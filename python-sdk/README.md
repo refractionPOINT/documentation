@@ -34,7 +34,7 @@ Current version: 4.9.24
 ## Installation
 
 ### Requirements
-- Python 3.6 or higher (Python 2.7 support available but deprecated)
+- Python 3.6 or higher
 - pip package manager
 
 ### Install via pip
@@ -150,7 +150,6 @@ limacharlie
 ├── Sensor           # Individual sensor management
 ├── Firehose         # Real-time data streaming (push)
 ├── Spout            # Real-time data streaming (pull)
-├── Sync             # Configuration synchronization
 ├── Configs          # Configuration management
 ├── Payloads         # Artifact and payload management
 ├── Logs/Artifacts   # Log and artifact retrieval
@@ -274,49 +273,6 @@ new_key = manager.setInstallationKey(
 manager.delInstallationKey('INSTALLATION_KEY_ID')
 ```
 
-#### Detection and Response Rules
-
-```python
-# Get all D&R rules
-rules = manager.rules()
-# Returns: {'rule1': {...}, 'rule2': {...}, ...}
-
-# Get rules from specific namespace
-namespace_rules = manager.rules(namespace='custom')
-
-# Add a new rule
-manager.add_rule(
-    name='suspicious_process',
-    detect={
-        'op': 'is',
-        'path': 'event_type',
-        'value': 'PROCESS_START'
-    },
-    respond=[
-        {'action': 'report', 'name': 'suspicious_process_detected'}
-    ],
-    is_replace=False,  # Don't replace if exists
-    namespace='custom'
-)
-
-# Update existing rule
-manager.add_rule(
-    name='suspicious_process',
-    detect={...},
-    respond=[...],
-    is_replace=True  # Replace existing
-)
-
-# Delete a rule
-manager.del_rule('suspicious_process', namespace='custom')
-
-# Test a rule against events
-test_result = manager.testRule(
-    detect_rule={...},
-    test_events=[{...}, {...}]
-)
-```
-
 #### Outputs Management
 
 ```python
@@ -325,7 +281,7 @@ outputs = manager.outputs()
 # Returns: {'output1': {...}, 'output2': {...}, ...}
 
 # Add new output
-manager.output_add(
+manager.add_output(
     name='siem_output',
     module='syslog',
     type='detect',
@@ -337,7 +293,7 @@ manager.output_add(
 )
 
 # Delete output
-manager.output_del('siem_output')
+manager.del_output('siem_output')
 ```
 
 #### Artifact Collection
@@ -559,249 +515,7 @@ Common tasks that can be sent to sensors:
 
 ## Detection and Response Rules
 
-### Rule Structure
-
-Detection and Response rules consist of two main components:
-
-1. **Detect**: Conditions that trigger the rule
-2. **Respond**: Actions to take when detection triggers
-
-### Detection Language (D&RL)
-
-```python
-# Basic detection structure
-detect = {
-    'op': 'is',  # Operator: is, contains, starts_with, ends_with, matches, exists
-    'path': 'event_type',  # Path to field in event
-    'value': 'PROCESS_START'  # Value to match
-}
-
-# Complex detection with multiple conditions
-detect = {
-    'op': 'and',
-    'rules': [
-        {
-            'op': 'is',
-            'path': 'event_type',
-            'value': 'PROCESS_START'
-        },
-        {
-            'op': 'contains',
-            'path': 'event/FILE_PATH',
-            'value': 'powershell'
-        },
-        {
-            'op': 'matches',  # Regex match
-            'path': 'event/COMMAND_LINE',
-            'value': '.*-enc.*|.*-e.*'
-        }
-    ]
-}
-
-# Using OR conditions
-detect = {
-    'op': 'or',
-    'rules': [
-        {
-            'op': 'contains',
-            'path': 'event/FILE_PATH',
-            'value': 'cmd.exe'
-        },
-        {
-            'op': 'contains',
-            'path': 'event/FILE_PATH',
-            'value': 'powershell.exe'
-        }
-    ]
-}
-
-# Lookback operations
-detect = {
-    'op': 'and',
-    'rules': [
-        {
-            'op': 'is',
-            'path': 'event_type',
-            'value': 'PROCESS_START'
-        },
-        {
-            'op': 'lookup',
-            'path': 'event/PARENT/PARENT/FILE_PATH',  # Check grandparent process
-            'value': 'explorer.exe'
-        }
-    ]
-}
-```
-
-### Response Actions
-
-```python
-# Basic response
-respond = [
-    {
-        'action': 'report',
-        'name': 'suspicious_activity'
-    }
-]
-
-# Multiple response actions
-respond = [
-    {
-        'action': 'report',
-        'name': 'malware_detected',
-        'priority': 3  # 1-5, higher is more critical
-    },
-    {
-        'action': 'task',
-        'command': 'kill %(event/PROCESS_ID)'  # Template variable
-    },
-    {
-        'action': 'isolate'  # Isolate the sensor
-    }
-]
-
-# Advanced responses
-respond = [
-    {
-        'action': 'report',
-        'name': 'data_exfiltration',
-        'metadata': {  # Additional metadata
-            'severity': 'critical',
-            'category': 'exfiltration'
-        }
-    },
-    {
-        'action': 'task',
-        'investigation': 'exfil_investigation',  # Set investigation ID
-        'command': [  # Multiple tasks
-            'file_get %(event/FILE_PATH)',
-            'mem_dump %(event/PROCESS_ID)'
-        ]
-    },
-    {
-        'action': 'add_tag',
-        'tag': 'compromised',
-        'ttl': 86400  # Tag TTL in seconds
-    }
-]
-```
-
-### Complete Rule Examples
-
-```python
-# Detect PowerShell encoded commands
-manager.add_rule(
-    name='powershell_encoded_command',
-    detect={
-        'op': 'and',
-        'rules': [
-            {
-                'op': 'is',
-                'path': 'event_type',
-                'value': 'PROCESS_START'
-            },
-            {
-                'op': 'contains',
-                'path': 'event/FILE_PATH',
-                'value': 'powershell'
-            },
-            {
-                'op': 'or',
-                'rules': [
-                    {
-                        'op': 'contains',
-                        'path': 'event/COMMAND_LINE',
-                        'value': '-enc'
-                    },
-                    {
-                        'op': 'contains',
-                        'path': 'event/COMMAND_LINE',
-                        'value': '-EncodedCommand'
-                    }
-                ]
-            }
-        ]
-    },
-    respond=[
-        {
-            'action': 'report',
-            'name': 'powershell_encoded_command',
-            'priority': 4
-        },
-        {
-            'action': 'task',
-            'command': 'history_dump'
-        }
-    ]
-)
-
-# Detect and respond to ransomware behavior
-manager.add_rule(
-    name='ransomware_behavior',
-    detect={
-        'op': 'and',
-        'rules': [
-            {
-                'op': 'is',
-                'path': 'event_type',
-                'value': 'FILE_CREATE'
-            },
-            {
-                'op': 'matches',
-                'path': 'event/FILE_PATH',
-                'value': '.*\\.encrypted$|.*\\.locked$|.*\\.crypto$'
-            },
-            {
-                'op': 'is',
-                'path': 'event/FILE_PATH',
-                'value': 'README_RANSOMWARE.txt',
-                'not': True  # Negative match
-            }
-        ]
-    },
-    respond=[
-        {
-            'action': 'report',
-            'name': 'possible_ransomware',
-            'priority': 5
-        },
-        {
-            'action': 'isolate'
-        },
-        {
-            'action': 'task',
-            'command': [
-                'kill %(event/PROCESS_ID)',
-                'file_get %(event/FILE_PATH)'
-            ]
-        }
-    ]
-)
-```
-
-### FalsePositive Rules
-
-```python
-# Create a false positive rule to suppress detections
-manager.add_fp_rule(
-    name='whitelist_admin_tools',
-    detect={
-        'op': 'and',
-        'rules': [
-            {
-                'op': 'is',
-                'path': 'detect_name',
-                'value': 'suspicious_process'
-            },
-            {
-                'op': 'contains',
-                'path': 'detect/event/FILE_PATH',
-                'value': 'C:\\AdminTools\\'
-            }
-        ]
-    }
-)
-```
+**Note**: The direct D&R rule methods (`rules()`, `add_rule()`, `del_rule()`, `add_fp()`, `del_fp()`) are deprecated. Please use the Hive accessors instead for managing Detection & Response rules. See the Hive Operations section for details on using the key-value storage system for rule management.
 
 ## Real-time Data Streaming
 
@@ -1163,32 +877,6 @@ extensions.configure('velociraptor', {
 extensions.uninstall('velociraptor')
 ```
 
-### Sync Configuration
-
-```python
-# Initialize Sync
-sync = limacharlie.Sync(manager)
-
-# Export configuration
-config = sync.export()
-
-# Save to file
-with open('org_config.yaml', 'w') as f:
-    yaml.dump(config, f)
-
-# Import configuration
-with open('org_config.yaml', 'r') as f:
-    config = yaml.load(f)
-
-sync.import_config(config)
-
-# Selective sync
-sync.sync(
-    source_org='ORG_ID_1',
-    dest_org='ORG_ID_2',
-    components=['rules', 'outputs', 'resources']
-)
-```
 
 ## Error Handling
 
@@ -1321,70 +1009,6 @@ class ThreatHunter:
         
         return findings
     
-    def create_hunting_rules(self):
-        """Create detection rules for suspicious behavior"""
-        
-        # Rule for detecting credential dumping
-        self.manager.add_rule(
-            name='credential_dumping',
-            detect={
-                'op': 'and',
-                'rules': [
-                    {
-                        'op': 'is',
-                        'path': 'event_type',
-                        'value': 'PROCESS_START'
-                    },
-                    {
-                        'op': 'or',
-                        'rules': [
-                            {
-                                'op': 'contains',
-                                'path': 'event/FILE_PATH',
-                                'value': 'mimikatz'
-                            },
-                            {
-                                'op': 'contains',
-                                'path': 'event/COMMAND_LINE',
-                                'value': 'sekurlsa::logonpasswords'
-                            },
-                            {
-                                'op': 'and',
-                                'rules': [
-                                    {
-                                        'op': 'contains',
-                                        'path': 'event/FILE_PATH',
-                                        'value': 'rundll32'
-                                    },
-                                    {
-                                        'op': 'contains',
-                                        'path': 'event/COMMAND_LINE',
-                                        'value': 'comsvcs.dll,MiniDump'
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            respond=[
-                {
-                    'action': 'report',
-                    'name': 'credential_dumping_detected',
-                    'priority': 5
-                },
-                {
-                    'action': 'task',
-                    'command': [
-                        'kill %(event/PROCESS_ID)',
-                        'history_dump'
-                    ]
-                }
-            ]
-        )
-        
-        print("Hunting rules created")
-    
     def monitor_detections(self, duration=3600):
         """Monitor for detections in real-time"""
         print(f"Monitoring detections for {duration} seconds...")
@@ -1447,9 +1071,6 @@ class ThreatHunter:
 # Usage
 if __name__ == "__main__":
     hunter = ThreatHunter('ORG_ID', 'API_KEY')
-    
-    # Create hunting rules
-    hunter.create_hunting_rules()
     
     # Hunt for suspicious processes
     findings = hunter.hunt_suspicious_processes()
@@ -1609,70 +1230,6 @@ class IncidentResponder:
             print(f"Error analyzing network: {e}")
             return []
     
-    def create_ioc_detection_rules(self, iocs):
-        """Create detection rules based on IOCs"""
-        
-        for ioc in iocs:
-            if ioc['type'] == 'file_hash':
-                self.manager.add_rule(
-                    name=f"ioc_hash_{ioc['value'][:8]}",
-                    detect={
-                        'op': 'and',
-                        'rules': [
-                            {
-                                'op': 'is',
-                                'path': 'event_type',
-                                'value': 'PROCESS_START'
-                            },
-                            {
-                                'op': 'is',
-                                'path': 'event/HASH',
-                                'value': ioc['value']
-                            }
-                        ]
-                    },
-                    respond=[
-                        {
-                            'action': 'report',
-                            'name': f"ioc_match_{ioc['type']}",
-                            'priority': 5,
-                            'metadata': {'ioc': ioc}
-                        },
-                        {
-                            'action': 'kill',
-                            'target': '%(event/PROCESS_ID)'
-                        }
-                    ]
-                )
-            
-            elif ioc['type'] == 'domain':
-                self.manager.add_rule(
-                    name=f"ioc_domain_{ioc['value'].replace('.', '_')}",
-                    detect={
-                        'op': 'and',
-                        'rules': [
-                            {
-                                'op': 'is',
-                                'path': 'event_type',
-                                'value': 'DNS_REQUEST'
-                            },
-                            {
-                                'op': 'is',
-                                'path': 'event/DOMAIN',
-                                'value': ioc['value']
-                            }
-                        ]
-                    },
-                    respond=[
-                        {
-                            'action': 'report',
-                            'name': 'c2_communication_attempt',
-                            'priority': 4,
-                            'metadata': {'ioc': ioc}
-                        }
-                    ]
-                )
-    
     def generate_incident_timeline(self, incident_id):
         """Generate timeline of incident events"""
         timeline = []
@@ -1723,13 +1280,6 @@ if __name__ == "__main__":
     
     print(f"\nIncident Response Complete:")
     print(json.dumps(incident, indent=2))
-    
-    # Create IOC detection rules
-    iocs = [
-        {'type': 'file_hash', 'value': 'abc123...'},
-        {'type': 'domain', 'value': 'malicious.com'}
-    ]
-    responder.create_ioc_detection_rules(iocs)
     
     # Generate timeline
     timeline = responder.generate_incident_timeline(incident['id'])
@@ -1853,76 +1403,6 @@ class ComplianceAuditor:
         
         return summary
     
-    def create_compliance_detection_rules(self):
-        """Create detection rules for compliance violations"""
-        
-        # Rule: Detect unauthorized software
-        self.manager.add_rule(
-            name='unauthorized_software',
-            detect={
-                'op': 'and',
-                'rules': [
-                    {
-                        'op': 'is',
-                        'path': 'event_type',
-                        'value': 'PROCESS_START'
-                    },
-                    {
-                        'op': 'or',
-                        'rules': [
-                            {
-                                'op': 'contains',
-                                'path': 'event/FILE_PATH',
-                                'value': 'torrent'
-                            },
-                            {
-                                'op': 'contains',
-                                'path': 'event/FILE_PATH',
-                                'value': 'limewire'
-                            },
-                            {
-                                'op': 'contains',
-                                'path': 'event/FILE_PATH',
-                                'value': 'kazaa'
-                            }
-                        ]
-                    }
-                ]
-            },
-            respond=[
-                {
-                    'action': 'report',
-                    'name': 'unauthorized_software_execution',
-                    'priority': 2,
-                    'metadata': {
-                        'compliance_violation': True,
-                        'policy': 'acceptable_use'
-                    }
-                }
-            ]
-        )
-        
-        # Rule: Detect USB device connections
-        self.manager.add_rule(
-            name='usb_device_connected',
-            detect={
-                'op': 'is',
-                'path': 'event_type',
-                'value': 'USB_DEVICE_CONNECTED'
-            },
-            respond=[
-                {
-                    'action': 'report',
-                    'name': 'usb_device_usage',
-                    'priority': 1,
-                    'metadata': {
-                        'compliance_check': True,
-                        'policy': 'data_loss_prevention'
-                    }
-                }
-            ]
-        )
-    
     def generate_audit_log(self, days=30):
         """Generate audit log for compliance reporting"""
         
@@ -2006,9 +1486,6 @@ class ComplianceAuditor:
 # Usage
 if __name__ == "__main__":
     auditor = ComplianceAuditor('ORG_ID', 'API_KEY')
-    
-    # Create compliance detection rules
-    auditor.create_compliance_detection_rules()
     
     # Perform organization-wide audit
     audit_results = auditor.audit_organization_compliance()
