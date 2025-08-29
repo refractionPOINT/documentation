@@ -789,9 +789,9 @@ Updates machine learning models with detection data.
 ```yaml
 respond:
   - action: model request
-    model: "behavioral_analysis"
-    action: "add_sample"
-    data:
+    model name: "behavioral_analysis"
+    model action: "add_sample"
+    model request:
       features: "{{.event}}"
       label: "malicious"
 ```
@@ -886,13 +886,12 @@ detect:
   # Initial suspicious file creation
   op: and
   rules:
-    - op: is
+    - op: ends with
       path: event/FILE_CREATE/FILE_PATH
       value: ".bat"
-      ends with: true
     - op: contains
       path: event/FILE_CREATE/FILE_PATH
-      value: "\\Temp\\"
+      value: "Temp"
   
   # Network activity within 60 seconds
   with events:
@@ -1509,7 +1508,7 @@ comment: "Escalates incidents when multiple attack stages are detected on the sa
 detect:
   op: and
   rules:
-    # Multiple detection categories from same sensor
+    # Initial detection of any attack stage
     - op: or
       rules:
         - op: is
@@ -1524,12 +1523,38 @@ detect:
         - op: is
           path: event/detect/cat
           value: "lateral_movement"
-    
-    # Time window for correlation
+
+    # Within time window
     - op: is older than
       path: event/ts
       seconds: 900
-      not: true  # Within last 15 minutes (900 seconds)
+      not: true
+
+  # Correlate with other detection categories from same sensor
+  with events:
+    op: and
+    rules:
+      - op: or
+        rules:
+          - op: is
+            path: event/detect/cat
+            value: "execution"
+          - op: is
+            path: event/detect/cat
+            value: "persistence"
+          - op: is
+            path: event/detect/cat
+            value: "credential_access"
+          - op: is
+            path: event/detect/cat
+            value: "lateral_movement"
+      # Ensure it's a different detection category
+      - op: is
+        path: event/detect/cat
+        value: "{{.event.detect.cat}}"
+        not: true
+    count: 2  # At least 2 additional different detection categories
+    within: 900  # Within 15 minutes
 
 respond:
   - action: report
@@ -1738,7 +1763,7 @@ detect:
           path: event/sensor_info/internal_ip
         - op: cidr
           path: event/sensor_info/internal_ip
-          value: "10.0.0.0/8"
+          cidr: "10.0.0.0/8"
           not: true  # Not in expected corporate network
 
 respond:
@@ -1995,13 +2020,18 @@ detect:
   rules:
     # Office application with suspicious child
     - op: or
-      path: event/NEW_PROCESS/PARENT/FILE_PATH
       rules:
-        - value: "winword.exe"
+        - op: is
+          path: event/NEW_PROCESS/PARENT/FILE_PATH
+          value: "winword.exe"
           file name: true
-        - value: "excel.exe"
+        - op: is
+          path: event/NEW_PROCESS/PARENT/FILE_PATH
+          value: "excel.exe"
           file name: true
-        - value: "powerpnt.exe"
+        - op: is
+          path: event/NEW_PROCESS/PARENT/FILE_PATH
+          value: "powerpnt.exe"
           file name: true
     
     # Suspicious child process
@@ -2183,9 +2213,9 @@ detect:
     - op: or
       rules:
         # Unsigned executable
-        - op: not
-          op: exists
+        - op: exists
           path: event/NEW_PROCESS/SIGNATURE/ISSUER
+	  not: true
         
         # Suspicious location
         - op: or
@@ -2207,10 +2237,10 @@ detect:
           file name: true
     
     # Not whitelisted process
-    - op: not
-      op: lookup
+    - op: lookup
       resource: "hive://lookup/approved_executables"
       path: event/NEW_PROCESS/FILE_HASH
+      not: true
   
   # Mass file operations
   with events:
