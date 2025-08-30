@@ -2610,8 +2610,6 @@ tests:
 
 ## Conclusion
 
-This comprehensive guidebook covers all aspects of LimaCharlie's D&R rule system, from basic syntax to advanced multi-stage detection. The examples provided demonstrate real-world cybersecurity use cases across all target types, with detailed explanations of component interactions and optimization techniques.
-
 Key takeaways:
 - Use appropriate target types for different data sources
 - Leverage stateful detection for complex attack patterns
