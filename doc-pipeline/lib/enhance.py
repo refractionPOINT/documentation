@@ -1,11 +1,11 @@
 """LLM-specific optimizations and enhancements."""
 import re
-from typing import Dict, List, Set
-from ..models import Page
+from typing import Dict, List
+from ..models import Page, DocumentStructure
 from ..config import Config
 
 
-def add_cross_references(structure, config: Config) -> int:
+def add_cross_references(structure: DocumentStructure, config: Config) -> int:
     """
     Add cross-references between related pages.
 
@@ -52,11 +52,14 @@ def _find_related_pages(page: Page, slug_map: Dict[str, Page]) -> List[Dict]:
         # Calculate relevance score
         score = 0
 
-        # Check if other page is mentioned
-        if other_page.title.lower() in content_lower:
+        # Check if other page is mentioned (with word boundaries)
+        title_pattern = r'\b' + re.escape(other_page.title.lower()) + r'\b'
+        if re.search(title_pattern, content_lower):
             score += 5
 
-        if slug in content_lower:
+        # Check for slug with word boundaries
+        slug_pattern = r'\b' + re.escape(slug).replace(r'\-', r'[-\s]') + r'\b'
+        if re.search(slug_pattern, content_lower):
             score += 3
 
         # Check keyword overlap
@@ -96,12 +99,22 @@ def optimize_heading_hierarchy(page: Page, config: Config) -> bool:
 
     lines = page.markdown.split('\n')
     changes_made = False
+    in_code_block = False
 
     # Track heading levels
     h1_count = 0
     prev_level = 0
 
     for i, line in enumerate(lines):
+        # Track code block boundaries
+        if line.strip().startswith('```'):
+            in_code_block = not in_code_block
+            continue
+
+        # Skip lines inside code blocks
+        if in_code_block:
+            continue
+
         if not line.strip().startswith('#'):
             continue
 
