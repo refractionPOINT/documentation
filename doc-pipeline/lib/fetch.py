@@ -18,17 +18,109 @@ except ImportError:
     from config import Config
 
 
+def _discover_via_algolia(config: Config) -> List[Page]:
+    """
+    Discover documentation using Algolia search API.
+
+    Document360 sites use Algolia for search, which provides access to all articles.
+    This bypasses the need to scrape JavaScript-rendered navigation.
+    """
+    # Algolia credentials from LimaCharlie docs (extracted from page source)
+    ALGOLIA_APP_ID = "JX9O5RE9SU"
+    ALGOLIA_INDEX = "articles11"
+    ALGOLIA_API_KEY = "N2M1ZDY0ZWNmYjc0MzhiZTI5ZDA1OGJiZTg4Y2E3MTNlZTcwYThiNDEyMjVlOTBkYTY5MGYyNTAzMGY3NjA2MmZpbHRlcnM9cHJvamVjdElkJTNBODRlYzIzMTEtMGUwNS00YzU4LTkwYjktYmFhOWMwNDFkMjJiJTIwQU5EJTIwTk9UJTIwaXNEZWxldGVkJTNBdHJ1ZSUyMEFORCUyMGlzRHJhZnQlM0FmYWxzZSUyMEFORCUyMGV4Y2x1ZGUlM0FmYWxzZSUyMEFORCUyMGlzSGlkZGVuJTNBZmFsc2UlMjBBTkQlMjBOT1QlMjBpc0NhdGVnb3J5SGlkZGVuJTNBdHJ1ZSUyMEFORCUyME5PVCUyMGlzVW5wdWJsaXNoZWQlM0F0cnVlJTIwQU5EJTIwTk9UJTIwZmxvd0FydGljbGVUeXBlJTNBZmxvaWsmbWluV29yZFNpemVmb3IxVHlwbz01Jm1pbldvcmRTaXplZm9yMlR5cG9zPTgmYWR2YW5jZWRTeW50YXg9dHJ1ZSZzeW5vbnltcz10cnVlJnR5cG9Ub2xlcmFuY2U9dHJ1ZSZyZW1vdmVTdG9wV29yZHM9ZW4mcmVzdHJpY3RJbmRpY2VzPWFydGljbGVzMTEmdmFsaWRVbnRpbD0xNzYwMzEyMDc2"
+
+    url = f"https://{ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/{ALGOLIA_INDEX}/query"
+
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Algolia-Application-Id': ALGOLIA_APP_ID,
+        'X-Algolia-API-Key': ALGOLIA_API_KEY,
+    }
+
+    pages = []
+    page_num = 0
+    total_pages = 1  # Will be updated from first response
+
+    while page_num < total_pages:
+        payload = {
+            'query': '',  # Empty query returns all articles
+            'hitsPerPage': 100,
+            'page': page_num
+        }
+
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=config.request_timeout)
+            response.raise_for_status()
+            data = response.json()
+
+            hits = data.get('hits', [])
+            total_pages = data.get('nbPages', 1)
+
+            print(f"  Algolia page {page_num + 1}/{total_pages}: {len(hits)} articles")
+
+            for hit in hits:
+                # Extract article details
+                slug = hit.get('slug', '').strip('/')
+                title = hit.get('title', 'Untitled')
+
+                # Build full URL
+                url_path = f"/docs/{slug}" if slug else "/docs"
+                full_url = f"{config.base_url}{url_path}"
+
+                page = Page(
+                    url=full_url,
+                    slug=slug,
+                    title=title,
+                    category=""  # Will be categorized later
+                )
+                pages.append(page)
+
+            page_num += 1
+            time.sleep(0.2)  # Be respectful between pagination requests
+
+        except Exception as e:
+            print(f"  Error fetching Algolia page {page_num}: {e}")
+            break
+
+    return pages
+
+
 def discover_documentation_structure(config: Config) -> DocumentStructure:
     """
     Dynamically discover all documentation pages from the website.
+
+    Uses Algolia search API for Document360 sites (JavaScript-rendered navigation).
 
     Returns DocumentStructure with discovered pages organized by category.
     """
     print("Discovering documentation structure...")
 
+    structure = DocumentStructure()
+
+    # Try Algolia discovery first (works for Document360 sites)
+    try:
+        algolia_pages = _discover_via_algolia(config)
+        if algolia_pages:
+            print(f"Found {len(algolia_pages)} pages via Algolia search")
+
+            # Organize into categories
+            for page in algolia_pages:
+                category = _categorize_page(page.slug)
+                if category not in structure.categories:
+                    structure.categories[category] = []
+                structure.categories[category].append(page)
+
+            from datetime import datetime
+            structure.discovered_at = datetime.now()
+            return structure
+    except Exception as e:
+        print(f"Algolia discovery failed: {e}")
+
+    # Fallback to HTML scraping
+    print("Falling back to HTML scraping...")
     docs_url = f"{config.base_url}{config.docs_path}"
     headers = {'User-Agent': 'Mozilla/5.0 (LimaCharlie Documentation Bot)'}
-    structure = DocumentStructure()
 
     try:
         response = requests.get(docs_url, headers=headers, timeout=config.request_timeout)
