@@ -183,7 +183,7 @@ def _extract_rest_endpoints(content: str) -> List[Dict]:
 
     # Pattern: GET /api/v1/resource
     pattern = re.compile(
-        r'(GET|POST|PUT|DELETE|PATCH)\s+([/\w\-\{\}]+)',
+        r'\b(GET|POST|PUT|DELETE|PATCH)\s+(\/[\w\-\/\{\}]+)',
         re.IGNORECASE
     )
 
@@ -200,6 +200,7 @@ def _extract_rest_endpoints(content: str) -> List[Dict]:
 
 def _extract_python_apis(content: str) -> List[Dict]:
     """Extract Python API calls."""
+    seen = set()
     apis = []
 
     # Look in Python code blocks
@@ -211,17 +212,21 @@ def _extract_python_apis(content: str) -> List[Dict]:
         matches = pattern.findall(block)
 
         for obj, method in matches:
-            apis.append({
-                'type': 'python_api',
-                'object': obj,
-                'method': method,
-            })
+            key = (obj, method)
+            if key not in seen:
+                seen.add(key)
+                apis.append({
+                    'type': 'python_api',
+                    'object': obj,
+                    'method': method,
+                })
 
     return apis
 
 
 def _extract_cli_commands(content: str) -> List[Dict]:
     """Extract CLI commands."""
+    seen = set()
     commands = []
 
     # Look in bash code blocks
@@ -235,11 +240,14 @@ def _extract_cli_commands(content: str) -> List[Dict]:
                 # Extract command (first word)
                 parts = line.split()
                 if parts:
-                    commands.append({
-                        'type': 'cli_command',
-                        'command': parts[0],
-                        'full': line,
-                    })
+                    key = (parts[0], line)
+                    if key not in seen:
+                        seen.add(key)
+                        commands.append({
+                            'type': 'cli_command',
+                            'command': parts[0],
+                            'full': line,
+                        })
 
     return commands
 
