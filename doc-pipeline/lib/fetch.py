@@ -1,6 +1,8 @@
 """Documentation fetching and discovery."""
 import time
 import hashlib
+import re
+import json
 from typing import Dict, List, Tuple, Optional
 import requests
 from bs4 import BeautifulSoup
@@ -18,17 +20,86 @@ except ImportError:
     from config import Config
 
 
+def _extract_algolia_credentials(config: Config) -> Optional[Tuple[str, str, str]]:
+    """
+    Extract Algolia credentials from the documentation page source.
+
+    Document360 embeds these credentials in the page's layoutData JavaScript object.
+    They are public, read-only keys that expire periodically.
+
+    Returns tuple of (app_id, index_name, api_key) or None if extraction fails.
+    """
+    try:
+        docs_url = f"{config.base_url}{config.docs_path}"
+        headers = {'User-Agent': 'Mozilla/5.0 (LimaCharlie Documentation Bot)'}
+
+        response = requests.get(docs_url, headers=headers, timeout=config.request_timeout)
+        response.raise_for_status()
+
+        # Find the layoutData JavaScript object in the page source
+        match = re.search(r'var layoutData=(\{[^;]+\});', response.text)
+        if not match:
+            print("  Could not find layoutData in page source")
+            return None
+
+        # Parse the JavaScript object as JSON
+        layout_data_str = match.group(1)
+        # Fix JavaScript boolean/null to JSON
+        layout_data_str = layout_data_str.replace("'", '"')
+        layout_data_str = re.sub(r':\s*True', ': true', layout_data_str)
+        layout_data_str = re.sub(r':\s*False', ': false', layout_data_str)
+        layout_data_str = re.sub(r":\s*'([^']*)'", r': "\1"', layout_data_str)
+
+        try:
+            layout_data = json.loads(layout_data_str)
+        except json.JSONDecodeError:
+            # If JSON parsing fails, try regex extraction
+            app_id_match = re.search(r'algoliaAppId["\']?\s*:\s*["\']([^"\']+)["\']', response.text)
+            index_match = re.search(r'algoliaArticlesIndexId["\']?\s*:\s*["\']([^"\']+)["\']', response.text)
+            key_match = re.search(r'algoliaSearchKey["\']?\s*:\s*["\']([^"\']+)["\']', response.text)
+
+            if app_id_match and index_match and key_match:
+                app_id = app_id_match.group(1)
+                index_name = index_match.group(1)
+                print(f"  Extracted Algolia credentials (via regex): {app_id}/{index_name}")
+                return (app_id, index_name, key_match.group(1))
+
+            print("  Could not parse layoutData as JSON or extract via regex")
+            return None
+
+        # Extract Algolia credentials
+        app_id = layout_data.get('algoliaAppId')
+        index_name = layout_data.get('algoliaArticlesIndexId')
+        api_key = layout_data.get('algoliaSearchKey')
+
+        if not all([app_id, index_name, api_key]):
+            print(f"  Missing Algolia credentials: app_id={bool(app_id)}, index={bool(index_name)}, key={bool(api_key)}")
+            return None
+
+        print(f"  Extracted Algolia credentials: {app_id}/{index_name}")
+        return (app_id, index_name, api_key)
+
+    except Exception as e:
+        print(f"  Error extracting Algolia credentials: {e}")
+        return None
+
+
 def _discover_via_algolia(config: Config) -> List[Page]:
     """
     Discover documentation using Algolia search API.
 
     Document360 sites use Algolia for search, which provides access to all articles.
     This bypasses the need to scrape JavaScript-rendered navigation.
+
+    Credentials are automatically extracted from the page source.
     """
-    # Algolia credentials from LimaCharlie docs (extracted from page source)
-    ALGOLIA_APP_ID = "JX9O5RE9SU"
-    ALGOLIA_INDEX = "articles11"
-    ALGOLIA_API_KEY = "N2M1ZDY0ZWNmYjc0MzhiZTI5ZDA1OGJiZTg4Y2E3MTNlZTcwYThiNDEyMjVlOTBkYTY5MGYyNTAzMGY3NjA2MmZpbHRlcnM9cHJvamVjdElkJTNBODRlYzIzMTEtMGUwNS00YzU4LTkwYjktYmFhOWMwNDFkMjJiJTIwQU5EJTIwTk9UJTIwaXNEZWxldGVkJTNBdHJ1ZSUyMEFORCUyMGlzRHJhZnQlM0FmYWxzZSUyMEFORCUyMGV4Y2x1ZGUlM0FmYWxzZSUyMEFORCUyMGlzSGlkZGVuJTNBZmFsc2UlMjBBTkQlMjBOT1QlMjBpc0NhdGVnb3J5SGlkZGVuJTNBdHJ1ZSUyMEFORCUyME5PVCUyMGlzVW5wdWJsaXNoZWQlM0F0cnVlJTIwQU5EJTIwTk9UJTIwZmxvd0FydGljbGVUeXBlJTNBZmxvaWsmbWluV29yZFNpemVmb3IxVHlwbz01Jm1pbldvcmRTaXplZm9yMlR5cG9zPTgmYWR2YW5jZWRTeW50YXg9dHJ1ZSZzeW5vbnltcz10cnVlJnR5cG9Ub2xlcmFuY2U9dHJ1ZSZyZW1vdmVTdG9wV29yZHM9ZW4mcmVzdHJpY3RJbmRpY2VzPWFydGljbGVzMTEmdmFsaWRVbnRpbD0xNzYwMzEyMDc2"
+    # Extract credentials from page source (they expire periodically)
+    credentials = _extract_algolia_credentials(config)
+    if not credentials:
+        print("  Could not extract Algolia credentials, discovery will fail")
+        return []
+
+    ALGOLIA_APP_ID, ALGOLIA_INDEX, ALGOLIA_API_KEY = credentials
 
     url = f"https://{ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/{ALGOLIA_INDEX}/query"
 
