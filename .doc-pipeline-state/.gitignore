@@ -1,0 +1,3 @@
+# Ignore state files but keep directory
+*
+!.gitignore
