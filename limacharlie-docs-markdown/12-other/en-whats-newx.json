@@ -1,0 +1,21 @@
+{
+  "url": "https://docs.limacharlie.io/docs/en/whats-newx",
+  "title": "En/Whats Newx",
+  "slug": "en/whats-newx",
+  "category": "",
+  "metadata": {
+    "summary": "Recently updated articles",
+    "keywords": [
+      "agent",
+      "edr",
+      "en/whats",
+      "event",
+      "newx",
+      "rule"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": "239ecdc36d8b3964590d4f8f6959e41096bfc23977af22fa004cbecbd5046282"
+}

@@ -1,41 +1,3 @@
-# LimaCharlie Complete Documentation
-
-Generated: 2025-10-11 16:28:51
-
----
-
-# Getting Started
-
-## Use Cases
-
-# Use Cases
-* 1 Minute to read
-
-## Related articles
-
-* [Billing Options](/docs/billing-options)
-
----
-
-### What's Next
-
-* [Sleeper Mode](/docs/sleeper-mode)
-
-Table of contents
-
-+ [Common LimaCharlie Use Cases](#common-limacharlie-use-cases)
-
-Tags
-
-* [LimaCharlie](/docs/en/tags/LimaCharlie)
-* [use cases](/docs/en/tags/use%20cases)
-
----
-
-# Other
-
-## En/Whats Newx
-
 [![LimaCharlie](https://cdn.document360.io/logo/84ec2311-0e05-4c58-90b9-baa9c041d22b/a8f5c28d58ea4df0b59badd4cebcc541-Logo_Blue.png)](/)
 
 Recently updated articles
@@ -117,7 +79,3 @@ Back to article
 * [Config Hive: Secrets
 
   08 Oct 2025](/docs/config-hive-secrets)
-
-
----
-

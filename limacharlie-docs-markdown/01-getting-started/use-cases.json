@@ -1,6 +1,23 @@
 {
   "url": "https://docs.limacharlie.io/docs/use-cases",
-  "title": "use-cases",
-  "downloaded_at": "2025-08-11 13:33:12",
-  "status": "html_downloaded"
+  "title": "Use Cases",
+  "slug": "use-cases",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "cases",
+      "related",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20cases)",
+      "](#common-limacharlie-use-cases)",
+      "1 Minute to read"
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "1741def7a46823c6ff56835c0734ba325df811bf1957023800ad13108e223bf0"
 }

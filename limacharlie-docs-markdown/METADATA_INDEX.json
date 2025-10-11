@@ -1,0 +1,40 @@
+{
+  "use-cases": {
+    "title": "Use Cases",
+    "category": "",
+    "url": "https://docs.limacharlie.io/docs/use-cases",
+    "metadata": {
+      "summary": "* 1 Minute to read",
+      "keywords": [
+        "articles",
+        "cases",
+        "related",
+        "what's"
+      ],
+      "complexity": "intermediate",
+      "use_cases": [
+        "](/docs/en/tags/use%20cases)",
+        "](#common-limacharlie-use-cases)",
+        "1 Minute to read"
+      ]
+    }
+  },
+  "en/whats-newx": {
+    "title": "En/Whats Newx",
+    "category": "",
+    "url": "https://docs.limacharlie.io/docs/en/whats-newx",
+    "metadata": {
+      "summary": "Recently updated articles",
+      "keywords": [
+        "agent",
+        "edr",
+        "en/whats",
+        "event",
+        "newx",
+        "rule"
+      ],
+      "complexity": "intermediate",
+      "use_cases": []
+    }
+  }
+}
