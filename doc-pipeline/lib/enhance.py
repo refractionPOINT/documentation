@@ -1,8 +1,15 @@
 """LLM-specific optimizations and enhancements."""
 import re
 from typing import Dict, List
-from ..models import Page, DocumentStructure
-from ..config import Config
+
+# Import from parent package
+try:
+    from ..models import Page, DocumentStructure
+    from ..config import Config
+except ImportError:
+    # Fallback for direct execution or testing
+    from models import Page, DocumentStructure
+    from config import Config
 
 
 def add_cross_references(structure: DocumentStructure, config: Config) -> int:

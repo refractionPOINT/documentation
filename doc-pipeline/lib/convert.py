@@ -19,9 +19,9 @@ def html_to_markdown(html: str) -> str:
     Returns raw markdown output.
     """
     try:
-        # Use markitdown via subprocess
+        # Use markitdown via subprocess (reads from stdin when no filename given)
         result = subprocess.run(
-            ['markitdown', '-'],
+            ['markitdown', '--extension', 'html'],
             input=html,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
