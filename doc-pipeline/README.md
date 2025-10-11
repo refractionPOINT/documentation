@@ -68,32 +68,38 @@ Requirements:
 ### Quick Start
 
 ```bash
-# Run full pipeline
-python -m doc_pipeline
+# Run full pipeline (from parent directory containing doc-pipeline/)
+python3 -m doc-pipeline
 
-# Output in: limacharlie-docs-markdown/
+# Or run CLI directly from inside doc-pipeline/
+cd doc-pipeline
+python3 cli.py
+
+# Output will be in: limacharlie-docs-markdown/
 ```
+
+**Note**: When using `python3 -m doc-pipeline`, run from the directory that contains the `doc-pipeline/` folder.
 
 ### Command Line Options
 
 ```bash
 # Discover structure only (dry run)
-python -m doc_pipeline --dry-run
+python3 -m doc-pipeline --dry-run
 
 # Skip git commit
-python -m doc_pipeline --no-commit
+python3 -m doc-pipeline --no-commit
 
 # Skip verification
-python -m doc_pipeline --no-verify
+python3 -m doc-pipeline --no-verify
 
 # Custom output directory
-python -m doc_pipeline --output-dir ./my-docs
+python3 -m doc-pipeline --output-dir ./my-docs
 
 # Fail on critical verification issues
-python -m doc_pipeline --fail-on-critical
+python3 -m doc-pipeline --fail-on-critical
 
 # Slower rate limiting
-python -m doc_pipeline --rate-limit 1.0
+python3 -m doc-pipeline --rate-limit 1.0
 ```
 
 ### Programmatic Usage

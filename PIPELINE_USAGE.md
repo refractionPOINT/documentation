@@ -8,13 +8,15 @@ This guide explains how to use the LimaCharlie documentation pipeline to generat
 # Install dependencies
 pip install -r doc-pipeline/requirements.txt
 
-# Run full pipeline
-python -m doc_pipeline
+# Run full pipeline (from parent directory containing doc-pipeline/)
+python3 -m doc-pipeline
 
-# Or from doc-pipeline directory
+# Alternative: Run CLI directly from inside doc-pipeline/
 cd doc-pipeline
-python -m doc_pipeline
+python3 cli.py
 ```
+
+**Important**: The `python3 -m doc-pipeline` command must be run from the directory that **contains** the `doc-pipeline/` folder, not from inside it.
 
 ## Understanding the Pipeline
 
