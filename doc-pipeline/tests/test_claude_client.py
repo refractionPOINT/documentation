@@ -75,3 +75,19 @@ def test_run_subagent_prompt_timeout(mocker, tmp_path):
 
     with pytest.raises(subprocess.TimeoutExpired):
         client.run_subagent_prompt(str(prompt_file), timeout=300)
+
+
+def test_run_subagent_prompt_failure(mocker, tmp_path):
+    """Test error handling for failed subagent execution."""
+    mock_run = mocker.patch('subprocess.run')
+    mock_run.return_value.returncode = 1
+    mock_run.return_value.stderr = 'Error: invalid prompt format'
+
+    client = ClaudeClient()
+    client._available = True
+
+    prompt_file = tmp_path / "prompt.md"
+    prompt_file.write_text("Test prompt")
+
+    with pytest.raises(RuntimeError, match="Claude subagent failed"):
+        client.run_subagent_prompt(str(prompt_file))
