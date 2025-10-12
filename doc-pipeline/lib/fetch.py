@@ -20,14 +20,14 @@ except ImportError:
     from config import Config
 
 
-def _extract_algolia_credentials(config: Config) -> Optional[Tuple[str, str, str]]:
+def _extract_algolia_credentials(config: Config) -> Optional[Tuple[str, str, str, str]]:
     """
     Extract Algolia credentials from the documentation page source.
 
     Document360 embeds these credentials in the page's layoutData JavaScript object.
     They are public, read-only keys that expire periodically.
 
-    Returns tuple of (app_id, index_name, api_key) or None if extraction fails.
+    Returns tuple of (app_id, index_name, api_key, language_version_id) or None if extraction fails.
     """
     try:
         docs_url = f"{config.base_url}{config.docs_path}"
@@ -61,23 +61,29 @@ def _extract_algolia_credentials(config: Config) -> Optional[Tuple[str, str, str
             if app_id_match and index_match and key_match:
                 app_id = app_id_match.group(1)
                 index_name = index_match.group(1)
-                print(f"  Extracted Algolia credentials (via regex): {app_id}/{index_name}")
-                return (app_id, index_name, key_match.group(1))
+
+                # Try to extract languageVersionId
+                lang_version_match = re.search(r'languageVersionId["\']?\s*:\s*["\']([^"\']+)["\']', response.text)
+                lang_version_id = lang_version_match.group(1) if lang_version_match else ""
+
+                print(f"  Extracted Algolia credentials (via regex): {app_id}/{index_name} (lang: {lang_version_id})")
+                return (app_id, index_name, key_match.group(1), lang_version_id)
 
             print("  Could not parse layoutData as JSON or extract via regex")
             return None
 
-        # Extract Algolia credentials
+        # Extract Algolia credentials and language version
         app_id = layout_data.get('algoliaAppId')
         index_name = layout_data.get('algoliaArticlesIndexId')
         api_key = layout_data.get('algoliaSearchKey')
+        lang_version_id = layout_data.get('languageVersionId', '')
 
         if not all([app_id, index_name, api_key]):
             print(f"  Missing Algolia credentials: app_id={bool(app_id)}, index={bool(index_name)}, key={bool(api_key)}")
             return None
 
-        print(f"  Extracted Algolia credentials: {app_id}/{index_name}")
-        return (app_id, index_name, api_key)
+        print(f"  Extracted Algolia credentials: {app_id}/{index_name} (lang: {lang_version_id})")
+        return (app_id, index_name, api_key, lang_version_id)
 
     except Exception as e:
         print(f"  Error extracting Algolia credentials: {e}")
@@ -99,7 +105,7 @@ def _discover_via_algolia(config: Config) -> List[Page]:
         print("  Could not extract Algolia credentials, discovery will fail")
         return []
 
-    ALGOLIA_APP_ID, ALGOLIA_INDEX, ALGOLIA_API_KEY = credentials
+    ALGOLIA_APP_ID, ALGOLIA_INDEX, ALGOLIA_API_KEY, LANGUAGE_VERSION_ID = credentials
 
     url = f"https://{ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/{ALGOLIA_INDEX}/query"
 
@@ -131,12 +137,30 @@ def _discover_via_algolia(config: Config) -> List[Page]:
             print(f"  Algolia page {page_num + 1}/{total_pages}: {len(hits)} articles")
 
             for hit in hits:
+                # Filter out articles not from current version or that are deleted/draft/hidden
+                article_lang_id = hit.get('languageId', '')
+                if LANGUAGE_VERSION_ID and article_lang_id != LANGUAGE_VERSION_ID:
+                    continue  # Skip articles from other versions
+
+                # Skip deleted, draft, hidden, or unpublished articles
+                if hit.get('isDeleted', False):
+                    continue
+                if hit.get('isDraft', False):
+                    continue
+                if hit.get('isHidden', False):
+                    continue
+                if hit.get('isUnpublished', False):
+                    continue
+
                 # Extract article details
                 slug = hit.get('slug', '').strip('/')
                 title = hit.get('title', 'Untitled')
 
+                if not slug:
+                    continue  # Skip articles without slugs
+
                 # Build full URL
-                url_path = f"/docs/{slug}" if slug else "/docs"
+                url_path = f"/docs/{slug}"
                 full_url = f"{config.base_url}{url_path}"
 
                 page = Page(
@@ -154,6 +178,7 @@ def _discover_via_algolia(config: Config) -> List[Page]:
             print(f"  Error fetching Algolia page {page_num}: {e}")
             break
 
+    print(f"Found {len(pages)} pages via Algolia search (filtered to current version)")
     return pages
 
 
@@ -173,8 +198,6 @@ def discover_documentation_structure(config: Config) -> DocumentStructure:
     try:
         algolia_pages = _discover_via_algolia(config)
         if algolia_pages:
-            print(f"Found {len(algolia_pages)} pages via Algolia search")
-
             # Organize into categories
             for page in algolia_pages:
                 category = _categorize_page(page.slug)
