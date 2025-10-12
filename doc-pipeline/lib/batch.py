@@ -75,14 +75,30 @@ Output only valid JSON, no markdown formatting."""
         # Get batching from Claude
         response = claude_client.run_subagent_prompt(prompt_file)
 
-        # Parse response
-        batch_data = json.loads(response)
+        # Parse response with error handling
+        try:
+            batch_data = json.loads(response)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Claude returned invalid JSON: {e}") from e
+
+        # Validate response structure
+        if 'batches' not in batch_data:
+            raise ValueError("Claude response missing 'batches' key")
+
+        if not batch_data['batches']:
+            # Empty result - return empty list
+            return []
 
         # Build batch objects with actual Page references
         page_map = {p.slug: p for p in pages}
         batches = []
 
-        for batch_def in batch_data['batches']:
+        for i, batch_def in enumerate(batch_data['batches']):
+            # Validate required keys
+            for required_key in ['id', 'theme', 'page_slugs']:
+                if required_key not in batch_def:
+                    raise ValueError(f"Batch {i} missing required key: {required_key}")
+
             batch = {
                 'id': batch_def['id'],
                 'theme': batch_def['theme'],

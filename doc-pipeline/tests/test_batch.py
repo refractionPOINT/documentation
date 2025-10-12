@@ -68,3 +68,57 @@ def test_create_semantic_batches_respects_size_limits(mocker):
 
     for batch in batches:
         assert 1 <= len(batch['pages']) <= 10
+
+
+def test_create_semantic_batches_handles_invalid_json(mocker):
+    """Test that invalid JSON from Claude is handled gracefully."""
+    pages = [Page(slug="test", title="Test", url="...", category="test", raw_html="")]
+
+    mock_client = mocker.Mock()
+    mock_client.run_subagent_prompt.return_value = "This is not JSON"
+
+    with pytest.raises(ValueError, match="Claude returned invalid JSON"):
+        create_semantic_batches(pages, mock_client)
+
+
+def test_create_semantic_batches_handles_missing_batches_key(mocker):
+    """Test that missing 'batches' key is handled."""
+    pages = [Page(slug="test", title="Test", url="...", category="test", raw_html="")]
+
+    mock_client = mocker.Mock()
+    mock_client.run_subagent_prompt.return_value = '{"wrong_key": []}'
+
+    with pytest.raises(ValueError, match="missing 'batches' key"):
+        create_semantic_batches(pages, mock_client)
+
+
+def test_create_semantic_batches_handles_empty_batches(mocker):
+    """Test that empty batch list returns empty result."""
+    pages = [Page(slug="test", title="Test", url="...", category="test", raw_html="")]
+
+    mock_client = mocker.Mock()
+    mock_client.run_subagent_prompt.return_value = '{"batches": []}'
+
+    result = create_semantic_batches(pages, mock_client)
+    assert result == []
+
+
+def test_create_semantic_batches_validates_batch_structure(mocker):
+    """Test that batches missing required keys are rejected."""
+    pages = [Page(slug="test", title="Test", url="...", category="test", raw_html="")]
+
+    mock_client = mocker.Mock()
+    # Missing 'theme' key in batch
+    mock_client.run_subagent_prompt.return_value = '''
+{
+  "batches": [
+    {
+      "id": "batch_01",
+      "page_slugs": ["test"]
+    }
+  ]
+}
+'''
+
+    with pytest.raises(ValueError, match="Batch 0 missing required key: theme"):
+        create_semantic_batches(pages, mock_client)
