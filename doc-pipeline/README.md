@@ -68,17 +68,13 @@ Requirements:
 ### Quick Start
 
 ```bash
-# Run full pipeline (from parent directory containing doc-pipeline/)
+# Run full pipeline from the parent directory containing doc-pipeline/
 python3 -m doc-pipeline
-
-# Or run CLI directly from inside doc-pipeline/
-cd doc-pipeline
-python3 cli.py
 
 # Output will be in: limacharlie-docs-markdown/
 ```
 
-**Note**: When using `python3 -m doc-pipeline`, run from the directory that contains the `doc-pipeline/` folder.
+**Important**: You must run `python3 -m doc-pipeline` from the directory that **contains** the `doc-pipeline/` folder (not from inside it).
 
 ### Command Line Options
 

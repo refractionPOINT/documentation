@@ -10,10 +10,6 @@ pip install -r doc-pipeline/requirements.txt
 
 # Run full pipeline (from parent directory containing doc-pipeline/)
 python3 -m doc-pipeline
-
-# Alternative: Run CLI directly from inside doc-pipeline/
-cd doc-pipeline
-python3 cli.py
 ```
 
 **Important**: The `python3 -m doc-pipeline` command must be run from the directory that **contains** the `doc-pipeline/` folder, not from inside it.
