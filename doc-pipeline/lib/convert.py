@@ -2,6 +2,7 @@
 import re
 import subprocess
 from typing import Optional
+from bs4 import BeautifulSoup
 
 try:
     from ..models import Page
@@ -12,6 +13,50 @@ except ImportError:
     from config import Config
 
 
+def extract_main_content(html: str) -> str:
+    """
+    Extract main article content from Document360 HTML.
+
+    Removes navigation, sidebars, headers, footers, etc.
+    """
+    if not html:
+        return ""
+
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # Try to find main content area (Document360 uses various selectors)
+        content_selectors = [
+            'article',
+            '.article-content',
+            '.d-article-content',
+            '[role="main"]',
+            'main',
+        ]
+
+        content = None
+        for selector in content_selectors:
+            content = soup.select_one(selector)
+            if content:
+                break
+
+        if not content:
+            # Fallback: try to find the largest content div
+            all_divs = soup.find_all('div')
+            content = max(all_divs, key=lambda d: len(d.get_text()), default=None)
+
+        if content:
+            return str(content)
+
+        # Last resort: return body
+        body = soup.find('body')
+        return str(body) if body else html
+
+    except Exception as e:
+        print(f"Warning: Could not extract content with BeautifulSoup: {e}")
+        return html
+
+
 def html_to_markdown(html: str) -> str:
     """
     Convert HTML to markdown using markitdown.
@@ -19,10 +64,13 @@ def html_to_markdown(html: str) -> str:
     Returns raw markdown output.
     """
     try:
+        # First extract main content to avoid converting navigation/UI elements
+        main_content = extract_main_content(html)
+
         # Use markitdown via subprocess (reads from stdin when no filename given)
         result = subprocess.run(
             ['markitdown', '--extension', 'html'],
-            input=html,
+            input=main_content,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             text=True,
