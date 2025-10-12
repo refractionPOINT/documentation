@@ -42,3 +42,36 @@ class ClaudeClient:
                 "Claude CLI is not available. Install from: "
                 "https://github.com/anthropics/claude-cli"
             )
+
+    def run_subagent_prompt(
+        self,
+        prompt_file: str,
+        timeout: int = 300
+    ) -> str:
+        """
+        Execute a subagent with the given prompt file.
+
+        Args:
+            prompt_file: Path to markdown file containing prompt
+            timeout: Timeout in seconds (default 5 minutes)
+
+        Returns:
+            Output from the subagent
+
+        Raises:
+            ClaudeNotAvailableError: If Claude CLI not available
+            subprocess.TimeoutExpired: If execution exceeds timeout
+        """
+        self.check_required()
+
+        result = subprocess.run(
+            ['claude', '--prompt-file', prompt_file],
+            capture_output=True,
+            text=True,
+            timeout=timeout
+        )
+
+        if result.returncode != 0:
+            raise RuntimeError(f"Claude subagent failed: {result.stderr}")
+
+        return result.stdout
