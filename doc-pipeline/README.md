@@ -122,20 +122,37 @@ success = run_pipeline(config)
 ```
 Input: docs.limacharlie.io
   ↓
-[FETCH] → Discover structure + Download HTML
+[FETCH] → Discover structure + Download HTML (Algolia API)
   ↓
-[CONVERT] → HTML to markdown + Clean artifacts
+[BATCH_GROUP] → Semantic batching via Claude (5-10 pages per batch)
   ↓
-[ANALYZE] → Extract metadata + API signatures
+[PARALLEL_UNDERSTAND] → Claude subagents process batches in parallel
   ↓
-[ENHANCE] → Add cross-refs + Optimize structure
+[SYNTHESIZE] → Build API index + resolve cross-references
   ↓
-[VERIFY] → Validate correctness
+[ENHANCE] → Global optimizations (coming soon)
+  ↓
+[VERIFY] → Semantic validation (coming soon)
   ↓
 [DETECT] → Git diff + Change report
   ↓
-Output: Optimized markdown + Reports
+Output: LLM-optimized markdown + Comprehensive indexes
 ```
+
+### Key Features
+
+- **Semantic Understanding**: Claude reads and understands page content, not just converts HTML
+- **Intelligent Batching**: Related pages processed together for better cross-referencing
+- **Parallel Processing**: 10x faster through concurrent subagent execution
+- **Rich Enhancement**: API extraction, cross-references, context additions
+- **Quality Focus**: Optimized for LLM consumption, not just human readability
+
+### Requirements
+
+- Python 3.8+
+- **Claude CLI** (required): Install from https://github.com/anthropics/claude-cli
+- Git (for change tracking)
+- Internet connection (for fetching)
 
 ### Project Structure
 
