@@ -134,7 +134,7 @@ async def process_batch_with_retry(
     batch: Dict[str, Any],
     claude_client: Any,
     max_retries: int = 3
-) -> Tuple[str, List[ProcessedPage]]:
+) -> Tuple[str, List[ProcessedTopic]]:
     """
     Process batch with retry logic.
 
@@ -144,7 +144,7 @@ async def process_batch_with_retry(
         max_retries: Maximum retry attempts
 
     Returns:
-        Tuple of (batch_id, processed pages)
+        Tuple of (batch_id, processed topics)
 
     Raises:
         RuntimeError: If all retries exhausted
@@ -167,7 +167,7 @@ async def process_batches_parallel(
     batches: List[Dict[str, Any]],
     claude_client: Any,
     max_concurrent: int = 10
-) -> Dict[str, List[ProcessedPage]]:
+) -> Dict[str, List[ProcessedTopic]]:
     """
     Process multiple batches in parallel with retry logic.
 
