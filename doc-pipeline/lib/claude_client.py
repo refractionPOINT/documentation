@@ -64,8 +64,14 @@ class ClaudeClient:
         """
         self.check_required()
 
+        # Read prompt from file
+        with open(prompt_file, 'r') as f:
+            prompt_content = f.read()
+
+        # Use --print for non-interactive output and pass prompt via stdin
         result = subprocess.run(
-            ['claude', '--prompt-file', prompt_file],
+            ['claude', '--print'],
+            input=prompt_content,
             capture_output=True,
             text=True,
             timeout=timeout

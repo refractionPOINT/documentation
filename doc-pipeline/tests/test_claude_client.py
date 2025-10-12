@@ -54,9 +54,13 @@ def test_run_subagent_prompt_success(mocker, tmp_path):
 
     assert result == '{"result": "success"}'
     mock_run.assert_called_once()
+    # Check command args
     args = mock_run.call_args[0][0]
     assert 'claude' in args
-    assert str(prompt_file) in args
+    assert '--print' in args
+    # Check that prompt content was passed via stdin
+    kwargs = mock_run.call_args[1]
+    assert kwargs['input'] == "Test prompt"
 
 
 def test_run_subagent_prompt_timeout(mocker, tmp_path):
