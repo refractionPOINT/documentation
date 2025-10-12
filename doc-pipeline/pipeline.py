@@ -1,10 +1,30 @@
-"""Main pipeline orchestrator."""
+"""Main pipeline orchestration."""
+import asyncio
 import json
 from pathlib import Path
 from datetime import datetime
-from .config import Config
-from .models import DocumentStructure
-from .lib import fetch, convert, analyze, enhance, verify, detect
+from typing import List
+
+# Handle both package and standalone imports
+try:
+    from .config import Config
+    from .models import DocumentStructure, Page
+    from .lib import fetch
+    from .lib.claude_client import ClaudeClient
+    from .lib.batch import create_semantic_batches
+    from .lib.understand import process_batches_parallel, ProcessedPage
+    from .lib.synthesize import build_api_index, resolve_cross_references
+except ImportError:
+    # Fallback for direct execution or testing
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent))
+    from config import Config
+    from models import DocumentStructure, Page
+    from lib import fetch
+    from lib.claude_client import ClaudeClient
+    from lib.batch import create_semantic_batches
+    from lib.understand import process_batches_parallel, ProcessedPage
+    from lib.synthesize import build_api_index, resolve_cross_references
 
 
 def save_state(structure: DocumentStructure, state_file: Path):
@@ -125,35 +145,38 @@ def create_combined_docs(structure: DocumentStructure, output_dir: Path):
     print(f"✓ Created {meta_file}")
 
 
-def run_pipeline(config: Config = None):
+def run_pipeline(config: Config = None) -> bool:
     """
-    Execute the complete documentation pipeline.
+    Run the complete documentation pipeline.
 
     Phases:
-    1. FETCH - Discover and download pages
-    2. CONVERT - HTML to markdown
-    3. ANALYZE - Extract metadata and APIs
-    4. ENHANCE - LLM optimizations
-    5. VERIFY - Content correctness
-    6. DETECT - Change detection
+    1. FETCH - Download pages
+    2. BATCH_GROUP - Create semantic batches
+    3. PARALLEL_UNDERSTAND - Process batches with Claude
+    4. SYNTHESIZE - Build indexes and resolve references
+    5. ENHANCE - Global optimizations (future)
+    6. VERIFY - Semantic validation (future)
+    7. DETECT - Git change tracking
+
+    Args:
+        config: Pipeline configuration
+
+    Returns:
+        True if successful, False otherwise
     """
     if config is None:
         config = Config()
 
-    print("="*60)
+    print("=" * 60)
     print("LIMACHARLIE DOCUMENTATION PIPELINE")
-    print("="*60)
-    print(f"\nConfiguration:")
-    print(f"  Source: {config.base_url}{config.docs_path}")
-    print(f"  Output: {config.output_dir}")
-    print(f"  State: {config.state_dir}")
-    print()
+    print("=" * 60)
 
-    # PHASE 1: FETCH
-    print("\n" + "="*60)
-    print("PHASE 1: FETCH")
-    print("="*60)
+    # Initialize Claude client
+    claude_client = ClaudeClient()
+    claude_client.check_required()
 
+    # Phase 1: FETCH
+    print("\n[FETCH] Discovering and downloading pages...")
     structure = fetch.discover_documentation_structure(config)
 
     if not structure.categories:
@@ -161,110 +184,76 @@ def run_pipeline(config: Config = None):
         return False
 
     total_pages = sum(len(pages) for pages in structure.categories.values())
-    print(f"\nDiscovered {total_pages} pages in {len(structure.categories)} categories")
+    print(f"Discovered {total_pages} pages in {len(structure.categories)} categories")
 
     downloaded = fetch.download_all_pages(structure, config)
     if downloaded == 0:
         print("✗ Failed to download any pages")
         return False
 
-    # Save state after fetch
-    save_state(structure, config.state_dir / "01-fetch.json")
+    print(f"✓ Fetched {downloaded} pages")
 
-    # PHASE 2: CONVERT
-    print("\n" + "="*60)
-    print("PHASE 2: CONVERT")
-    print("="*60)
+    # Flatten pages from structure
+    pages: List[Page] = []
+    for category_pages in structure.categories.values():
+        pages.extend(category_pages)
 
-    converted = convert.convert_all_pages(structure, config)
-    if converted == 0:
-        print("✗ Failed to convert any pages")
-        return False
+    # Phase 2: BATCH_GROUP
+    print("\n[BATCH_GROUP] Creating semantic batches...")
+    batches = create_semantic_batches(pages, claude_client)
+    print(f"✓ Created {len(batches)} batches")
 
-    save_state(structure, config.state_dir / "02-convert.json")
+    # Phase 3: PARALLEL_UNDERSTAND
+    print("\n[PARALLEL_UNDERSTAND] Processing batches with Claude...")
+    processed_batches = asyncio.run(
+        process_batches_parallel(batches, claude_client)
+    )
 
-    # PHASE 3: ANALYZE
-    print("\n" + "="*60)
-    print("PHASE 3: ANALYZE")
-    print("="*60)
+    # Flatten to page list
+    all_processed: List[ProcessedPage] = []
+    for batch_pages in processed_batches.values():
+        all_processed.extend(batch_pages)
+    print(f"✓ Processed {len(all_processed)} pages")
 
-    analyzed = analyze.analyze_all_pages(structure, config)
-    save_state(structure, config.state_dir / "03-analyze.json")
+    # Phase 4: SYNTHESIZE
+    print("\n[SYNTHESIZE] Building indexes and resolving references...")
+    api_index = build_api_index(all_processed, claude_client)
+    resolved_pages = resolve_cross_references(all_processed)
+    print(f"✓ Built API index and resolved cross-references")
 
-    # PHASE 4: ENHANCE
-    print("\n" + "="*60)
-    print("PHASE 4: ENHANCE")
-    print("="*60)
+    # Write output files
+    print("\n[OUTPUT] Writing documentation files...")
+    config.output_dir.mkdir(parents=True, exist_ok=True)
 
-    enhanced = enhance.enhance_all_pages(structure, config)
-    save_state(structure, config.state_dir / "04-enhance.json")
+    for page in resolved_pages:
+        output_file = config.output_dir / f"{page.slug}.md"
+        output_file.write_text(page.enhanced_markdown)
 
-    # PHASE 5: VERIFY
-    print("\n" + "="*60)
-    print("PHASE 5: VERIFY")
-    print("="*60)
+    # Write API index
+    (config.output_dir / "API_INDEX.md").write_text(api_index)
 
-    verification_report = verify.verify_all_pages(structure, config)
+    # Write metadata index
+    metadata_index = {
+        page.slug: page.metadata
+        for page in resolved_pages
+    }
+    (config.output_dir / "METADATA_INDEX.json").write_text(
+        json.dumps(metadata_index, indent=2)
+    )
 
-    if verification_report.critical > 0 and config.fail_on_critical:
-        print("\n✗ CRITICAL VERIFICATION FAILURES - Pipeline halted")
-        print("\nCritical Issues:")
-        for issue in verification_report.issues:
-            if issue.severity == "critical":
-                print(f"  - {issue.page_slug}: {issue.message}")
-        return False
+    print(f"✓ Wrote {len(resolved_pages)} markdown files")
 
-    # Save final state and output
-    save_state(structure, config.state_dir / "05-verify.json")
-    save_pages(structure, config.output_dir)
-    create_combined_docs(structure, config.output_dir)
+    # Phase 7: DETECT (if git enabled)
+    if config.git_commit_changes:
+        print("\n[DETECT] Detecting changes...")
+        try:
+            from .lib import detect
+        except ImportError:
+            from lib import detect
+        detect.detect_and_report(config.output_dir, config)
 
-    # Save verification report
-    report_file = config.state_dir / "verification_report.json"
-    with open(report_file, 'w') as f:
-        json.dump({
-            'total_pages': verification_report.total_pages,
-            'passed': verification_report.passed,
-            'warnings': verification_report.warnings,
-            'critical': verification_report.critical,
-            'issues': [
-                {
-                    'severity': issue.severity,
-                    'page_slug': issue.page_slug,
-                    'issue_type': issue.issue_type,
-                    'message': issue.message,
-                    'details': issue.details,
-                }
-                for issue in verification_report.issues
-            ]
-        }, f, indent=2)
-
-    print(f"\n✓ Verification report saved to {report_file}")
-
-    # PHASE 6: DETECT
-    print("\n" + "="*60)
-    print("PHASE 6: DETECT")
-    print("="*60)
-
-    change_report = detect.detect_and_report(config.output_dir, config)
-
-    # Save change report
-    if change_report:
-        report_file = config.state_dir / "change_report.json"
-        with open(report_file, 'w') as f:
-            json.dump(change_report, f, indent=2)
-        print(f"\n✓ Change report saved to {report_file}")
-
-    # Final summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("PIPELINE COMPLETE")
-    print("="*60)
-    print(f"\n✓ Processed {total_pages} pages")
-    print(f"  Downloaded: {downloaded}")
-    print(f"  Converted: {converted}")
-    print(f"  Analyzed: {analyzed}")
-    print(f"  Enhanced: {enhanced}")
-    print(f"\n✓ Output: {config.output_dir}")
-    print(f"✓ State: {config.state_dir}")
+    print("=" * 60)
 
     return True
