@@ -122,13 +122,46 @@ async def process_batch_async(
         Path(prompt_file).unlink()
 
 
+async def process_batch_with_retry(
+    batch: Dict[str, Any],
+    claude_client: Any,
+    max_retries: int = 3
+) -> Tuple[str, List[ProcessedPage]]:
+    """
+    Process batch with retry logic.
+
+    Args:
+        batch: Batch to process
+        claude_client: Claude client
+        max_retries: Maximum retry attempts
+
+    Returns:
+        Tuple of (batch_id, processed pages)
+
+    Raises:
+        RuntimeError: If all retries exhausted
+    """
+    last_error = None
+
+    for attempt in range(max_retries):
+        try:
+            return await process_batch_async(batch, claude_client)
+        except Exception as e:
+            last_error = e
+            print(f"Batch {batch['id']} failed (attempt {attempt + 1}/{max_retries}): {e}")
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2 ** attempt)  # Exponential backoff
+
+    raise RuntimeError(f"Batch {batch['id']} failed after {max_retries} attempts: {last_error}")
+
+
 async def process_batches_parallel(
     batches: List[Dict[str, Any]],
     claude_client: Any,
     max_concurrent: int = 10
 ) -> Dict[str, List[ProcessedPage]]:
     """
-    Process multiple batches in parallel.
+    Process multiple batches in parallel with retry logic.
 
     Args:
         batches: List of batches to process
@@ -138,24 +171,28 @@ async def process_batches_parallel(
     Returns:
         Dictionary mapping batch_id to processed pages
     """
-    # Create semaphore to limit concurrency
     semaphore = asyncio.Semaphore(max_concurrent)
 
     async def process_with_limit(batch):
         async with semaphore:
-            return await process_batch_async(batch, claude_client)
+            return await process_batch_with_retry(batch, claude_client)  # Use retry version
 
-    # Process all batches
     tasks = [process_with_limit(batch) for batch in batches]
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
-    # Collect successful results
     processed = {}
+    failed = []
+
     for result in results:
         if isinstance(result, Exception):
-            print(f"Batch processing failed: {result}")
+            failed.append(str(result))
             continue
         batch_id, pages = result
         processed[batch_id] = pages
+
+    if failed:
+        print(f"WARNING: {len(failed)} batches failed:")
+        for error in failed:
+            print(f"  - {error}")
 
     return processed
