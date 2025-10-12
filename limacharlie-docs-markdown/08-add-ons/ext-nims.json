@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-nims",
+  "title": "NIMS",
+  "slug": "ext-nims",
+  "category": "",
+  "metadata": {
+    "summary": "Notion Incident Management System (NIMS) helps SOC/IR teams streamline their incident collaboration. While not a replacement for advanced SIEM or SOAR case management systems, it offers a practical alternative for teams that don't have access to these tools.",
+    "keywords": [
+      "api",
+      "configuration",
+      "d&r",
+      "database",
+      "detection",
+      "event",
+      "example",
+      "extension",
+      "generate",
+      "integration",
+      "nims",
+      "rule",
+      "siem",
+      "token",
+      "what's"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-otx",
+        "title": "OTX",
+        "score": 15
+      },
+      {
+        "slug": "ext-renigma",
+        "title": "REnigma",
+        "score": 10
+      },
+      {
+        "slug": "ext-pagerduty",
+        "title": "PagerDuty",
+        "score": 10
+      },
+      {
+        "slug": "api-integrations-hybrid-analysis",
+        "title": "Hybrid Analysis",
+        "score": 9
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 9
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "1ca01667a8ef3697e418285c49af143fa137f65bc088ce7b810a42d28d768c2c"
+}

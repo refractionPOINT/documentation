@@ -1,0 +1,68 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-sophos",
+  "title": "Sophos",
+  "slug": "adapter-types-sophos",
+  "category": "",
+  "metadata": {
+    "summary": "This Adapter allows you to connect to Sophos Central to fetch event logs.",
+    "keywords": [
+      "adapter-specific",
+      "api",
+      "configurations",
+      "creating",
+      "credentials",
+      "deployment",
+      "endpoint",
+      "event",
+      "getting",
+      "infrastructure",
+      "options",
+      "organization",
+      "output",
+      "overview",
+      "response"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "infrastructure-as-code",
+        "title": "Infrastructure as Code",
+        "score": 14
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 12
+      },
+      {
+        "slug": "ext-infrastructure",
+        "title": "Infrastructure",
+        "score": 12
+      },
+      {
+        "slug": "adapter-types-azure-event-hub",
+        "title": "Azure Event Hub",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [
+    {
+      "type": "cli_command",
+      "command": "curl",
+      "full": "curl -XPOST -H \"Content-Type:application/x-www-form-urlencoded\" -d \"grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&scope=token\" https://id.sophos.com/api/v2/oauth2/token"
+    },
+    {
+      "type": "cli_command",
+      "command": "curl",
+      "full": "curl -XGET -H \"Authorization: Bearer YOUR_JWT_HERE\" https://api.central.sophos.com/whoami/v1"
+    }
+  ],
+  "content_hash": "eb05e1b294b905fd2727fbf2b8d9f778c259eb6476ac63762f40da40f5786c5e"
+}

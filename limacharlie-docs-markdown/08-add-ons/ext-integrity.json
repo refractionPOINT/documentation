@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-integrity",
+  "title": "Integrity",
+  "slug": "ext-integrity",
+  "category": "",
+  "metadata": {
+    "summary": "The Integrity Extension helps you manage all aspects of file or registry integrity monitoring (FIM and RIM, respectively). This extension automates integrity checks of file system and registry values through pattern-based rules.",
+    "keywords": [
+      "**file",
+      "actions",
+      "add-on",
+      "agent",
+      "api",
+      "articles",
+      "detection",
+      "edr",
+      "enabling",
+      "endpoint",
+      "event",
+      "example",
+      "extension",
+      "integrity",
+      "legacy"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 19
+      },
+      {
+        "slug": "endpoint-agent-commands",
+        "title": "Endpoint Agent Commands",
+        "score": 17
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 17
+      },
+      {
+        "slug": "reference-endpoint-agent-commands",
+        "title": "Reference: Endpoint Agent Commands",
+        "score": 15
+      },
+      {
+        "slug": "ext-lookup-manager",
+        "title": "Lookup Manager",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "0c253de241993e2be786d212c8fac4d0002eeebad4bfef8826946c9e7b6ab267"
+}

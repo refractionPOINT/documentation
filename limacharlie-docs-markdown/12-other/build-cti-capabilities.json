@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/build-cti-capabilities",
+  "title": "Build CTI Capabilities",
+  "slug": "build-cti-capabilities",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "build",
+      "capabilities",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "purple-teaming",
+        "title": "Purple Teaming",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 3
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "fad19341a0154e0e87c569f5826ad23a47047b8e12bcecbb1ce8fa9ea11ba2e3"
+}

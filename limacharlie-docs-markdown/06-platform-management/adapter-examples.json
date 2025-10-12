@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-examples",
+  "title": "Adapter Examples",
+  "slug": "adapter-examples",
+  "category": "",
+  "metadata": {
+    "summary": "3 Articles  in this category",
+    "keywords": [
+      "adapter",
+      "examples"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "template-strings-and-transforms",
+        "title": "Template Strings and Transforms",
+        "score": 4
+      },
+      {
+        "slug": "adapter-usage",
+        "title": "Adapter Usage",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-canarytokens",
+        "title": "Canarytokens",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-sublime-security",
+        "title": "Sublime Security",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "2f695735b0960bcb4cac2e8591c77e0924147810014837d7b07afce7cf033ce8"
+}

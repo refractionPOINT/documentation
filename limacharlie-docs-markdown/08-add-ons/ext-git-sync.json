@@ -1,0 +1,61 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-git-sync",
+  "title": "Git Sync",
+  "slug": "ext-git-sync",
+  "category": "",
+  "metadata": {
+    "summary": "The Git Sync Extension is a tool that automates the management of Infrastructure-as-Code (IaC) configurations. It simplifies the process of deploying and managing infrastructure by synchronizing changes between a Git repository and target organizations.",
+    "keywords": [
+      "across",
+      "agent",
+      "cases",
+      "configurations",
+      "configure",
+      "d&r",
+      "deploy",
+      "detection",
+      "edr",
+      "endpoint",
+      "export",
+      "exporting",
+      "extension",
+      "generate",
+      "github"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "### Sync FROM Git",
+      "](#use-cases)",
+      "."
+    ],
+    "related_pages": [
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 15
+      },
+      {
+        "slug": "infrastructure-as-code",
+        "title": "Infrastructure as Code",
+        "score": 14
+      },
+      {
+        "slug": "ext-yara",
+        "title": "YARA",
+        "score": 13
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 12
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "268f552ee9e33cb70ef54940f7aeef379502dc97217503b7b315730ebd5e842f"
+}

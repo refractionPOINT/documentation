@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-cato",
+  "title": "Cato",
+  "slug": "adapter-types-cato",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "api",
+      "cato",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 13
+      },
+      {
+        "slug": "adapter-types-crowdstrike-falcon-cloud",
+        "title": "CrowdStrike Falcon Cloud",
+        "score": 13
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 12
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 5
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "e1c40d0cabca82724cf6b55358b92fe48ccc4181f81980199801947f90c80230"
+}

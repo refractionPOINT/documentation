@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.limacharlie.io/docs/payload-manager",
+  "title": "Payload Manager",
+  "slug": "payload-manager",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "agent",
+      "articles",
+      "endpoint",
+      "extension",
+      "manager",
+      "payload",
+      "related",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 15
+      },
+      {
+        "slug": "payloads",
+        "title": "Payloads",
+        "score": 15
+      },
+      {
+        "slug": "endpoint-agent-commands",
+        "title": "Endpoint Agent Commands",
+        "score": 14
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 14
+      },
+      {
+        "slug": "ext-reliable-tasking",
+        "title": "Reliable Tasking",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "d66d63c644c8d9ed1d23e717514833bd88a688990968cd754a2cc17450cc7707"
+}

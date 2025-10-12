@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-apache-kafka",
+  "title": "Apache Kafka",
+  "slug": "outputs-destinations-apache-kafka",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "apache",
+      "event",
+      "kafka",
+      "output",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "outputs-destinations-azure-event-hub",
+        "title": "Azure Event Hub",
+        "score": 13
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli-azure",
+        "title": "Azure",
+        "score": 10
+      },
+      {
+        "slug": "adapter-types-azure-event-hub",
+        "title": "Azure Event Hub",
+        "score": 9
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "d4b81aa0fb09a70c18fe3bc676195407e7e608b4dc87c2c548a6d3673c66024b"
+}

@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/api-integrations-ip-geolocation",
+  "title": "IP Geolocation",
+  "slug": "api-integrations-ip-geolocation",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "api",
+      "geolocation",
+      "integration",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "api-integrations-pangea",
+        "title": "Pangea",
+        "score": 14
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 6
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 6
+      },
+      {
+        "slug": "api-integrations-virustotal",
+        "title": "VirusTotal",
+        "score": 6
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "11642b38dd1589911d73bfe1074d8a33bc52ed6c5faa1d82cfae376fc56b41d3"
+}

@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.limacharlie.io/docs/macos-agent-installation",
+  "title": "macOS Agent Installation",
+  "slug": "macos-agent-installation",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "endpoint",
+      "event",
+      "installation",
+      "macos",
+      "related",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 17
+      },
+      {
+        "slug": "ingesting-macos-unified-logs",
+        "title": "Ingesting MacOS Unified Logs",
+        "score": 17
+      },
+      {
+        "slug": "adapter-types-mac-unified-logging",
+        "title": "Mac Unified Logging",
+        "score": 16
+      },
+      {
+        "slug": "macos-agent-installation-mdm-configuration-profiles",
+        "title": "macOS Agent Installation - MDM Configuration Profiles",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "53352722137dd72477270aa75c7221bbbe9bd5e62407055fbf625dbc550b49e5"
+}

@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/community-rules",
+  "title": "Community Rules",
+  "slug": "community-rules",
+  "category": "",
+  "metadata": {
+    "summary": "The LimaCharlie Endpoint Agent is a cross platform endpoint Sensor. It is a low-level, light-weight sensor which executes detection and response functionality in real-time.",
+    "keywords": [
+      "accessing",
+      "agent",
+      "api",
+      "community",
+      "d&r",
+      "deeper",
+      "detection",
+      "digging",
+      "edr",
+      "endpoint",
+      "event",
+      "loading",
+      "organization",
+      "output",
+      "response"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 18
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 17
+      },
+      {
+        "slug": "template-strings-and-transforms",
+        "title": "Template Strings and Transforms",
+        "score": 16
+      },
+      {
+        "slug": "ext-zeek",
+        "title": "Zeek",
+        "score": 14
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "e942a8d77df1c27d3d197a38385866d3f3659b7b20dec1ed8069095d1150f609"
+}

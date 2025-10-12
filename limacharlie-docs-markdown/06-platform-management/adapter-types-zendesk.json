@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-zendesk",
+  "title": "Zendesk",
+  "slug": "adapter-types-zendesk",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "api",
+      "articles",
+      "related",
+      "sensor",
+      "what's",
+      "zendesk"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "adapter-deployment",
+        "title": "Adapter Deployment",
+        "score": 14
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "adapter-types-okta",
+        "title": "Okta",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli-okta",
+        "title": "Okta",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "3b509fcedb600a92d8bcc9311787b64aea96b542e3acabbe863003dff1a4a309"
+}

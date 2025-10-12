@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-permissions",
+  "title": "Reference: Permissions",
+  "slug": "reference-permissions",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie uses a granular permission system that controls access to all platform functionality. Permissions are applied through User accounts, API Keys, or Groups and follow a hierarchical naming convention: `category`.`action`",
+    "keywords": [
+      "(d&r)",
+      "(hive)",
+      "access",
+      "adapters",
+      "agent",
+      "agents",
+      "analytics",
+      "api",
+      "application",
+      "articles",
+      "audit",
+      "cloud",
+      "configuration",
+      "control",
+      "convention"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "api-keys",
+        "title": "API Keys",
+        "score": 13
+      },
+      {
+        "slug": "sensor-tags",
+        "title": "Sensor Tags",
+        "score": 13
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 13
+      },
+      {
+        "slug": "user-access",
+        "title": "User Access",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "368571c05ee7c8903f377358cd6cf9492188a1e7de8114064d4711f883bc8844"
+}

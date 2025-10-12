@@ -1,0 +1,53 @@
+{
+  "url": "https://docs.limacharlie.io/docs/updating-sensors-to-the-newest-version",
+  "title": "Updating Sensors to the Newest Version",
+  "slug": "updating-sensors-to-the-newest-version",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "endpoint",
+      "event",
+      "newest",
+      "related",
+      "sensor",
+      "sensors",
+      "updating",
+      "version",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 18
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 17
+      },
+      {
+        "slug": "test-a-new-sensor-version",
+        "title": "Test a New Sensor Version",
+        "score": 17
+      },
+      {
+        "slug": "ingesting-sysmon-event-logs",
+        "title": "Ingesting Sysmon Event Logs",
+        "score": 16
+      },
+      {
+        "slug": "endpoint-agent-installation",
+        "title": "Endpoint Agent Installation",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "661fb80bb1d1fe7e035fd78e46471c462a212c904ea8129b3c6356b962d3175b"
+}

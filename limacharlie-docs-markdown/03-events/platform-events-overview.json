@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.limacharlie.io/docs/platform-events-overview",
+  "title": "Platform Events Overview",
+  "slug": "platform-events-overview",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "event",
+      "events",
+      "overview",
+      "platform",
+      "related",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "platform-management",
+        "title": "Platform Management",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "reference-platform-events",
+        "title": "Reference: Platform Events",
+        "score": 11
+      },
+      {
+        "slug": "sensors-reference",
+        "title": "Reference",
+        "score": 7
+      },
+      {
+        "slug": "endpoint-agent-events-overview",
+        "title": "Endpoint Agent Events Overview",
+        "score": 7
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "1202a7389879cb72c086acdd052484d681062784a2870121e6524da9e4df95af"
+}

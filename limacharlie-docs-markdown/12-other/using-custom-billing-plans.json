@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/using-custom-billing-plans",
+  "title": "Using Custom Billing Plans",
+  "slug": "using-custom-billing-plans",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "billing",
+      "custom",
+      "plans",
+      "using",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "billing-options",
+        "title": "Billing Options",
+        "score": 12
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 11
+      },
+      {
+        "slug": "create-a-dr-rule-using-a-threat-feed",
+        "title": "Create a D&R Rule Using a Threat Feed",
+        "score": 4
+      },
+      {
+        "slug": "using-extensions",
+        "title": "Using Extensions",
+        "score": 4
+      },
+      {
+        "slug": "output-billing",
+        "title": "Output Billing",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "cf1ab3e27c92d5a11d1080dffdec224b4f4f58db3106d56f355cf2cb18f56885"
+}

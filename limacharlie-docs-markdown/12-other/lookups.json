@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/lookups",
+  "title": "Lookups",
+  "slug": "lookups",
+  "category": "",
+  "metadata": {
+    "summary": "Creating a lookup enables you to create a list that you can use as part of [detection and response rules](/v2/docs/detection-and-response). Once in place, you can refer to it using the `op: lookup`  rule with a reference to your add-on looking like `resource: hive://lookup/my-lookup-name`.",
+    "keywords": [
+      "add-on",
+      "api",
+      "articles",
+      "d&r",
+      "detection",
+      "event",
+      "format",
+      "lookups",
+      "optimized",
+      "reference",
+      "related",
+      "response",
+      "rule",
+      "rules",
+      "what's"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 16
+      },
+      {
+        "slug": "ext-lookup-manager",
+        "title": "Lookup Manager",
+        "score": 16
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 16
+      },
+      {
+        "slug": "config-hive-lookups",
+        "title": "Config Hive: Lookups",
+        "score": 15
+      },
+      {
+        "slug": "config-hive",
+        "title": "Config Hive",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "f48468195d9fc3eafb77ac0e64d3be62b6a8b403ac494d3e356784295ea0b89b"
+}

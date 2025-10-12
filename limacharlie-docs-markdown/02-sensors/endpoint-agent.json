@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.limacharlie.io/docs/endpoint-agent",
+  "title": "Endpoint Agent",
+  "slug": "endpoint-agent",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "endpoint",
+      "event",
+      "related",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent-uninstallation",
+        "title": "Endpoint Agent Uninstallation",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 17
+      },
+      {
+        "slug": "sensor-connectivity",
+        "title": "Sensor Connectivity",
+        "score": 16
+      },
+      {
+        "slug": "endpoint-agent-commands",
+        "title": "Endpoint Agent Commands",
+        "score": 15
+      },
+      {
+        "slug": "windows-agent-installation",
+        "title": "Windows Agent Installation",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "d606824edc9e6d915490b6a9d6ee266263438a0aba51303b706c91f2f87312c2"
+}

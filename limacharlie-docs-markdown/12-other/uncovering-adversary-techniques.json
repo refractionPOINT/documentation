@@ -1,0 +1,58 @@
+{
+  "url": "https://docs.limacharlie.io/docs/uncovering-adversary-techniques",
+  "title": "Uncovering Adversary Techniques",
+  "slug": "uncovering-adversary-techniques",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie's SecOps Cloud Platform provides a comprehensive approach to combating ransomware, focusing on early detection during the reconnaissance stage and rapid response in the event of a detonation. By gathering telemetry from a wide range of sources, enabling widespread deployment, and leve...",
+    "keywords": [
+      "adversary",
+      "api",
+      "detection",
+      "endpoint",
+      "event",
+      "limacharlie\u2019s",
+      "organization",
+      "problems",
+      "response",
+      "solution",
+      "techniques",
+      "telemetry",
+      "uncovering",
+      "what's"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 14
+      },
+      {
+        "slug": "response-actions",
+        "title": "Response Actions",
+        "score": 14
+      },
+      {
+        "slug": "observability-pipeline",
+        "title": "Observability Pipeline",
+        "score": 11
+      },
+      {
+        "slug": "threat-hunting",
+        "title": "Threat Hunting",
+        "score": 11
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "3275b7cbbebace895162ff4ff3f1d54b3af7a7e4c702c3c856e60c553ddce04a"
+}

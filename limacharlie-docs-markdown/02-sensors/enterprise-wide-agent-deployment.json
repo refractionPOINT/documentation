@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/enterprise-wide-agent-deployment",
+  "title": "Enterprise-Wide Agent Deployment",
+  "slug": "enterprise-wide-agent-deployment",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "deployment",
+      "endpoint",
+      "enterprise-wide",
+      "related",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "agent-deployment-microsoft-intune",
+        "title": "Agent Deployment via Microsoft Intune",
+        "score": 17
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 16
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 16
+      },
+      {
+        "slug": "chrome-enterprise",
+        "title": "ChromeOS with Google Chrome Enterprise",
+        "score": 16
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 8
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "b44d7b482758f49b0a27d40acf1d7f8b98c9a02c661e4d7cc848c704c7473280"
+}

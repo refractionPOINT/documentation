@@ -6,11 +6,11 @@ This pipeline transforms web-based documentation into LLM-optimized markdown thr
 
 ## Design Principles
 
-1. **Transformation Over Conversion**: Claude transforms human-oriented documentation into LLM-optimized topics, not 1:1 HTML→Markdown conversion
-2. **Topic-Based Organization**: Documentation reorganized into self-contained topics (task/concept/reference), not page-by-page replication
-3. **Batched Processing**: Related pages processed together to extract coherent topics across boundaries
-4. **Parallel Execution**: Concurrent subagent processing for speed without sacrificing quality
-5. **Self-Contained Content**: Each topic includes all needed information, eliminating navigation dependencies
+1. **Semantic Understanding Over Mechanical Conversion**: Claude reads and comprehends content rather than blindly converting HTML to markdown
+2. **Batched Processing**: Related pages processed together to discover patterns and relationships
+3. **Parallel Execution**: Concurrent subagent processing for speed without sacrificing quality
+4. **Context Preservation**: Enhanced markdown includes implicit context made explicit
+5. **Cross-Reference Network**: Pages linked by semantic relationships, not just navigation structure
 
 ## Pipeline Phases
 
@@ -64,43 +64,38 @@ This pipeline transforms web-based documentation into LLM-optimized markdown thr
 
 **Subagent Prompt Template**: `doc-pipeline/prompts/batch_processing.md`
 
-**Output Schema** (per topic):
+**Output Schema** (per page):
 ```json
 {
-  "topics": [
+  "slug": "page-identifier",
+  "enhanced_markdown": "# Title\n\nContent with added context...",
+  "extracted_apis": [
     {
-      "slug": "descriptive-topic-name",
-      "title": "Human-Readable Topic Title",
-      "type": "task|concept|reference",
-      "content": "# Title\n\nComplete, self-contained markdown...",
-      "source_pages": ["original-slug-1", "original-slug-2"],
-      "extracted_apis": [
-        {
-          "name": "function()",
-          "signature": "function(param: Type) -> ReturnType",
-          "description": "What it does and when to use it"
-        }
-      ],
-      "prerequisites": ["other-topic-slug-needed-first"],
-      "related_topics": ["similar-topic-slug"],
-      "keywords": ["primary", "terms", "alternate", "phrasings"]
+      "name": "function()",
+      "signature": "function(param: Type) -> ReturnType",
+      "description": "What it does and when to use it"
     }
-  ]
+  ],
+  "cross_refs": [
+    {
+      "page": "related-page-slug",
+      "relationship": "prerequisite|continuation|alternative|debugging"
+    }
+  ],
+  "metadata": {
+    "summary": "One-sentence description",
+    "keywords": ["key", "terms"],
+    "complexity": "beginner|intermediate|advanced"
+  }
 }
 ```
-
-**Key Differences from Page-Based Model**:
-- Multiple pages can be merged into one topic
-- One page can be split into multiple topics
-- Topics are self-contained with all needed context
-- Prerequisites/related_topics replace navigation-based cross-refs
 
 **Error Handling**:
 - Automatic retry with exponential backoff (3 attempts)
 - Batch isolation (one failure doesn't stop others)
 - Timeout protection (5 min per batch)
 
-**Output**: Dictionary mapping batch_id to list of `ProcessedTopic` objects
+**Output**: Dictionary mapping batch_id to list of `ProcessedPage` objects
 
 ### 4. SYNTHESIZE
 **Purpose**: Integrate batch outputs into coherent knowledge base
@@ -116,9 +111,11 @@ This pipeline transforms web-based documentation into LLM-optimized markdown thr
 - Add usage patterns and common workflows
 - Output: `API_INDEX.md`
 
-**B. Cross-Reference Resolution** (deprecated in transformation model):
-- Prerequisites and related_topics are now handled during transformation phase
-- No post-processing needed for cross-references
+**B. Cross-Reference Resolution**:
+- Collect within-batch references
+- Use Claude to find cross-batch connections
+- Add bidirectional links
+- Append "Related Documentation" sections to markdown
 
 **C. Gap Detection** (future):
 - Identify APIs without tutorials
@@ -126,9 +123,9 @@ This pipeline transforms web-based documentation into LLM-optimized markdown thr
 - Report documentation holes
 
 **Output**:
+- Enhanced `ProcessedPage` objects with global context
 - `API_INDEX.md`
 - `METADATA_INDEX.json`
-- Topics organized by type (tasks/, concepts/, reference/)
 
 ### 5. ENHANCE (planned)
 **Purpose**: Global-level optimizations
@@ -163,9 +160,9 @@ This pipeline transforms web-based documentation into LLM-optimized markdown thr
 ```
 Page (HTML)
   → Batch (5-10 Pages)
-    → ProcessedTopic (transformed, self-contained markdown)
-      → Synthesized (API index)
-        → Output Files by Type (tasks/*.md, concepts/*.md, reference/*.md + .json)
+    → ProcessedPage (enhanced markdown + metadata)
+      → Synthesized (cross-refs + API index)
+        → Output Files (.md + .json)
           → Git Commit
 ```
 
@@ -181,19 +178,15 @@ class Page:
     html_content: str   # Raw HTML
 ```
 
-**ProcessedTopic** (`lib/understand.py`):
+**ProcessedPage** (`lib/understand.py`):
 ```python
 @dataclass
-class ProcessedTopic:
-    slug: str                          # Topic identifier
-    title: str                         # Human-readable title
-    type: str                          # task, concept, or reference
-    content: str                       # Complete markdown
-    source_pages: List[str]            # Original page slugs
+class ProcessedPage:
+    slug: str
+    enhanced_markdown: str
     extracted_apis: List[Dict[str, str]]
-    prerequisites: List[str]           # Topic slugs needed first
-    related_topics: List[str]          # Related topic slugs
-    keywords: List[str]                # Search terms
+    cross_refs: List[Dict[str, str]]
+    metadata: Dict[str, Any]
 ```
 
 **Batch**:

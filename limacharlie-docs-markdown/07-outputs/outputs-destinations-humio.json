@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-humio",
+  "title": "Humio",
+  "slug": "outputs-destinations-humio",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "humio",
+      "output",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "outputs-destinations-opensearch",
+        "title": "OpenSearch",
+        "score": 12
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 4
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 4
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "0fb425ce9ccd6ea934d7f5cf0ea68b1ea1e42dc2bac1991901993a3aed76dba7"
+}

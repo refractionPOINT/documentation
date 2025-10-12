@@ -1,0 +1,53 @@
+{
+  "url": "https://docs.limacharlie.io/docs/config-hive-yara",
+  "title": "Config Hive: Yara",
+  "slug": "config-hive-yara",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "api",
+      "articles",
+      "config",
+      "detection",
+      "hive:",
+      "related",
+      "response",
+      "rule",
+      "sensor",
+      "what's",
+      "yara"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "config-hive-cloud-sensors",
+        "title": "Config Hive: Cloud Sensors",
+        "score": 20
+      },
+      {
+        "slug": "config-hive-dr-rules",
+        "title": "Config Hive: Detection & Response Rules",
+        "score": 20
+      },
+      {
+        "slug": "config-hive-secrets",
+        "title": "Config Hive: Secrets",
+        "score": 17
+      },
+      {
+        "slug": "lookups",
+        "title": "Lookups",
+        "score": 17
+      },
+      {
+        "slug": "config-hive-lookups",
+        "title": "Config Hive: Lookups",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "5fede7bb3fa54a2f661eccd1850b00b6bf76f2b1504682aad5b4de82d92546f1"
+}

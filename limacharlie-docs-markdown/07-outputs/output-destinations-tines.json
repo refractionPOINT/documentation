@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.limacharlie.io/docs/output-destinations-tines",
+  "title": "Tines",
+  "slug": "output-destinations-tines",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "output",
+      "tines",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "outputs-destinations-webhook",
+        "title": "Webhook",
+        "score": 12
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 4
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 4
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "4bbf97d3c95f577e0677c64ecd0de740e991b82d63321e3f7a2d94616b056c64"
+}

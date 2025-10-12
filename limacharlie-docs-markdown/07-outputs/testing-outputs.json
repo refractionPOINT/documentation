@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.limacharlie.io/docs/testing-outputs",
+  "title": "Testing Outputs",
+  "slug": "testing-outputs",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "output",
+      "outputs",
+      "related",
+      "testing",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "template-strings-and-transforms",
+        "title": "Template Strings and Transforms",
+        "score": 13
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 13
+      },
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 6
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 6
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 6
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "fc4f5008d7cdf0c13f61f89381c166e60d108d062e63cbdd43b0ded63549a813"
+}

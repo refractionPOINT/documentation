@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-canarytokens",
+  "title": "Canarytokens",
+  "slug": "adapter-types-canarytokens",
+  "category": "",
+  "metadata": {
+    "summary": "Canarytokens are a free, quick, painless way to help defenders discover they've been breached (by having attackers announce themselves). Canarytokens are digital traps, or tripwires, that can be placed in an organization's network as a \"lure\" for adversaries. When actioned against, canaries will ...",
+    "keywords": [
+      "adapter",
+      "agent",
+      "api",
+      "building",
+      "canaryalert",
+      "canarytokens",
+      "configuring",
+      "deployment",
+      "edr",
+      "endpoint",
+      "event",
+      "initial",
+      "integration",
+      "limacharlie",
+      "organization"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 16
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "adapter-deployment",
+        "title": "Adapter Deployment",
+        "score": 13
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "15b6794281c7f93ffa139c2961c7779d1093737b20049c1ec96ec218dbbc4533"
+}

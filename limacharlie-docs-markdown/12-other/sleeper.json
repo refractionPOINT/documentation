@@ -1,0 +1,59 @@
+{
+  "url": "https://docs.limacharlie.io/docs/sleeper",
+  "title": "Sleeper Deployment",
+  "slug": "sleeper",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie's usage-based billing enables incident responders to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an Organization's entire fleet and lay dormant in \u2018sleeper mode\u2019 at a cost of just $0.10 per 30 days. With agents deployed ahead of an inc...",
+    "keywords": [
+      "agent",
+      "api",
+      "articles",
+      "deployment",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "organization",
+      "output",
+      "related",
+      "response",
+      "rule",
+      "sensor",
+      "sleeper"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "."
+    ],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 21
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 20
+      },
+      {
+        "slug": "ext-yara",
+        "title": "YARA",
+        "score": 20
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 20
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 19
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "087e36d4f3d3d7443cc6d624dfb122ab241357d0adf81bf3201ec0335392ea53"
+}

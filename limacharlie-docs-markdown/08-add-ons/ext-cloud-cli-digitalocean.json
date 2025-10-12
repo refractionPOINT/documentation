@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-digitalocean",
+  "title": "DigitalOcean",
+  "slug": "ext-cloud-cli-digitalocean",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "digitalocean",
+      "extension",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-cloud-cli-github",
+        "title": "GitHub",
+        "score": 13
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli",
+        "title": "Cloud CLI",
+        "score": 8
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "473e4fbcb5c6265281346864cc66a7a721e32d927839ed2d18757008ec0a2c5e"
+}

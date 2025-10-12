@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-examples-stdin",
+  "title": "Stdin",
+  "slug": "adapter-examples-stdin",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "related",
+      "sensor",
+      "stdin",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-stdin",
+        "title": "Stdin",
+        "score": 15
+      },
+      {
+        "slug": "adapter-examples-stdin-json",
+        "title": "Stdin JSON",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "adapter-types-syslog",
+        "title": "Syslog",
+        "score": 11
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "0faba089a6ea221fb0396d953c523a0161866d75f8d7341a0de927dd8e6d070c"
+}

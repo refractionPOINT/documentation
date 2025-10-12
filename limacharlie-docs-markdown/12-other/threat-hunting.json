@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/threat-hunting",
+  "title": "Threat Hunting",
+  "slug": "threat-hunting",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "hunting",
+      "threat",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "security-monitoring-for-devops",
+        "title": "Security Monitoring for DevOps",
+        "score": 11
+      },
+      {
+        "slug": "create-a-dr-rule-using-a-threat-feed",
+        "title": "Create a D&R Rule Using a Threat Feed",
+        "score": 4
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "1fef5318e27ba61293183e1adecbf492ee95f34abc6f15e78ed29d26a4a0662d"
+}

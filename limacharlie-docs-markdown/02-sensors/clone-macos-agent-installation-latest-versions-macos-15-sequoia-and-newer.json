@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+  "title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+  "slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+  "category": "",
+  "metadata": {
+    "summary": "This document provides details of how to install, verify, and uninstall the LimaCharlie Endpoint Agent on macOS (versions 15 Sonoma). We also offer separate documentation for older versions.",
+    "keywords": [
+      "(macos",
+      "agent",
+      "api",
+      "edr",
+      "endpoint",
+      "extension",
+      "install",
+      "installation",
+      "installer",
+      "latest",
+      "macos",
+      "newer)",
+      "options",
+      "organization",
+      "permissions"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "macos-agent-installation-via-microsoft-intune",
+        "title": "macOS Agent Installation via Microsoft Intune",
+        "score": 17
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 16
+      },
+      {
+        "slug": "macos-agent-installation-older-versions",
+        "title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+        "score": 14
+      },
+      {
+        "slug": "macos-agent-installation",
+        "title": "macOS Agent Installation",
+        "score": 14
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "ea5bd63102342ecae73d4348e862b6f69e26fa9f1ac566e0de42b5ced7ba1a34"
+}

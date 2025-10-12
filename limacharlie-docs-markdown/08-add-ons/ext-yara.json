@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-yara",
+  "title": "YARA",
+  "slug": "ext-yara",
+  "category": "",
+  "metadata": {
+    "summary": "The [YARA](https://github.com/Yara-Rules/rules) Extension is designed to help you with all aspects of YARA scanning. It takes what is normally a manual piecewise process, provides a framework and automates it. Once configured, YARA scans can be run on demand for a particular endpoint or continuou...",
+    "keywords": [
+      "add-on",
+      "agent",
+      "api",
+      "articles",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "extension",
+      "legacy",
+      "migrating",
+      "organization",
+      "related",
+      "response"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-zeek",
+        "title": "Zeek",
+        "score": 21
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 19
+      },
+      {
+        "slug": "ext-yara-manager",
+        "title": "YARA Manager",
+        "score": 18
+      },
+      {
+        "slug": "binlib",
+        "title": "BinLib",
+        "score": 17
+      },
+      {
+        "slug": "config-hive",
+        "title": "Config Hive",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "ce7d39a96f185253244257d9d50daff6a10c77af6c4a352d4b225ccf75014027"
+}

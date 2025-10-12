@@ -1,0 +1,56 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-amazon-s3",
+  "title": "Amazon S3",
+  "slug": "outputs-destinations-amazon-s3",
+  "category": "",
+  "metadata": {
+    "summary": "Output events and detections to an Amazon S3 bucket.",
+    "keywords": [
+      "amazon",
+      "articles",
+      "configuration",
+      "detection",
+      "endpoint",
+      "event",
+      "limacharlie",
+      "organization",
+      "output",
+      "policy",
+      "related",
+      "sample",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 16
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 16
+      },
+      {
+        "slug": "adapter-types-s3",
+        "title": "S3",
+        "score": 15
+      },
+      {
+        "slug": "adapter-types-aws-cloudtrail",
+        "title": "AWS CloudTrail",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "5d9b2215608340860c637a78d8276e8998d333ca5f46c48f27c301f57f64eedf"
+}

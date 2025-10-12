@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-google-cloud",
+  "title": "Google Cloud",
+  "slug": "ext-cloud-cli-google-cloud",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "articles",
+      "cloud",
+      "extension",
+      "google",
+      "output",
+      "query",
+      "related",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 17
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-pubsub",
+        "title": "Google Cloud Pubsub",
+        "score": 17
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 17
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-bigquery",
+        "title": "Google Cloud BigQuery",
+        "score": 17
+      },
+      {
+        "slug": "adapter-types-google-workspace",
+        "title": "Google Workspace",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "b0060eff7b2445a02e7763fc6955672f73f217f267472d7caea38dbe6c1bf535"
+}

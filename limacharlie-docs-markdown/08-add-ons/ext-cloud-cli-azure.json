@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-azure",
+  "title": "Azure",
+  "slug": "ext-cloud-cli-azure",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "articles",
+      "azure",
+      "event",
+      "extension",
+      "output",
+      "related",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "azure-network-security-group",
+        "title": "Azure Network Security Group",
+        "score": 16
+      },
+      {
+        "slug": "azure-sql-audit-logs",
+        "title": "Azure SQL Audit Logs",
+        "score": 16
+      },
+      {
+        "slug": "azure-monitor",
+        "title": "Azure Monitor",
+        "score": 16
+      },
+      {
+        "slug": "azure-logs-key-vault",
+        "title": "Azure Key Vault",
+        "score": 16
+      },
+      {
+        "slug": "outputs-destinations-azure-event-hub",
+        "title": "Azure Event Hub",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "a4adcb8fe418d24adc57161fcbf6cb2897b39ebd5ac52dde4f0b0b7d93920132"
+}

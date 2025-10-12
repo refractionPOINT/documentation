@@ -1,0 +1,59 @@
+{
+  "url": "https://docs.limacharlie.io/docs/building-the-user-interface",
+  "title": "Building the User Interface",
+  "slug": "building-the-user-interface",
+  "category": "",
+  "metadata": {
+    "summary": "The Extensions UI uses the information provided in the schema to auto-determine it's UI elements, and for most simple extensions, the UI will be able to auto conform based on the bare minimum schema definition alone. However, further customization may be made in the schema for more complex or spe...",
+    "keywords": [
+      "actions",
+      "add-on",
+      "building",
+      "deconstructing",
+      "extension",
+      "generated",
+      "interface",
+      "layout",
+      "layouts",
+      "multiple",
+      "nuanced",
+      "picking",
+      "response",
+      "sensor",
+      "setting"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "by adjusting the layout, or adjusting the details for a specific field."
+    ],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 13
+      },
+      {
+        "slug": "lookups",
+        "title": "Lookups",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 11
+      },
+      {
+        "slug": "use-cases",
+        "title": "Use Cases",
+        "score": 10
+      },
+      {
+        "slug": "schema-data-types",
+        "title": "Schema Data Types",
+        "score": 8
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "57adea713975abcee57bd757b8d9b4056628e27b46df44bdab938e8997aae971"
+}

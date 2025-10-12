@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.limacharlie.io/docs/add-ons-api-integrations",
+  "title": "API Integrations",
+  "slug": "add-ons-api-integrations",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "api",
+      "articles",
+      "d&r",
+      "integration",
+      "integrations",
+      "related",
+      "rule",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "create-a-dr-rule-using-a-threat-feed",
+        "title": "Create a D&R Rule Using a Threat Feed",
+        "score": 18
+      },
+      {
+        "slug": "lookups",
+        "title": "Lookups",
+        "score": 17
+      },
+      {
+        "slug": "api-integrations-alphamountain",
+        "title": "alphaMountain",
+        "score": 15
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli",
+        "title": "Cloud CLI",
+        "score": 9
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "bd89ed289bcc78326970bb78eec41173174135605022198a82116b681b03c0e8"
+}

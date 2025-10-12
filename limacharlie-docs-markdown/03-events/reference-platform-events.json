@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-platform-events",
+  "title": "Reference: Platform Events",
+  "slug": "reference-platform-events",
+  "category": "",
+  "metadata": {
+    "summary": "---",
+    "keywords": [
+      "\\*\\_per\\_cloud\\_adapter",
+      "\\*\\_per\\_org",
+      "\\*\\_per\\_sensor",
+      "ack\\_messages",
+      "agent",
+      "api",
+      "articles",
+      "backoff",
+      "billing\\_record",
+      "cloud\\_adapter\\_disabled",
+      "data\\_dropped",
+      "deleted\\_sensor",
+      "details",
+      "detection",
+      "edr"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "c5c4e3585673eec164a8b9b799195d260efcc7652cbaa39e5d9a9fb63c011fd9"
+}

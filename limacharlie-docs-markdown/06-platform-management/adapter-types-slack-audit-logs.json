@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-slack-audit-logs",
+  "title": "Slack Audit Logs",
+  "slug": "adapter-types-slack-audit-logs",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "audit",
+      "logs",
+      "output",
+      "related",
+      "sensor",
+      "slack",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "outputs-destinations-slack",
+        "title": "Slack",
+        "score": 15
+      },
+      {
+        "slug": "adapter-deployment",
+        "title": "Adapter Deployment",
+        "score": 14
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "bdb01aecbed4126bed18380581acd2a5f109a23640edee70d1d0645747324b3f"
+}

@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-azure-event-hub",
+  "title": "Azure Event Hub",
+  "slug": "adapter-types-azure-event-hub",
+  "category": "",
+  "metadata": {
+    "summary": "This Adapter allows you to connect to an Azure Event Hub to fetch structured data stored there.",
+    "keywords": [
+      "adapter-specific",
+      "articles",
+      "azure",
+      "cloud-to-cloud",
+      "configurations",
+      "deployment",
+      "endpoint",
+      "event",
+      "guided",
+      "infrastructure",
+      "options",
+      "organization",
+      "output",
+      "overview",
+      "related"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 17
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "azure-network-security-group",
+        "title": "Azure Network Security Group",
+        "score": 15
+      },
+      {
+        "slug": "azure-sql-audit-logs",
+        "title": "Azure SQL Audit Logs",
+        "score": 15
+      },
+      {
+        "slug": "azure-monitor",
+        "title": "Azure Monitor",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "07831f2836460a323be15ed2f2b5218c299fc63e2f1b74b701c69bc8f2baac83"
+}

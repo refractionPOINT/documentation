@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/binlib",
+  "title": "BinLib",
+  "slug": "binlib",
+  "category": "",
+  "metadata": {
+    "summary": "Binary Library, or \"BinLib\", is a collection of executable binaries (such as EXE or ELF files) that have been observed within your environment. If enabled, this Extension helps you build your own private collection of observed executables for subsequent analysis and searching.",
+    "keywords": [
+      "acquired",
+      "add-on",
+      "api",
+      "articles",
+      "automating",
+      "binlib",
+      "check\\_hash",
+      "detection",
+      "endpoint",
+      "event",
+      "extension",
+      "files",
+      "get\\_hash\\_data",
+      "get\\_hash\\_metadata",
+      "integration"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-yara",
+        "title": "YARA",
+        "score": 17
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 16
+      },
+      {
+        "slug": "ext-renigma",
+        "title": "REnigma",
+        "score": 16
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 16
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "256f3ddc0967091ba666e986e95de2c61030bbfc734c47dd64bfa58f59a16885"
+}

@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-evtx",
+  "title": "EVTX",
+  "slug": "adapter-types-evtx",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "api",
+      "articles",
+      "event",
+      "evtx",
+      "related",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 15
+      },
+      {
+        "slug": "adapter-examples-windows-event-logs",
+        "title": "Windows Event Logs",
+        "score": 15
+      },
+      {
+        "slug": "ingesting-windows-event-logs",
+        "title": "Ingesting Windows Event Logs",
+        "score": 15
+      },
+      {
+        "slug": "ext-artifact",
+        "title": "Artifact",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "e2743996cf3545c680777edd1b8e773f9ae4b45d92df8acbdaa87dac4a2cfa84"
+}

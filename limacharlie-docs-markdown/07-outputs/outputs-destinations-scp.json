@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-scp",
+  "title": "SCP",
+  "slug": "outputs-destinations-scp",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "output",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "outputs-destinations-sftp",
+        "title": "SFTP",
+        "score": 12
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 4
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 4
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "7760651acacb4a6ed45674c8a9cf62089293a68fe9610c83b286459a98b7fa1f"
+}

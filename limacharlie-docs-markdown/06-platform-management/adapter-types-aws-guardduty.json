@@ -1,0 +1,59 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-aws-guardduty",
+  "title": "AWS GuardDuty",
+  "slug": "adapter-types-aws-guardduty",
+  "category": "",
+  "metadata": {
+    "summary": "This Adapter allows you to ingest AWS GuardDuty events via either an [S3 bucket](https://aws.amazon.com/s3/) or [SQS message queue](https://aws.amazon.com/sqs/).",
+    "keywords": [
+      "adapter",
+      "adapter-specific",
+      "api",
+      "articles",
+      "bucket",
+      "cloud-to-cloud",
+      "cloudtrail",
+      "collecting",
+      "configurations",
+      "d&r",
+      "deployment",
+      "detection",
+      "event",
+      "guardduty",
+      "guided"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "Threat Detection"
+    ],
+    "related_pages": [
+      {
+        "slug": "adapter-types-aws-cloudtrail",
+        "title": "AWS CloudTrail",
+        "score": 22
+      },
+      {
+        "slug": "adapter-types-azure-event-hub",
+        "title": "Azure Event Hub",
+        "score": 17
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "52fc1cd36df60d4a65283b9fb53c48bff9239a938ba0a79111075c2c222de722"
+}

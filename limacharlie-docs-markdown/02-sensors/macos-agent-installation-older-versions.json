@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/macos-agent-installation-older-versions",
+  "title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+  "slug": "macos-agent-installation-older-versions",
+  "category": "",
+  "metadata": {
+    "summary": "This document provides details of how to install, verify, and uninstall the LimaCharlie sensor on macOS (versions 10.14 and prior). \u00a0We also offer [documentation for macOS 10.15 and newer](/v2/docs/macos-agent-installation-latest-os-versions).",
+    "keywords": [
+      "(macos",
+      "10.14",
+      "agent",
+      "api",
+      "articles",
+      "edr",
+      "endpoint",
+      "extension",
+      "installation",
+      "installer",
+      "macos",
+      "older",
+      "options",
+      "organization",
+      "permissions"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "macos-agent-installation-mdm-configuration-profiles",
+        "title": "macOS Agent Installation - MDM Configuration Profiles",
+        "score": 18
+      },
+      {
+        "slug": "installing-macos-agents-via-jamf-now",
+        "title": "macOS Agent Installation via Jamf Now",
+        "score": 18
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 17
+      },
+      {
+        "slug": "macos-agent-installation-latest-os-versions",
+        "title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+        "score": 17
+      },
+      {
+        "slug": "macos-agent-installation",
+        "title": "macOS Agent Installation",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "1fefb3d99160018a49253f61b66c5af6eb4a886a0c2e41fa0951fd07fc29b9db"
+}

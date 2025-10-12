@@ -1,0 +1,54 @@
+{
+  "url": "https://docs.limacharlie.io/docs/unit-tests",
+  "title": "Unit Tests",
+  "slug": "unit-tests",
+  "category": "",
+  "metadata": {
+    "summary": "A D&R rule record can optionally contain unit tests. These tests describe events that should match, and events that should not match. When a D&R rule is updated or created, LimaCharlie will simulate the rules and if the tests fail, an error is produced.",
+    "keywords": [
+      "agent",
+      "d&r",
+      "detection",
+      "event",
+      "example",
+      "response",
+      "rule",
+      "rules",
+      "structure",
+      "tests",
+      "unit",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 14
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 14
+      },
+      {
+        "slug": "detection-and-response-examples",
+        "title": "Detection and Response Examples",
+        "score": 13
+      },
+      {
+        "slug": "lookups",
+        "title": "Lookups",
+        "score": 9
+      },
+      {
+        "slug": "soteria-edr-rules",
+        "title": "Soteria EDR Rules",
+        "score": 9
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "a4a2a1f01604cf2817e087e8d7eb8039c059e93635718e31778e8efd9c3eb701"
+}

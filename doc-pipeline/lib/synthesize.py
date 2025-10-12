@@ -4,19 +4,19 @@ from typing import List, Dict, Any
 from collections import defaultdict
 import tempfile
 from pathlib import Path
-from .understand import ProcessedTopic
+from .understand import ProcessedPage
 from .claude_client import ClaudeClient
 
 
 def build_api_index(
-    topics: List[ProcessedTopic],
+    pages: List[ProcessedPage],
     claude_client: ClaudeClient
 ) -> str:
     """
     Build comprehensive API index from all extracted APIs.
 
     Args:
-        topics: All processed topics
+        pages: All processed pages
         claude_client: Claude client for synthesis
 
     Returns:
@@ -24,17 +24,17 @@ def build_api_index(
     """
     # Collect all APIs
     all_apis = []
-    api_to_topics = defaultdict(list)
+    api_to_pages = defaultdict(list)
 
-    for topic in topics:
-        for api in topic.extracted_apis:
+    for page in pages:
+        for api in page.extracted_apis:
             api_name = api['name']
-            api_to_topics[api_name].append(topic.slug)
+            api_to_pages[api_name].append(page.slug)
             all_apis.append({
                 'name': api_name,
                 'signature': api['signature'],
                 'description': api['description'],
-                'topics': api_to_topics[api_name]
+                'pages': api_to_pages[api_name]
             })
 
     # Deduplicate by name
@@ -44,9 +44,9 @@ def build_api_index(
         if name not in unique_apis:
             unique_apis[name] = api
         else:
-            # Merge topic references
-            unique_apis[name]['topics'] = list(set(
-                unique_apis[name]['topics'] + api['topics']
+            # Merge page references
+            unique_apis[name]['pages'] = list(set(
+                unique_apis[name]['pages'] + api['pages']
             ))
 
     # Ask Claude to organize and enrich
@@ -61,7 +61,7 @@ Organize by:
 1. Category (Sensor APIs, Detection APIs, Platform APIs, etc.)
 2. Alphabetically within category
 3. Include signature and description
-4. List all topics where each API appears
+4. List all pages where each API appears
 
 Output markdown with this structure:
 
@@ -70,7 +70,7 @@ Output markdown with this structure:
 ## Category Name
 
 - `api_name(signature)`: Description
-  - Topics: topic1, topic2
+  - Pages: page1, page2
 
 Output only the markdown, no code blocks."""
 
@@ -84,20 +84,62 @@ Output only the markdown, no code blocks."""
         Path(prompt_file).unlink()
 
 
-def resolve_cross_references(topics: List[ProcessedTopic]) -> List[ProcessedTopic]:
+def resolve_cross_references(pages: List[ProcessedPage]) -> List[ProcessedPage]:
     """
-    DEPRECATED: This function is not used in the transformation-based pipeline.
-
-    In the new model, prerequisites and related_topics are handled during
-    the transformation phase, not as a post-processing step.
+    Resolve cross-references and add bidirectional links.
 
     Args:
-        topics: Processed topics
+        pages: Processed pages with cross-references
 
     Returns:
-        Topics unchanged
+        Pages with resolved cross-reference links in markdown
     """
-    # In the new transformation model, cross-references are handled
-    # during the Claude transformation phase via prerequisites and related_topics
-    # This function is kept for backwards compatibility but is a no-op
-    return topics
+    # Build slug to page mapping
+    page_map = {p.slug: p for p in pages}
+
+    # Track reverse references
+    reverse_refs = defaultdict(list)
+
+    for page in pages:
+        for ref in page.cross_refs:
+            target_slug = ref['page']
+            relationship = ref['relationship']
+            reverse_refs[target_slug].append({
+                'page': page.slug,
+                'relationship': relationship
+            })
+
+    # Add cross-reference sections to markdown
+    enhanced_pages = []
+
+    for page in pages:
+        markdown = page.enhanced_markdown
+
+        # Add forward references
+        if page.cross_refs:
+            markdown += "\n\n## Related Documentation\n\n"
+            for ref in page.cross_refs:
+                rel_type = ref['relationship'].replace('_', ' ').title()
+                target_page = page_map.get(ref['page'])
+                if target_page:
+                    markdown += f"- **{rel_type}**: [{target_page.slug}]({target_page.slug}.md)\n"
+
+        # Add reverse references
+        if page.slug in reverse_refs:
+            if not page.cross_refs:
+                markdown += "\n\n## Related Documentation\n\n"
+            for ref in reverse_refs[page.slug]:
+                rel_type = ref['relationship'].replace('_', ' ').title()
+                source_page = page_map.get(ref['page'])
+                if source_page:
+                    markdown += f"- **Referenced by** ({rel_type}): [{source_page.slug}]({source_page.slug}.md)\n"
+
+        enhanced_pages.append(ProcessedPage(
+            slug=page.slug,
+            enhanced_markdown=markdown,
+            extracted_apis=page.extracted_apis,
+            cross_refs=page.cross_refs,
+            metadata=page.metadata
+        ))
+
+    return enhanced_pages

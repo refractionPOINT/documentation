@@ -1,0 +1,54 @@
+{
+  "url": "https://docs.limacharlie.io/docs/sysmon-comparison",
+  "title": "Sysmon Comparison",
+  "slug": "sysmon-comparison",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "comparison",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "related",
+      "response",
+      "sysmon",
+      "telemetry",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ingesting-sysmon-event-logs",
+        "title": "Ingesting Sysmon Event Logs",
+        "score": 19
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 16
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 16
+      },
+      {
+        "slug": "reference-edr-events",
+        "title": "Reference: EDR Events",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "0563bff8660cfa0f3b4efe940091c5d2f184e8c1877cd739ce2e948b10c4f9d7"
+}

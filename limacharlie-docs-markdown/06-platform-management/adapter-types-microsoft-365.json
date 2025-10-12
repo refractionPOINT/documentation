@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-microsoft-365",
+  "title": "Microsoft 365",
+  "slug": "adapter-types-microsoft-365",
+  "category": "",
+  "metadata": {
+    "summary": "Microsoft 365, formerly Office 365, is a product family of productivity software, collaboration and cloud-based services owned by Microsoft. This Adapter allows you to ingest audit events from the [Office 365 Management Activity API](https://learn.microsoft.com/en-us/office/office-365-management-...",
+    "keywords": [
+      "adapter",
+      "agent",
+      "api",
+      "articles",
+      "configuring",
+      "d&r",
+      "deployment",
+      "details",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "infrastructure",
+      "microsoft",
+      "office"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "infrastructure-as-code",
+        "title": "Infrastructure as Code",
+        "score": 18
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 18
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 16
+      },
+      {
+        "slug": "soteria-m365-rules",
+        "title": "Soteria M365 Rules",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "98596930cc0adfe32607c6d1950fbadc43278425f7576ab4d488adaaa9b65a33"
+}

@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.limacharlie.io/docs/sentinelone",
+  "title": "SentinelOne",
+  "slug": "sentinelone",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "sentinelone",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-sophos",
+        "title": "Sophos",
+        "score": 10
+      },
+      {
+        "slug": "adapter-types",
+        "title": "Adapter Types",
+        "score": 5
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "675486a8fed977d2e41b7bfffbc1ce1283311075cc1a182942f417fa8371bb42"
+}

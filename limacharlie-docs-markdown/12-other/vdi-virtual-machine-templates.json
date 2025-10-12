@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/vdi-virtual-machine-templates",
+  "title": "VDI & Virtual Machine Templates",
+  "slug": "vdi-virtual-machine-templates",
+  "category": "",
+  "metadata": {
+    "summary": "The LimaCharlie Endpoint Agent can be installed in template-based environments whether they're VMs or VDIs.",
+    "keywords": [
+      "agent",
+      "articles",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "machine",
+      "organization",
+      "related",
+      "response",
+      "rule",
+      "sensor",
+      "telemetry",
+      "templates",
+      "virtual"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent-installation",
+        "title": "Endpoint Agent Installation",
+        "score": 18
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 18
+      },
+      {
+        "slug": "windows-agent-installation",
+        "title": "Windows Agent Installation",
+        "score": 17
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 16
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "00fe71cb61abe0e0c1c4959dff27db1bd187949029b04aa7661dd8b6e0632971"
+}

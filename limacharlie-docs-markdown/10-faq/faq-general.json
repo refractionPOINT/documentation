@@ -1,0 +1,61 @@
+{
+  "url": "https://docs.limacharlie.io/docs/faq-general",
+  "title": "FAQ - General",
+  "slug": "faq-general",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie data is secured starting at the endpoint all the way through your infrastructure. The LimaCharlie platform is hosted on the Google Cloud Platform, leveraging multiple capabilities from credentials management to compute isolation in order to limit the attack surface.",
+    "keywords": [
+      "access",
+      "accessed",
+      "add-on",
+      "after",
+      "agent",
+      "api",
+      "authorizations?",
+      "capabilities?",
+      "control",
+      "d&r",
+      "data?",
+      "deployed",
+      "detect",
+      "detected",
+      "detection"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "Compliance",
+      "or if you have further questions.",
+      "we see is sending detections and events data from LimaCharlie into the SIEM."
+    ],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 14
+      },
+      {
+        "slug": "faq-sensor-installation",
+        "title": "FAQ - Sensor Installation",
+        "score": 13
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 13
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 11
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "b072bc978010a4032701f6259ef3fb7b74e70eba2e4c3cd9674576474bceac78"
+}

@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/cloud-security",
+  "title": "Cloud Security",
+  "slug": "cloud-security",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "cloud",
+      "security",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "secops-development",
+        "title": "SecOps Development",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 4
+      },
+      {
+        "slug": "adapter-deployment",
+        "title": "Adapter Deployment",
+        "score": 4
+      },
+      {
+        "slug": "adapter-types-crowdstrike-falcon-cloud",
+        "title": "CrowdStrike Falcon Cloud",
+        "score": 4
+      },
+      {
+        "slug": "config-hive-cloud-sensors",
+        "title": "Config Hive: Cloud Sensors",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "ae9b845d9d53bb36321f9f11e0da2d0a42399fcf4ff836d63135d66266e7a8b3"
+}

@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/access-and-permissions",
+  "title": "Access and Permissions",
+  "slug": "access-and-permissions",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "access",
+      "api",
+      "permissions",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "api-keys",
+        "title": "API Keys",
+        "score": 11
+      },
+      {
+        "slug": "user-access",
+        "title": "User Access",
+        "score": 5
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 4
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 4
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "55b963312f65cd58f0691343e26e52517a09bf2bbcd9f61dfd8c703ad961a66f"
+}

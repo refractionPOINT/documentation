@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/network-monitoring",
+  "title": "Network Monitoring",
+  "slug": "network-monitoring",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "monitoring",
+      "network",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "file-and-registry-integrity-monitoring-fim-deployments",
+        "title": "File and Registry Integrity Monitoring (FIM) Deployments",
+        "score": 12
+      },
+      {
+        "slug": "adapter-types-file",
+        "title": "File",
+        "score": 8
+      },
+      {
+        "slug": "ext-integrity",
+        "title": "Integrity",
+        "score": 7
+      },
+      {
+        "slug": "azure-network-security-group",
+        "title": "Azure Network Security Group",
+        "score": 4
+      },
+      {
+        "slug": "wel-monitoring",
+        "title": "WEL Monitoring",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "698d6e63fa14e2f152411d4a2fd2a214fc14dac3747e02095d2db39cf8fc7866"
+}

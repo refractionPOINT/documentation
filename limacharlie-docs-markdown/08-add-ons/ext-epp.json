@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-epp",
+  "title": "Endpoint Protection",
+  "slug": "ext-epp",
+  "category": "",
+  "metadata": {
+    "summary": "The Endpoint Protection (EPP) management in LimaCharlie enables users to view the status of existing EPP solutions (including Windows Free Defender), manage parameters of the deployment and unify alerting from the deployment at scale. This makes it perfect for teams wanting a unified view of the ...",
+    "keywords": [
+      "add-on",
+      "agent",
+      "configuring",
+      "d&r",
+      "detection",
+      "edr",
+      "enabling",
+      "endpoint",
+      "event",
+      "extension",
+      "organization",
+      "output",
+      "overview",
+      "protection",
+      "response"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 19
+      },
+      {
+        "slug": "ext-artifact",
+        "title": "Artifact",
+        "score": 18
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 18
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 16
+      },
+      {
+        "slug": "ext-infrastructure",
+        "title": "Infrastructure",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "19bb6883d33dfc83d281c0cd31dbf172b3ea30cb49561312d87f057e7ded6e99"
+}

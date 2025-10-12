@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-kubernetes-pods-logs",
+  "title": "Kubernetes Pods Logs",
+  "slug": "adapter-types-kubernetes-pods-logs",
+  "category": "",
+  "metadata": {
+    "summary": "This Adapter allows you to ingest the logs from the pods running in a Kubernetes cluster.",
+    "keywords": [
+      "agent",
+      "api",
+      "articles",
+      "configuration",
+      "configurations",
+      "deployment",
+      "infrastructure",
+      "kubernetes",
+      "logs",
+      "overview",
+      "pods",
+      "related",
+      "response",
+      "rule",
+      "sample"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-mac-unified-logging",
+        "title": "Mac Unified Logging",
+        "score": 19
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      },
+      {
+        "slug": "container-clusters",
+        "title": "Container Clusters",
+        "score": 16
+      },
+      {
+        "slug": "infrastructure-as-code",
+        "title": "Infrastructure as Code",
+        "score": 14
+      },
+      {
+        "slug": "docker-agent-installation",
+        "title": "Docker Agent Installation",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "f54d0b03e1f69ad2313cad0c59366fe932ad36d7ab7708e0a058493b96d47280"
+}

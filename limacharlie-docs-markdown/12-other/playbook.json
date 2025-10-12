@@ -1,0 +1,83 @@
+{
+  "url": "https://docs.limacharlie.io/docs/playbook",
+  "title": "Playbook [LABS]",
+  "slug": "playbook",
+  "category": "",
+  "metadata": {
+    "summary": "> LimaCharlie LABS",
+    "keywords": [
+      "[labs]",
+      "accessing",
+      "add-on",
+      "api",
+      "billing",
+      "d&r",
+      "detection",
+      "enabling",
+      "environment",
+      "event",
+      "example",
+      "execution",
+      "extension",
+      "infrastructure",
+      "organization"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "infrastructure-as-code",
+        "title": "Infrastructure as Code",
+        "score": 16
+      },
+      {
+        "slug": "ext-cloud-cli",
+        "title": "Cloud CLI",
+        "score": 16
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [
+    {
+      "type": "python_api",
+      "object": "limacharlie",
+      "method": "Hive"
+    },
+    {
+      "type": "python_api",
+      "object": "request",
+      "method": "Request"
+    },
+    {
+      "type": "python_api",
+      "object": "request",
+      "method": "urlopen"
+    },
+    {
+      "type": "python_api",
+      "object": "response",
+      "method": "read"
+    },
+    {
+      "type": "python_api",
+      "object": "json",
+      "method": "loads"
+    }
+  ],
+  "content_hash": "06f298c324ff94293895fb5a3e7b47e78dfdbfcffbf8918368ecc5378df0386d"
+}

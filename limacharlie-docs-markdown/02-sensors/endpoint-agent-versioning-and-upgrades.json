@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/endpoint-agent-versioning-and-upgrades",
+  "title": "Endpoint Agent Versioning and Upgrades",
+  "slug": "endpoint-agent-versioning-and-upgrades",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie frequently releases new versions of the endpoint agent (typically every few weeks), giving you full control over which version runs in your Organization. Sensors are not updated by default, allowing you to manage versioning and deployment as needed.",
+    "keywords": [
+      "agent",
+      "agents",
+      "api",
+      "articles",
+      "auto-update",
+      "components",
+      "deployment",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "labels",
+      "managing",
+      "manual",
+      "organization"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent-events-overview",
+        "title": "Endpoint Agent Events Overview",
+        "score": 18
+      },
+      {
+        "slug": "payloads",
+        "title": "Payloads",
+        "score": 18
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 18
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 18
+      },
+      {
+        "slug": "sensor-tags",
+        "title": "Sensor Tags",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "6225ccee6a94ad6bd7fe9517c7f304745449a8ba826ddb082786251a9e6b66d4"
+}

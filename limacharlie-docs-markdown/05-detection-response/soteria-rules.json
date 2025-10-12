@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.limacharlie.io/docs/soteria-rules",
+  "title": "Soteria Rules",
+  "slug": "soteria-rules",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "detection",
+      "edr",
+      "related",
+      "response",
+      "rule",
+      "rules",
+      "soteria",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "soteria-aws-rules",
+        "title": "Soteria AWS Rules",
+        "score": 19
+      },
+      {
+        "slug": "soteria-edr-rules",
+        "title": "Soteria EDR Rules",
+        "score": 19
+      },
+      {
+        "slug": "managed-rulesets",
+        "title": "Managed Rulesets",
+        "score": 17
+      },
+      {
+        "slug": "soteria-m365-rules",
+        "title": "Soteria M365 Rules",
+        "score": 15
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "9cbca84070e59e4ea599053e812f6f95f98110c172ec3c1dc25f60c61ced827b"
+}

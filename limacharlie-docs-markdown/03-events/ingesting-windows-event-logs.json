@@ -1,0 +1,53 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ingesting-windows-event-logs",
+  "title": "Ingesting Windows Event Logs",
+  "slug": "ingesting-windows-event-logs",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "endpoint",
+      "event",
+      "ingesting",
+      "logs",
+      "related",
+      "sensor",
+      "telemetry",
+      "what's",
+      "windows"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ingesting-defender-event-logs",
+        "title": "Ingesting Defender Event Logs",
+        "score": 20
+      },
+      {
+        "slug": "ingesting-macos-unified-logs",
+        "title": "Ingesting MacOS Unified Logs",
+        "score": 19
+      },
+      {
+        "slug": "ingesting-sysmon-event-logs",
+        "title": "Ingesting Sysmon Event Logs",
+        "score": 18
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "db480b24c9e5e88c8d10292749336454ca6c3d92bf800abe0553f5ab7aad9007"
+}

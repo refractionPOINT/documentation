@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-artifact",
+  "title": "Artifact",
+  "slug": "ext-artifact",
+  "category": "",
+  "metadata": {
+    "summary": "The Artifact Extension provides low-level collection capabilities which can be configured to run automatically via Detection & Response rules, Sensor collections, or pushed via REST API. When enabled, an Artifact Collection menu will be available within the LimaCharlie web UI.",
+    "keywords": [
+      "add-on",
+      "agent",
+      "api",
+      "articles",
+      "artifact",
+      "detection",
+      "edr",
+      "enabling",
+      "endpoint",
+      "event",
+      "extension",
+      "organization",
+      "output",
+      "related",
+      "response"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 20
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 19
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 19
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 19
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 18
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "470959da180869f33cd59fcadbbff34419aa69139f5c11345d7773187b84f7aa"
+}

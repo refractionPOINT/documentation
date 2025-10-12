@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-sensor-selector-expressions",
+  "title": "Reference: Sensor Selector Expressions",
+  "slug": "reference-sensor-selector-expressions",
+  "category": "",
+  "metadata": {
+    "summary": "Many components in LimaCharlie require selecting a set of Sensors based on some characteristics. The selector expression is a text field that describe what matching characteristics the selector is looking for.",
+    "keywords": [
+      "agent",
+      "articles",
+      "edr",
+      "endpoint",
+      "event",
+      "expressions",
+      "lcql",
+      "organization",
+      "query",
+      "reference:",
+      "related",
+      "selector",
+      "sensor",
+      "telemetry",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 18
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 17
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "lcql",
+        "title": "LimaCharlie Query Language",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "43edb7afcc527d06e4b5cc84aaf5aaac31150b77aace3c2c37ea80b6499167e3"
+}

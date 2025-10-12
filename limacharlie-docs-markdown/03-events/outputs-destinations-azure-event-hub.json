@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-azure-event-hub",
+  "title": "Azure Event Hub",
+  "slug": "outputs-destinations-azure-event-hub",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "azure",
+      "event",
+      "output",
+      "related",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 16
+      },
+      {
+        "slug": "azure-network-security-group",
+        "title": "Azure Network Security Group",
+        "score": 16
+      },
+      {
+        "slug": "azure-sql-audit-logs",
+        "title": "Azure SQL Audit Logs",
+        "score": 16
+      },
+      {
+        "slug": "azure-monitor",
+        "title": "Azure Monitor",
+        "score": 16
+      },
+      {
+        "slug": "ext-cloud-cli-azure",
+        "title": "Azure",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "af9ee5f531a3711fba4ef8405d3223f9d9a35e14152b3b4bcaefb9aad753e072"
+}

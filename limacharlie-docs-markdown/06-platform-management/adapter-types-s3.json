@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-s3",
+  "title": "S3",
+  "slug": "adapter-types-s3",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "api",
+      "articles",
+      "output",
+      "related",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      },
+      {
+        "slug": "adapter-types-sqs",
+        "title": "SQS",
+        "score": 16
+      },
+      {
+        "slug": "adapter-types-slack-audit-logs",
+        "title": "Slack Audit Logs",
+        "score": 15
+      },
+      {
+        "slug": "outputs-destinations-amazon-s3",
+        "title": "Amazon S3",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "65246bea702eaf40a0861d8c0a3b5ff0312604a09f679133be8e1ef682b30dd1"
+}

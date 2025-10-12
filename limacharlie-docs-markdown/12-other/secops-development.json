@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/secops-development",
+  "title": "SecOps Development",
+  "slug": "secops-development",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "development",
+      "secops",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "observability-pipeline",
+        "title": "Observability Pipeline",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 3
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "90243d75c466d38448cc8f94779c9e439a5db1a9361d7c11a50ca83eefcd04bf"
+}

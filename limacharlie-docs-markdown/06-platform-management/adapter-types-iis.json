@@ -1,0 +1,56 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-iis",
+  "title": "IIS Logs",
+  "slug": "adapter-types-iis",
+  "category": "",
+  "metadata": {
+    "summary": "Microsoft's Internet Information Services (IIS) web server is a web server commonly found on Microsoft Windows servers. This Adapter assists with sending IIS web logs to LimaCharlie via the Adapter binary.",
+    "keywords": [
+      "adapter-specific",
+      "agent",
+      "configuration",
+      "configurations",
+      "deployment",
+      "event",
+      "example",
+      "logs",
+      "options",
+      "organization",
+      "query",
+      "sensor",
+      "telemetry",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "adapter-types-imap",
+        "title": "IMAP",
+        "score": 14
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 13
+      },
+      {
+        "slug": "adapter-types-json",
+        "title": "JSON",
+        "score": 9
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "e1c065f465137f3f2603d15878781d8ba644afd90890bb07fbcde5cecbe779ee"
+}

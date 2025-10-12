@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-secureannex",
+  "title": "Secure Annex",
+  "slug": "ext-secureannex",
+  "category": "",
+  "metadata": {
+    "summary": "[Secure Annex](https://secureannex.com/) is a browser extension security platform that provides a comprehensive analysis of the Chrome extensions installed across your organization\u2019s endpoints.",
+    "keywords": [
+      "add-on",
+      "agent",
+      "annex",
+      "api",
+      "articles",
+      "automatically",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "extension",
+      "manually",
+      "organization",
+      "query"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "reference-sensor-selector-expressions",
+        "title": "Reference: Sensor Selector Expressions",
+        "score": 17
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 15
+      },
+      {
+        "slug": "ext-reliable-tasking",
+        "title": "Reliable Tasking",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "ext-infrastructure",
+        "title": "Infrastructure",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "a3a9c61ad55321b39e0f7a9cb37ae6540cd328aa2411b19bc4a76df8b77f97e0"
+}

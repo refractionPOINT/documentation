@@ -1,0 +1,60 @@
+{
+  "url": "https://docs.limacharlie.io/docs/infrastructure-as-code",
+  "title": "Infrastructure as Code",
+  "slug": "infrastructure-as-code",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie leverages YAML templates to define and manage the configurations for an Organization, enabling a powerful infrastructure-as-code (IaC) approach. These templates capture all the essential security settings and features of an organization, such as:",
+    "keywords": [
+      "add-on",
+      "agent",
+      "api",
+      "applying",
+      "articles",
+      "code",
+      "configs",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "example",
+      "generating",
+      "infrastructure",
+      "methods"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "Incident Response",
+      ". You can create a base template for common settings and extend it with organization-specific rules or modules, giving you the ability to fine-tune security without sacrificing consistency."
+    ],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 17
+      },
+      {
+        "slug": "ext-integrity",
+        "title": "Integrity",
+        "score": 16
+      },
+      {
+        "slug": "config-hive-lookups",
+        "title": "Config Hive: Lookups",
+        "score": 15
+      },
+      {
+        "slug": "config-hive",
+        "title": "Config Hive",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "20238fb87aea20d8a2dcd2bd5c4494f804345ace447b7fa22dffc01132d78ec4"
+}

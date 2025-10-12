@@ -6,7 +6,7 @@ import asyncio
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from lib.understand import generate_batch_prompt, ProcessedTopic
+from lib.understand import generate_batch_prompt, ProcessedPage
 from models import Page
 
 
@@ -38,19 +38,16 @@ def test_generate_batch_prompt_includes_all_pages():
     assert 'Linux Sensors' in prompt
 
 
-def test_parse_batch_output_extracts_processed_topics():
+def test_parse_batch_output_extracts_processed_pages():
     """Test parsing Claude's batch processing output."""
     from lib.understand import parse_batch_output
 
     output = """
 {
-  "topics": [
+  "pages": [
     {
-      "slug": "installing-windows-sensors",
-      "title": "Installing Windows Sensors",
-      "type": "task",
-      "content": "# Installing Windows Sensors\\n\\nInstall sensors on Windows...",
-      "source_pages": ["sensor-windows"],
+      "slug": "sensor-windows",
+      "enhanced_markdown": "# Windows Sensors\\n\\nInstall sensors on Windows...",
       "extracted_apis": [
         {
           "name": "install_sensor()",
@@ -58,25 +55,29 @@ def test_parse_batch_output_extracts_processed_topics():
           "description": "Installs the sensor on the specified platform"
         }
       ],
-      "prerequisites": ["sensor-overview"],
-      "related_topics": ["sensor-troubleshooting"],
-      "keywords": ["sensor", "windows", "installation"]
+      "cross_refs": [
+        {
+          "page": "sensor-troubleshooting",
+          "relationship": "debugging"
+        }
+      ],
+      "metadata": {
+        "summary": "Guide for installing sensors on Windows systems",
+        "keywords": ["sensor", "windows", "installation"],
+        "complexity": "beginner"
+      }
     }
   ]
 }
 """
 
-    topics = parse_batch_output(output)
+    pages = parse_batch_output(output)
 
-    assert len(topics) == 1
-    assert topics[0].slug == "installing-windows-sensors"
-    assert topics[0].title == "Installing Windows Sensors"
-    assert topics[0].type == "task"
-    assert "# Installing Windows Sensors" in topics[0].content
-    assert len(topics[0].extracted_apis) == 1
-    assert topics[0].extracted_apis[0]['name'] == "install_sensor()"
-    assert "sensor-overview" in topics[0].prerequisites
-    assert "sensor-troubleshooting" in topics[0].related_topics
+    assert len(pages) == 1
+    assert pages[0].slug == "sensor-windows"
+    assert "# Windows Sensors" in pages[0].enhanced_markdown
+    assert len(pages[0].extracted_apis) == 1
+    assert pages[0].extracted_apis[0]['name'] == "install_sensor()"
 
 
 @pytest.mark.anyio
@@ -98,7 +99,7 @@ async def test_process_batches_parallel(mocker):
         # Synchronous function that simulates processing time
         call_times.append(time.time())
         time.sleep(0.1)  # Simulate processing
-        return '{"topics": [{"slug": "test", "title": "Test", "type": "task", "content": "# Test", "source_pages": [], "extracted_apis": [], "prerequisites": [], "related_topics": [], "keywords": []}]}'
+        return '{"pages": [{"slug": "test", "enhanced_markdown": "# Test", "extracted_apis": [], "cross_refs": [], "metadata": {}}]}'
 
     mock_client.run_subagent_prompt = mock_run
 

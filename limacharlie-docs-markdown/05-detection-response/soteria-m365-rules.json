@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/soteria-m365-rules",
+  "title": "Soteria M365 Rules",
+  "slug": "soteria-m365-rules",
+  "category": "",
+  "metadata": {
+    "summary": "Soteria's O365 ruleset provides coverage across O365 (aka M365) telemetry streams. The ruleset is designed for in-depth analysis of the Office 365 ecosystem which includes:",
+    "keywords": [
+      "activating",
+      "add-on",
+      "agent",
+      "articles",
+      "detection",
+      "edr",
+      "enabling",
+      "endpoint",
+      "extension",
+      "infrastructure",
+      "m365",
+      "organization",
+      "output",
+      "related",
+      "response"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "infrastructure-as-code",
+        "title": "Infrastructure as Code",
+        "score": 17
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 17
+      },
+      {
+        "slug": "ext-infrastructure",
+        "title": "Infrastructure",
+        "score": 17
+      },
+      {
+        "slug": "soteria-edr-rules",
+        "title": "Soteria EDR Rules",
+        "score": 17
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "759528df9bf4b183bc4b226d40edaab08ea629f512c22955ed0681c2539b7967"
+}

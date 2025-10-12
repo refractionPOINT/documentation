@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-dumper",
+  "title": "Dumper",
+  "slug": "ext-dumper",
+  "category": "",
+  "metadata": {
+    "summary": "The Dumper Extension provides the ability to do dumping of several forensic artifacts on Windows hosts. It supports a single action, which is to dump.",
+    "keywords": [
+      "add-on",
+      "agent",
+      "articles",
+      "d&r",
+      "detection",
+      "dumper",
+      "endpoint",
+      "extension",
+      "organization",
+      "output",
+      "related",
+      "rule",
+      "sensor",
+      "telemetry",
+      "usage"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "sleeper",
+        "title": "Sleeper Deployment",
+        "score": 19
+      },
+      {
+        "slug": "ext-epp",
+        "title": "Endpoint Protection",
+        "score": 18
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 17
+      },
+      {
+        "slug": "payloads",
+        "title": "Payloads",
+        "score": 17
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "8a8f3b04c6726eadcb5fa32e486e7a372017e16fa1221e9ab7d629bd160c82f3"
+}

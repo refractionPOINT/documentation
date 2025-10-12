@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-aws",
+  "title": "AWS",
+  "slug": "ext-cloud-cli-aws",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "articles",
+      "extension",
+      "output",
+      "related",
+      "rule",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-cloud-cli-azure",
+        "title": "Azure",
+        "score": 16
+      },
+      {
+        "slug": "adapter-types-sqs",
+        "title": "SQS",
+        "score": 15
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 15
+      },
+      {
+        "slug": "adapter-types-s3",
+        "title": "S3",
+        "score": 14
+      },
+      {
+        "slug": "soteria-aws-rules",
+        "title": "Soteria AWS Rules",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "476fad0c6dfb960bedfb1bde686baae6d698f29eacebc856603c9d0ad4aabc2e"
+}
