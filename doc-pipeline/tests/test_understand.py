@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import pytest
+import asyncio
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -77,3 +78,37 @@ def test_parse_batch_output_extracts_processed_pages():
     assert "# Windows Sensors" in pages[0].enhanced_markdown
     assert len(pages[0].extracted_apis) == 1
     assert pages[0].extracted_apis[0]['name'] == "install_sensor()"
+
+
+@pytest.mark.anyio
+async def test_process_batches_parallel(mocker):
+    """Test that batches are processed in parallel."""
+    batches = [
+        {'id': f'batch_{i}', 'theme': f'Theme {i}',
+         'pages': [Page(slug=f"page-{i}", title=f"Page {i}", url="...", category="test", raw_html="<p>test</p>")]}
+        for i in range(5)
+    ]
+
+    mock_client = mocker.Mock()
+
+    # Track call order to verify parallelism
+    call_times = []
+    import time
+
+    def mock_run(*args, **kwargs):
+        # Synchronous function that simulates processing time
+        call_times.append(time.time())
+        time.sleep(0.1)  # Simulate processing
+        return '{"pages": [{"slug": "test", "enhanced_markdown": "# Test", "extracted_apis": [], "cross_refs": [], "metadata": {}}]}'
+
+    mock_client.run_subagent_prompt = mock_run
+
+    from lib.understand import process_batches_parallel
+
+    start = time.time()
+    results = await process_batches_parallel(batches, mock_client)
+    duration = time.time() - start
+
+    # If parallel, should take ~0.1s. If sequential, would take ~0.5s
+    assert duration < 0.3
+    assert len(results) == 5

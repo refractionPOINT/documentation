@@ -1,6 +1,8 @@
 """Claude-powered understanding and enhancement of documentation pages."""
 import json
-from typing import List, Dict, Any
+import asyncio
+import tempfile
+from typing import List, Dict, Any, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 
@@ -78,3 +80,82 @@ def parse_batch_output(output: str) -> List[ProcessedPage]:
         ))
 
     return pages
+
+
+async def process_batch_async(
+    batch: Dict[str, Any],
+    claude_client: Any
+) -> Tuple[str, List[ProcessedPage]]:
+    """
+    Process a single batch asynchronously.
+
+    Args:
+        batch: Batch to process
+        claude_client: Claude client instance
+
+    Returns:
+        Tuple of (batch_id, list of processed pages)
+    """
+    # Generate prompt
+    prompt = generate_batch_prompt(batch)
+
+    # Write to temp file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        f.write(prompt)
+        prompt_file = f.name
+
+    try:
+        # Run in thread pool to avoid blocking
+        loop = asyncio.get_event_loop()
+        output = await loop.run_in_executor(
+            None,
+            claude_client.run_subagent_prompt,
+            prompt_file
+        )
+
+        # Parse output
+        pages = parse_batch_output(output)
+
+        return batch['id'], pages
+
+    finally:
+        Path(prompt_file).unlink()
+
+
+async def process_batches_parallel(
+    batches: List[Dict[str, Any]],
+    claude_client: Any,
+    max_concurrent: int = 10
+) -> Dict[str, List[ProcessedPage]]:
+    """
+    Process multiple batches in parallel.
+
+    Args:
+        batches: List of batches to process
+        claude_client: Claude client instance
+        max_concurrent: Max number of concurrent subagents (default 10)
+
+    Returns:
+        Dictionary mapping batch_id to processed pages
+    """
+    # Create semaphore to limit concurrency
+    semaphore = asyncio.Semaphore(max_concurrent)
+
+    async def process_with_limit(batch):
+        async with semaphore:
+            return await process_batch_async(batch, claude_client)
+
+    # Process all batches
+    tasks = [process_with_limit(batch) for batch in batches]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Collect successful results
+    processed = {}
+    for result in results:
+        if isinstance(result, Exception):
+            print(f"Batch processing failed: {result}")
+            continue
+        batch_id, pages = result
+        processed[batch_id] = pages
+
+    return processed
