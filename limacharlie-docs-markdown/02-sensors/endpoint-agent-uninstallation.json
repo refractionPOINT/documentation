@@ -1,6 +1,50 @@
 {
   "url": "https://docs.limacharlie.io/docs/endpoint-agent-uninstallation",
-  "title": "endpoint-agent-uninstallation",
-  "downloaded_at": "2025-08-11 13:33:15",
-  "status": "html_downloaded"
+  "title": "Endpoint Agent Uninstallation",
+  "slug": "endpoint-agent-uninstallation",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "endpoint",
+      "event",
+      "related",
+      "sensor",
+      "uninstallation",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 17
+      },
+      {
+        "slug": "macos-agent-installation",
+        "title": "macOS Agent Installation",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 17
+      },
+      {
+        "slug": "chrome-agent-installation",
+        "title": "Chrome Agent Installation",
+        "score": 16
+      },
+      {
+        "slug": "edge-agent-installation",
+        "title": "Edge Agent Installation",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "012b96714bc242ff668e4959c04cf251661866c5db32ae6d0abe1bf7b2e1e6a5"
 }

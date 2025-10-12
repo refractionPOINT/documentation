@@ -1,0 +1,43 @@
+{
+  "url": "https://docs.limacharlie.io/docs/detection-and-response-tutorials",
+  "title": "Tutorials",
+  "slug": "detection-and-response-tutorials",
+  "category": "",
+  "metadata": {
+    "summary": "2 Articles  in this category",
+    "keywords": [
+      "tutorials"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "tutorials",
+        "title": "Tutorials",
+        "score": 11
+      },
+      {
+        "slug": "tutorials-3",
+        "title": "Tutorials",
+        "score": 8
+      },
+      {
+        "slug": "tutorials-1",
+        "title": "Tutorials",
+        "score": 8
+      },
+      {
+        "slug": "adapter-tutorials",
+        "title": "Adapter Tutorials",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-tutorials",
+        "title": "Add-Ons Tutorials",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "18069b47503c6f93ee69760310a32956249bac4be9335f344838759e09b74f35"
+}

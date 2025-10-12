@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-twilio",
+  "title": "Twilio",
+  "slug": "ext-twilio",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "extension",
+      "twilio",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 12
+      },
+      {
+        "slug": "ext-velociraptor",
+        "title": "Velociraptor",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 5
+      },
+      {
+        "slug": "api-integrations-virustotal",
+        "title": "VirusTotal",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "dd309bca4cb109fc38e605ae2b4115a15faa621e1d3c450e248c910ffcde52b0"
+}

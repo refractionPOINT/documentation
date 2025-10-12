@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/extensions",
+  "title": "Extensions",
+  "slug": "extensions",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie Extensions provide a robust framework for enhancing and customizing the LimaCharlie Cloud's capabilities, enabling seamless integration with third-party tools, services, and custom logic. Extensions serve as modular components that expand LimaCharlie\u2019s native functionality, allowing o...",
+    "keywords": [
+      "add-on",
+      "articles",
+      "detection",
+      "extension",
+      "extensions",
+      "extensions:",
+      "integration",
+      "organization",
+      "overview",
+      "permissions",
+      "private,",
+      "public,",
+      "related",
+      "response",
+      "rule"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-artifact",
+        "title": "Artifact",
+        "score": 17
+      },
+      {
+        "slug": "using-extensions",
+        "title": "Using Extensions",
+        "score": 15
+      },
+      {
+        "slug": "ext-infrastructure",
+        "title": "Infrastructure",
+        "score": 15
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 13
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "e64a853c3e9dbe02b7fb987088f02cb41ebb37b1b0c83ace86c38231ee1819c6"
+}

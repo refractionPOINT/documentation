@@ -1,0 +1,56 @@
+{
+  "url": "https://docs.limacharlie.io/docs/user-access",
+  "title": "User Access",
+  "slug": "user-access",
+  "category": "",
+  "metadata": {
+    "summary": "To control who has access to an Organization, and what they have access to, go to the \"Users\" section of the web application.",
+    "keywords": [
+      "access",
+      "api",
+      "articles",
+      "basis",
+      "detection",
+      "groups",
+      "organization",
+      "output",
+      "per-organization",
+      "related",
+      "rule",
+      "sensor",
+      "user",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "api-keys",
+        "title": "API Keys",
+        "score": 15
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "single-sign-on",
+        "title": "Single Sign-On",
+        "score": 13
+      },
+      {
+        "slug": "reference-permissions",
+        "title": "Reference: Permissions",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "b05551bc947bd32e4a1ac3204eb898bfc77fc32dd7d429fc7c7ba14fbb91ac82"
+}

@@ -25,7 +25,7 @@ The returned data from the API contains the following:
 * `num_events`: the number of events that were replayed.
 * `eval_time`: the number of seconds it took to replay the data.
 
-```
+```json
 {
   "error": "",        // if an error occured.
   "stats": {
@@ -38,7 +38,6 @@ The returned data from the API contains the following:
   "results": [],      // a list of dictionaries containing the details of actions the engine would have taken
   "traces": []        // a list of trace items to help you troubleshoot where a rule failed
 }
-
 ```
 
 ### Query Language
@@ -53,14 +52,12 @@ Sample command line to query one sensor:
 
 ```
 limacharlie-replay --sid 9cbed57a-6d6a-4af0-b881-803a99b177d9 --start 1556568500 --end 1556568600 --rule-content ./test_rule.txt
-
 ```
 
 Sample command line to query an entire organization:
 
 ```
 limacharlie-replay --entire-org --start 1555359000 --end 1556568600 --rule-name my-rule-name
-
 ```
 
 If specifying a rule as content with the `--rule-content`, the format should be
@@ -75,7 +72,6 @@ detect:
 respond:
   - action: report
     name: dilbert-is-here
-
 ```
 
 Instead of specifying the `--entire-org` or `--sid` flags, you may use events from a local file via the `--events` flag.
@@ -95,14 +91,13 @@ For this example, we will use the experimental datacenter's URL:
 
 ```
 https://0651b4f82df0a29c.replay.limacharlie.io/
-
 ```
 
 The API mainly works on a per-sensor basis, on a limited amount of time. Replaying for multiple sensors (or entire org), or longer time period is done through multiple parallel API calls. This multiplexing is taken care of by the Python CLI above.
 
 To query Replay, do a `POST` with a `Content-Type` header of `application-json` and with a JSON body like:
 
-```
+```json
 {
   "oid": "",             // OID this query relates to
   "rule_source": {       // rule source information (use one of "rule_name" or "rule")
@@ -120,7 +115,7 @@ To query Replay, do a `POST` with a `Content-Type` header of `application-json` 
       "end_time": 0      // end second epoch time to replay to
     },
     "events": [{}]       // literal list of events to replay
-    "stream": "" // defaults to events, can also be "audit" or "detection"
+    "stream": "" // defaults to events, can also be "audit" or "detect"
   },
   "limit_event": 0,      // optional approximate number of events to process
   "limit_eval": 0,       // optional approximate number of operator evaluations to perform
@@ -128,7 +123,6 @@ To query Replay, do a `POST` with a `Content-Type` header of `application-json` 
   "is_dry_run": false,   // optional, if true, an estimate of the total cost of the query will be returned
   "query": ""            // optional alternative way to describe a replay query as a LimaCharlie Query Language (LCQL) query.
 }
-
 ```
 
 Like the other endpoints you can also submit a `rule_name` in the URL query if you want
@@ -141,3 +135,14 @@ Finally, you may also set `trace` to `true` in the request to receive a detailed
 ## Billing
 
 The Replay service is billed on a per event evaluated.
+
+---
+
+### What's Next
+
+* [Unit Tests](/docs/unit-tests)
+
+Table of contents
+
++ [Using](#using)
++ [Billing](#billing)

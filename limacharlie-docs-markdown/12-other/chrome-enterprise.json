@@ -1,0 +1,53 @@
+{
+  "url": "https://docs.limacharlie.io/docs/chrome-enterprise",
+  "title": "ChromeOS with Google Chrome Enterprise",
+  "slug": "chrome-enterprise",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "chrome",
+      "chromeos",
+      "endpoint",
+      "enterprise",
+      "google",
+      "related",
+      "sensor",
+      "what's",
+      "with"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "chrome-agent-installation",
+        "title": "Chrome Agent Installation",
+        "score": 17
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 16
+      },
+      {
+        "slug": "endpoint-agent-uninstallation",
+        "title": "Endpoint Agent Uninstallation",
+        "score": 16
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 16
+      },
+      {
+        "slug": "adapter-types-google-workspace",
+        "title": "Google Workspace",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "633c0c8f48b4b991b7122c1d0e285ebe3480ff9854848225c0df0148eb50bc5c"
+}

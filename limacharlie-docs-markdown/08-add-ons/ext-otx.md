@@ -46,3 +46,19 @@ LimaCharlie Extensions allow users to expand and customize their security enviro
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events, they must be enabled within the Exfil or Event Collection settings.
+
+---
+
+### What's Next
+
+* [PagerDuty](/docs/ext-pagerduty)
+
+Table of contents
+
++ [Enabling the OTX {{glossary.Extension}}](#enabling-the-otx-{{glossary-extension}})
++ [Using the OTX Extension](#using-the-otx-extension)
+
+Tags
+
+* [add-ons](/docs/en/tags/add-ons)
+* [extensions](/docs/en/tags/extensions)

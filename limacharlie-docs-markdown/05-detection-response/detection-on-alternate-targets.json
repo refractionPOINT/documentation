@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/detection-on-alternate-targets",
+  "title": "Detection on Alternate Targets",
+  "slug": "detection-on-alternate-targets",
+  "category": "",
+  "metadata": {
+    "summary": "Detection & Response rules run against `edr` events by default, however, there are 7 other targets:",
+    "keywords": [
+      "actions",
+      "agent",
+      "alternate",
+      "articles",
+      "artifact",
+      "artifact\\_event",
+      "audit",
+      "billing",
+      "deployment",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "example",
+      "extension"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 18
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 17
+      },
+      {
+        "slug": "stateful-rules",
+        "title": "Stateful Rules",
+        "score": 17
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 17
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "892ca299fb3a51bdbc98595a11d32930adfb281231345c5af3efc631fb0535c2"
+}

@@ -8,7 +8,7 @@ on the simple case where it is applied to Sensor events.
 
 For a full list of all rule operators and detailed documentation see the [Detection and Response](/v2/docs/detection-and-response) section.
 
-### Life of a Rule
+## Life of a Rule
 
 D&R rules are generally applied on a per-event basis. When the rule is applied, the "detection"
 component of the rule is processed to determine if it matches. If there is a match, the "response"
@@ -110,7 +110,6 @@ op: and
 event: CODE_IDENTITY
 rules:
   -
-
 ```
 
 The above sets up the criteria #2 preceding it, with the AND-ing that will follow. Since the AND is at the
@@ -128,7 +127,6 @@ event: CODE_IDENTITY
 rules:
   - op: is windows
   -
-
 ```
 
 Next up is criteria #3 and #4. Both of those can be determined using the `FILE_PATH` component of the
@@ -136,7 +134,7 @@ Next up is criteria #3 and #4. Both of those can be determined using the `FILE_P
 of the structure is simply to open the Historic View, start a new process on that specific host and look for
 the relevant event. If we were to do this on a Windows host, we'd get an example like this one:
 
-```
+```json
 {
     "routing": {
         "parent": "...",
@@ -174,7 +172,6 @@ the relevant event. If we were to do this on a Windows host, we'd get an example
         "FILE_PATH": "C:\\Windows\\System32\\setupcln.dll"
     }
 }
-
 ```
 
 This means what we want is to apply rules to the `event/FILE_PATH`. First part, #3 is easy, we just want
@@ -193,7 +190,6 @@ rules:
   - op: ends with
     path: event/FILE_PATH
     value: .cpl
-
 ```
 
 That was easy, but we're missing a critical component! By default, D&R rules operate in a case sensitive mode.
@@ -210,7 +206,6 @@ rules:
     value: .cpl
     case sensitive: false
   -
-
 ```
 
 Finally, we want to make sure the `event/FILE_PATH` is NOT in the `windows` directory. To do this, we will use
@@ -231,7 +226,6 @@ rules:
     re: ^.\:\\windows\\
     case sensitive: false
     not: true
-
 ```
 
 Here we go, we're done drafting our first rule.
@@ -267,7 +261,6 @@ detect:
 respond:
   - action: report
     name: T1196
-
 ```
 
 Now validate: `limacharlie replay --validate --rule-content T1196.rule`
@@ -321,7 +314,7 @@ Now we can run our 3 samples against the rule using Replay,
 `limacharlie replay --rule-content T1196.rule --events positive.json` should output a result
 indicating the event matched (by actioning the `report`) like:
 
-```
+```json
 {
   "num_evals": 4,
   "eval_time": 0.00020599365234375,
@@ -332,13 +325,12 @@ indicating the event matched (by actioning the `report`) like:
         "source": "11111111-1111-1111-1111-111111111111.11111111-1111-1111-1111-111111111111.11111111-1111-1111-1111-111111111111.10000000.2",
         "routing": {
 ...
-
 ```
 
 `limacharlie replay --rule-content T1196.rule --events negative-1.json` should output a result
 indicating the event did NOT match like:
 
-```
+```json
 {
   "num_evals": 4,
   "eval_time": 0.00011777877807617188,
@@ -346,7 +338,6 @@ indicating the event did NOT match like:
   "responses": [],
   "errors": []
 }
-
 ```
 
 `limacharlie replay --rule-content T1196.rule --events negative-2.json` be the same as `negative-1.json`.
@@ -365,7 +356,7 @@ Running our rule against the last week of data is simple:
 
 No matches should look like that:
 
-```
+```json
 {
   "num_evals": 67354,
   "eval_time": 1107.2150619029999,
@@ -397,3 +388,32 @@ Command-line Interface
 In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
 
 In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+
+---
+
+### Related articles
+
+* [Detection and Response Examples](/docs/detection-and-response-examples)
+* [Detection and Response](/docs/detection-and-response)
+* [Detection on Alternate Targets](/docs/detection-on-alternate-targets)
+* [Sigma Converter](/docs/sigma-converter)
+
+---
+
+#### What's Next
+
+* [Create a D&R Rule Using a Threat Feed](/docs/create-a-dr-rule-using-a-threat-feed)
+
+Table of contents
+
++ [Introduction](#introduction)
++ [Setup and Requirements](#setup-and-requirements)
++ [Draft Rule](#draft-rule)
++ [Validate Rule](#validate-rule)
++ [Test rule](#test-rule)
++ [Publish Rule](#publish-rule)
+
+Tags
+
+* [detection and response](/docs/en/tags/detection%20and%20response)
+* [tutorial](/docs/en/tags/tutorial "Tutorial")

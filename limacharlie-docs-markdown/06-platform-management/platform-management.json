@@ -1,6 +1,49 @@
 {
   "url": "https://docs.limacharlie.io/docs/platform-management",
-  "title": "platform-management",
-  "downloaded_at": "2025-08-11 13:33:32",
-  "status": "html_downloaded"
+  "title": "Platform Management",
+  "slug": "platform-management",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "event",
+      "management",
+      "platform",
+      "related",
+      "sdk",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "platform-events-overview",
+        "title": "Platform Events Overview",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 13
+      },
+      {
+        "slug": "limacharlie-sdk",
+        "title": "LimaCharlie SDK & CLI",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 6
+      },
+      {
+        "slug": "adapter-types-microsoft-defender",
+        "title": "Microsoft Defender",
+        "score": 6
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "d24b03b9ac8fef3608222f0c4427908be026ca981f2a77c3038a15d7cd15e626"
 }

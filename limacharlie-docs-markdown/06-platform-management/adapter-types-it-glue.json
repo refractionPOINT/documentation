@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-it-glue",
+  "title": "IT Glue",
+  "slug": "adapter-types-it-glue",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "api",
+      "glue",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 13
+      },
+      {
+        "slug": "adapter-types-json",
+        "title": "JSON",
+        "score": 12
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 12
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 5
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "e84dcc8c9f46a7cc709b2dbe102bc633e654c2addeed66c1fd68171788c599ee"
+}

@@ -3,7 +3,7 @@ LimaCharlie Query Language (LCQL) lets you write well-structured queries to sear
 
 Got a Unique Query?
 
-If you've written a unique query or have one you'd like to share with the community, please join us in the [LimaCharlie Community Slack](https://slack.limacharlie.io)!
+If you've written a unique query or have one you'd like to share with the community, please join us in the [LimaCharlie Community](https://community.limacharlie.io)!
 
 ## General Queries
 
@@ -28,7 +28,6 @@ which could result in:
 | mXXXXXXa |      11 | acmeCorpCodeRep/customers          |
 | aXXXXXXb |      11 | acmeCorpCodeRep/analysis           |
 | cXXXXXXd |       3 | acmeCorpCodeRep/devops             |
-
 ```
 
 ## Network Telemetry
@@ -48,7 +47,6 @@ which could result in:
 |---------|----------------------------|
 |      14 | logging.googleapis.com     |
 |      36 | logging-alv.googleapis.com |
-
 ```
 
 ### Domain Prevalence
@@ -64,7 +62,6 @@ which could result in:
 |---------|----------------------------|
 |       4 | logging.googleapis.com     |
 |       3 | logging-alv.googleapis.com |
-
 ```
 
 ## Process Activity
@@ -117,3 +114,30 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 Endpoint Detection & Response
 
 Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+---
+
+#### Related articles
+
+* [LimaCharlie Query Language](/docs/lcql)
+* [Query Console](/docs/query-console)
+* [Detection and Response Examples](/docs/detection-and-response-examples)
+* [Reference: Sensor Selector Expressions](/docs/reference-sensor-selector-expressions)
+
+---
+
+##### What's Next
+
+* [Detection and Response](/docs/detection-and-response)
+
+Table of contents
+
++ [General Queries](#general-queries)
++ [GitHub Telemetry](#github-telemetry)
++ [Network Telemetry](#network-telemetry)
++ [Process Activity](#process-activity)
++ [Windows Event Log (WEL)](#windows-event-log-wel-)
+
+Tags
+
+* [lcql](/docs/en/tags/lcql)

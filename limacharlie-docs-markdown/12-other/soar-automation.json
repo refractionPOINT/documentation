@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/soar-automation",
+  "title": "SOAR / Automation",
+  "slug": "soar-automation",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "automation",
+      "soar",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "cloud-security",
+        "title": "Cloud Security",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 3
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "8d60b3af15a9546e386bb633dff275f6d275663fbf1805eac6e02b275e70f675"
+}

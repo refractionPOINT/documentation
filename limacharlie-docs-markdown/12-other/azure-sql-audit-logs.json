@@ -1,0 +1,51 @@
+{
+  "url": "https://docs.limacharlie.io/docs/azure-sql-audit-logs",
+  "title": "Azure SQL Audit Logs",
+  "slug": "azure-sql-audit-logs",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "audit",
+      "azure",
+      "event",
+      "logs",
+      "output",
+      "related",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 17
+      },
+      {
+        "slug": "azure-network-security-group",
+        "title": "Azure Network Security Group",
+        "score": 17
+      },
+      {
+        "slug": "azure-monitor",
+        "title": "Azure Monitor",
+        "score": 17
+      },
+      {
+        "slug": "azure-logs-key-vault",
+        "title": "Azure Key Vault",
+        "score": 17
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "4ecb4732885082072f308191274250298cc2057588e2cfd2b587e49a9228f869"
+}

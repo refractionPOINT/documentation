@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/faq-billing",
+  "title": "FAQ - Billing",
+  "slug": "faq-billing",
+  "category": "",
+  "metadata": {
+    "summary": "This page contains frequently asked questions about billing within LimaCharlie.",
+    "keywords": [
+      "\"block",
+      "adapters",
+      "add-on",
+      "add-ons",
+      "agent",
+      "api",
+      "articles",
+      "billed",
+      "billing",
+      "billing?",
+      "calculated",
+      "card?",
+      "change",
+      "charged?",
+      "credit"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "sleeper",
+        "title": "Sleeper Deployment",
+        "score": 13
+      },
+      {
+        "slug": "payloads",
+        "title": "Payloads",
+        "score": 13
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "8839a9eaefb2bb89ee4900827611bba794f87477a81f5de29532b1333d12613b"
+}

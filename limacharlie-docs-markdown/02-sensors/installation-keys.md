@@ -37,3 +37,38 @@ In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+---
+
+### Related articles
+
+* [macOS Agent Installation via Jamf Now](/docs/installing-macos-agents-via-jamf-now)
+* [Docker Agent Installation](/docs/docker-agent-installation)
+* [macOS Agent Installation](/docs/macos-agent-installation)
+* [FAQ - Sensor Installation](/docs/faq-sensor-installation)
+* [Chrome Agent Installation](/docs/chrome-agent-installation)
+* [Windows Agent Installation](/docs/windows-agent-installation)
+* [Linux Agent Installation](/docs/linux-agent-installation)
+* [Endpoint Agent Installation](/docs/endpoint-agent-installation)
+* [macOS Agent Installation - MDM Configuration Profiles](/docs/macos-agent-installation-mdm-configuration-profiles)
+* [Agent Deployment via Microsoft Intune](/docs/agent-deployment-microsoft-intune)
+* [Endpoint Agent](/docs/endpoint-agent)
+* [Endpoint Agent Commands](/docs/endpoint-agent-commands)
+* [Adapter Deployment](/docs/adapter-deployment)
+* [Adapters](/docs/adapters)
+* [Adapter Usage](/docs/adapter-usage)
+
+---
+
+#### What's Next
+
+* [Adapters](/docs/adapters)
+
+Table of contents
+
++ [Management](#management)
++ [Use of Tags](#use-of-tags)
+
+Tags
+
+* [sensors](/docs/en/tags/sensors)

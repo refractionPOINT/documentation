@@ -1,6 +1,57 @@
 {
   "url": "https://docs.limacharlie.io/docs/faq-sensor-installation",
-  "title": "faq-sensor-installation",
-  "downloaded_at": "2025-08-11 13:33:19",
-  "status": "html_downloaded"
+  "title": "FAQ - Sensor Installation",
+  "slug": "faq-sensor-installation",
+  "category": "",
+  "metadata": {
+    "summary": "The tables below show the hostnames and IPs used to connect to LimaCharlie. All connections use TCP port 443 and TLS 1.2+",
+    "keywords": [
+      "(emshaven)",
+      "(iowa)",
+      "(london)",
+      "(mumbai)",
+      "(quebec)",
+      "(sydney)",
+      "agent",
+      "allow",
+      "api",
+      "articles",
+      "australia",
+      "canada",
+      "connect",
+      "consume?",
+      "detection"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 14
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 14
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 14
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "f688abf35e8418e383786f6123842b2fb19e91962c5cf2286ea88b23308eac6f"
 }

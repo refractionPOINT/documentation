@@ -1,0 +1,62 @@
+{
+  "url": "https://docs.limacharlie.io/docs/building-products",
+  "title": "Building Products",
+  "slug": "building-products",
+  "category": "",
+  "metadata": {
+    "summary": "The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.",
+    "keywords": [
+      "agent",
+      "api",
+      "build",
+      "building",
+      "costs",
+      "effectively",
+      "endpoint",
+      "focus",
+      "integration",
+      "market",
+      "organization",
+      "products",
+      "reduce",
+      "response",
+      "scale"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "can vary significantly. Nevertheless, all startups and product developers using the platform will benefit from the following three recommendations:",
+      "](/docs/en/tags/use%20case)",
+      "Incident Response",
+      "Compliance"
+    ],
+    "related_pages": [
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 12
+      },
+      {
+        "slug": "incident-response",
+        "title": "Incident Response",
+        "score": 11
+      },
+      {
+        "slug": "ext-infrastructure",
+        "title": "Infrastructure",
+        "score": 10
+      },
+      {
+        "slug": "tutorials",
+        "title": "Tutorials",
+        "score": 10
+      },
+      {
+        "slug": "use-cases",
+        "title": "Use Cases",
+        "score": 10
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "d82f005f35c3077a947119ed4c638800a8019a67a2b15a8920636b4deddd0742"
+}

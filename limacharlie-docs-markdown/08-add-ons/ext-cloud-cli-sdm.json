@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-sdm",
+  "title": "StrongDM",
+  "slug": "ext-cloud-cli-sdm",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "extension",
+      "strongdm",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-cloud-cli-sublime",
+        "title": "Sublime",
+        "score": 13
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli",
+        "title": "Cloud CLI",
+        "score": 8
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "efda41d264d3f251438e9b3c6c8bc794513ce0663fad67395fbf1100c46fd788"
+}

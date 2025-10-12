@@ -90,3 +90,23 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+---
+
+### Related articles
+
+* [Managed Rulesets](/docs/managed-rulesets)
+* [Sigma Rules](/docs/sigma-rules)
+
+---
+
+#### What's Next
+
+* [LimaCharlie Core Concepts](/docs/limacharlie-core-concepts)
+
+Table of contents
+
++ [Creating an Organization](#creating-an-organization)
++ [Deploying a Sensor](#deploying-a-sensor)
++ [Adding Sigma Rules](#adding-sigma-rules)
++ [Output](#output)

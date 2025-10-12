@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/table-top-exercises",
+  "title": "Table Top Exercises",
+  "slug": "table-top-exercises",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "exercises",
+      "table",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "network-monitoring",
+        "title": "Network Monitoring",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 3
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "3b008b3607d9adfc6859010d5928efd8469e52822a8f4a2bcccd61123bdca4d1"
+}

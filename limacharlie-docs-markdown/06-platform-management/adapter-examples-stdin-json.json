@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-examples-stdin-json",
+  "title": "Stdin JSON",
+  "slug": "adapter-examples-stdin-json",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "event",
+      "json",
+      "related",
+      "sensor",
+      "stdin",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-json",
+        "title": "JSON",
+        "score": 15
+      },
+      {
+        "slug": "adapter-types-stdin",
+        "title": "Stdin",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "adapter-examples-stdin",
+        "title": "Stdin",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "e37069adfe913e5d0963e2811f95e18057ea3d22106e297363ef922690d56d3d"
+}

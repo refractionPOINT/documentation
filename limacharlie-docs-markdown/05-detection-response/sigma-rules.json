@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/sigma-rules",
+  "title": "Sigma Rules",
+  "slug": "sigma-rules",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "detection",
+      "related",
+      "response",
+      "rule",
+      "rules",
+      "sigma",
+      "what's"
+    ],
+    "complexity": "beginner",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "sigma-converter",
+        "title": "Sigma Converter",
+        "score": 16
+      },
+      {
+        "slug": "managed-rulesets",
+        "title": "Managed Rulesets",
+        "score": 16
+      },
+      {
+        "slug": "quickstart",
+        "title": "Quickstart",
+        "score": 14
+      },
+      {
+        "slug": "detection-and-response-examples",
+        "title": "Detection and Response Examples",
+        "score": 12
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "8c8e0ef7285c1bc25345c91f536d24f8b2e6d961ebc989b03b059b7a2b235a16"
+}

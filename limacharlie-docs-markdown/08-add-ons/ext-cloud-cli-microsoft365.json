@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-microsoft365",
+  "title": "Microsoft 365",
+  "slug": "ext-cloud-cli-microsoft365",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "articles",
+      "extension",
+      "microsoft",
+      "related",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 14
+      },
+      {
+        "slug": "ext-cloud-cli-okta",
+        "title": "Okta",
+        "score": 13
+      },
+      {
+        "slug": "adapter-types-microsoft-365",
+        "title": "Microsoft 365",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli-azure",
+        "title": "Azure",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "ada2cfacc1b87cb2b2f1780576e319cd0616ae512b8c0e5bb9dea848f3598685"
+}

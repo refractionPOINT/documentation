@@ -81,15 +81,15 @@ The tables below show the hostnames and IPs used to connect to LimaCharlie. All 
 
 The amount of data that is produced by the sensor is dependent on how much, and what kind of activity is taking place on the endpoint. That being said, the average data produced per endpoint across thousands of deployments is approximately 1MB per day.
 
-## How much resources does the LimaCharlie agent consume?
+## What resources does the LimaCharlie agent consume?
 
 The total footprint of the agent on disk combined with what is in memory is approximately 50MB. The agent typically runs under 1% CPU.
 
 Depending on what actions you may be performing it may increase (e.g. if you’re doing a full YARA scan it’s expected that the CPU usage will increase). When you use our YARA trickle scan, that also keeps CPU usage within reasonable bounds. You’ll only see YARA scans spike CPU when you do a full manual scan.
 
-Depending on the configuration of the agent (it’s fully customizable), the network bandwidth will vary, but we typically see aproximately 2MB per day on Windows hosts.
+Depending on the configuration of the agent (it’s fully customizable), the network bandwidth will vary, but we typically see approximately 2MB per day on Windows hosts.
 
-## Why does my sensor initially connect successfully but then disappears?
+## Why does my sensor initially connect successfully but then disappear?
 
 Sometimes we see the agent connect to the LimaCharlie cloud, enrolls, then disconnects (which is normal the first time after enrollment) and never connects again, or it doesn't show that kernel has been acquired.
 
@@ -100,7 +100,7 @@ You can confirm if there is SSL interception by performing the following steps t
 **Confirm the region of your** Organization
 
 If you already know where your organization's region is located, you can move to the next step. To verify the organization's region where the data is processed and stored, click `Add Sensor` from the `Sensors` view. You will then see the region listed under `Sensor Connectivity`.
-![Sensor - Region](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Sensor%20-%20Region.png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/installation(1).png)
 
 **Open the test URL**
 Via web browser, navigate to one of the below test URLs that corresponds to the correct region:
@@ -160,3 +160,31 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
 
 Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+---
+
+### Related articles
+
+* [Endpoint Agent Installation](/docs/endpoint-agent-installation)
+* [Installation Keys](/docs/installation-keys)
+
+---
+
+#### What's Next
+
+* [FAQ - Sensor Removal](/docs/sensor-removal)
+
+Table of contents
+
++ [How can I add LimaCharlie traffic to an allow list?](#how-can-i-add-limacharlie-traffic-to-an-allow-list-)
++ [What Hostnames and IPs does LimaCharlie use for each region?](#what-hostnames-and-ips-does-limacharlie-use-for-each-region-)
++ [How much data does the LimaCharlie {{glossary.Sensor}} produce per day?](#how-much-data-does-the-limacharlie-{{glossary-sensor}}-produce-per-day-)
++ [What resources does the LimaCharlie agent consume?](#what-resources-does-the-limacharlie-agent-consume-)
++ [Why does my sensor initially connect successfully but then disappear?](#why-does-my-sensor-initially-connect-successfully-but-then-disappear-)
++ [What happens if a host is offline?](#what-happens-if-a-host-is-offline-)
++ [How can I tell which {{glossary.Installation Key}} was used to enroll a sensor?](#how-can-i-tell-which-{{glossary-installation-key}}-was-used-to-enroll-a-sensor-)
+
+Tags
+
+* [faq](/docs/en/tags/faq)
+* [sensors](/docs/en/tags/sensors)

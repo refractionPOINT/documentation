@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/artifacts",
+  "title": "Artifacts",
+  "slug": "artifacts",
+  "category": "",
+  "metadata": {
+    "summary": "The Artifact Collection system allows you to ingest artifact types like:",
+    "keywords": [
+      "accessing",
+      "add-on",
+      "agent",
+      "api",
+      "articles",
+      "artifacts",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "events",
+      "extension",
+      "files",
+      "ingestion"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 20
+      },
+      {
+        "slug": "ext-artifact",
+        "title": "Artifact",
+        "score": 19
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 19
+      },
+      {
+        "slug": "ext-zeek",
+        "title": "Zeek",
+        "score": 18
+      },
+      {
+        "slug": "sensor-tags",
+        "title": "Sensor Tags",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "19252f2a7e9032efc904b818250b34db013554b4f7b2dea48f344438660098d4"
+}

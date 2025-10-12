@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-google-cloud-storage",
+  "title": "Google Cloud Storage",
+  "slug": "outputs-destinations-google-cloud-storage",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "cloud",
+      "google",
+      "output",
+      "query",
+      "related",
+      "storage",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 18
+      },
+      {
+        "slug": "ext-cloud-cli-google-cloud",
+        "title": "Google Cloud",
+        "score": 17
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-pubsub",
+        "title": "Google Cloud Pubsub",
+        "score": 17
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-bigquery",
+        "title": "Google Cloud BigQuery",
+        "score": 17
+      },
+      {
+        "slug": "adapter-types-google-workspace",
+        "title": "Google Workspace",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "24c0abac4dd611cf9b08efe0d3739834e53c97629c59bc1def4f0a900f2a0924"
+}

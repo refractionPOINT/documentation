@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/schema-data-types",
+  "title": "Schema Data Types",
+  "slug": "schema-data-types",
+  "category": "",
+  "metadata": {
+    "summary": "The data types in your schema can be further subdivided into three categories. Primitives, Code Blocks, and Objects (including tables). These data types allow for a cleaner UI and a more intuitive schema.",
+    "keywords": [
+      "add-on",
+      "before",
+      "blocks",
+      "data",
+      "event",
+      "extension",
+      "objects",
+      "organization",
+      "primitives",
+      "rule",
+      "schema",
+      "sensor",
+      "start",
+      "tables)",
+      "types"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 14
+      },
+      {
+        "slug": "building-the-user-interface",
+        "title": "Building the User Interface",
+        "score": 13
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 11
+      },
+      {
+        "slug": "ext-yara",
+        "title": "YARA",
+        "score": 11
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "821b223662453704502f4732f4e67d8406a44981aab502f25e821bfde871f6bb"
+}

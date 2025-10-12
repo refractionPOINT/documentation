@@ -1,0 +1,56 @@
+{
+  "url": "https://docs.limacharlie.io/docs/hayabusa-to-bigquery",
+  "title": "Hayabusa to BigQuery",
+  "slug": "hayabusa-to-bigquery",
+  "category": "",
+  "metadata": {
+    "summary": "Our BigQuery output allows you to send Hayabusa analysis results to a BigQuery table allowing SQL-like queries against the data. This allows you to perform analysis at scale against massive datasets. For guidance on using Hayabusa within LimaCharlie, see [Hayabusa Extension](/v2/docs/ext-hayabusa).",
+    "keywords": [
+      "accomplish",
+      "add-on",
+      "articles",
+      "bigquery",
+      "event",
+      "extension",
+      "hayabusa",
+      "output",
+      "overview",
+      "query",
+      "related",
+      "sensor",
+      "steps",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "velociraptor-to-bigquery",
+        "title": "Velociraptor to BigQuery",
+        "score": 16
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 15
+      },
+      {
+        "slug": "ext-hayabusa",
+        "title": "Hayabusa",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "ext-cloud-cli-google-cloud",
+        "title": "Google Cloud",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "2010a824b9b8a7773d8a7360cf7cc1f63fd999befd942b5b62b2af0542961b17"
+}

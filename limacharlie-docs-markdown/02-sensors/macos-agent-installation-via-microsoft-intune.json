@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/macos-agent-installation-via-microsoft-intune",
+  "title": "macOS Agent Installation via Microsoft Intune",
+  "slug": "macos-agent-installation-via-microsoft-intune",
+  "category": "",
+  "metadata": {
+    "summary": "You can deploy the LimaCharlie Sensor for macOS using the MDM provider of your choice. Below are instructions for deploying the LimaCharlie Sensor for macOS using Microsoft Intune.",
+    "keywords": [
+      "**mdm",
+      "agent",
+      "api",
+      "edr",
+      "endpoint",
+      "installation",
+      "intune",
+      "macos",
+      "microsoft",
+      "organization",
+      "profile**",
+      "script",
+      "sensor",
+      "telemetry",
+      "what's"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      },
+      {
+        "slug": "macos-agent-installation",
+        "title": "macOS Agent Installation",
+        "score": 16
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 16
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "macos-agent-installation-latest-os-versions",
+        "title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+        "score": 11
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "92b4ef4a31ba63dbc31b8d6e6f326ac13e49f495933d60a44d95788945782484"
+}

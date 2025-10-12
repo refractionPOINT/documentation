@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.limacharlie.io/docs/sensor-connectivity",
+  "title": "Sensor Connectivity",
+  "slug": "sensor-connectivity",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "connectivity",
+      "endpoint",
+      "related",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      },
+      {
+        "slug": "chrome-agent-installation",
+        "title": "Chrome Agent Installation",
+        "score": 16
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 16
+      },
+      {
+        "slug": "macos-agent-installation",
+        "title": "macOS Agent Installation",
+        "score": 16
+      },
+      {
+        "slug": "edge-agent-installation",
+        "title": "Edge Agent Installation",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "321f825f48ea3571a02514a62fd39a8f0f1ff0decc046adfc39a3e499745ec5d"
+}

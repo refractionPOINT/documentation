@@ -1,0 +1,49 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-windows-event-log",
+  "title": "Windows Event Log",
+  "slug": "adapter-types-windows-event-log",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "api",
+      "articles",
+      "event",
+      "related",
+      "sensor",
+      "what's",
+      "windows"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 16
+      },
+      {
+        "slug": "adapter-examples-windows-event-logs",
+        "title": "Windows Event Logs",
+        "score": 16
+      },
+      {
+        "slug": "ingesting-windows-event-logs",
+        "title": "Ingesting Windows Event Logs",
+        "score": 16
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "91f7e95d17951ee88374e698b13bee8622e0e4c05869b043a9ed6f71f138cc60"
+}

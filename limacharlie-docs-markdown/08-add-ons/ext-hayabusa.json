@@ -1,0 +1,60 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-hayabusa",
+  "title": "Hayabusa",
+  "slug": "ext-hayabusa",
+  "category": "",
+  "metadata": {
+    "summary": "Hayabusa Extension Pricing",
+    "keywords": [
+      "add-on",
+      "agent",
+      "arguments",
+      "articles",
+      "configuration",
+      "d&r",
+      "detection",
+      "detections",
+      "edr",
+      "endpoint",
+      "event",
+      "extension",
+      "generate",
+      "hayabusa",
+      "organization"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "of this extension would be to trigger Hayabusa analysis upon ingestion of a Velociraptor KAPE files artifact.",
+      "Forensics"
+    ],
+    "related_pages": [
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 19
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 18
+      },
+      {
+        "slug": "ingesting-sysmon-event-logs",
+        "title": "Ingesting Sysmon Event Logs",
+        "score": 17
+      },
+      {
+        "slug": "ext-artifact",
+        "title": "Artifact",
+        "score": 16
+      },
+      {
+        "slug": "ext-velociraptor",
+        "title": "Velociraptor",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "90413f8358a95b375d87946ac7d7f91719f5ba4aa189534a047c8aefc44e019a"
+}

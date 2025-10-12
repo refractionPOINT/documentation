@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-slack",
+  "title": "Slack",
+  "slug": "outputs-destinations-slack",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "output",
+      "related",
+      "slack",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-slack-audit-logs",
+        "title": "Slack Audit Logs",
+        "score": 15
+      },
+      {
+        "slug": "outputs-destinations-smtp",
+        "title": "SMTP",
+        "score": 14
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 12
+      },
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 6
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 6
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "55fb1ff39f99f8475096463fd25d8719a8eabed2210cf9d09729cca706b53918"
+}

@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/linux-agent-installation",
+  "title": "Linux Agent Installation",
+  "slug": "linux-agent-installation",
+  "category": "",
+  "metadata": {
+    "summary": "The LimaCharlie Linux Sensor interfaces with the kernel to acquire deep visibility into the host's activity while taking measures to preserve the host's performance. We make full use of eBPF, which **requires Linux 4.4 or above**.",
+    "keywords": [
+      "agent",
+      "articles",
+      "command",
+      "custom",
+      "debian",
+      "detection",
+      "disabling",
+      "edr",
+      "endpoint",
+      "installation",
+      "instructions",
+      "linux",
+      "netlink",
+      "organization",
+      "output"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 18
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 17
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "container-clusters",
+        "title": "Container Clusters",
+        "score": 15
+      },
+      {
+        "slug": "ingesting-linux-audit-logs",
+        "title": "Ingesting Linux Audit Logs",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "3cebc3c04a7321fdc12f67c587927255e7036baa66fb5d6f6c658368f5d0e6b8"
+}

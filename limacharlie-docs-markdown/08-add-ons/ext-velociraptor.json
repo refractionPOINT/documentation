@@ -1,0 +1,59 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-velociraptor",
+  "title": "Velociraptor",
+  "slug": "ext-velociraptor",
+  "category": "",
+  "metadata": {
+    "summary": "[Velociraptor](https://github.com/Velocidex/Velociraptor) is an open source endpoint visibility tool that includes power digital forensic, incident response, and incident triage capabilities. LimaCharlie can be used to deploy Velociraptor at scale, allowing for easy artifact collection and incide...",
+    "keywords": [
+      "add-on",
+      "agent",
+      "arguments",
+      "articles",
+      "artifact",
+      "automating",
+      "collect",
+      "collection",
+      "collections",
+      "d&r",
+      "detection",
+      "endpoint",
+      "event",
+      "extension",
+      "legacy"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "Incident Response"
+    ],
+    "related_pages": [
+      {
+        "slug": "ext-hayabusa",
+        "title": "Hayabusa",
+        "score": 19
+      },
+      {
+        "slug": "ext-yara",
+        "title": "YARA",
+        "score": 19
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 18
+      },
+      {
+        "slug": "ext-plaso",
+        "title": "Plaso",
+        "score": 17
+      },
+      {
+        "slug": "velociraptor-to-bigquery",
+        "title": "Velociraptor to BigQuery",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "c83e62777afc950e5d84192c71db67ef93ebf868411ed9311ae6f0ac8a486c2d"
+}

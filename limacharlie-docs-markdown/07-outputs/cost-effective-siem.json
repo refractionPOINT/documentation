@@ -1,6 +1,53 @@
 {
   "url": "https://docs.limacharlie.io/docs/cost-effective-siem",
-  "title": "cost-effective-siem",
-  "downloaded_at": "2025-08-11 13:33:35",
-  "status": "html_downloaded"
+  "title": "Cost Effective SIEM Alternative",
+  "slug": "cost-effective-siem",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "alternative",
+      "cost",
+      "detection",
+      "edr",
+      "effective",
+      "endpoint",
+      "response",
+      "siem",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 13
+      },
+      {
+        "slug": "endpoint-detection-and-response-edr",
+        "title": "Endpoint Detection and Response (EDR)",
+        "score": 10
+      },
+      {
+        "slug": "sysmon-comparison",
+        "title": "Sysmon Comparison",
+        "score": 7
+      },
+      {
+        "slug": "reference-error-codes",
+        "title": "Reference: Error Codes",
+        "score": 7
+      },
+      {
+        "slug": "soteria-edr-rules",
+        "title": "Soteria EDR Rules",
+        "score": 7
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "1fa10e93c9703f64280861709c47b59550f6084e1ab0057877226e1bc6f02e33"
 }

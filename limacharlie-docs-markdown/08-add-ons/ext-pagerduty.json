@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-pagerduty",
+  "title": "PagerDuty",
+  "slug": "ext-pagerduty",
+  "category": "",
+  "metadata": {
+    "summary": "The PagerDuty Extension allows you to trigger events within PagerDuty. It requires you to setup the PagerDuty access token in the Integrations section of your Organization.",
+    "keywords": [
+      "add-on",
+      "api",
+      "configuration",
+      "d&r",
+      "detection",
+      "event",
+      "extension",
+      "integration",
+      "legacy",
+      "migrating",
+      "organization",
+      "output",
+      "pagerduty",
+      "response",
+      "rule"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 17
+      },
+      {
+        "slug": "ext-plaso",
+        "title": "Plaso",
+        "score": 16
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 16
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 16
+      },
+      {
+        "slug": "ext-infrastructure",
+        "title": "Infrastructure",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "f0711af3eeef0d14005e27d41be2f96a6231bf57a7c862ee68fe39a8a43ac274"
+}

@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.limacharlie.io/docs/telemetry-adapters-adapter-types-azure-logs",
+  "title": "Azure Logs",
+  "slug": "telemetry-adapters-adapter-types-azure-logs",
+  "category": "",
+  "metadata": {
+    "summary": "5 Articles  in this category",
+    "keywords": [
+      "azure",
+      "logs"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-cloud-cli-azure",
+        "title": "Azure",
+        "score": 8
+      },
+      {
+        "slug": "azure-sql-audit-logs",
+        "title": "Azure SQL Audit Logs",
+        "score": 4
+      },
+      {
+        "slug": "adapter-types-iis",
+        "title": "IIS Logs",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-slack-audit-logs",
+        "title": "Slack Audit Logs",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "64f0098d0fc3bf26993a7b6ef7ae63d9aa9135a709f9e940b70f9a5893541054"
+}

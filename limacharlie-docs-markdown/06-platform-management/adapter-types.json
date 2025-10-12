@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types",
+  "title": "Adapter Types",
+  "slug": "adapter-types",
+  "category": "",
+  "metadata": {
+    "summary": "39 Articles  in this category",
+    "keywords": [
+      "adapter",
+      "types"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-usage",
+        "title": "Adapter Usage",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-canarytokens",
+        "title": "Canarytokens",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-sublime-security",
+        "title": "Sublime Security",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-syslog",
+        "title": "Syslog",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "c49acff06842c70ae0609281bfc8732dcf7056e1a6a15564b3447ee24d29b47e"
+}

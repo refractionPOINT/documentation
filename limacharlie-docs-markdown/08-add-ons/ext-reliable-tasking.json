@@ -1,0 +1,83 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-reliable-tasking",
+  "title": "Reliable Tasking",
+  "slug": "ext-reliable-tasking",
+  "category": "",
+  "metadata": {
+    "summary": "The Reliable Tasking Extension enables you to task a Sensor(s) that are currently offline. The extension will automatically send the task(s) to Sensor(s) once it comes online.",
+    "keywords": [
+      "**create",
+      "**list",
+      "actions",
+      "add-on",
+      "agent",
+      "api",
+      "block:",
+      "capturing",
+      "d&r",
+      "detect",
+      "detection",
+      "edr",
+      "enabling",
+      "endpoint",
+      "event"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-sensor-cull",
+        "title": "Sensor Cull",
+        "score": 19
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 19
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 16
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 13
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [
+    {
+      "type": "cli_command",
+      "command": "curl",
+      "full": "curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \\"
+    },
+    {
+      "type": "cli_command",
+      "command": "--header",
+      "full": "--header 'Authorization: Bearer $JWT' \\"
+    },
+    {
+      "type": "cli_command",
+      "command": "--header",
+      "full": "--header 'Content-Type: application/x-www-form-urlencoded' \\"
+    },
+    {
+      "type": "cli_command",
+      "command": "--data",
+      "full": "--data 'oid=$YOUR_OID&action=task&data={\"context\":\"version\",\"selector\":\"plat==windows\",\"task\":\"run --shell-command whoami\",\"ttl\":3600}'"
+    },
+    {
+      "type": "cli_command",
+      "command": "--data",
+      "full": "--data 'oid=$YOUR_OID&action=list&data={}'"
+    }
+  ],
+  "content_hash": "64fb06086c797577585593964930ce62f832f8a20480f129f65e0eceacd52416"
+}

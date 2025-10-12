@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapters",
+  "title": "Adapters",
+  "slug": "adapters",
+  "category": "",
+  "metadata": {
+    "summary": "The LimaCharlie Adapter provides real-time ingestion of logs and other telemetry. Adapters allow you to send *any* data to LimaCharlie, which becomes an observable telemetry stream. All ingested data is recognized as a first-class data source, allowing you to write [detection & response rules](/v...",
+    "keywords": [
+      "adapters",
+      "agent",
+      "api",
+      "articles",
+      "detection",
+      "endpoint",
+      "event",
+      "output",
+      "pre-defined",
+      "related",
+      "response",
+      "rule",
+      "sensor",
+      "telemetry",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 18
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 18
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 17
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "63ddad1b1c5d20c2daeccae3621ca765ea80f99af4aac8d5a131fb0aee27c2e3"
+}

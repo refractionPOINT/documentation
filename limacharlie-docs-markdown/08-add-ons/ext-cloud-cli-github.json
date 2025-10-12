@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-github",
+  "title": "GitHub",
+  "slug": "ext-cloud-cli-github",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "extension",
+      "github",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "ext-cloud-cli-google-cloud",
+        "title": "Google Cloud",
+        "score": 13
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli",
+        "title": "Cloud CLI",
+        "score": 8
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "fab4cba4aa6fa62e07db447a989b33032b8313e4b7a2b506f18f6366962b59f3"
+}

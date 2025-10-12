@@ -58,7 +58,6 @@ In detection and response rules. To achieve this, in the response part of the de
 ```
 - action: add tag
 tag: DESKTOP
-
 ```
 
 ## Removing Tags
@@ -124,3 +123,34 @@ When you tag a sensor with *lc:usage*, the sensor will work as usual, but its co
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+---
+
+#### Related articles
+
+* [Response Actions](/docs/response-actions)
+* [Installation Keys](/docs/installation-keys)
+* [Template Strings and Transforms](/docs/template-strings-and-transforms)
+* [Endpoint Agent Versioning and Upgrades](/docs/endpoint-agent-versioning-and-upgrades)
+* [Updating Sensors to the Newest Version](/docs/updating-sensors-to-the-newest-version)
+* [Test a New Sensor Version](/docs/test-a-new-sensor-version)
+
+---
+
+##### What's Next
+
+* [Artifacts](/docs/artifacts)
+
+Table of contents
+
++ [Use Cases for Sensor Tags](#use-cases-for-sensor-tags)
++ [Adding Tags](#adding-tags)
++ [Removing Tags](#removing-tags)
++ [Checking Tags](#checking-tags)
++ [System Tags](#system-tags)
+
+Tags
+
+* [detection and response](/docs/en/tags/detection%20and%20response)
+* [platform](/docs/en/tags/platform)
+* [sensors](/docs/en/tags/sensors)

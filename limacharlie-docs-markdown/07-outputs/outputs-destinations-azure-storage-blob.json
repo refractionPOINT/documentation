@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/outputs-destinations-azure-storage-blob",
+  "title": "Azure Storage Blob",
+  "slug": "outputs-destinations-azure-storage-blob",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "azure",
+      "blob",
+      "event",
+      "output",
+      "related",
+      "storage",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-microsoft-entra-id",
+        "title": "Microsoft Entra ID",
+        "score": 16
+      },
+      {
+        "slug": "azure-network-security-group",
+        "title": "Azure Network Security Group",
+        "score": 16
+      },
+      {
+        "slug": "azure-sql-audit-logs",
+        "title": "Azure SQL Audit Logs",
+        "score": 16
+      },
+      {
+        "slug": "azure-monitor",
+        "title": "Azure Monitor",
+        "score": 16
+      },
+      {
+        "slug": "ext-cloud-cli-azure",
+        "title": "Azure",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "5e3b66c3cfefd6b9a9c20c2716e25422aa2f0f826d0adb1c54e726018ef0a49d"
+}

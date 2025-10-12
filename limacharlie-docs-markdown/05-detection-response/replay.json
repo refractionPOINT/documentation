@@ -1,6 +1,57 @@
 {
   "url": "https://docs.limacharlie.io/docs/replay",
-  "title": "replay",
-  "downloaded_at": "2025-08-11 13:33:31",
-  "status": "html_downloaded"
+  "title": "Replay",
+  "slug": "replay",
+  "category": "",
+  "metadata": {
+    "summary": "Replay allows you to run [Detection & Response (D&R) rules](/v2/docs/detection-and-response) against historical traffic. This can be done in a few combinations of sources:",
+    "keywords": [
+      "api",
+      "billing",
+      "d&r",
+      "detection",
+      "endpoint",
+      "event",
+      "language",
+      "lcql",
+      "organization",
+      "python",
+      "query",
+      "replay",
+      "response",
+      "rule",
+      "sdk"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "lcql",
+        "title": "LimaCharlie Query Language",
+        "score": 19
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 16
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 15
+      },
+      {
+        "slug": "unit-tests",
+        "title": "Unit Tests",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "9211fcc16ea3ed8204e37c29fe712e871ceda022e21151e963c787f709192f67"
 }

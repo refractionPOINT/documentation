@@ -3,7 +3,7 @@ Detection & Response rules automate actions based on the real-time events stream
 
 Note
 
-It's recommended to read about [Events](/v2/docs/events) before diving into rules.
+It's recommended to read about [Events](/v2/docs/events) before diving into  rules.
 
 ## A Basic Rule
 
@@ -19,7 +19,6 @@ value: example.com
 # Response
 - action: report
   name: DNS Hit example.com
-
 ```
 
 This rule will detect and respond to requests to `example.com` within 100ms of the `DNS_REQUEST` event occurring. It uses the `is` operator to assess if the given `value` can be found inside the `event` at the given `path`.
@@ -59,7 +58,6 @@ Here's a simple detection that uses a single `is windows` operator to detect a W
 ```
 event: CONNECTED
 op: is windows
-
 ```
 
 And here's a more complex detection that uses the `and` operator to detect a non-Windows sensor that's making a DNS request to example.com.
@@ -73,7 +71,6 @@ rules:
 - op: is
   path: event/DOMAIN_NAME
   value: example.com
-
 ```
 
 There are 3 operators here:
@@ -92,7 +89,7 @@ The `path` parameter is used commonly in several operators to specify which part
 
 Here's an example of a standard JSON `DNS_REQUEST` event from a sensor:
 
-```
+```json
 {
   "event": {
     "DNS_TYPE": 1,
@@ -108,7 +105,6 @@ Here's an example of a standard JSON `DNS_REQUEST` event from a sensor:
     // ...and other standardized routing data
   }
 }
-
 ```
 
 This detection will match the above event's hostname:
@@ -118,7 +114,6 @@ event: DNS_REQUEST
 op: is
 path: routing/hostname # where the value lives
 value: test-host-123   # the expected value at that path
-
 ```
 
 This works a lot like file paths in a directory system. Since LimaCharlie events are always formatted with separate `event` and `routing` data, almost all paths start with either `event/` or `routing/`.
@@ -127,7 +122,7 @@ This works a lot like file paths in a directory system. Since LimaCharlie events
 
 Paths may also employ the use of wildcards `*` to represent 0 or more directory levels, or `?` to represent exactly 1 directory level. This can be useful when working with events like `NETWORK_CONNECTIONS`:
 
-```
+```json
 {
   "event": {
     "NETWORK_ACTIVITY": [
@@ -165,7 +160,6 @@ Paths may also employ the use of wildcards `*` to represent 0 or more directory 
   },
   "routing": { ... } // Omitted for brevity
 }
-
 ```
 
 Notice that the `NETWORK_ACTIVITY` inside this event is a list.
@@ -177,7 +171,6 @@ event: NETWORK_CONNECTIONS
 op: is
 path: event/NETWORK_ACTIVITY/?/DESTINATION/IP_ADDRESS # <---
 value: 189.247.166.18
-
 ```
 
 The `?` saves us from enumerating each index within the list and instead evaluates *all* values at the indicated level. This can be very powerful when used in combination with lookups: lists of threat indicators such as known bad IPs or domains.
@@ -209,7 +202,6 @@ The most common action is the `report` action, which creates a Detection that sh
 # Example of accessing map values
 - action: report
   name: Event detected by {{ .event.USER_NAME }} from {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
-
 ```
 
 Each item in the response specifies an `action` and any accompanying parameters for that `action`.
@@ -230,7 +222,6 @@ rules:
     op: matches
     path: event/FILE_PATH
     re: .*\.(exe|dll)
-
 ```
 
 Respond
@@ -251,7 +242,6 @@ Respond
       - Yara Scan Executable
     max_count: 1
     period: 1m
-
 ```
 
 Notice the use of `suppression` to prevent the same `FILE_PATH` from being scanned more than once per minute to prevent a resource runaway situation.
@@ -275,7 +265,6 @@ event: NEW_PROCESS
 op: ends with
 path: event/FILE_PATH
 value: icacls.exe
-
 ```
 
 And we'll set a basic response action to report the detection, too:
@@ -283,7 +272,6 @@ And we'll set a basic response action to report the detection, too:
 ```
 - action: report
   name: win-acl-tampering
-
 ```
 
 If we save that, we'll start to see detections for any `icacls` processes spawning. However, not all of them will be particularly interesting from a security perspective. In this case, we only really care about invocations of `icacls` where the `grant` parameter is specified.
@@ -301,7 +289,6 @@ rules:
 - op: contains
   path: event/COMMAND_LINE
   value: grant
-
 ```
 
 This more specific rule means we'll see fewer false positives to look at or exclude later.
@@ -326,7 +313,6 @@ rules:
 # Response
 - action: report
   name: win-acl-tampering
-
 ```
 
 This rule combines multiple operators to specify the exact conditions which might make an `icacls` process interesting. If it sees one, it'll report it as a `win-acl-tampering` detection which will be forwarded to Outputs and become viewable in the Detections page.
@@ -344,3 +330,30 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
 
 Endpoint Detection & Response
+
+---
+
+### Related articles
+
+* [Detection and Response Examples](/docs/detection-and-response-examples)
+* [Detection on Alternate Targets](/docs/detection-on-alternate-targets)
+* [Config Hive: Detection & Response Rules](/docs/config-hive-dr-rules)
+* [Events](/docs/events)
+* [Reference: EDR Events](/docs/reference-edr-events)
+
+---
+
+#### What's Next
+
+* [Replay](/docs/replay)
+
+Table of contents
+
++ [A Basic Rule](#a-basic-rule)
++ [Detection](#detection)
++ [Response](#response)
++ [Putting It All Together](#putting-it-all-together)
+
+Tags
+
+* [detection and response](/docs/en/tags/detection%20and%20response)

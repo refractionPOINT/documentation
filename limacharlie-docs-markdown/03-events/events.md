@@ -33,7 +33,7 @@ There are 6 different event streams moving through LimaCharlie:
 
 At a high level, events in LimaCharlie are in standard formatted JSON.
 
-```
+```json
 {
   "type": "object",
   "properties": {
@@ -120,12 +120,11 @@ At a high level, events in LimaCharlie are in standard formatted JSON.
     }
   }
 }
-
 ```
 
 The following is a sample event utilizing the above schema:
 
-```
+```json
 {
   "event": {
     "BASE_ADDRESS": 140702709383168,
@@ -175,9 +174,37 @@ The following is a sample event utilizing the above schema:
     "tags": ["server"],
   },
 }
-
 ```
 
 Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+---
+
+### Related articles
+
+* [Event Schemas](/docs/event-schemas)
+* [Reference: EDR Events](/docs/reference-edr-events)
+* [Reference: Platform Events](/docs/reference-platform-events)
+* [Platform Events Overview](/docs/platform-events-overview)
+* [Reference: Schedule Events](/docs/reference-schedule-events)
+
+---
+
+#### What's Next
+
+* [Event Schemas](/docs/event-schemas)
+
+Table of contents
+
++ [Events Overview](#events-overview)
++ [Operationalizing Events](#operationalizing-events)
++ [Schema](#schema)
++ [Formatting](#formatting)
+
+Tags
+
+* [detection and response](/docs/en/tags/detection%20and%20response)
+* [events](/docs/en/tags/events)
+* [reference](/docs/en/tags/reference)

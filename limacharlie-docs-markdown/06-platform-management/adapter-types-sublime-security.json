@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-sublime-security",
+  "title": "Sublime Security",
+  "slug": "adapter-types-sublime-security",
+  "category": "",
+  "metadata": {
+    "summary": "[Sublime Security](https://sublime.security/) is a comprehensive email security platform that allows users to create custom detections, gain visibility and control, and focus on prevention of malicious emails.",
+    "keywords": [
+      "action",
+      "adapter",
+      "adapter-specific",
+      "alerts",
+      "api",
+      "articles",
+      "audit",
+      "building",
+      "configuring",
+      "creating",
+      "deployment",
+      "detection",
+      "event",
+      "infrastructure",
+      "ingesting"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-tailscale",
+        "title": "Tailscale",
+        "score": 17
+      },
+      {
+        "slug": "infrastructure-as-code",
+        "title": "Infrastructure as Code",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 14
+      },
+      {
+        "slug": "adapter-deployment",
+        "title": "Adapter Deployment",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "6df1e4e31d055145e88447500b203c38bff4a3cadf468f748dd85fa9962d2518"
+}

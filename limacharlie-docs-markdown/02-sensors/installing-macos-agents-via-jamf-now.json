@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/installing-macos-agents-via-jamf-now",
+  "title": "macOS Agent Installation via Jamf Now",
+  "slug": "installing-macos-agents-via-jamf-now",
+  "category": "",
+  "metadata": {
+    "summary": "[Jamf Now](https://www.jamf.com/products/jamf-now/) is an MDM solution that provides an easy way to manage Apple devices for small and medium-sized businesses. LimaCharlie sensors can be deployed via Jamf Now for easy app distribution and inventory capabilities.",
+    "keywords": [
+      "account",
+      "agent",
+      "articles",
+      "devices",
+      "edr",
+      "endpoint",
+      "enroll",
+      "installation",
+      "installer",
+      "jamf",
+      "limacharlie",
+      "macos",
+      "management",
+      "organization",
+      "package"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "macos-agent-installation-mdm-configuration-profiles",
+        "title": "macOS Agent Installation - MDM Configuration Profiles",
+        "score": 16
+      },
+      {
+        "slug": "macos-agent-installation",
+        "title": "macOS Agent Installation",
+        "score": 15
+      },
+      {
+        "slug": "vdi-virtual-machine-templates",
+        "title": "VDI & Virtual Machine Templates",
+        "score": 15
+      },
+      {
+        "slug": "adapter-types-mac-unified-logging",
+        "title": "Mac Unified Logging",
+        "score": 14
+      },
+      {
+        "slug": "ingesting-macos-unified-logs",
+        "title": "Ingesting MacOS Unified Logs",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "7e1e78dab02e55d4056e81987e5a3200e1d78d9d107c810846e996b6e915fe32"
+}

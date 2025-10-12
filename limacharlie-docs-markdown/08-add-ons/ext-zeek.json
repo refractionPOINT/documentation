@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-zeek",
+  "title": "Zeek",
+  "slug": "ext-zeek",
+  "category": "",
+  "metadata": {
+    "summary": "Zeek Extension Pricing",
+    "keywords": [
+      "add-on",
+      "agent",
+      "automatic",
+      "collection",
+      "configuration",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "extension",
+      "legacy",
+      "manual",
+      "migrating",
+      "organization"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 18
+      },
+      {
+        "slug": "ext-hayabusa",
+        "title": "Hayabusa",
+        "score": 17
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 16
+      },
+      {
+        "slug": "ext-artifact",
+        "title": "Artifact",
+        "score": 15
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "f66b3d28b410a7b8e09f79c495b36a2af7c9b193dd297a9d060e7353eb7114d5"
+}

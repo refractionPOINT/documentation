@@ -1,6 +1,60 @@
 {
   "url": "https://docs.limacharlie.io/docs/sensor-tags",
-  "title": "sensor-tags",
-  "downloaded_at": "2025-08-11 13:33:18",
-  "status": "html_downloaded"
+  "title": "Sensor Tags",
+  "slug": "sensor-tags",
+  "category": "",
+  "metadata": {
+    "summary": "Tags in LimaCharlie are simple strings that can be associated with any number of sensors. A Sensor can also have an arbitrary number of tags associated with it.",
+    "keywords": [
+      "adding",
+      "agent",
+      "api",
+      "articles",
+      "automating",
+      "automations",
+      "cases",
+      "checking",
+      "classification",
+      "creating",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "integration"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "for Sensor Tags",
+      "for Sensor Tags](#use-cases-for-sensor-tags)"
+    ],
+    "related_pages": [
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 19
+      },
+      {
+        "slug": "endpoint-agent-versioning-and-upgrades",
+        "title": "Endpoint Agent Versioning and Upgrades",
+        "score": 17
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 17
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 17
+      },
+      {
+        "slug": "response-actions",
+        "title": "Response Actions",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "ad3cb7267ec83d1283e7ece7ddbc9adde37cf82e7dd9127d7861398deccb83a7"
 }

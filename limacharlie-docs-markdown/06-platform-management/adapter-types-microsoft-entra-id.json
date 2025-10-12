@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-microsoft-entra-id",
+  "title": "Microsoft Entra ID",
+  "slug": "adapter-types-microsoft-entra-id",
+  "category": "",
+  "metadata": {
+    "summary": "[Microsoft Entra ID](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id), formerly Azure Active Directory, is an identity and access management solution from Microsoft that helps organizations secure and manage identities for hybrid and multicloud environments.",
+    "keywords": [
+      "adapter",
+      "api",
+      "articles",
+      "azure",
+      "deployment",
+      "detection",
+      "entra",
+      "event",
+      "microsoft",
+      "organization",
+      "output",
+      "related",
+      "sensor",
+      "webhooks",
+      "what's"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 18
+      },
+      {
+        "slug": "adapter-deployment",
+        "title": "Adapter Deployment",
+        "score": 17
+      },
+      {
+        "slug": "adapter-types-microsoft-365",
+        "title": "Microsoft 365",
+        "score": 17
+      },
+      {
+        "slug": "azure-network-security-group",
+        "title": "Azure Network Security Group",
+        "score": 17
+      },
+      {
+        "slug": "azure-sql-audit-logs",
+        "title": "Azure SQL Audit Logs",
+        "score": 17
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "c5f43988b2d9e680e413236a728eec91e204ad036079622f8903ca867119967a"
+}

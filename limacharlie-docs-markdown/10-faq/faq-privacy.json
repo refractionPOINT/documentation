@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/faq-privacy",
+  "title": "FAQ - Privacy",
+  "slug": "faq-privacy",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie is a highly configurable security infrastructure-as-a-service platform. It allows users to control which data they ingest into the platform from various locations, including endpoints and cloud services.",
+    "keywords": [
+      "(pii)",
+      "agent",
+      "collection",
+      "collects",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "examples",
+      "identifiable",
+      "information",
+      "limacharlie",
+      "organization",
+      "personally",
+      "privacy"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 16
+      },
+      {
+        "slug": "artifacts",
+        "title": "Artifacts",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 13
+      },
+      {
+        "slug": "ext-yara",
+        "title": "YARA",
+        "score": 13
+      },
+      {
+        "slug": "ext-integrity",
+        "title": "Integrity",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "8cb42d8f9bc8d011c376246e7ba90c8a8f57de79c8646df1948526913e0a5c99"
+}

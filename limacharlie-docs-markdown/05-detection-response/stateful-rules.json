@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/stateful-rules",
+  "title": "Stateful Rules",
+  "slug": "stateful-rules",
+  "category": "",
+  "metadata": {
+    "summary": "> It's recommended to first read [Detection & Response rules](/v2/docs/detection-and-response) before diving into stateful rules.",
+    "keywords": [
+      "actions",
+      "agent",
+      "articles",
+      "caveats",
+      "children",
+      "choosing",
+      "counting",
+      "descendants",
+      "detecting",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "events",
+      "flipping"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 18
+      },
+      {
+        "slug": "detection-on-alternate-targets",
+        "title": "Detection on Alternate Targets",
+        "score": 17
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "detection-and-response-examples",
+        "title": "Detection and Response Examples",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "8a97b46155194c0dc2a1b8f734cb72dfaf6724d027c5280b8ce0bd87e85fc80d"
+}

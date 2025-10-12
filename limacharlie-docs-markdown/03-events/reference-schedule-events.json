@@ -1,0 +1,52 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-schedule-events",
+  "title": "Reference: Schedule Events",
+  "slug": "reference-schedule-events",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "detection",
+      "event",
+      "events",
+      "query",
+      "reference:",
+      "related",
+      "response",
+      "schedule",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "platform-events-overview",
+        "title": "Platform Events Overview",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 14
+      },
+      {
+        "slug": "query-console",
+        "title": "Query Console",
+        "score": 14
+      },
+      {
+        "slug": "detection-on-alternate-targets",
+        "title": "Detection on Alternate Targets",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "bfffe57c676aff3685f482a17c224bd370d438a6424a6e869913a718e981b69d"
+}

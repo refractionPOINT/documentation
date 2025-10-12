@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/building-extensions",
+  "title": "Building Extensions",
+  "slug": "building-extensions",
+  "category": "",
+  "metadata": {
+    "summary": "This section is a work in progress",
+    "keywords": [
+      "(optional)",
+      "add-on",
+      "api",
+      "building",
+      "callback",
+      "callbacks",
+      "config",
+      "configuration",
+      "d&r",
+      "definition",
+      "detection",
+      "event",
+      "extension",
+      "extensions",
+      "extensions?"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "lookups",
+        "title": "Lookups",
+        "score": 15
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 14
+      },
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 14
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 14
+      },
+      {
+        "slug": "schema-data-types",
+        "title": "Schema Data Types",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "163a26b6f6b7bef17367f2805d7568b14f9f2ead514f84bde08538f97d76d49b"
+}

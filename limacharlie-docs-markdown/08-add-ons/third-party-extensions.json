@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.limacharlie.io/docs/third-party-extensions",
+  "title": "Third-Party Extensions",
+  "slug": "third-party-extensions",
+  "category": "",
+  "metadata": {
+    "summary": "14 Articles  in this category",
+    "keywords": [
+      "extension",
+      "extensions",
+      "third-party"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 12
+      },
+      {
+        "slug": "using-extensions",
+        "title": "Using Extensions",
+        "score": 4
+      },
+      {
+        "slug": "building-extensions",
+        "title": "Building Extensions",
+        "score": 4
+      },
+      {
+        "slug": "lc-extensions",
+        "title": "LimaCharlie Extensions",
+        "score": 4
+      },
+      {
+        "slug": "api-integrations-hybrid-analysis",
+        "title": "Hybrid Analysis",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "9af11ab523535714c369fd58186cab2e1f9fec0bafa1750fbe5b5da9461f8d14"
+}

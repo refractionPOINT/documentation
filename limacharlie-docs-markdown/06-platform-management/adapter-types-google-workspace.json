@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-google-workspace",
+  "title": "Google Workspace",
+  "slug": "adapter-types-google-workspace",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "google",
+      "output",
+      "query",
+      "related",
+      "sensor",
+      "what's",
+      "workspace"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 17
+      },
+      {
+        "slug": "ext-cloud-cli-google-cloud",
+        "title": "Google Cloud",
+        "score": 16
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-pubsub",
+        "title": "Google Cloud Pubsub",
+        "score": 16
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-storage",
+        "title": "Google Cloud Storage",
+        "score": 16
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-bigquery",
+        "title": "Google Cloud BigQuery",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "8a914c7897c0bfa431a3b8f93a7d74dd81b062012d04ec054730d0e260874118"
+}

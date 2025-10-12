@@ -1,0 +1,48 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-tailscale",
+  "title": "Tailscale",
+  "slug": "ext-cloud-cli-tailscale",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "articles",
+      "extension",
+      "related",
+      "tailscale",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 14
+      },
+      {
+        "slug": "ext-cloud-cli-vultr",
+        "title": "Vultr",
+        "score": 13
+      },
+      {
+        "slug": "adapter-types-tailscale",
+        "title": "Tailscale",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "ext-cloud-cli",
+        "title": "Cloud CLI",
+        "score": 10
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "ab37958bccd39a2507515ce83ae854cc0aa8a2864bc3f8e06cfd261228266369"
+}

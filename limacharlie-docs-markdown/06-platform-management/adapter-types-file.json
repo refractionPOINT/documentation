@@ -1,0 +1,45 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-file",
+  "title": "File",
+  "slug": "adapter-types-file",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "file",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 12
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 12
+      },
+      {
+        "slug": "adapter-types-google-cloud-pubsub",
+        "title": "Google Cloud Pubsub",
+        "score": 10
+      },
+      {
+        "slug": "ext-cloud-cli-google-cloud",
+        "title": "Google Cloud",
+        "score": 8
+      },
+      {
+        "slug": "outputs-destinations-google-cloud-pubsub",
+        "title": "Google Cloud Pubsub",
+        "score": 8
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "b8db2491dcd635e2b8acbc5d6316d9a8b173f7d39d2c5d4714cb406fb301f355"
+}

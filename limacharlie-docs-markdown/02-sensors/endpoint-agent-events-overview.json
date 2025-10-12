@@ -1,0 +1,59 @@
+{
+  "url": "https://docs.limacharlie.io/docs/endpoint-agent-events-overview",
+  "title": "Endpoint Agent Events Overview",
+  "slug": "endpoint-agent-events-overview",
+  "category": "",
+  "metadata": {
+    "summary": "This category describes and provides samples for the various events emitted by the LimaCharlie Endpoint Agent Sensor. These events can be leveraged in [D&R rules](/v2/docs/detection-and-response) and queried with [LCQL](/v2/docs/lcql).",
+    "keywords": [
+      "agent",
+      "api",
+      "articles",
+      "atoms",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "events",
+      "extension",
+      "lcql",
+      "organization",
+      "overview",
+      "related"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "."
+    ],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 22
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 19
+      },
+      {
+        "slug": "event-schemas",
+        "title": "Event Schemas",
+        "score": 18
+      },
+      {
+        "slug": "sysmon-comparison",
+        "title": "Sysmon Comparison",
+        "score": 17
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "2167c1a0f86cf59126f81cbc44c654abd44d28fe4eb500009ab84e6d47844502"
+}

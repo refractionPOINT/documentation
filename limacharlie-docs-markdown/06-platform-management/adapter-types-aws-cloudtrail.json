@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-aws-cloudtrail",
+  "title": "AWS CloudTrail",
+  "slug": "adapter-types-aws-cloudtrail",
+  "category": "",
+  "metadata": {
+    "summary": "[AWS CloudTrail](https://docs.aws.amazon.com/cloudtrail/) logs allow you to monitor AWS deployments. CloudTrail logs can provide granular visibility into AWS instances and can be used within [D&R rules](/v2/docs/detection-and-response) to identify AWS abuse.",
+    "keywords": [
+      "adapter",
+      "adapter-specific",
+      "api",
+      "articles",
+      "bucket",
+      "cloud-to-cloud",
+      "cloudtrail",
+      "collecting",
+      "d&r",
+      "deployment",
+      "detection",
+      "event",
+      "options",
+      "organization",
+      "output"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-types-aws-guardduty",
+        "title": "AWS GuardDuty",
+        "score": 22
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 16
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 15
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 15
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "ed65a37bda50178747525ac000da854b147ff96d7264e7cdc899319786cbc926"
+}

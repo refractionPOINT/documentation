@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/sleeper-mode",
+  "title": "Sleeper Mode",
+  "slug": "sleeper-mode",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "mode",
+      "sleeper",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "ma-cyber-due-diligence",
+        "title": "M&A Cyber Due Diligence",
+        "score": 11
+      },
+      {
+        "slug": "sleeper",
+        "title": "Sleeper Deployment",
+        "score": 6
+      },
+      {
+        "slug": "adapter-types-evtx",
+        "title": "EVTX",
+        "score": 3
+      },
+      {
+        "slug": "add-ons-api-integrations",
+        "title": "API Integrations",
+        "score": 3
+      },
+      {
+        "slug": "adapter-types-zendesk",
+        "title": "Zendesk",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "13e7e73c374456e7e2f4001fdc237f91f2f6e629192c3e803dba39a8982e4c75"
+}

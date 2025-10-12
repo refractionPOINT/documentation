@@ -27,7 +27,6 @@ The `ext-plaso` extension runs `psteal` (`log2timeline` + `psort`) against the a
 
 1. ```
    psteal.py --source /path/to/artifact -o dynamic --storage-file $artifact_id.plaso -w $artifact_id.csv
-
    ```
 
 Upon running `psteal.py`, a `.plaso` file and a `.csv` file are generated. They will be uploaded as LimaCharlie artifacts.
@@ -37,7 +36,6 @@ Upon running `psteal.py`, a `.plaso` file and a `.csv` file are generated. They 
 
 2. ```
    pinfo.py $artifact_id.plaso -w $artifact_id_pinfo.json --output_format json
-
    ```
 
 After `psteal.py` runs, information is gathered from the resulting `.plaso` file using the `pinfo.py` utility and pushed into the `ext-plaso` sensor timeline as a `pinfo` event. This event provides a detailed summary with metrics of the processing that occurred, as well as any relevant errors you should be aware of.
@@ -73,7 +71,6 @@ If you use the LimaCharlie [Velociraptor](/v2/docs/ext-velociraptor) extension, 
          not: true
          path: routing/event_type
          value: export_complete
-
    ```
 
    **Respond:**
@@ -84,15 +81,13 @@ If you use the LimaCharlie [Velociraptor](/v2/docs/ext-velociraptor) extension, 
      extension name: ext-plaso
      extension request:
          artifact_id: '{{ .routing.log_id }}'
-
    ```
 2. Launch a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Velociraptor extension. This instructs Velociraptor to gather all endpoint artifacts defined in [this KAPE Target file](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape).
 
    **Argument options:**
 
    * `EventLogs=Y` - EventLogs only, quicker processing time for proof of concept
-   * `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection
-      ![Screenshot 2024-01-22 at 2.57.34 PM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot%202024-01-22%20at%202.57.34%20PM.png)
+   * `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-3.png)
 3. Once Velociraptor collects, zips, and uploads the evidence, the previously created D&R rule will send the triage `.zip` to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](/v2/docs/ext-plaso#working-with-the-output).
 
 ### MFT Processing
@@ -114,7 +109,6 @@ If you use the LimaCharlie [Dumper](/v2/docs/ext-dumper) extension, a good use c
          not: true
          path: routing/event_type
          value: export_complete
-
    ```
 
    **Respond:**
@@ -125,10 +119,9 @@ If you use the LimaCharlie [Dumper](/v2/docs/ext-dumper) extension, a good use c
      extension name: ext-plaso
      extension request:
          artifact_id: '{{ .routing.log_id }}'
-
    ```
 2. Launch an MFT dump in the LimaCharlie Dumper extension.
-   ![Screenshot 2024-04-04 at 9.49.11 AM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot%202024-04-04%20at%209.49.11%E2%80%AFAM.png)
+   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/plaso-ext-1.png)
 3. Once dumper is complete and uploads the evidence, the previously created D&R rule will send the zipped MFT CSV to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](/v2/docs/ext-plaso#working-with-the-output).
 
 ## Working with the Output
@@ -182,7 +175,6 @@ Running the extension generates the following useful outputs:
 "winevtx": 382674,
 "winlogon": 8,
 "winreg_default": 654177
-
 ```
 
 ### Downloadable Artifacts
@@ -197,3 +189,29 @@ Running the extension generates the following useful outputs:
 LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+---
+
+#### Related articles
+
+* [Hayabusa](/docs/ext-hayabusa)
+* [Velociraptor](/docs/ext-velociraptor)
+
+---
+
+##### What's Next
+
+* [REnigma](/docs/ext-renigma)
+
+Table of contents
+
++ [About](#about)
++ [Extension Configuration](#extension-configuration)
++ [Usage &amp; Automation](#usage-amp-automation)
++ [Working with the Output](#working-with-the-output)
+
+Tags
+
+* [add-ons](/docs/en/tags/add-ons)
+* [dfir](/docs/en/tags/dfir)
+* [extensions](/docs/en/tags/extensions)

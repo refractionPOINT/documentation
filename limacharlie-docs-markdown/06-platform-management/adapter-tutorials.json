@@ -1,0 +1,44 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-tutorials",
+  "title": "Adapter Tutorials",
+  "slug": "adapter-tutorials",
+  "category": "",
+  "metadata": {
+    "summary": "3 Articles  in this category",
+    "keywords": [
+      "adapter",
+      "tutorials"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "tutorials-3",
+        "title": "Tutorials",
+        "score": 11
+      },
+      {
+        "slug": "tutorials",
+        "title": "Tutorials",
+        "score": 11
+      },
+      {
+        "slug": "detection-and-response-tutorials",
+        "title": "Tutorials",
+        "score": 8
+      },
+      {
+        "slug": "tutorials-1",
+        "title": "Tutorials",
+        "score": 8
+      },
+      {
+        "slug": "adapter-usage",
+        "title": "Adapter Usage",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "a10bd6e28d35e5853bd23ae26c81faefecc2e206d64b473a7db4603c07ed0a48"
+}

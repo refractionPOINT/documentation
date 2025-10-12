@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/faq-invoices",
+  "title": "FAQ - Invoices",
+  "slug": "faq-invoices",
+  "category": "",
+  "metadata": {
+    "summary": "This page contains frequently asked questions about invoices you receive for LimaCharlie service.",
+    "keywords": [
+      "agent",
+      "billing",
+      "detection",
+      "edr",
+      "endpoint",
+      "individual",
+      "invoices",
+      "limacharlie",
+      "organization",
+      "output",
+      "rule",
+      "sensor",
+      "telemetry",
+      "unified",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 16
+      },
+      {
+        "slug": "billing",
+        "title": "Billing",
+        "score": 15
+      },
+      {
+        "slug": "replay",
+        "title": "Replay",
+        "score": 15
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "ext-artifact",
+        "title": "Artifact",
+        "score": 13
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "467ad06b3eb61f50e74a040240ffcce548d5b5108c362faf933ff8922712becd"
+}

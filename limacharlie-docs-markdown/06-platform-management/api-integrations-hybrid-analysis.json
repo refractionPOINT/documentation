@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/api-integrations-hybrid-analysis",
+  "title": "Hybrid Analysis",
+  "slug": "api-integrations-hybrid-analysis",
+  "category": "",
+  "metadata": {
+    "summary": "Hybrid Analysis, aka Falcon Sandbox, is a powerful, free malware analysis service for the community that detects and analyzes unknown threats. Hybrid Analysis has its own unique approach, and offers both public-facing and private team-based sandboxing capabilities.",
+    "keywords": [
+      "add-on",
+      "analysis",
+      "api",
+      "d&r",
+      "detection",
+      "event",
+      "extension",
+      "hybrid",
+      "integration",
+      "output",
+      "overview",
+      "query",
+      "response",
+      "rule",
+      "rules"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 17
+      },
+      {
+        "slug": "api-integrations-ip-geolocation",
+        "title": "IP Geolocation",
+        "score": 13
+      },
+      {
+        "slug": "ext-pagerduty",
+        "title": "PagerDuty",
+        "score": 12
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 11
+      },
+      {
+        "slug": "api-integrations-virustotal",
+        "title": "VirusTotal",
+        "score": 11
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "4bb151d4092ff049a34b7ea37a1ed9aea1bcd009af591b9f01bdff2115c69759"
+}

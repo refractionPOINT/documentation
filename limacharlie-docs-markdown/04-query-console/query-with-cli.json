@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/query-with-cli",
+  "title": "Query with CLI",
+  "slug": "query-with-cli",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "lcql",
+      "query",
+      "what's",
+      "with"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "lcql-examples",
+        "title": "LCQL Examples",
+        "score": 10
+      },
+      {
+        "slug": "lcql",
+        "title": "LimaCharlie Query Language",
+        "score": 7
+      },
+      {
+        "slug": "reference-sensor-selector-expressions",
+        "title": "Reference: Sensor Selector Expressions",
+        "score": 5
+      },
+      {
+        "slug": "query-console",
+        "title": "Query Console",
+        "score": 5
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 4
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "22a376f3539138cfee3c47ccd46fdc35e26b431e298c5ebb614d45ef1d9a54ed"
+}

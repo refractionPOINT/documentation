@@ -1,6 +1,57 @@
 {
   "url": "https://docs.limacharlie.io/docs/installation-keys",
-  "title": "installation-keys",
-  "downloaded_at": "2025-08-11 13:33:13",
-  "status": "html_downloaded"
+  "title": "Installation Keys",
+  "slug": "installation-keys",
+  "category": "",
+  "metadata": {
+    "summary": "Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.",
+    "keywords": [
+      "agent",
+      "api",
+      "articles",
+      "certificates",
+      "detection",
+      "edr",
+      "endpoint",
+      "installation",
+      "keys",
+      "management",
+      "organization",
+      "output",
+      "pinned",
+      "related",
+      "response"
+    ],
+    "complexity": "advanced",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent-commands",
+        "title": "Endpoint Agent Commands",
+        "score": 20
+      },
+      {
+        "slug": "endpoint-agent-installation",
+        "title": "Endpoint Agent Installation",
+        "score": 19
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 18
+      },
+      {
+        "slug": "linux-agent-installation",
+        "title": "Linux Agent Installation",
+        "score": 18
+      },
+      {
+        "slug": "outputs",
+        "title": "Outputs",
+        "score": 18
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "22c356907088edac147431272e27f188f5cbb95f622f533db53eb4077c253206"
 }

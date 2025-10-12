@@ -1,0 +1,54 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-error-codes",
+  "title": "Reference: Error Codes",
+  "slug": "reference-error-codes",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "articles",
+      "codes",
+      "detection",
+      "edr",
+      "endpoint",
+      "error",
+      "event",
+      "reference:",
+      "related",
+      "response",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "endpoint-agent-commands",
+        "title": "Endpoint Agent Commands",
+        "score": 18
+      },
+      {
+        "slug": "endpoint-agent-events-overview",
+        "title": "Endpoint Agent Events Overview",
+        "score": 17
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "endpoint-agent",
+        "title": "Endpoint Agent",
+        "score": 16
+      },
+      {
+        "slug": "template-strings-and-transforms",
+        "title": "Template Strings and Transforms",
+        "score": 16
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "6efc707883c2e605fdbad01689d67109a6432988c3938f76e956239ad33ac9f3"
+}

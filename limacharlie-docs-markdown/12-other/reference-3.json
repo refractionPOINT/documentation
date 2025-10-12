@@ -1,0 +1,33 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-3",
+  "title": "Reference",
+  "slug": "reference-3",
+  "category": "",
+  "metadata": {
+    "summary": "1 Article  in this category",
+    "keywords": [
+      "reference"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "sensors-reference",
+        "title": "Reference",
+        "score": 8
+      },
+      {
+        "slug": "detection-and-response-reference",
+        "title": "Reference",
+        "score": 8
+      },
+      {
+        "slug": "lookups",
+        "title": "Lookups",
+        "score": 3
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "63decd58b294a08ea599f2a7d0a0dc72ee886ca80403aecc4de1776d521b3246"
+}

@@ -1,4 +1,40 @@
 # Release Notes
+## 2025-09-30
+
+Web App 5.0.0
+
+* The Query Console  is now in in the New UI Theme. Feature reach search and analytic capabilities integrated with the rest of LimaCharlie platform marks a major revision. See the [updated docs](https://docs.limacharlie.io/docs/query-console-ui) for details.
+
+  > Note: the Query console remains in beta while we continue to improve performance and refine usability.
+
+## 2025-09-12
+
+Endpoint Agent v4.33.15
+
+* macOS system extension -  fixes for potential install and upgrade issues, improved logging for troubleshooting
+* Fixes a macOS install issue when using the package installer (`.pkg`)
+
+Web App v 4.5.0
+
+* Many bug fixes and some ongoing UX improvements.
+
+## 2025-08-28
+
+Endpoint Agent 4.33.14:
+
+* includes “reduce CPU usage of the OS tracker”. The component is used for: new system service notifications, new driver notification & new autoruns / bootstrap notifications.
+
+Web App 4.4.9:
+
+* Improved UX for Access Management and Adapters pages
+* Add Wiz cloud sensor adapter integration
+* Many fixes and smaller improvements
+
+Other notable updates:
+
+* Re-introduction of org templates during the org creation. We currently offer EDR Quick Start and Basic Browser Monitoring to get the new org configured on creation. You can always add configurations as code using our [IaC Generator](https://iac.limacharlie.io/).
+* Parsing unstructured logs on ingestion made easier. With `parsing_grok` one can use OpenSearch Grok processor syntax, and tap to powerful ready-to-use [Grok patterns](https://github.com/opensearch-project/OpenSearch/blob/main/libs/grok/src/main/resources/patterns/grok-patterns) and vast knowledge of grokking the data with Elastic. [Docs updated](https://docs.limacharlie.io/docs/logcollectionguide?highlight=parsing_grok) with examples.
+
 ## 2025-08-08
 
 Endpoint Agent 4.33.13 and 4.33.10.3
@@ -289,3 +325,39 @@ In this release, we are adding the ability to sort columns in the LimaCharlie we
 ## Prior Release Notes
 
 All prior date release notes are located here: <https://limacharlie.io/release-notes>
+
+---
+
+### What's Next
+
+* [MCP Server](/docs/mcp-server)
+
+Table of contents
+
++ [2025-09-30](#2025-09-30)
++ [2025-09-12](#2025-09-12)
++ [2025-08-28](#2025-08-28)
++ [2025-08-08](#2025-08-08)
++ [2025-07-18](#2025-07-18)
++ [2025-07-10](#2025-07-10)
++ [2025-06-27](#2025-06-27)
++ [2025-06-17](#2025-06-17)
++ [2025-05-30](#2025-05-30)
++ [2025-05-22](#2025-05-22)
++ [2025-05-20](#2025-05-20)
++ [2025-05-08](#2025-05-08)
++ [2025-04-18](#2025-04-18)
++ [2025-04-11](#2025-04-11)
++ [2025-03-28](#2025-03-28)
++ [2025-03-28](#2025-03-281)
++ [2025-03-14](#2025-03-14)
++ [2025-03-06](#2025-03-06)
++ [2025-02-28](#2025-02-28)
++ [2025-02-21](#2025-02-21)
++ [2025-01-24](#2025-01-24)
++ [2025-01-09](#2025-01-09)
++ [2024-12-12](#2024-12-12)
++ [2024-10-28](#2024-10-28)
++ [2024-10-19](#2024-10-19)
++ [2024-10-17](#2024-10-17)
++ [Prior Release Notes](#prior-release-notes)

@@ -1,6 +1,57 @@
 {
   "url": "https://docs.limacharlie.io/docs/lcql-examples",
-  "title": "lcql-examples",
-  "downloaded_at": "2025-08-11 13:33:27",
-  "status": "html_downloaded"
+  "title": "LCQL Examples",
+  "slug": "lcql-examples",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie Query Language (LCQL) lets you write well-structured queries to search across telemetry within LimaCharlie. The following examples can help you perform targeted searches or hunts across your telemetry, as well as modify them to build your own. Example queries are sorted by *source*, h...",
+    "keywords": [
+      "%comspec%",
+      "(wel)",
+      "account",
+      "activity",
+      "agent",
+      "api",
+      "articles",
+      "binaries",
+      "branch",
+      "children",
+      "command",
+      "count",
+      "detection",
+      "domain",
+      "edr"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "detection-and-response-examples",
+        "title": "Detection and Response Examples",
+        "score": 15
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 15
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 15
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "lcql",
+        "title": "LimaCharlie Query Language",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "f7b9450eae60a902916e9ec81ec17b3af7671e4faf1bbc6b331a99036859566f"
 }

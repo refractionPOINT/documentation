@@ -1,0 +1,57 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-vmware-carbon-black",
+  "title": "VMWare Carbon Black",
+  "slug": "adapter-types-vmware-carbon-black",
+  "category": "",
+  "metadata": {
+    "summary": "LimaCharlie can ingest Carbon Black events from a number of storage locations. Typically, an organization would export Carbon Black data via the API to a storage mechanism, such as an S3 bucket, which would then be ingested by LimaCharlie.",
+    "keywords": [
+      "agent",
+      "api",
+      "black",
+      "carbon",
+      "config",
+      "configurations",
+      "deployment",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "organization",
+      "overview",
+      "response",
+      "rule"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 18
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 17
+      },
+      {
+        "slug": "installation-keys",
+        "title": "Installation Keys",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 13
+      },
+      {
+        "slug": "sleeper",
+        "title": "Sleeper Deployment",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "c8a29b5d726525e544a629ae0a32bf6f5d414ecc00120613fae5c209de12354d"
+}

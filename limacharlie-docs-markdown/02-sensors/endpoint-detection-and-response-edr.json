@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/endpoint-detection-and-response-edr",
+  "title": "Endpoint Detection and Response (EDR)",
+  "slug": "endpoint-detection-and-response-edr",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "(edr)",
+      "detection",
+      "edr",
+      "endpoint",
+      "response",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "](/docs/en/tags/use%20case)"
+    ],
+    "related_pages": [
+      {
+        "slug": "enerprises",
+        "title": "Enterprise SOC",
+        "score": 13
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 13
+      },
+      {
+        "slug": "sysmon-comparison",
+        "title": "Sysmon Comparison",
+        "score": 7
+      },
+      {
+        "slug": "reference-error-codes",
+        "title": "Reference: Error Codes",
+        "score": 7
+      },
+      {
+        "slug": "soteria-edr-rules",
+        "title": "Soteria EDR Rules",
+        "score": 7
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "6f5b91253cc889a1038609ccf43103e700f420511298a580e03175f8f59b66c9"
+}

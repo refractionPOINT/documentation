@@ -1,0 +1,47 @@
+{
+  "url": "https://docs.limacharlie.io/docs/sensor-removal",
+  "title": "FAQ - Sensor Removal",
+  "slug": "sensor-removal",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "agent",
+      "extension",
+      "removal",
+      "sensor",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "faq-troubleshooting",
+        "title": "FAQ - Sensor Troubleshooting",
+        "score": 12
+      },
+      {
+        "slug": "faq",
+        "title": "FAQ",
+        "score": 10
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 5
+      },
+      {
+        "slug": "adapter-types-iis",
+        "title": "IIS Logs",
+        "score": 5
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "fcea2a983330f546eaf61d679ea8cb9198eb05aa7ad18c9b69ef20e89646e5d8"
+}

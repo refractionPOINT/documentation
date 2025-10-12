@@ -1,0 +1,50 @@
+{
+  "url": "https://docs.limacharlie.io/docs/soc-prime-rules",
+  "title": "SOC Prime Rules",
+  "slug": "soc-prime-rules",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "detection",
+      "prime",
+      "related",
+      "response",
+      "rule",
+      "rules",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "soteria-rules",
+        "title": "Soteria Rules",
+        "score": 17
+      },
+      {
+        "slug": "managed-rulesets",
+        "title": "Managed Rulesets",
+        "score": 16
+      },
+      {
+        "slug": "community-rules",
+        "title": "Community Rules",
+        "score": 12
+      },
+      {
+        "slug": "detection-and-response-examples",
+        "title": "Detection and Response Examples",
+        "score": 12
+      },
+      {
+        "slug": "detection-and-response",
+        "title": "Detection and Response",
+        "score": 12
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "f079696e0126cc651008a5195f0156fcc05cde9f1e13e042cc358d264488bf71"
+}

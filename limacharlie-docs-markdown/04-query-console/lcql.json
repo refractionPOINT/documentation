@@ -1,6 +1,59 @@
 {
   "url": "https://docs.limacharlie.io/docs/lcql",
-  "title": "lcql",
-  "downloaded_at": "2025-08-11 13:33:26",
-  "status": "html_downloaded"
+  "title": "LimaCharlie Query Language",
+  "slug": "lcql",
+  "category": "",
+  "metadata": {
+    "summary": "Beta Feature",
+    "keywords": [
+      "api",
+      "articles",
+      "building",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "language",
+      "lcql",
+      "limacharlie",
+      "queries",
+      "query",
+      "related",
+      "response",
+      "rule"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "for LCQL include:"
+    ],
+    "related_pages": [
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 18
+      },
+      {
+        "slug": "events",
+        "title": "Events",
+        "score": 17
+      },
+      {
+        "slug": "query-console-ui",
+        "title": "Query Console UI",
+        "score": 17
+      },
+      {
+        "slug": "sensors",
+        "title": "Sensors",
+        "score": 14
+      },
+      {
+        "slug": "query-console",
+        "title": "Query Console",
+        "score": 14
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "d8c7121d1eaccb23adf26fbb91e5f1885d5d3bebe301961650a1370a706f60ad"
 }

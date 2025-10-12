@@ -1,0 +1,52 @@
+{
+  "url": "https://docs.limacharlie.io/docs/tutorial-ingesting-telemetry-from-cloud-based-external-sources",
+  "title": "Tutorial: Ingesting Telemetry from Cloud-Based External Sources",
+  "slug": "tutorial-ingesting-telemetry-from-cloud-based-external-sources",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "articles",
+      "cloud-based",
+      "external",
+      "from",
+      "ingesting",
+      "related",
+      "sources",
+      "telemetry",
+      "tutorial:",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "adapter-deployment",
+        "title": "Adapter Deployment",
+        "score": 14
+      },
+      {
+        "slug": "adapters",
+        "title": "Adapters",
+        "score": 14
+      },
+      {
+        "slug": "tutorial-creating-a-webhook-adapter",
+        "title": "Tutorial: Creating a Webhook Adapter",
+        "score": 12
+      },
+      {
+        "slug": "adapter-usage",
+        "title": "Adapter Usage",
+        "score": 11
+      },
+      {
+        "slug": "adapter-types",
+        "title": "Adapter Types",
+        "score": 10
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "32fe9b73970b6930dafc40f30f1e0ad29d6bb14906e3c58041fb661cc341a6c7"
+}

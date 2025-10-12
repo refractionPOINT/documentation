@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-vultr",
+  "title": "Vultr",
+  "slug": "ext-cloud-cli-vultr",
+  "category": "",
+  "metadata": {
+    "summary": "* 1 Minute to read",
+    "keywords": [
+      "add-on",
+      "extension",
+      "vultr",
+      "what's"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [],
+    "related_pages": [
+      {
+        "slug": "extensions",
+        "title": "Extensions",
+        "score": 12
+      },
+      {
+        "slug": "add-ons",
+        "title": "Add-Ons",
+        "score": 12
+      },
+      {
+        "slug": "ext-atomic-red-team",
+        "title": "Atomic Red Team",
+        "score": 12
+      },
+      {
+        "slug": "api-integrations-echotrail",
+        "title": "EchoTrail",
+        "score": 5
+      },
+      {
+        "slug": "api-integrations-virustotal",
+        "title": "VirusTotal",
+        "score": 5
+      }
+    ]
+  },
+  "api_elements": [],
+  "content_hash": "962341d8a007c5916c262da6c5cc0892422be13a701a289ef93f961e321696c1"
+}

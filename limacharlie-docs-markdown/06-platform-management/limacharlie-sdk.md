@@ -35,7 +35,6 @@ func main() {
     org, _ := limacharlie.NewOrganization(client)
     fmt.Printf("Hello, this is %s", org.GetOID())
 }
-
 ```
 
 **Using Client Options:**
@@ -58,7 +57,6 @@ func main() {
     org, _ := limacharlie.NewOrganizationFromClientOptions(clientOptions, nil)
     fmt.Printf("Hello, this is %s", org.GetOID())
 }
-
 ```
 
 ### SDK
@@ -157,7 +155,6 @@ func main() {
 	})
 
 }
-
 ```
 
 ## Python
@@ -229,7 +226,7 @@ You can authenticate the `Manager` using an `oid` (and optionally a `uid`), alon
 
 #### Importing
 
-```
+```python
 import limacharlie
 
 YARA_SIG = 'https://raw.githubusercontent.com/Yara-Rules/rules/master/Malicious_Documents/Maldoc_PDF.yar'
@@ -251,7 +248,6 @@ sensor.task( 'os_processes' )
 
 # Send a yara scan to that sensor for processes "evil.exe".
 sensor.task( 'yara_scan -e *evil.exe ' + YARA_SIG )
-
 ```
 
 #### Use of gevent
@@ -260,7 +256,7 @@ Note that the SDK uses the `gevent` package which sometimes has issues with othe
  packages that operate at a low level in python. For example, Jupyter notebooks
  may see freezing on importing `limacharlie` and require a tweak to load:
 
-```
+```json
 {
  "display_name": "IPython 2 w/gevent",
  "language": "python",
@@ -271,7 +267,6 @@ Note that the SDK uses the `gevent` package which sometimes has issues with othe
   "{connection_file}"
  ]
 }
-
 ```
 
 ### Components
@@ -317,14 +312,13 @@ The `Artifacts` is a helpful class to upload [artifacts](/v2/docs/artifacts) to 
 
 The `Extensions` can be used to subscribe to and manage extensions within your org.
 
-```
+```python
 import limacharlie
 from limacharlie import Extension
 
 mgr = limacharlie.Manager()
 ext = Extension(mgr)
 ext.subscribe('binlib')
-
 ```
 
 #### Payloads
@@ -339,14 +333,12 @@ Sample command line to query one sensor:
 
 ```
 limacharlie-replay --sid 9cbed57a-6d6a-4af0-b881-803a99b177d9 --start 1556568500 --end 1556568600 --rule-content ./test_rule.txt
-
 ```
 
 Sample command line to query an entire organization:
 
 ```
 limacharlie-replay --entire-org --start 1555359000 --end 1556568600 --rule-name my-rule-name
-
 ```
 
 #### Search
@@ -569,3 +561,26 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
 
 Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
+
+---
+
+##### Related articles
+
+* [Config Hive](/docs/config-hive)
+* [LimaCharlie Query Language](/docs/lcql)
+
+---
+
+###### What's Next
+
+* [Access and Permissions](/docs/access-and-permissions)
+
+Table of contents
+
++ [Go](#go)
++ [Python](#python)
+
+Tags
+
+* [api](/docs/en/tags/api)
+* [platform](/docs/en/tags/platform)
