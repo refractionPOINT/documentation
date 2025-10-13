@@ -4,7 +4,7 @@
   "slug": "observability-pipeline",
   "category": "",
   "metadata": {
-    "summary": "The SecOps Cloud Platform (SCP) creates a scalable, versatile, and actionable observability pipeline by collecting and standardizing telemetry from the full security stack. Stream data from any input, route it to any output. The SCP provides visibility into telemetry sources and empowers users to...",
+    "summary": "Creating an observability pipeline can be a daunting task as users try to integrate a complex and diverse technological environment into a single pipeline solution. When successful, ingesting, managing, and storing data can create significant costs, including:",
     "keywords": [
       "api",
       "detection",
@@ -19,42 +19,13 @@
       "response",
       "siem",
       "solutions",
-      "telemetry",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
     "use_cases": [
-      "Compliance",
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 15
-      },
-      {
-        "slug": "cost-effective-siem",
-        "title": "Cost Effective SIEM Alternative",
-        "score": 14
-      },
-      {
-        "slug": "ext-infrastructure",
-        "title": "Infrastructure",
-        "score": 12
-      },
-      {
-        "slug": "uncovering-adversary-techniques",
-        "title": "Uncovering Adversary Techniques",
-        "score": 11
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 9
-      }
+      "Compliance"
     ]
   },
   "api_elements": [],
-  "content_hash": "245000cd2a8d0bdd4057f6f84833cf5f9a7233a460b94b2de56e8eef8a9c646e"
+  "content_hash": ""
 }

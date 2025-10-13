@@ -1,0 +1,64 @@
+{
+  "slug": "adapter-types-azure-event-hub",
+  "title": "Azure Event Hub",
+  "category": "",
+  "metadata": {
+    "summary": "Configure Azure Event Hub adapter to ingest events from Azure services into LimaCharlie",
+    "keywords": [
+      "azure",
+      "event-hub",
+      "adapter",
+      "ingestion",
+      "connection-string"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Set up Azure Event Hub as a data source for LimaCharlie telemetry ingestion"
+  },
+  "extracted_apis": [
+    {
+      "type": "yaml_config",
+      "method": "CONFIG",
+      "path": "sensor_type: azure_event_hub",
+      "description": "Configure Azure Event Hub adapter with connection string and client options"
+    },
+    {
+      "type": "yaml_config",
+      "method": "CONFIG",
+      "path": "azure_event_hub.connection_string",
+      "description": "Azure Event Hub connection string with namespace, access key, and EntityPath"
+    },
+    {
+      "type": "yaml_config",
+      "method": "CONFIG",
+      "path": "azure_event_hub.client_options",
+      "description": "LimaCharlie client configuration including identity OID, installation key, hostname, and platform"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "azure-monitor",
+      "relationship": "continuation",
+      "description": "Azure Monitor uses Azure Event Hub as an ingestion method"
+    },
+    {
+      "target_slug": "azure-logs-key-vault",
+      "relationship": "continuation",
+      "description": "Azure Key Vault logs can be ingested via Azure Event Hub"
+    },
+    {
+      "target_slug": "azure-sql-audit-logs",
+      "relationship": "continuation",
+      "description": "Azure SQL audit logs can be ingested via Azure Event Hub"
+    },
+    {
+      "target_slug": "azure-network-security-group",
+      "relationship": "continuation",
+      "description": "Azure NSG logs can be ingested via Azure Event Hub"
+    },
+    {
+      "target_slug": "azure-kubernetes-service",
+      "relationship": "continuation",
+      "description": "AKS logs can be ingested via Azure Event Hub"
+    }
+  ]
+}

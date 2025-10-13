@@ -1,0 +1,37 @@
+{
+  "slug": "endpoint-agent-uninstallation",
+  "title": "Endpoint Agent Uninstallation",
+  "category": "",
+  "metadata": {
+    "summary": "Automated uninstallation of endpoint agents using D&R rules with task commands and tagging",
+    "keywords": [
+      "uninstallation",
+      "removal",
+      "D&R-rules",
+      "task-command",
+      "automation"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Remotely uninstalling endpoint agents using detection and response rules"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "task",
+      "path": "uninstall --is-confirmed",
+      "description": "Uninstall endpoint agent via D&R rule response action"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent",
+      "relationship": "prerequisite",
+      "description": "Understanding endpoint agents before uninstalling them"
+    },
+    {
+      "target_slug": "sensor-removal",
+      "relationship": "continuation",
+      "description": "Verifying uninstallation was successful after performing it"
+    }
+  ]
+}

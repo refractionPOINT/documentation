@@ -1,0 +1,36 @@
+{
+  "slug": "atlassian",
+  "title": "Atlassian",
+  "category": "",
+  "metadata": {
+    "summary": "Configure webhook adapter to ingest Atlassian Jira events (issues, comments, worklog) into LimaCharlie for security monitoring",
+    "keywords": [
+      "atlassian",
+      "jira",
+      "webhook",
+      "adapter",
+      "issue-tracking"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Monitor Jira issue events, user activities, and configuration changes for security and compliance"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/apidocs/get-org-urls",
+      "description": "Retrieve webhook URLs for organization"
+    },
+    {
+      "type": "yaml_config",
+      "sensor_type": "webhook",
+      "description": "Webhook adapter configuration for Jira event ingestion with JSON mapping"
+    },
+    {
+      "type": "webhook_url_format",
+      "pattern": "https://{domain}.hook.limacharlie.io/{OID}/{HOOKNAME}/{SECRET}",
+      "description": "Webhook URL format for Atlassian Jira integration"
+    }
+  ],
+  "cross_refs": []
+}

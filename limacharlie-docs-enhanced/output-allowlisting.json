@@ -1,0 +1,31 @@
+{
+  "slug": "output-allowlisting",
+  "title": "Adding Outputs to an Allow List",
+  "category": "",
+  "metadata": {
+    "summary": "Security approach for webhook outputs using HMAC signatures instead of static IP allow lists due to auto-scaling infrastructure",
+    "keywords": [
+      "security",
+      "allowlist",
+      "whitelist",
+      "webhooks",
+      "HMAC",
+      "authentication"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Securing webhook-based output destinations without relying on static IP addresses"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "outputs",
+      "relationship": "related",
+      "description": "Allow listing concerns apply to webhook-based output destinations"
+    },
+    {
+      "target_slug": "output-destinations",
+      "relationship": "related",
+      "description": "Webhook and webhook-bulk destinations use secret_key for authentication instead of IP allow lists"
+    }
+  ]
+}

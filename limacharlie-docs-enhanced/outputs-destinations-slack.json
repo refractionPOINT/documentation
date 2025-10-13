@@ -1,0 +1,37 @@
+{
+  "slug": "outputs-destinations-slack",
+  "title": "Slack",
+  "category": "",
+  "metadata": {
+    "summary": "Send detections and audit events to Slack channels via Bot API token",
+    "keywords": [
+      "slack",
+      "notifications",
+      "detections",
+      "audit",
+      "bot"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Route security detections and audit logs to team Slack channels"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "OUTPUT",
+      "path": "slack_api_token, slack_channel",
+      "description": "Configure Slack output destination with API token and channel name"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-webhook",
+      "relationship": "alternative",
+      "description": "Webhook provides programmatic alternative to Slack for notifications"
+    },
+    {
+      "target_slug": "outputs-destinations-smtp",
+      "relationship": "alternative",
+      "description": "SMTP provides email-based alternative to Slack for notifications"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "slug": "ext-secureannex",
+  "title": "Secure Annex",
+  "category": "",
+  "metadata": {
+    "summary": "Integration with Secure Annex platform for automated security analysis of Chrome browser extensions across organizational endpoints",
+    "keywords": [
+      "browser-extensions",
+      "chrome-security",
+      "vulnerability-detection",
+      "secure-annex",
+      "automation"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Monitor and analyze Chrome extensions installed across endpoints to detect vulnerabilities and security risks"
+  },
+  "extracted_apis": [
+    {
+      "type": "api_endpoint",
+      "path": "/manifest",
+      "description": "Query Chrome extension manifest information"
+    },
+    {
+      "type": "api_endpoint",
+      "path": "/extensions",
+      "description": "Query Chrome extension details"
+    },
+    {
+      "type": "api_endpoint",
+      "path": "/vulnerabilities",
+      "description": "Query Chrome extension vulnerabilities"
+    },
+    {
+      "type": "api_endpoint",
+      "path": "/signatures",
+      "description": "Query Chrome extension signatures"
+    },
+    {
+      "type": "api_endpoint",
+      "path": "/urls",
+      "description": "Query Chrome extension URL information"
+    },
+    {
+      "type": "api_endpoint",
+      "path": "/analysis",
+      "description": "Query Chrome extension analysis results"
+    },
+    {
+      "type": "dr_rule",
+      "name": "ext-secureannex-detect-vulnerabilities",
+      "description": "Detect high and critical vulnerabilities in Chrome extensions"
+    },
+    {
+      "type": "dr_rule",
+      "name": "ext-secureannex-detect-risk-rating",
+      "description": "Detect high and critical risk ratings in Chrome extension manifests"
+    },
+    {
+      "type": "dr_rule",
+      "name": "ext-secureannex-get-extensions-windows",
+      "description": "Scheduled PowerShell script to query Windows sensors for Chrome extensions every 24 hours"
+    },
+    {
+      "type": "dr_rule",
+      "name": "ext-secureannex-get-extensions-mac",
+      "description": "Scheduled bash script to query macOS sensors for Chrome extensions every 24 hours"
+    },
+    {
+      "type": "dr_rule",
+      "name": "ext-secureannex-get-extensions-chrome",
+      "description": "Scheduled OS_PACKAGES command to query Chrome sensors for extensions every 24 hours"
+    }
+  ],
+  "cross_refs": []
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "faq-account-management",
+  "title": "FAQ - Account Management",
+  "category": "",
+  "metadata": {
+    "summary": "Explains how to manage organizations, transfer ownership, set time zones, handle organization limits, wipe data, and manage account lifecycle",
+    "keywords": [
+      "organization",
+      "account",
+      "billing",
+      "user-settings",
+      "time-zone",
+      "infrastructure-as-code"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Manage LimaCharlie account settings, organizations, and user preferences"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "faq",
+      "relationship": "related",
+      "description": "Parent FAQ overview page"
+    }
+  ]
+}

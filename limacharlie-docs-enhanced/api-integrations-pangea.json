@@ -1,0 +1,69 @@
+{
+  "slug": "api-integrations-pangea",
+  "title": "Pangea",
+  "category": "",
+  "metadata": {
+    "summary": "Pangea multi-service security API providing reputation lookups for domains, files, IPs, URLs, and user breach data",
+    "keywords": [
+      "pangea",
+      "reputation",
+      "domain",
+      "file",
+      "ip",
+      "url",
+      "user",
+      "breach"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Perform comprehensive reputation checks across multiple data types with unified API"
+  },
+  "extracted_apis": [
+    {
+      "type": "lookup_resource",
+      "method": "lookup",
+      "path": "hive://lookup/pangea-domain-reputation",
+      "description": "Check domain reputation for malicious behavior"
+    },
+    {
+      "type": "lookup_resource",
+      "method": "lookup",
+      "path": "hive://lookup/pangea-file-reputation",
+      "description": "Check file hash reputation for malicious behavior"
+    },
+    {
+      "type": "lookup_resource",
+      "method": "lookup",
+      "path": "hive://lookup/pangea-ip-reputation",
+      "description": "Check IP address reputation for malicious behavior"
+    },
+    {
+      "type": "lookup_resource",
+      "method": "lookup",
+      "path": "hive://lookup/pangea-url-reputation",
+      "description": "Check URL reputation for malicious behavior"
+    },
+    {
+      "type": "lookup_resource",
+      "method": "lookup",
+      "path": "hive://lookup/pangea-user-reputation",
+      "description": "Check if user PII or credentials have been exposed in breaches"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "add-ons-api-integrations",
+      "relationship": "prerequisite",
+      "description": "Core concepts of API-based lookups and metadata_rules"
+    },
+    {
+      "target_slug": "api-integrations-alphamountain",
+      "relationship": "alternative",
+      "description": "Alternative domain and URL reputation service"
+    },
+    {
+      "target_slug": "api-integrations-greynoise",
+      "relationship": "related",
+      "description": "Complementary IP reputation service with different focus"
+    }
+  ]
+}

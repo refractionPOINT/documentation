@@ -4,51 +4,22 @@
   "slug": "config-hive-cloud-sensors",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `cloudsensor.get` * `cloudsensor.set` * `cloudsensor.del`",
     "keywords": [
-      "api",
-      "articles",
       "cloud",
+      "command-line",
       "config",
-      "detection",
+      "example",
+      "format",
       "hive:",
-      "related",
-      "response",
-      "rule",
+      "permissions",
       "sensor",
       "sensors",
-      "what's"
+      "usage"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "config-hive-yara",
-        "title": "Config Hive: Yara",
-        "score": 20
-      },
-      {
-        "slug": "config-hive-dr-rules",
-        "title": "Config Hive: Detection & Response Rules",
-        "score": 20
-      },
-      {
-        "slug": "config-hive-secrets",
-        "title": "Config Hive: Secrets",
-        "score": 17
-      },
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 17
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "4024e68190f1abf5c2f518427332463b91551b0dbb26864bc655ca3900644743"
+  "content_hash": ""
 }

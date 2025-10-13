@@ -1,0 +1,30 @@
+{
+  "slug": "updating-sensors-to-the-newest-version",
+  "title": "Updating Sensors to the Newest Version",
+  "category": "",
+  "metadata": {
+    "summary": "Manual and automated methods for updating sensors to latest versions using web UI or lc:stable tag",
+    "keywords": [
+      "updates",
+      "versions",
+      "lc:stable",
+      "auto-update",
+      "sensor-management"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Keeping endpoint agents up to date with latest security and feature improvements"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent",
+      "relationship": "prerequisite",
+      "description": "Understanding endpoint agents before managing their versions"
+    },
+    {
+      "target_slug": "test-a-new-sensor-version",
+      "relationship": "related",
+      "description": "Testing new versions before performing organization-wide updates"
+    }
+  ]
+}

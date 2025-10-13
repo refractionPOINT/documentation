@@ -23,35 +23,8 @@
       "rule"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 18
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 17
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 17
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 13
-      },
-      {
-        "slug": "sleeper",
-        "title": "Sleeper Deployment",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a6ffc4d9ff6629d512c09b1105a616e1fd258245fa6698b9f0a261a94bdaf72d"
+  "content_hash": ""
 }

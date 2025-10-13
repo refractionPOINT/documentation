@@ -4,41 +4,15 @@
   "slug": "outputs-destinations-scp",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `dest_host`: the ip:port where to send the data to, like `1.2.3.4:22`. * `dir`: the directory where to output the files on the remote host. * `username`: the SSH username to log in with.",
     "keywords": [
-      "output",
-      "what's"
+      "detection",
+      "event",
+      "output"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-sftp",
-        "title": "SFTP",
-        "score": 12
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 4
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 4
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 4
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "7760651acacb4a6ed45674c8a9cf62089293a68fe9610c83b286459a98b7fa1f"
+  "content_hash": ""
 }

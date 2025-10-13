@@ -4,12 +4,11 @@
   "slug": "detection-on-alternate-targets",
   "category": "",
   "metadata": {
-    "summary": "Detection & Response rules run against `edr` events by default, however, there are 7 other targets:",
+    "summary": "target: detection op: and rules:",
     "keywords": [
       "actions",
       "agent",
       "alternate",
-      "articles",
       "artifact",
       "artifact\\_event",
       "audit",
@@ -20,38 +19,12 @@
       "endpoint",
       "event",
       "example",
-      "extension"
+      "extension",
+      "operators"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 18
-      },
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 17
-      },
-      {
-        "slug": "stateful-rules",
-        "title": "Stateful Rules",
-        "score": 17
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 17
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "fb4033837f6f68247b9035a5e584cdc58f0510a2f195268a48c1b4f248b18587"
+  "content_hash": ""
 }

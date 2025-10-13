@@ -4,42 +4,15 @@
   "slug": "output-billing",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "An exception to this is outputs that use Google Cloud Platform mechanism where the destination region is the same as the one the relevant LimaCharlie datacenter lives in. In those cases, outputs are not billed.",
     "keywords": [
       "billing",
       "output",
-      "what's"
+      "query"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-amazon-s3",
-        "title": "Amazon S3",
-        "score": 12
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 11
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-s3",
-        "title": "S3",
-        "score": 9
-      },
-      {
-        "slug": "billing-options",
-        "title": "Billing Options",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "3c85551b66bd3e528bc6a7dec1c0beefbde51772ca0eee9c10a1efe07851e934"
+  "content_hash": ""
 }

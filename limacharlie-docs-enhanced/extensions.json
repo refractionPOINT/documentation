@@ -1,0 +1,46 @@
+{
+  "slug": "extensions",
+  "title": "Extensions",
+  "category": "",
+  "metadata": {
+    "summary": "Framework for modular LimaCharlie extensions with subscription model, permissions, and public/private/labs classifications",
+    "keywords": [
+      "extensions",
+      "subscription",
+      "permissions",
+      "public",
+      "private",
+      "framework"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Understanding the extension architecture and how to subscribe to and use extensions"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "add-ons",
+      "relationship": "prerequisite",
+      "description": "Provides context on add-on categories that extensions belong to"
+    },
+    {
+      "target_slug": "using-extensions",
+      "relationship": "continuation",
+      "description": "Explains how to interact with extensions through configurations and requests"
+    },
+    {
+      "target_slug": "building-extensions",
+      "relationship": "continuation",
+      "description": "Details the technical process of developing custom extensions"
+    },
+    {
+      "target_slug": "lc-extensions",
+      "relationship": "related",
+      "description": "Lists specific LimaCharlie-built extensions implementing this framework"
+    },
+    {
+      "target_slug": "third-party-extensions",
+      "relationship": "related",
+      "description": "Lists third-party extensions implementing this framework"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "slug": "sigma-converter",
+  "title": "Sigma Converter",
+  "category": "",
+  "metadata": {
+    "summary": "Convert custom Sigma rules to LimaCharlie D&R format using REST API endpoints for single rules or entire repositories.",
+    "keywords": [
+      "sigma_converter",
+      "api",
+      "rule_conversion",
+      "backend",
+      "custom_rules"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Convert your own Sigma rules or specific community rules to LimaCharlie format for custom deployment"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://sigma.limacharlie.io/convert/rule",
+      "description": "Convert a single Sigma rule to LimaCharlie D&R format"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://sigma.limacharlie.io/convert/repo",
+      "description": "Convert multiple Sigma rules from a GitHub repo or HTTPS resource"
+    },
+    {
+      "type": "cli_command",
+      "method": "POST",
+      "path": "curl -X POST https://sigma.limacharlie.io/convert/rule -H 'content-type: application/x-www-form-urlencoded' --data-urlencode 'rule@my-rule-file.yaml'",
+      "description": "Convert Sigma rule file using curl"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "sigma-rules",
+      "relationship": "prerequisite",
+      "description": "Understanding the Sigma rules service before converting custom rules"
+    }
+  ]
+}

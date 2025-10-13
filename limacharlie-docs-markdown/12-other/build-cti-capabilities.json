@@ -4,44 +4,29 @@
   "slug": "build-cti-capabilities",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Fragmented and siloed data:** Security teams often struggle to gain a holistic understanding of threats due to siloed data from disparate security tools and sensors. This fragmented intelligence hinders effective threat detection, investigation, and response. * **Manual correlation:** Manuall...",
     "keywords": [
+      "(cti)",
+      "api",
       "build",
       "capabilities",
-      "what's"
+      "cyber",
+      "detection",
+      "endpoint",
+      "gathering",
+      "integration",
+      "intelligence",
+      "limacharlie\u2019s",
+      "organization",
+      "problems",
+      "response",
+      "rule"
     ],
-    "complexity": "intermediate",
+    "complexity": "advanced",
     "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "purple-teaming",
-        "title": "Purple Teaming",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 3
-      }
+      "Threat Detection"
     ]
   },
   "api_elements": [],
-  "content_hash": "fad19341a0154e0e87c569f5826ad23a47047b8e12bcecbb1ce8fa9ea11ba2e3"
+  "content_hash": ""
 }

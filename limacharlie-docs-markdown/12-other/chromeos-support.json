@@ -4,44 +4,28 @@
   "slug": "chromeos-support",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Growing in popularity:** Chrome books are the fastest growing segment of personal computers and are being adopted by organizations and schools en masse. Despite this, there is very little security coverage (other than that which is conferred by the platform) and without LimaCharlie, visibilit...",
     "keywords": [
+      "agent",
       "chromeos",
+      "detection",
+      "edr",
+      "endpoint",
+      "limacharlie\u2019s",
+      "organization",
+      "problems",
+      "response",
+      "rule",
+      "sensor",
+      "solution",
       "support",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
     "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "uncovering-adversary-techniques",
-        "title": "Uncovering Adversary Techniques",
-        "score": 11
-      },
-      {
-        "slug": "chrome-enterprise",
-        "title": "ChromeOS with Google Chrome Enterprise",
-        "score": 4
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      }
+      "Threat Detection"
     ]
   },
   "api_elements": [],
-  "content_hash": "806af9a431fef2e94ee26aadd3d5b49cef66990ecaf054f816b2a0774a16b8b3"
+  "content_hash": ""
 }

@@ -4,47 +4,26 @@
   "slug": "sensors",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "In LimaCharlie, **Sensors** refer to the broad set of telemetry collection mechanisms used to gather, process, and act on data across a variety of environments. Sensors come in different forms, each designed to capture specific types of data to provide comprehensive visibility and security across...",
     "keywords": [
       "agent",
-      "articles",
+      "detection",
+      "edr",
       "endpoint",
       "event",
-      "related",
+      "organization",
+      "overview",
+      "response",
+      "rule",
       "sensor",
       "sensors",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent-installation",
-        "title": "Endpoint Agent Installation",
-        "score": 15
-      },
-      {
-        "slug": "endpoint-agent-events-overview",
-        "title": "Endpoint Agent Events Overview",
-        "score": 15
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 15
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 14
-      }
+    "use_cases": [
+      "Threat Detection"
     ]
   },
   "api_elements": [],
-  "content_hash": "fdc7b5b4a3291dff1d7614f89afbb3827e5f96a4089c3e82061d29c217f4e53b"
+  "content_hash": ""
 }

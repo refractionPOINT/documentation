@@ -4,13 +4,16 @@
   "slug": "reporting",
   "category": "",
   "metadata": {
-    "summary": "1 Article  in this category",
+    "summary": "LimaCharlie does not include reporting by default, however our granular and customizable Output options allow you to push data to any source and use third-party tools for reporting. In this tutorial, we'll push a subset of LimaCharlie EDR telemetr...](/docs/tutorials-reporting-building-reports-wi...",
     "keywords": [
+      "edr",
+      "output",
+      "query",
       "reporting"
     ],
     "complexity": "intermediate",
     "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "73a58fe6182fd0f727af7326b6ad1993cc80e3e6a152953c62facf753eec151a"
+  "content_hash": ""
 }

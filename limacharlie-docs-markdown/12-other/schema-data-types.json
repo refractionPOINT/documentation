@@ -6,7 +6,6 @@
   "metadata": {
     "summary": "The data types in your schema can be further subdivided into three categories. Primitives, Code Blocks, and Objects (including tables). These data types allow for a cleaner UI and a more intuitive schema.",
     "keywords": [
-      "add-on",
       "before",
       "blocks",
       "data",
@@ -23,35 +22,8 @@
       "types"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 14
-      },
-      {
-        "slug": "building-the-user-interface",
-        "title": "Building the User Interface",
-        "score": 13
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 12
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 11
-      },
-      {
-        "slug": "ext-yara",
-        "title": "YARA",
-        "score": 11
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "5ff9ec25bc03235a75de2837ea07d092d89e74724c5f3f1d5acb7d21005ad00a"
+  "content_hash": ""
 }

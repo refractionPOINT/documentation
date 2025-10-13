@@ -1,0 +1,43 @@
+{
+  "slug": "non-responding-sensors",
+  "title": "Detecting Sensors No Longer Sending Data",
+  "category": "",
+  "metadata": {
+    "summary": "Python playbook for detecting sensors that have stopped sending telemetry data using scheduled D&R rules and historic data overview",
+    "keywords": [
+      "monitoring",
+      "playbook",
+      "missing-data",
+      "sensor-health",
+      "detection"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Automatically detecting and alerting when sensors stop sending telemetry data"
+  },
+  "extracted_apis": [
+    {
+      "type": "python_method",
+      "method": "sensors",
+      "path": "limacharlie.Limacharlie.sensors(selector)",
+      "description": "Get sensors matching a selector expression"
+    },
+    {
+      "type": "python_method",
+      "method": "getHistoricOverview",
+      "path": "limacharlie.Sensor.getHistoricOverview(start, end)",
+      "description": "Get data overview for sensor within time period"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent",
+      "relationship": "prerequisite",
+      "description": "Understanding endpoint agents before monitoring their data transmission"
+    },
+    {
+      "target_slug": "sensors",
+      "relationship": "prerequisite",
+      "description": "Understanding sensor types before detecting missing data"
+    }
+  ]
+}

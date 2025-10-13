@@ -4,46 +4,26 @@
   "slug": "using-extensions",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Extensions can be interacted with using two main components:",
     "keywords": [
-      "add-on",
-      "articles",
+      "api",
+      "automation",
+      "components",
+      "configurations",
+      "detection",
       "extension",
       "extensions",
-      "related",
-      "using",
-      "what's"
+      "interacting",
+      "interactively",
+      "organization",
+      "requests",
+      "response",
+      "rule",
+      "using"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 15
-      },
-      {
-        "slug": "ext-usage-alerts",
-        "title": "Usage Alerts",
-        "score": 14
-      },
-      {
-        "slug": "building-extensions",
-        "title": "Building Extensions",
-        "score": 13
-      },
-      {
-        "slug": "ext-renigma",
-        "title": "REnigma",
-        "score": 13
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "6efd7e6e33cebbc9d48370c66ec06e676cb23a62b73f76c027cd2752c2d0b1d1"
+  "content_hash": ""
 }

@@ -4,54 +4,25 @@
   "slug": "ext-infrastructure",
   "category": "",
   "metadata": {
-    "summary": "The Infrastructure Extension allows you to perform infrastructure-as-code (IaC) modifications to your Organization. IaC modifications can be made in the web UI or via the LimaCharlie [CLI tool](https://github.com/refractionPOINT/python-limacharlie/#configs-1). Users can create new organizations f...",
+    "summary": "> Scaling Organization Management > > If you\u2019re an managed service company or need to manage a large number of Organizations, consider LimaCharlie\u2019s MSSP setup. You can find more information about this [here](https://github.com/refractionPOINT/mssp-demo).",
     "keywords": [
       "actions",
       "add-on",
       "api",
-      "articles",
       "detection",
       "enabling",
       "extension",
       "infrastructure",
       "organization",
       "output",
-      "related",
       "response",
       "rule",
       "sensor",
       "using"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 18
-      },
-      {
-        "slug": "ext-integrity",
-        "title": "Integrity",
-        "score": 17
-      },
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 15
-      },
-      {
-        "slug": "infrastructure-as-code",
-        "title": "Infrastructure as Code",
-        "score": 15
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "02ac9ef2e1b7d4079b76308bf087404d54633d9c83e6fd26cfb9dcdfe328805a"
+  "content_hash": ""
 }

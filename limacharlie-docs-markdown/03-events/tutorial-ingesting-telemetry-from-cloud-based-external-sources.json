@@ -4,49 +4,25 @@
   "slug": "tutorial-ingesting-telemetry-from-cloud-based-external-sources",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "There are two ways to ingest logs or telemetry from external sources:",
     "keywords": [
-      "articles",
+      "agent",
+      "api",
       "cloud-based",
+      "edr",
+      "endpoint",
       "external",
       "from",
       "ingesting",
-      "related",
+      "organization",
+      "sensor",
       "sources",
       "telemetry",
-      "tutorial:",
-      "what's"
+      "tutorial:"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-deployment",
-        "title": "Adapter Deployment",
-        "score": 14
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      },
-      {
-        "slug": "tutorial-creating-a-webhook-adapter",
-        "title": "Tutorial: Creating a Webhook Adapter",
-        "score": 12
-      },
-      {
-        "slug": "adapter-usage",
-        "title": "Adapter Usage",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types",
-        "title": "Adapter Types",
-        "score": 10
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "1538a9202cd06e0290eaf48daf424074129c0b98e8c88f00f8e2068642f0a0c2"
+  "content_hash": ""
 }

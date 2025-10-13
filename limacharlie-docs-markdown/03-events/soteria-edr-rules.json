@@ -4,51 +4,27 @@
   "slug": "soteria-edr-rules",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* [All rules](https://mitre-attack.github.io/attack-navigator/#layerURL=https%3A%2F%2Fstorage.googleapis.com%2Fsoteria-detector-mapping%2F%2Fall.json) * [Windows](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//windows.json) * [Li...",
     "keywords": [
-      "agent",
-      "articles",
+      "activating",
+      "add-on",
+      "api",
       "detection",
       "edr",
+      "enabling",
       "endpoint",
       "event",
-      "related",
+      "extension",
+      "infrastructure",
+      "organization",
+      "output",
       "response",
       "rule",
-      "rules",
-      "soteria",
-      "what's"
+      "rules"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "soteria-rules",
-        "title": "Soteria Rules",
-        "score": 19
-      },
-      {
-        "slug": "soteria-aws-rules",
-        "title": "Soteria AWS Rules",
-        "score": 19
-      },
-      {
-        "slug": "managed-rulesets",
-        "title": "Managed Rulesets",
-        "score": 17
-      },
-      {
-        "slug": "soteria-m365-rules",
-        "title": "Soteria M365 Rules",
-        "score": 17
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d8944fb27add5384411371a92036d045c1a14b1a0d346781cf52e8f53417e47a"
+  "content_hash": ""
 }

@@ -1,0 +1,50 @@
+{
+  "slug": "payloads",
+  "title": "Payloads",
+  "category": "",
+  "metadata": {
+    "summary": "Deploy and execute custom executables or scripts on endpoints through LimaCharlie agents with structured output collection",
+    "keywords": [
+      "payloads",
+      "executables",
+      "scripts",
+      "permissions",
+      "STDOUT"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Run vendor-specific cleanup tools or forensic utilities on endpoints when native LimaCharlie commands are insufficient"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "TASK",
+      "path": "run --payload-name MY-PAYLOAD --arguments \"-v EulaAccepted\"",
+      "description": "Execute a payload on endpoint with optional arguments"
+    },
+    {
+      "type": "cli_command",
+      "method": "TASK",
+      "path": "log_get",
+      "description": "Retrieve log file from endpoint when payload generates more than 10MB output"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "PUT",
+      "path": "signed-url",
+      "description": "Upload payload binary using signed URL with Content-Type: application/octet-stream"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "signed-url",
+      "description": "Download payload binary using signed URL"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "payload-manager",
+      "relationship": "continuation",
+      "description": "Payload Manager extension provides UI and automation for managing payloads"
+    }
+  ]
+}

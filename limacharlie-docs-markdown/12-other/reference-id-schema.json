@@ -9,7 +9,6 @@
       "agent",
       "api",
       "architecture",
-      "articles",
       "detection",
       "device",
       "edr",
@@ -20,38 +19,12 @@
       "output",
       "platform",
       "reference:",
-      "related"
+      "rule",
+      "schema"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 20
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 19
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 19
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 18
-      },
-      {
-        "slug": "reference-sensor-selector-expressions",
-        "title": "Reference: Sensor Selector Expressions",
-        "score": 18
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "9a332f81463ec105c14b4e04ea591d7eb14b8366b2b04300b10edad88c211024"
+  "content_hash": ""
 }

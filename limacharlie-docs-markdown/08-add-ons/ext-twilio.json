@@ -4,43 +4,25 @@
   "slug": "ext-twilio",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "The [Twilio](https://www.twilio.com/) Extension allows you to send messages within Twilio. It requires you to setup the Twilio authentication in the **Integrations** section of your Organization.",
     "keywords": [
       "add-on",
+      "detection",
+      "event",
       "extension",
-      "twilio",
-      "what's"
+      "integration",
+      "organization",
+      "output",
+      "overview",
+      "response",
+      "rule",
+      "sensor",
+      "setup",
+      "twilio"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 12
-      },
-      {
-        "slug": "ext-velociraptor",
-        "title": "Velociraptor",
-        "score": 12
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 5
-      },
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "505793fe477070aa1db70d88cc6c14b5b53ea5fc460f34014417c5b4f5d72cec"
+  "content_hash": ""
 }

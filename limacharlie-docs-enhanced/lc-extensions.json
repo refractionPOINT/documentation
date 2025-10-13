@@ -1,0 +1,41 @@
+{
+  "slug": "lc-extensions",
+  "title": "LimaCharlie Extensions",
+  "category": "",
+  "metadata": {
+    "summary": "Catalog of 15 LimaCharlie-developed extensions including Artifact, BinLib, Dumper, EPP, Exfil, Git Sync, and YARA Manager",
+    "keywords": [
+      "extensions",
+      "LimaCharlie",
+      "catalog",
+      "artifact",
+      "integrity",
+      "YARA"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Discovering and selecting LimaCharlie-built extensions for specific security capabilities"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "extensions",
+      "relationship": "prerequisite",
+      "description": "Explains the extension framework these LimaCharlie extensions are built on"
+    },
+    {
+      "target_slug": "using-extensions",
+      "relationship": "related",
+      "description": "Explains how to interact with these extensions using configurations and requests"
+    },
+    {
+      "target_slug": "add-ons",
+      "relationship": "prerequisite",
+      "description": "Provides context on add-on marketplace where these extensions are found"
+    },
+    {
+      "target_slug": "third-party-extensions",
+      "relationship": "alternative",
+      "description": "Lists extensions built by third parties rather than LimaCharlie"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "slug": "adapter-types-stdin",
+  "title": "Stdin",
+  "category": "",
+  "metadata": {
+    "summary": "Overview page for stdin adapter type with links to related configuration examples",
+    "keywords": [
+      "stdin",
+      "adapter",
+      "ingestion",
+      "input"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding stdin adapter capabilities and finding configuration examples"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter stdin",
+      "description": "Run stdin adapter to ingest data from standard input"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-examples-stdin",
+      "relationship": "continuation",
+      "description": "Detailed example of stdin adapter with text parsing using grok"
+    },
+    {
+      "target_slug": "adapter-examples-stdin-json",
+      "relationship": "continuation",
+      "description": "Example of stdin adapter configured for JSON input"
+    }
+  ]
+}

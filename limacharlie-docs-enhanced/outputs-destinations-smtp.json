@@ -1,0 +1,37 @@
+{
+  "slug": "outputs-destinations-smtp",
+  "title": "SMTP",
+  "category": "",
+  "metadata": {
+    "summary": "Send detections, events, and audit logs via SMTP to email addresses or ticketing systems",
+    "keywords": [
+      "smtp",
+      "email",
+      "notifications",
+      "ticketing",
+      "ssl"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Deliver security alerts to email inboxes or integrate with email-based ticketing systems"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "OUTPUT",
+      "path": "dest_host, dest_email, from_email, username, password, secret_key, is_readable, is_starttls, is_authlogin, subject",
+      "description": "Configure SMTP output destination with server details, credentials, and formatting options"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-slack",
+      "relationship": "alternative",
+      "description": "Slack provides chat-based alternative to email for notifications"
+    },
+    {
+      "target_slug": "outputs-destinations-webhook",
+      "relationship": "alternative",
+      "description": "Webhook provides programmatic alternative to email for event delivery"
+    }
+  ]
+}

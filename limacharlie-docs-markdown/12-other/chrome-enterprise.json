@@ -4,50 +4,27 @@
   "slug": "chrome-enterprise",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "1. Log into Google Workspace Admin and go to [Devices -> Chrome -> Apps & extensions -> Users & Browsers](https://admin.google.com/ac/chrome/apps/user). 2. In the **Users & browsers** tab click the \"+\" button in the bottom right, then choose the option to \"Add from Chrome Web Store\". 3. Search fo...",
     "keywords": [
       "agent",
-      "articles",
       "chrome",
       "chromeos",
+      "configuration",
+      "detection",
+      "edr",
       "endpoint",
       "enterprise",
+      "extension",
       "google",
-      "related",
+      "organization",
+      "output",
+      "rule",
       "sensor",
-      "what's",
-      "with"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "chrome-agent-installation",
-        "title": "Chrome Agent Installation",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "endpoint-agent-uninstallation",
-        "title": "Endpoint Agent Uninstallation",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "adapter-types-google-workspace",
-        "title": "Google Workspace",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a9f585affa56763c5f6ebbdb246dbcb41470650b46bbbccc64a6a56905dc8eee"
+  "content_hash": ""
 }

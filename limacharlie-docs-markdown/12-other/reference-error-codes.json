@@ -4,51 +4,22 @@
   "slug": "reference-error-codes",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "| Error Code | Value | | --- | --- | | ERROR\\_SUCCESS | 0, 200 |",
     "keywords": [
       "agent",
-      "articles",
       "codes",
-      "detection",
       "edr",
       "endpoint",
       "error",
       "event",
+      "payload",
       "reference:",
-      "related",
       "response",
-      "what's"
+      "specific"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent-commands",
-        "title": "Endpoint Agent Commands",
-        "score": 18
-      },
-      {
-        "slug": "endpoint-agent-events-overview",
-        "title": "Endpoint Agent Events Overview",
-        "score": 17
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "template-strings-and-transforms",
-        "title": "Template Strings and Transforms",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "7005abeed6f03f0ddcd3cd63d5c3452d63a87dfbc7e82477b6eb80b96be4d865"
+  "content_hash": ""
 }

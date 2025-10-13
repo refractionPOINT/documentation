@@ -4,14 +4,13 @@
   "slug": "billing",
   "category": "",
   "metadata": {
-    "summary": "Billing in LimaCharlie is done on monthly cycles and per-Organization (multi-tenant). Sensors can be billed on a quota, set within the organization, or billed on a usage basis.",
+    "summary": "Need simplified billing for many organizations?",
     "keywords": [
       "(retention)",
       "(retroactive",
       "add-on",
       "add-ons",
       "agent",
-      "articles",
       "artifact",
       "based",
       "billing",
@@ -20,38 +19,12 @@
       "detection",
       "edr",
       "endpoint",
-      "event"
+      "event",
+      "insight"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 18
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "sleeper",
-        "title": "Sleeper Deployment",
-        "score": 16
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 16
-      },
-      {
-        "slug": "replay",
-        "title": "Replay",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "fbb9b0254498a416ad59ee73ba87aeb833e8d992c186f19e23ccba3ccdd56586"
+  "content_hash": ""
 }

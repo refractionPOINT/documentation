@@ -4,46 +4,18 @@
   "slug": "adapter-types-microsoft-defender",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"defender\" defender: tenant_id: \"hive://secret/azure-tenant-id\"",
     "keywords": [
-      "articles",
       "defender",
       "event",
       "microsoft",
-      "related",
-      "sensor",
-      "what's"
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 16
-      },
-      {
-        "slug": "ingesting-defender-event-logs",
-        "title": "Ingesting Defender Event Logs",
-        "score": 16
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 15
-      },
-      {
-        "slug": "adapter-examples-windows-event-logs",
-        "title": "Windows Event Logs",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "1476e9530ee36905e38441c6d29f45707638a99fb6f50fc5e7a2c9b0edc6bc3f"
+  "content_hash": ""
 }

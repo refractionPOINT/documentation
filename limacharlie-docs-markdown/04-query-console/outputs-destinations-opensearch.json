@@ -13,35 +13,8 @@
       "what's"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-elastic",
-        "title": "Elastic",
-        "score": 14
-      },
-      {
-        "slug": "outputs-destinations-scp",
-        "title": "SCP",
-        "score": 12
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 6
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "24332793f2d7a4bd460d875846d1b80f83e8f8b32052cd0e42d1ed34d423a722"
+  "content_hash": ""
 }

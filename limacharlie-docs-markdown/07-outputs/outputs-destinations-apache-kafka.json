@@ -4,44 +4,18 @@
   "slug": "outputs-destinations-apache-kafka",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `dest_host`: the IP or DNS and port to connect to, format `kafka.myorg.com`. * `is_tls`: if `true` will output over TCP/TLS. * `is_strict_tls`: if `true` will enforce validation of TLS certs.",
     "keywords": [
       "apache",
+      "detection",
       "event",
       "kafka",
       "output",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-azure-event-hub",
-        "title": "Azure Event Hub",
-        "score": 13
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "ext-cloud-cli-azure",
-        "title": "Azure",
-        "score": 10
-      },
-      {
-        "slug": "adapter-types-azure-event-hub",
-        "title": "Azure Event Hub",
-        "score": 9
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d4b81aa0fb09a70c18fe3bc676195407e7e608b4dc87c2c548a6d3673c66024b"
+  "content_hash": ""
 }

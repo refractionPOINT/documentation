@@ -4,47 +4,20 @@
   "slug": "outputs-destinations-google-cloud-storage",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Looking for Google Chronicle?",
     "keywords": [
-      "articles",
+      "api",
       "cloud",
+      "detection",
+      "event",
       "google",
       "output",
-      "query",
-      "related",
       "storage",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 18
-      },
-      {
-        "slug": "ext-cloud-cli-google-cloud",
-        "title": "Google Cloud",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-bigquery",
-        "title": "Google Cloud BigQuery",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-google-workspace",
-        "title": "Google Workspace",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "60025c54395216095244423ab91b946f96f1068de2e417f8932e972eb4733f8a"
+  "content_hash": ""
 }

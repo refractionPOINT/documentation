@@ -4,44 +4,21 @@
   "slug": "single-sign-on",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "If your organization does not currently have a custom branded site with LimaCharlie, you can learn about the requirements, costs & get started here.",
     "keywords": [
-      "articles",
-      "related",
+      "detection",
+      "experience",
+      "organization",
+      "output",
+      "rule",
+      "sensor",
       "sign-on",
       "single",
-      "what's"
+      "works"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "user-access",
-        "title": "User Access",
-        "score": 13
-      },
-      {
-        "slug": "reference-permissions",
-        "title": "Reference: Permissions",
-        "score": 11
-      },
-      {
-        "slug": "sensors-reference",
-        "title": "Reference",
-        "score": 7
-      },
-      {
-        "slug": "reference-3",
-        "title": "Reference",
-        "score": 7
-      },
-      {
-        "slug": "detection-and-response-reference",
-        "title": "Reference",
-        "score": 7
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "581989bb2039e90e98e8219a4f63ac56d52ce4e47b972ce932b8b55056084dae"
+  "content_hash": ""
 }

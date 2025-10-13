@@ -1,0 +1,78 @@
+{
+  "slug": "macos-agent-installation-latest-os-versions",
+  "title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+  "category": "",
+  "metadata": {
+    "summary": "Step-by-step installation, verification, and uninstallation instructions for LimaCharlie endpoint agent on macOS 10.15 Catalina through macOS 14 Sonoma.",
+    "keywords": [
+      "macos",
+      "catalina",
+      "sonoma",
+      "installation",
+      "system-extensions"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Install and configure LimaCharlie sensor on macOS 10.15-14 with proper system permissions"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "version",
+      "path": "./lc_sensor -v",
+      "description": "Display build version"
+    },
+    {
+      "type": "cli_command",
+      "method": "install",
+      "path": "chmod +x lc_sensor",
+      "description": "Add execute permission to installer file"
+    },
+    {
+      "type": "cli_command",
+      "method": "install",
+      "path": "sudo ./lc_sensor -i YOUR_INSTALLATION_KEY_GOES_HERE",
+      "description": "Install sensor as launchctl service with installation key"
+    },
+    {
+      "type": "cli_command",
+      "method": "install",
+      "path": "./lc_sensor -d INSTALLATION_KEY",
+      "description": "Enroll with installation key without permanent installation"
+    },
+    {
+      "type": "cli_command",
+      "method": "uninstall",
+      "path": "./lc_sensor -r",
+      "description": "Uninstall sensor service"
+    },
+    {
+      "type": "cli_command",
+      "method": "uninstall",
+      "path": "./lc_sensor -c",
+      "description": "Uninstall sensor service and delete identity files"
+    },
+    {
+      "type": "cli_command",
+      "method": "verify",
+      "path": "sudo launchctl list | grep com.refractionpoint.rphcp",
+      "description": "Verify sensor installation and running status"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "macos-agent-installation",
+      "relationship": "prerequisite",
+      "description": "Parent overview page that directs to this version-specific guide"
+    },
+    {
+      "target_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "relationship": "alternative",
+      "description": "Installation guide for newer macOS 15 Sequoia and later versions"
+    },
+    {
+      "target_slug": "macos-agent-installation-mdm-configuration-profiles",
+      "relationship": "alternative",
+      "description": "Enterprise deployment alternative using MDM profiles to bypass user approval dialogs"
+    }
+  ]
+}

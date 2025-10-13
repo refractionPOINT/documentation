@@ -11,35 +11,8 @@
       "tutorials"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "tutorials",
-        "title": "Tutorials",
-        "score": 11
-      },
-      {
-        "slug": "tutorials-1",
-        "title": "Tutorials",
-        "score": 11
-      },
-      {
-        "slug": "detection-and-response-tutorials",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "tutorials-3",
-        "title": "Tutorials",
-        "score": 8
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "07f256c73fd436ab02753fbba909c0a638c151fd98d403627c79b7c8d12f759e"
+  "content_hash": ""
 }

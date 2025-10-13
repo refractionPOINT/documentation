@@ -23,35 +23,8 @@
       "management"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-infrastructure",
-        "title": "Infrastructure",
-        "score": 12
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 11
-      },
-      {
-        "slug": "infrastructure-as-code",
-        "title": "Infrastructure as Code",
-        "score": 11
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 11
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 10
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "313e7b4e8a1192f66606bcdc60b9fd5cb6f974f1837270e01a7c0344e38c814c"
+  "content_hash": ""
 }

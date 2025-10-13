@@ -4,9 +4,8 @@
   "slug": "api-integrations-echotrail",
   "category": "",
   "metadata": {
-    "summary": "[EchoTrail](https://echotrail.io/) is an API service that allows you to perform a lookup of a file name or hash value. EchoTrail will return a summary of statistical details that describes the behavior of the submitted value, as observed from their sensors over time.",
+    "summary": "LimaCharlie has an integration available for EchoTrail's `insights` API lookup, accepting one of the following:",
     "keywords": [
-      "add-on",
       "api",
       "detection",
       "echotrail",
@@ -17,39 +16,11 @@
       "query",
       "response",
       "rule",
-      "sensor",
-      "what's"
+      "sensor"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 15
-      },
-      {
-        "slug": "api-integrations-greynoise",
-        "title": "GreyNoise",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "api-integrations-hybrid-analysis",
-        "title": "Hybrid Analysis",
-        "score": 11
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "042ee93c619a8cb025379feac002d94fdfe8b684a602df71ee81f6631ccfdbd1"
+  "content_hash": ""
 }

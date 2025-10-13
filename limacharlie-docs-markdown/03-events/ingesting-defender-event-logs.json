@@ -4,50 +4,26 @@
   "slug": "ingesting-defender-event-logs",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This is done by ingesting [artifacts from the Defender Event Log Source](/v2/docs/artifacts) and using [Detection & Response rules](/v2/docs/detection-and-response) to take the appropriate action.",
     "keywords": [
       "agent",
-      "articles",
       "defender",
+      "detection",
+      "edr",
       "endpoint",
       "event",
+      "extension",
       "ingesting",
       "logs",
-      "related",
+      "organization",
+      "response",
+      "rule",
       "sensor",
-      "telemetry",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ingesting-windows-event-logs",
-        "title": "Ingesting Windows Event Logs",
-        "score": 20
-      },
-      {
-        "slug": "ingesting-sysmon-event-logs",
-        "title": "Ingesting Sysmon Event Logs",
-        "score": 18
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 17
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-microsoft-defender",
-        "title": "Microsoft Defender",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "0c64f7ad2f9ced4d5bbaf2483a2ee2531b4a84b205a1239ac7f58c192e644b5d"
+  "content_hash": ""
 }

@@ -4,41 +4,25 @@
   "slug": "sentinelone",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.",
     "keywords": [
-      "sentinelone",
-      "what's"
+      "adapter-specific",
+      "api",
+      "configurations",
+      "deployment",
+      "detection",
+      "endpoint",
+      "event",
+      "examples",
+      "on-prem",
+      "options",
+      "organization",
+      "sensor",
+      "sentinelone"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-sophos",
-        "title": "Sophos",
-        "score": 10
-      },
-      {
-        "slug": "adapter-types",
-        "title": "Adapter Types",
-        "score": 5
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "675486a8fed977d2e41b7bfffbc1ce1283311075cc1a182942f417fa8371bb42"
+  "content_hash": ""
 }

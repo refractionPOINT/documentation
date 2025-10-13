@@ -8,7 +8,6 @@
     "keywords": [
       "agent",
       "api",
-      "articles",
       "atoms",
       "d&r",
       "detection",
@@ -20,40 +19,14 @@
       "lcql",
       "organization",
       "overview",
-      "related"
+      "relationships",
+      "response"
     ],
     "complexity": "intermediate",
     "use_cases": [
       "."
-    ],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 22
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 19
-      },
-      {
-        "slug": "event-schemas",
-        "title": "Event Schemas",
-        "score": 18
-      },
-      {
-        "slug": "sysmon-comparison",
-        "title": "Sysmon Comparison",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 15
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "eb6b25d752bb9c55b7c2d168bde884a0e294514126ed2412a3e74cbc8d536ece"
+  "content_hash": ""
 }

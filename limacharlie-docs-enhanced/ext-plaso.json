@@ -1,0 +1,43 @@
+{
+  "slug": "ext-plaso",
+  "title": "Plaso",
+  "category": "",
+  "metadata": {
+    "summary": "Forensic timeline generation extension that processes triage collections using log2timeline and psort tools",
+    "keywords": [
+      "plaso",
+      "log2timeline",
+      "timeline",
+      "forensics",
+      "kape"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Create comprehensive forensic timelines from endpoint triage collections for incident investigation"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "psteal.py --source /path/to/artifact -o dynamic --storage-file $artifact_id.plaso -w $artifact_id.csv",
+      "description": "Parse forensic artifacts and generate timeline"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "pinfo.py $artifact_id.plaso -w $artifact_id_pinfo.json --output_format json",
+      "description": "Extract metadata and processing summary from plaso file"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-artifact",
+      "relationship": "prerequisite",
+      "description": "Requires artifacts to be collected before Plaso can process them"
+    },
+    {
+      "target_slug": "ext-velociraptor",
+      "relationship": "prerequisite",
+      "description": "Commonly processes Velociraptor KAPE triage collections"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "slug": "adapter-types-imap",
+  "title": "IMAP",
+  "category": "",
+  "metadata": {
+    "summary": "Configure IMAP adapter to ingest emails from any IMAP server for analysis, commonly used with email journaling for enterprise-wide monitoring",
+    "keywords": [
+      "imap",
+      "email",
+      "journaling",
+      "inbox",
+      "attachments"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Ingest and analyze emails at enterprise scale using email journaling from Exchange Online or Google Workspace"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "N/A",
+      "path": "sensor_type: imap",
+      "description": "IMAP adapter configuration with email collection settings including inbox monitoring, attachment handling, and body size limits"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-mimecast",
+      "relationship": "alternative",
+      "description": "Alternative email security adapter for organizations using Mimecast instead of direct IMAP access"
+    },
+    {
+      "target_slug": "adapter-types-sublime-security",
+      "relationship": "alternative",
+      "description": "Alternative email security adapter for organizations using Sublime Security for email threat detection"
+    }
+  ]
+}

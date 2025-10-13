@@ -4,10 +4,9 @@
   "slug": "adapter-deployment",
   "category": "",
   "metadata": {
-    "summary": "Adapters can be deployed in one of two ways:",
+    "summary": "* **On-prem**, Adapters utilize the LC Adapter binary to ingest a data source and forward it to LimaCharlie. * **Cloud-to-cloud**, connects the LimaCharlie cloud directly with your cloud source and automatically ingests data.",
     "keywords": [
       "adapter",
-      "articles",
       "binaries",
       "cloud",
       "deploying",
@@ -16,41 +15,11 @@
       "on-prem",
       "organization",
       "preparing",
-      "related",
-      "sensor",
-      "telemetry",
-      "what's"
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-mimecast",
-        "title": "Mimecast",
-        "score": 14
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "tutorial-ingesting-telemetry-from-cloud-based-external-sources",
-        "title": "Tutorial: Ingesting Telemetry from Cloud-Based External Sources",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b48715220ee29eb6aff128df688070d5e1aeb9000ec4c65a3be5ac5838c89a4e"
+  "content_hash": ""
 }

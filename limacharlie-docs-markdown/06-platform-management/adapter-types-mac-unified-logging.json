@@ -4,54 +4,21 @@
   "slug": "adapter-types-mac-unified-logging",
   "category": "",
   "metadata": {
-    "summary": "This Adapter allows you to collect events from MacOS Unified Logging.",
+    "summary": "sensor_type: \"mac_unified_logging\" mac_unified_logging: client_options:",
     "keywords": [
-      "agent",
-      "articles",
-      "configurations",
       "creation",
-      "deployment",
       "endpoint",
       "event",
-      "infrastructure",
       "logging",
-      "organization",
-      "overview",
-      "related",
       "response",
       "rule",
-      "sensor"
+      "sensor",
+      "service",
+      "unified"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 18
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "macos-agent-installation",
-        "title": "macOS Agent Installation",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "ingesting-macos-unified-logs",
-        "title": "Ingesting MacOS Unified Logs",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b749d8e03c9b9e3cebc203a1dcc6c96ffd1194fbc5f72c810da5b2fc9e21c94e"
+  "content_hash": ""
 }

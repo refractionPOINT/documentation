@@ -4,47 +4,25 @@
   "slug": "test-a-new-sensor-version",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Sensor version testing is done via LimaCharlie's tagging functionality.",
     "keywords": [
       "agent",
-      "articles",
+      "detection",
+      "edr",
       "endpoint",
-      "related",
+      "organization",
+      "output",
+      "rule",
       "sensor",
+      "telemetry",
       "test",
-      "version",
-      "what's"
+      "version"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "updating-sensors-to-the-newest-version",
-        "title": "Updating Sensors to the Newest Version",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "endpoint-agent-versioning-and-upgrades",
-        "title": "Endpoint Agent Versioning and Upgrades",
-        "score": 13
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 8
-      }
+    "use_cases": [
+      ". We also recommend testing on `dev` or `test` systems prior to deployment in production, again, to eliminate any concerns of resource utilization or Sensor operations."
     ]
   },
   "api_elements": [],
-  "content_hash": "5252a735cfef4f7b2b5cab4fb3ac77b9e47f6643d26df9edbf52d1d16d24897f"
+  "content_hash": ""
 }

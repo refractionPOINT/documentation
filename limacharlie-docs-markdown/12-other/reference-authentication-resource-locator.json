@@ -4,46 +4,27 @@
   "slug": "reference-authentication-resource-locator",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Many features in LimaCharlie require access to external resources, sometimes authenticated, provided by users.",
     "keywords": [
-      "add-on",
+      "access",
+      "api",
       "authenticated",
-      "integration",
+      "authentication",
+      "basic",
+      "bearer",
+      "branch",
+      "cloud",
+      "examples",
+      "format",
+      "github",
+      "google",
       "locator",
-      "reference:",
-      "resource",
-      "what's"
+      "overview",
+      "personal"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "tutorials-integratons-virustotal-integration",
-        "title": "VirusTotal Integration",
-        "score": 13
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 10
-      },
-      {
-        "slug": "tutorials",
-        "title": "Tutorials",
-        "score": 10
-      },
-      {
-        "slug": "sensors-reference",
-        "title": "Reference",
-        "score": 7
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d5a05ae7464938ed6cd876968d61f18b3389154a742d6cea5f40951a6d15a26f"
+  "content_hash": ""
 }

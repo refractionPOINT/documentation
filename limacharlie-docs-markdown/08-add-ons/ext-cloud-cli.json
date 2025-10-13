@@ -4,11 +4,10 @@
   "slug": "ext-cloud-cli",
   "category": "",
   "metadata": {
-    "summary": "LimaCharlie's Cloud CLI Extension (`ext-cloud-cli`) allows you to trigger actions against CLI or API endpoints for third-party products. This extension facilitates bi-directional communication between LimaCharlie and nearly any telemetry source. Actions can be triggered from the Cloud CLI UI or a...",
+    "summary": "For a list of platforms supported by this extension, see the nested items on the left-side navigation.",
     "keywords": [
       "add-on",
       "api",
-      "articles",
       "cloud",
       "credentials",
       "d&r",
@@ -16,42 +15,13 @@
       "event",
       "extension",
       "organization",
-      "related",
       "rule",
       "telemetry",
-      "usage",
-      "what's"
+      "usage"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "config-hive",
-        "title": "Config Hive",
-        "score": 16
-      },
-      {
-        "slug": "soteria-m365-rules",
-        "title": "Soteria M365 Rules",
-        "score": 16
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 16
-      },
-      {
-        "slug": "ext-cloud-cli-1password",
-        "title": "1Password",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-okta",
-        "title": "Okta",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d00e7a149bd6e6e8d6e9440b4cdf8920def89eebcae0e375b731e57125c12f88"
+  "content_hash": ""
 }

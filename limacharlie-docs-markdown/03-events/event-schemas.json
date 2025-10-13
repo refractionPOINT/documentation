@@ -4,54 +4,22 @@
   "slug": "event-schemas",
   "category": "",
   "metadata": {
-    "summary": "Since LimaCharlie standardizes on JSON, including arbitrary sources of data, it means that Schema in LimaCharlie is generally dynamic.",
+    "summary": "To enable users to create schemas in external systems that expect more strictly typed data, LimaCharlie makes a Schema API available.",
     "keywords": [
-      "agent",
       "api",
-      "articles",
       "definition",
       "detection",
       "edr",
-      "endpoint",
       "event",
       "listing",
-      "related",
       "retrieveing",
       "schema",
       "schemas",
-      "sensor",
-      "what's"
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent-events-overview",
-        "title": "Endpoint Agent Events Overview",
-        "score": 18
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 18
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 17
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 15
-      },
-      {
-        "slug": "platform-events-overview",
-        "title": "Platform Events Overview",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "86a24fd904f8869e71616915827d7987c7873b6b19a36a1c96e516b48b8da4e5"
+  "content_hash": ""
 }

@@ -4,44 +4,23 @@
   "slug": "ma-cyber-due-diligence",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Inefficiencies in evaluating risks and vulnerabilities:** During the M&A process, it's crucial to identify and assess the cybersecurity risks associated with the target company's digital assets, including intellectual property, customer data, and financial information. * **Complex infrastruct...",
     "keywords": [
+      "agent",
       "cyber",
+      "detection",
       "diligence",
-      "what's"
+      "integration",
+      "limacharlie\u2019s",
+      "organization",
+      "problems",
+      "rule",
+      "solution",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "building-products",
-        "title": "Building Products",
-        "score": 10
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "4a95df072cb86eb25e8b44c312760fc839218edc9e92cfda61f4dc75d02b4fdb"
+  "content_hash": ""
 }

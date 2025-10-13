@@ -4,12 +4,11 @@
   "slug": "macos-agent-installation-mdm-configuration-profiles",
   "category": "",
   "metadata": {
-    "summary": "This document provides details of the Mobile Device Management (MDM) Configuration Profile that can be used to deploy the LimaCharlie agent to your enterprise fleet on macOS (versions 10.15 and newer).",
+    "summary": "Once the configuration profile is deployed using an approved MDM server, users will not need to provide approval to complete the agent installation. In particular, the following three system approval dialogs will no longer be presented:",
     "keywords": [
       "affected",
       "agent",
       "api",
-      "articles",
       "configuration",
       "details",
       "dialogs",
@@ -20,38 +19,12 @@
       "macos",
       "organization",
       "preference",
-      "profile"
+      "profile",
+      "profiles"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "installing-macos-agents-via-jamf-now",
-        "title": "macOS Agent Installation via Jamf Now",
-        "score": 16
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 16
-      },
-      {
-        "slug": "macos-agent-installation",
-        "title": "macOS Agent Installation",
-        "score": 15
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      },
-      {
-        "slug": "macos-agent-installation-older-versions",
-        "title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "291a1f3d84e3600fcfd189ff870d620bf64d25aaabb1782abb412c557aeba612"
+  "content_hash": ""
 }

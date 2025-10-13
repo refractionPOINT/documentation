@@ -1,0 +1,25 @@
+{
+  "slug": "outputs-destinations-azure-event-hub",
+  "title": "Azure Event Hub",
+  "category": "",
+  "metadata": {
+    "summary": "Send LimaCharlie detection events and telemetry to Azure Event Hub as an output destination",
+    "keywords": [
+      "azure",
+      "event-hub",
+      "output",
+      "destination",
+      "export"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Forward LimaCharlie events to Azure Event Hub for downstream processing or SIEM integration"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-azure-event-hub",
+      "relationship": "related",
+      "description": "Input adapter counterpart for Azure Event Hub ingestion"
+    }
+  ]
+}

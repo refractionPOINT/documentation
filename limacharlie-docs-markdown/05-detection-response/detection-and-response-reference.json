@@ -4,30 +4,18 @@
   "slug": "detection-and-response-reference",
   "category": "",
   "metadata": {
-    "summary": "2 Articles  in this category",
+    "summary": "Operators are used in the Detection part of a Detection & Response rule. Operators may also be accompanied by other available parameters, such as transforms, times, and others, referenced later in this page. For more information on how to use ...](/docs/detection-logic-operators)",
     "keywords": [
-      "reference"
+      "d&r",
+      "detection",
+      "reference",
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "sensors-reference",
-        "title": "Reference",
-        "score": 8
-      },
-      {
-        "slug": "reference-3",
-        "title": "Reference",
-        "score": 8
-      },
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "17997a4766c59ce274be04c78f0a90b79901abf2b50a1cfb8923ce97e96f551a"
+  "content_hash": ""
 }

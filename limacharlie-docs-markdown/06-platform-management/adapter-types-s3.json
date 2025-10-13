@@ -4,45 +4,17 @@
   "slug": "adapter-types-s3",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"s3\" s3: bucket_name: \"your-s3-bucket-name-for-logs\"",
     "keywords": [
       "api",
-      "articles",
-      "output",
-      "related",
-      "sensor",
-      "what's"
+      "event",
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 16
-      },
-      {
-        "slug": "adapter-types-sqs",
-        "title": "SQS",
-        "score": 16
-      },
-      {
-        "slug": "adapter-types-slack-audit-logs",
-        "title": "Slack Audit Logs",
-        "score": 15
-      },
-      {
-        "slug": "outputs-destinations-amazon-s3",
-        "title": "Amazon S3",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "65246bea702eaf40a0861d8c0a3b5ff0312604a09f679133be8e1ef682b30dd1"
+  "content_hash": ""
 }

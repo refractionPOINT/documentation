@@ -4,41 +4,22 @@
   "slug": "output-destinations",
   "category": "",
   "metadata": {
-    "summary": "19 Articles  in this category",
+    "summary": "Output events and detections to an Amazon S3 bucket. If you have your own visualization stack, or you just need the data archived, you can output directly to Amazon S3. This way you don't need any infrastructure. bucket : the path to the AWS S3...](/docs/outputs-destinations-amazon-s3)",
     "keywords": [
+      "api",
       "destinations",
-      "output"
+      "detection",
+      "endpoint",
+      "event",
+      "output",
+      "query",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 4
-      },
-      {
-        "slug": "api-integrations-hybrid-analysis",
-        "title": "Hybrid Analysis",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-imap",
-        "title": "IMAP",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 3
-      }
+    "use_cases": [
+      "of this output, see this tutorial on pushing Velociraptor data to BigQuery . schema : describes the column names, data types, and other information; should...](/docs/outputs-destinations-google-cloud-bigquery)"
     ]
   },
   "api_elements": [],
-  "content_hash": "8fb2f3b4374c7513f8ab43675c9e4ca2675a568397ad47813fe66de2bdbc3a00"
+  "content_hash": ""
 }

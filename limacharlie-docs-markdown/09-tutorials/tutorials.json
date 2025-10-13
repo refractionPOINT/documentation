@@ -9,35 +9,8 @@
       "tutorials"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "reporting",
-        "title": "Reporting",
-        "score": 10
-      },
-      {
-        "slug": "detection-and-response-tutorials",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "tutorials-3",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "tutorials-1",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "adapter-tutorials",
-        "title": "Adapter Tutorials",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "0a802e9f9b8ef3f98747c60822cfce3b98b4ff9325ed65ee11de20960f832430"
+  "content_hash": ""
 }

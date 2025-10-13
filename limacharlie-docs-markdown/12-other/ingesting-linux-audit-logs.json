@@ -4,56 +4,29 @@
   "slug": "ingesting-linux-audit-logs",
   "category": "",
   "metadata": {
-    "summary": "One data source of common interest on Linux systems is the `audit.log` file. By default, this file stores entries from the Audit system, which contains information about logins, privilege escalations, and other account-related events. You can find more information about Audit Log files [here](htt...",
+    "summary": "There are a few techniques to ingest Linux Audit logs into LimaCharlie:",
     "keywords": [
       "adapter",
-      "agent",
-      "articles",
       "artifact",
       "audit",
       "browser",
       "collection",
       "edr",
-      "endpoint",
       "event",
       "ingesting",
       "ingestion",
       "linux",
       "logs",
-      "related"
+      "rule",
+      "sensor",
+      "system",
+      "telemetry"
     ],
     "complexity": "intermediate",
     "use_cases": [
       "."
-    ],
-    "related_pages": [
-      {
-        "slug": "ingesting-windows-event-logs",
-        "title": "Ingesting Windows Event Logs",
-        "score": 17
-      },
-      {
-        "slug": "adapter-usage",
-        "title": "Adapter Usage",
-        "score": 16
-      },
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 16
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 16
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "4d6c9986c7af7fc690caac3d8daa9baa4021c93114e063143c2a7e3cbb4470ea"
+  "content_hash": ""
 }

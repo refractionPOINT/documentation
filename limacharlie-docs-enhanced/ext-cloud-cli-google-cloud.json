@@ -1,0 +1,33 @@
+{
+  "slug": "ext-cloud-cli-google-cloud",
+  "title": "Google Cloud",
+  "category": "",
+  "metadata": {
+    "summary": "Execute Google Cloud Platform gcloud CLI commands directly from LimaCharlie using the Cloud CLI Extension with service account authentication.",
+    "keywords": [
+      "google-cloud",
+      "gcloud",
+      "cli",
+      "extension",
+      "service-account",
+      "compute-instances"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Manage Google Cloud resources and services from LimaCharlie detection and response rules"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "gcloud",
+      "path": "compute instances stop <instance-name>",
+      "description": "Stop a GCP compute instance using gcloud CLI through the Cloud CLI extension"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "extension request: ext-cloud-cli",
+      "description": "Execute gcloud commands via LimaCharlie extension with cloud='gcloud', command_tokens array, and credentials"
+    }
+  ],
+  "cross_refs": []
+}

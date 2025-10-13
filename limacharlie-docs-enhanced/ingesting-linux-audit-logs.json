@@ -1,0 +1,38 @@
+{
+  "slug": "ingesting-linux-audit-logs",
+  "title": "Ingesting Linux Audit Logs",
+  "category": "",
+  "metadata": {
+    "summary": "Ingest Linux audit logs using file system browser, artifact collection, or file adapter streaming",
+    "keywords": [
+      "Linux",
+      "audit logs",
+      "adapter",
+      "artifact collection",
+      "auth.log"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Collect and stream Linux authentication and privilege escalation events"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "RUN_ADAPTER",
+      "path": "./lc_adapter file /tmp/config.yml",
+      "description": "Run file adapter with configuration file for log ingestion"
+    },
+    {
+      "type": "config_parameter",
+      "method": "FILE_PATH",
+      "path": "file_path: /var/log/auth.log",
+      "description": "Specify log file path for adapter ingestion"
+    },
+    {
+      "type": "config_parameter",
+      "method": "PLATFORM",
+      "path": "platform: text",
+      "description": "Set ingestion platform type for log parsing"
+    }
+  ],
+  "cross_refs": []
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "what-is-limacharlie",
+  "title": "What is LimaCharlie?",
+  "category": "",
+  "metadata": {
+    "summary": "High-level introduction to the LimaCharlie SecOps Cloud Platform",
+    "keywords": [
+      "introduction",
+      "overview",
+      "platform",
+      "limacharlie"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding what LimaCharlie is and its fundamental purpose"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "use-cases",
+      "relationship": "continuation",
+      "description": "Natural next step after understanding what LimaCharlie is - explores practical applications"
+    },
+    {
+      "target_slug": "quickstart",
+      "relationship": "continuation",
+      "description": "Hands-on introduction after conceptual overview"
+    }
+  ]
+}

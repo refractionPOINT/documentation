@@ -4,43 +4,31 @@
   "slug": "ext-strelka",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Note that usage of ext-strelka will incur usage of Artifact Exporting (applied to processed artifacts at a rate of $0.02/GB) as well as webhook data received in LimaCharlie and the related costs on top of the ext-strelka specific pricing.",
     "keywords": [
       "add-on",
+      "agent",
+      "configuration",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
       "extension",
+      "organization",
+      "response",
+      "rule",
+      "sensor",
       "strelka",
-      "what's"
+      "telemetry",
+      "usage"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-twilio",
-        "title": "Twilio",
-        "score": 13
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 12
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 5
-      },
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 5
-      }
+    "use_cases": [
+      "Threat Detection",
+      "Incident Response",
+      "would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example."
     ]
   },
   "api_elements": [],
-  "content_hash": "75261b4376a6eb7c759e2c2750ce9d046c4424aa4adc5da3f449bd0287d2d741"
+  "content_hash": ""
 }

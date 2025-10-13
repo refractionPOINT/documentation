@@ -1,0 +1,32 @@
+{
+  "slug": "outputs-destinations-google-cloud-pubsub",
+  "title": "Google Cloud Pubsub",
+  "category": "",
+  "metadata": {
+    "summary": "Configure LimaCharlie to stream events and detections to Google Cloud Pubsub topics for real-time processing",
+    "keywords": [
+      "pubsub",
+      "google-cloud",
+      "streaming",
+      "output",
+      "real-time"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Stream LimaCharlie telemetry to Google Cloud Pubsub for real-time event processing and analytics pipelines"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "OUTPUT",
+      "path": "Google Cloud Pubsub",
+      "description": "Output events and detections to a Google Cloud Pubsub topic for real-time streaming"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-google-cloud-storage",
+      "relationship": "related",
+      "description": "Related Google Cloud output destination using GCS for batch storage instead of real-time streaming"
+    }
+  ]
+}

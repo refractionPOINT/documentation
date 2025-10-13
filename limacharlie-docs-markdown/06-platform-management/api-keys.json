@@ -4,12 +4,11 @@
   "slug": "api-keys",
   "category": "",
   "metadata": {
-    "summary": "LimaCharlie Cloud has a concept of API keys. Those are secret keys that can be created and named, and then in turn be used to retrieve a JWT that can be associated with the LC REST API at https://api.limacharlie.io.",
+    "summary": "This allows construction of headless applications able to securely acquire time-restricted REST authentication tokens it can then use.",
     "keywords": [
       "agent",
       "allowed",
       "api",
-      "articles",
       "detection",
       "edr",
       "endpoint",
@@ -20,38 +19,12 @@
       "managing",
       "organization",
       "output",
-      "privileges"
+      "privileges",
+      "python"
     ],
-    "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 18
-      },
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 17
-      },
-      {
-        "slug": "user-access",
-        "title": "User Access",
-        "score": 15
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 15
-      },
-      {
-        "slug": "limacharlie-sdk",
-        "title": "LimaCharlie SDK & CLI",
-        "score": 14
-      }
-    ]
+    "complexity": "intermediate",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d0cbaa06600208ef4e27da60efa679a7128d7a99267f2840b647f860019cdcf8"
+  "content_hash": ""
 }

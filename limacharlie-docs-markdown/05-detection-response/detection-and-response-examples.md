@@ -1,19 +1,3 @@
-# Detection and Response Examples
-The following are sample detection and response rules can help you get started in crafting efficient  rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](/v2/docs/sigma-rules) for more rules.
-
-## Translating Existing Rules
-
-Before listing examples, it's worth mentioning [uncoder.io](https://uncoder.io/) by [SOC Prime](https://socprime.com/) is a great resource for learning by analogy. If you're already familiar with another platform for rules or search queries (Sigma, Splunk, Kibana, etc.) you can use uncoder to translate to LimaCharlie's D&R rules.
-
-Looking for more?
-
-Check out this video that shows you the power of leveraging community resources with LimaCharlie
-
-## Examples
-
-Note that through limacharlie.io, in order to provide an easier to edit format, the same rule configuration is used but is in YAML format instead. For example:
-
-```
 # Detection
 op: ends with
 event: NEW_PROCESS
@@ -410,28 +394,3 @@ name: windows
 ```
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
----
-
-#### Related articles
-
-* [Detection and Response](/docs/detection-and-response)
-* [Detection on Alternate Targets](/docs/detection-on-alternate-targets)
-* [Stateful Rules](/docs/stateful-rules)
-
----
-
-##### What's Next
-
-* [Detection on Alternate Targets](/docs/detection-on-alternate-targets)
-
-Table of contents
-
-+ [Translating Existing Rules](#translating-existing-rules)
-+ [Examples](#examples)
-
-Tags
-
-* [detection and response](/docs/en/tags/detection%20and%20response)
-* [Getting started](/docs/en/tags/Getting%20started "Getting started")
-* [tutorial](/docs/en/tags/tutorial "Tutorial")

@@ -1,0 +1,25 @@
+{
+  "slug": "platform-management",
+  "title": "Platform Management",
+  "category": "",
+  "metadata": {
+    "summary": "Overview of LimaCharlie's platform management capabilities including user permissions, billing, and Cloud Sensor configuration",
+    "keywords": [
+      "management",
+      "configuration",
+      "permissions",
+      "billing",
+      "administration"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Navigate and understand platform management features for controlling LimaCharlie deployment settings and user access"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "release-notes",
+      "relationship": "related",
+      "description": "Release notes document updates to platform management features like Access Management and configuration tools"
+    }
+  ]
+}

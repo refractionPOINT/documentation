@@ -4,14 +4,9 @@
   "slug": "ext-yara-manager",
   "category": "",
   "metadata": {
-    "summary": "The [YARA](https://github.com/Yara-Rules/rules) manager Extension allows you to reference external YARA rules (rules maintained in GitHub, for example) to use in your YARA scans within LimaCharlie.",
+    "summary": "YARA rule sources defined in the YARA manager configuration will be synced every 24 hours, and can be manually synced by clicking the `Manual Sync` button on the extension page.",
     "keywords": [
-      "add-on",
-      "agent",
-      "articles",
       "available",
-      "detection",
-      "endpoint",
       "extension",
       "manager",
       "option",
@@ -19,39 +14,14 @@
       "predefined",
       "private",
       "publicly",
-      "related",
-      "repository"
+      "repository",
+      "rule",
+      "rules",
+      "yara"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent-commands",
-        "title": "Endpoint Agent Commands",
-        "score": 16
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 16
-      },
-      {
-        "slug": "binlib",
-        "title": "BinLib",
-        "score": 15
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 15
-      },
-      {
-        "slug": "ext-yara",
-        "title": "YARA",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a38466419012dd180fd766ce2767e77d6e04cc5a366160a3a1111b9f3d327696"
+  "content_hash": ""
 }

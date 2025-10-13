@@ -4,48 +4,26 @@
   "slug": "agent-deployment-microsoft-intune",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Intune can be used to simplify LimaCharlie Sensor deployment within enterprise environments. To add a custom App to Intune, select the `+ Add` button within the Intune admin center:",
     "keywords": [
       "agent",
-      "articles",
       "deployment",
+      "detection",
+      "edr",
       "endpoint",
+      "extension",
       "intune",
       "microsoft",
-      "related",
+      "organization",
+      "output",
+      "rule",
       "sensor",
-      "what's"
+      "telemetry",
+      "windows"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "chrome-enterprise",
-        "title": "ChromeOS with Google Chrome Enterprise",
-        "score": 16
-      },
-      {
-        "slug": "windows-agent-installation",
-        "title": "Windows Agent Installation",
-        "score": 15
-      },
-      {
-        "slug": "building-a-custom-msi-installer-for-windows",
-        "title": "Building a custom MSI installer for Windows",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "3c197b99c1588426b3fe03fdda5a55ce6472adc60ef86858e8767e0a1346bcf3"
+  "content_hash": ""
 }

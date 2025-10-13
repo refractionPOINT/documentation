@@ -4,44 +4,18 @@
   "slug": "adapter-types-json",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This Adapter allows you to ingest logs from a file as JSON.",
     "keywords": [
-      "articles",
+      "configuration",
+      "deployment",
       "json",
-      "related",
-      "sensor",
-      "what's"
+      "organization",
+      "overview",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-examples-stdin-json",
-        "title": "Stdin JSON",
-        "score": 15
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      },
-      {
-        "slug": "adapter-examples-stdin",
-        "title": "Stdin",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "adapter-types-kubernetes-pods-logs",
-        "title": "Kubernetes Pods Logs",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "efa889640d0233c047d3904378eff628d77fac631ac537cb1ae4e48cf9096a2f"
+  "content_hash": ""
 }

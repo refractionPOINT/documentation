@@ -1,0 +1,37 @@
+{
+  "slug": "lookups",
+  "title": "Lookups",
+  "category": "",
+  "metadata": {
+    "summary": "Create and structure lookups with support for multiple formats including MISP and OTX feeds, with optimized metadata handling for large-scale threat intelligence",
+    "keywords": [
+      "lookups",
+      "threat-intelligence",
+      "MISP",
+      "OTX",
+      "D&R-rules"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Build indicator lists from various threat intelligence sources for automated detection via D&R rules"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/api/lookup (upload)",
+      "description": "Upload lookup data via REST API (max 15MB)"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "config-hive-lookups",
+      "relationship": "alternative",
+      "description": "Shows hive-based approach to managing lookups with IaC support"
+    },
+    {
+      "target_slug": "config-hive",
+      "relationship": "related",
+      "description": "Lookups are stored in the Config Hive system"
+    }
+  ]
+}

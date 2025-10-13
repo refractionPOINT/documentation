@@ -9,25 +9,8 @@
       "reference"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "sensors-reference",
-        "title": "Reference",
-        "score": 8
-      },
-      {
-        "slug": "detection-and-response-reference",
-        "title": "Reference",
-        "score": 8
-      },
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "e9f3681d867633844bd9a2ec4bcc56fa0ca6fca263ccd3c5fec392beaf897a09"
+  "content_hash": ""
 }

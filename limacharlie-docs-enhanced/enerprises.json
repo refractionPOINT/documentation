@@ -1,0 +1,25 @@
+{
+  "slug": "enerprises",
+  "title": "Enterprise SOC",
+  "category": "",
+  "metadata": {
+    "summary": "How enterprises can use the SecOps Cloud Platform to centralize telemetry, improve visibility, reduce SIEM costs, and build custom security solutions",
+    "keywords": [
+      "enterprise",
+      "centralization",
+      "telemetry",
+      "SIEM",
+      "visibility"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Deploy SCP in enterprise environments to consolidate security operations and reduce vendor lock-in"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "secops-development",
+      "relationship": "related",
+      "description": "Enterprises building custom security solutions can leverage SecOps development patterns"
+    }
+  ]
+}

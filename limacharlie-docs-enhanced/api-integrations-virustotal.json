@@ -1,0 +1,32 @@
+{
+  "slug": "api-integrations-virustotal",
+  "title": "VirusTotal",
+  "category": "",
+  "metadata": {
+    "summary": "VirusTotal hash lookup integration for detection rules that evaluates multi-vendor malware detection results",
+    "keywords": [
+      "virustotal",
+      "hash",
+      "malware",
+      "code_identity",
+      "lookup"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Check file hashes against VirusTotal's multi-vendor malware database"
+  },
+  "extracted_apis": [
+    {
+      "type": "lookup_resource",
+      "method": "lookup",
+      "path": "hive://lookup/vt",
+      "description": "Query VirusTotal for hash reputation data"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "add-ons-api-integrations",
+      "relationship": "prerequisite",
+      "description": "Core concepts of API-based lookups and metadata_rules"
+    }
+  ]
+}

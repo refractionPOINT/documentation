@@ -4,40 +4,23 @@
   "slug": "tutorials-1",
   "category": "",
   "metadata": {
-    "summary": "8 Articles  in this category",
+    "summary": "Example Playbook for detecting when sensors stop sending expected data.](/docs/non-responding-sensors)",
     "keywords": [
+      "detection",
+      "edr",
+      "event",
+      "organization",
+      "response",
+      "rule",
+      "sensor",
+      "telemetry",
       "tutorials"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "tutorials",
-        "title": "Tutorials",
-        "score": 11
-      },
-      {
-        "slug": "detection-and-response-tutorials",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "tutorials-3",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "adapter-tutorials",
-        "title": "Adapter Tutorials",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-tutorials",
-        "title": "Add-Ons Tutorials",
-        "score": 3
-      }
+    "use_cases": [
+      ". We also recommend testing on dev ...](/docs/test-a-new-sensor-version)"
     ]
   },
   "api_elements": [],
-  "content_hash": "d1f83744c88af9b80df609aa9e8fe359045449bc3dddc11e3f333e717514bf98"
+  "content_hash": ""
 }

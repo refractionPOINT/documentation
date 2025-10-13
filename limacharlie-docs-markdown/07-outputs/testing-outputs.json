@@ -4,45 +4,16 @@
   "slug": "testing-outputs",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "After you have confirmed that the output configurations works, you can switch the data stream from `Audit` to the one you are looking to use.",
     "keywords": [
-      "articles",
+      "event",
       "output",
       "outputs",
-      "related",
-      "testing",
-      "what's"
+      "testing"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "template-strings-and-transforms",
-        "title": "Template Strings and Transforms",
-        "score": 13
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 13
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 6
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 6
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "fc4f5008d7cdf0c13f61f89381c166e60d108d062e63cbdd43b0ded63549a813"
+  "content_hash": ""
 }

@@ -1,0 +1,56 @@
+{
+  "slug": "outputs-destinations-syslog",
+  "title": "Syslog",
+  "category": "",
+  "metadata": {
+    "summary": "Configure syslog output over TCP or TLS to send events and detections to a syslog target.",
+    "keywords": [
+      "syslog",
+      "TCP",
+      "TLS",
+      "output",
+      "streaming"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Stream LimaCharlie events and detections to a syslog-compatible SIEM or log aggregation system"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "dest_host",
+      "description": "IP or DNS and port to connect to (format: www.myorg.com:514)"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "is_tls",
+      "description": "Enable TCP/TLS output (boolean)"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "is_strict_tls",
+      "description": "Enforce TLS certificate validation (boolean)"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "is_no_header",
+      "description": "Skip syslog header to convert to plain TCP output (boolean)"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "structured_data",
+      "description": "Arbitrary field for syslog Structured Data headers"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-apache-kafka",
+      "relationship": "alternative",
+      "description": "Alternative protocol-based streaming output for events and detections"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "slug": "uncovering-adversary-techniques",
+  "title": "Uncovering Adversary Techniques",
+  "category": "",
+  "metadata": {
+    "summary": "Detect ransomware during reconnaissance stage and enable rapid response through comprehensive telemetry and real-time endpoint control",
+    "keywords": [
+      "ransomware",
+      "adversary techniques",
+      "reconnaissance",
+      "early detection",
+      "real-time response"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Detect and stop ransomware attacks during the reconnaissance phase before detonation occurs"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "threat-hunting",
+      "relationship": "related",
+      "description": "Threat hunting capabilities enable detection of adversary reconnaissance activities before ransomware detonation"
+    },
+    {
+      "target_slug": "incident-response",
+      "relationship": "continuation",
+      "description": "When adversary techniques are detected, incident response capabilities enable real-time remediation and containment"
+    }
+  ]
+}

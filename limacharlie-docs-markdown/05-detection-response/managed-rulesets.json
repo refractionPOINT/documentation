@@ -17,35 +17,8 @@
       "what's"
     ],
     "complexity": "beginner",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "soteria-rules",
-        "title": "Soteria Rules",
-        "score": 17
-      },
-      {
-        "slug": "soteria-aws-rules",
-        "title": "Soteria AWS Rules",
-        "score": 17
-      },
-      {
-        "slug": "soteria-edr-rules",
-        "title": "Soteria EDR Rules",
-        "score": 17
-      },
-      {
-        "slug": "sigma-converter",
-        "title": "Sigma Converter",
-        "score": 16
-      },
-      {
-        "slug": "soc-prime-rules",
-        "title": "SOC Prime Rules",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "3913479cd8e4bed19b66bf3ca146dee3086e27bee9602e3dc13078910aef61fc"
+  "content_hash": ""
 }

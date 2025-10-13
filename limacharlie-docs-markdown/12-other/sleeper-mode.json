@@ -4,44 +4,27 @@
   "slug": "sleeper-mode",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Traditional IR relies on reactive deployment of sensors, leaving critical blind spots during early stages of an incident. Delays in gaining visibility slow down response times and increase damage potential.",
     "keywords": [
+      "api",
+      "deployment",
+      "edr",
+      "endpoint",
+      "event",
+      "limacharlie\u2019s",
       "mode",
+      "problems",
+      "response",
+      "sensor",
       "sleeper",
-      "what's"
+      "solution",
+      "traditional"
     ],
     "complexity": "intermediate",
     "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "ma-cyber-due-diligence",
-        "title": "M&A Cyber Due Diligence",
-        "score": 11
-      },
-      {
-        "slug": "sleeper",
-        "title": "Sleeper Deployment",
-        "score": 6
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      }
+      "Forensics"
     ]
   },
   "api_elements": [],
-  "content_hash": "74f5f14d9ba824bef969964acc31d2e6b994b59563385c7e5ea9d0bd1ab70561"
+  "content_hash": ""
 }

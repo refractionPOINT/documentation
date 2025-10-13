@@ -1,0 +1,19 @@
+{
+  "slug": "template-strings-and-transforms",
+  "title": "Template Strings and Transforms",
+  "category": "",
+  "metadata": {
+    "summary": "Explains output transforms and template strings for extracting and formatting event data with custom modifiers",
+    "keywords": [
+      "transforms",
+      "templates",
+      "gjson",
+      "output",
+      "parsing"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Transform and extract specific fields from events for outputs and integrations"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

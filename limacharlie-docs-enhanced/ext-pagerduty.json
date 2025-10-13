@@ -1,0 +1,54 @@
+{
+  "slug": "ext-pagerduty",
+  "title": "PagerDuty",
+  "category": "",
+  "metadata": {
+    "summary": "Trigger PagerDuty incidents from LimaCharlie detection rules using Events API v2",
+    "keywords": [
+      "pagerduty",
+      "incident",
+      "alerting",
+      "notification",
+      "events-api"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Send critical security alerts to PagerDuty for incident management and on-call response"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-pagerduty/trigger",
+      "description": "Trigger a PagerDuty event with summary, source, severity, component, group, and class"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie extension convert_rules --name ext-pagerduty",
+      "description": "Preview PagerDuty rule conversion from legacy service to extension (dry-run)"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie extension convert_rules --name ext-pagerduty --no-dry-run",
+      "description": "Execute PagerDuty rule conversion from legacy service to extension"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-twilio",
+      "relationship": "alternative",
+      "description": "Alternative notification method using SMS instead of PagerDuty alerts"
+    },
+    {
+      "target_slug": "ext-usage-alerts",
+      "relationship": "related",
+      "description": "Can be used together to trigger PagerDuty alerts when usage thresholds are exceeded"
+    },
+    {
+      "target_slug": "ext-govee",
+      "relationship": "alternative",
+      "description": "Alternative visual notification method using physical lights instead of PagerDuty"
+    }
+  ]
+}

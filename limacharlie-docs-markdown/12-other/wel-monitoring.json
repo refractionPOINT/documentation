@@ -4,43 +4,27 @@
   "slug": "wel-monitoring",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Limited real-time visibility:** Traditional WEL monitoring solutions often rely on periodic log collection, resulting in delayed visibility into potential security incidents, limiting real-time visibility. * **Complex and costly infrastructure:** Forwarding WEL data to a centralized monitorin...",
     "keywords": [
+      "agent",
+      "api",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "limacharlie\u2019s",
       "monitoring",
-      "what's"
+      "organization",
+      "problems",
+      "response",
+      "rule",
+      "sensor",
+      "solution"
     ],
-    "complexity": "intermediate",
-    "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "soar-automation",
-        "title": "SOAR / Automation",
-        "score": 11
-      },
-      {
-        "slug": "file-and-registry-integrity-monitoring-fim-deployments",
-        "title": "File and Registry Integrity Monitoring (FIM) Deployments",
-        "score": 4
-      },
-      {
-        "slug": "security-monitoring-for-devops",
-        "title": "Security Monitoring for DevOps",
-        "score": 4
-      },
-      {
-        "slug": "network-monitoring",
-        "title": "Network Monitoring",
-        "score": 4
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      }
-    ]
+    "complexity": "advanced",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d4c5f15b1603c0e8dd747ef113fcd28c3e93f0b7a2b97dd8e8c5eff00dd08a04"
+  "content_hash": ""
 }

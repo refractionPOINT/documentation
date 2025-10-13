@@ -9,7 +9,6 @@
       "adapter",
       "adapter-specific",
       "api",
-      "articles",
       "bucket",
       "cloud-to-cloud",
       "cloudtrail",
@@ -20,40 +19,14 @@
       "detection",
       "event",
       "guardduty",
-      "guided"
+      "guided",
+      "options"
     ],
     "complexity": "intermediate",
     "use_cases": [
       "Threat Detection"
-    ],
-    "related_pages": [
-      {
-        "slug": "adapter-types-aws-cloudtrail",
-        "title": "AWS CloudTrail",
-        "score": 22
-      },
-      {
-        "slug": "adapter-types-azure-event-hub",
-        "title": "Azure Event Hub",
-        "score": 17
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 15
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 14
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "52fc1cd36df60d4a65283b9fb53c48bff9239a938ba0a79111075c2c222de722"
+  "content_hash": ""
 }

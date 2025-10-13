@@ -1,0 +1,38 @@
+{
+  "slug": "ext-cloud-cli-aws",
+  "title": "AWS",
+  "category": "",
+  "metadata": {
+    "summary": "Execute AWS CLI commands directly from LimaCharlie to interact with EC2, IAM, and other AWS services using access keys stored in secrets manager",
+    "keywords": [
+      "aws",
+      "ec2",
+      "cloud-cli",
+      "aws-credentials",
+      "access-keys"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Automate AWS infrastructure responses like stopping EC2 instances based on security telemetry from AWS CloudTrail"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "POST",
+      "path": "aws ec2 stop-instances",
+      "description": "Stop EC2 instances using instance IDs with region specification"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-cloud-cli/run",
+      "description": "Execute AWS CLI commands through LimaCharlie extension framework"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-cloud-cli",
+      "relationship": "prerequisite",
+      "description": "Core Cloud CLI extension concepts and usage patterns required before AWS-specific implementation"
+    }
+  ]
+}

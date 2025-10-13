@@ -4,11 +4,9 @@
   "slug": "ext-usage-alerts",
   "category": "",
   "metadata": {
-    "summary": "The usage alerts Extension allows you to create, maintain, & automatically refresh usage alert conditions for an Organization.",
+    "summary": "For example, you can create a usage alert rule that will fire a detection when artifact downloads have reached a 1GB threshold in the last 30 days (43200 minutes). This alert will be saved as a managed  rule. When the threshold is reached, a detection will be created with the following `cat`:",
     "keywords": [
-      "add-on",
       "alerts",
-      "articles",
       "d&r",
       "detection",
       "event",
@@ -16,42 +14,14 @@
       "infrastructure",
       "organization",
       "output",
-      "related",
       "response",
       "rule",
       "sensor",
       "usage"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-yara",
-        "title": "YARA",
-        "score": 19
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 18
-      },
-      {
-        "slug": "ext-infrastructure",
-        "title": "Infrastructure",
-        "score": 18
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 16
-      },
-      {
-        "slug": "ext-yara-manager",
-        "title": "YARA Manager",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b6e57a55465f4f526e6e5ed437cb3549383f847c931d2f033a3e2a8bfd610f63"
+  "content_hash": ""
 }

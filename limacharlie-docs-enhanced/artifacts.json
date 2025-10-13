@@ -1,0 +1,32 @@
+{
+  "slug": "artifacts",
+  "title": "Artifacts",
+  "category": "",
+  "metadata": {
+    "summary": "Artifact Collection ingests and indexes diverse file types (logs, PCAPs, executables) from sensors or REST API for searchable security investigation",
+    "keywords": [
+      "artifacts",
+      "logs",
+      "pcap",
+      "ingestion",
+      "indexing"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Collect, retain, and search various artifact types (logs, network captures, system files) for tactical investigation during security operations"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "artifact_get",
+      "path": "artifact_get --type <type> --file <path> --days-retention <days>",
+      "description": "Manually ingest an artifact file from a host with LC sensor installed"
+    },
+    {
+      "type": "cli_command",
+      "method": "pcap_ifaces",
+      "path": "pcap_ifaces",
+      "description": "List available network interfaces for PCAP capture on Linux sensors"
+    }
+  ],
+  "cross_refs": []
+}

@@ -4,48 +4,17 @@
   "slug": "azure-sql-audit-logs",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "LimaCharlie can ingest and natively parse Azure SQL Server audit logs.",
     "keywords": [
-      "articles",
       "audit",
       "azure",
       "event",
-      "logs",
-      "output",
-      "related",
-      "sensor",
-      "what's"
+      "ingestion",
+      "logs"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 17
-      },
-      {
-        "slug": "azure-network-security-group",
-        "title": "Azure Network Security Group",
-        "score": 17
-      },
-      {
-        "slug": "azure-monitor",
-        "title": "Azure Monitor",
-        "score": 17
-      },
-      {
-        "slug": "azure-logs-key-vault",
-        "title": "Azure Key Vault",
-        "score": 17
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "3837de14a30a63138b875463f60fc64c27a90512916c324118cec3e864b3a07a"
+  "content_hash": ""
 }

@@ -1,0 +1,35 @@
+{
+  "slug": "faq",
+  "title": "FAQ",
+  "category": "",
+  "metadata": {
+    "summary": "Overview page linking to all FAQ categories including general platform, sensor installation/removal, troubleshooting, privacy, account management, billing, and invoices",
+    "keywords": [
+      "faq",
+      "overview",
+      "index",
+      "help",
+      "documentation"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Navigate to specific FAQ topics across the LimaCharlie platform"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "faq-general",
+      "relationship": "related",
+      "description": "General platform security, data residency, and initial setup questions"
+    },
+    {
+      "target_slug": "faq-troubleshooting",
+      "relationship": "related",
+      "description": "Sensor troubleshooting and connectivity issues"
+    },
+    {
+      "target_slug": "faq-account-management",
+      "relationship": "related",
+      "description": "Organization management, user settings, and account lifecycle"
+    }
+  ]
+}

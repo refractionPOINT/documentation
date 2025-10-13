@@ -1,0 +1,43 @@
+{
+  "slug": "adapter-types-okta",
+  "title": "Okta",
+  "category": "",
+  "metadata": {
+    "summary": "Ingest Okta system logs and authentication events using the Okta API adapter with hive secret credential storage.",
+    "keywords": [
+      "okta",
+      "sso",
+      "identity",
+      "authentication",
+      "adapter"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Monitor Okta authentication events and user activity for security visibility"
+  },
+  "extracted_apis": [
+    {
+      "type": "adapter_config",
+      "method": "CONFIG",
+      "path": "sensor_type: okta",
+      "description": "Configure Okta system log adapter with API token authentication"
+    },
+    {
+      "type": "external_api",
+      "method": "GET",
+      "path": "https://developer.okta.com/docs/reference/api/system-log/",
+      "description": "Okta System Log API reference"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-duo",
+      "relationship": "alternative",
+      "description": "Alternative SSO/identity provider adapter with similar authentication event collection capabilities"
+    },
+    {
+      "target_slug": "adapter-types-tailscale",
+      "relationship": "related",
+      "description": "Related identity and access management event ingestion via webhook adapter"
+    }
+  ]
+}

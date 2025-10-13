@@ -1,0 +1,36 @@
+{
+  "slug": "lcql",
+  "title": "LimaCharlie Query Language",
+  "category": "",
+  "metadata": {
+    "summary": "Reference documentation for LimaCharlie Query Language (LCQL) syntax including filters, projections, and aggregations",
+    "keywords": [
+      "LCQL",
+      "syntax",
+      "query language",
+      "filters",
+      "projections",
+      "aggregations"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Understanding LCQL syntax to write effective queries for searching telemetry"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "lcql-examples",
+      "relationship": "continuation",
+      "description": "Practical examples demonstrating LCQL syntax and patterns"
+    },
+    {
+      "target_slug": "query-console-ui",
+      "relationship": "related",
+      "description": "UI interface that uses LCQL for queries"
+    },
+    {
+      "target_slug": "query-with-cli",
+      "relationship": "related",
+      "description": "CLI interface that uses LCQL for queries"
+    }
+  ]
+}

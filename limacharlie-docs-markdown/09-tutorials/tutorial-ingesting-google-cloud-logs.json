@@ -4,14 +4,13 @@
   "slug": "tutorial-ingesting-google-cloud-logs",
   "category": "",
   "metadata": {
-    "summary": "With LimaCharlie, you can easily ingest Google Cloud logs for further processing and automation. This article covers the following high-level steps of shipping logs from GCP into LimaCharlie:",
+    "summary": "1. Create a Log Sink to Pubsub in GCP 2. Create a Subscription for the Topic 3. Create a Service Account with the required permissions.",
     "keywords": [
       "[optional]",
       "account",
       "adapter",
       "agent",
       "api",
-      "articles",
       "cloud",
       "create",
       "edr",
@@ -20,37 +19,11 @@
       "google",
       "ingesting",
       "installation",
-      "instance"
+      "instance",
+      "limacharlie"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 18
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 16
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 16
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 16
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [
     {
@@ -64,5 +37,5 @@
       "full": "chmod +x lc_adapter"
     }
   ],
-  "content_hash": "eb1b700224a0bf948460c7e54aa27739eeb7fe06305f68fad9e17446eb15ff9b"
+  "content_hash": ""
 }

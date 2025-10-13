@@ -4,12 +4,10 @@
   "slug": "ext-hayabusa",
   "category": "",
   "metadata": {
-    "summary": "Hayabusa Extension Pricing",
+    "summary": "While it is free to enable the Hayabusa extension, pricing is applied to downloaded and processed artifacts -- $0.02/GB for the original artifact, and $0.5/GB for the generation of the Hayabusa artifact.",
     "keywords": [
-      "add-on",
       "agent",
       "arguments",
-      "articles",
       "configuration",
       "d&r",
       "detection",
@@ -20,41 +18,16 @@
       "extension",
       "generate",
       "hayabusa",
-      "organization"
+      "organization",
+      "output",
+      "query"
     ],
     "complexity": "advanced",
     "use_cases": [
       "Forensics",
       "of this extension would be to trigger Hayabusa analysis upon ingestion of a Velociraptor KAPE files artifact."
-    ],
-    "related_pages": [
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 19
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 18
-      },
-      {
-        "slug": "ingesting-sysmon-event-logs",
-        "title": "Ingesting Sysmon Event Logs",
-        "score": 17
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 16
-      },
-      {
-        "slug": "ext-velociraptor",
-        "title": "Velociraptor",
-        "score": 16
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "9e157e30b4ff81625370f061e037fc38b270899be301e2e6e359777e331fff6a"
+  "content_hash": ""
 }

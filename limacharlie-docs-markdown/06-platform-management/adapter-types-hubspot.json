@@ -4,45 +4,26 @@
   "slug": "adapter-types-hubspot",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This Adapter allows you to connect to HubSpot to fetch [account activity logs](https://developers.hubspot.com/docs/guides/api/settings/account-activity-api).",
     "keywords": [
+      "adapter-specific",
       "api",
-      "articles",
+      "configurations",
+      "deployment",
+      "event",
       "hubspot",
-      "related",
-      "sensor",
-      "what's"
+      "infrastructure",
+      "manual",
+      "options",
+      "organization",
+      "overview",
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-google-workspace",
-        "title": "Google Workspace",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 14
-      },
-      {
-        "slug": "adapter-types-okta",
-        "title": "Okta",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "536dcadb141930e36a44fbcf66852eeb7dfb8a271fa456c7a60bdfeede542c33"
+  "content_hash": ""
 }

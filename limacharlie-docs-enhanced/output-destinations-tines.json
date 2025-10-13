@@ -1,0 +1,25 @@
+{
+  "slug": "output-destinations-tines",
+  "title": "Tines",
+  "category": "",
+  "metadata": {
+    "summary": "Integrate LimaCharlie detections and events with Tines SOAR platform via webhooks",
+    "keywords": [
+      "tines",
+      "soar",
+      "automation",
+      "workflow",
+      "integration"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Automate incident response workflows by sending LimaCharlie events to Tines"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-webhook",
+      "relationship": "prerequisite",
+      "description": "Tines integration uses webhook mechanism for event delivery"
+    }
+  ]
+}

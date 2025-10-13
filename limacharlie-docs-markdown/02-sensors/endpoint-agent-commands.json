@@ -4,11 +4,10 @@
   "slug": "endpoint-agent-commands",
   "category": "",
   "metadata": {
-    "summary": "Endpoint Agent commands offer a safe way to interact with a Sensor's host either for investigation, management, or threat mitigation purposes.",
+    "summary": "Commands can be sent to Sensors via:",
     "keywords": [
       "agent",
       "api",
-      "articles",
       "command",
       "commands",
       "detection",
@@ -19,39 +18,13 @@
       "investigation",
       "organization",
       "output",
-      "related",
-      "response"
+      "response",
+      "rule",
+      "sending"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 20
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 20
-      },
-      {
-        "slug": "endpoint-agent-events-overview",
-        "title": "Endpoint Agent Events Overview",
-        "score": 19
-      },
-      {
-        "slug": "payloads",
-        "title": "Payloads",
-        "score": 19
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 19
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "5bd0e6c30db2a7f7d01b169321f8d448b8905a2fe36b582f7a6043afc0a76df3"
+  "content_hash": ""
 }

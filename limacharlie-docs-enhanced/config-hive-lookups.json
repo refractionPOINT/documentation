@@ -1,0 +1,37 @@
+{
+  "slug": "config-hive-lookups",
+  "title": "Config Hive: Lookups",
+  "category": "",
+  "metadata": {
+    "summary": "Configure lookups as key-value dictionaries in the Config Hive for use in detection and response rules with support for multiple data formats",
+    "keywords": [
+      "lookups",
+      "key-value",
+      "dictionary",
+      "infrastructure-as-code",
+      "lookup-manager"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Create and manage lookups for threat intelligence and indicator matching in D&R rules"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive set lookup --key <name> --data <file>",
+      "description": "Create a lookup in the lookup hive"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "config-hive",
+      "relationship": "prerequisite",
+      "description": "Understanding Config Hive structure is essential before working with lookups"
+    },
+    {
+      "target_slug": "lookups",
+      "relationship": "related",
+      "description": "Provides detailed information on lookup formats and D&R rule integration"
+    }
+  ]
+}

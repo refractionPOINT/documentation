@@ -10,7 +10,6 @@
       "10.15",
       "agent",
       "api",
-      "articles",
       "catalina",
       "edr",
       "endpoint",
@@ -20,38 +19,12 @@
       "installer",
       "macos",
       "older",
-      "options"
+      "options",
+      "organization"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "macos-agent-installation-older-versions",
-        "title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
-        "score": 17
-      },
-      {
-        "slug": "macos-agent-installation-mdm-configuration-profiles",
-        "title": "macOS Agent Installation - MDM Configuration Profiles",
-        "score": 17
-      },
-      {
-        "slug": "installing-macos-agents-via-jamf-now",
-        "title": "macOS Agent Installation via Jamf Now",
-        "score": 17
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 16
-      },
-      {
-        "slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
-        "title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "7c854acfb5aba4aa86038632b901c162db011195fa0fdc5d05324a5e83b2a4fb"
+  "content_hash": ""
 }

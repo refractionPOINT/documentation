@@ -4,47 +4,23 @@
   "slug": "edge-agent-installation",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "The Edge sensor is available in the Edge Add-ons section.",
     "keywords": [
+      "add-on",
       "agent",
-      "articles",
       "edge",
+      "edr",
       "endpoint",
+      "extension",
       "installation",
-      "related",
+      "instructions",
+      "organization",
       "sensor",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "chrome-agent-installation",
-        "title": "Chrome Agent Installation",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "chrome-enterprise",
-        "title": "ChromeOS with Google Chrome Enterprise",
-        "score": 16
-      },
-      {
-        "slug": "linux-agent-installation",
-        "title": "Linux Agent Installation",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "24916ddaebb889b18820bb731fb56b322a12b3c2a4f87b4b1253f46dcc7b93be"
+  "content_hash": ""
 }

@@ -1,0 +1,25 @@
+{
+  "slug": "soar-automation",
+  "title": "SOAR / Automation",
+  "category": "",
+  "metadata": {
+    "summary": "Consolidated security orchestration, automation, and response with data normalization, bi-directional integrations, and API-driven automated remediation.",
+    "keywords": [
+      "SOAR",
+      "automation",
+      "orchestration",
+      "data normalization",
+      "automated response"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Build automated security workflows that detect threats and trigger automated responses across your security stack"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "security-monitoring-for-devops",
+      "relationship": "related",
+      "description": "SOAR automation capabilities support automated security workflows in DevOps environments"
+    }
+  ]
+}

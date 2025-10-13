@@ -1,0 +1,25 @@
+{
+  "slug": "reference-id-schema",
+  "title": "Reference: ID Schema",
+  "category": "",
+  "metadata": {
+    "summary": "Defines Agent IDs, Device IDs, Installer IDs, Organization IDs, platform codes, and architecture identifiers",
+    "keywords": [
+      "agent-id",
+      "device-id",
+      "platform",
+      "architecture",
+      "identifier"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Understand and interpret LimaCharlie sensor and device identification schemes"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "reference-error-codes",
+      "relationship": "related",
+      "description": "Error codes used when working with sensors and devices identified by these ID schemas"
+    }
+  ]
+}

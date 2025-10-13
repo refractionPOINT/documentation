@@ -26,35 +26,8 @@
     "use_cases": [
       ". Utilizing the Artifact Collection capability can automate artifact collection across a fleet, whereas sensor commands can help collect files from a single Sensor under investigation.",
       "such as local admin users attempting to uninstall the LimaCharlie service. Please note that sealed status is currently only reflected in `CONNECTED` and `SYNC` events."
-    ],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent-commands",
-        "title": "Endpoint Agent Commands",
-        "score": 17
-      },
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 16
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 16
-      },
-      {
-        "slug": "response-actions",
-        "title": "Response Actions",
-        "score": 16
-      },
-      {
-        "slug": "ext-yara",
-        "title": "YARA",
-        "score": 16
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "b9abeb4e818e2e88301dacb93d339aba7dae6ada26735b4b33ee1f32723dfb2b"
+  "content_hash": ""
 }

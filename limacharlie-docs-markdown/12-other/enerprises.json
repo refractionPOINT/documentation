@@ -4,7 +4,7 @@
   "slug": "enerprises",
   "category": "",
   "metadata": {
-    "summary": "The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.",
+    "summary": "The SCP delivers core cybersecurity capabilities and infrastructure via a public cloud model: on-demand, pay-per-use, and API-first. For the cybersecurity industry, this is a paradigm shift comparable to how the IT public cloud revolutionized IT.",
     "keywords": [
       "add-on",
       "agent",
@@ -25,37 +25,9 @@
     "complexity": "advanced",
     "use_cases": [
       "Compliance",
-      "](/docs/en/tags/use%20case)",
       ". Teams should begin by identifying their one-off tools and vendors and determining how they can be replaced with an SCP solution. The SecOps Cloud Platform offers a rich ecosystem of [100+ cybersecurity capabilities and integrations](https://limacharlie.io/secops-cloud-platform-guide-enterprise-soc#:~:text=100%2B%20cybersecurity%20capabilities%20and%20integrations) and a [marketplace of add-ons](https://docs.limacharlie.io/docs/add-ons) to extend the platform. In many cases, teams will find that it is possible to replace single-use vendors with an SCP solution that offers equal or better performance, reducing tool sprawl and improving security operations at the same time."
-    ],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 18
-      },
-      {
-        "slug": "response-actions",
-        "title": "Response Actions",
-        "score": 17
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-vmware-carbon-black",
-        "title": "VMWare Carbon Black",
-        "score": 13
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "ec5649ae8622815e3d7921c72f5270fb18868e93ab223e918116a5f1653c22bf"
+  "content_hash": ""
 }

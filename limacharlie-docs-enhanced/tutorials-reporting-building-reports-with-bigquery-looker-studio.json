@@ -1,0 +1,38 @@
+{
+  "slug": "tutorials-reporting-building-reports-with-bigquery-looker-studio",
+  "title": "Building Reports with BigQuery + Looker Studio",
+  "category": "",
+  "metadata": {
+    "summary": "Build visual reports and dashboards using LimaCharlie data exported to BigQuery and analyzed with Google Looker Studio",
+    "keywords": [
+      "reporting",
+      "bigquery",
+      "looker-studio",
+      "visualization",
+      "dashboards"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Create custom security reports and dashboards by exporting filtered EDR telemetry to BigQuery and visualizing in Looker Studio"
+  },
+  "extracted_apis": [
+    {
+      "type": "output_configuration",
+      "method": "OUTPUT",
+      "path": "events/google_cloud_bigquery",
+      "description": "Configure BigQuery output for Windows network connections with custom transform"
+    },
+    {
+      "type": "custom_transform",
+      "method": "TRANSFORM",
+      "path": "{\"hostname\": \"routing.hostname\", \"command_line\": \"event.COMMAND_LINE\", \"user\": \"event.USER_NAME\"}",
+      "description": "Transform to extract hostname, command line, and username from NETWORK_CONNECTIONS events"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-google-cloud-bigquery",
+      "relationship": "prerequisite",
+      "description": "Base BigQuery output configuration required for this reporting tutorial"
+    }
+  ]
+}

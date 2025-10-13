@@ -4,44 +4,26 @@
   "slug": "purple-teaming",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Slow and cumbersome purple teaming exercises:** Traditional purple teaming setups involve deploying complex infrastructure, manually configuring attack simulations, and waiting for results, hindering the frequency and efficiency of security validation. * **Limited visibility and control:** Si...",
     "keywords": [
+      "api",
+      "integration",
+      "limacharlie\u2019s",
+      "organization",
+      "output",
+      "problems",
       "purple",
-      "teaming",
-      "what's"
+      "response",
+      "sensor",
+      "siem",
+      "solution",
+      "teaming"
     ],
-    "complexity": "intermediate",
+    "complexity": "advanced",
     "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "threat-hunting",
-        "title": "Threat Hunting",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 3
-      }
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "61787634fb3f43944b63818ee3be72f18ab252ef19996a2e1431f9babd2267d9"
+  "content_hash": ""
 }

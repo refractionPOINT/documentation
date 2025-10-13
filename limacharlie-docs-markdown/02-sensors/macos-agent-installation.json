@@ -4,48 +4,22 @@
   "slug": "macos-agent-installation",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Executing the installer via the command line, pass the `-i INSTALLATION_KEY` argument where `INSTALLATION_KEY` is the key mentioned above.",
     "keywords": [
       "agent",
-      "articles",
+      "edr",
       "endpoint",
-      "event",
       "installation",
+      "instructions",
       "macos",
-      "related",
+      "organization",
       "sensor",
-      "what's"
+      "telemetry",
+      "uninstalling"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 17
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 17
-      },
-      {
-        "slug": "ingesting-macos-unified-logs",
-        "title": "Ingesting MacOS Unified Logs",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-mac-unified-logging",
-        "title": "Mac Unified Logging",
-        "score": 16
-      },
-      {
-        "slug": "macos-agent-installation-mdm-configuration-profiles",
-        "title": "macOS Agent Installation - MDM Configuration Profiles",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "53352722137dd72477270aa75c7221bbbe9bd5e62407055fbf625dbc550b49e5"
+  "content_hash": ""
 }

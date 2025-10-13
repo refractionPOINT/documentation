@@ -1,0 +1,61 @@
+{
+  "slug": "ingesting-sysmon-event-logs",
+  "title": "Ingesting Sysmon Event Logs",
+  "category": "",
+  "metadata": {
+    "summary": "Deploy Sysmon and ingest its event logs via LimaCharlie WEL streaming for enhanced Windows telemetry",
+    "keywords": [
+      "sysmon",
+      "windows event log",
+      "deployment automation",
+      "artifact collection",
+      "wel streaming"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Add Sysmon telemetry to Windows endpoints and stream logs through LimaCharlie"
+  },
+  "extracted_apis": [
+    {
+      "type": "artifact_pattern",
+      "method": "PATTERN",
+      "path": "wel://Microsoft-Windows-Sysmon/Operational:*",
+      "description": "Collect all Sysmon operational events"
+    },
+    {
+      "type": "artifact_pattern",
+      "method": "PATTERN",
+      "path": "wel://Microsoft-Windows-Sysmon/Operational:16",
+      "description": "Collect specific Sysmon event ID (filtered)"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "put --payload-name sysmon.exe --payload-path \"C:\\Windows\\Temp\\sysmon.exe\"",
+      "description": "Deploy Sysmon binary via LimaCharlie task command"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "run --shell-command \"C:\\Windows\\Temp\\sysmon.exe -accepteula -i C:\\Windows\\Temp\\sysmon-config.xml\"",
+      "description": "Install Sysmon with configuration file"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "restart",
+      "description": "Restart LimaCharlie agent to enable Sysmon collection"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ingesting-windows-event-logs",
+      "relationship": "prerequisite",
+      "description": "Base WEL ingestion setup required before adding Sysmon-specific collection"
+    },
+    {
+      "target_slug": "wel-monitoring",
+      "relationship": "related",
+      "description": "Sysmon enhances WEL monitoring capabilities"
+    }
+  ]
+}

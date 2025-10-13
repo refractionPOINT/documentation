@@ -1,0 +1,47 @@
+{
+  "slug": "macos-agent-installation-mdm-configuration-profiles",
+  "title": "macOS Agent Installation - MDM Configuration Profiles",
+  "category": "",
+  "metadata": {
+    "summary": "MDM configuration profile setup for enterprise deployment of LimaCharlie agent on macOS without user approval dialogs.",
+    "keywords": [
+      "mdm",
+      "configuration-profile",
+      "enterprise",
+      "jamf",
+      "silent-installation"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Deploy LimaCharlie sensor at scale across macOS fleet using MDM to pre-approve system extensions and permissions"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "install",
+      "path": "Place com.refractionpoint.rphcp.client.plist in /Library/Preferences",
+      "description": "Enable silent installation by placing preference file before installation"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "macos-agent-installation",
+      "relationship": "prerequisite",
+      "description": "Parent page listing this as an alternative installation method"
+    },
+    {
+      "target_slug": "macos-agent-installation-latest-os-versions",
+      "relationship": "related",
+      "description": "Shows the system approval dialogs that MDM profiles bypass"
+    },
+    {
+      "target_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "relationship": "related",
+      "description": "Shows the system approval dialogs that MDM profiles bypass"
+    },
+    {
+      "target_slug": "macos-agent-installation-via-microsoft-intune",
+      "relationship": "continuation",
+      "description": "Specific implementation of MDM deployment using Microsoft Intune"
+    }
+  ]
+}

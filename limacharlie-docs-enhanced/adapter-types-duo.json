@@ -1,0 +1,43 @@
+{
+  "slug": "adapter-types-duo",
+  "title": "Duo",
+  "category": "",
+  "metadata": {
+    "summary": "Ingest Duo Security authentication logs using the Admin API adapter with integration and secret key credentials.",
+    "keywords": [
+      "duo",
+      "mfa",
+      "authentication",
+      "security",
+      "adapter"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Monitor multi-factor authentication events and access patterns from Duo Security"
+  },
+  "extracted_apis": [
+    {
+      "type": "adapter_config",
+      "method": "CONFIG",
+      "path": "sensor_type: duo",
+      "description": "Configure Duo Security adapter with integration key and secret key authentication"
+    },
+    {
+      "type": "external_api",
+      "method": "GET",
+      "path": "https://duo.com/docs/adminapi",
+      "description": "Duo Admin API documentation reference"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-okta",
+      "relationship": "alternative",
+      "description": "Alternative SSO/identity provider adapter for authentication event monitoring"
+    },
+    {
+      "target_slug": "adapter-types-tailscale",
+      "relationship": "related",
+      "description": "Related identity and access management event ingestion with different authentication mechanism"
+    }
+  ]
+}

@@ -4,43 +4,19 @@
   "slug": "ext-cloud-cli-digitalocean",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This extension makes use of DigitalOcean's official CLI tool, which can be found [here](https://github.com/digitalocean/doctl). Reference documentation can be found [here](https://docs.digitalocean.com/reference/doctl/reference/).",
     "keywords": [
-      "add-on",
+      "api",
+      "credentials",
       "digitalocean",
+      "example",
       "extension",
-      "what's"
+      "organization",
+      "response"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-cloud-cli-github",
-        "title": "GitHub",
-        "score": 13
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 12
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 8
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "473e4fbcb5c6265281346864cc66a7a721e32d927839ed2d18757008ec0a2c5e"
+  "content_hash": ""
 }

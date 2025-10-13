@@ -1,0 +1,40 @@
+{
+  "slug": "enterprise-wide-agent-deployment",
+  "title": "Enterprise-Wide Agent Deployment",
+  "category": "",
+  "metadata": {
+    "summary": "Deploy LimaCharlie sensors across many endpoints simultaneously using installation keys with RMM, SCCM, MDM, or cURL commands",
+    "keywords": [
+      "enterprise",
+      "mass deployment",
+      "rmm",
+      "sccm",
+      "mdm"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Deploy LimaCharlie agents across hundreds or thousands of endpoints in an enterprise environment"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent-installation",
+      "relationship": "prerequisite",
+      "description": "Provides installation key concepts and download URLs needed for mass deployment"
+    },
+    {
+      "target_slug": "windows-agent-installation",
+      "relationship": "related",
+      "description": "Individual Windows installation methods that can be automated for mass deployment"
+    },
+    {
+      "target_slug": "agent-deployment-microsoft-intune",
+      "relationship": "alternative",
+      "description": "Specific enterprise deployment method using Intune as one of many RMM/MDM options"
+    },
+    {
+      "target_slug": "building-a-custom-msi-installer-for-windows",
+      "relationship": "related",
+      "description": "Creating custom installers can simplify mass deployment by embedding installation keys"
+    }
+  ]
+}

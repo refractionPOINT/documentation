@@ -10,7 +10,6 @@
       "agent",
       "api",
       "applying",
-      "articles",
       "code",
       "configs",
       "detection",
@@ -20,41 +19,15 @@
       "example",
       "generating",
       "infrastructure",
-      "methods"
+      "methods",
+      "organization"
     ],
     "complexity": "advanced",
     "use_cases": [
-      "Incident Response",
-      ". You can create a base template for common settings and extend it with organization-specific rules or modules, giving you the ability to fine-tune security without sacrificing consistency."
-    ],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 17
-      },
-      {
-        "slug": "ext-integrity",
-        "title": "Integrity",
-        "score": 16
-      },
-      {
-        "slug": "config-hive-lookups",
-        "title": "Config Hive: Lookups",
-        "score": 15
-      },
-      {
-        "slug": "config-hive",
-        "title": "Config Hive",
-        "score": 15
-      }
+      ". You can create a base template for common settings and extend it with organization-specific rules or modules, giving you the ability to fine-tune security without sacrificing consistency.",
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "20238fb87aea20d8a2dcd2bd5c4494f804345ace447b7fa22dffc01132d78ec4"
+  "content_hash": ""
 }

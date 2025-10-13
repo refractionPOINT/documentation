@@ -4,43 +4,22 @@
   "slug": "ext-cloud-cli-sdm",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "More information about the StrongDM CLI can be found [here](https://www.strongdm.com/docs/cli/).",
     "keywords": [
-      "add-on",
+      "credentials",
+      "detection",
+      "example",
       "extension",
-      "strongdm",
-      "what's"
+      "organization",
+      "output",
+      "response",
+      "rule",
+      "sensor",
+      "strongdm"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-cloud-cli-sublime",
-        "title": "Sublime",
-        "score": 13
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 12
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 8
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b2d21731d3151c457826587990cf460e8b851a8f3c60b26cf7ae8fd8b8e576e6"
+  "content_hash": ""
 }

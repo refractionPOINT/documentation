@@ -4,42 +4,19 @@
   "slug": "adapter-types-file",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This Adapter allows you to ingest logs from a file, either as a one time operation or by following its output (like `tail -f`). A more detailed guide to file collection can be found in the [Log Collection Guide](/v2/docs/logcollectionguide).",
     "keywords": [
+      "configuration",
+      "deployment",
       "file",
-      "sensor",
-      "what's"
+      "organization",
+      "output",
+      "overview",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 12
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 10
-      },
-      {
-        "slug": "ext-cloud-cli-google-cloud",
-        "title": "Google Cloud",
-        "score": 8
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 8
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "91b9535455d78a6b85587e74bff82b54d2651d38f05e2089dda56ac8c9d35667"
+  "content_hash": ""
 }

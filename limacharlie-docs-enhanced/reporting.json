@@ -1,0 +1,25 @@
+{
+  "slug": "reporting",
+  "title": "Reporting",
+  "category": "",
+  "metadata": {
+    "summary": "Overview page linking to reporting tutorials using third-party tools with LimaCharlie output options",
+    "keywords": [
+      "reporting",
+      "overview",
+      "tutorials",
+      "bigquery",
+      "outputs"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Find reporting tutorials and approaches for LimaCharlie data"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "tutorials-reporting-building-reports-with-bigquery-looker-studio",
+      "relationship": "continuation",
+      "description": "Full tutorial on building reports with BigQuery and Looker Studio"
+    }
+  ]
+}

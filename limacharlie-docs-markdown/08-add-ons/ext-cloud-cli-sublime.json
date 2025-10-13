@@ -4,45 +4,19 @@
   "slug": "ext-cloud-cli-sublime",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This extension makes use of Tailscale's native CLI, which can be found [here](https://docs.sublimesecurity.com/reference/analysis-api-cli). The CLI is a Python package - the source code can be found [here](https://github.com/sublime-security/sublime-cli).",
     "keywords": [
-      "add-on",
-      "articles",
+      "api",
+      "credentials",
+      "example",
       "extension",
-      "related",
-      "sublime",
-      "what's"
+      "organization",
+      "response",
+      "sublime"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-cloud-cli-tailscale",
-        "title": "Tailscale",
-        "score": 15
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 14
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-sublime-security",
-        "title": "Sublime Security",
-        "score": 11
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 10
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "2d0d7db55998bd817e4b5d75fada2e6de483666f4099cbc1e7af0763350f9eee"
+  "content_hash": ""
 }

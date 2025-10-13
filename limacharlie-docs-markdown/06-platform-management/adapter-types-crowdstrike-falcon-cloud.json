@@ -4,47 +4,19 @@
   "slug": "adapter-types-crowdstrike-falcon-cloud",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"falconcloud\" falconcloud: client_id: \"YOUR_CROWDSTRIKE_FALCON_API_CLIENT_ID\"",
     "keywords": [
       "api",
-      "articles",
       "cloud",
       "crowdstrike",
       "falcon",
-      "related",
-      "sensor",
-      "what's"
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "adapter-types-duo",
-        "title": "Duo",
-        "score": 13
-      },
-      {
-        "slug": "adapter-types-okta",
-        "title": "Okta",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "3bfd5fb2d0046e65b72402a402c0dfee65e8786b2f476b1b93bebe1fbd7f0b94"
+  "content_hash": ""
 }

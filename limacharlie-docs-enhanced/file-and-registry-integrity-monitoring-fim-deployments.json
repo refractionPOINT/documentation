@@ -1,0 +1,19 @@
+{
+  "slug": "file-and-registry-integrity-monitoring-fim-deployments",
+  "title": "File and Registry Integrity Monitoring (FIM) Deployments",
+  "category": "",
+  "metadata": {
+    "summary": "Continuous file and registry integrity monitoring with real-time alerts, granular configuration, and one year of historical data for threat hunting and investigation.",
+    "keywords": [
+      "FIM",
+      "integrity monitoring",
+      "file monitoring",
+      "registry monitoring",
+      "threat hunting"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Detect unauthorized changes to sensitive files and registry keys with continuous monitoring and historical analysis"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

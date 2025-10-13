@@ -4,45 +4,17 @@
   "slug": "ext-cloud-cli-tailscale",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This extension makes use of Tailscale's native CLI, which can be found [here](https://tailscale.com/kb/1031/install-linux).",
     "keywords": [
-      "add-on",
-      "articles",
+      "credentials",
+      "example",
       "extension",
-      "related",
-      "tailscale",
-      "what's"
+      "organization",
+      "tailscale"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 14
-      },
-      {
-        "slug": "ext-cloud-cli-vultr",
-        "title": "Vultr",
-        "score": 13
-      },
-      {
-        "slug": "adapter-types-tailscale",
-        "title": "Tailscale",
-        "score": 12
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 10
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "cd60d0cba0e5930528370e544c28ae9523d273fa4ee3db1942e9b351c0e01206"
+  "content_hash": ""
 }

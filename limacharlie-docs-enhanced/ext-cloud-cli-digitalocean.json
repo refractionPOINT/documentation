@@ -1,0 +1,43 @@
+{
+  "slug": "ext-cloud-cli-digitalocean",
+  "title": "DigitalOcean",
+  "category": "",
+  "metadata": {
+    "summary": "Interact with DigitalOcean cloud infrastructure using doctl CLI through LimaCharlie's Cloud CLI Extension",
+    "keywords": [
+      "digitalocean",
+      "doctl",
+      "cloud-cli",
+      "droplets",
+      "compute"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Manage and enumerate DigitalOcean cloud resources from LimaCharlie using response actions"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "doctl",
+      "path": "compute droplet list",
+      "description": "List DigitalOcean compute droplets"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Execute Cloud CLI extension with DigitalOcean doctl commands"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-cloud-cli-vultr",
+      "relationship": "alternative",
+      "description": "Alternative cloud provider CLI with similar structure for managing cloud infrastructure"
+    },
+    {
+      "target_slug": "ext-cloud-cli-tailscale",
+      "relationship": "related",
+      "description": "Related cloud CLI tool accessible through same ext-cloud-cli extension framework"
+    }
+  ]
+}

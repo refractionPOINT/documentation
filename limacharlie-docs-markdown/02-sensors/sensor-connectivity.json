@@ -4,46 +4,26 @@
   "slug": "sensor-connectivity",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "The specific domains are listed in the Sensor Downloads section of your Organization's dashboard. They will vary depending on the datacenter you chose to create your organization in. To find yours, see the screenshots below.",
     "keywords": [
       "agent",
-      "articles",
       "connectivity",
+      "detection",
+      "edr",
       "endpoint",
-      "related",
+      "organization",
+      "output",
+      "proxy",
+      "query",
+      "rule",
       "sensor",
-      "what's"
+      "telemetry",
+      "tunneling",
+      "windows"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 16
-      },
-      {
-        "slug": "chrome-agent-installation",
-        "title": "Chrome Agent Installation",
-        "score": 16
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "macos-agent-installation",
-        "title": "macOS Agent Installation",
-        "score": 16
-      },
-      {
-        "slug": "edge-agent-installation",
-        "title": "Edge Agent Installation",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b270b6caa90cd77a58357fb247ff4466b68d4c4ae49cb62344845792a551a292"
+  "content_hash": ""
 }

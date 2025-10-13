@@ -4,45 +4,22 @@
   "slug": "incident-response",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Limited visibility and data correlation:** Incident response teams often face incomplete or fragmented data from clients, hindering their ability to grasp the full extent of an incident and make informed analysis. * **Time-consuming manual analysis:** Manually sifting through large volumes of...",
     "keywords": [
+      "detection",
+      "endpoint",
+      "event",
       "incident",
+      "limacharlie\u2019s",
+      "problems",
       "response",
-      "what's"
+      "solution"
     ],
     "complexity": "intermediate",
     "use_cases": [
-      "Incident Response",
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "build-cti-capabilities",
-        "title": "Build CTI Capabilities",
-        "score": 11
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 4
-      },
-      {
-        "slug": "api-integrations-alphamountain",
-        "title": "alphaMountain",
-        "score": 4
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 4
-      },
-      {
-        "slug": "endpoint-detection-and-response-edr",
-        "title": "Endpoint Detection and Response (EDR)",
-        "score": 4
-      }
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "5bc664375c988ed30493cad1099894f5668b2e16c25bc9107ebdbfca1ed57345"
+  "content_hash": ""
 }

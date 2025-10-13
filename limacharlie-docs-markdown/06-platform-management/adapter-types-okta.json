@@ -4,45 +4,18 @@
   "slug": "adapter-types-okta",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"okta\" okta: apikey: \"hive://secret/okta-api-key\"",
     "keywords": [
       "api",
-      "articles",
+      "event",
       "okta",
-      "related",
-      "sensor",
-      "what's"
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-pandadoc",
-        "title": "PandaDoc",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 14
-      },
-      {
-        "slug": "ext-cloud-cli-okta",
-        "title": "Okta",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "4b8b3609a8db8ae28d99547c0ec18fbf27348e70ccfd39babf721d9d00c7ac75"
+  "content_hash": ""
 }

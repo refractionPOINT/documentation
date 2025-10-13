@@ -1,0 +1,67 @@
+{
+  "slug": "adapter-types-windows-event-log",
+  "title": "Windows Event Log",
+  "category": "",
+  "metadata": {
+    "summary": "Configure Windows Event Log adapter with XPath filters for selective event collection without EDR agent",
+    "keywords": [
+      "adapter",
+      "windows event log",
+      "xpath filters",
+      "configuration",
+      "wel adapter"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Collect Windows Event Logs using standalone adapter with advanced filtering capabilities"
+  },
+  "extracted_apis": [
+    {
+      "type": "config_parameter",
+      "method": "CONFIG",
+      "path": "evt_sources",
+      "description": "Comma-separated list of event channels with optional XPath filters"
+    },
+    {
+      "type": "xpath_filter",
+      "method": "FILTER",
+      "path": "*[System[(Level=1 or Level=2 or Level=3)]]",
+      "description": "Filter for high-priority security events (critical, error, warning)"
+    },
+    {
+      "type": "xpath_filter",
+      "method": "FILTER",
+      "path": "*[System[(EventID=4624 or EventID=4625 or EventID=4634)]]",
+      "description": "Filter for logon-related events only"
+    },
+    {
+      "type": "config_parameter",
+      "method": "CONFIG",
+      "path": "client_options.identity.oid",
+      "description": "Organization ID for adapter authentication"
+    },
+    {
+      "type": "config_parameter",
+      "method": "CONFIG",
+      "path": "client_options.identity.installation_key",
+      "description": "Installation key for adapter authentication"
+    },
+    {
+      "type": "config_parameter",
+      "method": "CONFIG",
+      "path": "client_options.sensor_seed_key",
+      "description": "Unique identifier for adapter instance"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ingesting-windows-event-logs",
+      "relationship": "alternative",
+      "description": "Alternative method using EDR agent instead of standalone adapter"
+    },
+    {
+      "target_slug": "adapter-examples-windows-event-logs",
+      "relationship": "continuation",
+      "description": "Practical CLI examples demonstrating this configuration"
+    }
+  ]
+}

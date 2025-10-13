@@ -4,49 +4,26 @@
   "slug": "reference-schedule-events",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Scheduling events have a very similar structure whether they are per-sensor or per-org.",
     "keywords": [
-      "articles",
+      "agent",
+      "d&r",
       "detection",
+      "edr",
+      "endpoint",
       "event",
       "events",
-      "query",
+      "organization",
+      "output",
       "reference:",
-      "related",
-      "response",
+      "rule",
       "schedule",
-      "what's"
+      "sensor",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "platform-events-overview",
-        "title": "Platform Events Overview",
-        "score": 15
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 15
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 14
-      },
-      {
-        "slug": "query-console",
-        "title": "Query Console",
-        "score": 14
-      },
-      {
-        "slug": "detection-on-alternate-targets",
-        "title": "Detection on Alternate Targets",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "34db327ccfa3a2b2304b07eab023c7125811cdc68cbecb9e041244a8cb0fbf13"
+  "content_hash": ""
 }

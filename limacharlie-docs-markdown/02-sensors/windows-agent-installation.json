@@ -7,7 +7,6 @@
     "summary": "Windows MSI Installation Versioning",
     "keywords": [
       "agent",
-      "articles",
       "edr",
       "endpoint",
       "installation",
@@ -16,42 +15,16 @@
       "manual",
       "organization",
       "query",
-      "related",
       "requirements",
       "running",
       "sensor",
-      "service"
+      "service",
+      "system",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "building-a-custom-msi-installer-for-windows",
-        "title": "Building a custom MSI installer for Windows",
-        "score": 18
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 17
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 15
-      },
-      {
-        "slug": "endpoint-agent-uninstallation",
-        "title": "Endpoint Agent Uninstallation",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "408c74a449a8d6871835e779a3e8d3d48e72adc9df5bb6527a51f6876213ae09"
+  "content_hash": ""
 }

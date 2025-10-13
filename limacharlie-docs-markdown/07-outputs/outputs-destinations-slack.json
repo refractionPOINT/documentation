@@ -4,44 +4,16 @@
   "slug": "outputs-destinations-slack",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `slack_api_token`: the Slack provided API token used to authenticate. * `slack_channel`: the channel to output to within the community.",
     "keywords": [
-      "articles",
+      "api",
+      "detection",
       "output",
-      "related",
-      "slack",
-      "what's"
+      "slack"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-slack-audit-logs",
-        "title": "Slack Audit Logs",
-        "score": 15
-      },
-      {
-        "slug": "outputs-destinations-smtp",
-        "title": "SMTP",
-        "score": 14
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 6
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "2bf792ed1c30ce488ab8aa8dea28cf800fefcf6d4cd483c8d40fe872636b10b1"
+  "content_hash": ""
 }

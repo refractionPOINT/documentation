@@ -1,0 +1,37 @@
+{
+  "slug": "ext-cloud-cli-sdm",
+  "title": "StrongDM",
+  "category": "",
+  "metadata": {
+    "summary": "Manage StrongDM infrastructure access and user permissions via CLI from LimaCharlie security workflows",
+    "keywords": [
+      "strongdm",
+      "infrastructure-access",
+      "privileged-access",
+      "admin",
+      "cli"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Automate privileged access management and infrastructure permission controls for security operations"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "GET",
+      "path": "admin users list",
+      "description": "Returns a list of all users in the StrongDM Organization"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-cloud-cli-okta",
+      "relationship": "related",
+      "description": "Can integrate with Okta for identity federation and user authentication"
+    },
+    {
+      "target_slug": "ext-cloud-cli-1password",
+      "relationship": "related",
+      "description": "Complementary tools for managing credentials and infrastructure access"
+    }
+  ]
+}

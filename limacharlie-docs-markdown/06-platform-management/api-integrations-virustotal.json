@@ -4,47 +4,20 @@
   "slug": "api-integrations-virustotal",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "The VirusTotal API key is added via the\u00a0[integrations](https://docs.limacharlie.io/v2/docs/add-ons-api-integrations#configuration)\u00a0menu within LimaCharlie.",
     "keywords": [
       "add-on",
       "api",
-      "articles",
-      "extension",
+      "event",
       "integration",
-      "related",
-      "virustotal",
-      "what's"
+      "response",
+      "rule",
+      "usage",
+      "virustotal"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "tutorials-integratons-virustotal-integration",
-        "title": "VirusTotal Integration",
-        "score": 18
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 15
-      },
-      {
-        "slug": "api-keys",
-        "title": "API Keys",
-        "score": 12
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "tutorials",
-        "title": "Tutorials",
-        "score": 10
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "4c3613eb281a5b7b73f10c4d35f1753db988ef90687b1ef321aaded25568c163"
+  "content_hash": ""
 }

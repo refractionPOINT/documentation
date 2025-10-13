@@ -4,11 +4,10 @@
   "slug": "adapter-types-tailscale",
   "category": "",
   "metadata": {
-    "summary": "[Tailscale](https://tailscale.com/) is a VPN service that makes devices and applications accessible anywhere in the world. Relying on the open source WireGuard protocol, Tailscale enables encrypted point-to-point connections.",
+    "summary": "Tailscale events can be ingested in LimaCharlie via a `json` Webhook Adapter.",
     "keywords": [
       "adapter",
       "api",
-      "articles",
       "building",
       "creating",
       "deployment",
@@ -19,39 +18,13 @@
       "organization",
       "output",
       "providing",
-      "related",
-      "sensor"
+      "sensor",
+      "tailscale",
+      "webhook"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 18
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 17
-      },
-      {
-        "slug": "adapter-deployment",
-        "title": "Adapter Deployment",
-        "score": 16
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 16
-      },
-      {
-        "slug": "tutorial-creating-a-webhook-adapter",
-        "title": "Tutorial: Creating a Webhook Adapter",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "61a51bcfdd4c69c5666430a290992c58b83d93a66757cf92be38efa38a12d62d"
+  "content_hash": ""
 }

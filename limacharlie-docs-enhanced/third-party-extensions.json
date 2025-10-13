@@ -1,0 +1,41 @@
+{
+  "slug": "third-party-extensions",
+  "title": "Third-Party Extensions",
+  "category": "",
+  "metadata": {
+    "summary": "Catalog of 15 third-party extensions including Atomic Red Team, Cloud CLI, Hayabusa, Velociraptor, YARA, and Zeek",
+    "keywords": [
+      "extensions",
+      "third-party",
+      "catalog",
+      "integrations",
+      "atomic-red-team",
+      "velociraptor"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Discovering and selecting third-party extensions for integrations and specialized security capabilities"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "extensions",
+      "relationship": "prerequisite",
+      "description": "Explains the extension framework these third-party extensions are built on"
+    },
+    {
+      "target_slug": "using-extensions",
+      "relationship": "related",
+      "description": "Explains how to interact with these extensions using configurations and requests"
+    },
+    {
+      "target_slug": "add-ons",
+      "relationship": "prerequisite",
+      "description": "Provides context on add-on marketplace where these extensions are found"
+    },
+    {
+      "target_slug": "lc-extensions",
+      "relationship": "alternative",
+      "description": "Lists extensions built by LimaCharlie rather than third parties"
+    }
+  ]
+}

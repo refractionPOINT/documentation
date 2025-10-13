@@ -1,0 +1,51 @@
+{
+  "slug": "ext-cloud-cli-microsoft365",
+  "title": "Microsoft 365",
+  "category": "",
+  "metadata": {
+    "summary": "Execute Microsoft 365 CLI commands from LimaCharlie using the Cloud CLI Extension with client secret authentication for tenant management.",
+    "keywords": [
+      "microsoft-365",
+      "m365",
+      "cloud-cli",
+      "extension",
+      "entra-id",
+      "pnp-cli"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Manage Microsoft 365 tenant users and resources programmatically from LimaCharlie detection and response rules"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "extension request",
+      "path": "ext-cloud-cli m365",
+      "description": "Execute Microsoft 365 CLI commands via LimaCharlie extension with PnP CLI for Microsoft 365"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Extension request action to run M365 commands with cloud='m365', command_tokens array, and credentials parameters"
+    },
+    {
+      "type": "cli_command",
+      "method": "m365 entra user set",
+      "path": "entra user set --id <user_id> --accountEnabled <boolean>",
+      "description": "Disable or enable Microsoft 365 user accounts via Entra ID user management"
+    },
+    {
+      "type": "cli_command",
+      "method": "m365 login",
+      "path": "m365 login",
+      "description": "Authenticate to Microsoft 365 tenant using client secret credentials (executed automatically by LimaCharlie)"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-cloud-cli-azure",
+      "relationship": "related",
+      "description": "Similar cloud CLI extension pattern for Azure management, uses same credential secret format (appID/clientSecret/tenantID)"
+    }
+  ]
+}

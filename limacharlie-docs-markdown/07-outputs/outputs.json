@@ -8,7 +8,6 @@
     "keywords": [
       "agent",
       "api",
-      "articles",
       "cases",
       "configuring",
       "destinations",
@@ -20,41 +19,14 @@
       "integration",
       "organization",
       "output",
-      "outputs"
+      "outputs",
+      "overview"
     ],
     "complexity": "advanced",
     "use_cases": [
-      "](#use-cases)",
       "There are multiple use cases or integration strategies for shipping telemetry to and from the LimaCharlie platform. Some common approaches we have seen:"
-    ],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 19
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 17
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "testing-outputs",
-        "title": "Testing Outputs",
-        "score": 13
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "d947802df21822810f3c3e561c7319657f4b94a9feeaaf8fb57e03efdc4d8078"
+  "content_hash": ""
 }

@@ -1,0 +1,19 @@
+{
+  "slug": "ext-lookup-manager",
+  "title": "Lookup Manager",
+  "category": "",
+  "metadata": {
+    "summary": "Extension for creating and automatically refreshing threat intelligence lookups from public or private sources",
+    "keywords": [
+      "lookups",
+      "threat intelligence",
+      "automation",
+      "github",
+      "IOC feeds"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Maintain up-to-date threat intelligence lookups for use in detection and response rules"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

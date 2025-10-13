@@ -1,0 +1,30 @@
+{
+  "slug": "single-sign-on",
+  "title": "Single Sign-On",
+  "category": "",
+  "metadata": {
+    "summary": "Configure enterprise SSO authentication with strict enforcement for custom branded LimaCharlie deployments",
+    "keywords": [
+      "sso",
+      "single-sign-on",
+      "authentication",
+      "identity-platform",
+      "enterprise"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Implementing enterprise-grade authentication for organizations requiring centralized identity management"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "user-access",
+      "relationship": "alternative",
+      "description": "SSO provides enterprise authentication alternative to individual user management"
+    },
+    {
+      "target_slug": "access-and-permissions",
+      "relationship": "related",
+      "description": "SSO integrates with the overall user access control system"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "slug": "adapter-usage",
+  "title": "Adapter Usage",
+  "category": "",
+  "metadata": {
+    "summary": "Configuration reference for adapters including required parameters, parsing, mapping, and multi-adapter setups",
+    "keywords": [
+      "configuration",
+      "mapping",
+      "parsing",
+      "sensor-seed-key",
+      "platform"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Configuring and customizing adapter behavior for data ingestion"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc-adapter file file_path=/path/to/logs.json client_options.identity.installation_key=<KEY> client_options.identity.oid=<OID> client_options.platform=json client_options.sensor_seed_key=<SEED> client_options.mapping.event_type_path=<PATH> client_options.hostname=<HOST>",
+      "description": "Run file adapter with inline parameters"
+    },
+    {
+      "type": "cli_command",
+      "method": "exec",
+      "path": "docker run -d --rm -it -p 4404:4404/udp refractionpoint/lc-adapter syslog client_options.identity.installation_key=<KEY> client_options.identity.oid=<OID> client_options.platform=cef client_options.hostname=<HOST> client_options.sensor_seed_key=<SEED> port=4404 iface=0.0.0.0 is_udp=true",
+      "description": "Run syslog adapter in Docker with UDP port"
+    },
+    {
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc-adapter file config_file.yaml",
+      "description": "Run adapter with YAML configuration file"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapters",
+      "relationship": "prerequisite",
+      "description": "Core concepts needed before configuring adapters"
+    },
+    {
+      "target_slug": "adapter-deployment",
+      "relationship": "related",
+      "description": "Deployment methods that use these configurations"
+    },
+    {
+      "target_slug": "adapter-examples",
+      "relationship": "continuation",
+      "description": "Practical examples of adapter configurations"
+    }
+  ]
+}

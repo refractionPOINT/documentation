@@ -1,0 +1,42 @@
+{
+  "slug": "outputs",
+  "title": "Outputs",
+  "category": "",
+  "metadata": {
+    "summary": "Core concepts of LimaCharlie outputs including streams (what data to send) and destinations (where to send it)",
+    "keywords": [
+      "outputs",
+      "streams",
+      "destinations",
+      "event routing",
+      "data export"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding how to send LimaCharlie data to external systems"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "N/A",
+      "description": "Configure outputs via LimaCharlie CLI (mentioned but not detailed)"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "output-destinations",
+      "relationship": "continuation",
+      "description": "Lists all supported output destination providers and their specific configurations"
+    },
+    {
+      "target_slug": "testing-outputs",
+      "relationship": "continuation",
+      "description": "Provides methods to verify output configuration is working correctly"
+    },
+    {
+      "target_slug": "output-billing",
+      "relationship": "related",
+      "description": "Explains cost implications of different output configurations"
+    }
+  ]
+}

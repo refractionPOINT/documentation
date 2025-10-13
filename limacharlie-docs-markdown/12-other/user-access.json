@@ -4,53 +4,22 @@
   "slug": "user-access",
   "category": "",
   "metadata": {
-    "summary": "To control who has access to an Organization, and what they have access to, go to the \"Users\" section of the web application.",
+    "summary": "Adding users is done by email address and requires the user to already have a limacharlie.io account.",
     "keywords": [
       "access",
-      "api",
-      "articles",
       "basis",
       "detection",
       "groups",
       "organization",
       "output",
       "per-organization",
-      "related",
       "rule",
       "sensor",
-      "user",
-      "what's"
+      "user"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "api-keys",
-        "title": "API Keys",
-        "score": 15
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "single-sign-on",
-        "title": "Single Sign-On",
-        "score": 13
-      },
-      {
-        "slug": "reference-permissions",
-        "title": "Reference: Permissions",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "e225e9c0c1c1f48baae59ce1de90158b16857876875573d5c9924328fe28ffba"
+  "content_hash": ""
 }

@@ -1,0 +1,19 @@
+{
+  "slug": "faq-privacy",
+  "title": "FAQ - Privacy",
+  "category": "",
+  "metadata": {
+    "summary": "Explains LimaCharlie's approach to PII collection, types of telemetry data collected, and user-configurable privacy controls for endpoint monitoring.",
+    "keywords": [
+      "privacy",
+      "PII",
+      "telemetry",
+      "data collection",
+      "sensor events"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Understanding what data LimaCharlie collects and how to configure privacy-preserving telemetry collection"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

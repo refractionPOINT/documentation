@@ -1,0 +1,50 @@
+{
+  "slug": "endpoint-agent",
+  "title": "Endpoint Agent",
+  "category": "",
+  "metadata": {
+    "summary": "Endpoint agent that collects EDR telemetry from devices and supports automated response actions like isolation and process termination",
+    "keywords": [
+      "endpoint-agent",
+      "EDR",
+      "telemetry",
+      "response-actions",
+      "sensor-types"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding what endpoint agents are and their role in threat detection and response"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "sensors",
+      "relationship": "prerequisite",
+      "description": "Provides context about sensors in general before diving into endpoint agents specifically"
+    },
+    {
+      "target_slug": "sensor-connectivity",
+      "relationship": "related",
+      "description": "Network requirements for endpoint agent operation"
+    },
+    {
+      "target_slug": "updating-sensors-to-the-newest-version",
+      "relationship": "related",
+      "description": "Managing endpoint agent versions after installation"
+    },
+    {
+      "target_slug": "test-a-new-sensor-version",
+      "relationship": "related",
+      "description": "Testing new endpoint agent versions before full deployment"
+    },
+    {
+      "target_slug": "endpoint-agent-uninstallation",
+      "relationship": "related",
+      "description": "Removing endpoint agents when needed"
+    },
+    {
+      "target_slug": "sensor-removal",
+      "relationship": "related",
+      "description": "Verifying endpoint agent removal was successful"
+    }
+  ]
+}

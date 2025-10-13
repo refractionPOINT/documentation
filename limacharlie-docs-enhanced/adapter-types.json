@@ -1,0 +1,36 @@
+{
+  "slug": "adapter-types",
+  "title": "Adapter Types",
+  "category": "",
+  "metadata": {
+    "summary": "Catalog of pre-defined adapter types including cloud platforms, third-party applications, and log sources with built-in mapping",
+    "keywords": [
+      "adapter-types",
+      "aws",
+      "azure",
+      "google-cloud",
+      "office365",
+      "syslog"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Discovering which pre-built adapter to use for a specific data source"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "adapters",
+      "relationship": "prerequisite",
+      "description": "Foundational concepts for understanding adapter types"
+    },
+    {
+      "target_slug": "adapter-deployment",
+      "relationship": "continuation",
+      "description": "How to deploy specific adapter types"
+    },
+    {
+      "target_slug": "adapter-usage",
+      "relationship": "continuation",
+      "description": "Configuration details for each adapter type"
+    }
+  ]
+}

@@ -4,47 +4,22 @@
   "slug": "outputs-destinations-google-cloud-bigquery",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "For a practical use case of this output, see this [tutorial on pushing Velociraptor data to BigQuery](/v2/docs/velociraptor-to-bigquery).",
     "keywords": [
-      "articles",
+      "api",
       "bigquery",
       "cloud",
+      "detection",
+      "event",
       "google",
       "output",
-      "query",
-      "related",
-      "what's"
+      "query"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 17
-      },
-      {
-        "slug": "ext-cloud-cli-google-cloud",
-        "title": "Google Cloud",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-google-workspace",
-        "title": "Google Workspace",
-        "score": 16
-      }
+    "use_cases": [
+      "of this output, see this [tutorial on pushing Velociraptor data to BigQuery](/v2/docs/velociraptor-to-bigquery)."
     ]
   },
   "api_elements": [],
-  "content_hash": "5146afc2bd7e5cf75346436f15f64946f11614019dec09d36f179edf70ac3309"
+  "content_hash": ""
 }

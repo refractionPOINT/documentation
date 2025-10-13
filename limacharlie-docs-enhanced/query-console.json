@@ -1,0 +1,30 @@
+{
+  "slug": "query-console",
+  "title": "Query Console",
+  "category": "",
+  "metadata": {
+    "summary": "Introduction to LimaCharlie's Query Console for searching telemetry, logs, and events",
+    "keywords": [
+      "query",
+      "console",
+      "search",
+      "LCQL",
+      "overview"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding what the Query Console is and how to get started"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "query-console-ui",
+      "relationship": "continuation",
+      "description": "Detailed guide on using the Query Console user interface"
+    },
+    {
+      "target_slug": "lcql",
+      "relationship": "related",
+      "description": "Reference documentation for LimaCharlie Query Language syntax"
+    }
+  ]
+}

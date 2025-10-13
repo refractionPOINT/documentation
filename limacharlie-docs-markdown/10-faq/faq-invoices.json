@@ -4,7 +4,7 @@
   "slug": "faq-invoices",
   "category": "",
   "metadata": {
-    "summary": "This page contains frequently asked questions about invoices you receive for LimaCharlie service.",
+    "summary": "Pricing Details",
     "keywords": [
       "agent",
       "billing",
@@ -19,39 +19,11 @@
       "rule",
       "sensor",
       "telemetry",
-      "unified",
-      "what's"
+      "unified"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 16
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 15
-      },
-      {
-        "slug": "replay",
-        "title": "Replay",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a3ad61dcbe9e8c2ba4d76a2d186177fd6650d793dd839a72e4b89fb7e8ca8c17"
+  "content_hash": ""
 }

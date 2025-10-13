@@ -1,0 +1,48 @@
+{
+  "slug": "outputs-destinations-webhook",
+  "title": "Webhook",
+  "category": "",
+  "metadata": {
+    "summary": "POST individual events, detections, and artifacts to custom HTTPS endpoints with HMAC authentication",
+    "keywords": [
+      "webhook",
+      "http",
+      "integration",
+      "hmac",
+      "custom"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Integrate LimaCharlie events with custom applications, SOAR platforms, or third-party services"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "OUTPUT",
+      "path": "dest_host, secret_key, auth_header_name, auth_header_value, custom_transform",
+      "description": "Configure webhook output destination with HTTPS endpoint, authentication, and optional JSON transformation"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "dest_host (configurable)",
+      "description": "Individual events posted to configured webhook endpoint with HMAC signature"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-webhook-bulk",
+      "relationship": "alternative",
+      "description": "Bulk webhook batches multiple events instead of individual POSTs"
+    },
+    {
+      "target_slug": "outputs-destinations-slack",
+      "relationship": "alternative",
+      "description": "Slack provides managed destination alternative to custom webhooks"
+    },
+    {
+      "target_slug": "outputs-destinations-smtp",
+      "relationship": "alternative",
+      "description": "SMTP provides email-based alternative to webhook POSTs"
+    }
+  ]
+}

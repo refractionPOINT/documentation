@@ -4,10 +4,9 @@
   "slug": "outputs-destinations-amazon-s3",
   "category": "",
   "metadata": {
-    "summary": "Output events and detections to an Amazon S3 bucket.",
+    "summary": "If you have your own visualization stack, or you just need the data archived, you can output directly to Amazon S3. This way you don't need any infrastructure.",
     "keywords": [
       "amazon",
-      "articles",
       "configuration",
       "detection",
       "endpoint",
@@ -16,41 +15,12 @@
       "organization",
       "output",
       "policy",
-      "related",
       "sample",
-      "sensor",
-      "what's"
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 16
-      },
-      {
-        "slug": "adapter-types-s3",
-        "title": "S3",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-aws-cloudtrail",
-        "title": "AWS CloudTrail",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "5d9b2215608340860c637a78d8276e8998d333ca5f46c48f27c301f57f64eedf"
+  "content_hash": ""
 }

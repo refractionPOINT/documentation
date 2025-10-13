@@ -1,0 +1,40 @@
+{
+  "slug": "soteria-m365-rules",
+  "title": "Soteria M365 Rules",
+  "category": "",
+  "metadata": {
+    "summary": "Soteria's managed ruleset for Microsoft 365 environments covering Teams, Word, Excel, PowerPoint, Outlook, OneDrive and other productivity apps",
+    "keywords": [
+      "soteria",
+      "M365",
+      "Office 365",
+      "microsoft",
+      "cloud productivity"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Enable managed detection rules for Microsoft 365 audit logs across productivity applications"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "soteria-rules",
+      "relationship": "prerequisite",
+      "description": "Parent overview page for Soteria rulesets"
+    },
+    {
+      "target_slug": "soteria-edr-rules",
+      "relationship": "related",
+      "description": "Alternative Soteria ruleset for endpoint environments"
+    },
+    {
+      "target_slug": "soteria-aws-rules",
+      "relationship": "related",
+      "description": "Alternative Soteria ruleset for AWS environments"
+    },
+    {
+      "target_slug": "managed-rulesets",
+      "relationship": "prerequisite",
+      "description": "General managed ruleset concepts apply to Soteria M365"
+    }
+  ]
+}

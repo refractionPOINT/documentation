@@ -4,50 +4,23 @@
   "slug": "ext-govee",
   "category": "",
   "metadata": {
-    "summary": "The Govee Extension allows you to trigger color changes on your [supported Govee lights](https://developer.govee.com/docs/support-product-model) via a  rule response action. It requires you to configure a Govee API key in the extension.",
+    "summary": "1. Request an API key from Govee by following their instructions [here](https://developer.govee.com/reference/apply-you-govee-api-key) 2. Get the Device ID (device) and model (sku) of the device you'd like to target by requesting a list of your supported devices from the Govee API:",
     "keywords": [
-      "add-on",
       "api",
       "d&r",
+      "detection",
       "event",
       "extension",
       "govee",
+      "organization",
       "parameters",
       "response",
       "rule",
       "setup",
-      "usage",
-      "what's"
+      "usage"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 14
-      },
-      {
-        "slug": "ext-hayabusa",
-        "title": "Hayabusa",
-        "score": 14
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 10
-      },
-      {
-        "slug": "api-integrations-hybrid-analysis",
-        "title": "Hybrid Analysis",
-        "score": 9
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [
     {
@@ -56,5 +29,5 @@
       "full": "curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --header 'Govee-API-Key: YOUR_GOVEE_API_KEY'"
     }
   ],
-  "content_hash": "3c2c5432330d655a700f8aade58d20643b79bcd11eda21314e9c06769ebc8d83"
+  "content_hash": ""
 }

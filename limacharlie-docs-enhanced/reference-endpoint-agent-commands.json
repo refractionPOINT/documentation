@@ -1,0 +1,91 @@
+{
+  "slug": "reference-endpoint-agent-commands",
+  "title": "Reference: Endpoint Agent Commands",
+  "category": "",
+  "metadata": {
+    "summary": "Comprehensive OS support matrix and command reference showing which commands work on each platform and their corresponding response event types",
+    "keywords": [
+      "commands",
+      "matrix",
+      "OS",
+      "REP",
+      "platform"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Reference guide for selecting appropriate commands based on target OS and understanding response events"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "artifact_get",
+      "description": "Retrieve artifacts from endpoint (macOS, Windows, Linux)"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "deny_tree",
+      "description": "Deny process tree execution (macOS, Windows, Linux)"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "dir_find_hash",
+      "description": "Find files by hash in directory (macOS, Windows, Linux) - emits DIR_FINDHASH_REP"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "dir_list",
+      "description": "List directory contents (macOS, Windows, Linux) - emits DIR_LIST_REP"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "dns_resolve",
+      "description": "Resolve DNS query (all platforms) - emits DNS_REQUEST"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "file_get",
+      "description": "Retrieve file contents (macOS, Windows, Linux) - emits FILE_GET_REP"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "file_hash",
+      "description": "Get file hash (macOS, Windows, Linux) - emits FILE_HASH_REP"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "netstat",
+      "description": "Get network connections (macOS, Windows, Linux) - emits NETSTAT_REP"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "os_kill_process",
+      "description": "Kill process (macOS, Windows, Linux) - emits OS_KILL_PROCESS_REP"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "mem_strings",
+      "description": "Extract strings from process memory (macOS, Windows, Linux) - emits MEM_STRINGS_REP"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent-commands",
+      "relationship": "prerequisite",
+      "description": "Read commands overview first to understand how to send commands and parse responses"
+    },
+    {
+      "target_slug": "endpoint-agent-events-overview",
+      "relationship": "related",
+      "description": "Each command's REP event type is documented in the events reference"
+    }
+  ]
+}

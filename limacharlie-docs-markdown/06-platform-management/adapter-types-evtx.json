@@ -4,46 +4,20 @@
   "slug": "adapter-types-evtx",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This Adapter allows you to ingest and convert a `.evtx` file into LimaCharlie. The `.evtx` files are the binary format used by Microsoft for Windows Event Logs. This is useful to ingest historical Windows Event Logs, for example during an Incident Response (IR) engagement.",
     "keywords": [
       "api",
-      "articles",
+      "configurations",
       "event",
       "evtx",
-      "related",
-      "sensor",
-      "what's"
+      "overview",
+      "response"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 15
-      },
-      {
-        "slug": "adapter-examples-windows-event-logs",
-        "title": "Windows Event Logs",
-        "score": 15
-      },
-      {
-        "slug": "ingesting-windows-event-logs",
-        "title": "Ingesting Windows Event Logs",
-        "score": 15
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 14
-      }
+    "use_cases": [
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "e2743996cf3545c680777edd1b8e773f9ae4b45d92df8acbdaa87dac4a2cfa84"
+  "content_hash": ""
 }

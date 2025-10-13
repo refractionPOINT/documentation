@@ -1,0 +1,67 @@
+{
+  "slug": "adapter-types-google-cloud-storage",
+  "title": "Google Cloud Storage",
+  "category": "",
+  "metadata": {
+    "summary": "Configure cloud-to-cloud adapter to ingest logs from Google Cloud Storage buckets into LimaCharlie",
+    "keywords": [
+      "GCS",
+      "Google Cloud Storage",
+      "adapter",
+      "cloud logs",
+      "bucket ingestion"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Ingest security logs and telemetry stored in GCS buckets for processing in LimaCharlie"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: \"gcs\"",
+      "description": "Configure GCS adapter with bucket, credentials, and client options"
+    },
+    {
+      "type": "config_parameter",
+      "method": "gcs.bucket_name",
+      "path": "gcs.bucket_name",
+      "description": "Specify the GCS bucket name for log storage"
+    },
+    {
+      "type": "config_parameter",
+      "method": "gcs.service_account_creds",
+      "path": "gcs.service_account_creds",
+      "description": "Reference to hive secret containing GCP service account credentials"
+    },
+    {
+      "type": "config_parameter",
+      "method": "gcs.prefix",
+      "path": "gcs.prefix",
+      "description": "Optional path prefix to filter logs by directory structure"
+    },
+    {
+      "type": "config_parameter",
+      "method": "gcs.parallel_fetch",
+      "path": "gcs.parallel_fetch",
+      "description": "Number of parallel downloads for log processing"
+    },
+    {
+      "type": "config_parameter",
+      "method": "gcs.single_load",
+      "path": "gcs.single_load",
+      "description": "Boolean to enable continuous processing mode"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-google-workspace",
+      "relationship": "alternative",
+      "description": "GCS adapter can be used as one of two methods to ingest Google Workspace audit logs"
+    },
+    {
+      "target_slug": "tutorial-ingesting-google-cloud-logs",
+      "relationship": "related",
+      "description": "Tutorial demonstrates GCP log ingestion using Pubsub, but GCS is an alternative approach"
+    }
+  ]
+}

@@ -4,50 +4,26 @@
   "slug": "ingesting-windows-event-logs",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "First, navigate to the Exfil Control section of LimaCharlie and ensure that `WEL` events are enabled for your Windows rules.",
     "keywords": [
       "agent",
-      "articles",
+      "detection",
+      "edr",
       "endpoint",
       "event",
+      "extension",
       "ingesting",
       "logs",
-      "related",
+      "organization",
+      "response",
+      "rule",
       "sensor",
       "telemetry",
-      "what's",
       "windows"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ingesting-defender-event-logs",
-        "title": "Ingesting Defender Event Logs",
-        "score": 20
-      },
-      {
-        "slug": "ingesting-macos-unified-logs",
-        "title": "Ingesting MacOS Unified Logs",
-        "score": 19
-      },
-      {
-        "slug": "ingesting-sysmon-event-logs",
-        "title": "Ingesting Sysmon Event Logs",
-        "score": 18
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 17
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 17
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "db480b24c9e5e88c8d10292749336454ca6c3d92bf800abe0553f5ab7aad9007"
+  "content_hash": ""
 }

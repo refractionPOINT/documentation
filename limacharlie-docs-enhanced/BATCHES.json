@@ -1,0 +1,774 @@
+{
+  "total_batches": 68,
+  "batches": [
+    {
+      "id": "batch_01_getting_started",
+      "theme": "Introduction, core concepts, and initial platform understanding",
+      "page_count": 6,
+      "page_slugs": [
+        "what-is-limacharlie",
+        "quickstart",
+        "use-cases",
+        "limacharlie-core-concepts",
+        "limacharlie-cli",
+        "limacharlie-sdk"
+      ]
+    },
+    {
+      "id": "batch_02_windows_agents",
+      "theme": "Windows endpoint agent installation and deployment",
+      "page_count": 5,
+      "page_slugs": [
+        "windows-agent-installation",
+        "endpoint-agent-installation",
+        "agent-deployment-microsoft-intune",
+        "building-a-custom-msi-installer-for-windows",
+        "enterprise-wide-agent-deployment"
+      ]
+    },
+    {
+      "id": "batch_03_macos_agents_modern",
+      "theme": "macOS agent installation for recent OS versions",
+      "page_count": 5,
+      "page_slugs": [
+        "macos-agent-installation",
+        "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+        "macos-agent-installation-latest-os-versions",
+        "macos-agent-installation-mdm-configuration-profiles",
+        "macos-agent-installation-via-microsoft-intune"
+      ]
+    },
+    {
+      "id": "batch_04_macos_agents_legacy",
+      "theme": "macOS agent installation for older versions and specialized deployments",
+      "page_count": 2,
+      "page_slugs": [
+        "macos-agent-installation-older-versions",
+        "installing-macos-agents-via-jamf-now"
+      ]
+    },
+    {
+      "id": "batch_05_linux_docker_edge",
+      "theme": "Linux, Docker, and Edge agent installation",
+      "page_count": 4,
+      "page_slugs": [
+        "linux-agent-installation",
+        "docker-agent-installation",
+        "edge-agent-installation",
+        "chrome-agent-installation"
+      ]
+    },
+    {
+      "id": "batch_06_sensor_management",
+      "theme": "Managing, monitoring, and troubleshooting sensors",
+      "page_count": 8,
+      "page_slugs": [
+        "sensors",
+        "endpoint-agent",
+        "sensor-connectivity",
+        "non-responding-sensors",
+        "sensor-removal",
+        "endpoint-agent-uninstallation",
+        "updating-sensors-to-the-newest-version",
+        "test-a-new-sensor-version"
+      ]
+    },
+    {
+      "id": "batch_07_sensor_configuration",
+      "theme": "Sensor configuration, tags, and versioning",
+      "page_count": 5,
+      "page_slugs": [
+        "endpoint-agent-versioning-and-upgrades",
+        "sensor-tags",
+        "installation-keys",
+        "config-hive-cloud-sensors",
+        "ext-sensor-cull"
+      ]
+    },
+    {
+      "id": "batch_08_sensor_commands_events",
+      "theme": "Sensor commands, events, and telemetry",
+      "page_count": 6,
+      "page_slugs": [
+        "endpoint-agent-commands",
+        "reference-endpoint-agent-commands",
+        "endpoint-agent-events-overview",
+        "sensors-reference",
+        "reference-sensor-selector-expressions",
+        "endpoint-detection-and-response-edr"
+      ]
+    },
+    {
+      "id": "batch_09_chromeos_enterprise",
+      "theme": "ChromeOS and enterprise browser deployments",
+      "page_count": 2,
+      "page_slugs": [
+        "chromeos-support",
+        "chrome-enterprise"
+      ]
+    },
+    {
+      "id": "batch_10_events_platform",
+      "theme": "Platform events, schemas, and event types",
+      "page_count": 6,
+      "page_slugs": [
+        "events",
+        "platform-events-overview",
+        "event-schemas",
+        "reference-platform-events",
+        "reference-schedule-events",
+        "reference-edr-events"
+      ]
+    },
+    {
+      "id": "batch_11_windows_event_logs",
+      "theme": "Windows event log ingestion and processing",
+      "page_count": 6,
+      "page_slugs": [
+        "ingesting-windows-event-logs",
+        "adapter-types-windows-event-log",
+        "adapter-examples-windows-event-logs",
+        "ingesting-sysmon-event-logs",
+        "ingesting-defender-event-logs",
+        "wel-monitoring"
+      ]
+    },
+    {
+      "id": "batch_12_azure_event_ingestion",
+      "theme": "Azure event and log ingestion",
+      "page_count": 8,
+      "page_slugs": [
+        "adapter-types-azure-event-hub",
+        "outputs-destinations-azure-event-hub",
+        "telemetry-adapters-adapter-types-azure-logs",
+        "azure-monitor",
+        "azure-logs-key-vault",
+        "azure-sql-audit-logs",
+        "azure-network-security-group",
+        "azure-kubernetes-service"
+      ]
+    },
+    {
+      "id": "batch_13_macos_linux_logs",
+      "theme": "macOS and Linux log ingestion",
+      "page_count": 3,
+      "page_slugs": [
+        "ingesting-macos-unified-logs",
+        "adapter-types-mac-unified-logging",
+        "ingesting-linux-audit-logs"
+      ]
+    },
+    {
+      "id": "batch_14_adapter_fundamentals",
+      "theme": "Adapter concepts, deployment, and usage",
+      "page_count": 7,
+      "page_slugs": [
+        "adapters",
+        "adapter-types",
+        "adapter-usage",
+        "adapter-deployment",
+        "adapters-as-a-service",
+        "adapter-tutorials",
+        "adapter-examples"
+      ]
+    },
+    {
+      "id": "batch_15_adapter_stdin_file",
+      "theme": "File-based and stdin adapters",
+      "page_count": 7,
+      "page_slugs": [
+        "adapter-types-stdin",
+        "adapter-types-file",
+        "adapter-types-json",
+        "adapter-types-evtx",
+        "adapter-types-iis",
+        "adapter-examples-stdin",
+        "adapter-examples-stdin-json"
+      ]
+    },
+    {
+      "id": "batch_16_adapter_aws",
+      "theme": "AWS adapter integrations",
+      "page_count": 4,
+      "page_slugs": [
+        "adapter-types-aws-cloudtrail",
+        "adapter-types-aws-guardduty",
+        "adapter-types-s3",
+        "adapter-types-sqs"
+      ]
+    },
+    {
+      "id": "batch_17_adapter_gcp",
+      "theme": "Google Cloud Platform adapter integrations",
+      "page_count": 4,
+      "page_slugs": [
+        "adapter-types-google-cloud-storage",
+        "adapter-types-google-cloud-pubsub",
+        "adapter-types-google-workspace",
+        "tutorial-ingesting-google-cloud-logs"
+      ]
+    },
+    {
+      "id": "batch_18_adapter_microsoft",
+      "theme": "Microsoft 365 and security product adapters",
+      "page_count": 3,
+      "page_slugs": [
+        "adapter-types-microsoft-365",
+        "adapter-types-microsoft-defender",
+        "adapter-types-microsoft-entra-id"
+      ]
+    },
+    {
+      "id": "batch_19_adapter_security_products",
+      "theme": "Third-party security product adapters",
+      "page_count": 3,
+      "page_slugs": [
+        "adapter-types-crowdstrike-falcon-cloud",
+        "adapter-types-vmware-carbon-black",
+        "adapter-types-sophos",
+        "adapter-types-sentinelone"
+      ]
+    },
+    {
+      "id": "batch_20_adapter_identity_sso",
+      "theme": "Identity and SSO provider adapters",
+      "page_count": 3,
+      "page_slugs": [
+        "adapter-types-okta",
+        "adapter-types-duo",
+        "adapter-types-tailscale"
+      ]
+    },
+    {
+      "id": "batch_21_adapter_saas_business",
+      "theme": "Business and SaaS application adapters",
+      "page_count": 5,
+      "page_slugs": [
+        "adapter-types-slack-audit-logs",
+        "adapter-types-zendesk",
+        "adapter-types-hubspot",
+        "adapter-types-pandadoc",
+        "adapter-types-it-glue",
+        "adapter-types-atlassian"
+      ]
+    },
+    {
+      "id": "batch_22_adapter_email_security",
+      "theme": "Email and messaging security adapters",
+      "page_count": 3,
+      "page_slugs": [
+        "adapter-types-imap",
+        "adapter-types-mimecast",
+        "adapter-types-sublime-security"
+      ]
+    },
+    {
+      "id": "batch_23_adapter_network_infra",
+      "theme": "Network and infrastructure adapters",
+      "page_count": 3,
+      "page_slugs": [
+        "adapter-types-syslog",
+        "adapter-types-cato",
+        "adapter-types-kubernetes-pods-logs"
+      ]
+    },
+    {
+      "id": "batch_24_adapter_threat_intel",
+      "theme": "Threat intelligence and detection adapters",
+      "page_count": 3,
+      "page_slugs": [
+        "adapter-types-canarytokens",
+        "tutorial-creating-a-webhook-adapter",
+        "tutorial-ingesting-telemetry-from-cloud-based-external-sources"
+      ]
+    },
+    {
+      "id": "batch_25_detection_fundamentals",
+      "theme": "Detection and response fundamentals",
+      "page_count": 6,
+      "page_slugs": [
+        "detection-and-response",
+        "writing-and-testing-rules",
+        "detection-and-response-reference",
+        "detection-logic-operators",
+        "response-actions",
+        "detection-and-response-examples"
+      ]
+    },
+    {
+      "id": "batch_26_detection_rulesets",
+      "theme": "Managed and community detection rulesets",
+      "page_count": 7,
+      "page_slugs": [
+        "managed-rulesets",
+        "community-rules",
+        "soteria-rules",
+        "soteria-edr-rules",
+        "soteria-aws-rules",
+        "soteria-m365-rules",
+        "soc-prime-rules"
+      ]
+    },
+    {
+      "id": "batch_27_detection_advanced",
+      "theme": "Advanced detection capabilities",
+      "page_count": 6,
+      "page_slugs": [
+        "stateful-rules",
+        "detection-on-alternate-targets",
+        "false-positive-rules",
+        "sigma-rules",
+        "sigma-converter",
+        "create-a-dr-rule-using-a-threat-feed"
+      ]
+    },
+    {
+      "id": "batch_28_detection_config",
+      "theme": "Detection configuration and incident response",
+      "page_count": 3,
+      "page_slugs": [
+        "config-hive-dr-rules",
+        "incident-response",
+        "detection-and-response-tutorials"
+      ]
+    },
+    {
+      "id": "batch_29_outputs_fundamentals",
+      "theme": "Output fundamentals and configuration",
+      "page_count": 5,
+      "page_slugs": [
+        "outputs",
+        "output-destinations",
+        "testing-outputs",
+        "output-billing",
+        "output-allowlisting"
+      ]
+    },
+    {
+      "id": "batch_30_outputs_cloud_storage",
+      "theme": "Cloud storage output destinations",
+      "page_count": 4,
+      "page_slugs": [
+        "outputs-destinations-amazon-s3",
+        "outputs-destinations-google-cloud-storage",
+        "outputs-destinations-azure-storage-blob",
+        "outputs-destinations-google-cloud-pubsub"
+      ]
+    },
+    {
+      "id": "batch_31_outputs_siem",
+      "theme": "SIEM and log aggregation outputs",
+      "page_count": 5,
+      "page_slugs": [
+        "outputs-destinations-splunk",
+        "outputs-destinations-elastic",
+        "outputs-destinations-opensearch",
+        "outputs-destinations-humio",
+        "cost-effective-siem"
+      ]
+    },
+    {
+      "id": "batch_32_outputs_messaging",
+      "theme": "Messaging and notification outputs",
+      "page_count": 5,
+      "page_slugs": [
+        "outputs-destinations-slack",
+        "outputs-destinations-smtp",
+        "outputs-destinations-webhook",
+        "outputs-destinations-webhook-bulk",
+        "output-destinations-tines"
+      ]
+    },
+    {
+      "id": "batch_33_outputs_protocols",
+      "theme": "Protocol-based output destinations",
+      "page_count": 4,
+      "page_slugs": [
+        "outputs-destinations-syslog",
+        "outputs-destinations-scp",
+        "outputs-destinations-sftp",
+        "outputs-destinations-apache-kafka"
+      ]
+    },
+    {
+      "id": "batch_34_outputs_integrations",
+      "theme": "Third-party integration outputs",
+      "page_count": 1,
+      "page_slugs": [
+        "tutorials-integratons-virustotal-integration"
+      ]
+    },
+    {
+      "id": "batch_35_query_console",
+      "theme": "Query console and LCQL",
+      "page_count": 5,
+      "page_slugs": [
+        "query-console",
+        "query-console-ui",
+        "query-with-cli",
+        "lcql",
+        "lcql-examples"
+      ]
+    },
+    {
+      "id": "batch_36_query_bigquery",
+      "theme": "BigQuery integration and reporting",
+      "page_count": 5,
+      "page_slugs": [
+        "outputs-destinations-google-cloud-bigquery",
+        "hayabusa-to-bigquery",
+        "velociraptor-to-bigquery",
+        "tutorials-reporting-building-reports-with-bigquery-looker-studio",
+        "reporting"
+      ]
+    },
+    {
+      "id": "batch_37_extensions_fundamentals",
+      "theme": "Extension fundamentals and usage",
+      "page_count": 7,
+      "page_slugs": [
+        "add-ons",
+        "extensions",
+        "lc-extensions",
+        "using-extensions",
+        "building-extensions",
+        "third-party-extensions",
+        "add-ons-tutorials"
+      ]
+    },
+    {
+      "id": "batch_38_extensions_detection",
+      "theme": "Detection and threat hunting extensions",
+      "page_count": 6,
+      "page_slugs": [
+        "ext-yara",
+        "ext-yara-manager",
+        "ext-integrity",
+        "ext-epp",
+        "ext-atomic-red-team",
+        "ext-otx"
+      ]
+    },
+    {
+      "id": "batch_39_extensions_forensics",
+      "theme": "Forensics and artifact collection extensions",
+      "page_count": 7,
+      "page_slugs": [
+        "ext-artifact",
+        "ext-velociraptor",
+        "ext-hayabusa",
+        "ext-dumper",
+        "ext-plaso",
+        "ext-strelka",
+        "ext-zeek"
+      ]
+    },
+    {
+      "id": "batch_40_extensions_cloud_aws",
+      "theme": "AWS cloud CLI extensions",
+      "page_count": 2,
+      "page_slugs": [
+        "ext-cloud-cli",
+        "ext-cloud-cli-aws"
+      ]
+    },
+    {
+      "id": "batch_41_extensions_cloud_azure",
+      "theme": "Azure cloud CLI extensions",
+      "page_count": 2,
+      "page_slugs": [
+        "ext-cloud-cli-azure",
+        "ext-cloud-cli-microsoft365"
+      ]
+    },
+    {
+      "id": "batch_42_extensions_cloud_gcp",
+      "theme": "Google Cloud Platform CLI extensions",
+      "page_count": 1,
+      "page_slugs": [
+        "ext-cloud-cli-google-cloud"
+      ]
+    },
+    {
+      "id": "batch_43_extensions_cloud_other",
+      "theme": "Other cloud provider CLI extensions",
+      "page_count": 3,
+      "page_slugs": [
+        "ext-cloud-cli-digitalocean",
+        "ext-cloud-cli-vultr",
+        "ext-cloud-cli-tailscale"
+      ]
+    },
+    {
+      "id": "batch_44_extensions_identity",
+      "theme": "Identity and access management extensions",
+      "page_count": 3,
+      "page_slugs": [
+        "ext-cloud-cli-okta",
+        "ext-cloud-cli-1password",
+        "ext-cloud-cli-sdm"
+      ]
+    },
+    {
+      "id": "batch_45_extensions_devops",
+      "theme": "DevOps and collaboration extensions",
+      "page_count": 3,
+      "page_slugs": [
+        "ext-cloud-cli-github",
+        "ext-git-sync",
+        "ext-cloud-cli-sublime"
+      ]
+    },
+    {
+      "id": "batch_46_extensions_automation",
+      "theme": "Automation and workflow extensions",
+      "page_count": 5,
+      "page_slugs": [
+        "ext-reliable-tasking",
+        "ext-exfil",
+        "ext-lookup-manager",
+        "ext-nims",
+        "ext-infrastructure"
+      ]
+    },
+    {
+      "id": "batch_47_extensions_alerting",
+      "theme": "Alerting and notification extensions",
+      "page_count": 4,
+      "page_slugs": [
+        "ext-pagerduty",
+        "ext-twilio",
+        "ext-usage-alerts",
+        "ext-govee"
+      ]
+    },
+    {
+      "id": "batch_48_extensions_misc",
+      "theme": "Miscellaneous utility extensions",
+      "page_count": 2,
+      "page_slugs": [
+        "ext-renigma",
+        "ext-secureannex"
+      ]
+    },
+    {
+      "id": "batch_49_config_hive",
+      "theme": "Configuration hive management",
+      "page_count": 5,
+      "page_slugs": [
+        "config-hive",
+        "config-hive-lookups",
+        "config-hive-secrets",
+        "config-hive-yara",
+        "lookups"
+      ]
+    },
+    {
+      "id": "batch_50_api_integrations",
+      "theme": "Third-party API integrations",
+      "page_count": 8,
+      "page_slugs": [
+        "add-ons-api-integrations",
+        "api-integrations-virustotal",
+        "api-integrations-greynoise",
+        "api-integrations-echotrail",
+        "api-integrations-hybrid-analysis",
+        "api-integrations-alphamountain",
+        "api-integrations-pangea",
+        "api-integrations-ip-geolocation"
+      ]
+    },
+    {
+      "id": "batch_51_platform_access",
+      "theme": "Platform access and authentication",
+      "page_count": 6,
+      "page_slugs": [
+        "access-and-permissions",
+        "user-access",
+        "api-keys",
+        "single-sign-on",
+        "reference-permissions",
+        "reference-authentication-resource-locator"
+      ]
+    },
+    {
+      "id": "batch_52_platform_billing",
+      "theme": "Billing and cost management",
+      "page_count": 3,
+      "page_slugs": [
+        "billing",
+        "billing-options",
+        "using-custom-billing-plans"
+      ]
+    },
+    {
+      "id": "batch_53_platform_architecture",
+      "theme": "Platform architecture and infrastructure",
+      "page_count": 6,
+      "page_slugs": [
+        "infrastructure-as-code",
+        "container-clusters",
+        "observability-pipeline",
+        "payloads",
+        "payload-manager",
+        "binlib"
+      ]
+    },
+    {
+      "id": "batch_54_platform_reference",
+      "theme": "Platform reference documentation",
+      "page_count": 6,
+      "page_slugs": [
+        "reference-3",
+        "reference-id-schema",
+        "reference-error-codes",
+        "schema-data-types",
+        "template-strings-and-transforms",
+        "hostname-resolution"
+      ]
+    },
+    {
+      "id": "batch_55_use_case_enterprise",
+      "theme": "Enterprise and SOC use cases",
+      "page_count": 4,
+      "page_slugs": [
+        "enerprises",
+        "service-providers-mssp-msp-mdr",
+        "building-products",
+        "secops-development"
+      ]
+    },
+    {
+      "id": "batch_56_use_case_threat",
+      "theme": "Threat hunting and incident response",
+      "page_count": 5,
+      "page_slugs": [
+        "threat-hunting",
+        "purple-teaming",
+        "uncovering-adversary-techniques",
+        "incident-response",
+        "table-top-exercises"
+      ]
+    },
+    {
+      "id": "batch_57_use_case_security",
+      "theme": "Security operations and monitoring",
+      "page_count": 5,
+      "page_slugs": [
+        "cloud-security",
+        "network-monitoring",
+        "file-and-registry-integrity-monitoring-fim-deployments",
+        "security-monitoring-for-devops",
+        "soar-automation"
+      ]
+    },
+    {
+      "id": "batch_58_use_case_compliance",
+      "theme": "Compliance and audit use cases",
+      "page_count": 2,
+      "page_slugs": [
+        "ma-cyber-due-diligence",
+        "build-cti-capabilities"
+      ]
+    },
+    {
+      "id": "batch_59_integrations_cloud",
+      "theme": "Cloud provider integrations",
+      "page_count": 2,
+      "page_slugs": [
+        "1password",
+        "atlassian"
+      ]
+    },
+    {
+      "id": "batch_60_integrations_endpoint",
+      "theme": "Endpoint security integrations",
+      "page_count": 2,
+      "page_slugs": [
+        "sentinelone",
+        "sysmon-comparison"
+      ]
+    },
+    {
+      "id": "batch_61_special_deployments",
+      "theme": "Special deployment scenarios",
+      "page_count": 4,
+      "page_slugs": [
+        "vdi-virtual-machine-templates",
+        "sleeper-mode",
+        "sleeper",
+        "unit-tests"
+      ]
+    },
+    {
+      "id": "batch_62_advanced_features",
+      "theme": "Advanced platform features",
+      "page_count": 5,
+      "page_slugs": [
+        "ai-agent-engine",
+        "playbook",
+        "mcp-server",
+        "replay",
+        "artifacts"
+      ]
+    },
+    {
+      "id": "batch_63_ui_development",
+      "theme": "User interface and product development",
+      "page_count": 2,
+      "page_slugs": [
+        "building-the-user-interface",
+        "developer-grant-program"
+      ]
+    },
+    {
+      "id": "batch_64_tutorials_general",
+      "theme": "General tutorials and guides",
+      "page_count": 4,
+      "page_slugs": [
+        "tutorials",
+        "tutorials-1",
+        "tutorials-3",
+        "logcollectionguide"
+      ]
+    },
+    {
+      "id": "batch_65_faq_platform",
+      "theme": "General platform FAQ",
+      "page_count": 4,
+      "page_slugs": [
+        "faq",
+        "faq-general",
+        "faq-troubleshooting",
+        "faq-account-management"
+      ]
+    },
+    {
+      "id": "batch_66_faq_sensors",
+      "theme": "Sensor-specific FAQ",
+      "page_count": 1,
+      "page_slugs": [
+        "faq-sensor-installation"
+      ]
+    },
+    {
+      "id": "batch_67_faq_billing",
+      "theme": "Billing and financial FAQ",
+      "page_count": 3,
+      "page_slugs": [
+        "faq-billing",
+        "faq-invoices",
+        "faq-privacy"
+      ]
+    },
+    {
+      "id": "batch_68_release_notes",
+      "theme": "Platform updates and release notes",
+      "page_count": 2,
+      "page_slugs": [
+        "release-notes",
+        "platform-management"
+      ]
+    }
+  ]
+}

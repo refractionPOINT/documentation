@@ -1,0 +1,33 @@
+{
+  "slug": "adapter-types-syslog",
+  "title": "Syslog",
+  "category": "",
+  "metadata": {
+    "summary": "Configure and deploy the LimaCharlie syslog adapter to ingest syslog messages over TCP/UDP with optional TLS support",
+    "keywords": [
+      "syslog",
+      "adapter",
+      "tcp",
+      "udp",
+      "tls",
+      "grok-parsing"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Ingest syslog messages from on-premise or cloud syslog daemons into LimaCharlie for centralized security monitoring"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "execute",
+      "path": "lc_adapter syslog",
+      "description": "Run LimaCharlie adapter with syslog configuration to ingest syslog messages"
+    },
+    {
+      "type": "cli_command",
+      "method": "execute",
+      "path": "nc -l -p 1514",
+      "description": "Listen on port 1514 with netcat to verify syslog message delivery"
+    }
+  ],
+  "cross_refs": []
+}

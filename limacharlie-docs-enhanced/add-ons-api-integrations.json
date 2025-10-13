@@ -1,0 +1,55 @@
+{
+  "slug": "add-ons-api-integrations",
+  "title": "API Integrations",
+  "category": "",
+  "metadata": {
+    "summary": "Overview of API-based lookup integrations that enrich telemetry and D&R rules with third-party metadata",
+    "keywords": [
+      "api",
+      "integrations",
+      "lookup",
+      "metadata_rules",
+      "enrichment"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Configure and understand API-based lookups for detection rule enrichment"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "api-integrations-virustotal",
+      "relationship": "continuation",
+      "description": "Example implementation of API-based lookup using VirusTotal"
+    },
+    {
+      "target_slug": "api-integrations-greynoise",
+      "relationship": "continuation",
+      "description": "GreyNoise IP context and RIOT lookup integration"
+    },
+    {
+      "target_slug": "api-integrations-echotrail",
+      "relationship": "continuation",
+      "description": "EchoTrail file and hash lookup integration"
+    },
+    {
+      "target_slug": "api-integrations-hybrid-analysis",
+      "relationship": "continuation",
+      "description": "Hybrid Analysis malware sandbox integration"
+    },
+    {
+      "target_slug": "api-integrations-alphamountain",
+      "relationship": "continuation",
+      "description": "alphaMountain URI categorization and threat intelligence"
+    },
+    {
+      "target_slug": "api-integrations-pangea",
+      "relationship": "continuation",
+      "description": "Pangea security service lookups for domains, files, IPs, URLs, and users"
+    },
+    {
+      "target_slug": "api-integrations-ip-geolocation",
+      "relationship": "continuation",
+      "description": "IP geolocation lookup using MaxMind GeoLite2 data"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "slug": "adapter-types-s3",
+  "title": "S3",
+  "category": "",
+  "metadata": {
+    "summary": "Configure adapter to ingest logs from AWS S3 buckets with parallel processing and prefix filtering",
+    "keywords": [
+      "aws",
+      "s3",
+      "storage",
+      "logs",
+      "adapter"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Ingest log files stored in S3 buckets into LimaCharlie for security analysis"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: s3",
+      "description": "Configure S3 adapter with bucket_name, access_key, secret_key, and optional prefix, parallel_fetch, single_load parameters"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-aws-cloudtrail",
+      "relationship": "related",
+      "description": "CloudTrail adapter uses S3 as one collection method"
+    },
+    {
+      "target_slug": "adapter-types-aws-guardduty",
+      "relationship": "related",
+      "description": "GuardDuty adapter uses S3 as one collection method"
+    }
+  ]
+}

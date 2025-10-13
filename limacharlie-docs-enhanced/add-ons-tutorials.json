@@ -1,0 +1,34 @@
+{
+  "slug": "add-ons-tutorials",
+  "title": "Add-Ons Tutorials",
+  "category": "",
+  "metadata": {
+    "summary": "Container page for add-on tutorials with 1 article available",
+    "keywords": [
+      "tutorials",
+      "add-ons",
+      "how-to",
+      "guides"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Learning add-on usage through step-by-step tutorials"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "add-ons",
+      "relationship": "prerequisite",
+      "description": "Provides foundational understanding of add-ons before following tutorials"
+    },
+    {
+      "target_slug": "extensions",
+      "relationship": "related",
+      "description": "Extensions are likely the subject of these tutorials"
+    },
+    {
+      "target_slug": "using-extensions",
+      "relationship": "related",
+      "description": "Tutorials likely demonstrate extension usage patterns"
+    }
+  ]
+}

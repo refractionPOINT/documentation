@@ -4,41 +4,15 @@
   "slug": "adapter-tutorials",
   "category": "",
   "metadata": {
-    "summary": "3 Articles  in this category",
+    "summary": "LimaCharlie supports webhooks as a telemetry ingestion method. Webhooks are technically cloud Adapters , as they cannot be deployed on-prem or through the downloadable Adapter binary. Webhook adapters are created by enabling a webhook through th...](/docs/tutorial-creating-a-webhook-adapter)",
     "keywords": [
       "adapter",
+      "telemetry",
       "tutorials"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "tutorials-3",
-        "title": "Tutorials",
-        "score": 11
-      },
-      {
-        "slug": "tutorials",
-        "title": "Tutorials",
-        "score": 11
-      },
-      {
-        "slug": "detection-and-response-tutorials",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "tutorials-1",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "adapter-usage",
-        "title": "Adapter Usage",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "865da0c117a559e58fdcc7f8b6e119658b7526388a64df7144b3ba5d8bb73ad5"
+  "content_hash": ""
 }

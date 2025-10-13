@@ -23,35 +23,8 @@
       "online"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 16
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 16
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 15
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "21bf23184ad76289c2ee881bfb96b109f26125bebd6588ff24a4e3b04194f71f"
+  "content_hash": ""
 }

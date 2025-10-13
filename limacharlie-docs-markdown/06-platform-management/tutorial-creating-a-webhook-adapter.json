@@ -4,53 +4,26 @@
   "slug": "tutorial-creating-a-webhook-adapter",
   "category": "",
   "metadata": {
-    "summary": "LimaCharlie supports webhooks as a telemetry ingestion method. Webhooks are technically cloud [Adapters](/v2/docs/adapters), as they cannot be deployed on-prem or through the downloadable Adapter binary.",
+    "summary": "Webhook adapters are created by enabling a webhook through the `cloud_sensor` [Hive](/v2/docs/config-hive) feature. Webhook creation will enable a specific URL that can receive webhooks from any platform. Received data will be ingested in LimaCharlie as a Sensor, similar to an Office365 or Syslog...",
     "keywords": [
       "adapter",
       "agent",
       "api",
-      "articles",
       "creating",
       "edr",
       "endpoint",
       "event",
       "format",
       "organization",
-      "output",
-      "related",
       "sdk",
       "sensor",
-      "supported"
+      "supported",
+      "telemetry",
+      "tutorial:",
+      "using"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 19
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 18
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 18
-      },
-      {
-        "slug": "tutorial-ingesting-google-cloud-logs",
-        "title": "Tutorial: Ingesting Google Cloud Logs",
-        "score": 17
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [
     {
@@ -59,5 +32,5 @@
       "method": "Manager"
     }
   ],
-  "content_hash": "dc051fc1540c8cf2938606674eb5c488f100f5db799e4f1ae79322da23ef15ca"
+  "content_hash": ""
 }

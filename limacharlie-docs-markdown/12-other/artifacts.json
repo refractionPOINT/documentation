@@ -10,7 +10,6 @@
       "add-on",
       "agent",
       "api",
-      "articles",
       "artifacts",
       "d&r",
       "detection",
@@ -20,38 +19,12 @@
       "events",
       "extension",
       "files",
-      "ingestion"
+      "ingestion",
+      "manually"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 20
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 19
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 19
-      },
-      {
-        "slug": "ext-zeek",
-        "title": "Zeek",
-        "score": 18
-      },
-      {
-        "slug": "sensor-tags",
-        "title": "Sensor Tags",
-        "score": 17
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "091bb32cb42d58ccdf46615e0fb0b448eae74b4aed3309805c527bda374a8338"
+  "content_hash": ""
 }

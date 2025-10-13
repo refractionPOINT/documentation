@@ -4,45 +4,25 @@
   "slug": "security-monitoring-for-devops",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Blind Spots in the Pipeline:** Siloed DevOps data from code repositories, third-party tools, and SaaS platforms leaves security teams in the dark, unable to detect threats hidden within routine operations. * **Reactive Response, Slowed Agility:** Manual security checks and sluggish incident r...",
     "keywords": [
+      "detection",
       "devops",
+      "limacharlie\u2019s",
       "monitoring",
+      "problems",
+      "response",
+      "rule",
       "security",
-      "what's"
+      "solution",
+      "telemetry"
     ],
     "complexity": "intermediate",
     "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "table-top-exercises",
-        "title": "Table Top Exercises",
-        "score": 11
-      },
-      {
-        "slug": "azure-network-security-group",
-        "title": "Azure Network Security Group",
-        "score": 4
-      },
-      {
-        "slug": "file-and-registry-integrity-monitoring-fim-deployments",
-        "title": "File and Registry Integrity Monitoring (FIM) Deployments",
-        "score": 4
-      },
-      {
-        "slug": "cloud-security",
-        "title": "Cloud Security",
-        "score": 4
-      },
-      {
-        "slug": "wel-monitoring",
-        "title": "WEL Monitoring",
-        "score": 4
-      }
+      "Threat Detection",
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "bb8e9d5110dca49d74bed0df6cd15da6b2bd7cddb3bc07551329da270f36fb7a"
+  "content_hash": ""
 }

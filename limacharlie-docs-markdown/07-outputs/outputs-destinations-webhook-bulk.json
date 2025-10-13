@@ -4,45 +4,17 @@
   "slug": "outputs-destinations-webhook-bulk",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `dest_host`: the IP or DNS, port and page to HTTP(S) POST to, format `https://www.myorg.com:514/whatever`. * `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the webhook to verify authenticity. This is a required field. [See \"Webhook Details\" section.](http...",
     "keywords": [
       "(bulk)",
-      "articles",
+      "detection",
+      "event",
       "output",
-      "related",
-      "webhook",
-      "what's"
+      "webhook"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "testing-outputs",
-        "title": "Testing Outputs",
-        "score": 14
-      },
-      {
-        "slug": "tutorial-creating-a-webhook-adapter",
-        "title": "Tutorial: Creating a Webhook Adapter",
-        "score": 13
-      },
-      {
-        "slug": "outputs-destinations-webhook",
-        "title": "Webhook",
-        "score": 12
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "2e10493dab25a448ed202234c66adc76f3066dd77fe7e16c4534ffde80fd1b40"
+  "content_hash": ""
 }

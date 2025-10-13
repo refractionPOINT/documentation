@@ -1,0 +1,19 @@
+{
+  "slug": "ext-atomic-red-team",
+  "title": "Atomic Red Team",
+  "category": "",
+  "metadata": {
+    "summary": "Enables execution of Atomic Red Team tests mapped to MITRE ATT&CK framework for security control validation",
+    "keywords": [
+      "atomic-red-team",
+      "mitre-attack",
+      "red-team",
+      "security-testing",
+      "purple-team"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Test detection capabilities by running MITRE ATT&CK-mapped adversary techniques on Windows endpoints"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

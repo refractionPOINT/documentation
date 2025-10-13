@@ -4,49 +4,19 @@
   "slug": "azure-network-security-group",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "LimaCharlie can ingest and natively parse Azure Network Security Group logs.",
     "keywords": [
-      "articles",
       "azure",
       "event",
       "group",
+      "ingestion",
       "network",
       "output",
-      "related",
-      "security",
-      "sensor",
-      "what's"
+      "security"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 17
-      },
-      {
-        "slug": "azure-sql-audit-logs",
-        "title": "Azure SQL Audit Logs",
-        "score": 17
-      },
-      {
-        "slug": "azure-monitor",
-        "title": "Azure Monitor",
-        "score": 17
-      },
-      {
-        "slug": "azure-logs-key-vault",
-        "title": "Azure Key Vault",
-        "score": 17
-      },
-      {
-        "slug": "ext-cloud-cli-azure",
-        "title": "Azure",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d8e7ce6363a16a1db9a7645cd8762e919891503873f94ddfaad652989731be0c"
+  "content_hash": ""
 }

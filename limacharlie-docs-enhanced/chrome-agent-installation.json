@@ -1,0 +1,25 @@
+{
+  "slug": "chrome-agent-installation",
+  "title": "Chrome Agent Installation",
+  "category": "",
+  "metadata": {
+    "summary": "Install the LimaCharlie sensor as a Chrome browser extension to provide visibility for browser activity, especially useful for ChromeOS environments.",
+    "keywords": [
+      "chrome",
+      "browser",
+      "extension",
+      "sensor",
+      "chromeos"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Gain affordable network visibility in organizations using ChromeOS and Chrome browsers"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "edge-agent-installation",
+      "relationship": "related",
+      "description": "Similar browser-based sensor for Chromium-based browsers sharing common architecture"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "slug": "ext-cloud-cli-vultr",
+  "title": "Vultr",
+  "category": "",
+  "metadata": {
+    "summary": "Interact with Vultr cloud infrastructure using vultr-cli through LimaCharlie's Cloud CLI Extension",
+    "keywords": [
+      "vultr",
+      "vultr-cli",
+      "cloud-cli",
+      "instances",
+      "api-token"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Manage and enumerate Vultr cloud instances from LimaCharlie using response actions"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "vultr-cli",
+      "path": "instance list",
+      "description": "List Vultr instances"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Execute Cloud CLI extension with Vultr vultr-cli commands"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-cloud-cli-digitalocean",
+      "relationship": "alternative",
+      "description": "Alternative cloud provider CLI with similar structure for managing cloud infrastructure"
+    },
+    {
+      "target_slug": "ext-cloud-cli-tailscale",
+      "relationship": "related",
+      "description": "Related cloud CLI tool accessible through same ext-cloud-cli extension framework"
+    }
+  ]
+}

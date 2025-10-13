@@ -1,0 +1,30 @@
+{
+  "slug": "outputs-destinations-azure-storage-blob",
+  "title": "Azure Storage Blob",
+  "category": "",
+  "metadata": {
+    "summary": "Configure LimaCharlie to output events and detections to Azure Storage Blob containers",
+    "keywords": [
+      "azure",
+      "blob-storage",
+      "output",
+      "storage",
+      "microsoft"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Archive LimaCharlie telemetry to Azure Blob Storage for integration with Azure analytics services"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-amazon-s3",
+      "relationship": "alternative",
+      "description": "Alternative cloud storage output destination using AWS S3"
+    },
+    {
+      "target_slug": "outputs-destinations-google-cloud-storage",
+      "relationship": "alternative",
+      "description": "Alternative cloud storage output destination using GCS"
+    }
+  ]
+}

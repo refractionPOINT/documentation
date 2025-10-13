@@ -1,0 +1,30 @@
+{
+  "slug": "table-top-exercises",
+  "title": "Table Top Exercises",
+  "category": "",
+  "metadata": {
+    "summary": "Realistic multi-platform security training simulations using pay-as-you-go pricing and customizable Atomic Red Team scenarios",
+    "keywords": [
+      "tabletop exercises",
+      "security training",
+      "Atomic Red Team",
+      "multi-platform",
+      "incident response training"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Train security teams through realistic attack simulations to improve incident response readiness"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "purple-teaming",
+      "relationship": "alternative",
+      "description": "Table-top exercises provide scenario-based team training while purple teaming offers automated continuous validation"
+    },
+    {
+      "target_slug": "incident-response",
+      "relationship": "prerequisite",
+      "description": "Table-top exercises prepare teams to use incident response capabilities effectively during real security events"
+    }
+  ]
+}

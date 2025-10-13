@@ -58,7 +58,7 @@ truthy: true
 
 applied to:
 
-```json
+```
 {
   "some": {
     "path": ""
@@ -383,7 +383,7 @@ times:
     tz: America/Los_Angeles
 ```
 
-### Time Zone
+#### Time Zone
 
 The `tz` should match a TZ database name from the [Time Zones Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
@@ -399,7 +399,7 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 
 ---
 
-#### Related articles
+###### Related articles
 
 * [Detection and Response Examples](/docs/detection-and-response-examples)
 * [Detection and Response](/docs/detection-and-response)
@@ -408,7 +408,7 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 
 ---
 
-##### What's Next
+###### What's Next
 
 * [Response Actions](/docs/response-actions)
 

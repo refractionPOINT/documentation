@@ -1,0 +1,25 @@
+{
+  "slug": "soc-prime-rules",
+  "title": "SOC Prime Rules",
+  "category": "",
+  "metadata": {
+    "summary": "Configure and sync detection rules from SOC Prime content lists into LimaCharlie with automatic 3-hour synchronization",
+    "keywords": [
+      "SOC Prime",
+      "managed rules",
+      "content lists",
+      "integration",
+      "sync"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Integrate and automatically sync SOC Prime detection rule lists into LimaCharlie"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "managed-rulesets",
+      "relationship": "prerequisite",
+      "description": "SOC Prime is a managed ruleset provider"
+    }
+  ]
+}

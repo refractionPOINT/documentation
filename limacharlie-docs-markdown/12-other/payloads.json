@@ -8,7 +8,6 @@
     "keywords": [
       "agent",
       "api",
-      "articles",
       "detection",
       "download",
       "edr",
@@ -20,38 +19,12 @@
       "overview",
       "payloads",
       "permissions",
-      "related"
+      "response",
+      "rule"
     ],
     "complexity": "advanced",
     "use_cases": [
       "is to run something with specific functionality not available in the main LimaCharlie functionality. For example: custom executables provided by another vendor to cleanup a machine, forensic utilities or firmware-related utilities."
-    ],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent-commands",
-        "title": "Endpoint Agent Commands",
-        "score": 19
-      },
-      {
-        "slug": "sleeper",
-        "title": "Sleeper Deployment",
-        "score": 19
-      },
-      {
-        "slug": "reference-endpoint-agent-commands",
-        "title": "Reference: Endpoint Agent Commands",
-        "score": 15
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 15
-      }
     ]
   },
   "api_elements": [
@@ -61,5 +34,5 @@
       "full": "curl -X PUT \"THE-SIGNED-URL-HERE\" -H \"Content-Type: application/octet-stream\" --upload-file your-file.exe"
     }
   ],
-  "content_hash": "0babe9de04fba3a46a7ac097033da080f6da225b0a7b8f6f4fddabc208862bdb"
+  "content_hash": ""
 }

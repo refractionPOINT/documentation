@@ -1,0 +1,30 @@
+{
+  "slug": "testing-outputs",
+  "title": "Testing Outputs",
+  "category": "",
+  "metadata": {
+    "summary": "Methods for verifying output configurations work correctly using Audit stream and troubleshooting failed outputs",
+    "keywords": [
+      "testing",
+      "verification",
+      "audit stream",
+      "troubleshooting",
+      "platform logs"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Validating that configured outputs are successfully sending data to destinations"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "outputs",
+      "relationship": "prerequisite",
+      "description": "Outputs must be configured before they can be tested"
+    },
+    {
+      "target_slug": "output-destinations",
+      "relationship": "prerequisite",
+      "description": "Specific destination must be configured before testing the connection"
+    }
+  ]
+}

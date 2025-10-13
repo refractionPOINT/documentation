@@ -1,0 +1,37 @@
+{
+  "slug": "adapter-types-sophos",
+  "title": "Sophos",
+  "category": "",
+  "metadata": {
+    "summary": "Ingest Sophos Central SIEM events into LimaCharlie using API credentials and event field mapping configuration.",
+    "keywords": [
+      "sophos",
+      "central",
+      "siem",
+      "adapter",
+      "api"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Integrate Sophos Central security events into LimaCharlie using SIEM API for unified threat detection"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter",
+      "description": "Deploy Sophos Central adapter using API credentials stored as hive secrets with SIEM event mapping"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-crowdstrike-falcon-cloud",
+      "relationship": "related",
+      "description": "Alternative third-party security product adapter with similar configuration structure"
+    },
+    {
+      "target_slug": "adapter-types-vmware-carbon-black",
+      "relationship": "related",
+      "description": "Alternative third-party EDR adapter demonstrating similar adapter deployment pattern"
+    }
+  ]
+}

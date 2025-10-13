@@ -4,45 +4,18 @@
   "slug": "adapter-types-mimecast",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"mimecast\" mimecast: client_id: \"hive://secret/mimecast-client-id\"",
     "keywords": [
       "api",
-      "articles",
+      "event",
       "mimecast",
-      "related",
-      "sensor",
-      "what's"
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-okta",
-        "title": "Okta",
-        "score": 15
-      },
-      {
-        "slug": "adapter-deployment",
-        "title": "Adapter Deployment",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "ext-cloud-cli-okta",
-        "title": "Okta",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "5ee5cbee9ce23cfec3b7975eb2dbbe240791b587605ba0a1293b37f2d4031cdd"
+  "content_hash": ""
 }

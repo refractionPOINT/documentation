@@ -1,0 +1,30 @@
+{
+  "slug": "installation-keys",
+  "title": "Installation Keys",
+  "category": "",
+  "metadata": {
+    "summary": "Base64-encoded keys that associate sensors with organizations and automatically apply tags during enrollment for deployment labeling and control",
+    "keywords": [
+      "installation-keys",
+      "enrollment",
+      "organization-id",
+      "tags",
+      "deployment"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Create and manage installation keys to enroll sensors with automatic tag classification"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "sensor-tags",
+      "relationship": "related",
+      "description": "Installation keys include tags that are automatically applied to sensors during enrollment"
+    },
+    {
+      "target_slug": "endpoint-agent-versioning-and-upgrades",
+      "relationship": "related",
+      "description": "Installation keys with version control tags enable automated version management at enrollment time"
+    }
+  ]
+}

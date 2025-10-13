@@ -4,44 +4,18 @@
   "slug": "outputs-destinations-smtp",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "To utilize SMTP output, you will need:",
     "keywords": [
-      "articles",
+      "configuration",
+      "detection",
+      "event",
       "output",
-      "related",
       "smtp",
-      "what's"
+      "webapp"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-imap",
-        "title": "IMAP",
-        "score": 13
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "outputs-destinations-splunk",
-        "title": "Splunk",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 6
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "0de52c54e78097a362645d0c42ce6b586d8aa18f840953ff9d9c390f098daf7b"
+  "content_hash": ""
 }

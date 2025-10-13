@@ -4,54 +4,21 @@
   "slug": "template-strings-and-transforms",
   "category": "",
   "metadata": {
-    "summary": "Many areas of LimaCharlie support template strings and transforms.",
+    "summary": "\"TargetUserName\": \"administrator\", \"WorkstationName\": \"D-483\" },",
     "keywords": [
-      "adapter",
-      "articles",
       "custom",
-      "d&r",
-      "detection",
-      "edr",
       "event",
-      "examples",
-      "extracting",
-      "fields",
       "modifiers",
       "output",
       "passthrough",
-      "related",
-      "response"
+      "string",
+      "strings",
+      "template",
+      "transforms"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 16
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 16
-      },
-      {
-        "slug": "writing-and-testing-rules",
-        "title": "Writing and Testing Rules",
-        "score": 15
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "c96045eb423fcd4414ea938b75419f732f01c1e37020544db0684aeb1d6b7009"
+  "content_hash": ""
 }

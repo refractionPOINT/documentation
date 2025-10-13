@@ -1,0 +1,44 @@
+{
+  "slug": "replay",
+  "title": "Replay",
+  "category": "",
+  "metadata": {
+    "summary": "Replay enables testing Detection & Response rules against historical sensor data or custom events before deployment",
+    "keywords": [
+      "testing",
+      "validation",
+      "d&r-rules",
+      "historical-data",
+      "lcql"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Test and validate detection rules against historical telemetry to measure effectiveness and performance before production deployment"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "limacharlie-replay",
+      "path": "limacharlie-replay --sid <sensor-id> --start <epoch> --end <epoch> --rule-content <file>",
+      "description": "Replay D&R rules against historical sensor data for a specific sensor"
+    },
+    {
+      "type": "cli_command",
+      "method": "limacharlie-replay",
+      "path": "limacharlie-replay --entire-org --start <epoch> --end <epoch> --rule-name <rule-name>",
+      "description": "Replay D&R rules against historical data for entire organization"
+    },
+    {
+      "type": "cli_command",
+      "method": "limacharlie query",
+      "path": "limacharlie query --help",
+      "description": "Query historical data using LCQL (LimaCharlie Query Language)"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://<datacenter>.replay.limacharlie.io/",
+      "description": "Replay API endpoint for testing D&R rules against historical or provided events"
+    }
+  ],
+  "cross_refs": []
+}

@@ -1,0 +1,49 @@
+{
+  "slug": "adapter-types-sublime-security",
+  "title": "Sublime Security",
+  "category": "",
+  "metadata": {
+    "summary": "Configure Sublime Security adapter to ingest email threat detection alerts via API or webhook for real-time email security monitoring",
+    "keywords": [
+      "sublime",
+      "email",
+      "security",
+      "webhook",
+      "alerts"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Ingest email security alerts and threat detection events from Sublime Security platform"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "N/A",
+      "path": "sensor_type: sublime",
+      "description": "Sublime Security adapter configuration using API key authentication"
+    },
+    {
+      "type": "configuration",
+      "method": "N/A",
+      "path": "sensor_type: webhook",
+      "description": "Webhook adapter configuration to receive JSON events from Sublime Security alerts"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/apidocs/get-org-urls",
+      "description": "LimaCharlie API to retrieve webhook URL for adapter configuration"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-imap",
+      "relationship": "alternative",
+      "description": "Alternative email ingestion method using direct IMAP access instead of Sublime Security API"
+    },
+    {
+      "target_slug": "adapter-types-mimecast",
+      "relationship": "related",
+      "description": "Related email security adapter that can complement Sublime Security for comprehensive email protection"
+    }
+  ]
+}

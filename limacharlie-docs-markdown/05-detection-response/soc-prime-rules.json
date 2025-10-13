@@ -4,47 +4,23 @@
   "slug": "soc-prime-rules",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "After the lists have been configured, you can finish the configuration in LimaCharlie. Note that currently the SOC Prime API is not available for free users. It is available only for paid users or if they requested a trial.",
     "keywords": [
-      "articles",
+      "add-on",
+      "api",
       "detection",
+      "integration",
+      "organization",
+      "output",
       "prime",
-      "related",
       "response",
       "rule",
       "rules",
-      "what's"
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "soteria-rules",
-        "title": "Soteria Rules",
-        "score": 17
-      },
-      {
-        "slug": "managed-rulesets",
-        "title": "Managed Rulesets",
-        "score": 16
-      },
-      {
-        "slug": "community-rules",
-        "title": "Community Rules",
-        "score": 12
-      },
-      {
-        "slug": "detection-and-response-examples",
-        "title": "Detection and Response Examples",
-        "score": 12
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "fadc7b9f99135a18c84e2714050338e36074ce5a58ac4e5ea4b659f65054c63a"
+  "content_hash": ""
 }

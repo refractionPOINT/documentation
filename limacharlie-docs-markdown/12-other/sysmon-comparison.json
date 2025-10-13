@@ -4,51 +4,25 @@
   "slug": "sysmon-comparison",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Many organizations deploy Sysmon and structure their detection events around Sysmon-specific event logs, which can offer granular insight into operating system changes. LimaCharlie's EDR telemetry can offer similar events, allowing you to write detections against these events directly.",
     "keywords": [
       "agent",
-      "articles",
       "comparison",
       "detection",
       "edr",
       "endpoint",
       "event",
-      "related",
+      "executable",
+      "organization",
       "response",
+      "sensor",
       "sysmon",
       "telemetry",
-      "what's"
+      "tracking"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ingesting-sysmon-event-logs",
-        "title": "Ingesting Sysmon Event Logs",
-        "score": 19
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 16
-      },
-      {
-        "slug": "reference-edr-events",
-        "title": "Reference: EDR Events",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "0563bff8660cfa0f3b4efe940091c5d2f184e8c1877cd739ce2e948b10c4f9d7"
+  "content_hash": ""
 }

@@ -23,35 +23,8 @@
       "group"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 15
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "template-strings-and-transforms",
-        "title": "Template Strings and Transforms",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a4c6d9b7343d873379bb935af1e9bee045b3c3e4c55827f7c5cfdb0589d1154c"
+  "content_hash": ""
 }

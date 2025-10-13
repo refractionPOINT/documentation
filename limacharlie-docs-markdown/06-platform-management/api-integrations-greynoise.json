@@ -4,44 +4,19 @@
   "slug": "api-integrations-greynoise",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "LimaCharlie offers integrations with two GreyNoise API lookups:",
     "keywords": [
-      "add-on",
       "api",
+      "context",
       "greynoise",
       "integration",
-      "what's"
+      "lookup",
+      "organization",
+      "query"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "api-integrations-hybrid-analysis",
-        "title": "Hybrid Analysis",
-        "score": 13
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 6
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 6
-      },
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "2ec785804e1c2cc08c727e03f7d6934b37ad1f150214fa9a653a92b63e7f9a65"
+  "content_hash": ""
 }

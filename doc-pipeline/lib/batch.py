@@ -17,14 +17,19 @@ except ImportError:
 
 def create_semantic_batches(
     pages: List[Page],
-    claude_client: ClaudeClient
+    claude_client: ClaudeClient,
+    max_pages_per_request: int = 30
 ) -> List[Dict[str, Any]]:
     """
     Group pages into semantic batches using Claude.
 
+    For large page lists, automatically chunks into smaller groups to avoid
+    overwhelming Claude with too much context.
+
     Args:
         pages: List of pages to batch
         claude_client: Claude client for making requests
+        max_pages_per_request: Maximum pages to send to Claude at once (default 30)
 
     Returns:
         List of batch dictionaries with structure:
@@ -34,6 +39,53 @@ def create_semantic_batches(
             'pages': [Page, Page, ...],
             'page_slugs': ['slug1', 'slug2', ...]
         }
+    """
+    # If page list is small enough, batch directly
+    if len(pages) <= max_pages_per_request:
+        return _batch_pages_with_claude(pages, claude_client)
+
+    # For large lists, batch by category first
+    print(f"  Large dataset ({len(pages)} pages) - batching by category...")
+
+    # Group pages by category
+    by_category: Dict[str, List[Page]] = {}
+    for page in pages:
+        category = page.category or 'uncategorized'
+        if category not in by_category:
+            by_category[category] = []
+        by_category[category].append(page)
+
+    # Batch each category separately
+    all_batches = []
+    batch_counter = 0
+
+    for category_name, category_pages in sorted(by_category.items()):
+        print(f"  Batching category: {category_name} ({len(category_pages)} pages)")
+
+        # Batch this category
+        category_batches = _batch_pages_with_claude(category_pages, claude_client)
+
+        # Renumber batch IDs to be globally unique
+        for batch in category_batches:
+            batch_counter += 1
+            old_id = batch['id']
+            # Keep descriptive name but ensure unique numbering
+            name_part = old_id.split('_', 2)[-1] if '_' in old_id else old_id
+            batch['id'] = f"batch_{batch_counter:02d}_{name_part}"
+
+        all_batches.extend(category_batches)
+
+    return all_batches
+
+
+def _batch_pages_with_claude(
+    pages: List[Page],
+    claude_client: ClaudeClient
+) -> List[Dict[str, Any]]:
+    """
+    Internal function to batch a list of pages using Claude.
+
+    Assumes page list is reasonably sized (<= 30 pages).
     """
     # Create prompt for Claude
     page_list = "\n".join([

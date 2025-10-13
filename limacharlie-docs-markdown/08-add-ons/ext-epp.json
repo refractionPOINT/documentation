@@ -23,35 +23,8 @@
       "response"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 19
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 18
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 18
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 16
-      },
-      {
-        "slug": "ext-infrastructure",
-        "title": "Infrastructure",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "19bb6883d33dfc83d281c0cd31dbf172b3ea30cb49561312d87f057e7ded6e99"
+  "content_hash": ""
 }

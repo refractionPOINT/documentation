@@ -1,0 +1,43 @@
+{
+  "slug": "sensor-removal",
+  "title": "FAQ - Sensor Removal",
+  "category": "",
+  "metadata": {
+    "summary": "Verification procedures for confirming successful removal of LimaCharlie macOS endpoint agents including processes, files, and extensions",
+    "keywords": [
+      "uninstallation",
+      "macOS",
+      "verification",
+      "removal",
+      "system-extensions"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Verifying that macOS endpoint agents were completely removed from systems"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "systemextensionsctl",
+      "path": "sudo systemextensionsctl list | grep rphcp",
+      "description": "Check if macOS system extensions are removed"
+    },
+    {
+      "type": "cli_command",
+      "method": "cat",
+      "path": "sudo cat /Library/SystemExtensions/db.plist | grep rphcp",
+      "description": "Verify system extension database for remaining entries"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent-uninstallation",
+      "relationship": "prerequisite",
+      "description": "Uninstallation procedure must be performed before verification"
+    },
+    {
+      "target_slug": "endpoint-agent",
+      "relationship": "related",
+      "description": "Removing endpoint agents from macOS systems"
+    }
+  ]
+}

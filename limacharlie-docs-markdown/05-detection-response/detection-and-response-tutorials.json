@@ -4,40 +4,21 @@
   "slug": "detection-and-response-tutorials",
   "category": "",
   "metadata": {
-    "summary": "2 Articles  in this category",
+    "summary": "Detection & Response ( D&R ) Rules are similar to Google Cloud Functions or AWS Lambda. They allow you to push D&R rules to the LimaCharlie cloud where the rules will be applied in real-time to data coming from the sensors. D&R ru...](/docs/writing-and-testing-rules)",
     "keywords": [
+      "d&r",
+      "detection",
+      "response",
+      "rule",
+      "sensor",
+      "telemetry",
       "tutorials"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "tutorials",
-        "title": "Tutorials",
-        "score": 11
-      },
-      {
-        "slug": "tutorials-3",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "tutorials-1",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "adapter-tutorials",
-        "title": "Adapter Tutorials",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-tutorials",
-        "title": "Add-Ons Tutorials",
-        "score": 3
-      }
+    "use_cases": [
+      "for D&R rules is to use them to compare telemetry against known malicious IPs, domain names, or file hashes via threat feeds. With LimaCharlie, it is easy to leverage public threat feeds or create your own. To configure a th...](/docs/create-a-dr-rule-using-a-threat-feed)"
     ]
   },
   "api_elements": [],
-  "content_hash": "42020bcfb6fcbf60334bca2d35ee7d212fa3c4d147e01e22bfcfe6fa733f2087"
+  "content_hash": ""
 }

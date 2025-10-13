@@ -23,34 +23,7 @@
       "default)"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 13
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 13
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 12
-      },
-      {
-        "slug": "api-keys",
-        "title": "API Keys",
-        "score": 12
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [
     {
@@ -69,5 +42,5 @@
       "full": "--header \"x-lc-oid: OID\""
     }
   ],
-  "content_hash": "2ea77eaa299fddec0271e14904fa8946ca15afc51ea62071e806c077d1341272"
+  "content_hash": ""
 }

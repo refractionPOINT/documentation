@@ -1,0 +1,26 @@
+{
+  "slug": "tutorials-integratons-virustotal-integration",
+  "title": "VirusTotal Integration",
+  "category": "",
+  "metadata": {
+    "summary": "Configure VirusTotal integration with LimaCharlie to enrich hash lookups in detection rules using cached API requests.",
+    "keywords": [
+      "virustotal",
+      "integration",
+      "hash-lookup",
+      "data-enrichment",
+      "detection-rules"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Enable automated VirusTotal hash reputation checks within LimaCharlie detection and response rules"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "lookup",
+      "path": "hives://lookup/vt",
+      "description": "Lookup operation resource for VirusTotal hash queries via LimaCharlie detection rules"
+    }
+  ],
+  "cross_refs": []
+}

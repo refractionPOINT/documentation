@@ -4,43 +4,22 @@
   "slug": "query-with-cli",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "To streamline day to day usage, the first 3 components of the query are set seperatly and remain between queries. These 3 component can be set through the following commands:",
     "keywords": [
-      "lcql",
+      "api",
+      "context",
+      "event",
+      "output",
+      "paged",
       "query",
-      "what's",
+      "querying",
+      "sdk",
+      "sensor",
       "with"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "lcql-examples",
-        "title": "LCQL Examples",
-        "score": 10
-      },
-      {
-        "slug": "lcql",
-        "title": "LimaCharlie Query Language",
-        "score": 7
-      },
-      {
-        "slug": "reference-sensor-selector-expressions",
-        "title": "Reference: Sensor Selector Expressions",
-        "score": 5
-      },
-      {
-        "slug": "query-console",
-        "title": "Query Console",
-        "score": 5
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 4
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "e40d6cac62ca7de25f43d5fb8b9937109ccc0fb3847028f548ac96f3ef715b74"
+  "content_hash": ""
 }

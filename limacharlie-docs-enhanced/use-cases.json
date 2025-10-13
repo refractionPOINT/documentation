@@ -1,0 +1,31 @@
+{
+  "slug": "use-cases",
+  "title": "Use Cases",
+  "category": "",
+  "metadata": {
+    "summary": "Comprehensive catalog of common LimaCharlie applications across security operations scenarios",
+    "keywords": [
+      "use-cases",
+      "MSSP",
+      "MDR",
+      "EDR",
+      "SIEM",
+      "threat-hunting"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Discovering how LimaCharlie can be applied to specific security needs"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "what-is-limacharlie",
+      "relationship": "prerequisite",
+      "description": "Need to understand platform before exploring use cases"
+    },
+    {
+      "target_slug": "limacharlie-core-concepts",
+      "relationship": "related",
+      "description": "Core concepts underpin the various use case implementations"
+    }
+  ]
+}

@@ -4,42 +4,20 @@
   "slug": "outputs-destinations-splunk",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Want to reduce Splunk spend?",
     "keywords": [
+      "detection",
+      "endpoint",
+      "event",
+      "limacharlie",
       "output",
-      "splunk",
-      "what's"
+      "sensor",
+      "setup",
+      "splunk"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-syslog",
-        "title": "Syslog",
-        "score": 12
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-syslog",
-        "title": "Syslog",
-        "score": 7
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 4
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 4
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "93dad633085f5abdf712f5232ea96242ed0e0fe5e10250fc42c88b5167276b5a"
+  "content_hash": ""
 }

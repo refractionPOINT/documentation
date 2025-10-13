@@ -4,46 +4,20 @@
   "slug": "ext-cloud-cli-aws",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This extension makes use of AWS's native CLI tool, which can be found [here](https://awscli.amazonaws.com/v2/documentation/api/latest/index.html).",
     "keywords": [
-      "add-on",
-      "articles",
+      "api",
+      "credentials",
+      "event",
+      "example",
       "extension",
-      "output",
-      "related",
-      "rule",
-      "what's"
+      "organization",
+      "response",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-cloud-cli-azure",
-        "title": "Azure",
-        "score": 16
-      },
-      {
-        "slug": "adapter-types-sqs",
-        "title": "SQS",
-        "score": 15
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-s3",
-        "title": "S3",
-        "score": 14
-      },
-      {
-        "slug": "soteria-aws-rules",
-        "title": "Soteria AWS Rules",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "476fad0c6dfb960bedfb1bde686baae6d698f29eacebc856603c9d0ad4aabc2e"
+  "content_hash": ""
 }

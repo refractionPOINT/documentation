@@ -4,47 +4,23 @@
   "slug": "sigma-rules",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Many people use Sigma as the community tends to respond quickly, but also puts interesting anomalies often in there.",
     "keywords": [
-      "articles",
+      "add-on",
+      "api",
       "detection",
-      "related",
-      "response",
+      "enabling",
+      "event",
+      "identifying",
+      "organization",
+      "query",
       "rule",
       "rules",
-      "sigma",
-      "what's"
+      "sigma"
     ],
-    "complexity": "beginner",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "sigma-converter",
-        "title": "Sigma Converter",
-        "score": 16
-      },
-      {
-        "slug": "managed-rulesets",
-        "title": "Managed Rulesets",
-        "score": 16
-      },
-      {
-        "slug": "quickstart",
-        "title": "Quickstart",
-        "score": 14
-      },
-      {
-        "slug": "detection-and-response-examples",
-        "title": "Detection and Response Examples",
-        "score": 12
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 12
-      }
-    ]
+    "complexity": "intermediate",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "5e4294c30815d0b38f2ac60e623d36d8039cbf3886cd5967ee5951e86f66c14f"
+  "content_hash": ""
 }

@@ -1,0 +1,25 @@
+{
+  "slug": "detection-and-response-tutorials",
+  "title": "Tutorials",
+  "category": "",
+  "metadata": {
+    "summary": "Collection of tutorials covering how to write, test, and deploy detection and response rules including threat feed integration",
+    "keywords": [
+      "tutorials",
+      "D&R rules",
+      "threat feeds",
+      "detection",
+      "testing"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Learn through practical examples how to create and test detection and response rules"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "config-hive-dr-rules",
+      "relationship": "prerequisite",
+      "description": "Understanding config hive structure helps when implementing D&R rules via CLI in tutorials"
+    }
+  ]
+}

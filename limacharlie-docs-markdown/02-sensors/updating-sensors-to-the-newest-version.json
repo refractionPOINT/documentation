@@ -4,50 +4,27 @@
   "slug": "updating-sensors-to-the-newest-version",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "There are two methods for updating sensors in your organization to the latest version.",
     "keywords": [
       "agent",
-      "articles",
+      "automated",
+      "detection",
+      "edr",
       "endpoint",
-      "event",
+      "manual",
       "newest",
-      "related",
+      "organization",
+      "output",
+      "rule",
       "sensor",
       "sensors",
-      "updating",
-      "version",
-      "what's"
+      "telemetry",
+      "update",
+      "updating"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 18
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 17
-      },
-      {
-        "slug": "test-a-new-sensor-version",
-        "title": "Test a New Sensor Version",
-        "score": 17
-      },
-      {
-        "slug": "ingesting-sysmon-event-logs",
-        "title": "Ingesting Sysmon Event Logs",
-        "score": 16
-      },
-      {
-        "slug": "endpoint-agent-installation",
-        "title": "Endpoint Agent Installation",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "661fb80bb1d1fe7e035fd78e46471c462a212c904ea8129b3c6356b962d3175b"
+  "content_hash": ""
 }

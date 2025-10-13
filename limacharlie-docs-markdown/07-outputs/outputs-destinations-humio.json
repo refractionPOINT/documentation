@@ -4,42 +4,19 @@
   "slug": "outputs-destinations-humio",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `humio_repo`: the name of the humio repo to upload to. * `humio_api_token`: the humio ingestion token. * `endpoint_url`: optionally specify a custom endpoint URL, if you have Humio deployed on-prem use this to point to it, otherwise it defaults to the Humio cloud.",
     "keywords": [
+      "api",
+      "detection",
+      "endpoint",
+      "event",
       "humio",
       "output",
-      "what's"
+      "query"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-opensearch",
-        "title": "OpenSearch",
-        "score": 12
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 4
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 4
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 4
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "0fb425ce9ccd6ea934d7f5cf0ea68b1ea1e42dc2bac1991901993a3aed76dba7"
+  "content_hash": ""
 }

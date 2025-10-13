@@ -4,7 +4,7 @@
   "slug": "building-extensions",
   "category": "",
   "metadata": {
-    "summary": "This section is a work in progress",
+    "summary": "Feel free to reach out to us on our Community Slack if you'd like to learn more",
     "keywords": [
       "(optional)",
       "add-on",
@@ -23,35 +23,8 @@
       "extensions?"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 15
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 14
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 14
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 14
-      },
-      {
-        "slug": "schema-data-types",
-        "title": "Schema Data Types",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "1a952dd66c58c157c89ee51dcc3ad6bed68d774d2d973d866222a9584dcbd936"
+  "content_hash": ""
 }

@@ -4,48 +4,26 @@
   "slug": "soteria-aws-rules",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* [AWS CloudTrail](https://aws.amazon.com/cloudtrail/) * [AWS GuardDuty](https://aws.amazon.com/guardduty/)",
     "keywords": [
-      "articles",
+      "activating",
+      "add-on",
       "detection",
-      "edr",
-      "related",
-      "response",
+      "enabling",
+      "extension",
+      "infrastructure",
+      "organization",
+      "output",
       "rule",
       "rules",
+      "sensor",
       "soteria",
-      "what's"
+      "soteria's",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "soteria-rules",
-        "title": "Soteria Rules",
-        "score": 19
-      },
-      {
-        "slug": "soteria-edr-rules",
-        "title": "Soteria EDR Rules",
-        "score": 19
-      },
-      {
-        "slug": "managed-rulesets",
-        "title": "Managed Rulesets",
-        "score": 17
-      },
-      {
-        "slug": "soteria-m365-rules",
-        "title": "Soteria M365 Rules",
-        "score": 15
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "70c32525bfd123df9e71afc1062f2ad14390bf84dcd7f943b2add381aea12b4a"
+  "content_hash": ""
 }

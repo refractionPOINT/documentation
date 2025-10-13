@@ -4,56 +4,21 @@
   "slug": "logcollectionguide",
   "category": "",
   "metadata": {
-    "summary": "This guide covers how to collect various Linux system logs into LimaCharlie using USP adapters. LimaCharlie provides flexible log collection capabilities through file monitoring and syslog ingestion.",
+    "summary": "journalctl -f -q --output=json | nc localhost 514",
     "keywords": [
-      "(/var/log/audit/audit.log)",
-      "(/var/log/messages,",
-      "(recommended",
-      "/var/log/syslog)",
-      "adapter",
-      "audit",
-      "basic",
       "collection",
-      "common",
-      "configuration:",
       "event",
-      "features:",
-      "files)",
       "guide",
-      "journalctl"
+      "multi-file",
+      "organization",
+      "output",
+      "practices",
+      "sensor",
+      "troubleshooting"
     ],
-    "complexity": "advanced",
-    "use_cases": [
-      "Compliance"
-    ],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 11
-      },
-      {
-        "slug": "reference-id-schema",
-        "title": "Reference: ID Schema",
-        "score": 11
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-syslog",
-        "title": "Syslog",
-        "score": 8
-      },
-      {
-        "slug": "adapter-types-json",
-        "title": "JSON",
-        "score": 7
-      }
-    ]
+    "complexity": "intermediate",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "c7ffc9e56887070b64003d48e494e576506111f8f97b573460986b0e9d24b0f7"
+  "content_hash": ""
 }

@@ -1,0 +1,50 @@
+{
+  "slug": "binlib",
+  "title": "BinLib",
+  "category": "",
+  "metadata": {
+    "summary": "Build private collection of observed executables for analysis, YARA scanning, and threat hunting across your environment",
+    "keywords": [
+      "binlib",
+      "binary-library",
+      "CODE_IDENTITY",
+      "YARA",
+      "hash-analysis"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Track and analyze all executables observed in environment to identify malicious binaries and enrich detections"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/check_hash",
+      "description": "Check if hash (MD5/SHA1/SHA256) has been observed in organization"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/get_hash_data",
+      "description": "Get download URL for binary file associated with hash"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/get_hash_metadata",
+      "description": "Retrieve metadata including signing details, file type, and hashes for observed binary"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/search",
+      "description": "Search binary library by imp_hash, company name, file description, signature, size, or type"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/tag",
+      "description": "Add tags to hash for classification within binary library"
+    }
+  ],
+  "cross_refs": []
+}

@@ -4,44 +4,17 @@
   "slug": "outputs-destinations-webhook",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `dest_host`: the IP or DNS, port and page to HTTP(S) POST to, format `https://www.myorg.com:514/whatever`. * `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the webhook to verify authenticity. [See \"Webhook Details\" section.](https://doc.limacharlie.io/doc...",
     "keywords": [
-      "articles",
+      "api",
+      "detection",
+      "event",
       "output",
-      "related",
-      "webhook",
-      "what's"
+      "webhook"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "tutorial-creating-a-webhook-adapter",
-        "title": "Tutorial: Creating a Webhook Adapter",
-        "score": 13
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "outputs-destinations-webhook-bulk",
-        "title": "Webhook (Bulk)",
-        "score": 10
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 6
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "5aade99a44f85c13c5b3b2e023f2f6c7a52f0aed8ecc054453c75d1f8d27d36d"
+  "content_hash": ""
 }

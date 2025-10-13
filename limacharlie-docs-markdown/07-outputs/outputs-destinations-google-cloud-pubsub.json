@@ -4,47 +4,20 @@
   "slug": "outputs-destinations-google-cloud-pubsub",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `secret_key`: the secret json key identifying a service account. * `project`: the GCP Project name where the Topic lives. * `topic`: use this specific value as a topic.",
     "keywords": [
-      "articles",
+      "api",
       "cloud",
+      "detection",
+      "event",
       "google",
       "output",
       "pubsub",
-      "query",
-      "related",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 17
-      },
-      {
-        "slug": "ext-cloud-cli-google-cloud",
-        "title": "Google Cloud",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-bigquery",
-        "title": "Google Cloud BigQuery",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-google-workspace",
-        "title": "Google Workspace",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d5505e57c0477576ea606f31aa4dc292e4329b0e486450f2f7afda3be55ac7ed"
+  "content_hash": ""
 }

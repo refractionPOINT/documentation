@@ -4,47 +4,22 @@
   "slug": "adapter-types-google-workspace",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Google Workspace Audit logs can be ingested via a Google Cloud Platform, deploye as a cloud-to-cloud LimaCharlie Adapter. Events will be ingested and observed via the `gcp` platform.",
     "keywords": [
-      "articles",
+      "adapter",
+      "api",
+      "deployment",
+      "event",
       "google",
-      "output",
+      "organization",
       "query",
-      "related",
-      "sensor",
-      "what's",
       "workspace"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 17
-      },
-      {
-        "slug": "ext-cloud-cli-google-cloud",
-        "title": "Google Cloud",
-        "score": 16
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 16
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 16
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-bigquery",
-        "title": "Google Cloud BigQuery",
-        "score": 16
-      }
+    "use_cases": [
+      "Compliance"
     ]
   },
   "api_elements": [],
-  "content_hash": "be40fa610068b6f5c110e31b7137127b341f429c60224f99ad4ee06136dbb9ab"
+  "content_hash": ""
 }

@@ -4,7 +4,7 @@
   "slug": "faq-privacy",
   "category": "",
   "metadata": {
-    "summary": "LimaCharlie is a highly configurable security infrastructure-as-a-service platform. It allows users to control which data they ingest into the platform from various locations, including endpoints and cloud services.",
+    "summary": "The LimaCharlie platform focuses on the collection of machine telemetry. This type of telemetry does not generally contain personally identifiable information. The LimaCharlie Sensor does not typically monitor PII-heavy areas such as the contents of email messages or documents. Consequently, manu...",
     "keywords": [
       "(pii)",
       "agent",
@@ -23,35 +23,8 @@
       "privacy"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 16
-      },
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 13
-      },
-      {
-        "slug": "ext-yara",
-        "title": "YARA",
-        "score": 13
-      },
-      {
-        "slug": "ext-integrity",
-        "title": "Integrity",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "86d9a21c9477ebed20a9a24d738d5832ff00fb6f54cda3504a7e4575b1f72911"
+  "content_hash": ""
 }

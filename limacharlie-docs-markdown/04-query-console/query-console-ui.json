@@ -4,7 +4,7 @@
   "slug": "query-console-ui",
   "category": "",
   "metadata": {
-    "summary": "Many critical security operations require a query console with strong search functionality. It enables analysts to query large volumes of telemetry, logs, and events for investigations, hunting, and incident response.",
+    "summary": "LimaCharlie\u2019s Query Console (with integrated Search) brings this functionality to the SecOps Cloud Platform. We\u2019ve combined familiar query workflows with features like type-ahead syntax, time range selection, and detection-as-code conversion. This lets your team quickly investigate alerts, analyz...",
     "keywords": [
       "console",
       "d&r",
@@ -24,37 +24,10 @@
     ],
     "complexity": "intermediate",
     "use_cases": [
-      "Incident Response",
-      "."
-    ],
-    "related_pages": [
-      {
-        "slug": "lcql",
-        "title": "LimaCharlie Query Language",
-        "score": 17
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 13
-      },
-      {
-        "slug": "query-console",
-        "title": "Query Console",
-        "score": 13
-      },
-      {
-        "slug": "incident-response",
-        "title": "Incident Response",
-        "score": 11
-      }
+      ".",
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "a2923ec6b702aefdcbccd85eaa28c2b6e047acdfcd3cd36e927da0620a6a156b"
+  "content_hash": ""
 }

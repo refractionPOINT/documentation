@@ -1,0 +1,50 @@
+{
+  "slug": "docker-agent-installation",
+  "title": "Docker Agent Installation",
+  "category": "",
+  "metadata": {
+    "summary": "Deploy the LimaCharlie agent in Docker containers with privileged mode and host-level visibility for containerized Linux environments.",
+    "keywords": [
+      "docker",
+      "container",
+      "sensor",
+      "privileged",
+      "ebpf"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Deploy LimaCharlie monitoring in containerized infrastructure and Kubernetes clusters"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker pull refractionpoint/limacharlie_sensor:latest",
+      "description": "Pull the latest LimaCharlie sensor Docker image from Docker Hub"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker run --privileged --net=host -v /:/rootfs:ro -v /var/run/docker/netns:/netns:ro -v /sys/kernel/debug:/sys/kernel/debug:ro -v /sys/kernel/btf:/sys/kernel/btf:ro -v /lib/modules:/lib/modules:ro --env LC_INSTALLATION_KEY=<your_key> --env HOST_FS=/rootfs --env NET_NS=/netns refractionpoint/limacharlie_sensor:latest",
+      "description": "Run LimaCharlie sensor in privileged Docker container with host visibility"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker-compose up -d",
+      "description": "Start LimaCharlie sensor using Docker Compose configuration"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker build -t my-lc-agent .",
+      "description": "Build custom Docker image with LimaCharlie sensor"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "linux-agent-installation",
+      "relationship": "alternative",
+      "description": "Alternative to native Linux installation for containerized environments"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "slug": "azure-logs-key-vault",
+  "title": "Azure Key Vault",
+  "category": "",
+  "metadata": {
+    "summary": "Ingest Azure Key Vault audit logs to monitor cryptographic key and secret access via Event Hub or webhooks",
+    "keywords": [
+      "azure",
+      "key-vault",
+      "secrets",
+      "audit-logs",
+      "ingestion"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Monitor and detect unauthorized access to Azure Key Vault secrets and cryptographic keys"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-azure-event-hub",
+      "relationship": "prerequisite",
+      "description": "Azure Event Hub is one ingestion method for Key Vault logs"
+    }
+  ]
+}

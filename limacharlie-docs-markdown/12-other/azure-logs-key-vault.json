@@ -4,47 +4,18 @@
   "slug": "azure-logs-key-vault",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Azure Key Vault logs can be ingested via:",
     "keywords": [
-      "articles",
+      "api",
       "azure",
       "event",
-      "output",
-      "related",
-      "sensor",
-      "vault",
-      "what's"
+      "ingestion",
+      "sample",
+      "vault"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 17
-      },
-      {
-        "slug": "azure-network-security-group",
-        "title": "Azure Network Security Group",
-        "score": 17
-      },
-      {
-        "slug": "azure-sql-audit-logs",
-        "title": "Azure SQL Audit Logs",
-        "score": 17
-      },
-      {
-        "slug": "azure-monitor",
-        "title": "Azure Monitor",
-        "score": 17
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "c48bc30b36d60c0e316e671b9cab3fa74ab39ba11febcb8434e937d5e70b62a2"
+  "content_hash": ""
 }

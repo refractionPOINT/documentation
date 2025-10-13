@@ -1,0 +1,25 @@
+{
+  "slug": "azure-network-security-group",
+  "title": "Azure Network Security Group",
+  "category": "",
+  "metadata": {
+    "summary": "Ingest Azure Network Security Group logs to monitor network traffic filtering between Azure resources",
+    "keywords": [
+      "azure",
+      "nsg",
+      "network-security",
+      "firewall",
+      "traffic"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Analyze network traffic patterns and detect unauthorized network access in Azure virtual networks"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-azure-event-hub",
+      "relationship": "prerequisite",
+      "description": "Azure Event Hub is one ingestion method for NSG logs"
+    }
+  ]
+}

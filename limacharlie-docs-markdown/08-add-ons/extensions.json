@@ -4,54 +4,31 @@
   "slug": "extensions",
   "category": "",
   "metadata": {
-    "summary": "LimaCharlie Extensions provide a robust framework for enhancing and customizing the LimaCharlie Cloud's capabilities, enabling seamless integration with third-party tools, services, and custom logic. Extensions serve as modular components that expand LimaCharlie\u2019s native functionality, allowing o...",
+    "summary": "Extensions are defined at the global level across all LimaCharlie datacenters. This means that once an Extension is created, it is available for use in any Organization, provided that organization subscribes to it. Once subscribed, Extensions can interact with various components within the subscr...",
     "keywords": [
-      "add-on",
-      "articles",
+      "agent",
+      "api",
+      "cases",
+      "considerations",
       "detection",
+      "developing",
+      "event",
       "extension",
       "extensions",
       "extensions:",
+      "flexibility",
       "integration",
       "organization",
-      "overview",
-      "permissions",
-      "private,",
-      "public,",
-      "related",
-      "response",
-      "rule"
+      "output",
+      "overview"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 17
-      },
-      {
-        "slug": "using-extensions",
-        "title": "Using Extensions",
-        "score": 15
-      },
-      {
-        "slug": "ext-infrastructure",
-        "title": "Infrastructure",
-        "score": 15
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 13
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 13
-      }
+    "use_cases": [
+      "for Extensions",
+      ", effectively creating a customized security environment that adapts to both current and future challenges.",
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "06975c14d20d93ce883e989fe2c9c26064e2a5bb6fd36ed86371a020ba295f8c"
+  "content_hash": ""
 }

@@ -1,0 +1,42 @@
+{
+  "slug": "ext-twilio",
+  "title": "Twilio",
+  "category": "",
+  "metadata": {
+    "summary": "Send SMS notifications via Twilio from LimaCharlie detection rules",
+    "keywords": [
+      "twilio",
+      "sms",
+      "notification",
+      "messaging",
+      "alerting"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Send text message alerts for security events directly to phone numbers"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-twilio/send",
+      "description": "Send SMS message via Twilio with body, from, and to parameters"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-pagerduty",
+      "relationship": "alternative",
+      "description": "Alternative notification method using PagerDuty instead of SMS"
+    },
+    {
+      "target_slug": "ext-usage-alerts",
+      "relationship": "related",
+      "description": "Can be used together to send SMS notifications when usage thresholds are exceeded"
+    },
+    {
+      "target_slug": "ext-govee",
+      "relationship": "alternative",
+      "description": "Alternative notification method using physical lights instead of SMS"
+    }
+  ]
+}

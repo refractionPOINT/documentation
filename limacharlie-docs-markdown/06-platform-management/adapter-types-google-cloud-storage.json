@@ -4,49 +4,20 @@
   "slug": "adapter-types-google-cloud-storage",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"gcs\" gcs: bucket_name: \"your-gcs-bucket-for-limacharlie-logs\"",
     "keywords": [
       "api",
-      "articles",
       "cloud",
+      "event",
       "google",
-      "output",
-      "query",
-      "related",
+      "response",
+      "rule",
       "sensor",
-      "storage",
-      "what's"
+      "storage"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 18
-      },
-      {
-        "slug": "adapter-types-google-workspace",
-        "title": "Google Workspace",
-        "score": 17
-      },
-      {
-        "slug": "ext-cloud-cli-google-cloud",
-        "title": "Google Cloud",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-bigquery",
-        "title": "Google Cloud BigQuery",
-        "score": 17
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "8e69b9a4e38a141d4123c06c4eb78da53126fc8c423f3ea5f229d95843432b9c"
+  "content_hash": ""
 }

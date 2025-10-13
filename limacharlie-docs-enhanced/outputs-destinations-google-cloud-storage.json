@@ -1,0 +1,42 @@
+{
+  "slug": "outputs-destinations-google-cloud-storage",
+  "title": "Google Cloud Storage",
+  "category": "",
+  "metadata": {
+    "summary": "Configure LimaCharlie to output events and detections to Google Cloud Storage buckets, including integration with Google Chronicle",
+    "keywords": [
+      "gcs",
+      "google-cloud",
+      "chronicle",
+      "output",
+      "storage"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Archive LimaCharlie telemetry to GCS for Chronicle integration or custom analytics workflows"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "OUTPUT",
+      "path": "Google Cloud Storage",
+      "description": "Output events and detections to GCS bucket with service account authentication"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-amazon-s3",
+      "relationship": "alternative",
+      "description": "Alternative cloud storage output destination using AWS S3 instead of GCS"
+    },
+    {
+      "target_slug": "outputs-destinations-google-cloud-pubsub",
+      "relationship": "related",
+      "description": "Related Google Cloud output destination using Pubsub for real-time streaming instead of batch storage"
+    },
+    {
+      "target_slug": "outputs-destinations-azure-storage-blob",
+      "relationship": "alternative",
+      "description": "Alternative cloud storage output destination using Azure Blob Storage"
+    }
+  ]
+}

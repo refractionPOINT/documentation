@@ -1,0 +1,43 @@
+{
+  "slug": "ext-hayabusa",
+  "title": "Hayabusa",
+  "category": "",
+  "metadata": {
+    "summary": "Windows event log forensics timeline generator that processes .evtx files or collections for threat hunting",
+    "keywords": [
+      "hayabusa",
+      "evtx",
+      "windows-event-logs",
+      "timeline",
+      "threat-hunting"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Generate forensic timelines from Windows event logs for threat hunting and incident response"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "hayabusa update-rules",
+      "description": "Update Hayabusa detection rules"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "hayabusa csv-timeline -f /path/to/artifact --RFC-3339 -p timesketch-$profile --min-level $min_rule_level --no-wizard --quiet -o $artifact_id.csv -U",
+      "description": "Generate CSV timeline from Windows event logs"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-artifact",
+      "relationship": "prerequisite",
+      "description": "Requires artifacts to be collected before Hayabusa can process them"
+    },
+    {
+      "target_slug": "ext-velociraptor",
+      "relationship": "prerequisite",
+      "description": "Commonly processes event logs collected via Velociraptor KAPE"
+    }
+  ]
+}

@@ -4,44 +4,22 @@
   "slug": "api-integrations-pangea",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "LimaCharlie supports the following Pangea lookups:",
     "keywords": [
       "add-on",
       "api",
+      "d&r",
+      "domain",
+      "event",
       "integration",
       "pangea",
-      "what's"
+      "reputation",
+      "response",
+      "rule"
     ],
-    "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 14
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "api-keys",
-        "title": "API Keys",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-file",
-        "title": "File",
-        "score": 8
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 6
-      }
-    ]
+    "complexity": "advanced",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "2f3da7c9f0a62e3b77590c9889932de67ec9845170de93a2ec0944934a0c6479"
+  "content_hash": ""
 }

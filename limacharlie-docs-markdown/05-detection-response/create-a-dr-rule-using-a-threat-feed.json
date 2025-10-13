@@ -4,54 +4,29 @@
   "slug": "create-a-dr-rule-using-a-threat-feed",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "To configure a threat feed, it must first be enabled within the Add-ons Marketplace. First, select a threat feed from the plethora available for free. In the following example, we will enable `crimeware-ips`.",
     "keywords": [
       "add-on",
-      "api",
-      "articles",
+      "additional",
       "create",
       "d&r",
       "detection",
+      "event",
       "feed",
-      "integration",
-      "related",
-      "response",
+      "organization",
+      "output",
+      "points",
       "rule",
+      "sensor",
       "telemetry",
       "threat",
-      "using",
-      "what's"
+      "using"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 19
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 18
-      },
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 16
-      },
-      {
-        "slug": "detection-logic-operators",
-        "title": "Detection Logic Operators",
-        "score": 15
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 15
-      }
+    "use_cases": [
+      "for  rules is to use them to compare telemetry against known malicious IPs, domain names, or file hashes via threat feeds. With LimaCharlie, it is easy to leverage public threat feeds or create your own."
     ]
   },
   "api_elements": [],
-  "content_hash": "ad9601635c83998af5f536b2a4e43f421c73f43b95dc3bbbee313237b9b269e5"
+  "content_hash": ""
 }

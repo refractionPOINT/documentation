@@ -1,0 +1,86 @@
+{
+  "slug": "linux-agent-installation",
+  "title": "Linux Agent Installation",
+  "category": "",
+  "metadata": {
+    "summary": "Install and configure the LimaCharlie Linux sensor using eBPF for deep kernel-level visibility on Linux 4.4+ systems.",
+    "keywords": [
+      "linux",
+      "sensor",
+      "installation",
+      "ebpf",
+      "debian"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Deploy LimaCharlie endpoint detection and response agent on Linux servers and workstations"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "uname -r",
+      "description": "Check Linux kernel version for compatibility"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo dpkg -i limacharlie.deb",
+      "description": "Install LimaCharlie sensor via Debian package interactively"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo apt install ./limacharlie.deb",
+      "description": "Install LimaCharlie sensor via apt package manager"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo dpkg -r limacharlie",
+      "description": "Uninstall LimaCharlie sensor using dpkg"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo apt remove limacharlie",
+      "description": "Uninstall LimaCharlie sensor using apt"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "echo \"limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE\" | sudo debconf-set-selections && sudo dpkg -i limacharlie.deb",
+      "description": "Install LimaCharlie programmatically with installation key via dpkg"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "echo \"limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE\" | sudo debconf-set-selections && sudo apt install ./limacharlie.deb -y",
+      "description": "Install LimaCharlie programmatically with installation key via apt"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "./lc_sensor -d INSTALLATION_KEY",
+      "description": "Execute LimaCharlie sensor with installation key parameter"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "./lc_sensor -d -",
+      "description": "Execute LimaCharlie sensor using alternative installation key sources"
+    },
+    {
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "run --shell-command \"service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs\"",
+      "description": "Uninstall LimaCharlie sensor via Sensor Console command chain"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "docker-agent-installation",
+      "relationship": "alternative",
+      "description": "Alternative deployment method for containerized Linux environments"
+    }
+  ]
+}

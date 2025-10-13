@@ -1,0 +1,42 @@
+{
+  "slug": "soteria-edr-rules",
+  "title": "Soteria EDR Rules",
+  "category": "",
+  "metadata": {
+    "summary": "Soteria's managed EDR ruleset providing cross-platform endpoint detection coverage for Windows, Linux, and macOS with MITRE ATT&CK mapping",
+    "keywords": [
+      "soteria",
+      "EDR",
+      "endpoint",
+      "MITRE ATT&CK",
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Enable managed EDR detection rules across Windows, Linux, and macOS endpoints"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "soteria-rules",
+      "relationship": "prerequisite",
+      "description": "Parent overview page for Soteria rulesets"
+    },
+    {
+      "target_slug": "soteria-aws-rules",
+      "relationship": "related",
+      "description": "Alternative Soteria ruleset for AWS environments"
+    },
+    {
+      "target_slug": "soteria-m365-rules",
+      "relationship": "related",
+      "description": "Alternative Soteria ruleset for M365 environments"
+    },
+    {
+      "target_slug": "managed-rulesets",
+      "relationship": "prerequisite",
+      "description": "General managed ruleset concepts apply to Soteria EDR"
+    }
+  ]
+}

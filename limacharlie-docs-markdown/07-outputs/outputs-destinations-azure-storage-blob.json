@@ -16,35 +16,8 @@
       "what's"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 16
-      },
-      {
-        "slug": "azure-network-security-group",
-        "title": "Azure Network Security Group",
-        "score": 16
-      },
-      {
-        "slug": "azure-sql-audit-logs",
-        "title": "Azure SQL Audit Logs",
-        "score": 16
-      },
-      {
-        "slug": "azure-monitor",
-        "title": "Azure Monitor",
-        "score": 16
-      },
-      {
-        "slug": "ext-cloud-cli-azure",
-        "title": "Azure",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "7af00423fa7f2b4da00fb68ad3804033cb739922e018e2d965606535423cb051"
+  "content_hash": ""
 }

@@ -4,11 +4,10 @@
   "slug": "tutorials-reporting-building-reports-with-bigquery-looker-studio",
   "category": "",
   "metadata": {
-    "summary": "LimaCharlie does not include reporting by default, however our granular and customizable [Output](/v2/docs/outputs) options allow you to push data to any source and use third-party tools for reporting. In this tutorial, we'll push a subset of LimaCharlie EDR telemetry to [BigQuery](https://cloud....",
+    "summary": "For this example, we will aggregate and analyze Windows processes making network connections.",
     "keywords": [
       "analyzing",
       "api",
-      "articles",
       "bigquery",
       "building",
       "creating",
@@ -19,39 +18,13 @@
       "output",
       "preparing",
       "query",
-      "related",
-      "reports"
+      "reports",
+      "studio",
+      "telemetry"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 15
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 15
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-bigquery",
-        "title": "Google Cloud BigQuery",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "07119525e294b228dbcfcfd140a1cd54ba097a15ffb7dc56542d021f7d7d7489"
+  "content_hash": ""
 }

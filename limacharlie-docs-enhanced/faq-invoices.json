@@ -1,0 +1,25 @@
+{
+  "slug": "faq-invoices",
+  "title": "FAQ - Invoices",
+  "category": "",
+  "metadata": {
+    "summary": "Describes LimaCharlie invoice types including individual organization invoices and unified billing for multi-tenant setups with detailed line items.",
+    "keywords": [
+      "invoices",
+      "unified billing",
+      "organization",
+      "tenant",
+      "proration"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding LimaCharlie invoice structure and managing multi-organization billing"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "faq-billing",
+      "relationship": "related",
+      "description": "Billing configuration and pricing models provide context for invoice line items and charges"
+    }
+  ]
+}

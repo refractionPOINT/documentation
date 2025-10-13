@@ -1,0 +1,25 @@
+{
+  "slug": "chromeos-support",
+  "title": "ChromeOS Support",
+  "category": "",
+  "metadata": {
+    "summary": "Overview of LimaCharlie's ChromeOS security solution providing endpoint detection and response capabilities for Chromebooks",
+    "keywords": [
+      "ChromeOS",
+      "Chromebook",
+      "endpoint protection",
+      "EDR",
+      "visibility"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding ChromeOS security coverage and LimaCharlie's capabilities for Chrome fleet management"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "chrome-enterprise",
+      "relationship": "continuation",
+      "description": "Provides step-by-step instructions for mass deploying ChromeOS sensors using Google Chrome Enterprise"
+    }
+  ]
+}

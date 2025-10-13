@@ -4,49 +4,18 @@
   "slug": "azure-kubernetes-service",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "More information about Azure Kubernetes logs and metrics can be found [here](https://learn.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-livedata-overview).",
     "keywords": [
       "(aks)",
-      "articles",
       "azure",
       "event",
+      "ingestion",
       "kubernetes",
-      "output",
-      "related",
-      "sensor",
-      "service",
-      "what's"
+      "service"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 17
-      },
-      {
-        "slug": "azure-network-security-group",
-        "title": "Azure Network Security Group",
-        "score": 17
-      },
-      {
-        "slug": "azure-sql-audit-logs",
-        "title": "Azure SQL Audit Logs",
-        "score": 17
-      },
-      {
-        "slug": "azure-monitor",
-        "title": "Azure Monitor",
-        "score": 17
-      },
-      {
-        "slug": "azure-logs-key-vault",
-        "title": "Azure Key Vault",
-        "score": 17
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b8d373bbcc9c4fa843025e947ae9ccfc03232c7edda01764204fb3c5324a8aea"
+  "content_hash": ""
 }

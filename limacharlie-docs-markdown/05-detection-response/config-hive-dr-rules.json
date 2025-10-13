@@ -4,50 +4,27 @@
   "slug": "config-hive-dr-rules",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "There are three \"sub-categories\" within detection and response rules contained in Hive.",
     "keywords": [
-      "api",
-      "articles",
+      "command-line",
       "config",
       "detection",
+      "dr-general",
+      "dr-managed",
+      "dr-service",
+      "event",
+      "example",
+      "format",
       "hive:",
-      "related",
+      "organization",
+      "output",
+      "permissions",
       "response",
-      "rule",
-      "rules",
-      "sensor",
-      "what's"
+      "rule"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "config-hive-cloud-sensors",
-        "title": "Config Hive: Cloud Sensors",
-        "score": 20
-      },
-      {
-        "slug": "config-hive-yara",
-        "title": "Config Hive: Yara",
-        "score": 20
-      },
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 18
-      },
-      {
-        "slug": "config-hive-secrets",
-        "title": "Config Hive: Secrets",
-        "score": 17
-      },
-      {
-        "slug": "config-hive-lookups",
-        "title": "Config Hive: Lookups",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "dadaea30a45e34515de5191f863f2dbaaff1b69cde5c40e5e68ba47485694853"
+  "content_hash": ""
 }

@@ -1,0 +1,47 @@
+{
+  "slug": "adapter-types-it-glue",
+  "title": "IT Glue",
+  "category": "",
+  "metadata": {
+    "summary": "Collect IT Glue audit logs using API token authentication with hive secrets integration",
+    "keywords": [
+      "it-glue",
+      "audit-logs",
+      "documentation",
+      "api-token",
+      "msp"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Ingest audit events from IT Glue documentation and asset management platform"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/api/audit_log_entries",
+      "description": "IT Glue API endpoint for retrieving audit log entries"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-zendesk",
+      "relationship": "related",
+      "description": "Similar business SaaS adapter with token authentication and audit log focus"
+    },
+    {
+      "target_slug": "adapter-types-hubspot",
+      "relationship": "related",
+      "description": "Comparable adapter pattern for business application activity monitoring"
+    },
+    {
+      "target_slug": "adapter-types-pandadoc",
+      "relationship": "related",
+      "description": "Similar configuration structure with hive secrets integration"
+    },
+    {
+      "target_slug": "adapter-types-slack-audit-logs",
+      "relationship": "related",
+      "description": "Related SaaS audit log ingestion adapter with similar deployment approach"
+    }
+  ]
+}

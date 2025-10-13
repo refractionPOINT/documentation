@@ -1,0 +1,37 @@
+{
+  "slug": "output-destinations",
+  "title": "Output Destinations",
+  "category": "",
+  "metadata": {
+    "summary": "Complete list of supported output destination providers including cloud storage, SIEM platforms, messaging systems, and notification services",
+    "keywords": [
+      "destinations",
+      "integrations",
+      "S3",
+      "Kafka",
+      "Splunk",
+      "Slack",
+      "BigQuery"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Selecting and configuring the appropriate destination provider for your data export needs"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "outputs",
+      "relationship": "prerequisite",
+      "description": "Core concepts of streams and destinations must be understood before configuring specific providers"
+    },
+    {
+      "target_slug": "testing-outputs",
+      "relationship": "continuation",
+      "description": "After configuring a destination, use testing procedures to verify it works"
+    },
+    {
+      "target_slug": "output-billing",
+      "relationship": "related",
+      "description": "Some destinations have billing implications, particularly GCP-based ones"
+    }
+  ]
+}

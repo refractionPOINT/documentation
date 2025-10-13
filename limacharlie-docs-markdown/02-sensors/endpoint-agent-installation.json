@@ -4,54 +4,27 @@
   "slug": "endpoint-agent-installation",
   "category": "",
   "metadata": {
-    "summary": "The Endpoint Agent is signed, and the same for everyone. The endpoint agent's customization, which indicates the owner, is done at installation based on the [installation key](/v2/docs/installation-keys) used. The Installation Key specifies where the Sensor should connect to enroll, as well as th...",
+    "summary": "Enterprise-wide deployment",
     "keywords": [
       "agent",
       "agents",
-      "articles",
       "detection",
       "downloading",
       "edr",
       "endpoint",
-      "event",
       "extension",
       "installation",
       "installing",
       "organization",
       "output",
       "permissions",
-      "related"
+      "required",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent-events-overview",
-        "title": "Endpoint Agent Events Overview",
-        "score": 19
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 19
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 19
-      },
-      {
-        "slug": "endpoint-agent-versioning-and-upgrades",
-        "title": "Endpoint Agent Versioning and Upgrades",
-        "score": 18
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 18
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d59bcad598daae66d4c4bf2fe05f1944602a31f6f7cecccf73832f522a7c1176"
+  "content_hash": ""
 }

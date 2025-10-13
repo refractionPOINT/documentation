@@ -4,42 +4,25 @@
   "slug": "lc-extensions",
   "category": "",
   "metadata": {
-    "summary": "15 Articles  in this category",
+    "summary": "The Artifact Extension provides low-level collection capabilities which can be configured to run automatically via Detection & Response rules, Sensor collections, or pushed via REST API. When enabled, an Artifact Collection menu will be avai...](/docs/ext-artifact)",
     "keywords": [
+      "api",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
       "extension",
       "extensions",
-      "limacharlie"
+      "limacharlie",
+      "organization",
+      "response",
+      "rule",
+      "sensor"
     ],
-    "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 12
-      },
-      {
-        "slug": "limacharlie-cli",
-        "title": "LimaCharlie CLI",
-        "score": 4
-      },
-      {
-        "slug": "using-extensions",
-        "title": "Using Extensions",
-        "score": 4
-      },
-      {
-        "slug": "building-extensions",
-        "title": "Building Extensions",
-        "score": 4
-      },
-      {
-        "slug": "third-party-extensions",
-        "title": "Third-Party Extensions",
-        "score": 4
-      }
-    ]
+    "complexity": "advanced",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "cb2e6147197b47f8a97ff1d1a5a06bad96842ec185d9effab18e4c6de0dd32bb"
+  "content_hash": ""
 }

@@ -27,35 +27,8 @@
       "Compliance",
       "or if you have further questions.",
       "we see is sending detections and events data from LimaCharlie into the SIEM."
-    ],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 15
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 14
-      },
-      {
-        "slug": "faq-sensor-installation",
-        "title": "FAQ - Sensor Installation",
-        "score": 13
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 13
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 11
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "b072bc978010a4032701f6259ef3fb7b74e70eba2e4c3cd9674576474bceac78"
+  "content_hash": ""
 }

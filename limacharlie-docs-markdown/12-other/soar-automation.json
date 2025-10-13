@@ -4,44 +4,26 @@
   "slug": "soar-automation",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Security orchestration, automation, and response (SOAR) solutions play a key role in detecting and responding to cyber threats. However, adopting a standalone SOAR solution may also create new challenges including:",
     "keywords": [
+      "api",
       "automation",
+      "detection",
+      "endpoint",
+      "event",
+      "limacharlie\u2019s",
+      "problems",
+      "response",
+      "rule",
+      "siem",
       "soar",
-      "what's"
+      "soar/automation",
+      "solutions",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "cloud-security",
-        "title": "Cloud Security",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "753919595bad351a030e2516e8441f5de7578c308102945b2d457905dbda4758"
+  "content_hash": ""
 }

@@ -4,13 +4,12 @@
   "slug": "ext-secureannex",
   "category": "",
   "metadata": {
-    "summary": "[Secure Annex](https://secureannex.com/) is a browser extension security platform that provides a comprehensive analysis of the Chrome extensions installed across your organization\u2019s endpoints.",
+    "summary": "The Secure Annex LimaCharlie Extension allows you to query the Secure Annex API with the IDs of Chrome extensions installed on endpoints within your organization in order to get detailed information about the extensions. You can then perform additional analysis or craft  rules based on the results.",
     "keywords": [
       "add-on",
       "agent",
       "annex",
       "api",
-      "articles",
       "automatically",
       "d&r",
       "detection",
@@ -20,38 +19,12 @@
       "extension",
       "manually",
       "organization",
-      "query"
+      "query",
+      "results"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "reference-sensor-selector-expressions",
-        "title": "Reference: Sensor Selector Expressions",
-        "score": 17
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 15
-      },
-      {
-        "slug": "ext-reliable-tasking",
-        "title": "Reliable Tasking",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "ext-infrastructure",
-        "title": "Infrastructure",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a3a9c61ad55321b39e0f7a9cb37ae6540cd328aa2411b19bc4a76df8b77f97e0"
+  "content_hash": ""
 }

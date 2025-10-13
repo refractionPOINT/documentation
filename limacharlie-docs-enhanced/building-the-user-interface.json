@@ -1,0 +1,19 @@
+{
+  "slug": "building-the-user-interface",
+  "title": "Building the User Interface",
+  "category": "",
+  "metadata": {
+    "summary": "Guide to customizing auto-generated UI elements for LimaCharlie extensions using schema configuration, layout types, and form data types.",
+    "keywords": [
+      "extensions",
+      "UI",
+      "schema",
+      "layout",
+      "customization"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Customize the auto-generated user interface for custom LimaCharlie extensions"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

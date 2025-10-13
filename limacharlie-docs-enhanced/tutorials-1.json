@@ -1,0 +1,27 @@
+{
+  "slug": "tutorials-1",
+  "title": "Tutorials",
+  "category": "",
+  "metadata": {
+    "summary": "Collection of tutorials covering sensor management, event log ingestion, and system monitoring across Windows, Linux, and macOS platforms",
+    "keywords": [
+      "sensors",
+      "event logs",
+      "ingestion",
+      "defender",
+      "sysmon",
+      "audit logs",
+      "monitoring"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Learn how to ingest and monitor various system event logs and manage sensor versions"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "logcollectionguide",
+      "relationship": "related",
+      "description": "Log ingestion tutorials relate to the comprehensive log collection guide"
+    }
+  ]
+}

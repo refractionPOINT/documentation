@@ -1,0 +1,37 @@
+{
+  "slug": "reference-permissions",
+  "title": "Reference: Permissions",
+  "category": "",
+  "metadata": {
+    "summary": "Complete reference of LimaCharlie's granular permission system organized by category and action",
+    "keywords": [
+      "permissions",
+      "access-control",
+      "privileges",
+      "rbac",
+      "org.get",
+      "sensor.task",
+      "dr.set"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Looking up specific permission requirements for configuring fine-grained access control"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "access-and-permissions",
+      "relationship": "prerequisite",
+      "description": "Provides context on where permissions are applied (Users, API Keys, Groups)"
+    },
+    {
+      "target_slug": "user-access",
+      "relationship": "related",
+      "description": "Shows how to apply these permissions to users and groups"
+    },
+    {
+      "target_slug": "api-keys",
+      "relationship": "related",
+      "description": "These permissions control what API Keys can access"
+    }
+  ]
+}

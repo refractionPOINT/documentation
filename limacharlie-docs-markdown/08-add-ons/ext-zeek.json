@@ -4,7 +4,7 @@
   "slug": "ext-zeek",
   "category": "",
   "metadata": {
-    "summary": "Zeek Extension Pricing",
+    "summary": "While it is Free to enable the Zeek extension, pricing is applied to processed PCAPs at a rate of $0.02/GB.",
     "keywords": [
       "add-on",
       "agent",
@@ -23,35 +23,8 @@
       "organization"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 18
-      },
-      {
-        "slug": "ext-hayabusa",
-        "title": "Hayabusa",
-        "score": 17
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 16
-      },
-      {
-        "slug": "ext-artifact",
-        "title": "Artifact",
-        "score": 15
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b65dcd774fbab8f262977c9091efa4277f341d9dc45db55b57c9e7566cb8e184"
+  "content_hash": ""
 }

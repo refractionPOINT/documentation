@@ -4,43 +4,18 @@
   "slug": "adapter-types-it-glue",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"itglue\" itglue: token: \"hive://secret/itglue-api-token\"",
     "keywords": [
       "api",
+      "event",
       "glue",
-      "sensor",
-      "what's"
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 13
-      },
-      {
-        "slug": "adapter-types-json",
-        "title": "JSON",
-        "score": 12
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 5
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "13c192496986b803719244bc7d6dda651d77352d0ae23e3b5c3ddd23e4477607"
+  "content_hash": ""
 }

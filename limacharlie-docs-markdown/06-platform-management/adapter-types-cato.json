@@ -4,43 +4,23 @@
   "slug": "adapter-types-cato",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This Adapter allows you to connect to the Cato API to fetch logs from the [events feed](https://support.catonetworks.com/hc/en-us/articles/360019839477-Cato-API-EventsFeed-Large-Scale-Event-Monitoring).",
     "keywords": [
+      "adapter-specific",
       "api",
       "cato",
-      "sensor",
-      "what's"
+      "configurations",
+      "deployment",
+      "event",
+      "manual",
+      "options",
+      "organization",
+      "overview",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 13
-      },
-      {
-        "slug": "adapter-types-crowdstrike-falcon-cloud",
-        "title": "CrowdStrike Falcon Cloud",
-        "score": 13
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 5
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "e1c40d0cabca82724cf6b55358b92fe48ccc4181f81980199801947f90c80230"
+  "content_hash": ""
 }

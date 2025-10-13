@@ -4,47 +4,26 @@
   "slug": "endpoint-detection-and-response-edr",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Endpoint Detection and Response (EDR) solutions are crucial for organizations to detect, investigate, and respond to threats on endpoints. However, traditional EDR solutions often present several challenges:",
     "keywords": [
       "(edr)",
+      "api",
       "detection",
       "edr",
       "endpoint",
+      "integration",
+      "limacharlie\u2019s",
+      "organization",
+      "problems",
       "response",
-      "what's"
+      "rule",
+      "sensor",
+      "solution",
+      "telemetry"
     ],
-    "complexity": "intermediate",
-    "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "enerprises",
-        "title": "Enterprise SOC",
-        "score": 13
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 13
-      },
-      {
-        "slug": "sysmon-comparison",
-        "title": "Sysmon Comparison",
-        "score": 7
-      },
-      {
-        "slug": "reference-error-codes",
-        "title": "Reference: Error Codes",
-        "score": 7
-      },
-      {
-        "slug": "soteria-edr-rules",
-        "title": "Soteria EDR Rules",
-        "score": 7
-      }
-    ]
+    "complexity": "advanced",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "39d8b5c53dcb9a79863266c12a44b139e5337e06556c346b83582eec458f899e"
+  "content_hash": ""
 }

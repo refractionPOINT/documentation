@@ -4,11 +4,10 @@
   "slug": "building-a-custom-msi-installer-for-windows",
   "category": "",
   "metadata": {
-    "summary": "You can white label the LimaCharlie installer for Windows by using an MSI wrapper. \u00a0By going through this process you can not only brand the installer to show your name / details, but you can also make installation of the Sensor easier for end users. \u00a0We have provided instructions below on how to...",
+    "summary": "1. An MSI wrapper application, such as the exemsi application referenced in the instructions below 2. A digital code signing certificate \u00a0(optional, but highly recommended)",
     "keywords": [
       "agent",
       "api",
-      "articles",
       "building",
       "custom",
       "edr",
@@ -19,39 +18,13 @@
       "organization",
       "output",
       "prerequisites",
-      "related",
-      "running"
+      "running",
+      "sensor",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 18
-      },
-      {
-        "slug": "windows-agent-installation",
-        "title": "Windows Agent Installation",
-        "score": 18
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 16
-      },
-      {
-        "slug": "agent-deployment-microsoft-intune",
-        "title": "Agent Deployment via Microsoft Intune",
-        "score": 14
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "eaa5a7f68203d92eb029800ac4a135c0ab00363ac53ba7d6736d30d5e62dd9ca"
+  "content_hash": ""
 }

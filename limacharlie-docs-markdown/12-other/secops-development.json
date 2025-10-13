@@ -4,44 +4,20 @@
   "slug": "secops-development",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Innovating new security products and modifying existing ones is crucial for protecting organizations from evolving cyberthreats. Unfortunately, the process of building better cybersecurity solutions is often hampered by:",
     "keywords": [
+      "api",
       "development",
+      "integration",
+      "limacharlie\u2019s",
+      "organization",
+      "problems",
       "secops",
-      "what's"
+      "solution"
     ],
-    "complexity": "intermediate",
-    "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "observability-pipeline",
-        "title": "Observability Pipeline",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 3
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 3
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 3
-      }
-    ]
+    "complexity": "advanced",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "90243d75c466d38448cc8f94779c9e439a5db1a9361d7c11a50ca83eefcd04bf"
+  "content_hash": ""
 }

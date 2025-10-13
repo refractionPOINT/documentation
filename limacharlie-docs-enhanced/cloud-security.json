@@ -1,0 +1,19 @@
+{
+  "slug": "cloud-security",
+  "title": "Cloud Security",
+  "category": "",
+  "metadata": {
+    "summary": "Unified cloud security monitoring platform providing centralized visibility, efficient storage, and platform-independent log ingestion across multi-cloud environments.",
+    "keywords": [
+      "cloud security",
+      "multi-cloud",
+      "centralized monitoring",
+      "log ingestion",
+      "data retention"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Secure and monitor cloud resources across multiple cloud platforms with unified visibility and cost-effective data storage"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

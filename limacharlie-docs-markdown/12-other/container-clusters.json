@@ -4,54 +4,23 @@
   "slug": "container-clusters",
   "category": "",
   "metadata": {
-    "summary": "You can also run LimaCharlie at the host level in a container cluster system like Kubernetes in order to monitor all running containers on the host with a single Sensor. In fact, this is the preferred method as it reduces the overhead",
+    "summary": "FROM alpine",
     "keywords": [
       "agent",
       "api",
-      "articles",
       "clusters",
-      "configurations",
       "container",
       "edr",
       "endpoint",
       "event",
       "organization",
-      "related",
-      "sample",
       "selinux",
       "sensor",
       "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-kubernetes-pods-logs",
-        "title": "Kubernetes Pods Logs",
-        "score": 16
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "docker-agent-installation",
-        "title": "Docker Agent Installation",
-        "score": 14
-      },
-      {
-        "slug": "tutorial-creating-a-webhook-adapter",
-        "title": "Tutorial: Creating a Webhook Adapter",
-        "score": 11
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d10e1a0477a4607911051e270c68df667a2e0924c496375ce662fc39d4f50b77"
+  "content_hash": ""
 }

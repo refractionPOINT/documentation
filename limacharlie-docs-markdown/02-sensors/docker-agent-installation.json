@@ -7,51 +7,24 @@
     "summary": "The LimaCharlie agent is designed to run within a Docker container, providing seamless integration with containerized environments. Running the agent in a container allows for efficient deployment and management while ensuring security monitoring and telemetry collection.",
     "keywords": [
       "agent",
-      "articles",
       "available",
       "building",
       "compose",
       "custom",
       "docker",
-      "endpoint",
       "environment",
       "flavors",
       "image",
       "installation",
       "integration",
-      "related",
-      "requirements"
+      "requirements",
+      "running",
+      "sensor",
+      "telemetry"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "edge-agent-installation",
-        "title": "Edge Agent Installation",
-        "score": 15
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "container-clusters",
-        "title": "Container Clusters",
-        "score": 14
-      },
-      {
-        "slug": "adapter-types-kubernetes-pods-logs",
-        "title": "Kubernetes Pods Logs",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "0f775c8291ae14c66a92582098c46ca6672ac38c5c5bf7b54a874c23ea7978b6"
+  "content_hash": ""
 }

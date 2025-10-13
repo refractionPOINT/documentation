@@ -1,0 +1,35 @@
+{
+  "slug": "adapters",
+  "title": "Adapters",
+  "category": "",
+  "metadata": {
+    "summary": "Overview of LimaCharlie Adapters for real-time ingestion of logs and telemetry from any structured data source",
+    "keywords": [
+      "adapter",
+      "ingestion",
+      "telemetry",
+      "data-source",
+      "structured-data"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding what adapters are and when to use them for data ingestion"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-deployment",
+      "relationship": "prerequisite",
+      "description": "Explains how to deploy adapters on-prem or cloud-to-cloud"
+    },
+    {
+      "target_slug": "adapter-usage",
+      "relationship": "prerequisite",
+      "description": "Details adapter configuration and usage patterns"
+    },
+    {
+      "target_slug": "adapter-types",
+      "relationship": "continuation",
+      "description": "Lists all pre-defined adapter types with built-in mapping"
+    }
+  ]
+}

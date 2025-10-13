@@ -1,0 +1,37 @@
+{
+  "slug": "adapter-types-sqs",
+  "title": "SQS",
+  "category": "",
+  "metadata": {
+    "summary": "Configure adapter to consume messages from AWS SQS queues with customizable polling and processing settings",
+    "keywords": [
+      "aws",
+      "sqs",
+      "queue",
+      "messaging",
+      "adapter"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Ingest real-time event streams from SQS message queues into LimaCharlie for security monitoring"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: sqs",
+      "description": "Configure SQS adapter with queue_url, aws_access_key_id, aws_secret_access_key, aws_region, and optional max_messages, wait_time_seconds, visibility_timeout, delete_after_processing parameters"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-aws-cloudtrail",
+      "relationship": "related",
+      "description": "CloudTrail adapter uses SQS as one collection method"
+    },
+    {
+      "target_slug": "adapter-types-aws-guardduty",
+      "relationship": "related",
+      "description": "GuardDuty adapter uses SQS as one collection method"
+    }
+  ]
+}

@@ -25,35 +25,8 @@
     "complexity": "advanced",
     "use_cases": [
       "Incident Response"
-    ],
-    "related_pages": [
-      {
-        "slug": "endpoint-agent-commands",
-        "title": "Endpoint Agent Commands",
-        "score": 18
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 18
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 18
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 18
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 17
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "f71ba605d22cba7be5b5d49fa5e186745d9ddfc867d61a2f06cd07404178a630"
+  "content_hash": ""
 }

@@ -4,44 +4,19 @@
   "slug": "outputs-destinations-syslog",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Output events and detections to a syslog target.",
     "keywords": [
-      "articles",
+      "(tcp)",
+      "detection",
+      "event",
+      "integration",
       "output",
-      "related",
-      "syslog",
-      "what's"
+      "siem",
+      "syslog"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "output-destinations-tines",
-        "title": "Tines",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-syslog",
-        "title": "Syslog",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 6
-      },
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 6
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "58e458bef0c5fd9c99e87bc644f343e6d941e932678f75953bb96f24edc27dec"
+  "content_hash": ""
 }

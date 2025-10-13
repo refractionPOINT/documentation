@@ -1,0 +1,40 @@
+{
+  "slug": "false-positive-rules",
+  "title": "False Positive Rules",
+  "category": "",
+  "metadata": {
+    "summary": "Create global rules that filter out false positive detections from D&R rules using detection metadata and originating event data.",
+    "keywords": [
+      "false_positive",
+      "fp_rules",
+      "detection_filtering",
+      "exceptions",
+      "suppression"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Reduce alert noise by suppressing known benign detections based on hostname, file paths, or detection categories"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "stateful-rules",
+      "relationship": "related",
+      "description": "False positive rules filter detections from stateful and other D&R rules"
+    },
+    {
+      "target_slug": "detection-on-alternate-targets",
+      "relationship": "related",
+      "description": "False positive rules can filter detections from any target type"
+    },
+    {
+      "target_slug": "sigma-rules",
+      "relationship": "related",
+      "description": "Sigma rule detections often require false positive tuning for specific environments"
+    },
+    {
+      "target_slug": "create-a-dr-rule-using-a-threat-feed",
+      "relationship": "related",
+      "description": "Threat feed detections may generate false positives requiring filtering"
+    }
+  ]
+}

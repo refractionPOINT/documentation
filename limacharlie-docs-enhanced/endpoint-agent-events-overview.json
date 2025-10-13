@@ -1,0 +1,43 @@
+{
+  "slug": "endpoint-agent-events-overview",
+  "title": "Endpoint Agent Events Overview",
+  "category": "",
+  "metadata": {
+    "summary": "Explains event atoms as GUIDs that relate events through parent-child relationships and how to construct event trees using API endpoints",
+    "keywords": [
+      "atoms",
+      "events",
+      "relationships",
+      "routing",
+      "GUID"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Understand event correlation and construct process/event trees for investigations"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/insight/{oid}/{sid}/{atom}",
+      "description": "Get event by atom identifier"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/insight/{oid}/{sid}/{atom}/children",
+      "description": "Get children events of an atom"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent-commands",
+      "relationship": "related",
+      "description": "Commands generate events with REP suffix that must be enabled in Exfil"
+    },
+    {
+      "target_slug": "reference-endpoint-agent-commands",
+      "relationship": "related",
+      "description": "Each command in reference lists its corresponding REP event type"
+    }
+  ]
+}

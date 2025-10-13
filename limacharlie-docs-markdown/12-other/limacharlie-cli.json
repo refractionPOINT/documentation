@@ -4,46 +4,19 @@
   "slug": "limacharlie-cli",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Repo - <https://github.com/refractionPOINT/python-limacharlie>",
     "keywords": [
-      "add-on",
-      "articles",
+      "event",
       "extension",
       "limacharlie",
-      "related",
-      "sdk",
-      "what's"
+      "organization",
+      "response",
+      "rule",
+      "sdk"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 14
-      },
-      {
-        "slug": "binlib",
-        "title": "BinLib",
-        "score": 13
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "limacharlie-sdk",
-        "title": "LimaCharlie SDK & CLI",
-        "score": 11
-      },
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 7
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b6a9d75568ef0f225bb22b8ccd7898ec9d0cdcf08c69b104a70d98593bff1c80"
+  "content_hash": ""
 }

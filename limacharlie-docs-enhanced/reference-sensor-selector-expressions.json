@@ -1,0 +1,19 @@
+{
+  "slug": "reference-sensor-selector-expressions",
+  "title": "Reference: Sensor Selector Expressions",
+  "category": "",
+  "metadata": {
+    "summary": "Defines selector expression syntax for matching sensors based on characteristics like platform, tags, IP addresses, and isolation status using operators",
+    "keywords": [
+      "selector",
+      "expressions",
+      "matching",
+      "tags",
+      "filters"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Write expressions to target specific sensors or groups for tasking, rules, or configuration"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

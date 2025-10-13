@@ -357,7 +357,7 @@ Endpoint Detection & Response
 
 ---
 
-#### Related articles
+###### Related articles
 
 * [Detection and Response Examples](/docs/detection-and-response-examples)
 * [Detection and Response](/docs/detection-and-response)
@@ -367,7 +367,7 @@ Endpoint Detection & Response
 
 ---
 
-##### What's Next
+###### What's Next
 
 * [Platform Management](/docs/platform-management)
 

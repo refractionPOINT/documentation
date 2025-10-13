@@ -4,13 +4,12 @@
   "slug": "detection-and-response-examples",
   "category": "",
   "metadata": {
-    "summary": "The following are sample detection and response rules can help you get started in crafting efficient  rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](/v2/docs/sigma-rules) for more rules.",
+    "summary": "op: ends with event: NEW_PROCESS path: event/FILE_PATH",
     "keywords": [
       "(file)",
       "(process)",
       "address",
       "agent",
-      "articles",
       "classify",
       "cloned",
       "command",
@@ -20,38 +19,12 @@
       "detections",
       "directories",
       "disable",
-      "edr"
+      "edr",
+      "endpoint"
     ],
-    "complexity": "beginner",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 16
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 15
-      },
-      {
-        "slug": "stateful-rules",
-        "title": "Stateful Rules",
-        "score": 14
-      },
-      {
-        "slug": "detection-on-alternate-targets",
-        "title": "Detection on Alternate Targets",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 12
-      }
-    ]
+    "complexity": "advanced",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b2aade17fee38c868c5ef3f08986ef8a27119ff07c8aeb8ba5e03208ac44c528"
+  "content_hash": ""
 }

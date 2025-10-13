@@ -4,40 +4,15 @@
   "slug": "tutorials-3",
   "category": "",
   "metadata": {
-    "summary": "2 Articles  in this category",
+    "summary": "Overview Our BigQuery output allows you to send Hayabusa analysis results to a BigQuery table allowing SQL-like queries against the data. This allows you to perform analysis at scale against massive datasets. For guidance on using Hayabusa within L...](/docs/hayabusa-to-bigquery)",
     "keywords": [
+      "output",
+      "query",
       "tutorials"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "tutorials",
-        "title": "Tutorials",
-        "score": 11
-      },
-      {
-        "slug": "detection-and-response-tutorials",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "tutorials-1",
-        "title": "Tutorials",
-        "score": 8
-      },
-      {
-        "slug": "adapter-tutorials",
-        "title": "Adapter Tutorials",
-        "score": 3
-      },
-      {
-        "slug": "add-ons-tutorials",
-        "title": "Add-Ons Tutorials",
-        "score": 3
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "fc60d9bf664e2da12d638a2c88f09c26e1ccf9f82910eef0394755192e92345d"
+  "content_hash": ""
 }

@@ -1,0 +1,38 @@
+{
+  "slug": "hayabusa-to-bigquery",
+  "title": "Hayabusa to BigQuery",
+  "category": "",
+  "metadata": {
+    "summary": "Send Hayabusa Windows event log analysis results to BigQuery for SQL-based threat hunting at scale",
+    "keywords": [
+      "hayabusa",
+      "bigquery",
+      "windows-event-logs",
+      "threat-hunting",
+      "timesketch"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Analyze Windows event logs from hundreds or thousands of systems using Hayabusa and BigQuery"
+  },
+  "extracted_apis": [
+    {
+      "type": "output_configuration",
+      "method": "OUTPUT",
+      "path": "events/google_cloud_bigquery",
+      "description": "Configure BigQuery output for Hayabusa events with timesketch-verbose profile schema"
+    },
+    {
+      "type": "bigquery_schema",
+      "method": "SCHEMA",
+      "path": "computer:STRING, message:STRING, timestamp:STRING, details:STRING, channel:STRING, event_id:STRING, level:STRING, mitre_tactics:STRING, mitre_tags:STRING, extra:STRING",
+      "description": "BigQuery table schema for Hayabusa timesketch-verbose CSV output"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-google-cloud-bigquery",
+      "relationship": "prerequisite",
+      "description": "Base BigQuery output configuration that this tutorial builds upon"
+    }
+  ]
+}

@@ -4,50 +4,20 @@
   "slug": "tutorials-integratons-virustotal-integration",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "VirusTotal Data Caching",
     "keywords": [
       "add-on",
       "api",
-      "articles",
       "detection",
-      "extension",
+      "event",
       "integration",
-      "query",
-      "related",
-      "response",
-      "virustotal",
-      "what's"
+      "organization",
+      "rule",
+      "virustotal"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 18
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 17
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 14
-      },
-      {
-        "slug": "tutorials-reporting-building-reports-with-bigquery-looker-studio",
-        "title": "Building Reports with BigQuery + Looker Studio",
-        "score": 14
-      },
-      {
-        "slug": "detection-and-response-examples",
-        "title": "Detection and Response Examples",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "2a7a9c9e828f1223fb9eaeff086d0353c813beaa0d82b2844d678082797ba2de"
+  "content_hash": ""
 }

@@ -1,0 +1,36 @@
+{
+  "slug": "quickstart",
+  "title": "Quickstart",
+  "category": "",
+  "metadata": {
+    "summary": "Step-by-step guide to deploying first sensor, adding Sigma rules, and configuring outputs",
+    "keywords": [
+      "quickstart",
+      "sensor",
+      "deployment",
+      "sigma",
+      "outputs",
+      "EDR"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Getting started with basic endpoint detection and response capabilities"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "what-is-limacharlie",
+      "relationship": "prerequisite",
+      "description": "Conceptual foundation before hands-on setup"
+    },
+    {
+      "target_slug": "limacharlie-core-concepts",
+      "relationship": "related",
+      "description": "Detailed explanation of concepts (sensors, outputs, rules) used in quickstart"
+    },
+    {
+      "target_slug": "use-cases",
+      "relationship": "related",
+      "description": "Shows broader applications beyond basic EDR setup"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "slug": "ext-reliable-tasking",
+  "title": "Reliable Tasking",
+  "category": "",
+  "metadata": {
+    "summary": "Extension for queuing tasks to offline sensors that execute automatically when sensors come online",
+    "keywords": [
+      "reliable tasking",
+      "offline sensors",
+      "task queue",
+      "automation",
+      "sensor commands"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Execute commands on sensors that are currently offline or intermittently connected"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/v1/extension/request/ext-reliable-tasking",
+      "description": "Create a task for offline sensors with selector, command, and TTL"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/v1/extension/request/ext-reliable-tasking",
+      "description": "List queued tasks by sid, tag, or platform"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-reliable-tasking",
+      "description": "Preview conversion of legacy service rules to extension format"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-reliable-tasking --no-dry-run",
+      "description": "Execute conversion of legacy service rules to extension format"
+    }
+  ],
+  "cross_refs": []
+}

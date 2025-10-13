@@ -1,0 +1,29 @@
+{
+  "slug": "reference-3",
+  "title": "Reference",
+  "category": "",
+  "metadata": {
+    "summary": "Category landing page for reference documentation including ID schemas and error codes",
+    "keywords": [
+      "reference",
+      "documentation",
+      "category",
+      "index"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Navigate to specific reference documentation sections"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "reference-id-schema",
+      "relationship": "continuation",
+      "description": "Detailed schema documentation for platform reference information"
+    },
+    {
+      "target_slug": "reference-error-codes",
+      "relationship": "continuation",
+      "description": "Error code reference for troubleshooting API and sensor operations"
+    }
+  ]
+}

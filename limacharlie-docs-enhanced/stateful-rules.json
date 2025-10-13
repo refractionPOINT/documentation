@@ -1,0 +1,30 @@
+{
+  "slug": "stateful-rules",
+  "title": "Stateful Rules",
+  "category": "",
+  "metadata": {
+    "summary": "Advanced detection rules that track event sequences over time using with_child, with_descendant, and with_events to detect multi-stage attacks and temporal patterns.",
+    "keywords": [
+      "stateful",
+      "with_child",
+      "with_descendant",
+      "event_correlation",
+      "temporal_detection"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Detect multi-event sequences like process chains, repeated failed logins, or time-based attack patterns"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "detection-on-alternate-targets",
+      "relationship": "related",
+      "description": "Stateful rules can be applied to different targets including deployment, artifact, and audit events"
+    },
+    {
+      "target_slug": "false-positive-rules",
+      "relationship": "related",
+      "description": "Stateful rules generate detections that may need false positive filtering"
+    }
+  ]
+}

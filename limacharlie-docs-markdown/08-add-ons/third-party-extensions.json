@@ -4,42 +4,29 @@
   "slug": "third-party-extensions",
   "category": "",
   "metadata": {
-    "summary": "14 Articles  in this category",
+    "summary": "LimaCharlie's Cloud CLI Extension ( ext-cloud-cli ) allows you to trigger actions against CLI or API endpoints for third-party products. This extension facilitates bi-directional communication between LimaCharlie and nearly any telemetry source....](/docs/ext-cloud-cli)",
     "keywords": [
+      "api",
+      "d&r",
+      "detection",
+      "endpoint",
+      "event",
       "extension",
       "extensions",
+      "integration",
+      "organization",
+      "query",
+      "response",
+      "rule",
+      "siem",
+      "telemetry",
       "third-party"
     ],
-    "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 12
-      },
-      {
-        "slug": "using-extensions",
-        "title": "Using Extensions",
-        "score": 4
-      },
-      {
-        "slug": "building-extensions",
-        "title": "Building Extensions",
-        "score": 4
-      },
-      {
-        "slug": "lc-extensions",
-        "title": "LimaCharlie Extensions",
-        "score": 4
-      },
-      {
-        "slug": "api-integrations-hybrid-analysis",
-        "title": "Hybrid Analysis",
-        "score": 3
-      }
+    "complexity": "advanced",
+    "use_cases": [
+      "Incident Response"
     ]
   },
   "api_elements": [],
-  "content_hash": "24c41dac753fc98447bef8972648fed8548955f0ce86de8774aa7d6a779e8c6b"
+  "content_hash": ""
 }

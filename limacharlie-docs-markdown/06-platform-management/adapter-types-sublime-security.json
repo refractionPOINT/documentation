@@ -4,54 +4,27 @@
   "slug": "adapter-types-sublime-security",
   "category": "",
   "metadata": {
-    "summary": "[Sublime Security](https://sublime.security/) is a comprehensive email security platform that allows users to create custom detections, gain visibility and control, and focus on prevention of malicious emails.",
+    "summary": "sensor_type: \"sublime\" sublime: api_key: \"hive://secret/sublime-api-key\"",
     "keywords": [
       "action",
       "adapter",
-      "adapter-specific",
       "alerts",
       "api",
-      "articles",
-      "audit",
       "building",
       "configuring",
       "creating",
       "deployment",
-      "detection",
       "event",
-      "infrastructure",
-      "ingesting"
+      "ingesting",
+      "limacharlie",
+      "organization",
+      "response",
+      "rule",
+      "security"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-tailscale",
-        "title": "Tailscale",
-        "score": 17
-      },
-      {
-        "slug": "infrastructure-as-code",
-        "title": "Infrastructure as Code",
-        "score": 15
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 14
-      },
-      {
-        "slug": "adapter-deployment",
-        "title": "Adapter Deployment",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "f1c274040252d0db083c3552f263d3a513d7f77a5ba2e1f36594e456ff6e31b9"
+  "content_hash": ""
 }

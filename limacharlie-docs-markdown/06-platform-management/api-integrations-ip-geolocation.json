@@ -4,44 +4,19 @@
   "slug": "api-integrations-ip-geolocation",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "> > LimaCharlie provides access to this integration free of charge for all users, so no additional subscription is required.",
     "keywords": [
       "add-on",
       "api",
+      "event",
       "geolocation",
       "integration",
-      "what's"
+      "response",
+      "rule"
     ],
-    "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "api-integrations-pangea",
-        "title": "Pangea",
-        "score": 14
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "add-ons-api-integrations",
-        "title": "API Integrations",
-        "score": 6
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 6
-      },
-      {
-        "slug": "api-integrations-virustotal",
-        "title": "VirusTotal",
-        "score": 6
-      }
-    ]
+    "complexity": "advanced",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "11642b38dd1589911d73bfe1074d8a33bc52ed6c5faa1d82cfae376fc56b41d3"
+  "content_hash": ""
 }

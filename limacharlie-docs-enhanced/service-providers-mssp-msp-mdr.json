@@ -1,0 +1,30 @@
+{
+  "slug": "service-providers-mssp-msp-mdr",
+  "title": "Security Service Providers (MSSP, MSP, MDR)",
+  "category": "",
+  "metadata": {
+    "summary": "How MSSPs, MSPs, and MDR providers can use the SecOps Cloud Platform to deliver security services at scale with multitenancy and flexible pricing",
+    "keywords": [
+      "MSSP",
+      "MDR",
+      "service provider",
+      "multitenancy",
+      "managed security"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Deploy SCP for managed security service delivery with multi-client visibility and operations"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "enerprises",
+      "relationship": "related",
+      "description": "Service providers managing enterprise clients apply similar telemetry centralization and visibility strategies"
+    },
+    {
+      "target_slug": "secops-development",
+      "relationship": "related",
+      "description": "MSSPs and MDRs building custom detection logic benefit from SecOps development infrastructure"
+    }
+  ]
+}

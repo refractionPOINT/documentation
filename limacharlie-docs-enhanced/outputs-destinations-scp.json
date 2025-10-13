@@ -1,0 +1,56 @@
+{
+  "slug": "outputs-destinations-scp",
+  "title": "SCP",
+  "category": "",
+  "metadata": {
+    "summary": "Configure SCP output to transfer events and detections as files over SSH to a remote host.",
+    "keywords": [
+      "SCP",
+      "SSH",
+      "file transfer",
+      "output",
+      "secure copy"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Securely transfer LimaCharlie data files to a remote storage server using SSH"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "dest_host",
+      "description": "IP and port for SSH connection (format: 1.2.3.4:22)"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "dir",
+      "description": "Remote directory path for output files"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "username",
+      "description": "SSH username for authentication"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "password",
+      "description": "Optional password for SSH authentication"
+    },
+    {
+      "type": "configuration_parameter",
+      "method": "CONFIG",
+      "path": "secret_key",
+      "description": "Optional SSH private key for authentication"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-sftp",
+      "relationship": "alternative",
+      "description": "Alternative SSH-based file transfer protocol with similar configuration"
+    }
+  ]
+}

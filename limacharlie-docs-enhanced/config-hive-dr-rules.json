@@ -1,0 +1,69 @@
+{
+  "slug": "config-hive-dr-rules",
+  "title": "Config Hive: Detection & Response Rules",
+  "category": "",
+  "metadata": {
+    "summary": "Configure detection and response rules in LimaCharlie's Hive storage system with permissions and CLI operations for general, managed, and service rule categories",
+    "keywords": [
+      "hive",
+      "detection",
+      "response",
+      "rules",
+      "permissions",
+      "CLI"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Store and manage detection and response rules programmatically using the CLI"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "list",
+      "path": "limacharlie hive list dr-general",
+      "description": "List detection and response rules in dr-general hive"
+    },
+    {
+      "type": "cli_command",
+      "method": "get",
+      "path": "limacharlie hive get dr-general -k KEY",
+      "description": "Retrieve a specific D&R rule by key"
+    },
+    {
+      "type": "cli_command",
+      "method": "set",
+      "path": "limacharlie hive set dr-general -k KEY -d DATA",
+      "description": "Create or update a D&R rule with JSON data"
+    },
+    {
+      "type": "cli_command",
+      "method": "remove",
+      "path": "limacharlie hive remove dr-general -k KEY",
+      "description": "Delete a D&R rule"
+    },
+    {
+      "type": "cli_command",
+      "method": "update",
+      "path": "limacharlie hive update dr-general -k KEY --enabled ENABLED --tags TAGS",
+      "description": "Update rule metadata like enabled status or tags"
+    },
+    {
+      "type": "cli_command",
+      "method": "list_mtd",
+      "path": "limacharlie hive list_mtd dr-general",
+      "description": "List metadata for D&R rules"
+    },
+    {
+      "type": "cli_command",
+      "method": "get_mtd",
+      "path": "limacharlie hive get_mtd dr-general -k KEY",
+      "description": "Get metadata for a specific D&R rule"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "detection-and-response-tutorials",
+      "relationship": "continuation",
+      "description": "Practical tutorials for creating and testing D&R rules using the config hive CLI"
+    }
+  ]
+}

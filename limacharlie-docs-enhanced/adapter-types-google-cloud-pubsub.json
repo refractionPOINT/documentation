@@ -1,0 +1,61 @@
+{
+  "slug": "adapter-types-google-cloud-pubsub",
+  "title": "Google Cloud Pubsub",
+  "category": "",
+  "metadata": {
+    "summary": "Configure cloud-to-cloud adapter to ingest real-time messages from Google Cloud Pub/Sub subscriptions into LimaCharlie",
+    "keywords": [
+      "Pub/Sub",
+      "Google Cloud",
+      "adapter",
+      "streaming logs",
+      "real-time ingestion"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Stream real-time security events and logs from GCP Pub/Sub into LimaCharlie for immediate processing"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: \"pubsub\"",
+      "description": "Configure Pub/Sub adapter with subscription, project, and credentials"
+    },
+    {
+      "type": "config_parameter",
+      "method": "pubsub.sub_name",
+      "path": "pubsub.sub_name",
+      "description": "Name of the GCP Pub/Sub subscription to consume messages from"
+    },
+    {
+      "type": "config_parameter",
+      "method": "pubsub.project_name",
+      "path": "pubsub.project_name",
+      "description": "GCP project ID where the Pub/Sub subscription exists"
+    },
+    {
+      "type": "config_parameter",
+      "method": "pubsub.service_account_creds",
+      "path": "pubsub.service_account_creds",
+      "description": "Reference to hive secret containing GCP service account credentials"
+    },
+    {
+      "type": "config_parameter",
+      "method": "pubsub.max_ps_buffer",
+      "path": "pubsub.max_ps_buffer",
+      "description": "Optional buffer size in bytes for Pub/Sub message handling"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-types-google-workspace",
+      "relationship": "alternative",
+      "description": "Pub/Sub adapter is one of two recommended methods to ingest Google Workspace audit logs"
+    },
+    {
+      "target_slug": "tutorial-ingesting-google-cloud-logs",
+      "relationship": "continuation",
+      "description": "Tutorial provides step-by-step implementation guide for configuring this adapter type"
+    }
+  ]
+}

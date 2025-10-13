@@ -1,0 +1,43 @@
+{
+  "slug": "adapter-examples",
+  "title": "Adapter Examples",
+  "category": "",
+  "metadata": {
+    "summary": "Practical configuration examples for stdin text, stdin JSON, and Windows Event Logs adapters",
+    "keywords": [
+      "examples",
+      "stdin",
+      "windows-event-logs",
+      "configuration-examples",
+      "wel"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Learning adapter configuration through copy-paste examples"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc_adapter stdin client_options.*",
+      "description": "Ingest text data from STDIN"
+    },
+    {
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc_adapter stdin client_options.platform=json client_options.*",
+      "description": "Ingest JSON data from STDIN"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "adapter-usage",
+      "relationship": "prerequisite",
+      "description": "Configuration concepts demonstrated in examples"
+    },
+    {
+      "target_slug": "adapter-deployment",
+      "relationship": "related",
+      "description": "Deployment methods used in examples"
+    }
+  ]
+}

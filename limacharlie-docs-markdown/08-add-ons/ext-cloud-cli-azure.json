@@ -4,47 +4,17 @@
   "slug": "ext-cloud-cli-azure",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This extension makes use of the Azure CLI, which can be found [here](https://learn.microsoft.com/en-us/cli/azure/get-started-with-azure-cli).",
     "keywords": [
-      "add-on",
-      "articles",
       "azure",
-      "event",
+      "credentials",
+      "example",
       "extension",
-      "output",
-      "related",
-      "what's"
+      "organization"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "azure-network-security-group",
-        "title": "Azure Network Security Group",
-        "score": 16
-      },
-      {
-        "slug": "azure-sql-audit-logs",
-        "title": "Azure SQL Audit Logs",
-        "score": 16
-      },
-      {
-        "slug": "azure-monitor",
-        "title": "Azure Monitor",
-        "score": 16
-      },
-      {
-        "slug": "azure-logs-key-vault",
-        "title": "Azure Key Vault",
-        "score": 16
-      },
-      {
-        "slug": "outputs-destinations-azure-event-hub",
-        "title": "Azure Event Hub",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a4adcb8fe418d24adc57161fcbf6cb2897b39ebd5ac52dde4f0b0b7d93920132"
+  "content_hash": ""
 }

@@ -1,0 +1,31 @@
+{
+  "slug": "reference-platform-events",
+  "title": "Reference: Platform Events",
+  "category": "",
+  "metadata": {
+    "summary": "Complete reference of platform event types including billing, quota, adapter errors, sensor lifecycle, and ingestion",
+    "keywords": [
+      "platform events",
+      "billing",
+      "deployment",
+      "quota",
+      "cloud adapter",
+      "sensor clone"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Looking up the structure and meaning of specific platform event types"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "events",
+      "relationship": "prerequisite",
+      "description": "General event structure and routing information applies to all platform events"
+    },
+    {
+      "target_slug": "platform-events-overview",
+      "relationship": "prerequisite",
+      "description": "Overview provides context for why platform events exist before diving into specifics"
+    }
+  ]
+}

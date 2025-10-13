@@ -4,45 +4,18 @@
   "slug": "adapter-types-pandadoc",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"pandadoc\" pandadoc: api_key: \"hive://secret/pandadoc-api-key\"",
     "keywords": [
       "api",
-      "articles",
+      "event",
       "pandadoc",
-      "related",
-      "sensor",
-      "what's"
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "adapter-types-s3",
-        "title": "S3",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 14
-      },
-      {
-        "slug": "adapter-types-okta",
-        "title": "Okta",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "1cbb8723eaa18ab8f04273ca6eb986f8826bcdbf885deb15a913527d8ec21f81"
+  "content_hash": ""
 }

@@ -1,0 +1,30 @@
+{
+  "slug": "test-a-new-sensor-version",
+  "title": "Test a New Sensor Version",
+  "category": "",
+  "metadata": {
+    "summary": "Testing new sensor versions on select systems using lc:latest or lc:stable tags before organization-wide deployment",
+    "keywords": [
+      "testing",
+      "versions",
+      "lc:latest",
+      "lc:stable",
+      "tagging"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Safely testing new sensor versions in non-production environments before full rollout"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "endpoint-agent",
+      "relationship": "prerequisite",
+      "description": "Understanding endpoint agents before testing new versions"
+    },
+    {
+      "target_slug": "updating-sensors-to-the-newest-version",
+      "relationship": "prerequisite",
+      "description": "Testing new versions before performing organization-wide updates"
+    }
+  ]
+}

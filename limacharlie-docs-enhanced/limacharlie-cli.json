@@ -1,0 +1,37 @@
+{
+  "slug": "limacharlie-cli",
+  "title": "LimaCharlie CLI",
+  "category": "",
+  "metadata": {
+    "summary": "CLI extension for issuing LimaCharlie commands through extension requests with rule-based triggers",
+    "keywords": [
+      "cli",
+      "extension",
+      "automation",
+      "commands",
+      "hive"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Automating LimaCharlie operations through command-line interface and rule actions"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": null,
+      "path": "limacharlie configs push --dry-run --oid",
+      "description": "Push configurations with dry-run option for specified organization"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "limacharlie-sdk",
+      "relationship": "related",
+      "description": "CLI is part of the same SDK package and shares authentication concepts"
+    },
+    {
+      "target_slug": "limacharlie-core-concepts",
+      "relationship": "prerequisite",
+      "description": "Understanding core concepts is necessary before using CLI to manipulate them"
+    }
+  ]
+}

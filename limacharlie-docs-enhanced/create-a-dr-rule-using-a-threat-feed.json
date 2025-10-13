@@ -1,0 +1,25 @@
+{
+  "slug": "create-a-dr-rule-using-a-threat-feed",
+  "title": "Create a D&R Rule Using a Threat Feed",
+  "category": "",
+  "metadata": {
+    "summary": "Create detection rules that match telemetry against threat intelligence feeds for malicious IPs, domains, or file hashes using lookup operators.",
+    "keywords": [
+      "threat_feed",
+      "lookup",
+      "ioc",
+      "threat_intelligence",
+      "crimeware"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Detect when network connections, DNS requests, or file hashes match known malicious indicators from threat feeds"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "false-positive-rules",
+      "relationship": "related",
+      "description": "Threat feed detections may generate false positives requiring filtering"
+    }
+  ]
+}

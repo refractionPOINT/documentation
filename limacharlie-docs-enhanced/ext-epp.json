@@ -1,0 +1,56 @@
+{
+  "slug": "ext-epp",
+  "title": "Endpoint Protection",
+  "category": "",
+  "metadata": {
+    "summary": "Integrates with Windows Defender to provide unified EPP management, alerting, and remediation at scale",
+    "keywords": [
+      "endpoint-protection",
+      "windows-defender",
+      "epp-management",
+      "unified-view",
+      "mssp"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Unified management and alerting for Windows Defender deployments across multiple organizations"
+  },
+  "extracted_apis": [
+    {
+      "type": "sensor_command",
+      "method": "N/A",
+      "path": "epp_status",
+      "description": "Get endpoint protection status from sensor console"
+    },
+    {
+      "type": "sensor_command",
+      "method": "N/A",
+      "path": "epp_list_exclusions",
+      "description": "List endpoint protection exclusions"
+    },
+    {
+      "type": "sensor_command",
+      "method": "N/A",
+      "path": "epp_add_exclusion",
+      "description": "Add endpoint protection exclusion"
+    },
+    {
+      "type": "sensor_command",
+      "method": "N/A",
+      "path": "epp_rem_exclusion",
+      "description": "Remove endpoint protection exclusion"
+    },
+    {
+      "type": "sensor_command",
+      "method": "N/A",
+      "path": "epp_list_quarantine",
+      "description": "List quarantined items"
+    },
+    {
+      "type": "sensor_command",
+      "method": "N/A",
+      "path": "epp_scan",
+      "description": "Trigger endpoint protection scan"
+    }
+  ],
+  "cross_refs": []
+}

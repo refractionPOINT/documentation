@@ -4,50 +4,27 @@
   "slug": "ingesting-macos-unified-logs",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "First, navigate to the Exfil Control section of LimaCharlie and ensure that `MUL` events are enabled for your Mac rules.",
     "keywords": [
       "agent",
-      "articles",
+      "detection",
+      "edr",
       "endpoint",
+      "event",
+      "extension",
       "ingesting",
       "logs",
       "macos",
-      "related",
+      "organization",
+      "response",
+      "rule",
       "sensor",
       "telemetry",
-      "unified",
-      "what's"
+      "unified"
     ],
-    "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "macos-agent-installation",
-        "title": "macOS Agent Installation",
-        "score": 17
-      },
-      {
-        "slug": "endpoint-agent",
-        "title": "Endpoint Agent",
-        "score": 16
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 16
-      },
-      {
-        "slug": "adapter-types-mac-unified-logging",
-        "title": "Mac Unified Logging",
-        "score": 15
-      },
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 13
-      }
-    ]
+    "complexity": "beginner",
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "af74a44e5b66a62054f939ae56a05c0acb16b12968d3fcc81cc342aaf01afe96"
+  "content_hash": ""
 }

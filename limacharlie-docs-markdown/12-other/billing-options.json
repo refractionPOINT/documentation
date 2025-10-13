@@ -4,57 +4,26 @@
   "slug": "billing-options",
   "category": "",
   "metadata": {
-    "summary": "LimaCharlie users have multiple billing options available to them, depending on their unique needs. We'll walk through these two options, *Default Billing* and *Unified Billing*, below.",
+    "summary": "By default, every Organization is billed using a credit card set at the individual organization level. The billing cycle for each organization starts at the time the organization goes from the free tier into a paid tier. The invoices go to the email address of the user who initially created the o...",
     "keywords": [
-      "articles",
       "billing",
       "default",
       "detection",
       "options",
       "organization",
       "output",
-      "related",
       "response",
       "rule",
       "sensor",
       "setup",
-      "unified",
-      "what's"
+      "unified"
     ],
     "complexity": "intermediate",
     "use_cases": [
       "Incident Response",
-      "Forensics",
-      "](/docs/use-cases)"
-    ],
-    "related_pages": [
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 14
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 13
-      },
-      {
-        "slug": "config-hive",
-        "title": "Config Hive",
-        "score": 13
-      },
-      {
-        "slug": "use-cases",
-        "title": "Use Cases",
-        "score": 13
-      }
+      "Forensics"
     ]
   },
   "api_elements": [],
-  "content_hash": "48e0fc6428598128b798979be7da55a13159c29f68f209c12929741d0d51bce3"
+  "content_hash": ""
 }

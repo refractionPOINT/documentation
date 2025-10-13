@@ -15,43 +15,16 @@
       "analytics",
       "api",
       "application",
-      "articles",
       "audit",
       "cloud",
       "configuration",
       "control",
-      "convention"
+      "convention",
+      "d&r"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      },
-      {
-        "slug": "api-keys",
-        "title": "API Keys",
-        "score": 13
-      },
-      {
-        "slug": "sensor-tags",
-        "title": "Sensor Tags",
-        "score": 13
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 13
-      },
-      {
-        "slug": "user-access",
-        "title": "User Access",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "368571c05ee7c8903f377358cd6cf9492188a1e7de8114064d4711f883bc8844"
+  "content_hash": ""
 }

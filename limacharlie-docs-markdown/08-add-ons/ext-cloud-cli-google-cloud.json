@@ -4,48 +4,19 @@
   "slug": "ext-cloud-cli-google-cloud",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "This extension makes use of Google Cloud's native CLI tool, which can be found [here](https://cloud.google.com/cli).",
     "keywords": [
-      "add-on",
-      "articles",
+      "api",
       "cloud",
+      "credentials",
+      "example",
       "extension",
       "google",
-      "output",
-      "query",
-      "related",
-      "what's"
+      "organization"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-pubsub",
-        "title": "Google Cloud Pubsub",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 17
-      },
-      {
-        "slug": "outputs-destinations-google-cloud-bigquery",
-        "title": "Google Cloud BigQuery",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-google-workspace",
-        "title": "Google Workspace",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "b0060eff7b2445a02e7763fc6955672f73f217f267472d7caea38dbe6c1bf535"
+  "content_hash": ""
 }

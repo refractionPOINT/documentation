@@ -4,47 +4,16 @@
   "slug": "azure-monitor",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "LimaCharlie can ingest and natively parse Azure Monitor Logs.",
     "keywords": [
-      "articles",
       "azure",
       "event",
-      "monitor",
-      "output",
-      "related",
-      "sensor",
-      "what's"
+      "ingestion",
+      "monitor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-microsoft-entra-id",
-        "title": "Microsoft Entra ID",
-        "score": 17
-      },
-      {
-        "slug": "azure-network-security-group",
-        "title": "Azure Network Security Group",
-        "score": 17
-      },
-      {
-        "slug": "azure-sql-audit-logs",
-        "title": "Azure SQL Audit Logs",
-        "score": 17
-      },
-      {
-        "slug": "azure-logs-key-vault",
-        "title": "Azure Key Vault",
-        "score": 17
-      },
-      {
-        "slug": "ext-cloud-cli-azure",
-        "title": "Azure",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "d72e82a49dad04300b37dfd4738824523126320c7128f96570ab2e27e23aa266"
+  "content_hash": ""
 }

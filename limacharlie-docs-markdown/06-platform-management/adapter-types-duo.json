@@ -4,42 +4,17 @@
   "slug": "adapter-types-duo",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"duo\" duo: integration_key: \"YOUR_DUO_INTEGRATION_KEY_DIXXXXXXXXXXXXXXXXXX\"",
     "keywords": [
       "api",
-      "sensor",
-      "what's"
+      "integration",
+      "response",
+      "rule",
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-evtx",
-        "title": "EVTX",
-        "score": 13
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 13
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-zendesk",
-        "title": "Zendesk",
-        "score": 5
-      },
-      {
-        "slug": "api-integrations-echotrail",
-        "title": "EchoTrail",
-        "score": 5
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "cb73effcefc84103dfd104d75caf6a4657e86da015b98e5a4a3375a3731a556b"
+  "content_hash": ""
 }

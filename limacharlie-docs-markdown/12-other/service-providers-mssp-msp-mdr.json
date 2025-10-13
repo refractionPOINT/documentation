@@ -4,7 +4,7 @@
   "slug": "service-providers-mssp-msp-mdr",
   "category": "",
   "metadata": {
-    "summary": "The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.",
+    "summary": "The SCP delivers core cybersecurity capabilities and infrastructure via a public cloud model: on-demand, pay-per-use, and API-first. For the cybersecurity industry, this is a paradigm shift comparable to how the IT public cloud revolutionized IT.",
     "keywords": [
       "(mssp,",
       "agreements",
@@ -26,37 +26,9 @@
     "use_cases": [
       "Incident Response",
       "has allowed SCP service provider partners to offer service-level agreements of as little as 20 minutes\u2014a considerable advantage when it comes to pitching (and closing) new MDR or MSSP clients.",
-      "](/docs/en/tags/use%20case)",
       "Forensics"
-    ],
-    "related_pages": [
-      {
-        "slug": "artifacts",
-        "title": "Artifacts",
-        "score": 16
-      },
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 16
-      },
-      {
-        "slug": "response-actions",
-        "title": "Response Actions",
-        "score": 16
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 16
-      },
-      {
-        "slug": "infrastructure-as-code",
-        "title": "Infrastructure as Code",
-        "score": 15
-      }
     ]
   },
   "api_elements": [],
-  "content_hash": "955f4019f2ea1bd2c412ec9f00d89d24b2f7b2b659593b6c889dd913cb83d553"
+  "content_hash": ""
 }

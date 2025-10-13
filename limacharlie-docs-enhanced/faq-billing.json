@@ -1,0 +1,32 @@
+{
+  "slug": "faq-billing",
+  "title": "FAQ - Billing",
+  "category": "",
+  "metadata": {
+    "summary": "Explains LimaCharlie billing models, quota management, usage-based pricing, and cost calculation for sensors, payloads, and adapters.",
+    "keywords": [
+      "billing",
+      "pricing",
+      "quota",
+      "usage-based",
+      "vSensor"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understanding LimaCharlie pricing models and managing organization billing settings"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/v1/usage/{OID}",
+      "description": "Get organization usage statistics including sensor_events and sensor_retained values"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "faq-invoices",
+      "relationship": "related",
+      "description": "Invoice structure and billing details complement billing configuration and pricing information"
+    }
+  ]
+}

@@ -4,14 +4,11 @@
   "slug": "ext-lookup-manager",
   "category": "",
   "metadata": {
-    "summary": "The Lookup Manager Extension allows you to create, maintain & automatically refresh lookups in the Organization to then reference them in Detection & Response Rules.",
+    "summary": "The saved Lookup Configurations can be managed across tenants using Infrastructure as Code extension. To manage lookup versions across all of your tenants, update the file under the original Authenticated Resource Locator.",
     "keywords": [
       "\"image(266).png\")",
-      "add-on",
       "api",
-      "articles",
       "available",
-      "d&r",
       "detection",
       "extension",
       "infrastructure",
@@ -20,38 +17,14 @@
       "lookups![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/images/documentation/image(279).png",
       "manager",
       "option",
-      "organization"
+      "organization",
+      "output",
+      "preconfigured",
+      "private"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 16
-      },
-      {
-        "slug": "infrastructure-as-code",
-        "title": "Infrastructure as Code",
-        "score": 15
-      },
-      {
-        "slug": "create-a-dr-rule-using-a-threat-feed",
-        "title": "Create a D&R Rule Using a Threat Feed",
-        "score": 15
-      },
-      {
-        "slug": "extensions",
-        "title": "Extensions",
-        "score": 15
-      },
-      {
-        "slug": "payload-manager",
-        "title": "Payload Manager",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "03ef0894d1da0154c658f9209b603ca5d3b143fcd1d37fccc0de87c361290e96"
+  "content_hash": ""
 }

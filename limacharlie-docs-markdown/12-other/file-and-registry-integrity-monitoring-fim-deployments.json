@@ -4,48 +4,27 @@
   "slug": "file-and-registry-integrity-monitoring-fim-deployments",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* **Undetected unauthorized changes:** Malicious actors often target sensitive files and registry keys to install malware, exfiltrate data, or disrupt operations, often evading traditional security measures. * **Challenges of manual monitoring:** Manually tracking changes to critical files and re...",
     "keywords": [
       "(fim)",
+      "deployment",
       "deployments",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
       "file",
       "integrity",
+      "limacharlie\u2019s",
       "monitoring",
+      "problems",
       "registry",
-      "what's"
+      "response",
+      "rule"
     ],
     "complexity": "intermediate",
-    "use_cases": [
-      "](/docs/en/tags/use%20case)"
-    ],
-    "related_pages": [
-      {
-        "slug": "chromeos-support",
-        "title": "ChromeOS Support",
-        "score": 11
-      },
-      {
-        "slug": "adapter-types-file",
-        "title": "File",
-        "score": 9
-      },
-      {
-        "slug": "ext-integrity",
-        "title": "Integrity",
-        "score": 8
-      },
-      {
-        "slug": "wel-monitoring",
-        "title": "WEL Monitoring",
-        "score": 4
-      },
-      {
-        "slug": "security-monitoring-for-devops",
-        "title": "Security Monitoring for DevOps",
-        "score": 4
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "28033e6cf35bd58b3dcc51f98cbf8104f9b09aa3373735edbb1a24c7e6051c9f"
+  "content_hash": ""
 }

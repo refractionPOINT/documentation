@@ -1,0 +1,30 @@
+{
+  "slug": "incident-response",
+  "title": "Incident Response",
+  "category": "",
+  "metadata": {
+    "summary": "Centralized incident response platform providing unified threat visibility, advanced analytics, and instant deployment for rapid investigation",
+    "keywords": [
+      "incident response",
+      "threat visibility",
+      "centralized platform",
+      "threat hunting",
+      "rapid deployment"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Rapidly investigate and respond to security incidents with centralized visibility across all data sources"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "threat-hunting",
+      "relationship": "related",
+      "description": "Incident response teams use threat hunting capabilities to investigate attack chains and identify hidden threats"
+    },
+    {
+      "target_slug": "uncovering-adversary-techniques",
+      "relationship": "related",
+      "description": "Incident response leverages real-time capabilities to remediate adversary activities discovered during investigations"
+    }
+  ]
+}

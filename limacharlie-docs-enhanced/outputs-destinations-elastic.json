@@ -1,0 +1,30 @@
+{
+  "slug": "outputs-destinations-elastic",
+  "title": "Elastic",
+  "category": "",
+  "metadata": {
+    "summary": "Configure LimaCharlie outputs to send events and detections to Elastic using username/password or API key authentication",
+    "keywords": [
+      "elastic",
+      "elasticsearch",
+      "output",
+      "index",
+      "cloud_id"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Forward telemetry data to Elastic for search, analysis, and visualization"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-opensearch",
+      "relationship": "alternative",
+      "description": "OpenSearch is an open-source fork of Elasticsearch with similar capabilities"
+    },
+    {
+      "target_slug": "cost-effective-siem",
+      "relationship": "related",
+      "description": "Elastic can be used as part of a cost-effective SIEM strategy"
+    }
+  ]
+}

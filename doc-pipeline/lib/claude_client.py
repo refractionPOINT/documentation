@@ -56,7 +56,7 @@ class ClaudeClient:
             timeout: Timeout in seconds (default 5 minutes)
 
         Returns:
-            Output from the subagent
+            Cleaned JSON output from the subagent
 
         Raises:
             ClaudeNotAvailableError: If Claude CLI not available
@@ -80,4 +80,53 @@ class ClaudeClient:
         if result.returncode != 0:
             raise RuntimeError(f"Claude subagent failed: {result.stderr}")
 
-        return result.stdout
+        # Clean the response to extract JSON
+        return self._clean_json_response(result.stdout)
+
+    def _clean_json_response(self, raw_output: str) -> str:
+        """
+        Extract JSON from Claude's response, handling common patterns.
+
+        Claude may return:
+        - Plain JSON
+        - JSON wrapped in ```json ... ```
+        - Explanatory text followed by JSON
+        - Combinations of the above
+
+        Args:
+            raw_output: Raw output from Claude CLI
+
+        Returns:
+            Cleaned JSON string
+        """
+        output = raw_output.strip()
+
+        # If output is empty, return it as-is (will fail JSON parsing)
+        if not output:
+            return output
+
+        # Strategy 1: Look for JSON in code blocks
+        # Pattern: ```json\n{...}\n``` or ```\n{...}\n```
+        if '```' in output:
+            import re
+            # Find content between code fences
+            code_block_match = re.search(r'```(?:json)?\s*\n(.*?)\n```', output, re.DOTALL)
+            if code_block_match:
+                return code_block_match.group(1).strip()
+
+        # Strategy 2: Find first { or [ and extract from there
+        # This handles cases where Claude adds explanatory text before JSON
+        json_start = -1
+        for i, char in enumerate(output):
+            if char in ('{', '['):
+                json_start = i
+                break
+
+        if json_start >= 0:
+            # Find matching closing brace/bracket
+            # Simple approach: take from first { or [ to end
+            # (assumes JSON is the last/main content)
+            return output[json_start:].strip()
+
+        # Strategy 3: Return as-is and let JSON parser handle it
+        return output

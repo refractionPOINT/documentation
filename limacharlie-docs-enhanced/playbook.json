@@ -1,0 +1,38 @@
+{
+  "slug": "playbook",
+  "title": "Playbook [LABS]",
+  "category": "",
+  "metadata": {
+    "summary": "Playbook extension enables custom Python automation scripts that execute in managed containers with LimaCharlie SDK access",
+    "keywords": [
+      "automation",
+      "python",
+      "scripting",
+      "workflow",
+      "webhooks"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Automate complex security workflows and integrations using Python scripts with access to LimaCharlie APIs and secrets"
+  },
+  "extracted_apis": [
+    {
+      "type": "python_method",
+      "method": "Extension.request()",
+      "path": "ext.request('ext-playbook', 'run_playbook', {...})",
+      "description": "Execute a playbook with specified name, credentials, and input data"
+    },
+    {
+      "type": "python_method",
+      "method": "playbook(sdk, data)",
+      "path": "def playbook(sdk, data):",
+      "description": "Required top-level function in playbook scripts that receives LC SDK instance and input data"
+    },
+    {
+      "type": "python_method",
+      "method": "limacharlie.Hive.get()",
+      "path": "limacharlie.Hive(sdk, 'secret').get('secret-name')",
+      "description": "Retrieve secrets from LimaCharlie Hive for use in playbooks"
+    }
+  ],
+  "cross_refs": []
+}

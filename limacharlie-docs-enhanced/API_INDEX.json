@@ -1,0 +1,2860 @@
+{
+  "rest_endpoints": [
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/msi32",
+      "description": "Download 32-bit Windows MSI installer"
+    },
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/msi64",
+      "description": "Download 64-bit Windows MSI installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/32",
+      "description": "Download Windows 32-bit executable installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/64",
+      "description": "Download Windows 64-bit executable installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/msi32",
+      "description": "Download Windows 32-bit MSI installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/msi64",
+      "description": "Download Windows 64-bit MSI installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/64",
+      "description": "Download Linux 64-bit installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/alpine64",
+      "description": "Download Linux Alpine 64-bit installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/deb32",
+      "description": "Download Linux 32-bit Debian package"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/deb64",
+      "description": "Download Linux 64-bit Debian package"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/debarm64",
+      "description": "Download Linux ARM 64-bit Debian package"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/mac/64",
+      "description": "Download macOS 64-bit installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/mac/arm64",
+      "description": "Download macOS ARM 64-bit (Apple Silicon) installer"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/chrome",
+      "description": "Download Chrome extension"
+    },
+    {
+      "page_slug": "endpoint-agent-installation",
+      "page_title": "Endpoint Agent Installation",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/edge",
+      "description": "Download MS Edge extension"
+    },
+    {
+      "page_slug": "building-a-custom-msi-installer-for-windows",
+      "page_title": "Building a custom MSI installer for Windows",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/64",
+      "description": "Download LimaCharlie sensor EXE for MSI wrapping"
+    },
+    {
+      "page_slug": "endpoint-agent-versioning-and-upgrades",
+      "page_title": "Endpoint Agent Versioning and Upgrades",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/Modules/upgradeOrg",
+      "description": "Upgrade organization sensor version"
+    },
+    {
+      "page_slug": "endpoint-agent-versioning-and-upgrades",
+      "page_title": "Endpoint Agent Versioning and Upgrades",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/{sid}/tags",
+      "description": "Add tags to a sensor"
+    },
+    {
+      "page_slug": "endpoint-agent-versioning-and-upgrades",
+      "page_title": "Endpoint Agent Versioning and Upgrades",
+      "type": "rest_endpoint",
+      "method": "DELETE",
+      "path": "/{sid}/tags",
+      "description": "Remove tags from a sensor"
+    },
+    {
+      "page_slug": "endpoint-agent-versioning-and-upgrades",
+      "page_title": "Endpoint Agent Versioning and Upgrades",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/{sid}/tags",
+      "description": "Get tags for a sensor"
+    },
+    {
+      "page_slug": "sensor-tags",
+      "page_title": "Sensor Tags",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/{sid}/tags",
+      "description": "Add tags to a sensor"
+    },
+    {
+      "page_slug": "sensor-tags",
+      "page_title": "Sensor Tags",
+      "type": "rest_endpoint",
+      "method": "DELETE",
+      "path": "/{sid}/tags",
+      "description": "Remove tags from a sensor"
+    },
+    {
+      "page_slug": "sensor-tags",
+      "page_title": "Sensor Tags",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/{sid}/tags",
+      "description": "Get tags for a sensor"
+    },
+    {
+      "page_slug": "ext-sensor-cull",
+      "page_title": "Sensor Cull",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/sensor-cull",
+      "description": "Send actions to Sensor Cull extension - get_rules action"
+    },
+    {
+      "page_slug": "ext-sensor-cull",
+      "page_title": "Sensor Cull",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/sensor-cull",
+      "description": "Send actions to Sensor Cull extension - run action for ad-hoc cleanup"
+    },
+    {
+      "page_slug": "ext-sensor-cull",
+      "page_title": "Sensor Cull",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/sensor-cull",
+      "description": "Send actions to Sensor Cull extension - add_rule action with name, tag, and ttl"
+    },
+    {
+      "page_slug": "ext-sensor-cull",
+      "page_title": "Sensor Cull",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/sensor-cull",
+      "description": "Send actions to Sensor Cull extension - del_rule action to delete rule by name"
+    },
+    {
+      "page_slug": "endpoint-agent-commands",
+      "page_title": "Endpoint Agent Commands",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/tasks",
+      "description": "Retrieve list of available commands"
+    },
+    {
+      "page_slug": "endpoint-agent-commands",
+      "page_title": "Endpoint Agent Commands",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/task",
+      "description": "Retrieve usage details for specific command"
+    },
+    {
+      "page_slug": "endpoint-agent-commands",
+      "page_title": "Endpoint Agent Commands",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/sensor/task",
+      "description": "Task sensor with command programmatically"
+    },
+    {
+      "page_slug": "endpoint-agent-events-overview",
+      "page_title": "Endpoint Agent Events Overview",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/insight/{oid}/{sid}/{atom}",
+      "description": "Get event by atom identifier"
+    },
+    {
+      "page_slug": "endpoint-agent-events-overview",
+      "page_title": "Endpoint Agent Events Overview",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/insight/{oid}/{sid}/{atom}/children",
+      "description": "Get children events of an atom"
+    },
+    {
+      "page_slug": "events",
+      "page_title": "Events",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/v1/orgs/YOUR-OID/schema",
+      "description": "List all available event schemas"
+    },
+    {
+      "page_slug": "event-schemas",
+      "page_title": "Event Schemas",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/v1/orgs/YOUR-OID/schema",
+      "description": "List all available learned schemas by event type"
+    },
+    {
+      "page_slug": "event-schemas",
+      "page_title": "Event Schemas",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/v1/orgs/YOUR-OID/schema/EVENT-TYPE",
+      "description": "Retrieve specific schema definition for a given event type"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-365",
+      "page_title": "Microsoft 365",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/office365/management/activity",
+      "description": "Office 365 Management Activity API for audit logs"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-entra-id",
+      "page_title": "Microsoft Entra ID",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/identityProtection/riskDetections",
+      "description": "Microsoft Entra ID Risk Detections API for identity protection events"
+    },
+    {
+      "page_slug": "adapter-types-tailscale",
+      "page_title": "Tailscale",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://{domain}.hook.limacharlie.io/{OID}/{HOOKNAME}/{SECRET}",
+      "description": "Webhook endpoint URL format for receiving Tailscale events"
+    },
+    {
+      "page_slug": "adapter-types-tailscale",
+      "page_title": "Tailscale",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/apidocs/get-org-urls",
+      "description": "Retrieve organization webhook URLs"
+    },
+    {
+      "page_slug": "adapter-types-slack-audit-logs",
+      "page_title": "Slack Audit Logs",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/api/slack/audit-logs",
+      "description": "Slack API endpoint for fetching audit logs from Enterprise Grid organizations"
+    },
+    {
+      "page_slug": "adapter-types-zendesk",
+      "page_title": "Zendesk",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/api/v2/audit_logs",
+      "description": "Zendesk API endpoint for retrieving audit logs"
+    },
+    {
+      "page_slug": "adapter-types-hubspot",
+      "page_title": "HubSpot",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/settings/v3/audit-logs",
+      "description": "HubSpot API endpoint for fetching account activity logs"
+    },
+    {
+      "page_slug": "adapter-types-pandadoc",
+      "page_title": "PandaDoc",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/public/v1/logs",
+      "description": "PandaDoc API endpoint for listing API logs and events"
+    },
+    {
+      "page_slug": "adapter-types-it-glue",
+      "page_title": "IT Glue",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/api/audit_log_entries",
+      "description": "IT Glue API endpoint for retrieving audit log entries"
+    },
+    {
+      "page_slug": "adapter-types-mimecast",
+      "page_title": "Mimecast",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/api/audit/get-audit-events",
+      "description": "Retrieve Mimecast audit events using client credentials authentication"
+    },
+    {
+      "page_slug": "adapter-types-sublime-security",
+      "page_title": "Sublime Security",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/apidocs/get-org-urls",
+      "description": "LimaCharlie API to retrieve webhook URL for adapter configuration"
+    },
+    {
+      "page_slug": "adapter-types-canarytokens",
+      "page_title": "Canarytokens",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/apidocs/get-org-urls",
+      "description": "Get organization webhook URLs for constructing Canarytoken webhook endpoints"
+    },
+    {
+      "page_slug": "tutorial-creating-a-webhook-adapter",
+      "page_title": "Tutorial: Creating a Webhook Adapter",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/apidocs/get-org-urls",
+      "description": "Retrieve geo-dependent webhook URLs for organization"
+    },
+    {
+      "page_slug": "sigma-rules",
+      "page_title": "Sigma Rules",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/convert",
+      "description": "Convert Sigma rules to LimaCharlie D&R format via public REST API"
+    },
+    {
+      "page_slug": "sigma-converter",
+      "page_title": "Sigma Converter",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://sigma.limacharlie.io/convert/rule",
+      "description": "Convert a single Sigma rule to LimaCharlie D&R format"
+    },
+    {
+      "page_slug": "sigma-converter",
+      "page_title": "Sigma Converter",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://sigma.limacharlie.io/convert/repo",
+      "description": "Convert multiple Sigma rules from a GitHub repo or HTTPS resource"
+    },
+    {
+      "page_slug": "outputs-destinations-splunk",
+      "page_title": "Splunk",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/services/collector/raw",
+      "description": "Splunk HEC endpoint for raw event ingestion"
+    },
+    {
+      "page_slug": "outputs-destinations-splunk",
+      "page_title": "Splunk",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/services/collector/event",
+      "description": "Splunk HEC endpoint for structured event ingestion"
+    },
+    {
+      "page_slug": "outputs-destinations-webhook",
+      "page_title": "Webhook",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "dest_host (configurable)",
+      "description": "Individual events posted to configured webhook endpoint with HMAC signature"
+    },
+    {
+      "page_slug": "outputs-destinations-webhook-bulk",
+      "page_title": "Webhook (Bulk)",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "dest_host (configurable)",
+      "description": "Batched events posted to configured webhook endpoint with HMAC signature"
+    },
+    {
+      "page_slug": "tutorials-integratons-virustotal-integration",
+      "page_title": "VirusTotal Integration",
+      "type": "rest_endpoint",
+      "method": "lookup",
+      "path": "hives://lookup/vt",
+      "description": "Lookup operation resource for VirusTotal hash queries via LimaCharlie detection rules"
+    },
+    {
+      "page_slug": "using-extensions",
+      "page_title": "Using Extensions",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/extension/schema",
+      "description": "Get the schema for an Extension"
+    },
+    {
+      "page_slug": "using-extensions",
+      "page_title": "Using Extensions",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Make requests to an Extension"
+    },
+    {
+      "page_slug": "ext-yara",
+      "page_title": "YARA",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-yara",
+      "description": "Extension request to trigger YARA scan via API"
+    },
+    {
+      "page_slug": "ext-integrity",
+      "page_title": "Integrity",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-integrity",
+      "description": "List integrity monitoring rules",
+      "request_body": {
+        "action": "list_rules"
+      }
+    },
+    {
+      "page_slug": "ext-integrity",
+      "page_title": "Integrity",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-integrity",
+      "description": "Add integrity monitoring rule",
+      "request_body": {
+        "action": "add_rule",
+        "name": "rule-name",
+        "patterns": [
+          "pattern"
+        ],
+        "tags": [
+          "tag"
+        ],
+        "platforms": [
+          "platform"
+        ]
+      }
+    },
+    {
+      "page_slug": "ext-integrity",
+      "page_title": "Integrity",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-integrity",
+      "description": "Remove integrity monitoring rule",
+      "request_body": {
+        "action": "remove_rule",
+        "name": "rule-name"
+      }
+    },
+    {
+      "page_slug": "ext-artifact",
+      "page_title": "Artifact",
+      "type": "rest_endpoint",
+      "method": "N/A",
+      "path": "/add-ons/extension-detail/ext-artifact",
+      "description": "Artifact extension marketplace page"
+    },
+    {
+      "page_slug": "ext-cloud-cli",
+      "page_title": "Cloud CLI",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-cloud-cli/run",
+      "description": "Run commands against third-party CLI or API endpoints"
+    },
+    {
+      "page_slug": "ext-cloud-cli-aws",
+      "page_title": "AWS",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-cloud-cli/run",
+      "description": "Execute AWS CLI commands through LimaCharlie extension framework"
+    },
+    {
+      "page_slug": "ext-cloud-cli-azure",
+      "page_title": "Azure",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Extension request action to run Azure CLI commands with cloud='az', command_line, and credentials parameters"
+    },
+    {
+      "page_slug": "ext-cloud-cli-microsoft365",
+      "page_title": "Microsoft 365",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Extension request action to run M365 commands with cloud='m365', command_tokens array, and credentials parameters"
+    },
+    {
+      "page_slug": "ext-cloud-cli-google-cloud",
+      "page_title": "Google Cloud",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "extension request: ext-cloud-cli",
+      "description": "Execute gcloud commands via LimaCharlie extension with cloud='gcloud', command_tokens array, and credentials"
+    },
+    {
+      "page_slug": "ext-cloud-cli-digitalocean",
+      "page_title": "DigitalOcean",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Execute Cloud CLI extension with DigitalOcean doctl commands"
+    },
+    {
+      "page_slug": "ext-cloud-cli-vultr",
+      "page_title": "Vultr",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Execute Cloud CLI extension with Vultr vultr-cli commands"
+    },
+    {
+      "page_slug": "ext-cloud-cli-tailscale",
+      "page_title": "Tailscale",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Execute Cloud CLI extension with Tailscale CLI commands"
+    },
+    {
+      "page_slug": "ext-cloud-cli-github",
+      "page_title": "GitHub",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Execute GitHub CLI commands through LimaCharlie extension"
+    },
+    {
+      "page_slug": "ext-cloud-cli-sublime",
+      "page_title": "Sublime",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/request",
+      "description": "Execute Sublime Security CLI commands through LimaCharlie extension"
+    },
+    {
+      "page_slug": "ext-reliable-tasking",
+      "page_title": "Reliable Tasking",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/v1/extension/request/ext-reliable-tasking",
+      "description": "Create a task for offline sensors with selector, command, and TTL"
+    },
+    {
+      "page_slug": "ext-reliable-tasking",
+      "page_title": "Reliable Tasking",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/v1/extension/request/ext-reliable-tasking",
+      "description": "List queued tasks by sid, tag, or platform"
+    },
+    {
+      "page_slug": "ext-infrastructure",
+      "page_title": "Infrastructure",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/v1/extension/request/ext-infrastructure",
+      "description": "Push or fetch infrastructure-as-code configuration for organization"
+    },
+    {
+      "page_slug": "ext-infrastructure",
+      "page_title": "Infrastructure",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/v1/extension/request/ext-infrastructure",
+      "description": "Apply IaC configuration with sync options for artifacts, integrity, DR rules, outputs, etc."
+    },
+    {
+      "page_slug": "ext-pagerduty",
+      "page_title": "PagerDuty",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-pagerduty/trigger",
+      "description": "Trigger a PagerDuty event with summary, source, severity, component, group, and class"
+    },
+    {
+      "page_slug": "ext-twilio",
+      "page_title": "Twilio",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-twilio/send",
+      "description": "Send SMS message via Twilio with body, from, and to parameters"
+    },
+    {
+      "page_slug": "ext-usage-alerts",
+      "page_title": "Usage Alerts",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-usage-alerts/sync",
+      "description": "Manually sync usage alert rules (also runs automatically every hour)"
+    },
+    {
+      "page_slug": "ext-govee",
+      "page_title": "Govee",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/extension/ext-govee/trigger",
+      "description": "Trigger Govee light color change with device_id, device_model, colors, brightness, and duration"
+    },
+    {
+      "page_slug": "ext-govee",
+      "page_title": "Govee",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://openapi.api.govee.com/router/api/v1/user/devices",
+      "description": "External Govee API: List all supported Govee devices to get device IDs and models"
+    },
+    {
+      "page_slug": "config-hive",
+      "page_title": "Config Hive",
+      "type": "rest_endpoint",
+      "method": "REST",
+      "path": "https://api.limacharlie.io/static/swagger/",
+      "description": "Access Config Hive via REST API"
+    },
+    {
+      "page_slug": "lookups",
+      "page_title": "Lookups",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/api/lookup (upload)",
+      "description": "Upload lookup data via REST API (max 15MB)"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://jwt.limacharlie.io",
+      "description": "Exchange Organization API key for JWT token (requires oid and secret)"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://jwt.limacharlie.io",
+      "description": "Exchange User API key for JWT token (requires uid and secret)"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://jwt.limacharlie.io",
+      "description": "Exchange User API key for organization-scoped JWT (requires oid, uid and secret)"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://app.limacharlie.io/owner_permissions",
+      "description": "Retrieve programmatic list of available permissions"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://app.limacharlie.io/user_key_info",
+      "description": "Get list of organizations accessible with User API Key (requires secret, uid, optional with_names)"
+    },
+    {
+      "page_slug": "billing",
+      "page_title": "Billing",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/v2/docs/detection-and-response",
+      "description": "D&R rules for sensor_over_quota event automation"
+    },
+    {
+      "page_slug": "using-custom-billing-plans",
+      "page_title": "Using Custom Billing Plans",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/organizations",
+      "description": "Create organization with custom plan using loc parameter"
+    },
+    {
+      "page_slug": "infrastructure-as-code",
+      "page_title": "Infrastructure as Code",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/infrastructure-service",
+      "description": "Apply infrastructure-as-code configurations via REST API"
+    },
+    {
+      "page_slug": "payloads",
+      "page_title": "Payloads",
+      "type": "rest_endpoint",
+      "method": "PUT",
+      "path": "signed-url",
+      "description": "Upload payload binary using signed URL with Content-Type: application/octet-stream"
+    },
+    {
+      "page_slug": "payloads",
+      "page_title": "Payloads",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "signed-url",
+      "description": "Download payload binary using signed URL"
+    },
+    {
+      "page_slug": "binlib",
+      "page_title": "BinLib",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/check_hash",
+      "description": "Check if hash (MD5/SHA1/SHA256) has been observed in organization"
+    },
+    {
+      "page_slug": "binlib",
+      "page_title": "BinLib",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/get_hash_data",
+      "description": "Get download URL for binary file associated with hash"
+    },
+    {
+      "page_slug": "binlib",
+      "page_title": "BinLib",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/get_hash_metadata",
+      "description": "Retrieve metadata including signing details, file type, and hashes for observed binary"
+    },
+    {
+      "page_slug": "binlib",
+      "page_title": "BinLib",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/search",
+      "description": "Search binary library by imp_hash, company name, file description, signature, size, or type"
+    },
+    {
+      "page_slug": "binlib",
+      "page_title": "BinLib",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "/binlib/tag",
+      "description": "Add tags to hash for classification within binary library"
+    },
+    {
+      "page_slug": "atlassian",
+      "page_title": "Atlassian",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/apidocs/get-org-urls",
+      "description": "Retrieve webhook URLs for organization"
+    },
+    {
+      "page_slug": "sentinelone",
+      "page_title": "SentinelOne",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/web/api/v2.1/activities",
+      "description": "Fetch SentinelOne activities"
+    },
+    {
+      "page_slug": "sentinelone",
+      "page_title": "SentinelOne",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/web/api/v2.1/cloud-detection/alerts",
+      "description": "Fetch SentinelOne alerts"
+    },
+    {
+      "page_slug": "sentinelone",
+      "page_title": "SentinelOne",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/web/api/v2.1/threats",
+      "description": "Fetch SentinelOne threats"
+    },
+    {
+      "page_slug": "sleeper",
+      "page_title": "Sleeper Deployment",
+      "type": "rest_endpoint",
+      "method": "N/A",
+      "path": "lc:sleeper tag",
+      "description": "Apply tag to sensor to enable sleeper mode billing at $0.10 per 30 days"
+    },
+    {
+      "page_slug": "sleeper",
+      "page_title": "Sleeper Deployment",
+      "type": "rest_endpoint",
+      "method": "N/A",
+      "path": "lc:usage tag",
+      "description": "Apply tag to sensor for usage-based billing outside normal quota"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://mcp.limacharlie.io",
+      "description": "MCP server endpoint supporting HTTP mode with JSON-RPC for AI agent tool access"
+    },
+    {
+      "page_slug": "replay",
+      "page_title": "Replay",
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "https://<datacenter>.replay.limacharlie.io/",
+      "description": "Replay API endpoint for testing D&R rules against historical or provided events"
+    },
+    {
+      "page_slug": "faq-billing",
+      "page_title": "FAQ - Billing",
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "/v1/usage/{OID}",
+      "description": "Get organization usage statistics including sensor_events and sensor_retained values"
+    }
+  ],
+  "python_methods": [
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "NewClientFromLoader",
+      "path": "limacharlie.NewClientFromLoader()",
+      "description": "Create new Go client from environment variables or options"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "NewOrganization",
+      "path": "limacharlie.NewOrganization(client)",
+      "description": "Create organization object from client"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "NewOrganizationFromClientOptions",
+      "path": "limacharlie.NewOrganizationFromClientOptions(clientOptions, nil)",
+      "description": "Create organization directly from client options"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "ListSensors",
+      "path": "org.ListSensors()",
+      "description": "Retrieve list of all sensors in organization"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "NewHiveClient",
+      "path": "limacharlie.NewHiveClient(org)",
+      "description": "Create hive client for configuration management"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "List",
+      "path": "hiveClient.List(HiveArgs)",
+      "description": "List items from hive partition (e.g., D&R rules)"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "Add",
+      "path": "hiveClient.Add(HiveArgs)",
+      "description": "Add new item to hive partition (e.g., D&R rule)"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "Extensions",
+      "path": "org.Extensions()",
+      "description": "List available extensions"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "SubscribeToExtension",
+      "path": "org.SubscribeToExtension(name)",
+      "description": "Subscribe organization to an extension"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "Payloads",
+      "path": "org.Payloads()",
+      "description": "List available payloads"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "InstallationKeys",
+      "path": "org.InstallationKeys()",
+      "description": "List installation keys for organization"
+    },
+    {
+      "page_slug": "limacharlie-sdk",
+      "page_title": "LimaCharlie SDK & CLI",
+      "type": "python_method",
+      "method": "AddInstallationKey",
+      "path": "org.AddInstallationKey(InstallationKey)",
+      "description": "Create new installation key with tags and description"
+    },
+    {
+      "page_slug": "non-responding-sensors",
+      "page_title": "Detecting Sensors No Longer Sending Data",
+      "type": "python_method",
+      "method": "sensors",
+      "path": "limacharlie.Limacharlie.sensors(selector)",
+      "description": "Get sensors matching a selector expression"
+    },
+    {
+      "page_slug": "non-responding-sensors",
+      "page_title": "Detecting Sensors No Longer Sending Data",
+      "type": "python_method",
+      "method": "getHistoricOverview",
+      "path": "limacharlie.Sensor.getHistoricOverview(start, end)",
+      "description": "Get data overview for sensor within time period"
+    },
+    {
+      "page_slug": "tutorial-creating-a-webhook-adapter",
+      "page_title": "Tutorial: Creating a Webhook Adapter",
+      "type": "python_method",
+      "method": "Manager.getOrgURLs",
+      "path": "limacharlie.Manager().getOrgURLs()['hooks']",
+      "description": "Retrieve webhook URLs using Python SDK"
+    },
+    {
+      "page_slug": "ext-velociraptor",
+      "page_title": "Velociraptor",
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-velociraptor",
+      "description": "Preview conversion of legacy service rules to extension format"
+    },
+    {
+      "page_slug": "ext-velociraptor",
+      "page_title": "Velociraptor",
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-velociraptor --no-dry-run",
+      "description": "Execute conversion of legacy service rules to extension format"
+    },
+    {
+      "page_slug": "ext-zeek",
+      "page_title": "Zeek",
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-zeek",
+      "description": "Preview conversion of legacy Zeek service rules"
+    },
+    {
+      "page_slug": "ext-zeek",
+      "page_title": "Zeek",
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-zeek --no-dry-run",
+      "description": "Execute conversion of legacy Zeek service rules"
+    },
+    {
+      "page_slug": "using-custom-billing-plans",
+      "page_title": "Using Custom Billing Plans",
+      "type": "python_method",
+      "method": "Manager.create_org()",
+      "path": "limacharlie.Manager",
+      "description": "Create organization with location parameter for custom billing plan"
+    },
+    {
+      "page_slug": "ai-agent-engine",
+      "page_title": "AI Agent Engine [LABS]",
+      "type": "python_method",
+      "method": "Extension.request()",
+      "path": "ext.request('ext-ai-agent-engine', 'start_session', {...})",
+      "description": "Start an AI Agent session with a specified agent definition and message"
+    },
+    {
+      "page_slug": "ai-agent-engine",
+      "page_title": "AI Agent Engine [LABS]",
+      "type": "python_method",
+      "method": "limacharlie.Extension()",
+      "path": "limacharlie.Extension(manager)",
+      "description": "Instantiate the Extension manager object for accessing extensions"
+    },
+    {
+      "page_slug": "playbook",
+      "page_title": "Playbook [LABS]",
+      "type": "python_method",
+      "method": "Extension.request()",
+      "path": "ext.request('ext-playbook', 'run_playbook', {...})",
+      "description": "Execute a playbook with specified name, credentials, and input data"
+    },
+    {
+      "page_slug": "playbook",
+      "page_title": "Playbook [LABS]",
+      "type": "python_method",
+      "method": "playbook(sdk, data)",
+      "path": "def playbook(sdk, data):",
+      "description": "Required top-level function in playbook scripts that receives LC SDK instance and input data"
+    },
+    {
+      "page_slug": "playbook",
+      "page_title": "Playbook [LABS]",
+      "type": "python_method",
+      "method": "limacharlie.Hive.get()",
+      "path": "limacharlie.Hive(sdk, 'secret').get('secret-name')",
+      "description": "Retrieve secrets from LimaCharlie Hive for use in playbooks"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "python_method",
+      "method": "generate_lcql_query",
+      "path": "generate_lcql_query",
+      "description": "Create LCQL queries from natural language using AI"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "python_method",
+      "method": "generate_dr_rule_detection",
+      "path": "generate_dr_rule_detection",
+      "description": "Generate Detection & Response rule detection logic using AI"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "python_method",
+      "method": "generate_python_playbook",
+      "path": "generate_python_playbook",
+      "description": "Create Python playbooks using AI"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "python_method",
+      "method": "get_historic_events",
+      "path": "get_historic_events",
+      "description": "Query historical telemetry events from sensors"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "python_method",
+      "method": "isolate_network",
+      "path": "isolate_network",
+      "description": "Isolate a sensor from network connectivity"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "python_method",
+      "method": "yara_scan_process",
+      "path": "yara_scan_process",
+      "description": "Scan process memory with YARA rules"
+    }
+  ],
+  "cli_commands": [
+    {
+      "page_slug": "limacharlie-cli",
+      "page_title": "LimaCharlie CLI",
+      "type": "cli_command",
+      "method": null,
+      "path": "limacharlie configs push --dry-run --oid",
+      "description": "Push configurations with dry-run option for specified organization"
+    },
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "cli_command",
+      "method": "INSTALL",
+      "path": "hcp_win_x86_release_<sensor_version>.msi InstallationKey=<installation_key>",
+      "description": "Install 32-bit Windows sensor via MSI with installation key"
+    },
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "cli_command",
+      "method": "INSTALL",
+      "path": "hcp_win_x64_release_<sensor_version>.msi InstallationKey=<installation_key>",
+      "description": "Install 64-bit Windows sensor via MSI with installation key"
+    },
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "cli_command",
+      "method": "INSTALL",
+      "path": "installer.msi InstallationKey=\"INSTALLATION_KEY\"",
+      "description": "Alternative MSI installation syntax"
+    },
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "cli_command",
+      "method": "VERIFY",
+      "path": "sc query rphcpsvc",
+      "description": "Verify the LimaCharlie sensor service is running"
+    },
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "cli_command",
+      "method": "UNINSTALL",
+      "path": "C:\\Windows\\System32\\rphcp.exe -c",
+      "description": "Uninstall Windows sensor via EXE"
+    },
+    {
+      "page_slug": "windows-agent-installation",
+      "page_title": "Windows Agent Installation",
+      "type": "cli_command",
+      "method": "UNINSTALL",
+      "path": "msiexec /x lc_sensor.msi /qn",
+      "description": "Uninstall Windows sensor via MSI"
+    },
+    {
+      "page_slug": "building-a-custom-msi-installer-for-windows",
+      "page_title": "Building a custom MSI installer for Windows",
+      "type": "cli_command",
+      "method": "INSTALL",
+      "path": "-i YOUR_INSTALLATION_KEY_GOES_HERE",
+      "description": "Installation argument to embed in custom MSI"
+    },
+    {
+      "page_slug": "building-a-custom-msi-installer-for-windows",
+      "page_title": "Building a custom MSI installer for Windows",
+      "type": "cli_command",
+      "method": "UNINSTALL",
+      "path": "-c",
+      "description": "Uninstall argument to embed in custom MSI"
+    },
+    {
+      "page_slug": "macos-agent-installation",
+      "page_title": "macOS Agent Installation",
+      "type": "cli_command",
+      "method": "install",
+      "path": "./lc_sensor -i INSTALLATION_KEY",
+      "description": "Install LimaCharlie sensor with installation key"
+    },
+    {
+      "page_slug": "macos-agent-installation",
+      "page_title": "macOS Agent Installation",
+      "type": "cli_command",
+      "method": "install",
+      "path": "./lc_sensor -i -",
+      "description": "Install sensor using alternate installation key sources (environment variable or file)"
+    },
+    {
+      "page_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "page_title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+      "type": "cli_command",
+      "method": "version",
+      "path": "./lc_sensor -v",
+      "description": "Display build version"
+    },
+    {
+      "page_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "page_title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+      "type": "cli_command",
+      "method": "install",
+      "path": "chmod +x lc_sensor",
+      "description": "Add execute permission to installer file"
+    },
+    {
+      "page_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "page_title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+      "type": "cli_command",
+      "method": "install",
+      "path": "sudo ./lc_sensor -i YOUR_INSTALLATION_KEY_GOES_HERE",
+      "description": "Install sensor as launchctl service with installation key"
+    },
+    {
+      "page_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "page_title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+      "type": "cli_command",
+      "method": "install",
+      "path": "./lc_sensor -d INSTALLATION_KEY",
+      "description": "Enroll with installation key without permanent installation"
+    },
+    {
+      "page_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "page_title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+      "type": "cli_command",
+      "method": "uninstall",
+      "path": "./lc_sensor -r",
+      "description": "Uninstall sensor service"
+    },
+    {
+      "page_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "page_title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+      "type": "cli_command",
+      "method": "uninstall",
+      "path": "./lc_sensor -c",
+      "description": "Uninstall sensor service and delete identity files"
+    },
+    {
+      "page_slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+      "page_title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+      "type": "cli_command",
+      "method": "verify",
+      "path": "sudo launchctl list | grep com.refractionpoint.rphcp",
+      "description": "Verify sensor installation and running status"
+    },
+    {
+      "page_slug": "macos-agent-installation-latest-os-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+      "type": "cli_command",
+      "method": "version",
+      "path": "./lc_sensor -v",
+      "description": "Display build version"
+    },
+    {
+      "page_slug": "macos-agent-installation-latest-os-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+      "type": "cli_command",
+      "method": "install",
+      "path": "chmod +x lc_sensor",
+      "description": "Add execute permission to installer file"
+    },
+    {
+      "page_slug": "macos-agent-installation-latest-os-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+      "type": "cli_command",
+      "method": "install",
+      "path": "sudo ./lc_sensor -i YOUR_INSTALLATION_KEY_GOES_HERE",
+      "description": "Install sensor as launchctl service with installation key"
+    },
+    {
+      "page_slug": "macos-agent-installation-latest-os-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+      "type": "cli_command",
+      "method": "install",
+      "path": "./lc_sensor -d INSTALLATION_KEY",
+      "description": "Enroll with installation key without permanent installation"
+    },
+    {
+      "page_slug": "macos-agent-installation-latest-os-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+      "type": "cli_command",
+      "method": "uninstall",
+      "path": "./lc_sensor -r",
+      "description": "Uninstall sensor service"
+    },
+    {
+      "page_slug": "macos-agent-installation-latest-os-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+      "type": "cli_command",
+      "method": "uninstall",
+      "path": "./lc_sensor -c",
+      "description": "Uninstall sensor service and delete identity files"
+    },
+    {
+      "page_slug": "macos-agent-installation-latest-os-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+      "type": "cli_command",
+      "method": "verify",
+      "path": "sudo launchctl list | grep com.refractionpoint.rphcp",
+      "description": "Verify sensor installation and running status"
+    },
+    {
+      "page_slug": "macos-agent-installation-mdm-configuration-profiles",
+      "page_title": "macOS Agent Installation - MDM Configuration Profiles",
+      "type": "cli_command",
+      "method": "install",
+      "path": "Place com.refractionpoint.rphcp.client.plist in /Library/Preferences",
+      "description": "Enable silent installation by placing preference file before installation"
+    },
+    {
+      "page_slug": "macos-agent-installation-older-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo ./hcp_osx_x64_release_4.23.0 -i <INSTALLATION_KEY>",
+      "description": "Install LimaCharlie sensor as a service with deployment key on macOS 10.14 and prior"
+    },
+    {
+      "page_slug": "macos-agent-installation-older-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo ./hcp_osx_x64_release_4.23.0 -d <INSTALLATION_KEY>",
+      "description": "Enroll sensor without permanent installation"
+    },
+    {
+      "page_slug": "macos-agent-installation-older-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo ./hcp_osx_x64_release_4.23.0 -c",
+      "description": "Uninstall sensor and delete identity files"
+    },
+    {
+      "page_slug": "macos-agent-installation-older-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo ./hcp_osx_x64_release_4.23.0 -r",
+      "description": "Uninstall sensor service"
+    },
+    {
+      "page_slug": "macos-agent-installation-older-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo launchctl list | grep com.refractionpoint.rphcp",
+      "description": "Verify sensor process is running"
+    },
+    {
+      "page_slug": "macos-agent-installation-older-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "kextstat | grep com.refractionpoint.",
+      "description": "Verify kernel extension is loaded"
+    },
+    {
+      "page_slug": "macos-agent-installation-older-versions",
+      "page_title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "chmod +x hcp_osx_x64_release_4.23.0",
+      "description": "Add execute permission to installer file"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "uname -r",
+      "description": "Check Linux kernel version for compatibility"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo dpkg -i limacharlie.deb",
+      "description": "Install LimaCharlie sensor via Debian package interactively"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo apt install ./limacharlie.deb",
+      "description": "Install LimaCharlie sensor via apt package manager"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo dpkg -r limacharlie",
+      "description": "Uninstall LimaCharlie sensor using dpkg"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "sudo apt remove limacharlie",
+      "description": "Uninstall LimaCharlie sensor using apt"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "echo \"limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE\" | sudo debconf-set-selections && sudo dpkg -i limacharlie.deb",
+      "description": "Install LimaCharlie programmatically with installation key via dpkg"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "echo \"limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE\" | sudo debconf-set-selections && sudo apt install ./limacharlie.deb -y",
+      "description": "Install LimaCharlie programmatically with installation key via apt"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "./lc_sensor -d INSTALLATION_KEY",
+      "description": "Execute LimaCharlie sensor with installation key parameter"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "./lc_sensor -d -",
+      "description": "Execute LimaCharlie sensor using alternative installation key sources"
+    },
+    {
+      "page_slug": "linux-agent-installation",
+      "page_title": "Linux Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "run --shell-command \"service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs\"",
+      "description": "Uninstall LimaCharlie sensor via Sensor Console command chain"
+    },
+    {
+      "page_slug": "docker-agent-installation",
+      "page_title": "Docker Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker pull refractionpoint/limacharlie_sensor:latest",
+      "description": "Pull the latest LimaCharlie sensor Docker image from Docker Hub"
+    },
+    {
+      "page_slug": "docker-agent-installation",
+      "page_title": "Docker Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker run --privileged --net=host -v /:/rootfs:ro -v /var/run/docker/netns:/netns:ro -v /sys/kernel/debug:/sys/kernel/debug:ro -v /sys/kernel/btf:/sys/kernel/btf:ro -v /lib/modules:/lib/modules:ro --env LC_INSTALLATION_KEY=<your_key> --env HOST_FS=/rootfs --env NET_NS=/netns refractionpoint/limacharlie_sensor:latest",
+      "description": "Run LimaCharlie sensor in privileged Docker container with host visibility"
+    },
+    {
+      "page_slug": "docker-agent-installation",
+      "page_title": "Docker Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker-compose up -d",
+      "description": "Start LimaCharlie sensor using Docker Compose configuration"
+    },
+    {
+      "page_slug": "docker-agent-installation",
+      "page_title": "Docker Agent Installation",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "docker build -t my-lc-agent .",
+      "description": "Build custom Docker image with LimaCharlie sensor"
+    },
+    {
+      "page_slug": "sensor-removal",
+      "page_title": "FAQ - Sensor Removal",
+      "type": "cli_command",
+      "method": "systemextensionsctl",
+      "path": "sudo systemextensionsctl list | grep rphcp",
+      "description": "Check if macOS system extensions are removed"
+    },
+    {
+      "page_slug": "sensor-removal",
+      "page_title": "FAQ - Sensor Removal",
+      "type": "cli_command",
+      "method": "cat",
+      "path": "sudo cat /Library/SystemExtensions/db.plist | grep rphcp",
+      "description": "Verify system extension database for remaining entries"
+    },
+    {
+      "page_slug": "endpoint-agent-uninstallation",
+      "page_title": "Endpoint Agent Uninstallation",
+      "type": "cli_command",
+      "method": "task",
+      "path": "uninstall --is-confirmed",
+      "description": "Uninstall endpoint agent via D&R rule response action"
+    },
+    {
+      "page_slug": "config-hive-cloud-sensors",
+      "page_title": "Config Hive: Cloud Sensors",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive [-k KEY] [-d DATA] [-pk PARTITIONKEY] [--etag ETAG] [--expiry EXPIRY] [--enabled ENABLED] [--tags TAGS] action hive_name",
+      "description": "Manage hive configuration for cloud sensors via CLI"
+    },
+    {
+      "page_slug": "config-hive-cloud-sensors",
+      "page_title": "Config Hive: Cloud Sensors",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive list hive_name",
+      "description": "List hive records"
+    },
+    {
+      "page_slug": "config-hive-cloud-sensors",
+      "page_title": "Config Hive: Cloud Sensors",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive get hive_name -k KEY",
+      "description": "Get specific hive record"
+    },
+    {
+      "page_slug": "config-hive-cloud-sensors",
+      "page_title": "Config Hive: Cloud Sensors",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive set hive_name -k KEY -d DATA",
+      "description": "Set hive record with JSON data"
+    },
+    {
+      "page_slug": "config-hive-cloud-sensors",
+      "page_title": "Config Hive: Cloud Sensors",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive remove hive_name -k KEY",
+      "description": "Remove hive record"
+    },
+    {
+      "page_slug": "endpoint-agent-commands",
+      "page_title": "Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "dir_list [-h] [-d DEPTH] rootDir fileExp",
+      "description": "List directory contents with optional depth and file expression wildcards"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "artifact_get",
+      "description": "Retrieve artifacts from endpoint (macOS, Windows, Linux)"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "deny_tree",
+      "description": "Deny process tree execution (macOS, Windows, Linux)"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "dir_find_hash",
+      "description": "Find files by hash in directory (macOS, Windows, Linux) - emits DIR_FINDHASH_REP"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "dir_list",
+      "description": "List directory contents (macOS, Windows, Linux) - emits DIR_LIST_REP"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "dns_resolve",
+      "description": "Resolve DNS query (all platforms) - emits DNS_REQUEST"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "file_get",
+      "description": "Retrieve file contents (macOS, Windows, Linux) - emits FILE_GET_REP"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "file_hash",
+      "description": "Get file hash (macOS, Windows, Linux) - emits FILE_HASH_REP"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "netstat",
+      "description": "Get network connections (macOS, Windows, Linux) - emits NETSTAT_REP"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "os_kill_process",
+      "description": "Kill process (macOS, Windows, Linux) - emits OS_KILL_PROCESS_REP"
+    },
+    {
+      "page_slug": "reference-endpoint-agent-commands",
+      "page_title": "Reference: Endpoint Agent Commands",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "mem_strings",
+      "description": "Extract strings from process memory (macOS, Windows, Linux) - emits MEM_STRINGS_REP"
+    },
+    {
+      "page_slug": "adapter-examples-windows-event-logs",
+      "page_title": "Windows Event Logs",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "./lc_adapter wel client_options.identity.installation_key=... client_options.identity.oid=... client_options.sensor_seed_key=... client_options.platform=wel evt_sources=...",
+      "description": "Run LimaCharlie adapter for Windows Event Log collection"
+    },
+    {
+      "page_slug": "ingesting-sysmon-event-logs",
+      "page_title": "Ingesting Sysmon Event Logs",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "put --payload-name sysmon.exe --payload-path \"C:\\Windows\\Temp\\sysmon.exe\"",
+      "description": "Deploy Sysmon binary via LimaCharlie task command"
+    },
+    {
+      "page_slug": "ingesting-sysmon-event-logs",
+      "page_title": "Ingesting Sysmon Event Logs",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "run --shell-command \"C:\\Windows\\Temp\\sysmon.exe -accepteula -i C:\\Windows\\Temp\\sysmon-config.xml\"",
+      "description": "Install Sysmon with configuration file"
+    },
+    {
+      "page_slug": "ingesting-sysmon-event-logs",
+      "page_title": "Ingesting Sysmon Event Logs",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "restart",
+      "description": "Restart LimaCharlie agent to enable Sysmon collection"
+    },
+    {
+      "page_slug": "adapter-types-mac-unified-logging",
+      "page_title": "Mac Unified Logging",
+      "type": "cli_command",
+      "method": "DOWNLOAD",
+      "path": "curl https://downloads.limacharlie.io/adapter/mac/64 -o /usr/local/bin/lc_adapter",
+      "description": "Download macOS adapter binary"
+    },
+    {
+      "page_slug": "adapter-types-mac-unified-logging",
+      "page_title": "Mac Unified Logging",
+      "type": "cli_command",
+      "method": "RUN_ADAPTER",
+      "path": "/usr/local/bin/lc_adapter mac_unified_logging client_options.identity.installation_key=$INSTALLATION_KEY client_options.identity.oid=$OID client_options.hostname=$SENSOR_NAME client_options.platform=json client_options.sensor_seed_key=$SENSOR_NAME predicate=eventMessage CONTAINS[c] \"corp.sap.privileges\"",
+      "description": "Run macOS unified logging adapter with configuration parameters"
+    },
+    {
+      "page_slug": "adapter-types-mac-unified-logging",
+      "page_title": "Mac Unified Logging",
+      "type": "cli_command",
+      "method": "LOAD_SERVICE",
+      "path": "launchctl load -w /Library/LaunchDaemons/io.limacharlie.adapter.macunifiedlogging.plist",
+      "description": "Load adapter as persistent macOS service"
+    },
+    {
+      "page_slug": "ingesting-linux-audit-logs",
+      "page_title": "Ingesting Linux Audit Logs",
+      "type": "cli_command",
+      "method": "RUN_ADAPTER",
+      "path": "./lc_adapter file /tmp/config.yml",
+      "description": "Run file adapter with configuration file for log ingestion"
+    },
+    {
+      "page_slug": "adapter-usage",
+      "page_title": "Adapter Usage",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc-adapter file file_path=/path/to/logs.json client_options.identity.installation_key=<KEY> client_options.identity.oid=<OID> client_options.platform=json client_options.sensor_seed_key=<SEED> client_options.mapping.event_type_path=<PATH> client_options.hostname=<HOST>",
+      "description": "Run file adapter with inline parameters"
+    },
+    {
+      "page_slug": "adapter-usage",
+      "page_title": "Adapter Usage",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "docker run -d --rm -it -p 4404:4404/udp refractionpoint/lc-adapter syslog client_options.identity.installation_key=<KEY> client_options.identity.oid=<OID> client_options.platform=cef client_options.hostname=<HOST> client_options.sensor_seed_key=<SEED> port=4404 iface=0.0.0.0 is_udp=true",
+      "description": "Run syslog adapter in Docker with UDP port"
+    },
+    {
+      "page_slug": "adapter-usage",
+      "page_title": "Adapter Usage",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc-adapter file config_file.yaml",
+      "description": "Run adapter with YAML configuration file"
+    },
+    {
+      "page_slug": "adapter-deployment",
+      "page_title": "Adapter Deployment",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc_adapter cloud conf_guid=XXXXXXXXXXXXXX oid=YYYYYYYYYYYY",
+      "description": "Run cloud-managed adapter with external configuration"
+    },
+    {
+      "page_slug": "adapters-as-a-service",
+      "page_title": "Adapters as a Service",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc_adapter.exe -install:<service_name> azure_event_hub client_options.identity.installation_key=...",
+      "description": "Install Windows adapter as a service"
+    },
+    {
+      "page_slug": "adapters-as-a-service",
+      "page_title": "Adapters as a Service",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc_adapter.exe -remove:<service_name>",
+      "description": "Remove Windows adapter service"
+    },
+    {
+      "page_slug": "adapters-as-a-service",
+      "page_title": "Adapters as a Service",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "sudo systemctl enable lc-adapter-name",
+      "description": "Enable Linux adapter service with systemd"
+    },
+    {
+      "page_slug": "adapters-as-a-service",
+      "page_title": "Adapters as a Service",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "sudo systemctl start lc-adapter-name",
+      "description": "Start Linux adapter service"
+    },
+    {
+      "page_slug": "adapters-as-a-service",
+      "page_title": "Adapters as a Service",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "sudo systemctl stop lc-adapter-name",
+      "description": "Stop Linux adapter service"
+    },
+    {
+      "page_slug": "adapter-examples",
+      "page_title": "Adapter Examples",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc_adapter stdin client_options.*",
+      "description": "Ingest text data from STDIN"
+    },
+    {
+      "page_slug": "adapter-examples",
+      "page_title": "Adapter Examples",
+      "type": "cli_command",
+      "method": "exec",
+      "path": "./lc_adapter stdin client_options.platform=json client_options.*",
+      "description": "Ingest JSON data from STDIN"
+    },
+    {
+      "page_slug": "adapter-types-stdin",
+      "page_title": "Stdin",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter stdin",
+      "description": "Run stdin adapter to ingest data from standard input"
+    },
+    {
+      "page_slug": "adapter-types-file",
+      "page_title": "File",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter file",
+      "description": "Run file adapter to ingest logs from files with optional tail functionality"
+    },
+    {
+      "page_slug": "adapter-types-json",
+      "page_title": "JSON",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter file client_options.platform=json",
+      "description": "Run file adapter configured to parse JSON-formatted log files"
+    },
+    {
+      "page_slug": "adapter-types-evtx",
+      "page_title": "EVTX",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter evtx",
+      "description": "Run EVTX adapter to ingest and convert Windows Event Log binary files"
+    },
+    {
+      "page_slug": "adapter-types-iis",
+      "page_title": "IIS Logs",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter.exe file config.yaml",
+      "description": "Run file adapter with IIS configuration to ingest web server logs"
+    },
+    {
+      "page_slug": "adapter-examples-stdin",
+      "page_title": "Stdin",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter stdin client_options.platform=text",
+      "description": "Run stdin adapter with grok parsing for text log ingestion"
+    },
+    {
+      "page_slug": "adapter-examples-stdin-json",
+      "page_title": "Stdin JSON",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter stdin client_options.platform=json",
+      "description": "Run stdin adapter configured to parse JSON input directly"
+    },
+    {
+      "page_slug": "adapter-types-aws-cloudtrail",
+      "page_title": "AWS CloudTrail",
+      "type": "cli_command",
+      "method": "s3",
+      "path": "./lc_adapter s3",
+      "description": "Create S3 adapter for AWS CloudTrail logs with bucket_name, access_key, secret_key parameters"
+    },
+    {
+      "page_slug": "adapter-types-aws-cloudtrail",
+      "page_title": "AWS CloudTrail",
+      "type": "cli_command",
+      "method": "sqs",
+      "path": "./lc_adapter sqs",
+      "description": "Create SQS adapter for AWS CloudTrail logs with queue_url, region, access_key, secret_key parameters"
+    },
+    {
+      "page_slug": "adapter-types-aws-guardduty",
+      "page_title": "AWS GuardDuty",
+      "type": "cli_command",
+      "method": "s3",
+      "path": "./lc_adapter s3 client_options.identity.installation_key=<INSTALLATION_KEY> client_options.identity.oid=<OID> client_options.platform=guard_duty bucket_name=<BUCKET> access_key=<KEY> secret_key=<SECRET> client_options.hostname=guardduty-logs",
+      "description": "Create S3 adapter for AWS GuardDuty logs with guard_duty platform type"
+    },
+    {
+      "page_slug": "adapter-types-aws-guardduty",
+      "page_title": "AWS GuardDuty",
+      "type": "cli_command",
+      "method": "sqs",
+      "path": "./lc_adapter sqs client_options.identity.installation_key=<INSTALLATION_KEY> client_options.identity.oid=<OID> client_options.platform=guard_duty client_options.sensor_seed_key=<SENSOR_SEED_KEY> client_options.hostname=guardduty-logs access_key=<KEY> secret_key=<SECRET> queue_url=<QUEUE_URL> region=<AWS-REGION>",
+      "description": "Create SQS adapter for AWS GuardDuty logs with guard_duty platform type"
+    },
+    {
+      "page_slug": "adapter-types-s3",
+      "page_title": "S3",
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: s3",
+      "description": "Configure S3 adapter with bucket_name, access_key, secret_key, and optional prefix, parallel_fetch, single_load parameters"
+    },
+    {
+      "page_slug": "adapter-types-sqs",
+      "page_title": "SQS",
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: sqs",
+      "description": "Configure SQS adapter with queue_url, aws_access_key_id, aws_secret_access_key, aws_region, and optional max_messages, wait_time_seconds, visibility_timeout, delete_after_processing parameters"
+    },
+    {
+      "page_slug": "adapter-types-google-cloud-storage",
+      "page_title": "Google Cloud Storage",
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: \"gcs\"",
+      "description": "Configure GCS adapter with bucket, credentials, and client options"
+    },
+    {
+      "page_slug": "adapter-types-google-cloud-pubsub",
+      "page_title": "Google Cloud Pubsub",
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: \"pubsub\"",
+      "description": "Configure Pub/Sub adapter with subscription, project, and credentials"
+    },
+    {
+      "page_slug": "tutorial-ingesting-google-cloud-logs",
+      "page_title": "Tutorial: Ingesting Google Cloud Logs",
+      "type": "cli_command",
+      "method": "gcloud",
+      "path": "Create Sink via Logs Router",
+      "description": "Create a log sink with Pub/Sub as destination in GCP console"
+    },
+    {
+      "page_slug": "tutorial-ingesting-google-cloud-logs",
+      "page_title": "Tutorial: Ingesting Google Cloud Logs",
+      "type": "cli_command",
+      "method": "gcloud",
+      "path": "Create Topic",
+      "description": "Create a Pub/Sub topic to receive log messages"
+    },
+    {
+      "page_slug": "tutorial-ingesting-google-cloud-logs",
+      "page_title": "Tutorial: Ingesting Google Cloud Logs",
+      "type": "cli_command",
+      "method": "gcloud",
+      "path": "Create Subscription",
+      "description": "Create a subscription for the Pub/Sub topic to enable message consumption"
+    },
+    {
+      "page_slug": "tutorial-ingesting-google-cloud-logs",
+      "page_title": "Tutorial: Ingesting Google Cloud Logs",
+      "type": "cli_command",
+      "method": "gcloud",
+      "path": "Create Service Account with Pub/Sub Subscriber role",
+      "description": "Create service account with permissions to read from Pub/Sub subscription"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-365",
+      "page_title": "Microsoft 365",
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: office365",
+      "description": "Configure Office 365 adapter with tenant credentials and content types"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-365",
+      "page_title": "Microsoft 365",
+      "type": "cli_command",
+      "method": "config",
+      "path": "content_types: [Audit.AzureActiveDirectory, Audit.Exchange, Audit.SharePoint, Audit.General, DLP.All]",
+      "description": "Specify which Office 365 audit log content types to ingest"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-defender",
+      "page_title": "Microsoft Defender",
+      "type": "cli_command",
+      "method": "config",
+      "path": "sensor_type: defender",
+      "description": "Configure Microsoft Defender adapter with Azure tenant credentials"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-defender",
+      "page_title": "Microsoft Defender",
+      "type": "cli_command",
+      "method": "config",
+      "path": "mapping.sensor_hostname_path: machineDnsName",
+      "description": "Map Defender machine DNS name to sensor hostname for event correlation"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-defender",
+      "page_title": "Microsoft Defender",
+      "type": "cli_command",
+      "method": "config",
+      "path": "mapping.event_type_path: alertType",
+      "description": "Map Defender alert type to LimaCharlie event type"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-entra-id",
+      "page_title": "Microsoft Entra ID",
+      "type": "cli_command",
+      "method": "config",
+      "path": "ingestion_method: azure_event_hub",
+      "description": "Configure Entra ID adapter to receive events via Azure Event Hub"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-entra-id",
+      "page_title": "Microsoft Entra ID",
+      "type": "cli_command",
+      "method": "config",
+      "path": "ingestion_method: entra_id_api",
+      "description": "Configure Entra ID adapter to poll Risk Detections API directly"
+    },
+    {
+      "page_slug": "adapter-types-microsoft-entra-id",
+      "page_title": "Microsoft Entra ID",
+      "type": "cli_command",
+      "method": "config",
+      "path": "ingestion_method: webhook",
+      "description": "Configure Entra ID adapter to receive events via webhook push"
+    },
+    {
+      "page_slug": "adapter-types-crowdstrike-falcon-cloud",
+      "page_title": "CrowdStrike Falcon Cloud",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter",
+      "description": "Deploy CrowdStrike Falcon Cloud adapter with sensor configuration"
+    },
+    {
+      "page_slug": "adapter-types-vmware-carbon-black",
+      "page_title": "VMWare Carbon Black",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter s3",
+      "description": "Ingest Carbon Black events from AWS S3 bucket using CLI adapter with client_options, bucket configuration, and Carbon Black platform specification"
+    },
+    {
+      "page_slug": "adapter-types-sophos",
+      "page_title": "Sophos",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_adapter",
+      "description": "Deploy Sophos Central adapter using API credentials stored as hive secrets with SIEM event mapping"
+    },
+    {
+      "page_slug": "adapter-types-slack-audit-logs",
+      "page_title": "Slack Audit Logs",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "lc_adapter slack token=<TOKEN> client_options.identity.installation_key=<KEY> client_options.identity.oid=<OID> client_options.platform=slack client_options.sensor_seed_key=<NAME>",
+      "description": "Deploy Slack adapter via CLI with OAuth token authentication"
+    },
+    {
+      "page_slug": "adapter-types-hubspot",
+      "page_title": "HubSpot",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "lc_adapter hubspot client_options.identity.installation_key=$INSTALLATION_KEY client_options.identity.oid=$OID client_options.platform=json client_options.sensor_seed_key=$SENSOR_NAME client_options.hostname=$SENSOR_NAME client_options.mappings.event_type_path=category access_token=$ACCESS_TOKEN",
+      "description": "Manual deployment of HubSpot adapter using access token"
+    },
+    {
+      "page_slug": "adapter-types-syslog",
+      "page_title": "Syslog",
+      "type": "cli_command",
+      "method": "execute",
+      "path": "lc_adapter syslog",
+      "description": "Run LimaCharlie adapter with syslog configuration to ingest syslog messages"
+    },
+    {
+      "page_slug": "adapter-types-syslog",
+      "page_title": "Syslog",
+      "type": "cli_command",
+      "method": "execute",
+      "path": "nc -l -p 1514",
+      "description": "Listen on port 1514 with netcat to verify syslog message delivery"
+    },
+    {
+      "page_slug": "adapter-types-cato",
+      "page_title": "Cato",
+      "type": "cli_command",
+      "method": "execute",
+      "path": "lc_adapter cato client_options.identity.installation_key=$INSTALLATION_KEY client_options.identity.oid=$OID client_options.platform=json client_options.sensor_seed_key=$SENSOR_NAME client_options.hostname=$SENSOR_NAME apikey=$API_KEY accountid=$ACCOUNT_ID",
+      "description": "Deploy Cato Networks adapter to fetch logs from Cato API events feed"
+    },
+    {
+      "page_slug": "adapter-types-kubernetes-pods-logs",
+      "page_title": "Kubernetes Pods Logs",
+      "type": "cli_command",
+      "method": "execute",
+      "path": "kubectl apply -f daemonset.yaml",
+      "description": "Deploy Kubernetes DaemonSet configuration for LimaCharlie pod logs adapter"
+    },
+    {
+      "page_slug": "adapter-types-canarytokens",
+      "page_title": "Canarytokens",
+      "type": "cli_command",
+      "method": "limacharlie hive set",
+      "path": "limacharlie hive set cloud_sensor --key canarytoken --data <json_config_file>",
+      "description": "Create webhook adapter for Canarytokens via CLI"
+    },
+    {
+      "page_slug": "tutorial-creating-a-webhook-adapter",
+      "page_title": "Tutorial: Creating a Webhook Adapter",
+      "type": "cli_command",
+      "method": "limacharlie hive set",
+      "path": "limacharlie hive set cloud_sensor --key <webhook_name> --data -",
+      "description": "Create webhook adapter through Hive configuration"
+    },
+    {
+      "page_slug": "sigma-converter",
+      "page_title": "Sigma Converter",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "curl -X POST https://sigma.limacharlie.io/convert/rule -H 'content-type: application/x-www-form-urlencoded' --data-urlencode 'rule@my-rule-file.yaml'",
+      "description": "Convert Sigma rule file using curl"
+    },
+    {
+      "page_slug": "config-hive-dr-rules",
+      "page_title": "Config Hive: Detection & Response Rules",
+      "type": "cli_command",
+      "method": "list",
+      "path": "limacharlie hive list dr-general",
+      "description": "List detection and response rules in dr-general hive"
+    },
+    {
+      "page_slug": "config-hive-dr-rules",
+      "page_title": "Config Hive: Detection & Response Rules",
+      "type": "cli_command",
+      "method": "get",
+      "path": "limacharlie hive get dr-general -k KEY",
+      "description": "Retrieve a specific D&R rule by key"
+    },
+    {
+      "page_slug": "config-hive-dr-rules",
+      "page_title": "Config Hive: Detection & Response Rules",
+      "type": "cli_command",
+      "method": "set",
+      "path": "limacharlie hive set dr-general -k KEY -d DATA",
+      "description": "Create or update a D&R rule with JSON data"
+    },
+    {
+      "page_slug": "config-hive-dr-rules",
+      "page_title": "Config Hive: Detection & Response Rules",
+      "type": "cli_command",
+      "method": "remove",
+      "path": "limacharlie hive remove dr-general -k KEY",
+      "description": "Delete a D&R rule"
+    },
+    {
+      "page_slug": "config-hive-dr-rules",
+      "page_title": "Config Hive: Detection & Response Rules",
+      "type": "cli_command",
+      "method": "update",
+      "path": "limacharlie hive update dr-general -k KEY --enabled ENABLED --tags TAGS",
+      "description": "Update rule metadata like enabled status or tags"
+    },
+    {
+      "page_slug": "config-hive-dr-rules",
+      "page_title": "Config Hive: Detection & Response Rules",
+      "type": "cli_command",
+      "method": "list_mtd",
+      "path": "limacharlie hive list_mtd dr-general",
+      "description": "List metadata for D&R rules"
+    },
+    {
+      "page_slug": "config-hive-dr-rules",
+      "page_title": "Config Hive: Detection & Response Rules",
+      "type": "cli_command",
+      "method": "get_mtd",
+      "path": "limacharlie hive get_mtd dr-general -k KEY",
+      "description": "Get metadata for a specific D&R rule"
+    },
+    {
+      "page_slug": "outputs",
+      "page_title": "Outputs",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "N/A",
+      "description": "Configure outputs via LimaCharlie CLI (mentioned but not detailed)"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "limacharlie query",
+      "path": "limacharlie query",
+      "description": "Main CLI command for querying LimaCharlie data"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "set_time",
+      "path": "set_time -3h",
+      "description": "Set the timeframe for queries using ParseDuration format"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "set_sensors",
+      "path": "set_sensors plat == windows",
+      "description": "Set sensor selector for which sensors to query"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "set_events",
+      "path": "set_events NEW_PROCESS DNS_REQUEST",
+      "description": "Set event types to query (space separated, supports tab completion)"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "set_limit_event",
+      "path": "set_limit_event",
+      "description": "Set maximum number of events to scan during query"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "set_output",
+      "path": "set_output",
+      "description": "Mirror queries and results to a file"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "set_format",
+      "path": "set_format json|table",
+      "description": "Display results in json or table format"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "stats",
+      "path": "stats",
+      "description": "Display total costs incurred from queries during session"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "q",
+      "path": "q event/DOMAIN_NAME contains 'google'",
+      "description": "Run query in paged mode (returns initial subset, use 'n' for next page)"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "n",
+      "path": "n",
+      "description": "Fetch next page of results in paged mode"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "qa",
+      "path": "qa event/DOMAIN_NAME contains 'google'",
+      "description": "Query all data (non-paged mode, computes all results over entire timeline)"
+    },
+    {
+      "page_slug": "query-with-cli",
+      "page_title": "Query with CLI",
+      "type": "cli_command",
+      "method": "dryrun",
+      "path": "dryrun event/COMMAND_LINE contains 'powershell'",
+      "description": "Simulate query execution and return approximate worst case cost"
+    },
+    {
+      "page_slug": "using-extensions",
+      "page_title": "Using Extensions",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie extension get_schema",
+      "description": "Get extension schema via CLI"
+    },
+    {
+      "page_slug": "ext-yara",
+      "page_title": "YARA",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-yara",
+      "description": "Preview YARA rule conversion from legacy service to extension (dry-run)"
+    },
+    {
+      "page_slug": "ext-yara",
+      "page_title": "YARA",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-yara --no-dry-run",
+      "description": "Execute YARA rule conversion from legacy service to extension"
+    },
+    {
+      "page_slug": "ext-artifact",
+      "page_title": "Artifact",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "artifact_get --file /path/to/file --type <type>",
+      "description": "Collect and upload artifacts from a sensor"
+    },
+    {
+      "page_slug": "ext-hayabusa",
+      "page_title": "Hayabusa",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "hayabusa update-rules",
+      "description": "Update Hayabusa detection rules"
+    },
+    {
+      "page_slug": "ext-hayabusa",
+      "page_title": "Hayabusa",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "hayabusa csv-timeline -f /path/to/artifact --RFC-3339 -p timesketch-$profile --min-level $min_rule_level --no-wizard --quiet -o $artifact_id.csv -U",
+      "description": "Generate CSV timeline from Windows event logs"
+    },
+    {
+      "page_slug": "ext-plaso",
+      "page_title": "Plaso",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "psteal.py --source /path/to/artifact -o dynamic --storage-file $artifact_id.plaso -w $artifact_id.csv",
+      "description": "Parse forensic artifacts and generate timeline"
+    },
+    {
+      "page_slug": "ext-plaso",
+      "page_title": "Plaso",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "pinfo.py $artifact_id.plaso -w $artifact_id_pinfo.json --output_format json",
+      "description": "Extract metadata and processing summary from plaso file"
+    },
+    {
+      "page_slug": "ext-zeek",
+      "page_title": "Zeek",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "/opt/zeek/bin/zeek -C LogAscii::use_json=T --no-checksums --readfile /path/to/your.pcap",
+      "description": "Process PCAP file and generate JSON logs"
+    },
+    {
+      "page_slug": "ext-zeek",
+      "page_title": "Zeek",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "artifact_get --file /path/to/your.pcap --type pcap",
+      "description": "Upload PCAP file as artifact for Zeek processing"
+    },
+    {
+      "page_slug": "ext-cloud-cli",
+      "page_title": "Cloud CLI",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "extension request",
+      "description": "Execute Cloud CLI commands via D&R rules using extension request action"
+    },
+    {
+      "page_slug": "ext-cloud-cli-aws",
+      "page_title": "AWS",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "aws ec2 stop-instances",
+      "description": "Stop EC2 instances using instance IDs with region specification"
+    },
+    {
+      "page_slug": "ext-cloud-cli-azure",
+      "page_title": "Azure",
+      "type": "cli_command",
+      "method": "extension request",
+      "path": "ext-cloud-cli azure",
+      "description": "Execute Azure CLI commands via LimaCharlie extension with az vm list example"
+    },
+    {
+      "page_slug": "ext-cloud-cli-microsoft365",
+      "page_title": "Microsoft 365",
+      "type": "cli_command",
+      "method": "extension request",
+      "path": "ext-cloud-cli m365",
+      "description": "Execute Microsoft 365 CLI commands via LimaCharlie extension with PnP CLI for Microsoft 365"
+    },
+    {
+      "page_slug": "ext-cloud-cli-microsoft365",
+      "page_title": "Microsoft 365",
+      "type": "cli_command",
+      "method": "m365 entra user set",
+      "path": "entra user set --id <user_id> --accountEnabled <boolean>",
+      "description": "Disable or enable Microsoft 365 user accounts via Entra ID user management"
+    },
+    {
+      "page_slug": "ext-cloud-cli-microsoft365",
+      "page_title": "Microsoft 365",
+      "type": "cli_command",
+      "method": "m365 login",
+      "path": "m365 login",
+      "description": "Authenticate to Microsoft 365 tenant using client secret credentials (executed automatically by LimaCharlie)"
+    },
+    {
+      "page_slug": "ext-cloud-cli-google-cloud",
+      "page_title": "Google Cloud",
+      "type": "cli_command",
+      "method": "gcloud",
+      "path": "compute instances stop <instance-name>",
+      "description": "Stop a GCP compute instance using gcloud CLI through the Cloud CLI extension"
+    },
+    {
+      "page_slug": "ext-cloud-cli-digitalocean",
+      "page_title": "DigitalOcean",
+      "type": "cli_command",
+      "method": "doctl",
+      "path": "compute droplet list",
+      "description": "List DigitalOcean compute droplets"
+    },
+    {
+      "page_slug": "ext-cloud-cli-vultr",
+      "page_title": "Vultr",
+      "type": "cli_command",
+      "method": "vultr-cli",
+      "path": "instance list",
+      "description": "List Vultr instances"
+    },
+    {
+      "page_slug": "ext-cloud-cli-tailscale",
+      "page_title": "Tailscale",
+      "type": "cli_command",
+      "method": "tailscale",
+      "path": "status --json",
+      "description": "Get current Tailscale network status in JSON format"
+    },
+    {
+      "page_slug": "ext-cloud-cli-okta",
+      "page_title": "Okta",
+      "type": "cli_command",
+      "method": "GET",
+      "path": "user get USERID",
+      "description": "Fetches a user from Okta organization by user ID"
+    },
+    {
+      "page_slug": "ext-cloud-cli-okta",
+      "page_title": "Okta",
+      "type": "cli_command",
+      "method": "GET",
+      "path": "user list [OPTIONAL_FILTER]",
+      "description": "Lists users that do not have DEPROVISIONED status with optional filter"
+    },
+    {
+      "page_slug": "ext-cloud-cli-okta",
+      "page_title": "Okta",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user deactivate USERID",
+      "description": "Deactivates a user in Okta"
+    },
+    {
+      "page_slug": "ext-cloud-cli-okta",
+      "page_title": "Okta",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user activate USERID",
+      "description": "Activates a user with STAGED status in Okta"
+    },
+    {
+      "page_slug": "ext-cloud-cli-okta",
+      "page_title": "Okta",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user expire-password USERID",
+      "description": "Transitions user to PASSWORD_EXPIRED status requiring password change"
+    },
+    {
+      "page_slug": "ext-cloud-cli-okta",
+      "page_title": "Okta",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user suspend USERID",
+      "description": "Suspends a user setting their status to SUSPENDED"
+    },
+    {
+      "page_slug": "ext-cloud-cli-okta",
+      "page_title": "Okta",
+      "type": "cli_command",
+      "method": "GET",
+      "path": "apps",
+      "description": "Returns a list of registered Okta applications"
+    },
+    {
+      "page_slug": "ext-cloud-cli-1password",
+      "page_title": "1Password",
+      "type": "cli_command",
+      "method": "GET",
+      "path": "item list",
+      "description": "Returns a list of all items the account has read access to"
+    },
+    {
+      "page_slug": "ext-cloud-cli-sdm",
+      "page_title": "StrongDM",
+      "type": "cli_command",
+      "method": "GET",
+      "path": "admin users list",
+      "description": "Returns a list of all users in the StrongDM Organization"
+    },
+    {
+      "page_slug": "ext-cloud-cli-github",
+      "page_title": "GitHub",
+      "type": "cli_command",
+      "method": "D&R",
+      "path": "gh org list",
+      "description": "List GitHub organizations via Cloud CLI extension"
+    },
+    {
+      "page_slug": "ext-git-sync",
+      "page_title": "Git Sync",
+      "type": "cli_command",
+      "method": "extension",
+      "path": "sync apply",
+      "description": "Synchronize Infrastructure-as-Code configurations from Git repository to LimaCharlie organizations"
+    },
+    {
+      "page_slug": "ext-git-sync",
+      "page_title": "Git Sync",
+      "type": "cli_command",
+      "method": "extension",
+      "path": "sync export",
+      "description": "Export LimaCharlie organization configurations to Git repository"
+    },
+    {
+      "page_slug": "ext-cloud-cli-sublime",
+      "page_title": "Sublime",
+      "type": "cli_command",
+      "method": "D&R",
+      "path": "sublime me",
+      "description": "Get information about authenticated Sublime Security user"
+    },
+    {
+      "page_slug": "ext-reliable-tasking",
+      "page_title": "Reliable Tasking",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-reliable-tasking",
+      "description": "Preview conversion of legacy service rules to extension format"
+    },
+    {
+      "page_slug": "ext-reliable-tasking",
+      "page_title": "Reliable Tasking",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-reliable-tasking --no-dry-run",
+      "description": "Execute conversion of legacy service rules to extension format"
+    },
+    {
+      "page_slug": "ext-pagerduty",
+      "page_title": "PagerDuty",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie extension convert_rules --name ext-pagerduty",
+      "description": "Preview PagerDuty rule conversion from legacy service to extension (dry-run)"
+    },
+    {
+      "page_slug": "ext-pagerduty",
+      "page_title": "PagerDuty",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie extension convert_rules --name ext-pagerduty --no-dry-run",
+      "description": "Execute PagerDuty rule conversion from legacy service to extension"
+    },
+    {
+      "page_slug": "config-hive",
+      "page_title": "Config Hive",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive list",
+      "description": "List records in a hive"
+    },
+    {
+      "page_slug": "config-hive",
+      "page_title": "Config Hive",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive get",
+      "description": "Get a specific record from a hive"
+    },
+    {
+      "page_slug": "config-hive",
+      "page_title": "Config Hive",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive set",
+      "description": "Set/create a record in a hive"
+    },
+    {
+      "page_slug": "config-hive",
+      "page_title": "Config Hive",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive update",
+      "description": "Update an existing record with conditional etag support"
+    },
+    {
+      "page_slug": "config-hive",
+      "page_title": "Config Hive",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive remove",
+      "description": "Remove a record from a hive"
+    },
+    {
+      "page_slug": "config-hive",
+      "page_title": "Config Hive",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive list dr-general",
+      "description": "List detection and response rules in general namespace"
+    },
+    {
+      "page_slug": "config-hive-lookups",
+      "page_title": "Config Hive: Lookups",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive set lookup --key <name> --data <file>",
+      "description": "Create a lookup in the lookup hive"
+    },
+    {
+      "page_slug": "config-hive-secrets",
+      "page_title": "Config Hive: Secrets",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive set secret --key <name> --data <file> --data-key secret",
+      "description": "Create a secret in the secrets hive"
+    },
+    {
+      "page_slug": "config-hive-secrets",
+      "page_title": "Config Hive: Secrets",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive update secret",
+      "description": "Update an existing secret"
+    },
+    {
+      "page_slug": "config-hive-yara",
+      "page_title": "Config Hive: Yara",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie hive set yara --key <name> --data <file> --data-key rule",
+      "description": "Load a Yara rule into the yara hive"
+    },
+    {
+      "page_slug": "config-hive-yara",
+      "page_title": "Config Hive: Yara",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "yara_scan hive://yara/<rule-name>",
+      "description": "Execute a Yara scan using a rule from the hive"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "curl -X POST \"https://jwt.limacharlie.io\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"oid=<YOUR_OID>&secret=<YOUR_API_KEY>\"",
+      "description": "Get JWT using Organization API key via curl"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "curl -X POST \"https://jwt.limacharlie.io\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"uid=<YOUR_USER_ID>&secret=<YOUR_API_KEY>\"",
+      "description": "Get JWT using User API key via curl"
+    },
+    {
+      "page_slug": "api-keys",
+      "page_title": "API Keys",
+      "type": "cli_command",
+      "method": "POST",
+      "path": "curl -X POST \"https://jwt.limacharlie.io\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"oid=<YOUR_OID>&uid=<YOUR_USER_ID>&secret=<YOUR_API_KEY>\"",
+      "description": "Get organization-scoped JWT using User API key via curl"
+    },
+    {
+      "page_slug": "infrastructure-as-code",
+      "page_title": "Infrastructure as Code",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie config fetch",
+      "description": "Fetch organization configuration as YAML template"
+    },
+    {
+      "page_slug": "infrastructure-as-code",
+      "page_title": "Infrastructure as Code",
+      "type": "cli_command",
+      "method": "CLI",
+      "path": "limacharlie config push",
+      "description": "Apply YAML configuration template to organization"
+    },
+    {
+      "page_slug": "container-clusters",
+      "page_title": "Container Clusters",
+      "type": "cli_command",
+      "method": "ENV",
+      "path": "LC_INSTALLATION_KEY",
+      "description": "Environment variable specifying the installation key for sensor deployment"
+    },
+    {
+      "page_slug": "container-clusters",
+      "page_title": "Container Clusters",
+      "type": "cli_command",
+      "method": "ENV",
+      "path": "HOST_FS",
+      "description": "Environment variable specifying host root filesystem mount point (e.g., /rootfs)"
+    },
+    {
+      "page_slug": "container-clusters",
+      "page_title": "Container Clusters",
+      "type": "cli_command",
+      "method": "ENV",
+      "path": "NET_NS",
+      "description": "Environment variable specifying host namespaces directory mount point (e.g., /netns)"
+    },
+    {
+      "page_slug": "container-clusters",
+      "page_title": "Container Clusters",
+      "type": "cli_command",
+      "method": "ENV",
+      "path": "LC_MOD_LOAD_LOC",
+      "description": "Environment variable for specifying directory for loading .so files on hardened Linux with SELinux"
+    },
+    {
+      "page_slug": "payloads",
+      "page_title": "Payloads",
+      "type": "cli_command",
+      "method": "TASK",
+      "path": "run --payload-name MY-PAYLOAD --arguments \"-v EulaAccepted\"",
+      "description": "Execute a payload on endpoint with optional arguments"
+    },
+    {
+      "page_slug": "payloads",
+      "page_title": "Payloads",
+      "type": "cli_command",
+      "method": "TASK",
+      "path": "log_get",
+      "description": "Retrieve log file from endpoint when payload generates more than 10MB output"
+    },
+    {
+      "page_slug": "sentinelone",
+      "page_title": "SentinelOne",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "./lc_adapter sentinel_one client_options.identity.installation_key=<KEY> client_options.identity.oid=<OID> client_options.platform=sentinel_one client_options.hostname=<HOSTNAME> client_options.sensor_seed_key=<SEED> domain=<DOMAIN> api_key=<API_KEY>",
+      "description": "Deploy SentinelOne adapter on-premise"
+    },
+    {
+      "page_slug": "vdi-virtual-machine-templates",
+      "page_title": "VDI & Virtual Machine Templates",
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "lc_sensor.exe -t",
+      "description": "Create hcp_vdi.dat file with +1 day enrollment delay for VDI/template installations"
+    },
+    {
+      "page_slug": "mcp-server",
+      "page_title": "MCP Server",
+      "type": "cli_command",
+      "method": "uvicorn",
+      "path": "uvicorn server:app",
+      "description": "Run MCP server in HTTP mode for public service deployment"
+    },
+    {
+      "page_slug": "replay",
+      "page_title": "Replay",
+      "type": "cli_command",
+      "method": "limacharlie-replay",
+      "path": "limacharlie-replay --sid <sensor-id> --start <epoch> --end <epoch> --rule-content <file>",
+      "description": "Replay D&R rules against historical sensor data for a specific sensor"
+    },
+    {
+      "page_slug": "replay",
+      "page_title": "Replay",
+      "type": "cli_command",
+      "method": "limacharlie-replay",
+      "path": "limacharlie-replay --entire-org --start <epoch> --end <epoch> --rule-name <rule-name>",
+      "description": "Replay D&R rules against historical data for entire organization"
+    },
+    {
+      "page_slug": "replay",
+      "page_title": "Replay",
+      "type": "cli_command",
+      "method": "limacharlie query",
+      "path": "limacharlie query --help",
+      "description": "Query historical data using LCQL (LimaCharlie Query Language)"
+    },
+    {
+      "page_slug": "artifacts",
+      "page_title": "Artifacts",
+      "type": "cli_command",
+      "method": "artifact_get",
+      "path": "artifact_get --type <type> --file <path> --days-retention <days>",
+      "description": "Manually ingest an artifact file from a host with LC sensor installed"
+    },
+    {
+      "page_slug": "artifacts",
+      "page_title": "Artifacts",
+      "type": "cli_command",
+      "method": "pcap_ifaces",
+      "path": "pcap_ifaces",
+      "description": "List available network interfaces for PCAP capture on Linux sensors"
+    },
+    {
+      "page_slug": "logcollectionguide",
+      "page_title": "Log Collection Guide",
+      "type": "cli_command",
+      "method": null,
+      "path": "journalctl -f -q --output=json | nc localhost 514",
+      "description": "Stream journalctl logs to syslog adapter in JSON format"
+    },
+    {
+      "page_slug": "logcollectionguide",
+      "page_title": "Log Collection Guide",
+      "type": "cli_command",
+      "method": null,
+      "path": "sudo systemctl enable journal-export.service",
+      "description": "Enable systemd journal export service"
+    },
+    {
+      "page_slug": "logcollectionguide",
+      "page_title": "Log Collection Guide",
+      "type": "cli_command",
+      "method": null,
+      "path": "sudo systemctl start journal-export.service",
+      "description": "Start systemd journal export service"
+    },
+    {
+      "page_slug": "faq-troubleshooting",
+      "page_title": "FAQ - Sensor Troubleshooting",
+      "type": "cli_command",
+      "method": null,
+      "path": "os_users",
+      "description": "Sensor console command to collect OS user information (requires OS_USERS_REP event collection enabled)"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
   "slug": "ext-exfil",
   "category": "",
   "metadata": {
-    "summary": "The Exfil Extension helps manage which real-time [events](/v2/docs/reference-edr-events) get sent from EDR sensors to LimaCharlie. By default, LimaCharlie Sensors send events to the cloud based on a standard profile. This extension exposes those profiles for customization. The Exfil extension all...",
+    "summary": "> Event Collection Rule Synchronization > > Please note that Exfil (or Event Collection) rule configurations are synchronized with sensors every few minutes.",
     "keywords": [
       "(event",
       "actions",
@@ -12,7 +12,6 @@
       "afterburner",
       "agent",
       "api",
-      "articles",
       "collection",
       "collection)",
       "d&r",
@@ -20,38 +19,12 @@
       "edr",
       "enabling",
       "endpoint",
-      "event"
+      "event",
+      "exfil"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 20
-      },
-      {
-        "slug": "endpoint-agent-events-overview",
-        "title": "Endpoint Agent Events Overview",
-        "score": 18
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 18
-      },
-      {
-        "slug": "endpoint-agent-commands",
-        "title": "Endpoint Agent Commands",
-        "score": 17
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 17
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "0ffd675208a179d6a00b0bd84e92db0323d014a4ad9618785ea08fa2030a64f4"
+  "content_hash": ""
 }

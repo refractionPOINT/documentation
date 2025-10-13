@@ -4,11 +4,10 @@
   "slug": "config-hive",
   "category": "",
   "metadata": {
-    "summary": "The Config Hive, or \"Hive\", is the main configuration system for LimaCharlie. It is a generic set of APIs using by LimaCharlie to maintain the configuration of various systems within the platform. We make the Config Hive accessible to help you configure the wide range of systems, features, and ex...",
+    "summary": "Components managed through Hive:",
     "keywords": [
       "accessing",
       "api",
-      "articles",
       "conditional",
       "config",
       "d&r",
@@ -20,38 +19,12 @@
       "infrastructure",
       "metadata",
       "organization",
-      "python"
+      "python",
+      "record"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 15
-      },
-      {
-        "slug": "infrastructure-as-code",
-        "title": "Infrastructure as Code",
-        "score": 15
-      },
-      {
-        "slug": "false-positive-rules",
-        "title": "False Positive Rules",
-        "score": 15
-      },
-      {
-        "slug": "limacharlie-sdk",
-        "title": "LimaCharlie SDK & CLI",
-        "score": 14
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "704b60b2a38d1de990967d324fcc7d9c4074c199d66c7d1cb6fb6ad4ccb0da39"
+  "content_hash": ""
 }

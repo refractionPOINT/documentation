@@ -1,0 +1,48 @@
+{
+  "slug": "ext-velociraptor",
+  "title": "Velociraptor",
+  "category": "",
+  "metadata": {
+    "summary": "Extension for triggering Velociraptor artifact collections and automating post-processing workflows via D&R rules",
+    "keywords": [
+      "velociraptor",
+      "kape",
+      "artifact-collection",
+      "forensics",
+      "triage"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Automate forensic artifact collection using Velociraptor and integrate with downstream analysis tools"
+  },
+  "extracted_apis": [
+    {
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-velociraptor",
+      "description": "Preview conversion of legacy service rules to extension format"
+    },
+    {
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-velociraptor --no-dry-run",
+      "description": "Execute conversion of legacy service rules to extension format"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-artifact",
+      "relationship": "related",
+      "description": "Velociraptor collections are uploaded as artifacts"
+    },
+    {
+      "target_slug": "ext-hayabusa",
+      "relationship": "continuation",
+      "description": "Hayabusa can process Velociraptor KAPE event log collections"
+    },
+    {
+      "target_slug": "ext-plaso",
+      "relationship": "continuation",
+      "description": "Plaso processes Velociraptor KAPE triage collections for timeline analysis"
+    }
+  ]
+}

@@ -23,35 +23,8 @@
       "permissions"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "macos-agent-installation-via-microsoft-intune",
-        "title": "macOS Agent Installation via Microsoft Intune",
-        "score": 17
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 16
-      },
-      {
-        "slug": "macos-agent-installation-older-versions",
-        "title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
-        "score": 14
-      },
-      {
-        "slug": "macos-agent-installation",
-        "title": "macOS Agent Installation",
-        "score": 14
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 13
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "ea5bd63102342ecae73d4348e862b6f69e26fa9f1ac566e0de42b5ced7ba1a34"
+  "content_hash": ""
 }

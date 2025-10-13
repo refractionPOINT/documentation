@@ -4,46 +4,17 @@
   "slug": "adapter-types-sqs",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "sensor_type: \"sqs\" sqs: queue_url: \"https://sqs.us-east-1.amazonaws.com/123456789012/your-security-logs-queue\"",
     "keywords": [
       "api",
-      "articles",
-      "output",
-      "related",
+      "event",
+      "response",
       "rule",
-      "sensor",
-      "what's"
+      "sensor"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 17
-      },
-      {
-        "slug": "adapter-types-s3",
-        "title": "S3",
-        "score": 16
-      },
-      {
-        "slug": "ext-cloud-cli-aws",
-        "title": "AWS",
-        "score": 15
-      },
-      {
-        "slug": "outputs-destinations-amazon-s3",
-        "title": "Amazon S3",
-        "score": 15
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "3aef45a26ed06a488f1c41f2b173cba28462b39822540fbda293a9853bd12805"
+  "content_hash": ""
 }

@@ -1,0 +1,38 @@
+{
+  "slug": "outputs-destinations-webhook-bulk",
+  "title": "Webhook (Bulk)",
+  "category": "",
+  "metadata": {
+    "summary": "POST batched events and detections to HTTPS endpoints with configurable time-based batching",
+    "keywords": [
+      "webhook",
+      "bulk",
+      "batch",
+      "http",
+      "performance"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Efficiently deliver high-volume event streams to endpoints that prefer batch processing"
+  },
+  "extracted_apis": [
+    {
+      "type": "configuration",
+      "method": "OUTPUT",
+      "path": "dest_host, secret_key, auth_header_name, auth_header_value, sec_per_file, is_no_sharding",
+      "description": "Configure bulk webhook output with batching parameters and sharding options"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "POST",
+      "path": "dest_host (configurable)",
+      "description": "Batched events posted to configured webhook endpoint with HMAC signature"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "outputs-destinations-webhook",
+      "relationship": "alternative",
+      "description": "Standard webhook sends individual events instead of batches"
+    }
+  ]
+}

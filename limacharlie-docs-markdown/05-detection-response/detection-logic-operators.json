@@ -23,35 +23,8 @@
       "integration"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 18
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 18
-      },
-      {
-        "slug": "response-actions",
-        "title": "Response Actions",
-        "score": 17
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "stateful-rules",
-        "title": "Stateful Rules",
-        "score": 16
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "9f1324abb3a5848077053673f8218073757159c86709b631259112ce6b089bfe"
+  "content_hash": ""
 }

@@ -4,47 +4,24 @@
   "slug": "adapter-types-slack-audit-logs",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Slack telemetry can be addressed via the `slack` platform.",
     "keywords": [
-      "articles",
+      "adapter",
+      "api",
       "audit",
+      "cloud-to-cloud",
+      "deploying",
+      "deployment",
+      "event",
       "logs",
-      "output",
-      "related",
+      "organization",
       "sensor",
       "slack",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "outputs-destinations-slack",
-        "title": "Slack",
-        "score": 15
-      },
-      {
-        "slug": "adapter-deployment",
-        "title": "Adapter Deployment",
-        "score": 14
-      },
-      {
-        "slug": "sensors",
-        "title": "Sensors",
-        "score": 14
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "bdb01aecbed4126bed18380581acd2a5f109a23640edee70d1d0645747324b3f"
+  "content_hash": ""
 }

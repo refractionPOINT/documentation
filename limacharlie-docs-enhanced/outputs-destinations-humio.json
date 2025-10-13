@@ -1,0 +1,25 @@
+{
+  "slug": "outputs-destinations-humio",
+  "title": "Humio",
+  "category": "",
+  "metadata": {
+    "summary": "Configure LimaCharlie to output events and detections to Humio cloud or on-premises deployments using ingestion tokens",
+    "keywords": [
+      "humio",
+      "output",
+      "log-management",
+      "parser",
+      "timestamp"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Stream telemetry to Humio for real-time log management and analysis with custom parsing"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "cost-effective-siem",
+      "relationship": "related",
+      "description": "Humio can be part of a cost-effective log management and SIEM strategy"
+    }
+  ]
+}

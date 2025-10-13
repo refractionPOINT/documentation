@@ -4,10 +4,9 @@
   "slug": "ingesting-sysmon-event-logs",
   "category": "",
   "metadata": {
-    "summary": "Sysmon can be a valuable addition to any defender's toolkit, given it's verbosity and generous log data. It's worth noting that LimaCharlie's native EDR capabilities mirror much of the same telemetry. However, Sysmon and LimaCharlie can be combined to provide granular coverage across Windows syst...",
+    "summary": "With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WEL) streaming capabilities to bring logs into the Sensor timeline.",
     "keywords": [
       "agent",
-      "articles",
       "detection",
       "edr",
       "endpoint",
@@ -16,42 +15,15 @@
       "logs",
       "organization",
       "output",
-      "related",
       "response",
       "rule",
       "sensor",
-      "sysmon"
+      "sysmon",
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "sysmon-comparison",
-        "title": "Sysmon Comparison",
-        "score": 19
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 19
-      },
-      {
-        "slug": "ingesting-linux-audit-logs",
-        "title": "Ingesting Linux Audit Logs",
-        "score": 18
-      },
-      {
-        "slug": "payloads",
-        "title": "Payloads",
-        "score": 18
-      },
-      {
-        "slug": "ingesting-windows-event-logs",
-        "title": "Ingesting Windows Event Logs",
-        "score": 18
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "3c36c12a7e3c3fea649a12da6f1616465a22c405cfc7d52ef1b5a8ad8ec8de08"
+  "content_hash": ""
 }

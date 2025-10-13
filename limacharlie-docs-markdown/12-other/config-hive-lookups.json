@@ -7,7 +7,6 @@
     "summary": "Lookups are dictionaries/maps/key-value-pairs where the key is a string. The lookup can then be queried by various parts of LimaCharlie (like  rules). The value component of a lookup must be a dictionary and represents metadata associated with the given key, which will be returned to the rule usi...",
     "keywords": [
       "api",
-      "articles",
       "automatically",
       "config",
       "detection",
@@ -20,38 +19,12 @@
       "lookups",
       "manager",
       "manually",
-      "organization"
+      "organization",
+      "output"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "ext-lookup-manager",
-        "title": "Lookup Manager",
-        "score": 19
-      },
-      {
-        "slug": "config-hive-secrets",
-        "title": "Config Hive: Secrets",
-        "score": 18
-      },
-      {
-        "slug": "config-hive",
-        "title": "Config Hive",
-        "score": 17
-      },
-      {
-        "slug": "config-hive-cloud-sensors",
-        "title": "Config Hive: Cloud Sensors",
-        "score": 15
-      },
-      {
-        "slug": "config-hive-yara",
-        "title": "Config Hive: Yara",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "e3778df5a93bb2e91e2decdb40a983093a863740d90057fbe5abb728897bf139"
+  "content_hash": ""
 }

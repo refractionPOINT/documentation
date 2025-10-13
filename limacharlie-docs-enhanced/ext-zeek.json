@@ -1,0 +1,55 @@
+{
+  "slug": "ext-zeek",
+  "title": "Zeek",
+  "category": "",
+  "metadata": {
+    "summary": "Network traffic analysis extension that generates Zeek logs from PCAP files for intrusion detection",
+    "keywords": [
+      "zeek",
+      "pcap",
+      "network-analysis",
+      "intrusion-detection",
+      "artifact"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Analyze network traffic from PCAP captures to detect intrusions and generate network telemetry"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "/opt/zeek/bin/zeek -C LogAscii::use_json=T --no-checksums --readfile /path/to/your.pcap",
+      "description": "Process PCAP file and generate JSON logs"
+    },
+    {
+      "type": "cli_command",
+      "method": "N/A",
+      "path": "artifact_get --file /path/to/your.pcap --type pcap",
+      "description": "Upload PCAP file as artifact for Zeek processing"
+    },
+    {
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-zeek",
+      "description": "Preview conversion of legacy Zeek service rules"
+    },
+    {
+      "type": "python_method",
+      "method": "N/A",
+      "path": "limacharlie extension convert_rules --name ext-zeek --no-dry-run",
+      "description": "Execute conversion of legacy Zeek service rules"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-artifact",
+      "relationship": "prerequisite",
+      "description": "Requires PCAP artifacts to be collected before Zeek can process them"
+    },
+    {
+      "target_slug": "ext-strelka",
+      "relationship": "continuation",
+      "description": "Zeek extracts files from PCAPs that can be analyzed by Strelka"
+    }
+  ]
+}

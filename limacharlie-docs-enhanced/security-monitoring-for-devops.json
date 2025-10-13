@@ -1,0 +1,25 @@
+{
+  "slug": "security-monitoring-for-devops",
+  "title": "Security Monitoring for DevOps",
+  "category": "",
+  "metadata": {
+    "summary": "Unified DevOps security monitoring that ingests telemetry from code repositories and deployment pipelines with automated threat detection and response.",
+    "keywords": [
+      "DevOps security",
+      "DevSecOps",
+      "pipeline security",
+      "automated detection",
+      "collaboration"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Gain visibility and automate security monitoring across the entire DevOps pipeline from code to production"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "soar-automation",
+      "relationship": "related",
+      "description": "Automated threat detection and response capabilities complement DevOps security monitoring workflows"
+    }
+  ]
+}

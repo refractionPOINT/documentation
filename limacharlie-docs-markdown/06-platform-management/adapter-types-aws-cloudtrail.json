@@ -4,12 +4,11 @@
   "slug": "adapter-types-aws-cloudtrail",
   "category": "",
   "metadata": {
-    "summary": "[AWS CloudTrail](https://docs.aws.amazon.com/cloudtrail/) logs allow you to monitor AWS deployments. CloudTrail logs can provide granular visibility into AWS instances and can be used within [D&R rules](/v2/docs/detection-and-response) to identify AWS abuse.",
+    "summary": "This Adapter allows you to ingest AWS CloudTrail events via either an [S3 bucket](https://aws.amazon.com/s3/) or [SQS message queue](https://aws.amazon.com/sqs/).",
     "keywords": [
       "adapter",
       "adapter-specific",
       "api",
-      "articles",
       "bucket",
       "cloud-to-cloud",
       "cloudtrail",
@@ -20,38 +19,12 @@
       "event",
       "options",
       "organization",
-      "output"
+      "queue",
+      "response"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "adapter-types-aws-guardduty",
-        "title": "AWS GuardDuty",
-        "score": 22
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 17
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 16
-      },
-      {
-        "slug": "adapters",
-        "title": "Adapters",
-        "score": 15
-      },
-      {
-        "slug": "installation-keys",
-        "title": "Installation Keys",
-        "score": 15
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "91438f2006ce8996ff294da2f35431c7ff8181f481bf3693c80886141ccc0433"
+  "content_hash": ""
 }

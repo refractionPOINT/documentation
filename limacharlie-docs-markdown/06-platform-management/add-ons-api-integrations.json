@@ -4,48 +4,25 @@
   "slug": "add-ons-api-integrations",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "Functionally, API-based lookups operate exactly the same as using the normal `lookup` [operator](/v2/docs/detection-logic-operators#lookup), with one addition: `metadata_rules`. The rule will pass a value to the lookup, wait for a response, and then evaluate the response using `metadata_rules`.",
     "keywords": [
-      "add-on",
       "api",
-      "articles",
+      "available",
+      "configuration",
       "d&r",
+      "detection",
       "integration",
       "integrations",
-      "related",
+      "lookups",
+      "mechanics",
+      "organization",
+      "response",
       "rule",
-      "what's"
+      "telemetry"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "create-a-dr-rule-using-a-threat-feed",
-        "title": "Create a D&R Rule Using a Threat Feed",
-        "score": 18
-      },
-      {
-        "slug": "lookups",
-        "title": "Lookups",
-        "score": 17
-      },
-      {
-        "slug": "api-integrations-alphamountain",
-        "title": "alphaMountain",
-        "score": 15
-      },
-      {
-        "slug": "add-ons",
-        "title": "Add-Ons",
-        "score": 12
-      },
-      {
-        "slug": "ext-cloud-cli",
-        "title": "Cloud CLI",
-        "score": 9
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "bd89ed289bcc78326970bb78eec41173174135605022198a82116b681b03c0e8"
+  "content_hash": ""
 }

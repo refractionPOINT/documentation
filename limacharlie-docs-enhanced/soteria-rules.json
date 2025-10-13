@@ -1,0 +1,40 @@
+{
+  "slug": "soteria-rules",
+  "title": "Soteria Rules",
+  "category": "",
+  "metadata": {
+    "summary": "Hub page for Soteria managed detection rulesets covering EDR, AWS, and M365",
+    "keywords": [
+      "soteria",
+      "managed rules",
+      "EDR",
+      "AWS",
+      "M365"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Navigate to specific Soteria ruleset documentation"
+  },
+  "extracted_apis": [],
+  "cross_refs": [
+    {
+      "target_slug": "managed-rulesets",
+      "relationship": "prerequisite",
+      "description": "General context about managed rulesets before diving into Soteria specifics"
+    },
+    {
+      "target_slug": "soteria-edr-rules",
+      "relationship": "continuation",
+      "description": "Soteria EDR rules are the endpoint-focused subset of Soteria rules"
+    },
+    {
+      "target_slug": "soteria-aws-rules",
+      "relationship": "continuation",
+      "description": "Soteria AWS rules are the cloud-focused subset of Soteria rules"
+    },
+    {
+      "target_slug": "soteria-m365-rules",
+      "relationship": "continuation",
+      "description": "Soteria M365 rules are the Microsoft 365 subset of Soteria rules"
+    }
+  ]
+}

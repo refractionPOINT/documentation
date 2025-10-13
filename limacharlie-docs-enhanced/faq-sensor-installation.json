@@ -1,0 +1,20 @@
+{
+  "slug": "faq-sensor-installation",
+  "title": "FAQ - Sensor Installation",
+  "category": "",
+  "metadata": {
+    "summary": "Provides network requirements including hostnames and IP addresses for LimaCharlie sensor connectivity across all regions.",
+    "keywords": [
+      "allowlist",
+      "firewall",
+      "network",
+      "hostnames",
+      "IP addresses",
+      "regional endpoints"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Configure network firewall rules to allow LimaCharlie sensor traffic"
+  },
+  "extracted_apis": [],
+  "cross_refs": []
+}

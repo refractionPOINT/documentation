@@ -23,35 +23,8 @@
       "isolate"
     ],
     "complexity": "advanced",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "detection-and-response",
-        "title": "Detection and Response",
-        "score": 19
-      },
-      {
-        "slug": "events",
-        "title": "Events",
-        "score": 18
-      },
-      {
-        "slug": "endpoint-agent-commands",
-        "title": "Endpoint Agent Commands",
-        "score": 17
-      },
-      {
-        "slug": "billing",
-        "title": "Billing",
-        "score": 17
-      },
-      {
-        "slug": "stateful-rules",
-        "title": "Stateful Rules",
-        "score": 17
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "a5566bb2c64910ec66aa9d3cbe60b661093db2b06e752b9655a073f2e3b8bb3e"
+  "content_hash": ""
 }

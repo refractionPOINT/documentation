@@ -1,0 +1,114 @@
+{
+  "slug": "endpoint-agent-installation",
+  "title": "Endpoint Agent Installation",
+  "category": "",
+  "metadata": {
+    "summary": "Overview of LimaCharlie endpoint agent installation across all platforms including system requirements and download locations",
+    "keywords": [
+      "endpoint",
+      "agent",
+      "installation",
+      "requirements",
+      "cross-platform"
+    ],
+    "complexity": "beginner",
+    "primary_use_case": "Understand agent installation requirements and download installers for any platform"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/32",
+      "description": "Download Windows 32-bit executable installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/64",
+      "description": "Download Windows 64-bit executable installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/msi32",
+      "description": "Download Windows 32-bit MSI installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/windows/msi64",
+      "description": "Download Windows 64-bit MSI installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/64",
+      "description": "Download Linux 64-bit installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/alpine64",
+      "description": "Download Linux Alpine 64-bit installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/deb32",
+      "description": "Download Linux 32-bit Debian package"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/deb64",
+      "description": "Download Linux 64-bit Debian package"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/linux/debarm64",
+      "description": "Download Linux ARM 64-bit Debian package"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/mac/64",
+      "description": "Download macOS 64-bit installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/mac/arm64",
+      "description": "Download macOS ARM 64-bit (Apple Silicon) installer"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/chrome",
+      "description": "Download Chrome extension"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "GET",
+      "path": "https://downloads.limacharlie.io/sensor/edge",
+      "description": "Download MS Edge extension"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "windows-agent-installation",
+      "relationship": "continuation",
+      "description": "Provides detailed Windows-specific installation instructions and commands"
+    },
+    {
+      "target_slug": "enterprise-wide-agent-deployment",
+      "relationship": "continuation",
+      "description": "Explains how to deploy agents at scale across multiple endpoints"
+    },
+    {
+      "target_slug": "agent-deployment-microsoft-intune",
+      "relationship": "related",
+      "description": "Shows enterprise deployment method for Windows and macOS using Intune"
+    }
+  ]
+}

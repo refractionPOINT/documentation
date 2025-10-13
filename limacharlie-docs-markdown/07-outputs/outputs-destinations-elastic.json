@@ -4,45 +4,17 @@
   "slug": "outputs-destinations-elastic",
   "category": "",
   "metadata": {
-    "summary": "* 1 Minute to read",
+    "summary": "* `addresses`: the IPs or DNS where to send the data to. * `index`: the index name to send data to. * `username`: user name if using username/password auth. (use either username/password -or- API key)",
     "keywords": [
-      "articles",
+      "api",
+      "detection",
       "elastic",
-      "output",
-      "query",
-      "related",
-      "what's"
+      "event",
+      "output"
     ],
     "complexity": "intermediate",
-    "use_cases": [],
-    "related_pages": [
-      {
-        "slug": "outputs-destinations-google-cloud-bigquery",
-        "title": "Google Cloud BigQuery",
-        "score": 15
-      },
-      {
-        "slug": "outputs-destinations-opensearch",
-        "title": "OpenSearch",
-        "score": 14
-      },
-      {
-        "slug": "ext-cloud-cli-google-cloud",
-        "title": "Google Cloud",
-        "score": 12
-      },
-      {
-        "slug": "outputs",
-        "title": "Outputs",
-        "score": 12
-      },
-      {
-        "slug": "adapter-types-google-cloud-storage",
-        "title": "Google Cloud Storage",
-        "score": 7
-      }
-    ]
+    "use_cases": []
   },
   "api_elements": [],
-  "content_hash": "fa84233cb24fa2e86497ed3da9e89fdf6a678a4c6aadf86600efcbc400d5eef6"
+  "content_hash": ""
 }

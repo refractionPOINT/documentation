@@ -1,0 +1,73 @@
+{
+  "slug": "ext-cloud-cli-okta",
+  "title": "Okta",
+  "category": "",
+  "metadata": {
+    "summary": "Interact with Okta identity platform via CLI to manage users, applications, and authentication from LimaCharlie",
+    "keywords": [
+      "okta",
+      "identity",
+      "authentication",
+      "user-management",
+      "cli"
+    ],
+    "complexity": "intermediate",
+    "primary_use_case": "Automate Okta user lifecycle operations and identity management tasks from security workflows"
+  },
+  "extracted_apis": [
+    {
+      "type": "cli_command",
+      "method": "GET",
+      "path": "user get USERID",
+      "description": "Fetches a user from Okta organization by user ID"
+    },
+    {
+      "type": "cli_command",
+      "method": "GET",
+      "path": "user list [OPTIONAL_FILTER]",
+      "description": "Lists users that do not have DEPROVISIONED status with optional filter"
+    },
+    {
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user deactivate USERID",
+      "description": "Deactivates a user in Okta"
+    },
+    {
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user activate USERID",
+      "description": "Activates a user with STAGED status in Okta"
+    },
+    {
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user expire-password USERID",
+      "description": "Transitions user to PASSWORD_EXPIRED status requiring password change"
+    },
+    {
+      "type": "cli_command",
+      "method": "POST",
+      "path": "user suspend USERID",
+      "description": "Suspends a user setting their status to SUSPENDED"
+    },
+    {
+      "type": "cli_command",
+      "method": "GET",
+      "path": "apps",
+      "description": "Returns a list of registered Okta applications"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "ext-cloud-cli-1password",
+      "relationship": "related",
+      "description": "Alternative identity/credential management platform accessible via Cloud CLI extension"
+    },
+    {
+      "target_slug": "ext-cloud-cli-sdm",
+      "relationship": "related",
+      "description": "Complementary identity and access management for infrastructure resources"
+    }
+  ]
+}

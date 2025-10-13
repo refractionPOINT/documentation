@@ -1,0 +1,39 @@
+{
+  "slug": "sleeper",
+  "title": "Sleeper Deployment",
+  "category": "",
+  "metadata": {
+    "summary": "Configure and bill sensors using sleeper or usage mode through tag-based activation",
+    "keywords": [
+      "sleeper",
+      "usage-billing",
+      "lc:sleeper",
+      "lc:usage",
+      "tags",
+      "quota"
+    ],
+    "complexity": "advanced",
+    "primary_use_case": "Implement cost-effective pre-deployment strategy for incident response with tag-based sensor activation"
+  },
+  "extracted_apis": [
+    {
+      "type": "rest_endpoint",
+      "method": "N/A",
+      "path": "lc:sleeper tag",
+      "description": "Apply tag to sensor to enable sleeper mode billing at $0.10 per 30 days"
+    },
+    {
+      "type": "rest_endpoint",
+      "method": "N/A",
+      "path": "lc:usage tag",
+      "description": "Apply tag to sensor for usage-based billing outside normal quota"
+    }
+  ],
+  "cross_refs": [
+    {
+      "target_slug": "sleeper-mode",
+      "relationship": "prerequisite",
+      "description": "Explains the conceptual foundation and use cases for sleeper deployments"
+    }
+  ]
+}
