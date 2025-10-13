@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/detection-logic-operators",
+  "title": "Detection Logic Operators",
+  "slug": "detection-logic-operators",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "* [Getting Started](what-is-limacharlie) * [Sensors](installation-keys) * [Events](event-schemas)",
+    "keywords": [
+      "add-on",
+      "address",
+      "agent",
+      "api",
+      "contains",
+      "detection",
+      "distance",
+      "domain",
+      "edr",
+      "endpoint",
+      "event",
+      "exists",
+      "greater",
+      "integration",
+      "logic"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

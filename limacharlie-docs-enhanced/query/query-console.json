@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/query-console",
+  "title": "Query Console",
+  "slug": "query-console",
+  "category": "query",
+  "metadata": {
+    "summary": "* [LimaCharlie Log In](https://app.limacharlie.io)",
+    "keywords": [
+      "add-on",
+      "agent",
+      "api",
+      "console",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "integration",
+      "lcql",
+      "organization",
+      "output",
+      "query",
+      "response",
+      "sdk"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

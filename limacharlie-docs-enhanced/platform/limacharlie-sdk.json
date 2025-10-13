@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/limacharlie-sdk",
+  "title": "LimaCharlie SDK & CLI",
+  "slug": "limacharlie-sdk",
+  "category": "platform",
+  "metadata": {
+    "summary": "* [Getting Started](what-is-limacharlie) * [Sensors](installation-keys) * [Events](event-schemas)",
+    "keywords": [
+      "(pip)",
+      "add-on",
+      "agent",
+      "api",
+      "artifact",
+      "artifacts",
+      "authentication",
+      "checks",
+      "command",
+      "components",
+      "configs",
+      "credentials",
+      "d&r",
+      "detection",
+      "detections"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

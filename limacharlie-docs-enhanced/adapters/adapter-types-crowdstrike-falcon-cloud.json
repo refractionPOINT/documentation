@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-crowdstrike-falcon-cloud",
+  "title": "CrowdStrike Falcon Cloud",
+  "slug": "adapter-types-crowdstrike-falcon-cloud",
+  "category": "adapters",
+  "metadata": {
+    "summary": "This Adapter allows you to connect to CrowdStrike Falcon Cloud to stream events as they happen in the CrowdStrike Falcon Console.",
+    "keywords": [
+      "adapter-specific",
+      "api",
+      "cloud",
+      "configurations",
+      "crowdstrike",
+      "deployment",
+      "event",
+      "falcon",
+      "infrastructure",
+      "manual",
+      "options",
+      "organization",
+      "overview",
+      "response",
+      "rule"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

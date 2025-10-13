@@ -1,0 +1,27 @@
+{
+  "url": "https://docs.limacharlie.io/docs/payload-manager",
+  "title": "Payload Manager",
+  "slug": "payload-manager",
+  "category": "sensors",
+  "metadata": {
+    "summary": "* [LimaCharlie Log In](https://app.limacharlie.io)",
+    "keywords": [
+      "add-on",
+      "detection",
+      "event",
+      "manager",
+      "organization",
+      "output",
+      "payload",
+      "query",
+      "response",
+      "rule",
+      "sdk",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

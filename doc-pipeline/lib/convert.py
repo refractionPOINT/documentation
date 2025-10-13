@@ -204,8 +204,23 @@ def clean_markdown_content(content: str) -> str:
     """
     Clean Document360 artifacts from markdown content.
 
-    Removes UI elements, metadata, feedback forms, etc.
+    ENHANCED: Uses quality.strip_human_metadata() for comprehensive cleaning.
+    This is optimized for LLM consumption (removes all human UI elements).
     """
+    if not content:
+        return ""
+
+    # Use the enhanced quality filter
+    try:
+        from . import quality
+        return quality.strip_human_metadata(content)
+    except ImportError:
+        # Fallback to basic cleaning if quality module unavailable
+        return _basic_clean_markdown(content)
+
+
+def _basic_clean_markdown(content: str) -> str:
+    """Basic markdown cleaning (fallback)."""
     if not content:
         return ""
 

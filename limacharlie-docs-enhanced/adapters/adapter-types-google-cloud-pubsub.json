@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-google-cloud-pubsub",
+  "title": "Google Cloud Pubsub",
+  "slug": "adapter-types-google-cloud-pubsub",
+  "category": "adapters",
+  "metadata": {
+    "summary": "This Adapter allows you to ingest events from a Google Cloud Pubsub subscription.",
+    "keywords": [
+      "agent",
+      "api",
+      "cloud",
+      "configurations",
+      "deployment",
+      "edr",
+      "endpoint",
+      "event",
+      "google",
+      "infrastructure",
+      "organization",
+      "overview",
+      "pubsub",
+      "response",
+      "rule"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

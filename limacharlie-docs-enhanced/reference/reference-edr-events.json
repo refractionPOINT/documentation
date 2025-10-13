@@ -1,0 +1,32 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-edr-events",
+  "title": "Reference: EDR Events",
+  "slug": "reference-edr-events",
+  "category": "reference",
+  "metadata": {
+    "summary": "* [Getting Started](what-is-limacharlie) * [Sensors](installation-keys) * [Events](event-schemas)",
+    "keywords": [
+      "add-on",
+      "agent",
+      "api",
+      "autorun\\_change",
+      "cloud\\_notification",
+      "code\\_identity",
+      "connected",
+      "debug\\_data\\_rep",
+      "descriptions",
+      "detection",
+      "dir\\_findhash\\_rep",
+      "dir\\_list\\_rep",
+      "disconnected",
+      "dns\\_request",
+      "driver\\_change"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "Threat Detection"
+    ]
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

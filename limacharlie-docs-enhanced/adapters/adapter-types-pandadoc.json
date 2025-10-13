@@ -1,0 +1,28 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-pandadoc",
+  "title": "PandaDoc",
+  "slug": "adapter-types-pandadoc",
+  "category": "adapters",
+  "metadata": {
+    "summary": "This Adapter allows you to connect to PandaDoc to fetch [API logs](https://developers.pandadoc.com/reference/list-api-logs).",
+    "keywords": [
+      "adapter-specific",
+      "api",
+      "configurations",
+      "deployment",
+      "event",
+      "infrastructure",
+      "options",
+      "organization",
+      "overview",
+      "pandadoc",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

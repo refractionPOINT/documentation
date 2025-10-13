@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/what-is-limacharlie",
+  "title": "What is LimaCharlie?",
+  "slug": "what-is-limacharlie",
+  "category": "getting-started",
+  "metadata": {
+    "summary": "* [LimaCharlie Log In](https://app.limacharlie.io)",
+    "keywords": [
+      "add-on",
+      "agent",
+      "api",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "integration",
+      "limacharlie?",
+      "organization",
+      "output",
+      "query",
+      "response",
+      "rule",
+      "sdk"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

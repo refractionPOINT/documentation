@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-usage",
+  "title": "Adapter Usage",
+  "slug": "adapter-usage",
+  "category": "adapters",
+  "metadata": {
+    "summary": "* [Getting Started](what-is-limacharlie) * [Sensors](installation-keys) * [Events](event-schemas)",
+    "keywords": [
+      "adapter",
+      "add-on",
+      "agent",
+      "basic",
+      "built-in",
+      "configuration",
+      "configurations",
+      "defined",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "example",
+      "expressions",
+      "extraction"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

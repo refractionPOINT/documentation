@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-mac-unified-logging",
+  "title": "Mac Unified Logging",
+  "slug": "adapter-types-mac-unified-logging",
+  "category": "adapters",
+  "metadata": {
+    "summary": "This Adapter allows you to collect events from MacOS Unified Logging.",
+    "keywords": [
+      "configurations",
+      "creation",
+      "deployment",
+      "endpoint",
+      "event",
+      "infrastructure",
+      "logging",
+      "organization",
+      "overview",
+      "response",
+      "rule",
+      "sensor",
+      "service",
+      "unified"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

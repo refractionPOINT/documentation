@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/stateful-rules",
+  "title": "Stateful Rules",
+  "slug": "stateful-rules",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "> It's recommended to first read [Detection & Response rules](/v2/docs/detection-and-response) before diving into stateful rules.",
+    "keywords": [
+      "actions",
+      "agent",
+      "caveats",
+      "children",
+      "choosing",
+      "counting",
+      "descendants",
+      "detecting",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "events",
+      "flipping",
+      "organization"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

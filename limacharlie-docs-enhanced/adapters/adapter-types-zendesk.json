@@ -1,0 +1,28 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-zendesk",
+  "title": "Zendesk",
+  "slug": "adapter-types-zendesk",
+  "category": "adapters",
+  "metadata": {
+    "summary": "This Adapter allows you to connect to Zendesk to fetch [account activity logs](https://developer.zendesk.com/api-reference/ticketing/account-configuration/audit_logs/#list-audit-logs).",
+    "keywords": [
+      "adapter-specific",
+      "api",
+      "configurations",
+      "deployment",
+      "event",
+      "infrastructure",
+      "options",
+      "organization",
+      "overview",
+      "response",
+      "rule",
+      "sensor",
+      "zendesk"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

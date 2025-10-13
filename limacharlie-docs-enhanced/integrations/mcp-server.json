@@ -1,0 +1,46 @@
+{
+  "url": "https://docs.limacharlie.io/docs/mcp-server",
+  "title": "MCP Server",
+  "slug": "mcp-server",
+  "category": "integrations",
+  "metadata": {
+    "summary": "* [Getting Started](what-is-limacharlie) * [Sensors](installation-keys) * [Events](event-schemas)",
+    "keywords": [
+      "(public\\_mode=false,",
+      "(public\\_mode=true)",
+      "(requires",
+      "(stdio)",
+      "add-on",
+      "administrative",
+      "advanced",
+      "agent",
+      "ai-powered",
+      "api",
+      "authentication",
+      "capabilities",
+      "claude",
+      "configuration",
+      "d&r"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [
+    {
+      "type": "cli_command",
+      "command": "claude",
+      "full": "claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp \\"
+    },
+    {
+      "type": "cli_command",
+      "command": "--header",
+      "full": "--header \"Authorization: Bearer API_KEY:OID\" \\"
+    },
+    {
+      "type": "cli_command",
+      "command": "--header",
+      "full": "--header \"x-lc-oid: OID\""
+    }
+  ],
+  "content_hash": ""
+}

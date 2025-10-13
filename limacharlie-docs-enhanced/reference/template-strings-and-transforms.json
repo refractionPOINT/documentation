@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/template-strings-and-transforms",
+  "title": "Template Strings and Transforms",
+  "slug": "template-strings-and-transforms",
+  "category": "reference",
+  "metadata": {
+    "summary": "A template string allows you to customize the value of a configuration based on the context. For example to adjust the Detection Name a D&R rule to include a value from the detection itself. Transforms can also be used to select, modify, or remove fields upon data ingestion from an Adapter.",
+    "keywords": [
+      "adapter",
+      "custom",
+      "d&r",
+      "detection",
+      "edr",
+      "event",
+      "examples",
+      "extracting",
+      "fields",
+      "modifiers",
+      "output",
+      "passthrough",
+      "rule",
+      "string",
+      "strings"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

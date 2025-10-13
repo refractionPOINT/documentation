@@ -1,0 +1,31 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-imap",
+  "title": "IMAP",
+  "slug": "adapter-types-imap",
+  "category": "adapters",
+  "metadata": {
+    "summary": "This Adapter allows you to ingest emails as events from an IMAP server.",
+    "keywords": [
+      "api",
+      "cases",
+      "configurations",
+      "deployment",
+      "event",
+      "example",
+      "format",
+      "imap",
+      "infrastructure",
+      "overview",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "Although this Adapter can be used on any IMAP server for any inbox, it is often used to perform enterprise wide analysis and alerting using Email Journaling.",
+      "Compliance"
+    ]
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

@@ -1,0 +1,56 @@
+{
+  "url": "https://docs.limacharlie.io/docs/playbook",
+  "title": "Playbook [LABS]",
+  "slug": "playbook",
+  "category": "add-ons",
+  "metadata": {
+    "summary": "The Playbook Extension allows you to execute Python playbooks within the context of your Organization in order to automate tasks and customize more complex detections.",
+    "keywords": [
+      "[labs]",
+      "accessing",
+      "add-on",
+      "api",
+      "billing",
+      "d&r",
+      "detection",
+      "enabling",
+      "environment",
+      "event",
+      "example",
+      "execution",
+      "extension",
+      "infrastructure",
+      "organization"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [
+    {
+      "type": "python_api",
+      "object": "limacharlie",
+      "method": "Hive"
+    },
+    {
+      "type": "python_api",
+      "object": "request",
+      "method": "Request"
+    },
+    {
+      "type": "python_api",
+      "object": "request",
+      "method": "urlopen"
+    },
+    {
+      "type": "python_api",
+      "object": "response",
+      "method": "read"
+    },
+    {
+      "type": "python_api",
+      "object": "json",
+      "method": "loads"
+    }
+  ],
+  "content_hash": ""
+}

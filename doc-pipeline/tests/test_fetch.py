@@ -9,14 +9,14 @@ from lib.fetch import _categorize_page
 
 
 def test_categorize_page_getting_started():
-    assert _categorize_page("quickstart") == "01-getting-started"
-    assert _categorize_page("what-is-limacharlie") == "01-getting-started"
+    assert _categorize_page("quickstart") == "getting-started"
+    assert _categorize_page("what-is-limacharlie") == "getting-started"
 
 
 def test_categorize_page_sensors():
-    assert _categorize_page("sensor-installation") == "02-sensors"
-    assert _categorize_page("agent-configuration") == "02-sensors"
+    assert _categorize_page("sensor-installation") == "sensors"
+    assert _categorize_page("agent-configuration") == "sensors"
 
 
 def test_categorize_page_other():
-    assert _categorize_page("random-page") == "12-other"
+    assert _categorize_page("random-page") == "other"

@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-microsoft-defender",
+  "title": "Microsoft Defender",
+  "slug": "adapter-types-microsoft-defender",
+  "category": "adapters",
+  "metadata": {
+    "summary": "LimaCharlie can ingest [Microsoft 365 Defender logs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide) via three methods [Azure Event Hub](/v2/docs/adapter-types-azure-event-hub) Adapter, the [Microsoft Defender API](https://learn.micros...",
+    "keywords": [
+      "adapter-specific",
+      "api",
+      "configurations",
+      "defender",
+      "deployment",
+      "endpoint",
+      "event",
+      "guided",
+      "infrastructure",
+      "microsoft",
+      "options",
+      "organization",
+      "overview",
+      "response",
+      "rule"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}
