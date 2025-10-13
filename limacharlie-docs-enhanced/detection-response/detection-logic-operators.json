@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/detection-logic-operators",
+  "title": "Detection Logic Operators",
+  "slug": "detection-logic-operators",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "Operators are used in the Detection part of a Detection & Response rule. Operators may also be accompanied by other available parameters, such as transforms, times, and others, referenced later in this page.",
+    "keywords": [
+      "add-on",
+      "address",
+      "agent",
+      "api",
+      "contains",
+      "detection",
+      "distance",
+      "domain",
+      "edr",
+      "endpoint",
+      "event",
+      "exists",
+      "greater",
+      "integration",
+      "logic"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

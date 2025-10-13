@@ -1,0 +1,33 @@
+{
+  "url": "https://docs.limacharlie.io/docs/reference-endpoint-agent-commands",
+  "title": "Reference: Endpoint Agent Commands",
+  "slug": "reference-endpoint-agent-commands",
+  "category": "reference",
+  "metadata": {
+    "summary": "For commands which emit a report/reply event type from the agent, the corresponding event type is provided.",
+    "keywords": [
+      "agent",
+      "api",
+      "artifact\\_get",
+      "command",
+      "commands",
+      "d&r",
+      "deny\\_tree",
+      "descriptions",
+      "detection",
+      "dir\\_find\\_hash",
+      "dir\\_list",
+      "dns\\_resolve",
+      "doc\\_cache\\_get",
+      "edr",
+      "endpoint"
+    ],
+    "complexity": "advanced",
+    "use_cases": [
+      "such as local admin users attempting to uninstall the LimaCharlie service. Please note that sealed status is currently only reflected in `CONNECTED` and `SYNC` events.",
+      ". Utilizing the Artifact Collection capability can automate artifact collection across a fleet, whereas sensor commands can help collect files from a single Sensor under investigation."
+    ]
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

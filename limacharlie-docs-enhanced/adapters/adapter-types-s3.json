@@ -1,0 +1,20 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-s3",
+  "title": "S3",
+  "slug": "adapter-types-s3",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"s3\" s3: bucket_name: \"your-s3-bucket-name-for-logs\"",
+    "keywords": [
+      "api",
+      "event",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

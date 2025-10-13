@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/limacharlie-sdk",
+  "title": "LimaCharlie SDK & CLI",
+  "slug": "limacharlie-sdk",
+  "category": "platform",
+  "metadata": {
+    "summary": "The Go library is a simple abstraction to the [LimaCharlie.io REST API](https://api.limacharlie.io/). The REST API currently supports many more functions. If it's missing a function available in the REST API that you would like to use, let us know at support@limacharlie.io.",
+    "keywords": [
+      "(pip)",
+      "agent",
+      "api",
+      "artifact",
+      "artifacts",
+      "authentication",
+      "checks",
+      "command",
+      "components",
+      "configs",
+      "credentials",
+      "d&r",
+      "detection",
+      "detections",
+      "docker"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

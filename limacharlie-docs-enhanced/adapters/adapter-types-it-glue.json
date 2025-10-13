@@ -1,0 +1,21 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-it-glue",
+  "title": "IT Glue",
+  "slug": "adapter-types-it-glue",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"itglue\" itglue: token: \"hive://secret/itglue-api-token\"",
+    "keywords": [
+      "api",
+      "event",
+      "glue",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

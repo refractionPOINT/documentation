@@ -1,6 +1,5 @@
 """Semantic batching of documentation pages using Claude."""
 import json
-import re
 from typing import List, Dict, Any
 from pathlib import Path
 
@@ -16,45 +15,21 @@ except ImportError:
     from lib.claude_client import ClaudeClient
 
 
-def _extract_json_from_markdown(text: str) -> str:
-    """
-    Extract JSON from markdown code fences.
-
-    Claude often wraps JSON responses in markdown code fences like:
-    ```json
-    {...}
-    ```
-
-    This function extracts the JSON content, or returns the original
-    text if no fences are found.
-
-    Args:
-        text: Text that may contain markdown-wrapped JSON
-
-    Returns:
-        Extracted JSON string, or original text if no fences found
-    """
-    # Pattern matches ```json or ``` followed by content, then closing ```
-    pattern = r'```(?:json)?\s*\n(.*?)\n```'
-    match = re.search(pattern, text, re.DOTALL)
-
-    if match:
-        return match.group(1)
-
-    # No fences found, return original
-    return text
-
-
 def create_semantic_batches(
     pages: List[Page],
-    claude_client: ClaudeClient
+    claude_client: ClaudeClient,
+    max_pages_per_request: int = 30
 ) -> List[Dict[str, Any]]:
     """
     Group pages into semantic batches using Claude.
 
+    For large page lists, automatically chunks into smaller groups to avoid
+    overwhelming Claude with too much context.
+
     Args:
         pages: List of pages to batch
         claude_client: Claude client for making requests
+        max_pages_per_request: Maximum pages to send to Claude at once (default 30)
 
     Returns:
         List of batch dictionaries with structure:
@@ -64,6 +39,53 @@ def create_semantic_batches(
             'pages': [Page, Page, ...],
             'page_slugs': ['slug1', 'slug2', ...]
         }
+    """
+    # If page list is small enough, batch directly
+    if len(pages) <= max_pages_per_request:
+        return _batch_pages_with_claude(pages, claude_client)
+
+    # For large lists, batch by category first
+    print(f"  Large dataset ({len(pages)} pages) - batching by category...")
+
+    # Group pages by category
+    by_category: Dict[str, List[Page]] = {}
+    for page in pages:
+        category = page.category or 'uncategorized'
+        if category not in by_category:
+            by_category[category] = []
+        by_category[category].append(page)
+
+    # Batch each category separately
+    all_batches = []
+    batch_counter = 0
+
+    for category_name, category_pages in sorted(by_category.items()):
+        print(f"  Batching category: {category_name} ({len(category_pages)} pages)")
+
+        # Batch this category
+        category_batches = _batch_pages_with_claude(category_pages, claude_client)
+
+        # Renumber batch IDs to be globally unique
+        for batch in category_batches:
+            batch_counter += 1
+            old_id = batch['id']
+            # Keep descriptive name but ensure unique numbering
+            name_part = old_id.split('_', 2)[-1] if '_' in old_id else old_id
+            batch['id'] = f"batch_{batch_counter:02d}_{name_part}"
+
+        all_batches.extend(category_batches)
+
+    return all_batches
+
+
+def _batch_pages_with_claude(
+    pages: List[Page],
+    claude_client: ClaudeClient
+) -> List[Dict[str, Any]]:
+    """
+    Internal function to batch a list of pages using Claude.
+
+    Assumes page list is reasonably sized (<= 30 pages).
     """
     # Create prompt for Claude
     page_list = "\n".join([
@@ -105,12 +127,9 @@ Output only valid JSON, no markdown formatting."""
         # Get batching from Claude
         response = claude_client.run_subagent_prompt(prompt_file)
 
-        # Extract JSON from markdown code fences if present
-        json_text = _extract_json_from_markdown(response)
-
         # Parse response with error handling
         try:
-            batch_data = json.loads(json_text)
+            batch_data = json.loads(response)
         except json.JSONDecodeError as e:
             raise ValueError(f"Claude returned invalid JSON: {e}") from e
 

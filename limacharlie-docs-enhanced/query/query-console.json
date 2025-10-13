@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.limacharlie.io/docs/query-console",
+  "title": "Query Console",
+  "slug": "query-console",
+  "category": "query",
+  "metadata": {
+    "summary": "The **LimaCharlie Query Console** is a powerful feature within the LimaCharlie web application that enables users to interactively execute queries across their collected telemetry data using the [**LimaCharlie Query Language (LCQL)**](/v2/docs/lcql). The Query Console provides a streamlined inter...",
+    "keywords": [
+      "agent",
+      "api",
+      "console",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "integration",
+      "lcql",
+      "organization",
+      "query",
+      "response",
+      "sensor",
+      "telemetry"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

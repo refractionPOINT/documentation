@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/playbook",
+  "title": "Playbook [LABS]",
+  "slug": "playbook",
+  "category": "add-ons",
+  "metadata": {
+    "summary": "import limacharlie",
+    "keywords": [
+      "[labs]",
+      "api",
+      "billing",
+      "detection",
+      "environment",
+      "example",
+      "execution",
+      "extension",
+      "infrastructure",
+      "organization",
+      "output",
+      "playbook",
+      "response",
+      "rule",
+      "sdk"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

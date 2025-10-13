@@ -1,0 +1,24 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-windows-event-log",
+  "title": "Windows Event Log",
+  "slug": "adapter-types-windows-event-log",
+  "category": "adapters",
+  "metadata": {
+    "summary": "wel: evt_sources: \"Security:'*[System[(Level=1 or Level=2 or Level=3)]]',System,Application\" client_options:",
+    "keywords": [
+      "api",
+      "event",
+      "examples",
+      "filter",
+      "response",
+      "rule",
+      "sensor",
+      "windows",
+      "xpath"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

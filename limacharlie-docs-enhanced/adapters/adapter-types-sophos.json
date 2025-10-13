@@ -1,0 +1,23 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-sophos",
+  "title": "Sophos",
+  "slug": "adapter-types-sophos",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"sophos\" sophos: clientid: \"hive://secret/sophos-client-id\"",
+    "keywords": [
+      "api",
+      "endpoint",
+      "event",
+      "response",
+      "rule",
+      "sensor",
+      "siem",
+      "sophos"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

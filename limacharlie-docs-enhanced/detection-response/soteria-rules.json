@@ -1,0 +1,28 @@
+{
+  "url": "https://docs.limacharlie.io/docs/soteria-rules",
+  "title": "Soteria Rules",
+  "slug": "soteria-rules",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "[Soteria](https://soteria.io/) is a US-based MSSP and longtime MSSP, and has built a wealth of experience writing and managing LimaCharlie [detection & response](/v2/docs/detection-and-response) rules. With one click, you can apply their rules to your environment. When Soteria updates the rules f...",
+    "keywords": [
+      "add-on",
+      "agent",
+      "detection",
+      "edr",
+      "endpoint",
+      "organization",
+      "output",
+      "response",
+      "rule",
+      "rules",
+      "sensor",
+      "soteria",
+      "telemetry"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

@@ -1,0 +1,21 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-mimecast",
+  "title": "Mimecast",
+  "slug": "adapter-types-mimecast",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"mimecast\" mimecast: client_id: \"hive://secret/mimecast-client-id\"",
+    "keywords": [
+      "api",
+      "event",
+      "mimecast",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

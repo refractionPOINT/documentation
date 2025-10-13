@@ -37,6 +37,65 @@ def hello():
     assert "```python" in result
 
 
+def test_clean_markdown_removes_feedback_forms():
+    """Test that Document360 feedback forms and navigation are stripped."""
+    content = """[![Logo](https://cdn.document360.io/logo/test.png)](/)
+
+* [Home](https://example.com)
+* v2
+
+Contents x
+
+Share this
+
+# What is LimaCharlie?
+
+* Updated on 13 May 2025
+
+LimaCharlie is the **SecOps Cloud Platform**.
+
+This is actual content that should be preserved.
+
+Yes    No
+
+[ ]  Need more information
+
+[ ]  Difficult to understand
+
+[ ]  Inaccurate or irrelevant content
+
+Comment
+
+Email
+
+Cancel"""
+
+    result = clean_markdown_content(content)
+
+    # Should NOT contain feedback form elements
+    assert "Yes    No" not in result
+    assert "[ ]  Need more information" not in result
+    assert "[ ]  Difficult to understand" not in result
+    assert "Comment" not in result
+    assert "Email" not in result
+    assert "Cancel" not in result
+
+    # Should NOT contain navigation chrome
+    assert "Contents x" not in result
+    assert "Share this" not in result
+    assert "* [Home]" not in result
+    assert "Updated on" not in result
+    assert "Logo" not in result
+
+    # Should preserve actual content
+    assert "What is LimaCharlie?" in result
+    assert "SecOps Cloud Platform" in result
+    assert "actual content that should be preserved" in result
+
+    # Should start with the heading (not navigation)
+    assert result.strip().startswith("# What is LimaCharlie?")
+
+
 def test_clean_markdown_preserves_code_blocks():
     content = """# Title
 

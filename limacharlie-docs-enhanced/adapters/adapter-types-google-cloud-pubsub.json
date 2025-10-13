@@ -1,0 +1,28 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-google-cloud-pubsub",
+  "title": "Google Cloud Pubsub",
+  "slug": "adapter-types-google-cloud-pubsub",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"pubsub\" pubsub: sub_name: \"your-pubsub-subscription-name\"",
+    "keywords": [
+      "agent",
+      "api",
+      "cloud",
+      "edr",
+      "endpoint",
+      "event",
+      "google",
+      "organization",
+      "pubsub",
+      "response",
+      "rule",
+      "sensor",
+      "telemetry"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

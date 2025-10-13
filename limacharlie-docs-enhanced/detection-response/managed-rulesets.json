@@ -1,0 +1,27 @@
+{
+  "url": "https://docs.limacharlie.io/docs/managed-rulesets",
+  "title": "Managed Rulesets",
+  "slug": "managed-rulesets",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "In addition to LimaCharlie's powerful custom detection & response capabilities, we also offer native integration with several managed rulesets. LimaCharlie currently offers:",
+    "keywords": [
+      "detection",
+      "edr",
+      "endpoint",
+      "integration",
+      "managed",
+      "organization",
+      "query",
+      "response",
+      "rule",
+      "rulesets"
+    ],
+    "complexity": "intermediate",
+    "use_cases": [
+      "(s)."
+    ]
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

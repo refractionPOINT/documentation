@@ -1,0 +1,21 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-microsoft-defender",
+  "title": "Microsoft Defender",
+  "slug": "adapter-types-microsoft-defender",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"defender\" defender: tenant_id: \"hive://secret/azure-tenant-id\"",
+    "keywords": [
+      "defender",
+      "event",
+      "microsoft",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

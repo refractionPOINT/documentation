@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/detection-and-response",
+  "title": "Detection and Response",
+  "slug": "detection-and-response",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "Detection & Response rules automate actions based on the real-time events streaming into LimaCharlie. Each rule has two YAML descriptors: one that describes what to detect, and another that describes how to respond.",
+    "keywords": [
+      "actions",
+      "adapter",
+      "add-on",
+      "against",
+      "agent",
+      "api",
+      "basic",
+      "d&r",
+      "detection",
+      "detections",
+      "edr",
+      "endpoint",
+      "event",
+      "events",
+      "operators"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

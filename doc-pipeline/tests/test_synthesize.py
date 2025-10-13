@@ -6,37 +6,29 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from lib.synthesize import build_api_index, resolve_cross_references
-from lib.understand import ProcessedTopic
+from lib.understand import ProcessedPage
 
 
 def test_build_api_index_deduplicates_apis(mocker):
-    """Test that duplicate APIs from different topics are merged."""
-    topics = [
-        ProcessedTopic(
-            slug="installing-sensors",
-            title="Installing Sensors",
-            type="task",
-            content="...",
-            source_pages=["page1"],
+    """Test that duplicate APIs from different pages are merged."""
+    pages = [
+        ProcessedPage(
+            slug="page1",
+            enhanced_markdown="...",
             extracted_apis=[
                 {"name": "sensor.install()", "signature": "install() -> bool", "description": "Installs sensor"}
             ],
-            prerequisites=[],
-            related_topics=[],
-            keywords=[]
+            cross_refs=[],
+            metadata={}
         ),
-        ProcessedTopic(
-            slug="sensor-setup",
-            title="Sensor Setup",
-            type="task",
-            content="...",
-            source_pages=["page2"],
+        ProcessedPage(
+            slug="page2",
+            enhanced_markdown="...",
             extracted_apis=[
                 {"name": "sensor.install()", "signature": "install() -> bool", "description": "Installs the sensor"}
             ],
-            prerequisites=[],
-            related_topics=[],
-            keywords=[]
+            cross_refs=[],
+            metadata={}
         ),
     ]
 
@@ -47,46 +39,41 @@ def test_build_api_index_deduplicates_apis(mocker):
 ## Sensor APIs
 
 - `sensor.install() -> bool`: Installs the sensor on the system
-  - Topics: installing-sensors, sensor-setup
+  - Pages: page1, page2
 """
 
-    api_index = build_api_index(topics, mock_client)
+    api_index = build_api_index(pages, mock_client)
 
     assert "sensor.install()" in api_index
-    assert "installing-sensors" in api_index
-    assert "sensor-setup" in api_index
+    assert "page1" in api_index
+    assert "page2" in api_index
 
 
-def test_resolve_cross_references_is_deprecated():
-    """Test that resolve_cross_references is now a no-op (deprecated)."""
-    topics = [
-        ProcessedTopic(
+def test_resolve_cross_references_adds_bidirectional_links():
+    """Test that cross-references are resolved bidirectionally."""
+    pages = [
+        ProcessedPage(
             slug="sensor-install",
-            title="Installing Sensors",
-            type="task",
-            content="# Install",
-            source_pages=["page1"],
+            enhanced_markdown="# Install",
             extracted_apis=[],
-            prerequisites=[],
-            related_topics=["sensor-troubleshoot"],
-            keywords=[]
+            cross_refs=[{"page": "sensor-troubleshoot", "relationship": "debugging"}],
+            metadata={}
         ),
-        ProcessedTopic(
+        ProcessedPage(
             slug="sensor-troubleshoot",
-            title="Troubleshooting Sensors",
-            type="task",
-            content="# Troubleshoot",
-            source_pages=["page2"],
+            enhanced_markdown="# Troubleshoot",
             extracted_apis=[],
-            prerequisites=[],
-            related_topics=[],
-            keywords=[]
+            cross_refs=[],
+            metadata={}
         ),
     ]
 
-    # In the new transformation model, resolve_cross_references is a no-op
-    # It returns topics unchanged
-    resolved = resolve_cross_references(topics)
+    resolved = resolve_cross_references(pages)
 
-    assert len(resolved) == 2
-    assert resolved == topics  # Should return unchanged
+    # sensor-install should have link to troubleshoot
+    install_page = next(p for p in resolved if p.slug == "sensor-install")
+    assert "sensor-troubleshoot" in install_page.enhanced_markdown
+
+    # sensor-troubleshoot should have reverse link to install
+    troubleshoot_page = next(p for p in resolved if p.slug == "sensor-troubleshoot")
+    assert "sensor-install" in troubleshoot_page.enhanced_markdown

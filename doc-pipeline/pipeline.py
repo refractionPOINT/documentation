@@ -12,7 +12,7 @@ try:
     from .lib import fetch
     from .lib.claude_client import ClaudeClient
     from .lib.batch import create_semantic_batches
-    from .lib.understand import process_batches_parallel, ProcessedTopic
+    from .lib.understand import process_batches_parallel, ProcessedPage
     from .lib.synthesize import build_api_index, resolve_cross_references
 except ImportError:
     # Fallback for direct execution or testing
@@ -23,7 +23,7 @@ except ImportError:
     from lib import fetch
     from lib.claude_client import ClaudeClient
     from lib.batch import create_semantic_batches
-    from lib.understand import process_batches_parallel, ProcessedTopic
+    from lib.understand import process_batches_parallel, ProcessedPage
     from lib.synthesize import build_api_index, resolve_cross_references
 
 
@@ -209,108 +209,39 @@ def run_pipeline(config: Config = None) -> bool:
         process_batches_parallel(batches, claude_client)
     )
 
-    # Flatten to topic list
-    all_topics: List[ProcessedTopic] = []
-    for batch_topics in processed_batches.values():
-        all_topics.extend(batch_topics)
-    print(f"✓ Processed {len(all_topics)} topics")
+    # Flatten to page list
+    all_processed: List[ProcessedPage] = []
+    for batch_pages in processed_batches.values():
+        all_processed.extend(batch_pages)
+    print(f"✓ Processed {len(all_processed)} pages")
 
     # Phase 4: SYNTHESIZE
-    print("\n[SYNTHESIZE] Building indexes and organizing topics...")
-    api_index = build_api_index(all_topics, claude_client)
-    print(f"✓ Built API index")
+    print("\n[SYNTHESIZE] Building indexes and resolving references...")
+    api_index = build_api_index(all_processed, claude_client)
+    resolved_pages = resolve_cross_references(all_processed)
+    print(f"✓ Built API index and resolved cross-references")
 
-    # Write output files organized by type
+    # Write output files
     print("\n[OUTPUT] Writing documentation files...")
     config.output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Organize topics by type
-    tasks_dir = config.output_dir / "tasks"
-    concepts_dir = config.output_dir / "concepts"
-    reference_dir = config.output_dir / "reference"
-
-    tasks_dir.mkdir(parents=True, exist_ok=True)
-    concepts_dir.mkdir(parents=True, exist_ok=True)
-    reference_dir.mkdir(parents=True, exist_ok=True)
-
-    tasks = []
-    concepts = []
-    references = []
-
-    for topic in all_topics:
-        # Choose directory based on type
-        if topic.type == "task":
-            output_dir = tasks_dir
-            tasks.append(topic)
-        elif topic.type == "concept":
-            output_dir = concepts_dir
-            concepts.append(topic)
-        elif topic.type == "reference":
-            output_dir = reference_dir
-            references.append(topic)
-        else:
-            output_dir = config.output_dir  # Fallback
-            print(f"⚠️  Unknown type '{topic.type}' for topic {topic.slug}")
-
-        # Write topic file
-        output_file = output_dir / f"{topic.slug}.md"
-        output_file.write_text(topic.content)
-
-        # Write topic metadata
-        meta_file = output_dir / f"{topic.slug}.json"
-        meta_file.write_text(json.dumps({
-            'title': topic.title,
-            'type': topic.type,
-            'source_pages': topic.source_pages,
-            'extracted_apis': topic.extracted_apis,
-            'prerequisites': topic.prerequisites,
-            'related_topics': topic.related_topics,
-            'keywords': topic.keywords
-        }, indent=2))
-
-    print(f"✓ Wrote {len(tasks)} tasks, {len(concepts)} concepts, {len(references)} references")
+    for page in resolved_pages:
+        output_file = config.output_dir / f"{page.slug}.md"
+        output_file.write_text(page.enhanced_markdown)
 
     # Write API index
     (config.output_dir / "API_INDEX.md").write_text(api_index)
 
-    # Write comprehensive index with navigation
-    index_content = f"""# LimaCharlie Documentation Index
+    # Write metadata index
+    metadata_index = {
+        page.slug: page.metadata
+        for page in resolved_pages
+    }
+    (config.output_dir / "METADATA_INDEX.json").write_text(
+        json.dumps(metadata_index, indent=2)
+    )
 
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-This documentation has been optimized for LLM consumption with complete, self-contained topics.
-
-## Organization
-
-Documentation is organized by type:
-
-### Tasks ({len(tasks)} topics)
-Step-by-step procedures for accomplishing specific goals.
-
-"""
-    for task in sorted(tasks, key=lambda t: t.title):
-        index_content += f"- [{task.title}](tasks/{task.slug}.md)\n"
-
-    index_content += f"""
-
-### Concepts ({len(concepts)} topics)
-Explanations of key ideas, architectures, and how things work.
-
-"""
-    for concept in sorted(concepts, key=lambda c: c.title):
-        index_content += f"- [{concept.title}](concepts/{concept.slug}.md)\n"
-
-    index_content += f"""
-
-### Reference ({len(references)} topics)
-API documentation, command references, and parameter listings.
-
-"""
-    for ref in sorted(references, key=lambda r: r.title):
-        index_content += f"- [{ref.title}](reference/{ref.slug}.md)\n"
-
-    (config.output_dir / "INDEX.md").write_text(index_content)
-    print(f"✓ Created INDEX.md with navigation")
+    print(f"✓ Wrote {len(resolved_pages)} markdown files")
 
     # Phase 7: DETECT (if git enabled)
     if config.git_commit_changes:

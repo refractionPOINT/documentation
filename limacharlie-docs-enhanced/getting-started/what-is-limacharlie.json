@@ -1,0 +1,29 @@
+{
+  "url": "https://docs.limacharlie.io/docs/what-is-limacharlie",
+  "title": "What is LimaCharlie?",
+  "slug": "what-is-limacharlie",
+  "category": "getting-started",
+  "metadata": {
+    "summary": "LimaCharlie is the **SecOps Cloud Platform** - delivering security operations for the modern era.",
+    "keywords": [
+      "agent",
+      "api",
+      "detection",
+      "edr",
+      "endpoint",
+      "integration",
+      "limacharlie?",
+      "organization",
+      "output",
+      "response",
+      "rule",
+      "sensor",
+      "telemetry",
+      "what"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

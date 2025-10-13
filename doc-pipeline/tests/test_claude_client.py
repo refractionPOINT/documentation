@@ -41,7 +41,8 @@ def test_run_subagent_prompt_success(mocker, tmp_path):
     """Test successful subagent execution with prompt file."""
     mock_run = mocker.patch('subprocess.run')
     mock_run.return_value.returncode = 0
-    mock_run.return_value.stdout = '{"result": "success"}'
+    # Mock the JSON wrapper format that --output-format json returns
+    mock_run.return_value.stdout = '{"type": "result", "result": "{\\"result\\": \\"success\\"}"}'
 
     client = ClaudeClient()
     # Pre-set availability to avoid the version check call
@@ -58,6 +59,8 @@ def test_run_subagent_prompt_success(mocker, tmp_path):
     args = mock_run.call_args[0][0]
     assert 'claude' in args
     assert '--print' in args
+    assert '--output-format' in args
+    assert 'json' in args
     # Check that prompt content was passed via stdin
     kwargs = mock_run.call_args[1]
     assert kwargs['input'] == "Test prompt"

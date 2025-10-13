@@ -1,0 +1,22 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-crowdstrike-falcon-cloud",
+  "title": "CrowdStrike Falcon Cloud",
+  "slug": "adapter-types-crowdstrike-falcon-cloud",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"falconcloud\" falconcloud: client_id: \"YOUR_CROWDSTRIKE_FALCON_API_CLIENT_ID\"",
+    "keywords": [
+      "api",
+      "cloud",
+      "crowdstrike",
+      "falcon",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

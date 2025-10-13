@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/stateful-rules",
+  "title": "Stateful Rules",
+  "slug": "stateful-rules",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "event: NEW_PROCESS op: ends with path: event/FILE_PATH",
+    "keywords": [
+      "actions",
+      "agent",
+      "caveats",
+      "choosing",
+      "counting",
+      "detecting",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "events",
+      "flipping",
+      "organization",
+      "proximal",
+      "report"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/response-actions",
+  "title": "Response Actions",
+  "slug": "response-actions",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "Actions in LimaCharlie Detection & Response () rules define what happens after a detection is triggered. Common actions include generating reports, tagging sensors, isolating networks, and the frequently used `task` action, which sends commands to an Endpoint Agent to interrogate or take action o...",
+    "keywords": [
+      "actions",
+      "activation",
+      "agent",
+      "available",
+      "count",
+      "d&r",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "extension",
+      "frequency",
+      "isolate",
+      "limiting",
+      "network"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

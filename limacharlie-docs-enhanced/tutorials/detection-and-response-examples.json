@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/detection-and-response-examples",
+  "title": "Detection and Response Examples",
+  "slug": "detection-and-response-examples",
+  "category": "tutorials",
+  "metadata": {
+    "summary": "op: ends with event: NEW_PROCESS path: event/FILE_PATH",
+    "keywords": [
+      "(file)",
+      "(process)",
+      "address",
+      "agent",
+      "classify",
+      "cloned",
+      "command",
+      "d&r",
+      "de-duplicate",
+      "detection",
+      "detections",
+      "directories",
+      "disable",
+      "edr",
+      "endpoint"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

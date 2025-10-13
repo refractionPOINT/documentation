@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/non-responding-sensors",
+  "title": "Detecting Sensors No Longer Sending Data",
+  "slug": "non-responding-sensors",
+  "category": "sensors",
+  "metadata": {
+    "summary": "SENSOR_SELECTOR = \"plat == windows and `server` in tags\" DATA_WITHIN = 10 * 60 * 1000 # 10 minutes",
+    "keywords": [
+      "agent",
+      "d&r",
+      "data",
+      "detecting",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "extension",
+      "longer",
+      "organization",
+      "response",
+      "rule",
+      "sdk",
+      "sending"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

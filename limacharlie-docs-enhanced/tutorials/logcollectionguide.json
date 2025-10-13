@@ -1,0 +1,24 @@
+{
+  "url": "https://docs.limacharlie.io/docs/logcollectionguide",
+  "title": "Log Collection Guide",
+  "slug": "logcollectionguide",
+  "category": "tutorials",
+  "metadata": {
+    "summary": "journalctl -f -q --output=json | nc localhost 514",
+    "keywords": [
+      "collection",
+      "event",
+      "guide",
+      "multi-file",
+      "organization",
+      "output",
+      "practices",
+      "sensor",
+      "troubleshooting"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

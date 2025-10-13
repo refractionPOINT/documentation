@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-types-microsoft-365",
+  "title": "Microsoft 365",
+  "slug": "adapter-types-microsoft-365",
+  "category": "adapters",
+  "metadata": {
+    "summary": "sensor_type: \"office365\" office365: tenant_id: \"hive://secret/azure-o365-tenant-id\"",
+    "keywords": [
+      "adapter",
+      "agent",
+      "api",
+      "configuring",
+      "d&r",
+      "details",
+      "detection",
+      "edr",
+      "endpoint",
+      "event",
+      "microsoft",
+      "office",
+      "organization",
+      "preparing",
+      "response"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

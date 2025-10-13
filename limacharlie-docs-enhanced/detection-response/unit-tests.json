@@ -1,0 +1,21 @@
+{
+  "url": "https://docs.limacharlie.io/docs/unit-tests",
+  "title": "Unit Tests",
+  "slug": "unit-tests",
+  "category": "detection-response",
+  "metadata": {
+    "summary": "- - event: EVENT: EventData:",
+    "keywords": [
+      "agent",
+      "detection",
+      "event",
+      "rule",
+      "tests",
+      "unit"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

@@ -1,0 +1,23 @@
+{
+  "url": "https://docs.limacharlie.io/docs/payload-manager",
+  "title": "Payload Manager",
+  "slug": "payload-manager",
+  "category": "sensors",
+  "metadata": {
+    "summary": "[Payloads](/v2/docs/payloads), such as scripts, pre-built binaries, or other files, can be deployed to LimaCharlie sensors for any reason necessary.",
+    "keywords": [
+      "detection",
+      "manager",
+      "organization",
+      "output",
+      "payload",
+      "response",
+      "rule",
+      "sensor"
+    ],
+    "complexity": "intermediate",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}

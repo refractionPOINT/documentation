@@ -1,0 +1,30 @@
+{
+  "url": "https://docs.limacharlie.io/docs/adapter-usage",
+  "title": "Adapter Usage",
+  "slug": "adapter-usage",
+  "category": "adapters",
+  "metadata": {
+    "summary": "The Adapter can be used to access many different sources and many different event types. The main mechanisms specifying the source and type of events are:",
+    "keywords": [
+      "adapter",
+      "agent",
+      "basic",
+      "built-in",
+      "configuration",
+      "configurations",
+      "defined",
+      "edr",
+      "endpoint",
+      "event",
+      "example",
+      "expressions",
+      "extraction",
+      "group",
+      "indexes"
+    ],
+    "complexity": "advanced",
+    "use_cases": []
+  },
+  "api_elements": [],
+  "content_hash": ""
+}
