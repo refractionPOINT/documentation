@@ -160,6 +160,29 @@ def strip_human_metadata(markdown: str) -> str:
         r'^Email \(Optional\)',
         r'^Powered by Document360',
         r'^Updated on',
+        r'^\* Updated on',  # With bullet point
+        # Feedback form elements
+        r'^Yes\s+No\s*$',  # Feedback yes/no buttons
+        r'^\[\s*\]\s+Need more information\s*$',
+        r'^\[\s*\]\s+Difficult to understand\s*$',
+        r'^\[\s*\]\s+Inaccurate or irrelevant content\s*$',
+        r'^\[\s*\]\s+Missing/broken link\s*$',
+        r'^\[\s*\]\s+Others\s*$',
+        r'^\[\s*\]\s+Notify me about change\s*$',
+        r'^Comment\s*$',
+        r'^Comment \(Optional\)\s*$',
+        r'^Please enter your comment\s*$',
+        r'^Email\s*$',
+        r'^Please enter a valid email\s*$',
+        r'^Cancel\s*$',
+        # Navigation/UI chrome
+        r'^Share this\s*$',
+        r'^Contents\s+x\s*$',
+        r'^\* v\d+\s*$',  # Version selector
+        r'^\+ \[v\d+.*?\]\(/.*?\)\s*$',  # Version links
+        r'^\* \[.*?\]\(.*?\)\s*$',  # Navigation links at top
+        r'^!\[.*?\]\(https://cdn\.document360\.io.*?\)',  # Logo images
+        r'^\[Powered by.*?Document360.*?\]',  # Powered by footer
     ]
 
     # Section headers to remove entirely (with their content)
@@ -170,7 +193,18 @@ def strip_human_metadata(markdown: str) -> str:
         'Tags',
     ]
 
-    i = 0
+    # Find first real content heading (skip all navigation/chrome before it)
+    content_start = 0
+    for idx, line in enumerate(lines):
+        # Look for first H1 heading that's actual content (not just "Contents" or similar)
+        if line.strip().startswith('# ') and len(line.strip()) > 3:
+            heading_text = line.strip()[2:].lower()
+            # Skip if it's a navigation heading
+            if heading_text not in ['contents', 'menu', 'navigation', 'toc']:
+                content_start = idx
+                break
+
+    i = content_start
     while i < len(lines):
         line = lines[i]
 
