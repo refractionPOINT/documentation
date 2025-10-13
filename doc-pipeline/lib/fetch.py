@@ -182,17 +182,13 @@ def _discover_via_algolia(config: Config) -> List[Page]:
     return pages
 
 
-def discover_documentation_structure(config: Config, claude_client=None) -> DocumentStructure:
+def discover_documentation_structure(config: Config) -> DocumentStructure:
     """
     Dynamically discover all documentation pages from the website.
 
     Uses Algolia search API for Document360 sites (JavaScript-rendered navigation).
 
     Returns DocumentStructure with discovered pages organized by category.
-
-    Args:
-        config: Configuration
-        claude_client: Optional Claude client for smart categorization
     """
     print("Discovering documentation structure...")
 
@@ -202,31 +198,12 @@ def discover_documentation_structure(config: Config, claude_client=None) -> Docu
     try:
         algolia_pages = _discover_via_algolia(config)
         if algolia_pages:
-            # Use Claude for smart categorization if available
-            if claude_client:
-                print("\nUsing Claude for semantic categorization...")
-                try:
-                    from . import categorize
-                    structure.categories = categorize.categorize_pages_batch(
-                        algolia_pages, claude_client, batch_size=100
-                    )
-                    print(f"✓ Categorized into {len(structure.categories)} categories")
-                except Exception as e:
-                    print(f"Warning: Claude categorization failed: {e}")
-                    print("Falling back to rule-based categorization")
-                    # Fallback to rule-based
-                    for page in algolia_pages:
-                        category = _categorize_page(page.slug)
-                        if category not in structure.categories:
-                            structure.categories[category] = []
-                        structure.categories[category].append(page)
-            else:
-                # No Claude client, use rule-based
-                for page in algolia_pages:
-                    category = _categorize_page(page.slug)
-                    if category not in structure.categories:
-                        structure.categories[category] = []
-                    structure.categories[category].append(page)
+            # Organize into categories
+            for page in algolia_pages:
+                category = _categorize_page(page.slug)
+                if category not in structure.categories:
+                    structure.categories[category] = []
+                structure.categories[category].append(page)
 
             from datetime import datetime
             structure.discovered_at = datetime.now()
@@ -322,43 +299,29 @@ def _create_page_from_url(url: str, config: Config) -> Optional[Page]:
 
 
 def _categorize_page(slug: str) -> str:
-    """
-    Categorize a page based on its slug.
-
-    DEPRECATED: Use categorize.categorize_pages_with_claude() for better results.
-    This is kept as a fallback only.
-    """
+    """Categorize a page based on its slug."""
     slug_lower = slug.lower()
 
-    # Priority 1: Exact prefix patterns
-    if slug_lower.startswith('adapter-types-') or slug_lower.startswith('adapter-examples-'):
-        return "adapters"
-    elif slug_lower.startswith('outputs-destinations-') or slug_lower.startswith('output-destinations-'):
-        return "outputs"
-    elif slug_lower.startswith('ext-'):
-        return "add-ons"
-    elif slug_lower.startswith('api-integrations-'):
-        return "integrations"
-    elif slug_lower.startswith('reference-'):
-        return "reference"
-
-    # Priority 2: Broad keyword matching
+    # Category mapping based on keywords
     categories = {
-        "getting-started": ["quickstart", "what-is", "use-case", "introduction"],
-        "sensors": ["sensor", "installation", "agent", "endpoint"],
-        "events": ["event-schema", "edr-event", "telemetry"],
-        "query": ["lcql", "query-console"],
-        "detection-response": ["detection", "response", "replay", "d-r", "rule"],
-        "platform": ["platform", "sdk", "organization"],
-        "tutorials": ["tutorial", "guide", "walkthrough"],
-        "faq": ["faq", "question"],
+        "01-getting-started": ["quickstart", "what-is", "use-case", "introduction"],
+        "02-sensors": ["sensor", "installation", "agent", "endpoint"],
+        "03-events": ["event", "edr", "telemetry"],
+        "04-query-console": ["lcql", "query", "search"],
+        "05-detection-response": ["detection", "response", "replay", "d&r", "rule"],
+        "06-platform-management": ["platform", "sdk", "adapter", "api", "organization"],
+        "07-outputs": ["output", "siem", "export", "integration"],
+        "08-add-ons": ["add-on", "extension", "ext-"],
+        "09-tutorials": ["tutorial", "guide", "walkthrough", "example"],
+        "10-faq": ["faq", "question"],
+        "11-release-notes": ["release", "changelog", "version"],
     }
 
     for category, keywords in categories.items():
         if any(keyword in slug_lower for keyword in keywords):
             return category
 
-    return "other"
+    return "12-other"
 
 
 def _fallback_discovery(config: Config) -> DocumentStructure:

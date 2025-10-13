@@ -1,8 +1,7 @@
 """HTML to Markdown conversion and cleaning."""
 import re
 import subprocess
-from typing import Optional, Tuple
-from pathlib import Path
+from typing import Optional
 from bs4 import BeautifulSoup
 
 try:
@@ -14,176 +13,59 @@ except ImportError:
     from config import Config
 
 
-def save_extraction_debug(slug: str, html: str, extracted: str, markdown: str, method: str = "unknown"):
+def extract_main_content(html: str) -> str:
     """
-    Save extraction artifacts for debugging.
+    Extract main article content from Document360 HTML.
 
-    Creates .doc-pipeline-state/extraction-debug/<slug>/ with:
-    - full.html: First 50KB of original HTML
-    - extracted.html: What was extracted
-    - output.md: Final markdown
-    - info.txt: Extraction method and stats
-    """
-    try:
-        debug_dir = Path('.doc-pipeline-state/extraction-debug') / slug
-        debug_dir.mkdir(parents=True, exist_ok=True)
-
-        # Save full HTML (limited to 50KB to avoid huge files)
-        (debug_dir / 'full.html').write_text(html[:50000], encoding='utf-8')
-
-        # Save extracted HTML
-        (debug_dir / 'extracted.html').write_text(extracted, encoding='utf-8')
-
-        # Save markdown output
-        (debug_dir / 'output.md').write_text(markdown, encoding='utf-8')
-
-        # Save info
-        info = f"""Extraction Method: {method}
-Original HTML length: {len(html)} chars
-Extracted HTML length: {len(extracted)} chars
-Markdown length: {len(markdown)} chars
-Word count (markdown): {len(markdown.split())} words
-"""
-        (debug_dir / 'info.txt').write_text(info, encoding='utf-8')
-    except Exception as e:
-        # Don't fail conversion if debug save fails
-        print(f"Warning: Could not save debug artifacts for {slug}: {e}")
-
-
-def extract_main_content(html: str, slug: str = "") -> Tuple[str, str]:
-    """
-    Extract main article content from Document360 HTML using robust heuristics.
-
-    Returns:
-        Tuple of (extracted_html, method_used)
-
-    Strategy:
-    1. Try Document360-specific selectors
-    2. Use heuristics (most paragraphs, longest text, code blocks)
-    3. Validate extraction (minimum content requirements)
-    4. Fall back to full HTML if extraction seems wrong
+    Removes navigation, sidebars, headers, footers, etc.
     """
     if not html:
-        return "", "empty"
+        return ""
 
     try:
         soup = BeautifulSoup(html, 'html.parser')
 
-        # Collect candidates with scoring
-        candidates = []
-
-        # Method 1: Standard Document360 selectors (prioritized by reliability)
-        d360_selectors = [
-            # Document360 article content (HIGHEST priority - actual content)
-            '.content_block_text',
-            '.default',  # Often wraps content_block_text
-            # Other Document360 specific classes
-            '.main_content_block',
-            '.docs-main-content',
-            '.content_block',
-            '.d-article-content',
-            '.article-content',
-            '.doc-content',
-            # Generic semantic tags (lower priority)
+        # Try to find main content area (Document360 uses various selectors)
+        content_selectors = [
             'article',
+            '.article-content',
+            '.d-article-content',
             '[role="main"]',
             'main',
         ]
 
-        for selector in d360_selectors:
-            # Use select() to get ALL matches, not just first one
-            elems = soup.select(selector)
-            for i, elem in enumerate(elems):
-                text_len = len(elem.get_text(strip=True))
-                # Skip empty elements
-                if text_len < 10:
-                    continue
+        content = None
+        for selector in content_selectors:
+            content = soup.select_one(selector)
+            if content:
+                break
 
-                # Highest boost for actual content classes
-                if selector in ['.content_block_text', '.default']:
-                    boost = 50000
-                # High boost for other Document360-specific selectors
-                elif 'content' in selector.lower() and '.' in selector:
-                    boost = 10000
-                else:
-                    boost = 0
-                score = text_len + boost
-                method_name = f'selector:{selector}[{i}]' if len(elems) > 1 else f'selector:{selector}'
-                candidates.append((method_name, elem, score))
+        if not content:
+            # Fallback: try to find the largest content div
+            all_divs = soup.find_all('div')
+            content = max(all_divs, key=lambda d: len(d.get_text()), default=None)
 
-        # Method 2: Find element with most paragraph tags (good indicator of content)
-        all_containers = soup.find_all(['div', 'section', 'article'])
-        for container in all_containers:
-            p_count = len(container.find_all('p', recursive=True))
-            if p_count >= 3:  # At least 3 paragraphs indicates real content
-                score = p_count * 200  # Weight paragraphs heavily
-                candidates.append((f'p-count:{p_count}', container, score))
+        if content:
+            return str(content)
 
-        # Method 3: Find element with most text (longest content)
-        for elem in all_containers:
-            text_len = len(elem.get_text(strip=True))
-            if text_len > 500:  # Minimum content threshold
-                candidates.append((f'text-len:{text_len}', elem, text_len))
-
-        # Method 4: Find element with code blocks (technical docs often have code)
-        for elem in all_containers:
-            code_blocks = len(elem.find_all(['pre', 'code'], recursive=True))
-            if code_blocks >= 2:  # At least 2 code blocks
-                text_len = len(elem.get_text(strip=True))
-                score = text_len + (code_blocks * 500)  # Boost score for code
-                candidates.append((f'code-blocks:{code_blocks}', elem, score))
-
-        if not candidates:
-            # Absolute fallback: use body
-            body = soup.find('body')
-            if body:
-                return str(body), "fallback:body"
-            return html, "fallback:full-html"
-
-        # Sort by score and get best candidate
-        candidates.sort(key=lambda x: x[2], reverse=True)
-        method, best_elem, score = candidates[0]
-
-        extracted = str(best_elem)
-
-        # Validation: Check if extraction looks reasonable
-        word_count = len(best_elem.get_text().split())
-        heading_count = len(best_elem.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']))
-        code_blocks = len(best_elem.find_all(['pre', 'code']))
-
-        # Quality thresholds
-        min_words = 50
-        min_headings = 1
-
-        # If extraction seems too small, try next best or full HTML
-        if word_count < min_words or (heading_count < min_headings and code_blocks == 0):
-            # Try second-best candidate if available
-            if len(candidates) > 1:
-                method2, elem2, score2 = candidates[1]
-                word_count2 = len(elem2.get_text().split())
-                if word_count2 > word_count * 2:  # Significantly more content
-                    return str(elem2), f"{method2}:retry"
-
-            # Last resort: use full HTML and let markitdown handle it
-            return html, f"{method}:failed-validation-using-full-html"
-
-        return extracted, method
+        # Last resort: return body
+        body = soup.find('body')
+        return str(body) if body else html
 
     except Exception as e:
         print(f"Warning: Could not extract content with BeautifulSoup: {e}")
-        return html, f"error:{e}"
+        return html
 
 
-def html_to_markdown(html: str, slug: str = "") -> Tuple[str, str]:
+def html_to_markdown(html: str) -> str:
     """
     Convert HTML to markdown using markitdown.
 
-    Returns:
-        Tuple of (markdown, extraction_method)
+    Returns raw markdown output.
     """
     try:
         # First extract main content to avoid converting navigation/UI elements
-        main_content, method = extract_main_content(html, slug)
+        main_content = extract_main_content(html)
 
         # Use markitdown via subprocess (reads from stdin when no filename given)
         result = subprocess.run(
@@ -194,33 +76,18 @@ def html_to_markdown(html: str, slug: str = "") -> Tuple[str, str]:
             text=True,
             check=True
         )
-        return result.stdout, method
+        return result.stdout
     except Exception as e:
         print(f"Error converting HTML: {e}")
-        return "", f"error:{e}"
+        return ""
 
 
 def clean_markdown_content(content: str) -> str:
     """
     Clean Document360 artifacts from markdown content.
 
-    ENHANCED: Uses quality.strip_human_metadata() for comprehensive cleaning.
-    This is optimized for LLM consumption (removes all human UI elements).
+    Removes UI elements, metadata, feedback forms, etc.
     """
-    if not content:
-        return ""
-
-    # Use the enhanced quality filter
-    try:
-        from . import quality
-        return quality.strip_human_metadata(content)
-    except ImportError:
-        # Fallback to basic cleaning if quality module unavailable
-        return _basic_clean_markdown(content)
-
-
-def _basic_clean_markdown(content: str) -> str:
-    """Basic markdown cleaning (fallback)."""
     if not content:
         return ""
 
@@ -332,27 +199,21 @@ def normalize_formatting(content: str) -> str:
     return '\n'.join(normalized)
 
 
-def convert_page(page: Page, config: Config, save_debug: bool = False) -> bool:
+def convert_page(page: Page, config: Config) -> bool:
     """
     Convert a page's HTML to cleaned markdown.
 
     Updates page.markdown field.
     Returns True on success.
-
-    Args:
-        page: Page to convert
-        config: Configuration
-        save_debug: If True, save extraction artifacts for debugging
     """
     if not page.raw_html:
         print(f"✗ No HTML content for {page.slug}")
         return False
 
     try:
-        # Convert to markdown (now returns tuple)
-        raw_md, extraction_method = html_to_markdown(page.raw_html, page.slug)
+        # Convert to markdown
+        raw_md = html_to_markdown(page.raw_html)
         if not raw_md:
-            print(f"✗ No markdown generated for {page.slug}")
             return False
 
         # Clean artifacts
@@ -363,27 +224,11 @@ def convert_page(page: Page, config: Config, save_debug: bool = False) -> bool:
 
         page.markdown = normalized
 
-        # Save debug artifacts if requested or if page seems problematic
-        word_count = len(normalized.split())
-        if save_debug or word_count < 100:  # Auto-save for suspicious pages
-            extracted_html, _ = extract_main_content(page.raw_html, page.slug)
-            save_extraction_debug(
-                page.slug,
-                page.raw_html,
-                extracted_html,
-                normalized,
-                extraction_method
-            )
-            if word_count < 100:
-                print(f"⚠ {page.slug}: Only {word_count} words (method: {extraction_method})")
-
-        print(f"✓ Converted: {page.slug} (method: {extraction_method})")
+        print(f"✓ Converted: {page.slug}")
         return True
 
     except Exception as e:
         print(f"✗ Error converting {page.slug}: {e}")
-        import traceback
-        traceback.print_exc()
         return False
 
 

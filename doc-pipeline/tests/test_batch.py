@@ -70,6 +70,29 @@ def test_create_semantic_batches_respects_size_limits(mocker):
         assert 1 <= len(batch['pages']) <= 10
 
 
+def test_create_semantic_batches_handles_markdown_wrapped_json(mocker):
+    """Test that markdown-wrapped JSON from Claude is parsed correctly."""
+    pages = [Page(slug="test", title="Test", url="...", category="test", raw_html="")]
+
+    mock_client = mocker.Mock()
+    # Claude often returns JSON wrapped in markdown code fences
+    mock_client.run_subagent_prompt.return_value = '''```json
+{
+  "batches": [
+    {
+      "id": "batch_01_test",
+      "theme": "Test batch",
+      "page_slugs": ["test"]
+    }
+  ]
+}
+```'''
+
+    batches = create_semantic_batches(pages, mock_client)
+    assert len(batches) == 1
+    assert batches[0]['id'] == 'batch_01_test'
+
+
 def test_create_semantic_batches_handles_invalid_json(mocker):
     """Test that invalid JSON from Claude is handled gracefully."""
     pages = [Page(slug="test", title="Test", url="...", category="test", raw_html="")]

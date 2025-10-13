@@ -135,16 +135,20 @@ def test_pipeline_with_claude_phases(mocker, tmp_path):
     mocker.patch('pipeline.create_semantic_batches', return_value=mock_batches)
 
     # Mock understand phase - patch in pipeline namespace
-    from lib.understand import ProcessedPage
+    from lib.understand import ProcessedTopic
 
     async def mock_async_process(*args, **kwargs):
         return {
-            'batch_01': [ProcessedPage(
+            'batch_01': [ProcessedTopic(
                 slug="test-page",
-                enhanced_markdown="# Test Page\n\nEnhanced content",
+                title="Test Page",
+                type="task",
+                content="# Test Page\n\nEnhanced content",
+                source_pages=["test-page"],
                 extracted_apis=[],
-                cross_refs=[],
-                metadata={"summary": "Test"}
+                prerequisites=[],
+                related_topics=[],
+                keywords=["test"]
             )]
         }
 
@@ -153,17 +157,10 @@ def test_pipeline_with_claude_phases(mocker, tmp_path):
     # Mock synthesize phase - patch in pipeline namespace
     mocker.patch('pipeline.build_api_index', return_value="# API Index\n\nNo APIs")
 
-    mocker.patch('pipeline.resolve_cross_references', return_value=[ProcessedPage(
-        slug="test-page",
-        enhanced_markdown="# Test Page\n\nEnhanced content",
-        extracted_apis=[],
-        cross_refs=[],
-        metadata={"summary": "Test"}
-    )])
-
     success = run_pipeline(config)
 
     assert success is True
-    assert (tmp_path / "output" / "test-page.md").exists()
-    output_content = (tmp_path / "output" / "test-page.md").read_text()
+    # Check for topics in the tasks/ directory (since type="task")
+    assert (tmp_path / "output" / "tasks" / "test-page.md").exists()
+    output_content = (tmp_path / "output" / "tasks" / "test-page.md").read_text()
     assert "# Test Page" in output_content

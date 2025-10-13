@@ -8,13 +8,17 @@ from dataclasses import dataclass
 
 
 @dataclass
-class ProcessedPage:
-    """Result of processing a page through Claude."""
+class ProcessedTopic:
+    """Result of processing - a transformed, LLM-optimized topic."""
     slug: str
-    enhanced_markdown: str
+    title: str
+    type: str  # task, concept, or reference
+    content: str  # Complete markdown
+    source_pages: List[str]  # Original page slugs this was derived from
     extracted_apis: List[Dict[str, str]]
-    cross_refs: List[Dict[str, str]]
-    metadata: Dict[str, Any]
+    prerequisites: List[str]  # Topic slugs needed first
+    related_topics: List[str]  # Related topic slugs
+    keywords: List[str]
 
 
 def generate_batch_prompt(batch: Dict[str, Any]) -> str:
@@ -57,7 +61,7 @@ def generate_batch_prompt(batch: Dict[str, Any]) -> str:
     return prompt
 
 
-def parse_batch_output(output: str) -> List[ProcessedPage]:
+def parse_batch_output(output: str) -> List[ProcessedTopic]:
     """
     Parse Claude's batch processing output.
 
@@ -65,27 +69,31 @@ def parse_batch_output(output: str) -> List[ProcessedPage]:
         output: JSON output from Claude
 
     Returns:
-        List of ProcessedPage objects
+        List of ProcessedTopic objects
     """
     data = json.loads(output)
 
-    pages = []
-    for page_data in data['pages']:
-        pages.append(ProcessedPage(
-            slug=page_data['slug'],
-            enhanced_markdown=page_data['enhanced_markdown'],
-            extracted_apis=page_data['extracted_apis'],
-            cross_refs=page_data['cross_refs'],
-            metadata=page_data['metadata']
+    topics = []
+    for topic_data in data['topics']:
+        topics.append(ProcessedTopic(
+            slug=topic_data['slug'],
+            title=topic_data['title'],
+            type=topic_data['type'],
+            content=topic_data['content'],
+            source_pages=topic_data.get('source_pages', []),
+            extracted_apis=topic_data.get('extracted_apis', []),
+            prerequisites=topic_data.get('prerequisites', []),
+            related_topics=topic_data.get('related_topics', []),
+            keywords=topic_data.get('keywords', [])
         ))
 
-    return pages
+    return topics
 
 
 async def process_batch_async(
     batch: Dict[str, Any],
     claude_client: Any
-) -> Tuple[str, List[ProcessedPage]]:
+) -> Tuple[str, List[ProcessedTopic]]:
     """
     Process a single batch asynchronously.
 
@@ -94,7 +102,7 @@ async def process_batch_async(
         claude_client: Claude client instance
 
     Returns:
-        Tuple of (batch_id, list of processed pages)
+        Tuple of (batch_id, list of processed topics)
     """
     # Generate prompt
     prompt = generate_batch_prompt(batch)
@@ -126,7 +134,7 @@ async def process_batch_with_retry(
     batch: Dict[str, Any],
     claude_client: Any,
     max_retries: int = 3
-) -> Tuple[str, List[ProcessedPage]]:
+) -> Tuple[str, List[ProcessedTopic]]:
     """
     Process batch with retry logic.
 
@@ -136,7 +144,7 @@ async def process_batch_with_retry(
         max_retries: Maximum retry attempts
 
     Returns:
-        Tuple of (batch_id, processed pages)
+        Tuple of (batch_id, processed topics)
 
     Raises:
         RuntimeError: If all retries exhausted
@@ -159,7 +167,7 @@ async def process_batches_parallel(
     batches: List[Dict[str, Any]],
     claude_client: Any,
     max_concurrent: int = 10
-) -> Dict[str, List[ProcessedPage]]:
+) -> Dict[str, List[ProcessedTopic]]:
     """
     Process multiple batches in parallel with retry logic.
 
