@@ -162,7 +162,7 @@ Common integration scenarios:
 ## Resources
 
 - [D&R Rule Syntax Reference](/docs/detection-and-response)
-- [Event Type Documentation](/docs/events)
+- [Event Type Documentation](events.md)
 - [Sensor Commands Reference](/docs/sensor-commands)
 - [API Documentation](/docs/api)
 - [Community Rules Repository](https://github.com/refractionPOINT/rules)

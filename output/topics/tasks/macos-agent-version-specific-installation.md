@@ -124,7 +124,7 @@ sudo ./lc_sensor -i YOUR_INSTALLATION_KEY_GOES_HERE
 
 ![Basic installation](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/01-Basic_installation.png)
 
-You can obtain the installation key from the [Installation Keys](/v2/docs/installation-keys) section of the LimaCharlie web application.
+You can obtain the installation key from the [Installation Keys](installation-keys.md) section of the LimaCharlie web application.
 
 The sensor will be installed as a launchctl service. Installation will trigger the sensors enrollment with the LimaCharlie cloud.
 

@@ -42,7 +42,7 @@ click **Save**
 
 ## File Adapter Ingestion
 
-It is also possible to deploy a LimaCharlie [Adapter](/v2/docs/adapters) pointed to `auth.log` to collect and stream the events in directly. Note that Adapters will create a separate telemetry "stream" - thus, it is recommended to combine file types where possible.
+It is also possible to deploy a LimaCharlie [Adapter](../concepts/adapters.md) pointed to `auth.log` to collect and stream the events in directly. Note that Adapters will create a separate telemetry "stream" - thus, it is recommended to combine file types where possible.
 
 **Step 1:** Create an Installation Key for your adapter and download the appropriate binary.
 
@@ -60,7 +60,7 @@ file:
   no_follow: false
 ```
 
-More details on configuration files and adapter usage can be found [here](/v2/docs/adapter-usage).
+More details on configuration files and adapter usage can be found [here](../reference/adapter-usage.md).
 
 **Step 3:** Run the adapter, providing the `file` option and the appropriate config file.
 

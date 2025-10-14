@@ -30,6 +30,6 @@ You should see logging details related to Google Workspace, under the following 
 
 **Step 3: Create a cloud-to-cloud GCP Adapter**
 
-Once Google Workspace Audit logs are pushed to GCP, events can be ingested via either [Google Cloud Storage](/v2/docs/adapter-types-google-cloud-storage) or [Google Cloud Pubsub](/v2/docs/adapter-types-google-cloud-pubsub). Utilize the appropriate documentation to set up the desired Adapter.
+Once Google Workspace Audit logs are pushed to GCP, events can be ingested via either [Google Cloud Storage](adapter-types-google-cloud-storage.md) or [Google Cloud Pubsub](adapter-types-google-cloud-pubsub.md). Utilize the appropriate documentation to set up the desired Adapter.
 
 Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

@@ -68,7 +68,7 @@ with events:
   within: 60
 ```
 
-The top-level rule filters down meaningful events to [`WEL`](/v1/docs/reference-events#WEL) ones sent from Windows sensors using the `is windows` operator, and then it declares a stateful rule inside `with events`. It uses `count` and `within` to declare a suitable timespan to evaluate matching events.
+The top-level rule filters down meaningful events to [`WEL`](../reference/reference-events.md) ones sent from Windows sensors using the `is windows` operator, and then it declares a stateful rule inside `with events`. It uses `count` and `within` to declare a suitable timespan to evaluate matching events.
 
 ## Stateful Rules
 

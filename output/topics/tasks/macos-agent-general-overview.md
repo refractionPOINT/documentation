@@ -20,7 +20,7 @@ You may also pass the value `-` instead of the `INSTALLATION_KEY` like: `-i -`. 
 
 ## Uninstalling the Agent
 
-For additional agent uninstall options, see [Endpoint Agent Uninstallation](/v2/docs/endpoint-agent-uninstallation)
+For additional agent uninstall options, see [Endpoint Agent Uninstallation](endpoint-agent-uninstallation.md)
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 

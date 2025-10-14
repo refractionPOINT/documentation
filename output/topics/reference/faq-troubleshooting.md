@@ -2,7 +2,7 @@
 
 ## Why is there no output in the console?
 
-When running Sensor [console commands](/v2/docs/endpoint-agent-commands), you may encounter a "spinning wheel" or no output back from the Sensor. Oftentimes, this is due to the *response* event not enabled in [Event Collection](/v2/docs/ext-exfil). You will need to configure the response event in order to receive feedback in the console.
+When running Sensor [console commands](/v2/docs/endpoint-agent-commands), you may encounter a "spinning wheel" or no output back from the Sensor. Oftentimes, this is due to the *response* event not enabled in [Event Collection](ext-exfil.md). You will need to configure the response event in order to receive feedback in the console.
 
 For example, the `os_users` Sensor command has two components:
 

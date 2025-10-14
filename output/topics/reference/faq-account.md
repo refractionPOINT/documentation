@@ -14,7 +14,7 @@ Please navigate to the bottom of the Billing & Usage section of the organization
 
 You can wipe the data retention by disabling the `Insight` add on on the marketplace and re-enabling it again. Please note that unsubscribing from `Insight` will delete all telemetry stored for a selected organization, and this action cannot be undone.
 
-To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](/v2/docs/ext-infrastructure).
+To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](ext-infrastructure.md).
 
 ## Can I Transfer Ownership of an Organization?
 

@@ -6,11 +6,11 @@ This tag indexes documentation articles related to Linux in the LimaCharlie plat
 
 Core documentation for the LimaCharlie endpoint agent on Linux systems:
 
-* [Endpoint Agent](/docs/endpoint-agent) - Overview of the endpoint detection and response agent
+* [Endpoint Agent](../reference/endpoint-agent.md) - Overview of the endpoint detection and response agent
 * [Endpoint Agent Events Overview](/docs/endpoint-agent-events-overview) - Complete guide to agent-generated events
 * [Endpoint Agent Commands](/docs/endpoint-agent-commands) - Available commands for agent control
-* [Endpoint Agent Installation](/docs/endpoint-agent-installation) - General installation procedures
-* [Endpoint Agent Uninstallation](/docs/endpoint-agent-uninstallation) - Agent removal procedures
+* [Endpoint Agent Installation](../tasks/endpoint-agent-installation.md) - General installation procedures
+* [Endpoint Agent Uninstallation](../tasks/endpoint-agent-uninstallation.md) - Agent removal procedures
 
 ## Linux-Specific Installation
 
@@ -38,8 +38,8 @@ Linux log collection and integration capabilities:
 
 Specialized Linux deployment scenarios and features:
 
-* [Container Clusters](/docs/container-clusters) - Kubernetes and container orchestration
-* [Payloads](/docs/payloads) - Custom code deployment and execution on endpoints
+* [Container Clusters](container-clusters.md) - Kubernetes and container orchestration
+* [Payloads](../reference/payloads.md) - Custom code deployment and execution on endpoints
 
 ---
 

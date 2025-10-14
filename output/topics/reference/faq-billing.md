@@ -29,11 +29,11 @@ To understand the impact on your organization, check the **Metered Usage** secti
 
 ## What is Usage-Based Billing?
 
-Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. You can find more information about our billing options [here](/v2/docs/billing).
+Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. You can find more information about our billing options [here](../concepts/billing.md).
 
 We acknowledge that some might not need the entirety of available components all the time, and might benefit from having access to an Endpoint Agent on an ad-hoc basis. This approach enables the following:
 
-1. Incident responders will now be able to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an organization's entire fleet and lay dormant in [sleeper mode](/v2/docs/sleeper). With agents deployed ahead of an incident, responders can offer competitive SLA's.
+1. Incident responders will now be able to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an organization's entire fleet and lay dormant in [sleeper mode](../concepts/sleeper.md). With agents deployed ahead of an incident, responders can offer competitive SLA's.
 2. Product developers can take advantage of usage-based billing to leverage narrow bands of functionality at a low cost. This means getting the functionality they need without building it from the ground up or paying for a full EDR deployment.
 
 ## For LC Adapters Billed on Usage, What Does "Block of Data" Mean & How Will It Impact the Price I Pay?
@@ -60,7 +60,7 @@ There are two categories of Sensors: sensors billed on Quota set by the user (vS
 
 ### vSensors
 
-LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of [Endpoint Agents](/v2/docs/endpoint-agent). vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
+LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of [Endpoint Agents](endpoint-agent.md). vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
 
 Our transparent pricing and quota-based approach allows you to easily mix and match deployments, while staying within a certain price point.
 

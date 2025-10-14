@@ -295,7 +295,7 @@ The `task` function sends a task to the sensor unidirectionally, meaning it does
 
 #### Artifacts
 
-The `Artifacts` is a helpful class to upload [artifacts](/v2/docs/artifacts) to LimaCharlie without going through a sensor.
+The `Artifacts` is a helpful class to upload [artifacts](artifacts.md) to LimaCharlie without going through a sensor.
 
 #### Extensions
 
@@ -312,11 +312,11 @@ ext.subscribe('binlib')
 
 #### Payloads
 
-The `Payloads` can be used to manage various executable [payloads](/v2/docs/payloads) accessible to sensors.
+The `Payloads` can be used to manage various executable [payloads](../reference/payloads.md) accessible to sensors.
 
 #### Replay
 
-The `Replay` object allows you to interact with [Replay](/v2/docs/replay) jobs managed by LimaCharlie. These allow you to re-run [D&R Rules](/v2/docs/detection-and-response) on historical data.
+The `Replay` object allows you to interact with [Replay](../reference/replay.md) jobs managed by LimaCharlie. These allow you to re-run [D&R Rules](/v2/docs/detection-and-response) on historical data.
 
 Sample command line to query one sensor:
 
@@ -360,7 +360,7 @@ Many of the objects available as part of the LimaCharlie Python SDK also support
 
 #### Query
 
-[LimaCharlie Query Language (LCQL)](/v2/docs/lcql) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie.
+[LimaCharlie Query Language (LCQL)](lcql.md) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie.
 
 ```
 limacharlie query --help
@@ -370,7 +370,7 @@ limacharlie query --help
 
 [Authenticated Resource Locators (ARLs)](/v2/docs/reference-authentication-resource-locator) describe a way to specify access to a remote resource, supporting many methods, including authentication data, and all that within a single string.
 
-ARLs can be used in the [YARA manager](/v2/docs/ext-yara-manager) to import rules from GitHub repositories and other locations.
+ARLs can be used in the [YARA manager](../reference/ext-yara-manager.md) to import rules from GitHub repositories and other locations.
 
 Testing an ARL before applying it somewhere can be helpful to shake out access or authentication errors beforehand. You can test an ARL and see what files are fetched, and their contents, by running the following command:
 
@@ -450,7 +450,7 @@ limacharlie extension --help
 
 #### Artifact Upload
 
-Shortcut utility to upload and retrieve [Artifacts](/v2/docs/artifacts) within LimaCharlie with just the CLI (no agent).
+Shortcut utility to upload and retrieve [Artifacts](artifacts.md) within LimaCharlie with just the CLI (no agent).
 
 ```
 limacharlie artifacts --help
@@ -458,7 +458,7 @@ limacharlie artifacts --help
 
 #### Artifact Download
 
-Shortcut utility to download [Artifact Collection](/v2/docs/artifacts) in LimaCharlie locally.
+Shortcut utility to download [Artifact Collection](artifacts.md) in LimaCharlie locally.
 
 ```
 limacharlie artifacts get_original --help
@@ -466,7 +466,7 @@ limacharlie artifacts get_original --help
 
 #### Replay
 
-Shortcut utility to perform [Replay](/v2/docs/replay) jobs from the CLI.
+Shortcut utility to perform [Replay](../reference/replay.md) jobs from the CLI.
 
 ```
 limacharlie replay --help

@@ -22,7 +22,7 @@ A typical D&R rule looks like:
 }
 ```
 
-The `match` and `non_match` both have the same format: they contain a list of lists of events. Each top list element is a unit test, and the content of a test is a list of events as would be seen by LimaCharlie. The reason for the test to be a list is to accomodate for [Stateful Detections](/v2/docs/stateful-rules) which operate across multiple events.
+The `match` and `non_match` both have the same format: they contain a list of lists of events. Each top list element is a unit test, and the content of a test is a list of events as would be seen by LimaCharlie. The reason for the test to be a list is to accomodate for [Stateful Detections](stateful-rules.md) which operate across multiple events.
 
 Here's an example:
 

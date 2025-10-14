@@ -15,7 +15,7 @@ To leverage detection logic provided by the ruleset:
 
 1. Subscribe your tenant to the Soteria AWS [ruleset extension](https://app.limacharlie.io/add-ons/extension-detail/soteria-rules-aws).
 2. Subscribe your tenant to [tor](/v2/docs/ext-lookup-manager) lookup (provided at no cost).
-3. Configure [AWS CloudTrail](/v2/docs/adapter-types-aws-cloudtrail) and [AWS GuardDuty](/v2/docs/adapter-types-aws-guardduty) adapters to start collecting AWS audit logs.
+3. Configure [AWS CloudTrail](adapter-types-aws-cloudtrail.md) and [AWS GuardDuty](/v2/docs/adapter-types-aws-guardduty) adapters to start collecting AWS audit logs.
 
 ## Enabling Soteria's AWS Rules
 

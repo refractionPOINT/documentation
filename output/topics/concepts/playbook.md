@@ -4,7 +4,7 @@
 
 The Playbook Extension allows you to execute Python playbooks within the context of your Organization in order to automate tasks and customize more complex detections.
 
-The playbooks themselves are managed in the playbook [Hive](/v2/docs/config-hive) Configurations and can be managed across tenants using the Infrastructure as Code extension.
+The playbooks themselves are managed in the playbook [Hive](../reference/config-hive.md) Configurations and can be managed across tenants using the Infrastructure as Code extension.
 
 The execution of a playbook can be triggered through the following means:
 

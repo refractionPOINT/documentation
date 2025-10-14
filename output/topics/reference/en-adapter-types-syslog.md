@@ -6,15 +6,15 @@ Syslog data can also be ingested via other data platforms, such as an S3 bucket.
 
 Syslog events are observed in LimaCharlie as the `text` platform.
 
-A more detailed guide to syslog collection can be found in the [Log Collection Guide](/v2/docs/logcollectionguide).
+A more detailed guide to syslog collection can be found in the [Log Collection Guide](../tasks/logcollectionguide.md).
 
 ## Adapter Deployment
 
-Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/log and streaming formats. For non-streaming methods, please refer to the corresponding Adapter type (such as [S3](/v2/docs/adapter-types-s3), [GCP](/v2/docs/adapter-types-google-cloud-pubsub), etc.)
+Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/log and streaming formats. For non-streaming methods, please refer to the corresponding Adapter type (such as [S3](/v2/docs/adapter-types-s3), [GCP](adapter-types-google-cloud-pubsub.md), etc.)
 
 ### Syslog-specific Configurations
 
-All Adapters have the same common client configuration options, found [here](/v2/docs/adapter-usage). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
+All Adapters have the same common client configuration options, found [here](adapter-usage.md). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
 
 * `port`: port to listen for syslog from.
 * `iface`: the interface name to listen for new connections/packets from, defaults to all.

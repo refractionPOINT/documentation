@@ -18,7 +18,7 @@ To leverage detection logic provided by the ruleset:
 
 1. Subscribe your tenant to the [Soteria Office 365 ruleset extension](https://app.limacharlie.io/add-ons/extension-detail/soteria-rules-o365)
 2. Subscribe your tenant to [tor](https://app.limacharlie.io/add-ons/detail/tor-ips) lookup (provided at no cost).
-3. Configure Office 365 Sensor to start collecting [Office 365 audit logs](/v2/docs/adapter-types-microsoft-365).
+3. Configure Office 365 Sensor to start collecting [Office 365 audit logs](adapter-types-microsoft-365.md).
 
 ## Enabling Soteria's O365 Rules
 

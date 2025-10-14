@@ -23,13 +23,13 @@ The LimaCharlie Adapter allows for real-time ingestion of any structured data, s
 
 Installation Keys are used to install a sensor. By specifying a key during installation the sensor can cryptographically be tied to your account.
 
-Get more details in the [Installation Keys section](/v2/docs/installation-keys).
+Get more details in the [Installation Keys section](../tasks/installation-keys.md).
 
 ### Tags
 
 Sensors can have Tags associated with them. Tags are added during creation or dynamically through the UI, API or Detection & Response Rules.
 
-Get more information in the [Sensor tags section](/v2/docs/sensor-tags).
+Get more information in the [Sensor tags section](sensor-tags.md).
 
 ### Detection & Response Rules
 
@@ -60,11 +60,11 @@ Output is also split between four categories:
 
 Selecting a Stream when creating an Output will select the relevant type of data to flow through it.
 
-More details and exact configuration possibilities in the [Outputs section](/v2/docs/outputs).
+More details and exact configuration possibilities in the [Outputs section](outputs.md).
 
 ### API Keys
 
-The API keys are represented as UUIDs. They are linked to your specific organization and enable you to programmatically acquire authorization tokens that can be used on our REST API. See the [API key section](/v2/docs/api-keys) for more details.
+The API keys are represented as UUIDs. They are linked to your specific organization and enable you to programmatically acquire authorization tokens that can be used on our REST API. See the [API key section](../reference/api-keys.md) for more details.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 

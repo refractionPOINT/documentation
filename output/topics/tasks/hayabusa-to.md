@@ -10,7 +10,7 @@ Looking at this content, I can see it's a single document about "Hayabusa to Big
 
 The BigQuery output integration enables you to send Hayabusa analysis results directly to a BigQuery table, allowing SQL-like queries against forensic event log data at scale. This is particularly valuable for analyzing event logs from tens, hundreds, or thousands of systems simultaneously.
 
-For guidance on using Hayabusa within LimaCharlie, see the [Hayabusa Extension documentation](/v2/docs/ext-hayabusa).
+For guidance on using Hayabusa within LimaCharlie, see the [Hayabusa Extension documentation](../reference/ext-hayabusa.md).
 
 ## Use Cases
 

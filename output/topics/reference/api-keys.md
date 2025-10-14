@@ -54,7 +54,7 @@ https://app.limacharlie.io/user_key_info?secret=<YOUR_USER_API_KEY>&uid=<YOUR_US
 
 ### Ingestion Keys
 
-The [artifact collection](/v2/docs/artifacts) in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
+The [artifact collection](../concepts/artifacts.md) in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
 
 ## Python
 

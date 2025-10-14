@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Adapter allows you to ingest logs from a file, either as a one time operation or by following its output (like `tail -f`). A more detailed guide to file collection can be found in the [Log Collection Guide](/v2/docs/logcollectionguide).
+This Adapter allows you to ingest logs from a file, either as a one time operation or by following its output (like `tail -f`). A more detailed guide to file collection can be found in the [Log Collection Guide](../tasks/logcollectionguide.md).
 
 ### Configuration
 
@@ -23,7 +23,7 @@ Adapter type `file`:
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment).
+Adapter downloads can be found [here](../tasks/adapter-deployment.md).
 
 ```
 chmod +x /path/to/lc_adapter

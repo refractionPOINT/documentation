@@ -1,6 +1,6 @@
 # Payload Manager
 
-[Payloads](/v2/docs/payloads), such as scripts, pre-built binaries, or other files, can be deployed to LimaCharlie sensors for any reason necessary.
+[Payloads](../reference/payloads.md), such as scripts, pre-built binaries, or other files, can be deployed to LimaCharlie sensors for any reason necessary.
 
 One method of adding payloads to an Organization is via the web UI on the payloads screen. This is suitable for ad-hoc payload needs, however does not scale past a handful of payloads, or for multiple organizations requiring access the same payload(s).
 

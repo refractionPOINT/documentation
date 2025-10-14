@@ -45,7 +45,7 @@ To avoid frequent churn, Quota modifications are limited by:
 * Up to one quota decrease per day.
 * Any number of quota increases per day.
 
-The endpoint service includes [Outputs](/v2/docs/outputs) as well as [D&R rules](/v2/docs/detection-and-response) processed in real-time.
+The endpoint service includes [Outputs](outputs.md) as well as [D&R rules](/v2/docs/detection-and-response) processed in real-time.
 
 ### Insight (Retention)
 
@@ -53,7 +53,7 @@ Insight is also a foundational service of LimaCharlie. It provides a flat 1 year
 
 ### Usage Based Billing
 
-See [Sleeper Deployment](/docs/sleeper) for more details.
+See [Sleeper Deployment](sleeper.md) for more details.
 
 | Connected Time | Events Processed | Events Retained |
 | --- | --- | --- |
@@ -61,7 +61,7 @@ See [Sleeper Deployment](/docs/sleeper) for more details.
 
 ### Replay (Retroactive Scanning)
 
-[Replay](/v2/docs/replay) allows you to run [D&R rules](/v2/docs/detection-and-response) or [False Positives](/v2/docs/false-positive-rules) against external or historical telemetry. Not to be confused with Searching for specific IoCs which is a free feature of Insight.
+[Replay](../reference/replay.md) allows you to run [D&R rules](/v2/docs/detection-and-response) or [False Positives](/v2/docs/false-positive-rules) against external or historical telemetry. Not to be confused with Searching for specific IoCs which is a free feature of Insight.
 
 Its pricing is based on the number of events (telemetry) scanned.
 
@@ -73,7 +73,7 @@ Replay jobs can also be launched with a maximum number of operation evaluations 
 
 ### Artifact Collection
 
-[Artifacts](/v2/docs/artifacts) allows you to ingest artifacts like Syslog, Windows Events Logs as well as more complex file formats like Packet Captures (PCAP), Windows Prefetch files, Portable Executable (PE) etc.
+[Artifacts](artifacts.md) allows you to ingest artifacts like Syslog, Windows Events Logs as well as more complex file formats like Packet Captures (PCAP), Windows Prefetch files, Portable Executable (PE) etc.
 
 Ingested files can then be downloaded as originals or viewed in parsed formats right from your browser. You can also run [D&R rules](/v2/docs/detection-and-response) against them.
 
@@ -85,7 +85,7 @@ For example, a file that is 100 MB and is ingested with a retention period of 10
 
 ## Add-Ons
 
-LimaCharlie Add-Ons are billed on the vSensor basis. When an add-on is used with a sensor billed on usage (eg., 1Password), the Add-On is free. For more information and the examples, visit our [billing FAQ](/v2/docs/faq-billing).
+LimaCharlie Add-Ons are billed on the vSensor basis. When an add-on is used with a sensor billed on usage (eg., 1Password), the Add-On is free. For more information and the examples, visit our [billing FAQ](../reference/faq-billing.md).
 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 

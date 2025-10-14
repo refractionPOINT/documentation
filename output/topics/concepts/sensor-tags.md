@@ -120,4 +120,4 @@ When you tag a sensor with *lc:sleeper*, the sensor will keep its connection to 
 
 ### lc:usage
 
-When you tag a sensor with *lc:usage*, the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](/v2/docs/sleeper).
+When you tag a sensor with *lc:usage*, the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](sleeper.md).

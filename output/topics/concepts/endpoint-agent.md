@@ -24,13 +24,13 @@ All sensors register with the cloud, and many of them may go online / offline ov
 
 If the quota is maxed out when a sensor attempts to come online, the sensor will be dismissed and a `sensor_over_quota` event will be emitted in the deployments stream.
 
-For more information, see [Billing](/v2/docs/billing) and [Billing FAQ](/v2/docs/faq-billing).
+For more information, see [Billing](billing.md) and [Billing FAQ](../reference/faq-billing.md).
 
 ## Events
 
 All sensors observe host & network activity, packaging telemetry and sending it to the cloud. The types of observable events are dependent on the sensor's type.
 
-For an introduction to events and their structure, check out [Events](/v2/docs/events).
+For an introduction to events and their structure, check out [Events](events.md).
 
 ## Commands
 
@@ -40,7 +40,7 @@ For an introduction to commands and their usage, check out [Endpoint Agent Comma
 
 ## Installation Keys
 
-Read more about Installation Keys and their recommended usage [here](/v2/docs/installation-keys).
+Read more about Installation Keys and their recommended usage [here](../tasks/installation-keys.md).
 
 ## Sensor Versions & Upgrades
 

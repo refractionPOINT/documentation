@@ -7,7 +7,7 @@ These documents are related but cover different scenarios of the same broader to
 
 LimaCharlie provides flexible options for ingesting logs and telemetry from external sources in real-time. This can be accomplished through two primary methods:
 
-* Run the [LimaCharlie Adapter](/v2/docs/adapters) on premises or on your cloud infrastructure
+* Run the [LimaCharlie Adapter](../concepts/adapters.md) on premises or on your cloud infrastructure
 * Provide credentials for cloud-based sources and allow LimaCharlie cloud to connect directly (available for cloud-based Adapters)
 
 ## Cloud-Based External Sources
@@ -23,7 +23,7 @@ Ensure you have the appropriate `cloudsensor.*` permissions enabled before begin
 1. Navigate to the `Sensors` page of the web app and click `Add Sensor`
 2. Choose an external source you would like to ingest logs or telemetry from, or filter the list to only include `Cloud & External Sources` to see available options
 3. Select the Sensor type
-4. Choose or create an [Installation Key](/v2/docs/installation-keys)
+4. Choose or create an [Installation Key](installation-keys.md)
 5. Enter the name for the sensor
 6. Provide method-specific credentials for connection
 7. If the sensor is cloud-based, you will see the call to action `Complete Cloud Installation`
@@ -230,5 +230,5 @@ For production use, consider the following options:
 * Run within tmux/screen on the Linux host
 * Use the [Docker container](https://hub.docker.com/r/refractionpoint/lc-adapter) with a serverless platform like Cloud Run
 
-For more documentation on configuring Adapters, see the [Adapters documentation](/v2/docs/adapters).
+For more documentation on configuring Adapters, see the [Adapters documentation](../concepts/adapters.md).
 ```

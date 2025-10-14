@@ -28,7 +28,7 @@ Note, LC's Endpoint Agent is easily able to [consume Sysmon events](/v2/docs/ing
 
 ## Executable Tracking
 
-Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality with LimaCharlie with BinLib. More information on that can be found [here](/v2/docs/binlib).
+Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality with LimaCharlie with BinLib. More information on that can be found [here](binlib.md).
 
 ## Endpoint Detection & Response
 

@@ -26,7 +26,7 @@ LimaCharlie offers a 1Password guided configuration in the web UI. From your 1Pa
   + 1Password.ca
   + 1Password.eu
 
-After providing an [Installation Key](/v2/docs/installation-keys), provide the required values and LimaCharlie will establish a Cloud Adapter for 1Password events
+After providing an [Installation Key](../tasks/installation-keys.md), provide the required values and LimaCharlie will establish a Cloud Adapter for 1Password events
 
 ### Infrastructure as Code Deployment
 

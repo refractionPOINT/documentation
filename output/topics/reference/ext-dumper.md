@@ -2,7 +2,7 @@
 
 The Dumper Extension provides the ability to do dumping of several forensic artifacts on Windows hosts. It supports a single action, which is to dump.
 
-It supports multiple targets -- `memory` to dump the memory of the host, and `mft` to dump the MFT of the file system to CSV. The extension then automates the ingestion of the resulting dump (and dump metadata) to LimaCharlie's [Artifact Ingestion system](/v2/docs/artifacts) where it can be downloaded or analyzed, and where you can create rules to automate detections of characteristics of those dumps.
+It supports multiple targets -- `memory` to dump the memory of the host, and `mft` to dump the MFT of the file system to CSV. The extension then automates the ingestion of the resulting dump (and dump metadata) to LimaCharlie's [Artifact Ingestion system](../concepts/artifacts.md) where it can be downloaded or analyzed, and where you can create rules to automate detections of characteristics of those dumps.
 
 ## Usage
 

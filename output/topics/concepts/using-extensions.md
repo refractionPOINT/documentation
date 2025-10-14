@@ -6,7 +6,7 @@ Extensions can be interacted with using two main components:
 
 ### Configurations
 
-Extension Configurations are records in [Hive](/v2/docs/config-hive). Each Extension has its configuration in the Hive record of the same name in the `extension_configuration` Hive.
+Extension Configurations are records in [Hive](../reference/config-hive.md). Each Extension has its configuration in the Hive record of the same name in the `extension_configuration` Hive.
 
 These configurations are manipulated by simply storing the value in the record, LimaCharlie takes care of validating and notifying the Extension with the new value.
 

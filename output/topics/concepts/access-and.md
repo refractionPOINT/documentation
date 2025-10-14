@@ -14,7 +14,7 @@ One user can be a member of multiple organizations.
 
 An API Key represents a set of permissions and are used to interact with LimaCharlie.
 
-Full documentation on API Keys can be [here](/v2/docs/api-keys).
+Full documentation on API Keys can be [here](../reference/api-keys.md).
 
 ## Groups
 

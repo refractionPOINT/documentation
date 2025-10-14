@@ -30,7 +30,7 @@ Note that Artifact Collection configurations are synchronized with sensors every
 
 There are multiple ways to ingest artifacts within LimaCharlie, depending on the need of the user.
 
-**Please note, if you are looking for real-time streaming of a file (such as a system log), we'd recommend using the** `file`[**adapter**](/v2/docs/adapters) **instead of Artifact Collection.**
+**Please note, if you are looking for real-time streaming of a file (such as a system log), we'd recommend using the** `file`[**adapter**](adapters.md) **instead of Artifact Collection.**
 
 ### Using LC Sensors
 
@@ -93,7 +93,7 @@ which would automatically be expanded for you as
 tcp port 80 and not lc.aaa.limacharlie.io and not ...
 ```
 
-These rules get synced with agents every 10 minutes. Once a capture on the agent reaches a certain threshold (about 30MB), the capture will get automatically sent to the LimaCharlie cloud as an artifact with the retention specified in the rule. From there you can specify rules to process further the pcap data automatically, like using the [Zeek extension](/v2/docs/ext-zeek).
+These rules get synced with agents every 10 minutes. Once a capture on the agent reaches a certain threshold (about 30MB), the capture will get automatically sent to the LimaCharlie cloud as an artifact with the retention specified in the rule. From there you can specify rules to process further the pcap data automatically, like using the [Zeek extension](../reference/ext-zeek.md).
 
 ### Using the CLI
 

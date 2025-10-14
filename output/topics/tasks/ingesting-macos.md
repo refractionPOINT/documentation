@@ -16,4 +16,4 @@ If you ingest MacOS Unified Logs with a `mul://` pattern, they are streamed in r
 
 After you apply those, you should start seeing your MacOS Unified Logs data coming through for your endpoints within 10 minutes. You can verify this by going into the Timeline view and choosing `MUL` event type.
 
-Also see: [Artifacts](/v1/docs/telemetry-artifacts)
+Also see: [Artifacts](../concepts/telemetry-artifacts.md)

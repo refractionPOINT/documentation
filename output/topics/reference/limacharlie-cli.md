@@ -1,6 +1,6 @@
 # LimaCharlie CLI
 
-LimaCharlie CLI Extension allows you to issue [LimaCharlie CLI commands](/v2/docs/limacharlie-sdk) using extension requests.
+LimaCharlie CLI Extension allows you to issue [LimaCharlie CLI commands](../concepts/limacharlie-sdk.md) using extension requests.
 
 Repo - <https://github.com/refractionPOINT/python-limacharlie>
 

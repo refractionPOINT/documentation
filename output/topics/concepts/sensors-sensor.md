@@ -4,9 +4,9 @@ Sensor commands offer a safe way to interact with a sensor's host either for inv
 
 * [Artifact Collection](/v1/docs/sensor-commands-artifact-collection)
   + `artifact_get`
-* [Anomalies](/v1/docs/sensor-commands-anomalies)
+* [Anomalies](../reference/sensor-commands-anomalies.md)
   + `hidden_module_scan`
-* [Documents](/v1/docs/sensor-commands-documents)
+* [Documents](../reference/sensor-commands-documents.md)
   + `doc_cache_get`
 * [File and Registry Integrity Monitoring](/v1/docs/sensor-commands-fim)
   + `fim_add`
@@ -30,7 +30,7 @@ Sensor commands offer a safe way to interact with a sensor's host either for inv
   + `set_performance_mode`
   + `restart`
   + `uninstall`
-* [Memory](/v1/docs/sensor-commands-memory)
+* [Memory](../reference/sensor-commands-memory.md)
   + `get_debug_data`
   + `mem_find_handle`
   + `mem_find_string`
@@ -38,7 +38,7 @@ Sensor commands offer a safe way to interact with a sensor's host either for inv
   + `mem_map`
   + `mem_read`
   + `mem_strings`
-* [Mitigation](/v1/docs/sensor-commands-mitigation)
+* [Mitigation](../reference/sensor-commands-mitigation.md)
   + `deny_tree`
   + `rejoin_network`
   + `segregate_network`
@@ -59,7 +59,7 @@ Sensor commands offer a safe way to interact with a sensor's host either for inv
 * [Payloads](/v1/docs/sensor-commands-payloads)
   + `run`
   + `put`
-* [Registry](/v1/docs/sensor-commands-registry)
+* [Registry](../reference/sensor-commands-registry.md)
   + `reg_list`
 * [System](/v1/docs/sensor-commands-system)
   + `logoff`
@@ -84,7 +84,7 @@ Regardless of which you choose, sent commands will be acknowledged immediately w
 
 **Please ensure that you have enabled the appropriate response event(s) in Event Collection to ensure that you will receive the Sensor response.**
 
-This non-blocking approach makes responses accessible via the [event streams](/v1/docs/sensors) passing through Detection & Response rules and Outputs.
+This non-blocking approach makes responses accessible via the [event streams](sensors.md) passing through Detection & Response rules and Outputs.
 
 ## Structure
 

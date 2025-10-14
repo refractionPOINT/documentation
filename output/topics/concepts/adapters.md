@@ -1,6 +1,6 @@
 # Adapters
 
-The LimaCharlie Adapter provides real-time ingestion of logs and other telemetry. Adapters allow you to send *any* data to LimaCharlie, which becomes an observable telemetry stream. All ingested data is recognized as a first-class data source, allowing you to write [detection & response rules](/v2/docs/detection-and-response) directly against Adapter events or [output](/v2/docs/outputs) Adapter data to other destinations.
+The LimaCharlie Adapter provides real-time ingestion of logs and other telemetry. Adapters allow you to send *any* data to LimaCharlie, which becomes an observable telemetry stream. All ingested data is recognized as a first-class data source, allowing you to write [detection & response rules](/v2/docs/detection-and-response) directly against Adapter events or [output](outputs.md) Adapter data to other destinations.
 
 The LimaCharlie Adapter:
 
@@ -11,7 +11,7 @@ The LimaCharlie Adapter:
 
 For certain well known Adapter sources, we offer built-in mapping and recognition of events. This allows you to ingest a known source without the need to parse event structure yourself. Well-known Adapter types include cloud platforms, various third-party applications, and sources like Windows Event Logs.
 
-Key concepts of Adapters include [deployment options](/v2/docs/adapter-deployment) and [usage/configurations](/v2/docs/adapter-usage).
+Key concepts of Adapters include [deployment options](../tasks/adapter-deployment.md) and [usage/configurations](../reference/adapter-usage.md).
 
 ## Text Adapters
 

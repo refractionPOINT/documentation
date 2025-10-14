@@ -8,7 +8,7 @@ LimaCharlie Query Language (LCQL) provides a flexible, intuitive and interactive
 * Analyze all volume mounts and unmounts on macOS devices
 * And many more!!!
 
-The steps below walk you through creating your own LCQL queries. If you're looking for samples or LCQL inspiration, check out our [LCQL Examples](/v2/docs/lcql-examples) page.
+The steps below walk you through creating your own LCQL queries. If you're looking for samples or LCQL inspiration, check out our [LCQL Examples](../reference/lcql-examples.md) page.
 
 > **Beta Feature**: LCQL is currently in Beta, and features may change in the future.
 

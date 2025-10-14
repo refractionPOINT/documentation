@@ -250,7 +250,7 @@ or
 
 The secrets hive allows you to decouple secrets from their usage or configuration across LimaCharlie. This enables you to grant permissions to users that allow them to see the configuration of an output without having access to the associated credentials.
 
-The most common usage is for storing secret keys used by various [Adapters](/v2/docs/adapters) or [Outputs](/v2/docs/outputs). By referencing secrets within the Config Hive, you can configure these services without needing to reveal secret keys to all users.
+The most common usage is for storing secret keys used by various [Adapters](../concepts/adapters.md) or [Outputs](../concepts/outputs.md). By referencing secrets within the Config Hive, you can configure these services without needing to reveal secret keys to all users.
 
 ### Format
 

@@ -14,7 +14,7 @@ Execute Atomic Red Team tests to validate detection rules and security controls.
 
 Monitor and validate system integrity across endpoints. The Integrity extension provides continuous monitoring of critical system files, configurations, and binaries to detect unauthorized changes.
 
-[View Full Documentation](/docs/ext-integrity)
+[View Full Documentation](../reference/ext-integrity.md)
 
 ## Threat Detection & Analysis
 
@@ -22,13 +22,13 @@ Monitor and validate system integrity across endpoints. The Integrity extension 
 
 Deploy and manage YARA rules for malware detection and threat hunting. The YARA extension enables real-time scanning of files, memory, and processes using custom or community YARA signatures.
 
-[View Full Documentation](/docs/ext-yara)
+[View Full Documentation](../reference/ext-yara.md)
 
 ### YARA Manager
 
 Centralized management interface for YARA rules across your organization. YARA Manager simplifies rule deployment, versioning, and distribution to sensors at scale.
 
-[View Full Documentation](/docs/ext-yara-manager)
+[View Full Documentation](../reference/ext-yara-manager.md)
 
 ### VirusTotal Integration
 
@@ -42,7 +42,7 @@ Integrate VirusTotal threat intelligence for file and URL analysis. This integra
 
 Deploy Velociraptor for endpoint visibility and forensic investigations. This extension brings Velociraptor's powerful artifact collection and query capabilities into the LimaCharlie platform.
 
-[View Full Documentation](/docs/ext-velociraptor)
+[View Full Documentation](../reference/ext-velociraptor.md)
 
 ### Velociraptor to BigQuery
 
@@ -54,25 +54,25 @@ Stream Velociraptor artifacts directly to BigQuery for analysis. This extension 
 
 Process and analyze timeline data using the Plaso framework. The Plaso extension automates super timeline creation from disk images and file systems for forensic investigations.
 
-[View Full Documentation](/docs/ext-plaso)
+[View Full Documentation](../reference/ext-plaso.md)
 
 ### Hayabusa
 
 Fast Windows Event Log forensics with Hayabusa integration. Hayabusa provides rapid threat hunting and detection in Windows Event Logs using high-speed Sigma rule processing.
 
-[View Full Documentation](/docs/ext-hayabusa)
+[View Full Documentation](../reference/ext-hayabusa.md)
 
 ### Zeek
 
 Network security monitoring using Zeek (formerly Bro). This extension processes network traffic to generate detailed protocol logs and detect suspicious network activity.
 
-[View Full Documentation](/docs/ext-zeek)
+[View Full Documentation](../reference/ext-zeek.md)
 
 ### Artifact
 
 Collect and analyze forensic artifacts from endpoints. The Artifact extension provides pre-built and custom artifact collection capabilities for incident response and investigations.
 
-[View Full Documentation](/docs/ext-artifact)
+[View Full Documentation](../reference/ext-artifact.md)
 
 ## Data Collection & Management
 
@@ -80,7 +80,7 @@ Collect and analyze forensic artifacts from endpoints. The Artifact extension pr
 
 Configure event exfiltration and collection workflows. The Exfil extension manages how events are collected, filtered, and forwarded to external systems or storage locations.
 
-[View Full Documentation](/docs/ext-exfil)
+[View Full Documentation](../reference/ext-exfil.md)
 
 ### Lookup Manager
 
@@ -92,7 +92,7 @@ Manage threat intelligence lookups and enrichment data. Lookup Manager maintains
 
 Binary library management for detection engineering. BinLib provides a repository of known-good and known-bad binaries to improve detection accuracy and reduce false positives.
 
-[View Full Documentation](/docs/binlib)
+[View Full Documentation](binlib.md)
 
 ## Automation & Operations
 
@@ -112,7 +112,7 @@ Automatically manage inactive or obsolete sensors. Sensor Cull identifies and re
 
 Manage infrastructure resources and configurations. The Infrastructure extension provides centralized management of cloud resources, network configurations, and deployment automation.
 
-[View Full Documentation](/docs/ext-infrastructure)
+[View Full Documentation](../reference/ext-infrastructure.md)
 
 ## Integrations
 
@@ -120,13 +120,13 @@ Manage infrastructure resources and configurations. The Infrastructure extension
 
 SMS and voice notification integration via Twilio. This extension enables alert delivery through SMS messages and voice calls for critical security events.
 
-[View Full Documentation](/docs/ext-twilio)
+[View Full Documentation](../reference/ext-twilio.md)
 
 ### Govee
 
 IoT device integration for physical security indicators. The Govee extension controls smart lights and devices to provide visual indicators of security events and system status.
 
-[View Full Documentation](/docs/ext-govee)
+[View Full Documentation](../reference/ext-govee.md)
 
 ## Development
 

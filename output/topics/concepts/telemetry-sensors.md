@@ -24,7 +24,7 @@ If the quota is maxed out when a sensor attempts to come online, the sensor will
 
 All sensors observe host & network activity, packaging telemetry and sending it to the cloud. The types of observable events are dependent on the sensor's type.
 
-> For an introduction to events and their structure, check out [Events](/v1/docs/reference-events).
+> For an introduction to events and their structure, check out [Events](../reference/reference-events.md).
 
 ## Commands
 

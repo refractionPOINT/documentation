@@ -52,7 +52,7 @@ In an administrative command prompt issue the command `sc query rphcpsvc` and co
 
 ## Uninstalling the Agent
 
-For additional agent uninstall options, see [Endpoint Agent Uninstallation](/v2/docs/endpoint-agent-uninstallation)
+For additional agent uninstall options, see [Endpoint Agent Uninstallation](endpoint-agent-uninstallation.md)
 
 ### Manual Uninstallation
 

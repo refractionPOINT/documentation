@@ -2,7 +2,7 @@
 
 ## Overview
 
-Our BigQuery output allows you to send Velociraptor hunt results to a BigQuery table allowing SQL-like queries against the hunt data. This is very similar to using [Velociraptor notebooks](https://docs.velociraptor.app/docs/vql/notebooks/), allowing you to perform hunt analysis at scale against massive datasets. For guidance on using LimaCharlie to execute Velociraptor hunts, see [Velociraptor Extension](/v2/docs/ext-velociraptor).
+Our BigQuery output allows you to send Velociraptor hunt results to a BigQuery table allowing SQL-like queries against the hunt data. This is very similar to using [Velociraptor notebooks](https://docs.velociraptor.app/docs/vql/notebooks/), allowing you to perform hunt analysis at scale against massive datasets. For guidance on using LimaCharlie to execute Velociraptor hunts, see [Velociraptor Extension](../reference/ext-velociraptor.md).
 
 Imagine you wanted to obtain running processes from 10s, 100s, or 1000s of systems using Velociraptor. You could easily issue a `Windows.System.Pslist` hunt across these systems, and let LimaCharlie push Velociraptor to the endpoints and collect the results. The issue is, if you want to run queries against all of the data returned by the hunts, you'll need a database-like tool to do that which is where BigQuery comes in.
 

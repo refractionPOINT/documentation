@@ -8,7 +8,7 @@ This Adapter allows you to ingest events from a Google Cloud Pubsub subscription
 
 Adapter Type: `pubsub`
 
-* `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
+* `client_options`: common configuration for adapter as defined [here](../concepts/adapters.md).
 * `sub_name`: the name of the subscription to subscribe to.
 * `service_account_creds`: the string version of the JSON credentials for a (Google) Service Account to use accessing the subscription.
 * `project_name`: project name where the `sub_name` exists.

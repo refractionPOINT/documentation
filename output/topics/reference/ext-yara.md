@@ -24,7 +24,7 @@ Files on disk can be scanned using a Sensor command. You can trigger a Manual Sc
 
 ## Rules
 
-This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](/v2/docs/ext-yara-manager). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](/v2/docs/reference-authentication-resource-locator) to a YARA rule.
+This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](ext-yara-manager.md). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](/v2/docs/reference-authentication-resource-locator) to a YARA rule.
 
 ## Scanners
 

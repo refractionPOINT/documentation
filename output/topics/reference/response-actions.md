@@ -32,7 +32,7 @@ The above example means that the `evil-process-detected` detection will be gener
 
 The `is_global: true` means that the suppression should operate globally within the Org (tenant), if the value was `false`, the suppression would be scoped per-Sensor.
 
-The `keys` parameter is a list of strings that support [templating](/v2/docs/template-strings-and-transforms). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil-process detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then *all* actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
+The `keys` parameter is a list of strings that support [templating](template-strings-and-transforms.md). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil-process detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then *all* actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
 
 > **Supported Time Period Formats**
 >
@@ -150,7 +150,7 @@ Perform an asynchronous request to an extension the Organization is subscribed t
     pid: event.PROCESS_ID
 ```
 
-The `extension request` parameters will vary depending on the extension (see the relevant extension's schema). The `extension request` parameter is a [transform](/v2/docs/template-strings-and-transforms).
+The `extension request` parameters will vary depending on the extension (see the relevant extension's schema). The `extension request` parameter is a [transform](template-strings-and-transforms.md).
 
 You can also specify a `based on report: true` parameter. When true (defaults to false), the transform for the `extension request` will be based on the latest `report` action's report instead of the original event. This means you MUST have a `report` action *before* the `extension request`.
 
@@ -188,7 +188,7 @@ Removes the seal status of a sensor that had it set using `seal`.
 
 ### output
 
-Forwards the matched event to an Output identified by `name` in the `tailored` [stream](/v2/docs/outputs).
+Forwards the matched event to an Output identified by `name` in the `tailored` [stream](../concepts/outputs.md).
 
 This allows you to create highly granular Outputs for specific events.
 
@@ -227,7 +227,7 @@ Reports the match as a detection. Think of it as an alert. Detections go a few p
 * The organization's Detections page (if `insight` is enabled)
 * The D&R rule engine, for chaining detections
 
-The `name`, `metadata` and `detect_data` parameters support [string templates](/v2/docs/template-strings-and-transforms) like `detected {{ .cat }} on {{ .routing.hostname }}`, note that the context of the transform is the detection itself and not the original event, so you would refer to `.detect.event.USER_NAME` and not `.event.USER_NAME` for example.
+The `name`, `metadata` and `detect_data` parameters support [string templates](template-strings-and-transforms.md) like `detected {{ .cat }} on {{ .routing.hostname }}`, note that the context of the transform is the detection itself and not the original event, so you would refer to `.detect.event.USER_NAME` and not `.event.USER_NAME` for example.
 
 The `metadata` is generally used to populate information about the rule, its author, remediation etc.
 
@@ -257,7 +257,7 @@ Sends a task in the `command` parameter to the sensor that the event under evalu
 
 An optional `investigation` parameter can be given to create a unique identifier for the task and any events emitted from the sensor as a result of the task.
 
-The `command` parameter supports [string templates](/v2/docs/template-strings-and-transforms) like `artifact_get {{ .event.FILE_PATH }}`.
+The `command` parameter supports [string templates](template-strings-and-transforms.md) like `artifact_get {{ .event.FILE_PATH }}`.
 
 > To view all possible commands, see [Endpoint Agent Commands](/v2/docs/reference-endpoint-agent-commands)
 

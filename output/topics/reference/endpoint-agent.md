@@ -17,9 +17,9 @@ Commands can be sent to Sensors via:
 
 Regardless of which you choose, sent commands will be acknowledged immediately with an empty response, followed by a `CLOUD_NOTIFICATION` event being sent by the sensor. The content of command outputs are delivered as sensor [events](/v2/docs/endpoint-agent-events-overview) suffixed with `_REP`, depending on the command.
 
-**Please ensure that you have enabled the appropriate response event(s) in** [**Event Collection**](/v2/docs/ext-exfil) **to ensure that you will receive the Sensor response.**
+**Please ensure that you have enabled the appropriate response event(s) in** [**Event Collection**](ext-exfil.md) **to ensure that you will receive the Sensor response.**
 
-This non-blocking approach makes responses accessible via the [event streams](/v2/docs/sensors) passing through Detection & Response rules and Outputs.
+This non-blocking approach makes responses accessible via the [event streams](../concepts/sensors.md) passing through Detection & Response rules and Outputs.
 
 ### Command Structure
 
@@ -70,11 +70,11 @@ This means that as a general statement, unless you want to embed quoted strings 
 
 ## Endpoint Agent Events Overview
 
-This section describes and provides information about the various events emitted by the LimaCharlie Endpoint Agent Sensor. These events can be leveraged in [D&R rules](/v2/docs/detection-and-response) and queried with [LCQL](/v2/docs/lcql).
+This section describes and provides information about the various events emitted by the LimaCharlie Endpoint Agent Sensor. These events can be leveraged in [D&R rules](/v2/docs/detection-and-response) and queried with [LCQL](../concepts/lcql.md).
 
 > **Important note about Event Collection**
 >
-> Only events enabled in the Exfil configuration will be shipped by the endpoint agent. If you're not seeing a specific event you expect, make sure that the desired event type is enabled in the [Exfil extension](/v2/docs/ext-exfil) configuration. Ensure your Exfil settings are properly configured to capture all required event types for your use case.
+> Only events enabled in the Exfil configuration will be shipped by the endpoint agent. If you're not seeing a specific event you expect, make sure that the desired event type is enabled in the [Exfil extension](ext-exfil.md) configuration. Ensure your Exfil settings are properly configured to capture all required event types for your use case.
 
 ### Atoms
 

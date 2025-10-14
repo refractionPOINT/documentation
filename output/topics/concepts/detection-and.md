@@ -2,7 +2,7 @@
 
 Detection & Response rules automate actions based on the real-time events streaming into LimaCharlie. Each rule has two YAML descriptors: one that describes what to detect, and another that describes how to respond.
 
-Note: It's recommended to read about [Events](/v2/docs/events) before diving into rules.
+Note: It's recommended to read about [Events](events.md) before diving into rules.
 
 ## A Basic Rule
 
@@ -38,7 +38,7 @@ Detections must specify an `event` (or `events`), and may optionally specify a `
 * `artifact`: artifacts collected via REST API or via `artifact_get` Sensor command
 * `artifact_event`: lifecycle events around artifacts such as ingestion
 
-For a full list of events with examples, see [Events Reference](/v2/docs/events).
+For a full list of events with examples, see [Events Reference](events.md).
 
 Most of this page focuses on `edr` events. For information about other targets, see [Detection on Alternate Targets](/v2/docs/detection-on-alternate-targets).
 
@@ -184,7 +184,7 @@ In most detections `value` will be used to specify a known value like all the pr
 
 Values from events can also be forwarded in response actions using `value: <<event/FILE_PATH>>` double angle bracket syntax.
 
-> To see how sensor variables and lookback values are used, see the `add var / del var` action in [Reference: Response Actions](/v2/docs/response-actions).
+> To see how sensor variables and lookback values are used, see the `add var / del var` action in [Reference: Response Actions](../reference/response-actions.md).
 
 ## Response
 
@@ -249,7 +249,7 @@ Which D&R Rule Triggered a Command?
 
 To determine which D&R rule triggered a command on an endpoint, navigate to the `Platform Logs` section. If a command was triggered by a D&R rule, the audit log will show the associate rule. If the command was sent via the API, the audit logs will show the API key name.
 
-> To learn about all possible actions, see [Reference: Response Actions](/v2/docs/response-actions).
+> To learn about all possible actions, see [Reference: Response Actions](../reference/response-actions.md).
 
 ## Putting It All Together
 

@@ -88,7 +88,7 @@ rules:
     SSH from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
 ```
 
-The `report` uses [Go Templates](/v2/docs/template-strings-and-transforms) to include the offending IP address in the detection name.
+The `report` uses [Go Templates](template-strings-and-transforms.md) to include the offending IP address in the detection name.
 
 ### RDP from External IP Address
 
@@ -117,7 +117,7 @@ rules:
     RDP from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
 ```
 
-The `report` uses [Go Templates](/v2/docs/template-strings-and-transforms) to include the offending IP address in the detection name.
+The `report` uses [Go Templates](template-strings-and-transforms.md) to include the offending IP address in the detection name.
 
 ### Suspicious Windows Executable Names
 
@@ -252,7 +252,7 @@ path: event/FILE_PATH
 
 > **Resource Utilization**
 >
-> Performing CPU intensive actions such as YARA scanning can impact endpoint performance if not optimized. Be sure to always test rules that carry out sensor commands (like the examples below) before deploying at scale in production. Use [suppression](/v2/docs/response-actions#suppression) to prevent runaway conditions.
+> Performing CPU intensive actions such as YARA scanning can impact endpoint performance if not optimized. Be sure to always test rules that carry out sensor commands (like the examples below) before deploying at scale in production. Use [suppression](response-actions.md) to prevent runaway conditions.
 
 Here are a few examples of using D&R rules to initiate automatic YARA scans on an endpoint. Note that the defined YARA rule must exist in your org before using it in a D&R rule.
 

@@ -27,7 +27,7 @@ LimaCharlie integrates with several providers, such as S3, Google Cloud, or Slac
 
 > **Allow Lists**
 >
-> Looking to add LimaCharlie outputs to an allow list? See more details [here](/v2/docs/output-allowlisting).
+> Looking to add LimaCharlie outputs to an allow list? See more details [here](../tasks/output-allowlisting.md).
 
 Destinations are the recipients of LimaCharlie streams. Oftentimes, users will rely on LimaCharlie for 365 data retention, while pushing high-fidelity alerts or other platform logs to another source for subsequent auditing or ticketing. As such, we have created native and/or easy-to-use destination options.
 
@@ -54,7 +54,7 @@ All destinations can be configured with the following options:
 * `is_delete_on_failure`: if an error occurs during output, delete the output automatically.
 * `is_prefix_data`: wrap JSON events in a dictionary with the event\_type as the key and original event as value.
 * `sample_rate`: limits data sent to Output to be 1/sample\_rate.
-* `custom_transform`: a [template and transforms](/v2/docs/template-strings-and-transforms) to apply to the JSON data as a last output step.
+* `custom_transform`: a [template and transforms](../reference/template-strings-and-transforms.md) to apply to the JSON data as a last output step.
 
 #### Specific Parameters
 
@@ -66,7 +66,7 @@ See [Output Destinations](/v2/docs/output-destinations) for a list of supported 
 
 ## Transforming Output Data
 
-To learn how you can manipulate data prior to sending to your Output Destination, read about [Transforming Output Data](/v2/docs/template-strings-and-transforms#transformingoutputdata).
+To learn how you can manipulate data prior to sending to your Output Destination, read about [Transforming Output Data](../reference/template-strings-and-transforms.md).
 
 ## Testing Outputs
 

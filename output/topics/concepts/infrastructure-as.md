@@ -95,4 +95,4 @@ The web application offers two main modes of syncing:
 
 Apply mode can be especially useful for applying partial configs from online examples and community solutions. LimaCharlie has a [GitHub repository](https://github.com/refractionPOINT/templates) with some starter config templates.
 
-For finer-grained control of config, or updating configs as part of a CI pipeline, we recommend reading the documentation for [infrastructure service](/v2/docs/ext-infrastructure).
+For finer-grained control of config, or updating configs as part of a CI pipeline, we recommend reading the documentation for [infrastructure service](../reference/ext-infrastructure.md).

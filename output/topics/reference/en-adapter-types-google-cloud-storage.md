@@ -10,7 +10,7 @@ Note that this adapter operates as a sink by default, meaning it will "consume" 
 
 Adapter Type: `gcs`
 
-* `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
+* `client_options`: common configuration for adapter as defined [here](../concepts/adapters.md).
 * `bucket_name`: the name of the bucket to ingest from.
 * `service_account_creds`: the string version of the JSON credentials for a (Google) Service Account to use accessing the bucket.
 * `prefix`: only ingest files with a given path prefix.

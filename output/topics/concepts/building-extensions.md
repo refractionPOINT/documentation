@@ -119,7 +119,7 @@ Afterwards, we recommend you define the data_type and other optional fields furt
 
 #### Config Schema (optional)
 
-The config schema is a description of what the extension's config should look like, when stored as a Hive record in the `extension_configuration` [Hive](/v2/docs/config-hive) for convenience.
+The config schema is a description of what the extension's config should look like, when stored as a Hive record in the `extension_configuration` [Hive](../reference/config-hive.md) for convenience.
 
 Not all extensions will have a configuration, feel free to reach out on the community slack if you need help determining whether or not your extension needs a configuration.
 

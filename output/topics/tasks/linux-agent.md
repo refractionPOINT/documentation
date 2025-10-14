@@ -16,7 +16,7 @@ All versions of Debian and CentOS starting around Debian 5 should be supported. 
 
 ### Deb Package
 
-If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](https://docs.limacharlie.io/docs/endpoint-agent-installation#downloading-the-agents).
+If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](endpoint-agent-installation.md).
 
 The deb package will install the LimaCharlie sensor using a `systemd` service, or if unavailable a `system V` service.
 
@@ -91,7 +91,7 @@ By default, the Linux sensor makes use of Netlink if available. In some rare con
 
 ## Uninstalling the Agent
 
-For additional agent uninstall options, see [Endpoint Agent Uninstallation](/v2/docs/endpoint-agent-uninstallation)
+For additional agent uninstall options, see [Endpoint Agent Uninstallation](endpoint-agent-uninstallation.md)
 
 Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (`dpkg` file), you should uninstall via the same mechanism. If you installed via the SystemV installation method, please utilize the bottom of [this script](https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97).
 

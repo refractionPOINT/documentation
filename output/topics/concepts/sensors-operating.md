@@ -14,46 +14,46 @@ Looking for alternative installation methods?
 
 ## Supported Events
 
-* [`AUTORUN_CHANGE`](/v1/docs/reference-events#autorun_change)
-* [`CLOUD_NOTIFICATION`](/v1/docs/reference-events#cloud_notification)
-* [`CODE_IDENTITY`](/v1/docs/reference-events#code_identity)
-* [`CONNECTED`](/v1/docs/reference-events#connected)
-* [`DATA_DROPPED`](/v1/docs/reference-events#data_dropped)
-* [`DNS_REQUEST`](/v1/docs/reference-events#dns_request)
-* [`EXEC_OOB`](/v1/docs/reference-events#exec_oob)
-* [`FILE_CREATE`](/v1/docs/reference-events#file_create)
-* [`FILE_DELETE`](/v1/docs/reference-events#file_delete)
-* [`FILE_MODIFIED`](/v1/docs/reference-events#file_modified)
-* [`FILE_TYPE_ACCESSED`](/v1/docs/reference-events#file_type_accessed)
-* [`FIM_HIT`](/v1/docs/reference-events#fim_hit)
-* [`HIDDEN_MODULE_DETECTED`](/v1/docs/reference-events#hidden_module_detected)
-* [`MODULE_LOAD`](/v1/docs/reference-events#module_load) -- *temporarily disabled*
-* [`MODULE_MEM_DISK_MISMATCH`](/v1/docs/reference-events#module_mem_disk_mismatch)
-* [`NETWORK_CONNECTIONS`](/v1/docs/reference-events#network_connections)
-* [`NETWORK_SUMMARY`](/v1/docs/reference-events#network_summary)
-* [`NEW_DOCUMENT`](/v1/docs/reference-events#new_document)
-* [`NEW_PROCESS`](/v1/docs/reference-events#new_process)
-* [`NEW_TCP4_CONNECTION`](/v1/docs/reference-events#new_tcp4_connection)
-* [`NEW_UDP4_CONNECTION`](/v1/docs/reference-events#new_udp4_connection)
-* [`NEW_TCP6_CONNECTION`](/v1/docs/reference-events#new_tcp6_connection)
-* [`NEW_UDP6_CONNECTION`](/v1/docs/reference-events#new_udp6_connection)
-* [`RECEIPT`](/v1/docs/reference-events#receipt)
-* [`SERVICE_CHANGE`](/v1/docs/reference-events#service_change)
-* [`SHUTTING_DOWN`](/v1/docs/reference-events#shutting_down)
+* [`AUTORUN_CHANGE`](../reference/reference-events.md)
+* [`CLOUD_NOTIFICATION`](../reference/reference-events.md)
+* [`CODE_IDENTITY`](../reference/reference-events.md)
+* [`CONNECTED`](../reference/reference-events.md)
+* [`DATA_DROPPED`](../reference/reference-events.md)
+* [`DNS_REQUEST`](../reference/reference-events.md)
+* [`EXEC_OOB`](../reference/reference-events.md)
+* [`FILE_CREATE`](../reference/reference-events.md)
+* [`FILE_DELETE`](../reference/reference-events.md)
+* [`FILE_MODIFIED`](../reference/reference-events.md)
+* [`FILE_TYPE_ACCESSED`](../reference/reference-events.md)
+* [`FIM_HIT`](../reference/reference-events.md)
+* [`HIDDEN_MODULE_DETECTED`](../reference/reference-events.md)
+* [`MODULE_LOAD`](../reference/reference-events.md) -- *temporarily disabled*
+* [`MODULE_MEM_DISK_MISMATCH`](../reference/reference-events.md)
+* [`NETWORK_CONNECTIONS`](../reference/reference-events.md)
+* [`NETWORK_SUMMARY`](../reference/reference-events.md)
+* [`NEW_DOCUMENT`](../reference/reference-events.md)
+* [`NEW_PROCESS`](../reference/reference-events.md)
+* [`NEW_TCP4_CONNECTION`](../reference/reference-events.md)
+* [`NEW_UDP4_CONNECTION`](../reference/reference-events.md)
+* [`NEW_TCP6_CONNECTION`](../reference/reference-events.md)
+* [`NEW_UDP6_CONNECTION`](../reference/reference-events.md)
+* [`RECEIPT`](../reference/reference-events.md)
+* [`SERVICE_CHANGE`](../reference/reference-events.md)
+* [`SHUTTING_DOWN`](../reference/reference-events.md)
 * `SSH_LOGIN`
 * `SSH_LOGOUT`
-* [`STARTING_UP`](/v1/docs/reference-events#starting_up)
-* [`TERMINATE_PROCESS`](/v1/docs/reference-events#terminate_process)
-* [`TERMINATE_TCP4_CONNECTION`](/v1/docs/reference-events#terminate_tcp4_connection)
-* [`TERMINATE_UDP4_CONNECTION`](/v1/docs/reference-events#terminate_udp4_connection)
-* [`TERMINATE_TCP6_CONNECTION`](/v1/docs/reference-events#terminate_tcp6_connection)
-* [`TERMINATE_UDP6_CONNECTION`](/v1/docs/reference-events#terminate_udp6_connection)
+* [`STARTING_UP`](../reference/reference-events.md)
+* [`TERMINATE_PROCESS`](../reference/reference-events.md)
+* [`TERMINATE_TCP4_CONNECTION`](../reference/reference-events.md)
+* [`TERMINATE_UDP4_CONNECTION`](../reference/reference-events.md)
+* [`TERMINATE_TCP6_CONNECTION`](../reference/reference-events.md)
+* [`TERMINATE_UDP6_CONNECTION`](../reference/reference-events.md)
 * `USER_LOGIN`
 * `USER_LOGOUT`
-* [`USER_OBSERVED`](/v1/docs/reference-events#user_observed)
-* [`VOLUME_MOUNT`](/v1/docs/reference-events#volume_mount)
-* [`VOLUME_UNMOUNT`](/v1/docs/reference-events#volume_unmount)
-* [`YARA_DETECTION`](/v1/docs/reference-events#yara_detection)
+* [`USER_OBSERVED`](../reference/reference-events.md)
+* [`VOLUME_MOUNT`](../reference/reference-events.md)
+* [`VOLUME_UNMOUNT`](../reference/reference-events.md)
+* [`YARA_DETECTION`](../reference/reference-events.md)
 
 ## Supported Commands
 
@@ -105,10 +105,10 @@ Looking for alternative installation methods?
 
 Given configured paths to collect from, the Mac sensor can batch upload logs / artifacts directly from the host.
 
-Learn more about collecting Artifacts [here](/v1/docs/artifacts).
+Learn more about collecting Artifacts [here](artifacts.md).
 
 ## Payloads
 
-For more complex needs not supported by [Events](/v1/docs/detecting-related-events), [Artifacts](/v1/docs/artifacts), or [Commands](/v1/docs/sensor-commands), it's possible to execute payloads on hosts via the Mac sensor.
+For more complex needs not supported by [Events](/v1/docs/detecting-related-events), [Artifacts](artifacts.md), or [Commands](/v1/docs/sensor-commands), it's possible to execute payloads on hosts via the Mac sensor.
 
-Learn more about executing Payloads [here](/v1/docs/payloads).
+Learn more about executing Payloads [here](../reference/payloads.md).
