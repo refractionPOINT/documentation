@@ -8,6 +8,7 @@ Orchestrates all phases of the pipeline:
 3. Convert - HTML to raw Markdown
 4. Transform - Claude-powered cleaning
 5. Verify - Completeness check and final outputs
+6. Synthesize - Reorganize into self-contained topics
 """
 import sys
 import subprocess
@@ -22,7 +23,7 @@ from utils import log, log_error, log_success, log_warning
 class PipelineRunner:
     """Orchestrates the complete documentation transformation pipeline."""
 
-    def __init__(self, start_phase: int = 1, end_phase: int = 5):
+    def __init__(self, start_phase: int = 1, end_phase: int = 6):
         self.start_phase = start_phase
         self.end_phase = end_phase
         self.phases = [
@@ -31,6 +32,7 @@ class PipelineRunner:
             ("Convert to Markdown", "03_convert.py"),
             ("Transform with Claude", "04_transform.py"),
             ("Verify & Generate Outputs", "05_verify.py"),
+            ("Topic Synthesis", "06_synthesize.py"),
         ]
         self.start_time = None
         self.phase_times = []
@@ -40,7 +42,7 @@ class PipelineRunner:
         Run a single phase of the pipeline.
 
         Args:
-            phase_num: Phase number (1-5)
+            phase_num: Phase number (1-6)
             description: Human-readable description
             script: Script filename to run
 
@@ -126,6 +128,7 @@ class PipelineRunner:
         log(f"  - Index:    {config.INDEX_FILE}")
         log(f"  - Combined: {config.COMBINED_FILE}")
         log(f"  - Cleaned:  {config.CLEANED_MARKDOWN_DIR}/")
+        log(f"  - Topics:   {config.TOPICS_DIR}/")
         log(f"  - Report:   {config.VERIFICATION_REPORT_FILE}")
 
         return True
@@ -156,16 +159,16 @@ Examples:
         '--start',
         type=int,
         default=1,
-        choices=range(1, 6),
-        help='Start from phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify)'
+        choices=range(1, 7),
+        help='Start from phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify, 6=synthesize)'
     )
 
     parser.add_argument(
         '--end',
         type=int,
-        default=5,
-        choices=range(1, 6),
-        help='End at phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify)'
+        default=6,
+        choices=range(1, 7),
+        help='End at phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify, 6=synthesize)'
     )
 
     args = parser.parse_args()
