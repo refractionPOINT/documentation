@@ -1,0 +1,78 @@
+{
+  "total_discovered": 496,
+  "total_processed": 395,
+  "missing_count": 13,
+  "missing_pages": [
+    {
+      "url": "https://docs.limacharlie.io/docs/en/tags/use%20case",
+      "slug": "en/tags/use%20case",
+      "title": "LimaCharlie"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/reference-endpoint-agent-commands",
+      "slug": "reference-endpoint-agent-commands",
+      "title": "Reference: Endpoint Agent Commands"
+    },
+    {
+      "url": "https://docs.limacharlie.io/v2/docs/reference-endpoint-agent-commands",
+      "slug": "reference-endpoint-agent-commands",
+      "title": "Reference: Endpoint Agent Commands"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/en/reference-edr-events",
+      "slug": "en/reference-edr-events",
+      "title": "Reference: EDR Events"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/reference-edr-events",
+      "slug": "reference-edr-events",
+      "title": "Reference: EDR Events"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/adapter-types-imap",
+      "slug": "adapter-types-imap",
+      "title": "IMAP"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/en/tags/IR",
+      "slug": "en/tags/IR",
+      "title": "LimaCharlie"
+    },
+    {
+      "url": "https://docs.limacharlie.io/v2/docs/reference-edr-events",
+      "slug": "reference-edr-events",
+      "title": "Reference: EDR Events"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/en/tags/Getting%20started",
+      "slug": "en/tags/Getting%20started",
+      "title": "LimaCharlie"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/tags/use case",
+      "slug": "tags/use case",
+      "title": "LimaCharlie"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/tags/telemetry",
+      "slug": "tags/telemetry",
+      "title": "LimaCharlie"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/en/tags/incident%20response",
+      "slug": "en/tags/incident%20response",
+      "title": "LimaCharlie"
+    },
+    {
+      "url": "https://docs.limacharlie.io/docs/en/tags/SOAR",
+      "slug": "en/tags/SOAR",
+      "title": "LimaCharlie"
+    }
+  ],
+  "completion_rate": "79.6%",
+  "output_files": {
+    "index": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/INDEX.md",
+    "combined": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/COMBINED.md",
+    "cleaned_markdown_dir": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/cleaned-markdown"
+  }
+}

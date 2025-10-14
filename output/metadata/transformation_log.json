@@ -1,0 +1,2377 @@
+{
+  "successful": 395,
+  "failed": 11,
+  "total": 406,
+  "processing_log": [
+    {
+      "file": "managed-rulesets.md",
+      "raw_size": 4606,
+      "cleaned_size": 2088,
+      "reduction": "54.7%"
+    },
+    {
+      "file": "soc-prime-rules.md",
+      "raw_size": 4130,
+      "cleaned_size": 2166,
+      "reduction": "47.6%"
+    },
+    {
+      "file": "event-schemas.md",
+      "raw_size": 5527,
+      "cleaned_size": 3578,
+      "reduction": "35.3%"
+    },
+    {
+      "file": "quickstart.md",
+      "raw_size": 8103,
+      "cleaned_size": 5959,
+      "reduction": "26.5%"
+    },
+    {
+      "file": "developer-grant-program.md",
+      "raw_size": 2282,
+      "cleaned_size": 581,
+      "reduction": "74.5%"
+    },
+    {
+      "file": "what-is-limacharlie.md",
+      "raw_size": 3583,
+      "cleaned_size": 1949,
+      "reduction": "45.6%"
+    },
+    {
+      "file": "en-tags-faq.md",
+      "raw_size": 701,
+      "cleaned_size": 507,
+      "reduction": "27.7%"
+    },
+    {
+      "file": "installation-keys.md",
+      "raw_size": 6730,
+      "cleaned_size": 3271,
+      "reduction": "51.4%"
+    },
+    {
+      "file": "query-console-ui.md",
+      "raw_size": 7889,
+      "cleaned_size": 6221,
+      "reduction": "21.1%"
+    },
+    {
+      "file": "mcp-server.md",
+      "raw_size": 8946,
+      "cleaned_size": 7034,
+      "reduction": "21.4%"
+    },
+    {
+      "file": "use-cases.md",
+      "raw_size": 3821,
+      "cleaned_size": 1976,
+      "reduction": "48.3%"
+    },
+    {
+      "file": "agent-deployment-microsoft-intune.md",
+      "raw_size": 4595,
+      "cleaned_size": 1610,
+      "reduction": "65.0%"
+    },
+    {
+      "file": "incident-response.md",
+      "raw_size": 3973,
+      "cleaned_size": 2155,
+      "reduction": "45.8%"
+    },
+    {
+      "file": "output-allowlisting.md",
+      "raw_size": 2367,
+      "cleaned_size": 670,
+      "reduction": "71.7%"
+    },
+    {
+      "file": "tags-add-ons.md",
+      "raw_size": 302,
+      "cleaned_size": 72,
+      "reduction": "76.2%"
+    },
+    {
+      "file": "false-positive-rules.md",
+      "raw_size": 6398,
+      "cleaned_size": 3872,
+      "reduction": "39.5%"
+    },
+    {
+      "file": "table-top-exercises.md",
+      "raw_size": 3915,
+      "cleaned_size": 2141,
+      "reduction": "45.3%"
+    },
+    {
+      "file": "sleeper-mode.md",
+      "raw_size": 4570,
+      "cleaned_size": 2820,
+      "reduction": "38.3%"
+    },
+    {
+      "file": "service-providers-mssp-msp-mdr.md",
+      "raw_size": 14275,
+      "cleaned_size": 10931,
+      "reduction": "23.4%"
+    },
+    {
+      "file": "en-ext-sensor-cull.md",
+      "raw_size": 6046,
+      "cleaned_size": 1935,
+      "reduction": "68.0%"
+    },
+    {
+      "file": "sensors.md",
+      "raw_size": 4631,
+      "cleaned_size": 2505,
+      "reduction": "45.9%"
+    },
+    {
+      "file": "faq-general.md",
+      "raw_size": 12524,
+      "cleaned_size": 9398,
+      "reduction": "25.0%"
+    },
+    {
+      "file": "en-tags-add-ons.md",
+      "raw_size": 1506,
+      "cleaned_size": 7691,
+      "reduction": "-410.7%"
+    },
+    {
+      "file": "building-a-custom-msi-installer-for-windows.md",
+      "raw_size": 7889,
+      "cleaned_size": 5062,
+      "reduction": "35.8%"
+    },
+    {
+      "file": "en-ext-zeek.md",
+      "raw_size": 6966,
+      "cleaned_size": 4940,
+      "reduction": "29.1%"
+    },
+    {
+      "file": "tags-faq.md",
+      "raw_size": 286,
+      "cleaned_size": 420,
+      "reduction": "-46.9%"
+    },
+    {
+      "file": "detection-and-response.md",
+      "raw_size": 15030,
+      "cleaned_size": 11989,
+      "reduction": "20.2%"
+    },
+    {
+      "file": "en-tags-endpoint%20agent.md",
+      "raw_size": 2170,
+      "cleaned_size": 4800,
+      "reduction": "-121.2%"
+    },
+    {
+      "file": "en-macos-agent-installation-older-versions.md",
+      "raw_size": 8186,
+      "cleaned_size": 3884,
+      "reduction": "52.6%"
+    },
+    {
+      "file": "en-whats-newx.md",
+      "raw_size": 1665,
+      "cleaned_size": 1172,
+      "reduction": "29.6%"
+    },
+    {
+      "file": "en-sensor-connectivity.md",
+      "raw_size": 5594,
+      "cleaned_size": 2910,
+      "reduction": "48.0%"
+    },
+    {
+      "file": "en-tags-MDR.md",
+      "raw_size": 349,
+      "cleaned_size": 5383,
+      "reduction": "-1442.4%"
+    },
+    {
+      "file": "en-tags-extensions.md",
+      "raw_size": 1446,
+      "cleaned_size": 1464,
+      "reduction": "-1.2%"
+    },
+    {
+      "file": "soteria-aws-rules.md",
+      "raw_size": 4481,
+      "cleaned_size": 2358,
+      "reduction": "47.4%"
+    },
+    {
+      "file": "sigma-converter.md",
+      "raw_size": 10600,
+      "cleaned_size": 8615,
+      "reduction": "18.7%"
+    },
+    {
+      "file": "en-developer-grant-program.md",
+      "raw_size": 2282,
+      "cleaned_size": 581,
+      "reduction": "74.5%"
+    },
+    {
+      "file": "adapter-deployment.md",
+      "raw_size": 6850,
+      "cleaned_size": 4534,
+      "reduction": "33.8%"
+    },
+    {
+      "file": "en-tags-windows.md",
+      "raw_size": 1832,
+      "cleaned_size": 1702,
+      "reduction": "7.1%"
+    },
+    {
+      "file": "cost-effective-siem.md",
+      "raw_size": 4697,
+      "cleaned_size": 2916,
+      "reduction": "37.9%"
+    },
+    {
+      "file": "ext-velociraptor.md",
+      "raw_size": 9516,
+      "cleaned_size": 6225,
+      "reduction": "34.6%"
+    },
+    {
+      "file": "create-a-dr-rule-using-a-threat-feed.md",
+      "raw_size": 4096,
+      "cleaned_size": 1833,
+      "reduction": "55.2%"
+    },
+    {
+      "file": "ingesting-linux-audit-logs.md",
+      "raw_size": 6461,
+      "cleaned_size": 4324,
+      "reduction": "33.1%"
+    },
+    {
+      "file": "cloud-security.md",
+      "raw_size": 3669,
+      "cleaned_size": 1942,
+      "reduction": "47.1%"
+    },
+    {
+      "file": "adapters-as-a-service.md",
+      "raw_size": 5034,
+      "cleaned_size": 3162,
+      "reduction": "37.2%"
+    },
+    {
+      "file": "ext-sensor-cull.md",
+      "raw_size": 6046,
+      "cleaned_size": 2333,
+      "reduction": "61.4%"
+    },
+    {
+      "file": "limacharlie-core-concepts.md",
+      "raw_size": 6732,
+      "cleaned_size": 5073,
+      "reduction": "24.6%"
+    },
+    {
+      "file": "en-tags-cloud.md",
+      "raw_size": 310,
+      "cleaned_size": 2189,
+      "reduction": "-606.1%"
+    },
+    {
+      "file": "endpoint-agent-commands.md",
+      "raw_size": 7367,
+      "cleaned_size": 4327,
+      "reduction": "41.3%"
+    },
+    {
+      "file": "tutorial-creating-a-webhook-adapter.md",
+      "raw_size": 6659,
+      "cleaned_size": 4389,
+      "reduction": "34.1%"
+    },
+    {
+      "file": "en-faq-general.md",
+      "raw_size": 12524,
+      "cleaned_size": 9398,
+      "reduction": "25.0%"
+    },
+    {
+      "file": "en-tags-sensors.md",
+      "raw_size": 1628,
+      "cleaned_size": 939,
+      "reduction": "42.3%"
+    },
+    {
+      "file": "en-building-the-user-interface.md",
+      "raw_size": 5859,
+      "cleaned_size": 4040,
+      "reduction": "31.0%"
+    },
+    {
+      "file": "en-adapter-types-google-cloud-pubsub.md",
+      "raw_size": 7046,
+      "cleaned_size": 2949,
+      "reduction": "58.1%"
+    },
+    {
+      "file": "secops-development.md",
+      "raw_size": 4058,
+      "cleaned_size": 2274,
+      "reduction": "44.0%"
+    },
+    {
+      "file": "en-tags-detection%20and%20response.md",
+      "raw_size": 1928,
+      "cleaned_size": 900,
+      "reduction": "53.3%"
+    },
+    {
+      "file": "en-endpoint-agent-commands.md",
+      "raw_size": 7367,
+      "cleaned_size": 4327,
+      "reduction": "41.3%"
+    },
+    {
+      "file": "en-ext-atomic-red-team.md",
+      "raw_size": 8490,
+      "cleaned_size": 4720,
+      "reduction": "44.4%"
+    },
+    {
+      "file": "replay.md",
+      "raw_size": 8053,
+      "cleaned_size": 6365,
+      "reduction": "21.0%"
+    },
+    {
+      "file": "faq-sensor-installation.md",
+      "raw_size": 14475,
+      "cleaned_size": 10599,
+      "reduction": "26.8%"
+    },
+    {
+      "file": "en-ext-lookup-manager.md",
+      "raw_size": 7018,
+      "cleaned_size": 3200,
+      "reduction": "54.4%"
+    },
+    {
+      "file": "sensor-tags.md",
+      "raw_size": 8744,
+      "cleaned_size": 5601,
+      "reduction": "35.9%"
+    },
+    {
+      "file": "file-and-registry-integrity-monitoring-fim-deployments.md",
+      "raw_size": 3783,
+      "cleaned_size": 1991,
+      "reduction": "47.4%"
+    },
+    {
+      "file": "reference-sensor-selector-expressions.md",
+      "raw_size": 5315,
+      "cleaned_size": 3517,
+      "reduction": "33.8%"
+    },
+    {
+      "file": "ext-exfil.md",
+      "raw_size": 10291,
+      "cleaned_size": 6078,
+      "reduction": "40.9%"
+    },
+    {
+      "file": "soteria-rules.md",
+      "raw_size": 3747,
+      "cleaned_size": 1801,
+      "reduction": "51.9%"
+    },
+    {
+      "file": "en-adapter-types-google-cloud-storage.md",
+      "raw_size": 4744,
+      "cleaned_size": 1697,
+      "reduction": "64.2%"
+    },
+    {
+      "file": "en-vdi-virtual-machine-templates.md",
+      "raw_size": 5290,
+      "cleaned_size": 3213,
+      "reduction": "39.3%"
+    },
+    {
+      "file": "en-response-actions.md",
+      "raw_size": 17840,
+      "cleaned_size": 13618,
+      "reduction": "23.7%"
+    },
+    {
+      "file": "sensor-removal.md",
+      "raw_size": 4754,
+      "cleaned_size": 2279,
+      "reduction": "52.1%"
+    },
+    {
+      "file": "en-macos-agent-installation-mdm-configuration-profiles.md",
+      "raw_size": 9428,
+      "cleaned_size": 6278,
+      "reduction": "33.4%"
+    },
+    {
+      "file": "en-adapter-types-microsoft-defender.md",
+      "raw_size": 6058,
+      "cleaned_size": 3915,
+      "reduction": "35.4%"
+    },
+    {
+      "file": "en-reference-id-schema.md",
+      "raw_size": 12835,
+      "cleaned_size": 10658,
+      "reduction": "17.0%"
+    },
+    {
+      "file": "api-integrations-ip-geolocation.md",
+      "raw_size": 3995,
+      "cleaned_size": 2161,
+      "reduction": "45.9%"
+    },
+    {
+      "file": "enerprises.md",
+      "raw_size": 11563,
+      "cleaned_size": 8968,
+      "reduction": "22.4%"
+    },
+    {
+      "file": "ext-yara.md",
+      "raw_size": 7183,
+      "cleaned_size": 3299,
+      "reduction": "54.1%"
+    },
+    {
+      "file": "en-tags-tutorial.md",
+      "raw_size": 1829,
+      "cleaned_size": 930,
+      "reduction": "49.2%"
+    },
+    {
+      "file": "en-detection-and-response-examples.md",
+      "raw_size": 13356,
+      "cleaned_size": 11148,
+      "reduction": "16.5%"
+    },
+    {
+      "file": "en-api-integrations-ip-geolocation.md",
+      "raw_size": 3995,
+      "cleaned_size": 2161,
+      "reduction": "45.9%"
+    },
+    {
+      "file": "outputs-destinations-webhook-bulk.md",
+      "raw_size": 2762,
+      "cleaned_size": 996,
+      "reduction": "63.9%"
+    },
+    {
+      "file": "en-linux-agent-installation.md",
+      "raw_size": 8432,
+      "cleaned_size": 5323,
+      "reduction": "36.9%"
+    },
+    {
+      "file": "macos-agent-installation-mdm-configuration-profiles.md",
+      "raw_size": 9428,
+      "cleaned_size": 6316,
+      "reduction": "33.0%"
+    },
+    {
+      "file": "add-ons.md",
+      "raw_size": 4733,
+      "cleaned_size": 2753,
+      "reduction": "41.8%"
+    },
+    {
+      "file": "adapter-usage.md",
+      "raw_size": 16415,
+      "cleaned_size": 13799,
+      "reduction": "15.9%"
+    },
+    {
+      "file": "en-soteria-m365-rules.md",
+      "raw_size": 5848,
+      "cleaned_size": 1894,
+      "reduction": "67.6%"
+    },
+    {
+      "file": "en-wel-monitoring.md",
+      "raw_size": 3956,
+      "cleaned_size": 2236,
+      "reduction": "43.5%"
+    },
+    {
+      "file": "en-event-schemas.md",
+      "raw_size": 5527,
+      "cleaned_size": 3578,
+      "reduction": "35.3%"
+    },
+    {
+      "file": "endpoint-detection-and-response-edr.md",
+      "raw_size": 4820,
+      "cleaned_size": 3017,
+      "reduction": "37.4%"
+    },
+    {
+      "file": "config-hive-dr-rules.md",
+      "raw_size": 4793,
+      "cleaned_size": 2614,
+      "reduction": "45.5%"
+    },
+    {
+      "file": "velociraptor-to-bigquery.md",
+      "raw_size": 9925,
+      "cleaned_size": 7798,
+      "reduction": "21.4%"
+    },
+    {
+      "file": "ingesting-windows-event-logs.md",
+      "raw_size": 4811,
+      "cleaned_size": 1852,
+      "reduction": "61.5%"
+    },
+    {
+      "file": "en-tags-lookups.md",
+      "raw_size": 320,
+      "cleaned_size": 4562,
+      "reduction": "-1325.6%"
+    },
+    {
+      "file": "en-adapter-types-iis.md",
+      "raw_size": 6963,
+      "cleaned_size": 5069,
+      "reduction": "27.2%"
+    },
+    {
+      "file": "en-replay.md",
+      "raw_size": 8053,
+      "cleaned_size": 6365,
+      "reduction": "21.0%"
+    },
+    {
+      "file": "ext-epp.md",
+      "raw_size": 9732,
+      "cleaned_size": 5194,
+      "reduction": "46.6%"
+    },
+    {
+      "file": "en-observability-pipeline.md",
+      "raw_size": 5357,
+      "cleaned_size": 3554,
+      "reduction": "33.7%"
+    },
+    {
+      "file": "en-installation-keys.md",
+      "raw_size": 6730,
+      "cleaned_size": 4000,
+      "reduction": "40.6%"
+    },
+    {
+      "file": "tutorial-ingesting-google-cloud-logs.md",
+      "raw_size": 10105,
+      "cleaned_size": 6659,
+      "reduction": "34.1%"
+    },
+    {
+      "file": "en-adapter-examples-windows-event-logs.md",
+      "raw_size": 4320,
+      "cleaned_size": 2272,
+      "reduction": "47.4%"
+    },
+    {
+      "file": "ext-lookup-manager.md",
+      "raw_size": 7018,
+      "cleaned_size": 3200,
+      "reduction": "54.4%"
+    },
+    {
+      "file": "adapter-types-google-workspace.md",
+      "raw_size": 4669,
+      "cleaned_size": 2130,
+      "reduction": "54.4%"
+    },
+    {
+      "file": "en-soteria-edr-rules.md",
+      "raw_size": 5036,
+      "cleaned_size": 2827,
+      "reduction": "43.9%"
+    },
+    {
+      "file": "detection-and-response-examples.md",
+      "raw_size": 13356,
+      "cleaned_size": 10814,
+      "reduction": "19.0%"
+    },
+    {
+      "file": "chrome-enterprise.md",
+      "raw_size": 5024,
+      "cleaned_size": 2933,
+      "reduction": "41.6%"
+    },
+    {
+      "file": "events.md",
+      "raw_size": 8991,
+      "cleaned_size": 6757,
+      "reduction": "24.8%"
+    },
+    {
+      "file": "soteria-m365-rules.md",
+      "raw_size": 5848,
+      "cleaned_size": 3544,
+      "reduction": "39.4%"
+    },
+    {
+      "file": "reference-authentication-resource-locator.md",
+      "raw_size": 4493,
+      "cleaned_size": 2560,
+      "reduction": "43.0%"
+    },
+    {
+      "file": "endpoint-agent.md",
+      "raw_size": 5778,
+      "cleaned_size": 3233,
+      "reduction": "44.0%"
+    },
+    {
+      "file": "en-adapter-types-evtx.md",
+      "raw_size": 2913,
+      "cleaned_size": 843,
+      "reduction": "71.1%"
+    },
+    {
+      "file": "outputs.md",
+      "raw_size": 9540,
+      "cleaned_size": 6650,
+      "reduction": "30.3%"
+    },
+    {
+      "file": "en-false-positive-rules.md",
+      "raw_size": 6398,
+      "cleaned_size": 3924,
+      "reduction": "38.7%"
+    },
+    {
+      "file": "detection-on-alternate-targets.md",
+      "raw_size": 8255,
+      "cleaned_size": 5284,
+      "reduction": "36.0%"
+    },
+    {
+      "file": "en-tags-observability.md",
+      "raw_size": 350,
+      "cleaned_size": 1279,
+      "reduction": "-265.4%"
+    },
+    {
+      "file": "ext-infrastructure.md",
+      "raw_size": 8094,
+      "cleaned_size": 4089,
+      "reduction": "49.5%"
+    },
+    {
+      "file": "template-strings-and-transforms.md",
+      "raw_size": 16250,
+      "cleaned_size": 13922,
+      "reduction": "14.3%"
+    },
+    {
+      "file": "macos-agent-installation.md",
+      "raw_size": 4482,
+      "cleaned_size": 1771,
+      "reduction": "60.5%"
+    },
+    {
+      "file": "en-soteria-aws-rules.md",
+      "raw_size": 4481,
+      "cleaned_size": 2358,
+      "reduction": "47.4%"
+    },
+    {
+      "file": "en-output-allowlisting.md",
+      "raw_size": 2367,
+      "cleaned_size": 670,
+      "reduction": "71.7%"
+    },
+    {
+      "file": "config-hive-yara.md",
+      "raw_size": 4388,
+      "cleaned_size": 2248,
+      "reduction": "48.8%"
+    },
+    {
+      "file": "network-monitoring.md",
+      "raw_size": 4470,
+      "cleaned_size": 2620,
+      "reduction": "41.4%"
+    },
+    {
+      "file": "en-adapter-types-windows-event-log.md",
+      "raw_size": 4669,
+      "cleaned_size": 2047,
+      "reduction": "56.2%"
+    },
+    {
+      "file": "en-ext-twilio.md",
+      "raw_size": 4028,
+      "cleaned_size": 2252,
+      "reduction": "44.1%"
+    },
+    {
+      "file": "en-velociraptor-to-bigquery.md",
+      "raw_size": 9925,
+      "cleaned_size": 7798,
+      "reduction": "21.4%"
+    },
+    {
+      "file": "ma-cyber-due-diligence.md",
+      "raw_size": 3720,
+      "cleaned_size": 1944,
+      "reduction": "47.7%"
+    },
+    {
+      "file": "macos-agent-installation-latest-os-versions.md",
+      "raw_size": 10255,
+      "cleaned_size": 6934,
+      "reduction": "32.4%"
+    },
+    {
+      "file": "en-tags-dfir.md",
+      "raw_size": 985,
+      "cleaned_size": 896,
+      "reduction": "9.0%"
+    },
+    {
+      "file": "adapter-types-windows-event-log.md",
+      "raw_size": 4669,
+      "cleaned_size": 2613,
+      "reduction": "44.0%"
+    },
+    {
+      "file": "en-template-strings-and-transforms-3.md",
+      "raw_size": 16216,
+      "cleaned_size": 13852,
+      "reduction": "14.6%"
+    },
+    {
+      "file": "using-extensions.md",
+      "raw_size": 5281,
+      "cleaned_size": 2845,
+      "reduction": "46.1%"
+    },
+    {
+      "file": "observability-pipeline.md",
+      "raw_size": 5357,
+      "cleaned_size": 3554,
+      "reduction": "33.7%"
+    },
+    {
+      "file": "en-create-a-dr-rule-using-a-threat-feed.md",
+      "raw_size": 4096,
+      "cleaned_size": 1833,
+      "reduction": "55.2%"
+    },
+    {
+      "file": "adapter-examples-windows-event-logs.md",
+      "raw_size": 4320,
+      "cleaned_size": 2272,
+      "reduction": "47.4%"
+    },
+    {
+      "file": "infrastructure-as-code.md",
+      "raw_size": 8338,
+      "cleaned_size": 4904,
+      "reduction": "41.2%"
+    },
+    {
+      "file": "en-faq-troubleshooting.md",
+      "raw_size": 19559,
+      "cleaned_size": 15859,
+      "reduction": "18.9%"
+    },
+    {
+      "file": "test-a-new-sensor-version.md",
+      "raw_size": 4143,
+      "cleaned_size": 2148,
+      "reduction": "48.2%"
+    },
+    {
+      "file": "en-tags-pipeline.md",
+      "raw_size": 335,
+      "cleaned_size": 2864,
+      "reduction": "-754.9%"
+    },
+    {
+      "file": "building-extensions.md",
+      "raw_size": 14022,
+      "cleaned_size": 11934,
+      "reduction": "14.9%"
+    },
+    {
+      "file": "adapter-types-mimecast.md",
+      "raw_size": 5089,
+      "cleaned_size": 2471,
+      "reduction": "51.4%"
+    },
+    {
+      "file": "tags-endpoint-agent.md",
+      "raw_size": 2110,
+      "cleaned_size": 3735,
+      "reduction": "-77.0%"
+    },
+    {
+      "file": "en-tags-SecOps.md",
+      "raw_size": 321,
+      "cleaned_size": 4996,
+      "reduction": "-1456.4%"
+    },
+    {
+      "file": "en-tags-development.md",
+      "raw_size": 336,
+      "cleaned_size": 5418,
+      "reduction": "-1512.5%"
+    },
+    {
+      "file": "en-reporting.md",
+      "raw_size": 1410,
+      "cleaned_size": 363,
+      "reduction": "74.3%"
+    },
+    {
+      "file": "en-tags-macos.md",
+      "raw_size": 1825,
+      "cleaned_size": 1359,
+      "reduction": "25.5%"
+    },
+    {
+      "file": "edge-agent-installation.md",
+      "raw_size": 3284,
+      "cleaned_size": 1221,
+      "reduction": "62.8%"
+    },
+    {
+      "file": "tags-tutorial.md",
+      "raw_size": 1781,
+      "cleaned_size": 1297,
+      "reduction": "27.2%"
+    },
+    {
+      "file": "payloads.md",
+      "raw_size": 5187,
+      "cleaned_size": 2994,
+      "reduction": "42.3%"
+    },
+    {
+      "file": "soteria-edr-rules.md",
+      "raw_size": 5036,
+      "cleaned_size": 2834,
+      "reduction": "43.7%"
+    },
+    {
+      "file": "limacharlie-sdk.md",
+      "raw_size": 21860,
+      "cleaned_size": 17786,
+      "reduction": "18.6%"
+    },
+    {
+      "file": "whats-newx-publisheddate=30.md",
+      "raw_size": 1665,
+      "cleaned_size": 6661,
+      "reduction": "-300.1%"
+    },
+    {
+      "file": "en-mcp-server.md",
+      "raw_size": 8946,
+      "cleaned_size": 7050,
+      "reduction": "21.2%"
+    },
+    {
+      "file": "en-tags-LimaCharlie.md",
+      "raw_size": 318,
+      "cleaned_size": 2179,
+      "reduction": "-585.2%"
+    },
+    {
+      "file": "outputs-destinations-google-cloud-bigquery.md",
+      "raw_size": 3943,
+      "cleaned_size": 1666,
+      "reduction": "57.7%"
+    },
+    {
+      "file": "en-template-strings-and-transforms.md",
+      "raw_size": 16250,
+      "cleaned_size": 13623,
+      "reduction": "16.2%"
+    },
+    {
+      "file": "ingesting-sysmon-event-logs.md",
+      "raw_size": 6099,
+      "cleaned_size": 3318,
+      "reduction": "45.6%"
+    },
+    {
+      "file": "en-file-and-registry-integrity-monitoring-fim-deployments.md",
+      "raw_size": 3783,
+      "cleaned_size": 1991,
+      "reduction": "47.4%"
+    },
+    {
+      "file": "tags-detection-and-response.md",
+      "raw_size": 370,
+      "cleaned_size": 80,
+      "reduction": "78.4%"
+    },
+    {
+      "file": "tags-pipeline.md",
+      "raw_size": 332,
+      "cleaned_size": 1537,
+      "reduction": "-363.0%"
+    },
+    {
+      "file": "en-adapter-examples-stdin.md",
+      "raw_size": 4223,
+      "cleaned_size": 2348,
+      "reduction": "44.4%"
+    },
+    {
+      "file": "en-use-cases.md",
+      "raw_size": 3821,
+      "cleaned_size": 1976,
+      "reduction": "48.3%"
+    },
+    {
+      "file": "adapter-types-azure-event-hub.md",
+      "raw_size": 6512,
+      "cleaned_size": 4003,
+      "reduction": "38.5%"
+    },
+    {
+      "file": "en-tutorial-creating-a-webhook-adapter.md",
+      "raw_size": 6659,
+      "cleaned_size": 4290,
+      "reduction": "35.6%"
+    },
+    {
+      "file": "en-adapter-usage.md",
+      "raw_size": 16415,
+      "cleaned_size": 13799,
+      "reduction": "15.9%"
+    },
+    {
+      "file": "en-tags-aws.md",
+      "raw_size": 675,
+      "cleaned_size": 893,
+      "reduction": "-32.3%"
+    },
+    {
+      "file": "en-ext-integrity.md",
+      "raw_size": 8244,
+      "cleaned_size": 3815,
+      "reduction": "53.7%"
+    },
+    {
+      "file": "tags-cloud.md",
+      "raw_size": 294,
+      "cleaned_size": 53,
+      "reduction": "82.0%"
+    },
+    {
+      "file": "windows-agent-installation.md",
+      "raw_size": 6144,
+      "cleaned_size": 3801,
+      "reduction": "38.1%"
+    },
+    {
+      "file": "tags-aws.md",
+      "raw_size": 654,
+      "cleaned_size": 821,
+      "reduction": "-25.5%"
+    },
+    {
+      "file": "adapter-types-hubspot.md",
+      "raw_size": 4648,
+      "cleaned_size": 2695,
+      "reduction": "42.0%"
+    },
+    {
+      "file": "ext-usage-alerts.md",
+      "raw_size": 6851,
+      "cleaned_size": 4839,
+      "reduction": "29.4%"
+    },
+    {
+      "file": "en-stateful-rules.md",
+      "raw_size": 9986,
+      "cleaned_size": 7120,
+      "reduction": "28.7%"
+    },
+    {
+      "file": "tags-windows.md",
+      "raw_size": 1772,
+      "cleaned_size": 1636,
+      "reduction": "7.7%"
+    },
+    {
+      "file": "endpoint-agent-installation.md",
+      "raw_size": 7486,
+      "cleaned_size": 4904,
+      "reduction": "34.5%"
+    },
+    {
+      "file": "en-adapter-types-sqs.md",
+      "raw_size": 4275,
+      "cleaned_size": 1554,
+      "reduction": "63.6%"
+    },
+    {
+      "file": "building-products.md",
+      "raw_size": 11324,
+      "cleaned_size": 9569,
+      "reduction": "15.5%"
+    },
+    {
+      "file": "adapter-types-zendesk.md",
+      "raw_size": 5393,
+      "cleaned_size": 2733,
+      "reduction": "49.3%"
+    },
+    {
+      "file": "sysmon-comparison.md",
+      "raw_size": 4270,
+      "cleaned_size": 1893,
+      "reduction": "55.7%"
+    },
+    {
+      "file": "unit-tests.md",
+      "raw_size": 18195,
+      "cleaned_size": 16421,
+      "reduction": "9.7%"
+    },
+    {
+      "file": "ingesting-macos-unified-logs.md",
+      "raw_size": 3085,
+      "cleaned_size": 1405,
+      "reduction": "54.5%"
+    },
+    {
+      "file": "en-sysmon-comparison.md",
+      "raw_size": 4270,
+      "cleaned_size": 2164,
+      "reduction": "49.3%"
+    },
+    {
+      "file": "outputs-destinations-google-cloud-storage.md",
+      "raw_size": 3814,
+      "cleaned_size": 1502,
+      "reduction": "60.6%"
+    },
+    {
+      "file": "reference-error-codes.md",
+      "raw_size": 4171,
+      "cleaned_size": 1744,
+      "reduction": "58.2%"
+    },
+    {
+      "file": "en-tags-telemetry.md",
+      "raw_size": 1069,
+      "cleaned_size": 3250,
+      "reduction": "-204.0%"
+    },
+    {
+      "file": "detection-logic-operators.md",
+      "raw_size": 14999,
+      "cleaned_size": 11609,
+      "reduction": "22.6%"
+    },
+    {
+      "file": "lcql.md",
+      "raw_size": 5705,
+      "cleaned_size": 3769,
+      "reduction": "33.9%"
+    },
+    {
+      "file": "binlib.md",
+      "raw_size": 10508,
+      "cleaned_size": 5902,
+      "reduction": "43.8%"
+    },
+    {
+      "file": "artifacts.md",
+      "raw_size": 19449,
+      "cleaned_size": 13326,
+      "reduction": "31.5%"
+    },
+    {
+      "file": "tutorials-integratons-virustotal-integration.md",
+      "raw_size": 3102,
+      "cleaned_size": 1089,
+      "reduction": "64.9%"
+    },
+    {
+      "file": "azure-monitor.md",
+      "raw_size": 2963,
+      "cleaned_size": 612,
+      "reduction": "79.3%"
+    },
+    {
+      "file": "reporting.md",
+      "raw_size": 1410,
+      "cleaned_size": 363,
+      "reduction": "74.3%"
+    },
+    {
+      "file": "en-ext-yara-manager.md",
+      "raw_size": 5343,
+      "cleaned_size": 3250,
+      "reduction": "39.2%"
+    },
+    {
+      "file": "whats-newx-publisheddate=1.md",
+      "raw_size": 574,
+      "cleaned_size": 2035,
+      "reduction": "-254.5%"
+    },
+    {
+      "file": "adapter-tutorials.md",
+      "raw_size": 2166,
+      "cleaned_size": 1132,
+      "reduction": "47.7%"
+    },
+    {
+      "file": "linux-agent-installation.md",
+      "raw_size": 8432,
+      "cleaned_size": 5323,
+      "reduction": "36.9%"
+    },
+    {
+      "file": "telemetry-artifacts.md",
+      "raw_size": 15198,
+      "cleaned_size": 13066,
+      "reduction": "14.0%"
+    },
+    {
+      "file": "wel-monitoring.md",
+      "raw_size": 3956,
+      "cleaned_size": 2230,
+      "reduction": "43.6%"
+    },
+    {
+      "file": "en-cloud-security.md",
+      "raw_size": 3669,
+      "cleaned_size": 1942,
+      "reduction": "47.1%"
+    },
+    {
+      "file": "ext-git-sync.md",
+      "raw_size": 11839,
+      "cleaned_size": 7886,
+      "reduction": "33.4%"
+    },
+    {
+      "file": "en-tags-defender.md",
+      "raw_size": 317,
+      "cleaned_size": 2578,
+      "reduction": "-713.2%"
+    },
+    {
+      "file": "config-hive-secrets.md",
+      "raw_size": 6151,
+      "cleaned_size": 3958,
+      "reduction": "35.7%"
+    },
+    {
+      "file": "en-building-a-custom-msi-installer-for-windows.md",
+      "raw_size": 7889,
+      "cleaned_size": 5552,
+      "reduction": "29.6%"
+    },
+    {
+      "file": "testing-outputs.md",
+      "raw_size": 2670,
+      "cleaned_size": 847,
+      "reduction": "68.3%"
+    },
+    {
+      "file": "azure-sql-audit-logs.md",
+      "raw_size": 2927,
+      "cleaned_size": 584,
+      "reduction": "80.0%"
+    },
+    {
+      "file": "en-tutorials-reporting-building-reports-with-bigquery-looker-studio.md",
+      "raw_size": 7858,
+      "cleaned_size": 5405,
+      "reduction": "31.2%"
+    },
+    {
+      "file": "lookups.md",
+      "raw_size": 6723,
+      "cleaned_size": 4603,
+      "reduction": "31.5%"
+    },
+    {
+      "file": "en-sigma-converter.md",
+      "raw_size": 10600,
+      "cleaned_size": 8615,
+      "reduction": "18.7%"
+    },
+    {
+      "file": "en-agent-deployment-microsoft-intune.md",
+      "raw_size": 4595,
+      "cleaned_size": 1610,
+      "reduction": "65.0%"
+    },
+    {
+      "file": "ext-govee.md",
+      "raw_size": 5347,
+      "cleaned_size": 3153,
+      "reduction": "41.0%"
+    },
+    {
+      "file": "tags-secops.md",
+      "raw_size": 318,
+      "cleaned_size": 3091,
+      "reduction": "-872.0%"
+    },
+    {
+      "file": "en-security-monitoring-for-devops.md",
+      "raw_size": 3524,
+      "cleaned_size": 1736,
+      "reduction": "50.7%"
+    },
+    {
+      "file": "adapter-types-okta.md",
+      "raw_size": 4749,
+      "cleaned_size": 2815,
+      "reduction": "40.7%"
+    },
+    {
+      "file": "en-purple-teaming.md",
+      "raw_size": 4105,
+      "cleaned_size": 2372,
+      "reduction": "42.2%"
+    },
+    {
+      "file": "whats-newx-publisheddate=7.md",
+      "raw_size": 959,
+      "cleaned_size": 2670,
+      "reduction": "-178.4%"
+    },
+    {
+      "file": "adapter-types-sqs.md",
+      "raw_size": 4275,
+      "cleaned_size": 1554,
+      "reduction": "63.6%"
+    },
+    {
+      "file": "schema-data-types.md",
+      "raw_size": 5663,
+      "cleaned_size": 3760,
+      "reduction": "33.6%"
+    },
+    {
+      "file": "output-billing.md",
+      "raw_size": 2630,
+      "cleaned_size": 958,
+      "reduction": "63.6%"
+    },
+    {
+      "file": "config-hive-lookups.md",
+      "raw_size": 6576,
+      "cleaned_size": 4422,
+      "reduction": "32.8%"
+    },
+    {
+      "file": "en-faq-billing.md",
+      "raw_size": 9583,
+      "cleaned_size": 5761,
+      "reduction": "39.9%"
+    },
+    {
+      "file": "en-ext-yara.md",
+      "raw_size": 7183,
+      "cleaned_size": 3299,
+      "reduction": "54.1%"
+    },
+    {
+      "file": "en-tutorials-integratons-virustotal-integration.md",
+      "raw_size": 3102,
+      "cleaned_size": 1089,
+      "reduction": "64.9%"
+    },
+    {
+      "file": "ext-zeek.md",
+      "raw_size": 6966,
+      "cleaned_size": 3973,
+      "reduction": "43.0%"
+    },
+    {
+      "file": "tags-ir.md",
+      "raw_size": 282,
+      "cleaned_size": 366,
+      "reduction": "-29.8%"
+    },
+    {
+      "file": "tags-dfir.md",
+      "raw_size": 290,
+      "cleaned_size": 421,
+      "reduction": "-45.2%"
+    },
+    {
+      "file": "ext-cloud-cli-aws.md",
+      "raw_size": 4019,
+      "cleaned_size": 1402,
+      "reduction": "65.1%"
+    },
+    {
+      "file": "en-tags-mergers%20and%20acquisitions.md",
+      "raw_size": 392,
+      "cleaned_size": 13312,
+      "reduction": "-3295.9%"
+    },
+    {
+      "file": "ext-dumper.md",
+      "raw_size": 5581,
+      "cleaned_size": 1860,
+      "reduction": "66.7%"
+    },
+    {
+      "file": "en-query-console-ui.md",
+      "raw_size": 7889,
+      "cleaned_size": 6220,
+      "reduction": "21.2%"
+    },
+    {
+      "file": "tags-defender.md",
+      "raw_size": 306,
+      "cleaned_size": 1239,
+      "reduction": "-304.9%"
+    },
+    {
+      "file": "1password.md",
+      "raw_size": 4859,
+      "cleaned_size": 2462,
+      "reduction": "49.3%"
+    },
+    {
+      "file": "chromeos-support.md",
+      "raw_size": 3725,
+      "cleaned_size": 1964,
+      "reduction": "47.3%"
+    },
+    {
+      "file": "config-hive.md",
+      "raw_size": 9321,
+      "cleaned_size": 6254,
+      "reduction": "32.9%"
+    },
+    {
+      "file": "single-sign-on.md",
+      "raw_size": 4421,
+      "cleaned_size": 2570,
+      "reduction": "41.9%"
+    },
+    {
+      "file": "en-soar-automation.md",
+      "raw_size": 4601,
+      "cleaned_size": 2840,
+      "reduction": "38.3%"
+    },
+    {
+      "file": "endpoint-agent-uninstallation.md",
+      "raw_size": 5875,
+      "cleaned_size": 2776,
+      "reduction": "52.7%"
+    },
+    {
+      "file": "tags-lookups.md",
+      "raw_size": 317,
+      "cleaned_size": 5089,
+      "reduction": "-1505.4%"
+    },
+    {
+      "file": "access-and-permissions.md",
+      "raw_size": 3281,
+      "cleaned_size": 1521,
+      "reduction": "53.6%"
+    },
+    {
+      "file": "en-ext-artifact.md",
+      "raw_size": 5571,
+      "cleaned_size": 2309,
+      "reduction": "58.6%"
+    },
+    {
+      "file": "en-ingesting-defender-event-logs.md",
+      "raw_size": 3336,
+      "cleaned_size": 1194,
+      "reduction": "64.2%"
+    },
+    {
+      "file": "endpoint-agent-events-overview.md",
+      "raw_size": 6246,
+      "cleaned_size": 3627,
+      "reduction": "41.9%"
+    },
+    {
+      "file": "en-endpoint-agent.md",
+      "raw_size": 5778,
+      "cleaned_size": 3233,
+      "reduction": "44.0%"
+    },
+    {
+      "file": "reference-schedule-events.md",
+      "raw_size": 4426,
+      "cleaned_size": 2313,
+      "reduction": "47.7%"
+    },
+    {
+      "file": "en-tags-SIEM.md",
+      "raw_size": 329,
+      "cleaned_size": 4824,
+      "reduction": "-1366.3%"
+    },
+    {
+      "file": "adapter-types-file.md",
+      "raw_size": 3825,
+      "cleaned_size": 2026,
+      "reduction": "47.0%"
+    },
+    {
+      "file": "chrome-agent-installation.md",
+      "raw_size": 5400,
+      "cleaned_size": 2316,
+      "reduction": "57.1%"
+    },
+    {
+      "file": "uncovering-adversary-techniques.md",
+      "raw_size": 5374,
+      "cleaned_size": 3585,
+      "reduction": "33.3%"
+    },
+    {
+      "file": "payload-manager.md",
+      "raw_size": 3590,
+      "cleaned_size": 1783,
+      "reduction": "50.3%"
+    },
+    {
+      "file": "en-tags-linux.md",
+      "raw_size": 1322,
+      "cleaned_size": 1155,
+      "reduction": "12.6%"
+    },
+    {
+      "file": "en-building-products.md",
+      "raw_size": 11324,
+      "cleaned_size": 9569,
+      "reduction": "15.5%"
+    },
+    {
+      "file": "en-adapter-types-syslog.md",
+      "raw_size": 11955,
+      "cleaned_size": 7381,
+      "reduction": "38.3%"
+    },
+    {
+      "file": "template-strings-and-transforms-1.md",
+      "raw_size": 16224,
+      "cleaned_size": 13852,
+      "reduction": "14.6%"
+    },
+    {
+      "file": "en-ext-infrastructure.md",
+      "raw_size": 8094,
+      "cleaned_size": 4089,
+      "reduction": "49.5%"
+    },
+    {
+      "file": "en-ext-hayabusa.md",
+      "raw_size": 11317,
+      "cleaned_size": 8485,
+      "reduction": "25.0%"
+    },
+    {
+      "file": "en-clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer.md",
+      "raw_size": 10074,
+      "cleaned_size": 7276,
+      "reduction": "27.8%"
+    },
+    {
+      "file": "lcql-examples.md",
+      "raw_size": 7927,
+      "cleaned_size": 5248,
+      "reduction": "33.8%"
+    },
+    {
+      "file": "adapter-examples.md",
+      "raw_size": 2021,
+      "cleaned_size": 861,
+      "reduction": "57.4%"
+    },
+    {
+      "file": "en-tags-adapters.md",
+      "raw_size": 1497,
+      "cleaned_size": 2950,
+      "reduction": "-97.1%"
+    },
+    {
+      "file": "adapter-types-aws-cloudtrail.md",
+      "raw_size": 5950,
+      "cleaned_size": 3426,
+      "reduction": "42.4%"
+    },
+    {
+      "file": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer.md",
+      "raw_size": 10074,
+      "cleaned_size": 8024,
+      "reduction": "20.3%"
+    },
+    {
+      "file": "stateful-rules.md",
+      "raw_size": 9986,
+      "cleaned_size": 7121,
+      "reduction": "28.7%"
+    },
+    {
+      "file": "reference-id-schema.md",
+      "raw_size": 12835,
+      "cleaned_size": 10660,
+      "reduction": "16.9%"
+    },
+    {
+      "file": "ext-nims.md",
+      "raw_size": 6426,
+      "cleaned_size": 3257,
+      "reduction": "49.3%"
+    },
+    {
+      "file": "en-tags-MSP.md",
+      "raw_size": 349,
+      "cleaned_size": 4869,
+      "reduction": "-1295.1%"
+    },
+    {
+      "file": "en-tags-WEL.md",
+      "raw_size": 304,
+      "cleaned_size": 2182,
+      "reduction": "-617.8%"
+    },
+    {
+      "file": "adapters.md",
+      "raw_size": 5204,
+      "cleaned_size": 3109,
+      "reduction": "40.3%"
+    },
+    {
+      "file": "en-tags-epp.md",
+      "raw_size": 302,
+      "cleaned_size": 1686,
+      "reduction": "-458.3%"
+    },
+    {
+      "file": "en-faq-invoices.md",
+      "raw_size": 6070,
+      "cleaned_size": 3940,
+      "reduction": "35.1%"
+    },
+    {
+      "file": "tags-limacharlie.md",
+      "raw_size": 318,
+      "cleaned_size": 50,
+      "reduction": "84.3%"
+    },
+    {
+      "file": "en-tags-SOC.md",
+      "raw_size": 300,
+      "cleaned_size": 258,
+      "reduction": "14.0%"
+    },
+    {
+      "file": "en-payloads.md",
+      "raw_size": 5187,
+      "cleaned_size": 2994,
+      "reduction": "42.3%"
+    },
+    {
+      "file": "en-tags-enterprise.md",
+      "raw_size": 321,
+      "cleaned_size": 2642,
+      "reduction": "-723.1%"
+    },
+    {
+      "file": "platform-management.md",
+      "raw_size": 2331,
+      "cleaned_size": 500,
+      "reduction": "78.5%"
+    },
+    {
+      "file": "threat-hunting.md",
+      "raw_size": 3858,
+      "cleaned_size": 2087,
+      "reduction": "45.9%"
+    },
+    {
+      "file": "billing.md",
+      "raw_size": 7622,
+      "cleaned_size": 5548,
+      "reduction": "27.2%"
+    },
+    {
+      "file": "en-table-top-exercises.md",
+      "raw_size": 3915,
+      "cleaned_size": 2141,
+      "reduction": "45.3%"
+    },
+    {
+      "file": "tags-extensions.md",
+      "raw_size": 1386,
+      "cleaned_size": 2978,
+      "reduction": "-114.9%"
+    },
+    {
+      "file": "adapter-types-google-cloud-pubsub.md",
+      "raw_size": 7046,
+      "cleaned_size": 2945,
+      "reduction": "58.2%"
+    },
+    {
+      "file": "en-ext-plaso.md",
+      "raw_size": 11843,
+      "cleaned_size": 8614,
+      "reduction": "27.3%"
+    },
+    {
+      "file": "outputs-destinations-webhook.md",
+      "raw_size": 2962,
+      "cleaned_size": 1245,
+      "reduction": "58.0%"
+    },
+    {
+      "file": "tags-observability.md",
+      "raw_size": 326,
+      "cleaned_size": 303,
+      "reduction": "7.1%"
+    },
+    {
+      "file": "en-endpoint-detection-and-response-edr.md",
+      "raw_size": 4820,
+      "cleaned_size": 3017,
+      "reduction": "37.4%"
+    },
+    {
+      "file": "telemetry-sensors.md",
+      "raw_size": 5395,
+      "cleaned_size": 3538,
+      "reduction": "34.4%"
+    },
+    {
+      "file": "adapter-types-microsoft-defender.md",
+      "raw_size": 6058,
+      "cleaned_size": 3915,
+      "reduction": "35.4%"
+    },
+    {
+      "file": "ext-yara-manager.md",
+      "raw_size": 5343,
+      "cleaned_size": 3251,
+      "reduction": "39.2%"
+    },
+    {
+      "file": "en-installing-macos-agents-via-jamf-now.md",
+      "raw_size": 11297,
+      "cleaned_size": 8036,
+      "reduction": "28.9%"
+    },
+    {
+      "file": "en-hayabusa-to-bigquery.md",
+      "raw_size": 6295,
+      "cleaned_size": 4311,
+      "reduction": "31.5%"
+    },
+    {
+      "file": "en-ext-govee.md",
+      "raw_size": 5347,
+      "cleaned_size": 3153,
+      "reduction": "41.0%"
+    },
+    {
+      "file": "sensors-sensor-commands.md",
+      "raw_size": 7962,
+      "cleaned_size": 6124,
+      "reduction": "23.1%"
+    },
+    {
+      "file": "reference-platform-events.md",
+      "raw_size": 11224,
+      "cleaned_size": 7610,
+      "reduction": "32.2%"
+    },
+    {
+      "file": "en-sleeper.md",
+      "raw_size": 6231,
+      "cleaned_size": 4355,
+      "reduction": "30.1%"
+    },
+    {
+      "file": "build-cti-capabilities.md",
+      "raw_size": 4051,
+      "cleaned_size": 2324,
+      "reduction": "42.6%"
+    },
+    {
+      "file": "purple-teaming.md",
+      "raw_size": 4105,
+      "cleaned_size": 2372,
+      "reduction": "42.2%"
+    },
+    {
+      "file": "en-tags-gcp.md",
+      "raw_size": 1231,
+      "cleaned_size": 2700,
+      "reduction": "-119.3%"
+    },
+    {
+      "file": "extensions.md",
+      "raw_size": 10356,
+      "cleaned_size": 8341,
+      "reduction": "19.5%"
+    },
+    {
+      "file": "en-tags-automation.md",
+      "raw_size": 329,
+      "cleaned_size": 1759,
+      "reduction": "-434.7%"
+    },
+    {
+      "file": "security-monitoring-for-devops.md",
+      "raw_size": 3524,
+      "cleaned_size": 1736,
+      "reduction": "50.7%"
+    },
+    {
+      "file": "en-adapter-types-google-workspace.md",
+      "raw_size": 4669,
+      "cleaned_size": 2130,
+      "reduction": "54.4%"
+    },
+    {
+      "file": "en-windows-agent-installation.md",
+      "raw_size": 6144,
+      "cleaned_size": 3922,
+      "reduction": "36.2%"
+    },
+    {
+      "file": "container-clusters.md",
+      "raw_size": 8634,
+      "cleaned_size": 6609,
+      "reduction": "23.5%"
+    },
+    {
+      "file": "sensor-commands-anomalies.md",
+      "raw_size": 2146,
+      "cleaned_size": 435,
+      "reduction": "79.7%"
+    },
+    {
+      "file": "en-ext-exfil.md",
+      "raw_size": 10291,
+      "cleaned_size": 6077,
+      "reduction": "40.9%"
+    },
+    {
+      "file": "en-ext-reliable-tasking.md",
+      "raw_size": 8372,
+      "cleaned_size": 4079,
+      "reduction": "51.3%"
+    },
+    {
+      "file": "ext-reliable-tasking.md",
+      "raw_size": 8372,
+      "cleaned_size": 4079,
+      "reduction": "51.3%"
+    },
+    {
+      "file": "writing-and-testing-rules.md",
+      "raw_size": 18805,
+      "cleaned_size": 14392,
+      "reduction": "23.5%"
+    },
+    {
+      "file": "tags-wel.md",
+      "raw_size": 286,
+      "cleaned_size": 1171,
+      "reduction": "-309.4%"
+    },
+    {
+      "file": "en-1password.md",
+      "raw_size": 4859,
+      "cleaned_size": 2461,
+      "reduction": "49.4%"
+    },
+    {
+      "file": "faq-troubleshooting.md",
+      "raw_size": 19559,
+      "cleaned_size": 15858,
+      "reduction": "18.9%"
+    },
+    {
+      "file": "tags-macos.md",
+      "raw_size": 1777,
+      "cleaned_size": 874,
+      "reduction": "50.8%"
+    },
+    {
+      "file": "en-adapter-types-sophos.md",
+      "raw_size": 6247,
+      "cleaned_size": 4416,
+      "reduction": "29.3%"
+    },
+    {
+      "file": "sensor-commands-memory.md",
+      "raw_size": 5243,
+      "cleaned_size": 3449,
+      "reduction": "34.2%"
+    },
+    {
+      "file": "en-tags-FIM.md",
+      "raw_size": 386,
+      "cleaned_size": 3364,
+      "reduction": "-771.5%"
+    },
+    {
+      "file": "en-tags-api.md",
+      "raw_size": 793,
+      "cleaned_size": 12860,
+      "reduction": "-1521.7%"
+    },
+    {
+      "file": "tags-epp.md",
+      "raw_size": 299,
+      "cleaned_size": 4136,
+      "reduction": "-1283.3%"
+    },
+    {
+      "file": "detecting-related-events.md",
+      "raw_size": 7817,
+      "cleaned_size": 5857,
+      "reduction": "25.1%"
+    },
+    {
+      "file": "en-config-hive-dr-rules.md",
+      "raw_size": 4793,
+      "cleaned_size": 2614,
+      "reduction": "45.5%"
+    },
+    {
+      "file": "faq-billing.md",
+      "raw_size": 9583,
+      "cleaned_size": 5762,
+      "reduction": "39.9%"
+    },
+    {
+      "file": "tags-msp.md",
+      "raw_size": 346,
+      "cleaned_size": 2251,
+      "reduction": "-550.6%"
+    },
+    {
+      "file": "en-tags-google%20workspace.md",
+      "raw_size": 451,
+      "cleaned_size": 672,
+      "reduction": "-49.0%"
+    },
+    {
+      "file": "ext-cloud-cli-1password.md",
+      "raw_size": 3415,
+      "cleaned_size": 1093,
+      "reduction": "68.0%"
+    },
+    {
+      "file": "en-enerprises.md",
+      "raw_size": 11563,
+      "cleaned_size": 8968,
+      "reduction": "22.4%"
+    },
+    {
+      "file": "tags-mergers-and-acquisitions.md",
+      "raw_size": 378,
+      "cleaned_size": 83,
+      "reduction": "78.0%"
+    },
+    {
+      "file": "limacharlie-cli.md",
+      "raw_size": 2826,
+      "cleaned_size": 1042,
+      "reduction": "63.1%"
+    },
+    {
+      "file": "tags-enterprise.md",
+      "raw_size": 318,
+      "cleaned_size": 2687,
+      "reduction": "-745.0%"
+    },
+    {
+      "file": "outputs-destinations-syslog.md",
+      "raw_size": 2429,
+      "cleaned_size": 634,
+      "reduction": "73.9%"
+    },
+    {
+      "file": "tags-development.md",
+      "raw_size": 333,
+      "cleaned_size": 4411,
+      "reduction": "-1224.6%"
+    },
+    {
+      "file": "tags-google-workspace.md",
+      "raw_size": 445,
+      "cleaned_size": 657,
+      "reduction": "-47.6%"
+    },
+    {
+      "file": "en-adapter-types-sublime-security.md",
+      "raw_size": 7639,
+      "cleaned_size": 4873,
+      "reduction": "36.2%"
+    },
+    {
+      "file": "ai-agent-engine.md",
+      "raw_size": 9131,
+      "cleaned_size": 5389,
+      "reduction": "41.0%"
+    },
+    {
+      "file": "adapter-examples-stdin.md",
+      "raw_size": 4223,
+      "cleaned_size": 2348,
+      "reduction": "44.4%"
+    },
+    {
+      "file": "tags-api.md",
+      "raw_size": 769,
+      "cleaned_size": 11166,
+      "reduction": "-1352.0%"
+    },
+    {
+      "file": "en-config-hive-yara.md",
+      "raw_size": 4388,
+      "cleaned_size": 2273,
+      "reduction": "48.2%"
+    },
+    {
+      "file": "logcollectionguide.md",
+      "raw_size": 10249,
+      "cleaned_size": 8338,
+      "reduction": "18.6%"
+    },
+    {
+      "file": "en-tags-tabletop.md",
+      "raw_size": 329,
+      "cleaned_size": 1417,
+      "reduction": "-330.7%"
+    },
+    {
+      "file": "ext-cloud-cli.md",
+      "raw_size": 5128,
+      "cleaned_size": 2138,
+      "reduction": "58.3%"
+    },
+    {
+      "file": "billing-options.md",
+      "raw_size": 6397,
+      "cleaned_size": 4658,
+      "reduction": "27.2%"
+    },
+    {
+      "file": "en-endpoint-agent-installation.md",
+      "raw_size": 7486,
+      "cleaned_size": 4908,
+      "reduction": "34.4%"
+    },
+    {
+      "file": "en-ext-secureannex.md",
+      "raw_size": 7549,
+      "cleaned_size": 4174,
+      "reduction": "44.7%"
+    },
+    {
+      "file": "en-tags-browser%20agent.md",
+      "raw_size": 1005,
+      "cleaned_size": 1221,
+      "reduction": "-21.5%"
+    },
+    {
+      "file": "en-tags-monitoring.md",
+      "raw_size": 424,
+      "cleaned_size": 4287,
+      "reduction": "-911.1%"
+    },
+    {
+      "file": "template-strings-and-transforms-2.md",
+      "raw_size": 16252,
+      "cleaned_size": 13852,
+      "reduction": "14.8%"
+    },
+    {
+      "file": "tags-sensors.md",
+      "raw_size": 302,
+      "cleaned_size": 188,
+      "reduction": "37.7%"
+    },
+    {
+      "file": "updating-sensors-to-the-newest-version.md",
+      "raw_size": 4095,
+      "cleaned_size": 1922,
+      "reduction": "53.1%"
+    },
+    {
+      "file": "tags-mdr.md",
+      "raw_size": 346,
+      "cleaned_size": 7789,
+      "reduction": "-2151.2%"
+    },
+    {
+      "file": "macos-agent-installation-via-microsoft-intune.md",
+      "raw_size": 5308,
+      "cleaned_size": 2949,
+      "reduction": "44.4%"
+    },
+    {
+      "file": "hostname-resolution.md",
+      "raw_size": 2684,
+      "cleaned_size": 1007,
+      "reduction": "62.5%"
+    },
+    {
+      "file": "en-writing-and-testing-rules.md",
+      "raw_size": 18805,
+      "cleaned_size": 14394,
+      "reduction": "23.5%"
+    },
+    {
+      "file": "sensor-connectivity.md",
+      "raw_size": 5594,
+      "cleaned_size": 2910,
+      "reduction": "48.0%"
+    },
+    {
+      "file": "en-template-strings-and-transforms-2.md",
+      "raw_size": 16252,
+      "cleaned_size": 13922,
+      "reduction": "14.3%"
+    },
+    {
+      "file": "tutorial-ingesting-telemetry-from-cloud-based-external-sources.md",
+      "raw_size": 4230,
+      "cleaned_size": 2098,
+      "reduction": "50.4%"
+    },
+    {
+      "file": "ext-renigma.md",
+      "raw_size": 5456,
+      "cleaned_size": 3538,
+      "reduction": "35.2%"
+    },
+    {
+      "file": "sensor-commands-documents.md",
+      "raw_size": 2519,
+      "cleaned_size": 848,
+      "reduction": "66.3%"
+    },
+    {
+      "file": "reference-events-responses-anomalies.md",
+      "raw_size": 2122,
+      "cleaned_size": 379,
+      "reduction": "82.1%"
+    },
+    {
+      "file": "sleeper.md",
+      "raw_size": 6231,
+      "cleaned_size": 4338,
+      "reduction": "30.4%"
+    },
+    {
+      "file": "adapter-types-microsoft-365.md",
+      "raw_size": 9723,
+      "cleaned_size": 6510,
+      "reduction": "33.0%"
+    },
+    {
+      "file": "community-rules.md",
+      "raw_size": 6456,
+      "cleaned_size": 4716,
+      "reduction": "27.0%"
+    },
+    {
+      "file": "en-tutorial-ingesting-google-cloud-logs.md",
+      "raw_size": 10105,
+      "cleaned_size": 6662,
+      "reduction": "34.1%"
+    },
+    {
+      "file": "en-service-providers-mssp-msp-mdr.md",
+      "raw_size": 14275,
+      "cleaned_size": 10931,
+      "reduction": "23.4%"
+    },
+    {
+      "file": "soar-automation.md",
+      "raw_size": 4601,
+      "cleaned_size": 2840,
+      "reduction": "38.3%"
+    },
+    {
+      "file": "adapter-types-stdin.md",
+      "raw_size": 2269,
+      "cleaned_size": 340,
+      "reduction": "85.0%"
+    },
+    {
+      "file": "tags-gcp.md",
+      "raw_size": 1198,
+      "cleaned_size": 960,
+      "reduction": "19.9%"
+    },
+    {
+      "file": "en-endpoint-agent-events-overview.md",
+      "raw_size": 6246,
+      "cleaned_size": 3606,
+      "reduction": "42.3%"
+    },
+    {
+      "file": "ext-twilio.md",
+      "raw_size": 4028,
+      "cleaned_size": 1310,
+      "reduction": "67.5%"
+    },
+    {
+      "file": "faq-account-management.md",
+      "raw_size": 7211,
+      "cleaned_size": 3671,
+      "reduction": "49.1%"
+    },
+    {
+      "file": "sensor-commands-registry.md",
+      "raw_size": 1951,
+      "cleaned_size": 280,
+      "reduction": "85.6%"
+    },
+    {
+      "file": "playbook.md",
+      "raw_size": 10658,
+      "cleaned_size": 7365,
+      "reduction": "30.9%"
+    },
+    {
+      "file": "config-hive-cloud-sensors.md",
+      "raw_size": 3930,
+      "cleaned_size": 1740,
+      "reduction": "55.7%"
+    },
+    {
+      "file": "ext-integrity.md",
+      "raw_size": 8244,
+      "cleaned_size": 3815,
+      "reduction": "53.7%"
+    },
+    {
+      "file": "building-the-user-interface.md",
+      "raw_size": 5859,
+      "cleaned_size": 4033,
+      "reduction": "31.2%"
+    },
+    {
+      "file": "en-tags-MSSP.md",
+      "raw_size": 352,
+      "cleaned_size": 3252,
+      "reduction": "-823.9%"
+    },
+    {
+      "file": "en-build-cti-capabilities.md",
+      "raw_size": 4051,
+      "cleaned_size": 2324,
+      "reduction": "42.6%"
+    },
+    {
+      "file": "api-integrations-virustotal.md",
+      "raw_size": 2762,
+      "cleaned_size": 922,
+      "reduction": "66.6%"
+    },
+    {
+      "file": "en-tags-events.md",
+      "raw_size": 827,
+      "cleaned_size": 22024,
+      "reduction": "-2563.1%"
+    },
+    {
+      "file": "en-adapter-types-it-glue.md",
+      "raw_size": 4108,
+      "cleaned_size": 2280,
+      "reduction": "44.5%"
+    },
+    {
+      "file": "adapter-types-mac-unified-logging.md",
+      "raw_size": 6947,
+      "cleaned_size": 4439,
+      "reduction": "36.1%"
+    },
+    {
+      "file": "outputs-destinations-azure-storage-blob.md",
+      "raw_size": 2532,
+      "cleaned_size": 425,
+      "reduction": "83.2%"
+    },
+    {
+      "file": "tags-automation.md",
+      "raw_size": 326,
+      "cleaned_size": 2655,
+      "reduction": "-714.4%"
+    },
+    {
+      "file": "en-adapter-types-mac-unified-logging.md",
+      "raw_size": 6947,
+      "cleaned_size": 4439,
+      "reduction": "36.1%"
+    },
+    {
+      "file": "en-tags-ChromeOS.md",
+      "raw_size": 323,
+      "cleaned_size": 1062,
+      "reduction": "-228.8%"
+    },
+    {
+      "file": "en-incident-response.md",
+      "raw_size": 3973,
+      "cleaned_size": 2155,
+      "reduction": "45.8%"
+    },
+    {
+      "file": "en-outputs-destinations-google-cloud-bigquery.md",
+      "raw_size": 3943,
+      "cleaned_size": 1666,
+      "reduction": "57.7%"
+    },
+    {
+      "file": "adapter-types-google-cloud-storage.md",
+      "raw_size": 4744,
+      "cleaned_size": 1697,
+      "reduction": "64.2%"
+    },
+    {
+      "file": "tags-linux.md",
+      "raw_size": 1280,
+      "cleaned_size": 1021,
+      "reduction": "20.2%"
+    },
+    {
+      "file": "en-tags-EDR.md",
+      "raw_size": 348,
+      "cleaned_size": 5035,
+      "reduction": "-1346.8%"
+    },
+    {
+      "file": "en-tags-m365.md",
+      "raw_size": 456,
+      "cleaned_size": 806,
+      "reduction": "-76.8%"
+    },
+    {
+      "file": "sensor-commands-mitigation.md",
+      "raw_size": 3336,
+      "cleaned_size": 1567,
+      "reduction": "53.0%"
+    },
+    {
+      "file": "ext-plaso.md",
+      "raw_size": 11843,
+      "cleaned_size": 8628,
+      "reduction": "27.1%"
+    },
+    {
+      "file": "adapter-types-it-glue.md",
+      "raw_size": 4108,
+      "cleaned_size": 2280,
+      "reduction": "44.5%"
+    },
+    {
+      "file": "en-template-strings-and-transforms-1.md",
+      "raw_size": 16224,
+      "cleaned_size": 13828,
+      "reduction": "14.8%"
+    },
+    {
+      "file": "ext-cloud-cli-microsoft365.md",
+      "raw_size": 3804,
+      "cleaned_size": 1385,
+      "reduction": "63.6%"
+    },
+    {
+      "file": "api-keys.md",
+      "raw_size": 8224,
+      "cleaned_size": 6325,
+      "reduction": "23.1%"
+    },
+    {
+      "file": "adapter-examples-stdin-json.md",
+      "raw_size": 4289,
+      "cleaned_size": 2331,
+      "reduction": "45.7%"
+    },
+    {
+      "file": "telemetry-sensors-uninstallation.md",
+      "raw_size": 5901,
+      "cleaned_size": 4166,
+      "reduction": "29.4%"
+    },
+    {
+      "file": "sensors-operating-systems-macos.md",
+      "raw_size": 8398,
+      "cleaned_size": 6494,
+      "reduction": "22.7%"
+    },
+    {
+      "file": "en-tags-DevOps.md",
+      "raw_size": 345,
+      "cleaned_size": 8047,
+      "reduction": "-2232.5%"
+    },
+    {
+      "file": "en-detection-logic-operators.md",
+      "raw_size": 14999,
+      "cleaned_size": 11609,
+      "reduction": "22.6%"
+    },
+    {
+      "file": "en-ext-cloud-cli-microsoft365.md",
+      "raw_size": 3804,
+      "cleaned_size": 1381,
+      "reduction": "63.7%"
+    },
+    {
+      "file": "en-reference-platform-events.md",
+      "raw_size": 11224,
+      "cleaned_size": 7829,
+      "reduction": "30.2%"
+    },
+    {
+      "file": "reference-permissions.md",
+      "raw_size": 10009,
+      "cleaned_size": 7679,
+      "reduction": "23.3%"
+    }
+  ]
+}

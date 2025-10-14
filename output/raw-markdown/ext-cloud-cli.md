@@ -1,0 +1,180 @@
+[![LimaCharlie](https://cdn.document360.io/logo/84ec2311-0e05-4c58-90b9-baa9c041d22b/a8f5c28d58ea4df0b59badd4cebcc541-Logo_Blue.png)](/)
+
+* [LimaCharlie Log In](https://app.limacharlie.io)
+
+* v2
+
+  + [v1 Deprecated](/v1/docs "v1")
+  + [v2](/docs "v2")
+
+Contents x
+
+* [Getting Started](what-is-limacharlie)
+* [Sensors](installation-keys)
+* [Events](event-schemas)
+* [Query Console](query-console-ui)
+* [Detection and Response](replay)
+* [Platform Management](limacharlie-sdk)
+* [Outputs](output-allowlisting)
+* [Add-Ons](developer-grant-program)
+* [Tutorials](reporting)
+* [FAQ](faq-general)
+* Release Notes
+* [Connecting](mcp-server)
+
+[Powered by![Document360](https://cdn.document360.io/static/images/document360-logo.svg)](https://document360.com/powered-by-document360/?utm_source=docs&utm_medium=footer&utm_campaign=poweredbylogo)
+
+---
+
+Cloud CLI
+
+* 08 Oct 2025
+* 2 Minutes to read
+
+Share this
+
+* Print
+* Share
+* Dark
+
+  Light
+
+Contents
+
+# Cloud CLI
+
+* Updated on 08 Oct 2025
+* 2 Minutes to read
+
+* Print
+* Share
+* Dark
+
+  Light
+
+---
+
+Article summary
+
+Did you find this summary helpful?
+
+Thank you for your feedback!
+
+LimaCharlie's Cloud CLI Extension (`ext-cloud-cli`) allows you to trigger actions against CLI or API endpoints for third-party products. This extension facilitates bi-directional communication between LimaCharlie and nearly any telemetry source. Actions can be triggered from the Cloud CLI UI or automated via  rules.
+
+For a list of platforms supported by this extension, see the nested items on the left-side navigation.
+
+## Usage
+
+The Cloud CLI extension is enabled via the [Add-Ons Marketplace](https://app.limacharlie.io/add-ons/category/featured). When enabled, the Cloud CLI extension provides the following UI, available via the Extensions menu in LimaCharlie.
+
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ext-cloud-cli.png)
+
+From this UI, you can build and execute commands against the CLI or API endpoints of the chosen product.
+
+Cloud CLI commands can also be executed via D&R rules and the use of the `extension request` action.
+
+**Example 1:** Stop EC2 instances based on an `instance_id` parameter found in [AWS telemetry](/v2/docs/adapter-types-aws-cloudtrail).
+
+```
+- action: extension request
+  extension action: run
+  extension name: ext-cloud-cli
+  extension request:
+    tool: '{{ "aws" }}'
+    command_tokens:
+      - ec2
+      - stop-instances
+      - '--instance-ids'
+      - '{{ .event.instance_id  }}'
+      - '--region'
+      - us-east-1
+    credentials: '{{ "hive://secret/secret-name" }}'
+```
+
+**Example 2:** Enumerate a list of VMs from an Azure tenant.
+
+```
+- action: extension request
+  extension action: run
+  extension name: ext-cloud-cli
+  extension request:
+    tool: '{{ "az" }}'
+    command_line: '{{ "vm list" }}'
+    credentials: '{{ "hive://secret/secret-name" }}'
+```
+
+### Credentials
+
+You must set up credentials in the respective third-party tools or platforms prior to utilizing this extension. Once procured, credentials can be stored in the [Secrets config hive](/v2/docs/config-hive-secrets) or provided ad-hoc to the extension in the UI. We recommend storing credentials in the Secrets config hive if you plan to make repetitive calls with this extension.
+
+Where available, details for procuring third-party credentials are provided in their respective sub-pages.
+
+Command-line Interface
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+---
+
+Was this article helpful?
+
+Yes    No
+
+Thank you for your feedback! Our team will get back to you
+
+How can we improve this article?
+
+Your feedback
+
+[ ]  Need more information
+
+[ ]  Difficult to understand
+
+[ ]  Inaccurate or irrelevant content
+
+[ ]  Missing/broken link
+
+[ ]  Others
+
+Comment
+
+Comment (Optional)
+
+Character limit : 500
+
+Please enter your comment
+
+Email (Optional)
+
+Email
+
+[ ]   Notify me about change
+
+Please enter a valid email
+
+Cancel
+
+---
+
+###### Related articles
+
+* [1Password](/docs/1password)
+* [Okta](/docs/adapter-types-okta)
+* [Soteria M365 Rules](/docs/soteria-m365-rules)
+
+---
+
+###### What's Next
+
+* [1Password](/docs/ext-cloud-cli-1password)
+
+Table of contents
+
++ [Usage](#usage)
+
+Tags
+
+* [add-ons](/docs/en/tags/add-ons)
+* [extensions](/docs/en/tags/extensions)

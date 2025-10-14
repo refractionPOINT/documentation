@@ -1,0 +1,2978 @@
+{
+  "https://docs.limacharlie.io/v2/docs/quickstart": {
+    "url": "https://docs.limacharlie.io/v2/docs/quickstart",
+    "title": "Quickstart",
+    "discovered_via": "crawl",
+    "slug": "quickstart"
+  },
+  "https://docs.limacharlie.io/v2/docs/event-schemas": {
+    "url": "https://docs.limacharlie.io/v2/docs/event-schemas",
+    "title": "Event Schemas",
+    "discovered_via": "crawl",
+    "slug": "event-schemas"
+  },
+  "https://docs.limacharlie.io/v2/docs/mcp-server": {
+    "url": "https://docs.limacharlie.io/v2/docs/mcp-server",
+    "title": "MCP Server",
+    "discovered_via": "crawl",
+    "slug": "mcp-server"
+  },
+  "https://docs.limacharlie.io/docs/managed-rulesets": {
+    "url": "https://docs.limacharlie.io/docs/managed-rulesets",
+    "title": "Managed Rulesets",
+    "discovered_via": "crawl",
+    "slug": "managed-rulesets"
+  },
+  "https://docs.limacharlie.io/docs/event-schemas": {
+    "url": "https://docs.limacharlie.io/docs/event-schemas",
+    "title": "Event Schemas",
+    "discovered_via": "crawl",
+    "slug": "event-schemas"
+  },
+  "https://docs.limacharlie.io/v2/docs/query-console-ui": {
+    "url": "https://docs.limacharlie.io/v2/docs/query-console-ui",
+    "title": "Query Console UI",
+    "discovered_via": "crawl",
+    "slug": "query-console-ui"
+  },
+  "https://docs.limacharlie.io/docs/developer-grant-program": {
+    "url": "https://docs.limacharlie.io/docs/developer-grant-program",
+    "title": "Developer Grant Program",
+    "discovered_via": "crawl",
+    "slug": "developer-grant-program"
+  },
+  "https://docs.limacharlie.io/v2/docs/faq-general": {
+    "url": "https://docs.limacharlie.io/v2/docs/faq-general",
+    "title": "FAQ - General",
+    "discovered_via": "crawl",
+    "slug": "faq-general"
+  },
+  "https://docs.limacharlie.io/v2/docs/soc-prime-rules": {
+    "url": "https://docs.limacharlie.io/v2/docs/soc-prime-rules",
+    "title": "SOC Prime Rules",
+    "discovered_via": "crawl",
+    "slug": "soc-prime-rules"
+  },
+  "https://docs.limacharlie.io/docs/what-is-limacharlie": {
+    "url": "https://docs.limacharlie.io/docs/what-is-limacharlie",
+    "title": "What is LimaCharlie?",
+    "discovered_via": "crawl",
+    "slug": "what-is-limacharlie"
+  },
+  "https://docs.limacharlie.io/v2/docs/installation-keys": {
+    "url": "https://docs.limacharlie.io/v2/docs/installation-keys",
+    "title": "Installation Keys",
+    "discovered_via": "crawl",
+    "slug": "installation-keys"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/faq": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/faq",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/faq"
+  },
+  "https://docs.limacharlie.io/docs/use-cases": {
+    "url": "https://docs.limacharlie.io/docs/use-cases",
+    "title": "Use Cases",
+    "discovered_via": "crawl",
+    "slug": "use-cases"
+  },
+  "https://docs.limacharlie.io/docs/agent-deployment-microsoft-intune": {
+    "url": "https://docs.limacharlie.io/docs/agent-deployment-microsoft-intune",
+    "title": "Agent Deployment via Microsoft Intune",
+    "discovered_via": "crawl",
+    "slug": "agent-deployment-microsoft-intune"
+  },
+  "https://docs.limacharlie.io/v2/docs/incident-response": {
+    "url": "https://docs.limacharlie.io/v2/docs/incident-response",
+    "title": "Incident Response",
+    "discovered_via": "crawl",
+    "slug": "incident-response"
+  },
+  "https://docs.limacharlie.io/v2/docs/false-positive-rules": {
+    "url": "https://docs.limacharlie.io/v2/docs/false-positive-rules",
+    "title": "False Positive Rules",
+    "discovered_via": "crawl",
+    "slug": "false-positive-rules"
+  },
+  "https://docs.limacharlie.io/docs/output-allowlisting": {
+    "url": "https://docs.limacharlie.io/docs/output-allowlisting",
+    "title": "Adding Outputs to an Allow List",
+    "discovered_via": "crawl",
+    "slug": "output-allowlisting"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/add-ons": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/add-ons",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/add-ons"
+  },
+  "https://docs.limacharlie.io/v2/docs/service-providers-mssp-msp-mdr": {
+    "url": "https://docs.limacharlie.io/v2/docs/service-providers-mssp-msp-mdr",
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "discovered_via": "crawl",
+    "slug": "service-providers-mssp-msp-mdr"
+  },
+  "https://docs.limacharlie.io/v2/docs/table-top-exercises": {
+    "url": "https://docs.limacharlie.io/v2/docs/table-top-exercises",
+    "title": "Table Top Exercises",
+    "discovered_via": "crawl",
+    "slug": "table-top-exercises"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/add-ons": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/add-ons",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/add-ons"
+  },
+  "https://docs.limacharlie.io/docs/sleeper-mode": {
+    "url": "https://docs.limacharlie.io/docs/sleeper-mode",
+    "title": "Sleeper Mode",
+    "discovered_via": "crawl",
+    "slug": "sleeper-mode"
+  },
+  "https://docs.limacharlie.io/docs/soc-prime-rules": {
+    "url": "https://docs.limacharlie.io/docs/soc-prime-rules",
+    "title": "SOC Prime Rules",
+    "discovered_via": "crawl",
+    "slug": "soc-prime-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-sensor-cull": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-sensor-cull",
+    "title": "Sensor Cull",
+    "discovered_via": "crawl",
+    "slug": "en/ext-sensor-cull"
+  },
+  "https://docs.limacharlie.io/v2/docs/sensors": {
+    "url": "https://docs.limacharlie.io/v2/docs/sensors",
+    "title": "Sensors",
+    "discovered_via": "crawl",
+    "slug": "sensors"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/endpoint%20agent": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/endpoint%20agent",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/endpoint%20agent"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-zeek": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-zeek",
+    "title": "Zeek",
+    "discovered_via": "crawl",
+    "slug": "en/ext-zeek"
+  },
+  "https://docs.limacharlie.io/docs/detection-and-response": {
+    "url": "https://docs.limacharlie.io/docs/detection-and-response",
+    "title": "Detection and Response",
+    "discovered_via": "crawl",
+    "slug": "detection-and-response"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/faq": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/faq",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/faq"
+  },
+  "https://docs.limacharlie.io/docs/building-a-custom-msi-installer-for-windows": {
+    "url": "https://docs.limacharlie.io/docs/building-a-custom-msi-installer-for-windows",
+    "title": "Building a custom MSI installer for Windows",
+    "discovered_via": "crawl",
+    "slug": "building-a-custom-msi-installer-for-windows"
+  },
+  "https://docs.limacharlie.io/docs/tags/add-ons": {
+    "url": "https://docs.limacharlie.io/docs/tags/add-ons",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/add-ons"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/MDR": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/MDR",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/MDR"
+  },
+  "https://docs.limacharlie.io/docs/en/sensor-connectivity": {
+    "url": "https://docs.limacharlie.io/docs/en/sensor-connectivity",
+    "title": "Sensor Connectivity",
+    "discovered_via": "crawl",
+    "slug": "en/sensor-connectivity"
+  },
+  "https://docs.limacharlie.io/docs/en/macos-agent-installation-older-versions": {
+    "url": "https://docs.limacharlie.io/docs/en/macos-agent-installation-older-versions",
+    "title": "macOS Agent Installation - Older Versions (macOS 10.14 and prior)",
+    "discovered_via": "crawl",
+    "slug": "en/macos-agent-installation-older-versions"
+  },
+  "https://docs.limacharlie.io/docs/ext-velociraptor": {
+    "url": "https://docs.limacharlie.io/docs/ext-velociraptor",
+    "title": "Velociraptor",
+    "discovered_via": "crawl",
+    "slug": "ext-velociraptor"
+  },
+  "https://docs.limacharlie.io/docs/en/whats-newx": {
+    "url": "https://docs.limacharlie.io/docs/en/whats-newx",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/whats-newx"
+  },
+  "https://docs.limacharlie.io/docs/sigma-converter": {
+    "url": "https://docs.limacharlie.io/docs/sigma-converter",
+    "title": "Sigma Converter",
+    "discovered_via": "crawl",
+    "slug": "sigma-converter"
+  },
+  "https://docs.limacharlie.io/docs/adapter-deployment": {
+    "url": "https://docs.limacharlie.io/docs/adapter-deployment",
+    "title": "Adapter Deployment",
+    "discovered_via": "crawl",
+    "slug": "adapter-deployment"
+  },
+  "https://docs.limacharlie.io/docs/soteria-aws-rules": {
+    "url": "https://docs.limacharlie.io/docs/soteria-aws-rules",
+    "title": "Soteria AWS Rules",
+    "discovered_via": "crawl",
+    "slug": "soteria-aws-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/extensions": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/extensions",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/extensions"
+  },
+  "https://docs.limacharlie.io/docs/en/developer-grant-program": {
+    "url": "https://docs.limacharlie.io/docs/en/developer-grant-program",
+    "title": "Developer Grant Program",
+    "discovered_via": "crawl",
+    "slug": "en/developer-grant-program"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/windows": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/windows",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/windows"
+  },
+  "https://docs.limacharlie.io/docs/ingesting-linux-audit-logs": {
+    "url": "https://docs.limacharlie.io/docs/ingesting-linux-audit-logs",
+    "title": "Ingesting Linux Audit Logs",
+    "discovered_via": "crawl",
+    "slug": "ingesting-linux-audit-logs"
+  },
+  "https://docs.limacharlie.io/v2/docs/cost-effective-siem": {
+    "url": "https://docs.limacharlie.io/v2/docs/cost-effective-siem",
+    "title": "Cost Effective SIEM Alternative",
+    "discovered_via": "crawl",
+    "slug": "cost-effective-siem"
+  },
+  "https://docs.limacharlie.io/v2/docs/cloud-security": {
+    "url": "https://docs.limacharlie.io/v2/docs/cloud-security",
+    "title": "Cloud Security",
+    "discovered_via": "crawl",
+    "slug": "cloud-security"
+  },
+  "https://docs.limacharlie.io/docs/limacharlie-core-concepts": {
+    "url": "https://docs.limacharlie.io/docs/limacharlie-core-concepts",
+    "title": "LimaCharlie Core Concepts",
+    "discovered_via": "crawl",
+    "slug": "limacharlie-core-concepts"
+  },
+  "https://docs.limacharlie.io/docs/create-a-dr-rule-using-a-threat-feed": {
+    "url": "https://docs.limacharlie.io/docs/create-a-dr-rule-using-a-threat-feed",
+    "title": "Create a D&R Rule Using a Threat Feed",
+    "discovered_via": "crawl",
+    "slug": "create-a-dr-rule-using-a-threat-feed"
+  },
+  "https://docs.limacharlie.io/docs/adapters-as-a-service": {
+    "url": "https://docs.limacharlie.io/docs/adapters-as-a-service",
+    "title": "Adapters as a Service",
+    "discovered_via": "crawl",
+    "slug": "adapters-as-a-service"
+  },
+  "https://docs.limacharlie.io/docs/faq-sensor-installation": {
+    "url": "https://docs.limacharlie.io/docs/faq-sensor-installation",
+    "title": "FAQ - Sensor Installation",
+    "discovered_via": "crawl",
+    "slug": "faq-sensor-installation"
+  },
+  "https://docs.limacharlie.io/docs/ext-sensor-cull": {
+    "url": "https://docs.limacharlie.io/docs/ext-sensor-cull",
+    "title": "Sensor Cull",
+    "discovered_via": "crawl",
+    "slug": "ext-sensor-cull"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/cloud": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/cloud",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/cloud"
+  },
+  "https://docs.limacharlie.io/docs/endpoint-agent-commands": {
+    "url": "https://docs.limacharlie.io/docs/endpoint-agent-commands",
+    "title": "Endpoint Agent Commands",
+    "discovered_via": "crawl",
+    "slug": "endpoint-agent-commands"
+  },
+  "https://docs.limacharlie.io/docs/en/faq-general": {
+    "url": "https://docs.limacharlie.io/docs/en/faq-general",
+    "title": "FAQ - General",
+    "discovered_via": "crawl",
+    "slug": "en/faq-general"
+  },
+  "https://docs.limacharlie.io/docs/tutorial-creating-a-webhook-adapter": {
+    "url": "https://docs.limacharlie.io/docs/tutorial-creating-a-webhook-adapter",
+    "title": "Tutorial: Creating a Webhook Adapter",
+    "discovered_via": "crawl",
+    "slug": "tutorial-creating-a-webhook-adapter"
+  },
+  "https://docs.limacharlie.io/docs/en/building-the-user-interface": {
+    "url": "https://docs.limacharlie.io/docs/en/building-the-user-interface",
+    "title": "Building the User Interface",
+    "discovered_via": "crawl",
+    "slug": "en/building-the-user-interface"
+  },
+  "https://docs.limacharlie.io/v2/docs/output-allowlisting": {
+    "url": "https://docs.limacharlie.io/v2/docs/output-allowlisting",
+    "title": "Adding Outputs to an Allow List",
+    "discovered_via": "crawl",
+    "slug": "output-allowlisting"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/sensors": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/sensors",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/sensors"
+  },
+  "https://docs.limacharlie.io/docs/en/response-actions": {
+    "url": "https://docs.limacharlie.io/docs/en/response-actions",
+    "title": "Response Actions",
+    "discovered_via": "crawl",
+    "slug": "en/response-actions"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-google-cloud-pubsub": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-google-cloud-pubsub",
+    "title": "Google Cloud Pubsub",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-google-cloud-pubsub"
+  },
+  "https://docs.limacharlie.io/docs/faq-general": {
+    "url": "https://docs.limacharlie.io/docs/faq-general",
+    "title": "FAQ - General",
+    "discovered_via": "crawl",
+    "slug": "faq-general"
+  },
+  "https://docs.limacharlie.io/v2/docs/secops-development": {
+    "url": "https://docs.limacharlie.io/v2/docs/secops-development",
+    "title": "SecOps Development",
+    "discovered_via": "crawl",
+    "slug": "secops-development"
+  },
+  "https://docs.limacharlie.io/docs/en/endpoint-agent-commands": {
+    "url": "https://docs.limacharlie.io/docs/en/endpoint-agent-commands",
+    "title": "Endpoint Agent Commands",
+    "discovered_via": "crawl",
+    "slug": "en/endpoint-agent-commands"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-atomic-red-team": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-atomic-red-team",
+    "title": "Atomic Red Team",
+    "discovered_via": "crawl",
+    "slug": "en/ext-atomic-red-team"
+  },
+  "https://docs.limacharlie.io/docs/ext-exfil": {
+    "url": "https://docs.limacharlie.io/docs/ext-exfil",
+    "title": "Exfil (Event Collection)",
+    "discovered_via": "crawl",
+    "slug": "ext-exfil"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/detection%20and%20response": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/detection%20and%20response",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/detection%20and%20response"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-lookup-manager": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-lookup-manager",
+    "title": "Lookup Manager",
+    "discovered_via": "crawl",
+    "slug": "en/ext-lookup-manager"
+  },
+  "https://docs.limacharlie.io/v2/docs/sensor-tags": {
+    "url": "https://docs.limacharlie.io/v2/docs/sensor-tags",
+    "title": "Sensor Tags",
+    "discovered_via": "crawl",
+    "slug": "sensor-tags"
+  },
+  "https://docs.limacharlie.io/docs/replay": {
+    "url": "https://docs.limacharlie.io/docs/replay",
+    "title": "Replay",
+    "discovered_via": "crawl",
+    "slug": "replay"
+  },
+  "https://docs.limacharlie.io/v2/docs/reference-sensor-selector-expressions": {
+    "url": "https://docs.limacharlie.io/v2/docs/reference-sensor-selector-expressions",
+    "title": "Reference: Sensor Selector Expressions",
+    "discovered_via": "crawl",
+    "slug": "reference-sensor-selector-expressions"
+  },
+  "https://docs.limacharlie.io/v2/docs/file-and-registry-integrity-monitoring-fim-deployments": {
+    "url": "https://docs.limacharlie.io/v2/docs/file-and-registry-integrity-monitoring-fim-deployments",
+    "title": "File and Registry Integrity Monitoring (FIM) Deployments",
+    "discovered_via": "crawl",
+    "slug": "file-and-registry-integrity-monitoring-fim-deployments"
+  },
+  "https://docs.limacharlie.io/v2/docs/soteria-rules": {
+    "url": "https://docs.limacharlie.io/v2/docs/soteria-rules",
+    "title": "Soteria Rules",
+    "discovered_via": "crawl",
+    "slug": "soteria-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/reference-id-schema": {
+    "url": "https://docs.limacharlie.io/docs/en/reference-id-schema",
+    "title": "Reference: ID Schema",
+    "discovered_via": "crawl",
+    "slug": "en/reference-id-schema"
+  },
+  "https://docs.limacharlie.io/docs/en/vdi-virtual-machine-templates": {
+    "url": "https://docs.limacharlie.io/docs/en/vdi-virtual-machine-templates",
+    "title": "VDI & Virtual Machine Templates",
+    "discovered_via": "crawl",
+    "slug": "en/vdi-virtual-machine-templates"
+  },
+  "https://docs.limacharlie.io/v2/docs/enerprises": {
+    "url": "https://docs.limacharlie.io/v2/docs/enerprises",
+    "title": "Enterprise SOC",
+    "discovered_via": "crawl",
+    "slug": "enerprises"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-google-cloud-storage": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-google-cloud-storage",
+    "title": "Google Cloud Storage",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-google-cloud-storage"
+  },
+  "https://docs.limacharlie.io/docs/en/macos-agent-installation-mdm-configuration-profiles": {
+    "url": "https://docs.limacharlie.io/docs/en/macos-agent-installation-mdm-configuration-profiles",
+    "title": "macOS Agent Installation - MDM Configuration Profiles",
+    "discovered_via": "crawl",
+    "slug": "en/macos-agent-installation-mdm-configuration-profiles"
+  },
+  "https://docs.limacharlie.io/docs/sensor-removal": {
+    "url": "https://docs.limacharlie.io/docs/sensor-removal",
+    "title": "FAQ - Sensor Removal",
+    "discovered_via": "crawl",
+    "slug": "sensor-removal"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-microsoft-defender": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-microsoft-defender",
+    "title": "Microsoft Defender",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-microsoft-defender"
+  },
+  "https://docs.limacharlie.io/docs/adapter-usage": {
+    "url": "https://docs.limacharlie.io/docs/adapter-usage",
+    "title": "Adapter Usage",
+    "discovered_via": "crawl",
+    "slug": "adapter-usage"
+  },
+  "https://docs.limacharlie.io/docs/api-integrations-ip-geolocation": {
+    "url": "https://docs.limacharlie.io/docs/api-integrations-ip-geolocation",
+    "title": "IP Geolocation",
+    "discovered_via": "crawl",
+    "slug": "api-integrations-ip-geolocation"
+  },
+  "https://docs.limacharlie.io/docs/en/detection-and-response-examples": {
+    "url": "https://docs.limacharlie.io/docs/en/detection-and-response-examples",
+    "title": "Detection and Response Examples",
+    "discovered_via": "crawl",
+    "slug": "en/detection-and-response-examples"
+  },
+  "https://docs.limacharlie.io/docs/ext-yara": {
+    "url": "https://docs.limacharlie.io/docs/ext-yara",
+    "title": "YARA",
+    "discovered_via": "crawl",
+    "slug": "ext-yara"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/use%20case": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/use%20case",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/use%20case"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/tutorial": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/tutorial",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/tutorial"
+  },
+  "https://docs.limacharlie.io/docs/macos-agent-installation-mdm-configuration-profiles": {
+    "url": "https://docs.limacharlie.io/docs/macos-agent-installation-mdm-configuration-profiles",
+    "title": "macOS Agent Installation - MDM Configuration Profiles",
+    "discovered_via": "crawl",
+    "slug": "macos-agent-installation-mdm-configuration-profiles"
+  },
+  "https://docs.limacharlie.io/docs/en/api-integrations-ip-geolocation": {
+    "url": "https://docs.limacharlie.io/docs/en/api-integrations-ip-geolocation",
+    "title": "IP Geolocation",
+    "discovered_via": "crawl",
+    "slug": "en/api-integrations-ip-geolocation"
+  },
+  "https://docs.limacharlie.io/docs/en/linux-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/en/linux-agent-installation",
+    "title": "Linux Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "en/linux-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/outputs-destinations-webhook-bulk": {
+    "url": "https://docs.limacharlie.io/docs/outputs-destinations-webhook-bulk",
+    "title": "Webhook (Bulk)",
+    "discovered_via": "crawl",
+    "slug": "outputs-destinations-webhook-bulk"
+  },
+  "https://docs.limacharlie.io/docs/en/event-schemas": {
+    "url": "https://docs.limacharlie.io/docs/en/event-schemas",
+    "title": "Event Schemas",
+    "discovered_via": "crawl",
+    "slug": "en/event-schemas"
+  },
+  "https://docs.limacharlie.io/docs/en/soteria-m365-rules": {
+    "url": "https://docs.limacharlie.io/docs/en/soteria-m365-rules",
+    "title": "Soteria M365 Rules",
+    "discovered_via": "crawl",
+    "slug": "en/soteria-m365-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/wel-monitoring": {
+    "url": "https://docs.limacharlie.io/docs/en/wel-monitoring",
+    "title": "WEL Monitoring",
+    "discovered_via": "crawl",
+    "slug": "en/wel-monitoring"
+  },
+  "https://docs.limacharlie.io/docs/add-ons": {
+    "url": "https://docs.limacharlie.io/docs/add-ons",
+    "title": "Add-Ons",
+    "discovered_via": "crawl",
+    "slug": "add-ons"
+  },
+  "https://docs.limacharlie.io/v2/docs/velociraptor-to-bigquery": {
+    "url": "https://docs.limacharlie.io/v2/docs/velociraptor-to-bigquery",
+    "title": "Velociraptor to BigQuery",
+    "discovered_via": "crawl",
+    "slug": "velociraptor-to-bigquery"
+  },
+  "https://docs.limacharlie.io/docs/endpoint-detection-and-response-edr": {
+    "url": "https://docs.limacharlie.io/docs/endpoint-detection-and-response-edr",
+    "title": "Endpoint Detection and Response (EDR)",
+    "discovered_via": "crawl",
+    "slug": "endpoint-detection-and-response-edr"
+  },
+  "https://docs.limacharlie.io/docs/reference-endpoint-agent-commands": {
+    "url": "https://docs.limacharlie.io/docs/reference-endpoint-agent-commands",
+    "title": "Reference: Endpoint Agent Commands",
+    "discovered_via": "crawl",
+    "slug": "reference-endpoint-agent-commands"
+  },
+  "https://docs.limacharlie.io/v2/docs/faq-sensor-installation": {
+    "url": "https://docs.limacharlie.io/v2/docs/faq-sensor-installation",
+    "title": "FAQ - Sensor Installation",
+    "discovered_via": "crawl",
+    "slug": "faq-sensor-installation"
+  },
+  "https://docs.limacharlie.io/docs/config-hive-dr-rules": {
+    "url": "https://docs.limacharlie.io/docs/config-hive-dr-rules",
+    "title": "Config Hive: Detection & Response Rules",
+    "discovered_via": "crawl",
+    "slug": "config-hive-dr-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/lookups": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/lookups",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/lookups"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-epp": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-epp",
+    "title": "Endpoint Protection",
+    "discovered_via": "crawl",
+    "slug": "ext-epp"
+  },
+  "https://docs.limacharlie.io/docs/en/replay": {
+    "url": "https://docs.limacharlie.io/docs/en/replay",
+    "title": "Replay",
+    "discovered_via": "crawl",
+    "slug": "en/replay"
+  },
+  "https://docs.limacharlie.io/docs/ingesting-windows-event-logs": {
+    "url": "https://docs.limacharlie.io/docs/ingesting-windows-event-logs",
+    "title": "Ingesting Windows Event Logs",
+    "discovered_via": "crawl",
+    "slug": "ingesting-windows-event-logs"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-exfil": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-exfil",
+    "title": "Exfil (Event Collection)",
+    "discovered_via": "crawl",
+    "slug": "ext-exfil"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-iis": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-iis",
+    "title": "IIS Logs",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-iis"
+  },
+  "https://docs.limacharlie.io/docs/tutorial-ingesting-google-cloud-logs": {
+    "url": "https://docs.limacharlie.io/docs/tutorial-ingesting-google-cloud-logs",
+    "title": "Tutorial: Ingesting Google Cloud Logs",
+    "discovered_via": "crawl",
+    "slug": "tutorial-ingesting-google-cloud-logs"
+  },
+  "https://docs.limacharlie.io/docs/en/installation-keys": {
+    "url": "https://docs.limacharlie.io/docs/en/installation-keys",
+    "title": "Installation Keys",
+    "discovered_via": "crawl",
+    "slug": "en/installation-keys"
+  },
+  "https://docs.limacharlie.io/docs/reference-sensor-selector-expressions": {
+    "url": "https://docs.limacharlie.io/docs/reference-sensor-selector-expressions",
+    "title": "Reference: Sensor Selector Expressions",
+    "discovered_via": "crawl",
+    "slug": "reference-sensor-selector-expressions"
+  },
+  "https://docs.limacharlie.io/docs/en/observability-pipeline": {
+    "url": "https://docs.limacharlie.io/docs/en/observability-pipeline",
+    "title": "Observability Pipeline",
+    "discovered_via": "crawl",
+    "slug": "en/observability-pipeline"
+  },
+  "https://docs.limacharlie.io/v2/docs/detection-and-response-examples": {
+    "url": "https://docs.limacharlie.io/v2/docs/detection-and-response-examples",
+    "title": "Detection and Response Examples",
+    "discovered_via": "crawl",
+    "slug": "detection-and-response-examples"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-examples-windows-event-logs": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-examples-windows-event-logs",
+    "title": "Windows Event Logs",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-examples-windows-event-logs"
+  },
+  "https://docs.limacharlie.io/docs/en/soteria-edr-rules": {
+    "url": "https://docs.limacharlie.io/docs/en/soteria-edr-rules",
+    "title": "Soteria EDR Rules",
+    "discovered_via": "crawl",
+    "slug": "en/soteria-edr-rules"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-lookup-manager": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-lookup-manager",
+    "title": "Lookup Manager",
+    "discovered_via": "crawl",
+    "slug": "ext-lookup-manager"
+  },
+  "https://docs.limacharlie.io/v2/docs/template-strings-and-transforms": {
+    "url": "https://docs.limacharlie.io/v2/docs/template-strings-and-transforms",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "template-strings-and-transforms"
+  },
+  "https://docs.limacharlie.io/v2/docs/events": {
+    "url": "https://docs.limacharlie.io/v2/docs/events",
+    "title": "Events",
+    "discovered_via": "crawl",
+    "slug": "events"
+  },
+  "https://docs.limacharlie.io/v2/docs/reference-authentication-resource-locator": {
+    "url": "https://docs.limacharlie.io/v2/docs/reference-authentication-resource-locator",
+    "title": "Reference: Authenticated Resource Locator",
+    "discovered_via": "crawl",
+    "slug": "reference-authentication-resource-locator"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-google-workspace": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-google-workspace",
+    "title": "Google Workspace",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-google-workspace"
+  },
+  "https://docs.limacharlie.io/docs/soteria-m365-rules": {
+    "url": "https://docs.limacharlie.io/docs/soteria-m365-rules",
+    "title": "Soteria M365 Rules",
+    "discovered_via": "crawl",
+    "slug": "soteria-m365-rules"
+  },
+  "https://docs.limacharlie.io/docs/chrome-enterprise": {
+    "url": "https://docs.limacharlie.io/docs/chrome-enterprise",
+    "title": "ChromeOS with Google Chrome Enterprise",
+    "discovered_via": "crawl",
+    "slug": "chrome-enterprise"
+  },
+  "https://docs.limacharlie.io/v2/docs/outputs": {
+    "url": "https://docs.limacharlie.io/v2/docs/outputs",
+    "title": "Outputs",
+    "discovered_via": "crawl",
+    "slug": "outputs"
+  },
+  "https://docs.limacharlie.io/docs/endpoint-agent": {
+    "url": "https://docs.limacharlie.io/docs/endpoint-agent",
+    "title": "Endpoint Agent",
+    "discovered_via": "crawl",
+    "slug": "endpoint-agent"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-evtx": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-evtx",
+    "title": "EVTX",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-evtx"
+  },
+  "https://docs.limacharlie.io/docs/en/faq-troubleshooting": {
+    "url": "https://docs.limacharlie.io/docs/en/faq-troubleshooting",
+    "title": "FAQ - Sensor Troubleshooting",
+    "discovered_via": "crawl",
+    "slug": "en/faq-troubleshooting"
+  },
+  "https://docs.limacharlie.io/docs/en/template-strings-and-transforms-3": {
+    "url": "https://docs.limacharlie.io/docs/en/template-strings-and-transforms-3",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "en/template-strings-and-transforms-3"
+  },
+  "https://docs.limacharlie.io/docs/en/false-positive-rules": {
+    "url": "https://docs.limacharlie.io/docs/en/false-positive-rules",
+    "title": "False Positive Rules",
+    "discovered_via": "crawl",
+    "slug": "en/false-positive-rules"
+  },
+  "https://docs.limacharlie.io/docs/ext-infrastructure": {
+    "url": "https://docs.limacharlie.io/docs/ext-infrastructure",
+    "title": "Infrastructure",
+    "discovered_via": "crawl",
+    "slug": "ext-infrastructure"
+  },
+  "https://docs.limacharlie.io/docs/detection-on-alternate-targets": {
+    "url": "https://docs.limacharlie.io/docs/detection-on-alternate-targets",
+    "title": "Detection on Alternate Targets",
+    "discovered_via": "crawl",
+    "slug": "detection-on-alternate-targets"
+  },
+  "https://docs.limacharlie.io/v2/docs/macos-agent-installation": {
+    "url": "https://docs.limacharlie.io/v2/docs/macos-agent-installation",
+    "title": "macOS Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "macos-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/observability": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/observability",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/observability"
+  },
+  "https://docs.limacharlie.io/docs/en/soteria-aws-rules": {
+    "url": "https://docs.limacharlie.io/docs/en/soteria-aws-rules",
+    "title": "Soteria AWS Rules",
+    "discovered_via": "crawl",
+    "slug": "en/soteria-aws-rules"
+  },
+  "https://docs.limacharlie.io/docs/config-hive-yara": {
+    "url": "https://docs.limacharlie.io/docs/config-hive-yara",
+    "title": "Config Hive: Yara",
+    "discovered_via": "crawl",
+    "slug": "config-hive-yara"
+  },
+  "https://docs.limacharlie.io/docs/network-monitoring": {
+    "url": "https://docs.limacharlie.io/docs/network-monitoring",
+    "title": "Network Monitoring",
+    "discovered_via": "crawl",
+    "slug": "network-monitoring"
+  },
+  "https://docs.limacharlie.io/docs/en/output-allowlisting": {
+    "url": "https://docs.limacharlie.io/docs/en/output-allowlisting",
+    "title": "Adding Outputs to an Allow List",
+    "discovered_via": "crawl",
+    "slug": "en/output-allowlisting"
+  },
+  "https://docs.limacharlie.io/docs/en/velociraptor-to-bigquery": {
+    "url": "https://docs.limacharlie.io/docs/en/velociraptor-to-bigquery",
+    "title": "Velociraptor to BigQuery",
+    "discovered_via": "crawl",
+    "slug": "en/velociraptor-to-bigquery"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-windows-event-log": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-windows-event-log",
+    "title": "Windows Event Log",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-windows-event-log"
+  },
+  "https://docs.limacharlie.io/v2/docs/reference-endpoint-agent-commands": {
+    "url": "https://docs.limacharlie.io/v2/docs/reference-endpoint-agent-commands",
+    "title": "Reference: Endpoint Agent Commands",
+    "discovered_via": "crawl",
+    "slug": "reference-endpoint-agent-commands"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-twilio": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-twilio",
+    "title": "Twilio",
+    "discovered_via": "crawl",
+    "slug": "en/ext-twilio"
+  },
+  "https://docs.limacharlie.io/v2/docs/ma-cyber-due-diligence": {
+    "url": "https://docs.limacharlie.io/v2/docs/ma-cyber-due-diligence",
+    "title": "M&A Cyber Due Diligence",
+    "discovered_via": "crawl",
+    "slug": "ma-cyber-due-diligence"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/dfir": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/dfir",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/dfir"
+  },
+  "https://docs.limacharlie.io/v2/docs/macos-agent-installation-latest-os-versions": {
+    "url": "https://docs.limacharlie.io/v2/docs/macos-agent-installation-latest-os-versions",
+    "title": "macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)",
+    "discovered_via": "crawl",
+    "slug": "macos-agent-installation-latest-os-versions"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-windows-event-log": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-windows-event-log",
+    "title": "Windows Event Log",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-windows-event-log"
+  },
+  "https://docs.limacharlie.io/v2/docs/observability-pipeline": {
+    "url": "https://docs.limacharlie.io/v2/docs/observability-pipeline",
+    "title": "Observability Pipeline",
+    "discovered_via": "crawl",
+    "slug": "observability-pipeline"
+  },
+  "https://docs.limacharlie.io/docs/using-extensions": {
+    "url": "https://docs.limacharlie.io/docs/using-extensions",
+    "title": "Using Extensions",
+    "discovered_via": "crawl",
+    "slug": "using-extensions"
+  },
+  "https://docs.limacharlie.io/docs/en/create-a-dr-rule-using-a-threat-feed": {
+    "url": "https://docs.limacharlie.io/docs/en/create-a-dr-rule-using-a-threat-feed",
+    "title": "Create a D&R Rule Using a Threat Feed",
+    "discovered_via": "crawl",
+    "slug": "en/create-a-dr-rule-using-a-threat-feed"
+  },
+  "https://docs.limacharlie.io/docs/adapter-examples-windows-event-logs": {
+    "url": "https://docs.limacharlie.io/docs/adapter-examples-windows-event-logs",
+    "title": "Windows Event Logs",
+    "discovered_via": "crawl",
+    "slug": "adapter-examples-windows-event-logs"
+  },
+  "https://docs.limacharlie.io/v2/docs/what-is-limacharlie": {
+    "url": "https://docs.limacharlie.io/v2/docs/what-is-limacharlie",
+    "title": "What is LimaCharlie?",
+    "discovered_via": "crawl",
+    "slug": "what-is-limacharlie"
+  },
+  "https://docs.limacharlie.io/docs/limacharlie-sdk": {
+    "url": "https://docs.limacharlie.io/docs/limacharlie-sdk",
+    "title": "LimaCharlie SDK & CLI",
+    "discovered_via": "crawl",
+    "slug": "limacharlie-sdk"
+  },
+  "https://docs.limacharlie.io/docs/infrastructure-as-code": {
+    "url": "https://docs.limacharlie.io/docs/infrastructure-as-code",
+    "title": "Infrastructure as Code",
+    "discovered_via": "crawl",
+    "slug": "infrastructure-as-code"
+  },
+  "https://docs.limacharlie.io/docs/building-extensions": {
+    "url": "https://docs.limacharlie.io/docs/building-extensions",
+    "title": "Building Extensions",
+    "discovered_via": "crawl",
+    "slug": "building-extensions"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/pipeline": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/pipeline",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/pipeline"
+  },
+  "https://docs.limacharlie.io/docs/mcp-server": {
+    "url": "https://docs.limacharlie.io/docs/mcp-server",
+    "title": "MCP Server",
+    "discovered_via": "crawl",
+    "slug": "mcp-server"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/SecOps": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/SecOps",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/SecOps"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/development": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/development",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/development"
+  },
+  "https://docs.limacharlie.io/docs/test-a-new-sensor-version": {
+    "url": "https://docs.limacharlie.io/docs/test-a-new-sensor-version",
+    "title": "Test a New Sensor Version",
+    "discovered_via": "crawl",
+    "slug": "test-a-new-sensor-version"
+  },
+  "https://docs.limacharlie.io/docs/tags/endpoint agent": {
+    "url": "https://docs.limacharlie.io/docs/tags/endpoint agent",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/endpoint agent"
+  },
+  "https://docs.limacharlie.io/v2/docs/limacharlie-sdk": {
+    "url": "https://docs.limacharlie.io/v2/docs/limacharlie-sdk",
+    "title": "LimaCharlie SDK & CLI",
+    "discovered_via": "crawl",
+    "slug": "limacharlie-sdk"
+  },
+  "https://docs.limacharlie.io/docs/en/reference-edr-events": {
+    "url": "https://docs.limacharlie.io/docs/en/reference-edr-events",
+    "title": "Reference: EDR Events",
+    "discovered_via": "crawl",
+    "slug": "en/reference-edr-events"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-mimecast": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-mimecast",
+    "title": "Mimecast",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-mimecast"
+  },
+  "https://docs.limacharlie.io/docs/en/reporting": {
+    "url": "https://docs.limacharlie.io/docs/en/reporting",
+    "title": "Reporting",
+    "discovered_via": "crawl",
+    "slug": "en/reporting"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/macos": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/macos",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/macos"
+  },
+  "https://docs.limacharlie.io/docs/edge-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/edge-agent-installation",
+    "title": "Edge Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "edge-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/reference-edr-events": {
+    "url": "https://docs.limacharlie.io/docs/reference-edr-events",
+    "title": "Reference: EDR Events",
+    "discovered_via": "crawl",
+    "slug": "reference-edr-events"
+  },
+  "https://docs.limacharlie.io/docs/soteria-rules": {
+    "url": "https://docs.limacharlie.io/docs/soteria-rules",
+    "title": "Soteria Rules",
+    "discovered_via": "crawl",
+    "slug": "soteria-rules"
+  },
+  "https://docs.limacharlie.io/v2/docs/soteria-edr-rules": {
+    "url": "https://docs.limacharlie.io/v2/docs/soteria-edr-rules",
+    "title": "Soteria EDR Rules",
+    "discovered_via": "crawl",
+    "slug": "soteria-edr-rules"
+  },
+  "https://docs.limacharlie.io/docs/tags/tutorial": {
+    "url": "https://docs.limacharlie.io/docs/tags/tutorial",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/tutorial"
+  },
+  "https://docs.limacharlie.io/docs/soteria-edr-rules": {
+    "url": "https://docs.limacharlie.io/docs/soteria-edr-rules",
+    "title": "Soteria EDR Rules",
+    "discovered_via": "crawl",
+    "slug": "soteria-edr-rules"
+  },
+  "https://docs.limacharlie.io/v2/docs/detection-and-response": {
+    "url": "https://docs.limacharlie.io/v2/docs/detection-and-response",
+    "title": "Detection and Response",
+    "discovered_via": "crawl",
+    "slug": "detection-and-response"
+  },
+  "https://docs.limacharlie.io/v2/docs/payloads": {
+    "url": "https://docs.limacharlie.io/v2/docs/payloads",
+    "title": "Payloads",
+    "discovered_via": "crawl",
+    "slug": "payloads"
+  },
+  "https://docs.limacharlie.io/docs/whats-newx/publisheddate=30": {
+    "url": "https://docs.limacharlie.io/docs/whats-newx/publisheddate=30",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "whats-newx/publisheddate=30"
+  },
+  "https://docs.limacharlie.io/docs/ext-lookup-manager": {
+    "url": "https://docs.limacharlie.io/docs/ext-lookup-manager",
+    "title": "Lookup Manager",
+    "discovered_via": "crawl",
+    "slug": "ext-lookup-manager"
+  },
+  "https://docs.limacharlie.io/v2/docs/adapter-deployment": {
+    "url": "https://docs.limacharlie.io/v2/docs/adapter-deployment",
+    "title": "Adapter Deployment",
+    "discovered_via": "crawl",
+    "slug": "adapter-deployment"
+  },
+  "https://docs.limacharlie.io/docs/en/template-strings-and-transforms": {
+    "url": "https://docs.limacharlie.io/docs/en/template-strings-and-transforms",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "en/template-strings-and-transforms"
+  },
+  "https://docs.limacharlie.io/docs/en/mcp-server": {
+    "url": "https://docs.limacharlie.io/docs/en/mcp-server",
+    "title": "MCP Server",
+    "discovered_via": "crawl",
+    "slug": "en/mcp-server"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/LimaCharlie": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/LimaCharlie",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/LimaCharlie"
+  },
+  "https://docs.limacharlie.io/docs/outputs-destinations-google-cloud-bigquery": {
+    "url": "https://docs.limacharlie.io/docs/outputs-destinations-google-cloud-bigquery",
+    "title": "Google Cloud BigQuery",
+    "discovered_via": "crawl",
+    "slug": "outputs-destinations-google-cloud-bigquery"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-imap": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-imap",
+    "title": "IMAP",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-imap"
+  },
+  "https://docs.limacharlie.io/docs/ingesting-sysmon-event-logs": {
+    "url": "https://docs.limacharlie.io/docs/ingesting-sysmon-event-logs",
+    "title": "Ingesting Sysmon Event Logs",
+    "discovered_via": "crawl",
+    "slug": "ingesting-sysmon-event-logs"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-usage": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-usage",
+    "title": "Adapter Usage",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-usage"
+  },
+  "https://docs.limacharlie.io/docs/tags/pipeline": {
+    "url": "https://docs.limacharlie.io/docs/tags/pipeline",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/pipeline"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/detection and response": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/detection and response",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/detection and response"
+  },
+  "https://docs.limacharlie.io/docs/en/file-and-registry-integrity-monitoring-fim-deployments": {
+    "url": "https://docs.limacharlie.io/docs/en/file-and-registry-integrity-monitoring-fim-deployments",
+    "title": "File and Registry Integrity Monitoring (FIM) Deployments",
+    "discovered_via": "crawl",
+    "slug": "en/file-and-registry-integrity-monitoring-fim-deployments"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-examples-stdin": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-examples-stdin",
+    "title": "Stdin",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-examples-stdin"
+  },
+  "https://docs.limacharlie.io/docs/false-positive-rules": {
+    "url": "https://docs.limacharlie.io/docs/false-positive-rules",
+    "title": "False Positive Rules",
+    "discovered_via": "crawl",
+    "slug": "false-positive-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/use-cases": {
+    "url": "https://docs.limacharlie.io/docs/en/use-cases",
+    "title": "Use Cases",
+    "discovered_via": "crawl",
+    "slug": "en/use-cases"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-azure-event-hub": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-azure-event-hub",
+    "title": "Azure Event Hub",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-azure-event-hub"
+  },
+  "https://docs.limacharlie.io/docs/en/tutorial-creating-a-webhook-adapter": {
+    "url": "https://docs.limacharlie.io/docs/en/tutorial-creating-a-webhook-adapter",
+    "title": "Tutorial: Creating a Webhook Adapter",
+    "discovered_via": "crawl",
+    "slug": "en/tutorial-creating-a-webhook-adapter"
+  },
+  "https://docs.limacharlie.io/docs/en/stateful-rules": {
+    "url": "https://docs.limacharlie.io/docs/en/stateful-rules",
+    "title": "Stateful Rules",
+    "discovered_via": "crawl",
+    "slug": "en/stateful-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/aws": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/aws",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/aws"
+  },
+  "https://docs.limacharlie.io/docs/windows-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/windows-agent-installation",
+    "title": "Windows Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "windows-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/IR": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/IR",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/IR"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-integrity": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-integrity",
+    "title": "Integrity",
+    "discovered_via": "crawl",
+    "slug": "en/ext-integrity"
+  },
+  "https://docs.limacharlie.io/docs/ext-usage-alerts": {
+    "url": "https://docs.limacharlie.io/docs/ext-usage-alerts",
+    "title": "Usage Alerts",
+    "discovered_via": "crawl",
+    "slug": "ext-usage-alerts"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/cloud": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/cloud",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/cloud"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-hubspot": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-hubspot",
+    "title": "HubSpot",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-hubspot"
+  },
+  "https://docs.limacharlie.io/docs/endpoint-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/endpoint-agent-installation",
+    "title": "Endpoint Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "endpoint-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/tags/aws": {
+    "url": "https://docs.limacharlie.io/docs/tags/aws",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/aws"
+  },
+  "https://docs.limacharlie.io/v2/docs/detection-logic-operators": {
+    "url": "https://docs.limacharlie.io/v2/docs/detection-logic-operators",
+    "title": "Detection Logic Operators",
+    "discovered_via": "crawl",
+    "slug": "detection-logic-operators"
+  },
+  "https://docs.limacharlie.io/v2/docs/ingesting-windows-event-logs": {
+    "url": "https://docs.limacharlie.io/v2/docs/ingesting-windows-event-logs",
+    "title": "Ingesting Windows Event Logs",
+    "discovered_via": "crawl",
+    "slug": "ingesting-windows-event-logs"
+  },
+  "https://docs.limacharlie.io/docs/artifacts": {
+    "url": "https://docs.limacharlie.io/docs/artifacts",
+    "title": "Artifacts",
+    "discovered_via": "crawl",
+    "slug": "artifacts"
+  },
+  "https://docs.limacharlie.io/docs/unit-tests": {
+    "url": "https://docs.limacharlie.io/docs/unit-tests",
+    "title": "Unit Tests",
+    "discovered_via": "crawl",
+    "slug": "unit-tests"
+  },
+  "https://docs.limacharlie.io/docs/tags/windows": {
+    "url": "https://docs.limacharlie.io/docs/tags/windows",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/windows"
+  },
+  "https://docs.limacharlie.io/v1/docs/whats-newx/publisheddate=30": {
+    "url": "https://docs.limacharlie.io/v1/docs/whats-newx/publisheddate=30",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "whats-newx/publisheddate=30"
+  },
+  "https://docs.limacharlie.io/v2/docs/building-products": {
+    "url": "https://docs.limacharlie.io/v2/docs/building-products",
+    "title": "Building Products",
+    "discovered_via": "crawl",
+    "slug": "building-products"
+  },
+  "https://docs.limacharlie.io/docs/building-products": {
+    "url": "https://docs.limacharlie.io/docs/building-products",
+    "title": "Building Products",
+    "discovered_via": "crawl",
+    "slug": "building-products"
+  },
+  "https://docs.limacharlie.io/v2/docs/adapter-types-azure-event-hub": {
+    "url": "https://docs.limacharlie.io/v2/docs/adapter-types-azure-event-hub",
+    "title": "Azure Event Hub",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-azure-event-hub"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-sqs": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-sqs",
+    "title": "SQS",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-sqs"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-zendesk": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-zendesk",
+    "title": "Zendesk",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-zendesk"
+  },
+  "https://docs.limacharlie.io/docs/en/sysmon-comparison": {
+    "url": "https://docs.limacharlie.io/docs/en/sysmon-comparison",
+    "title": "Sysmon Comparison",
+    "discovered_via": "crawl",
+    "slug": "en/sysmon-comparison"
+  },
+  "https://docs.limacharlie.io/docs/sysmon-comparison": {
+    "url": "https://docs.limacharlie.io/docs/sysmon-comparison",
+    "title": "Sysmon Comparison",
+    "discovered_via": "crawl",
+    "slug": "sysmon-comparison"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/telemetry": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/telemetry",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/telemetry"
+  },
+  "https://docs.limacharlie.io/v2/docs/reference-edr-events": {
+    "url": "https://docs.limacharlie.io/v2/docs/reference-edr-events",
+    "title": "Reference: EDR Events",
+    "discovered_via": "crawl",
+    "slug": "reference-edr-events"
+  },
+  "https://docs.limacharlie.io/v2/docs/soteria-aws-rules": {
+    "url": "https://docs.limacharlie.io/v2/docs/soteria-aws-rules",
+    "title": "Soteria AWS Rules",
+    "discovered_via": "crawl",
+    "slug": "soteria-aws-rules"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-infrastructure": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-infrastructure",
+    "title": "Infrastructure",
+    "discovered_via": "crawl",
+    "slug": "ext-infrastructure"
+  },
+  "https://docs.limacharlie.io/v1/docs/ingesting-macos-unified-logs": {
+    "url": "https://docs.limacharlie.io/v1/docs/ingesting-macos-unified-logs",
+    "title": "Ingesting MacOS Unified Logs",
+    "discovered_via": "crawl",
+    "slug": "ingesting-macos-unified-logs"
+  },
+  "https://docs.limacharlie.io/docs/outputs-destinations-google-cloud-storage": {
+    "url": "https://docs.limacharlie.io/docs/outputs-destinations-google-cloud-storage",
+    "title": "Google Cloud Storage",
+    "discovered_via": "crawl",
+    "slug": "outputs-destinations-google-cloud-storage"
+  },
+  "https://docs.limacharlie.io/docs/events": {
+    "url": "https://docs.limacharlie.io/docs/events",
+    "title": "Events",
+    "discovered_via": "crawl",
+    "slug": "events"
+  },
+  "https://docs.limacharlie.io/v1/docs/telemetry-artifacts": {
+    "url": "https://docs.limacharlie.io/v1/docs/telemetry-artifacts",
+    "title": "Artifacts",
+    "discovered_via": "crawl",
+    "slug": "telemetry-artifacts"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/Getting%20started": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/Getting%20started",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/Getting%20started"
+  },
+  "https://docs.limacharlie.io/docs/reference-error-codes": {
+    "url": "https://docs.limacharlie.io/docs/reference-error-codes",
+    "title": "Reference: Error Codes",
+    "discovered_via": "crawl",
+    "slug": "reference-error-codes"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/tutorial": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/tutorial",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/tutorial"
+  },
+  "https://docs.limacharlie.io/docs/binlib": {
+    "url": "https://docs.limacharlie.io/docs/binlib",
+    "title": "BinLib",
+    "discovered_via": "crawl",
+    "slug": "binlib"
+  },
+  "https://docs.limacharlie.io/docs/tutorials-integratons-virustotal-integration": {
+    "url": "https://docs.limacharlie.io/docs/tutorials-integratons-virustotal-integration",
+    "title": "VirusTotal Integration",
+    "discovered_via": "crawl",
+    "slug": "tutorials-integratons-virustotal-integration"
+  },
+  "https://docs.limacharlie.io/docs/lcql": {
+    "url": "https://docs.limacharlie.io/docs/lcql",
+    "title": "LimaCharlie Query Language",
+    "discovered_via": "crawl",
+    "slug": "lcql"
+  },
+  "https://docs.limacharlie.io/docs/whats-newx/publisheddate=1": {
+    "url": "https://docs.limacharlie.io/docs/whats-newx/publisheddate=1",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "whats-newx/publisheddate=1"
+  },
+  "https://docs.limacharlie.io/docs/linux-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/linux-agent-installation",
+    "title": "Linux Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "linux-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/azure-monitor": {
+    "url": "https://docs.limacharlie.io/docs/azure-monitor",
+    "title": "Azure Monitor",
+    "discovered_via": "crawl",
+    "slug": "azure-monitor"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-yara-manager": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-yara-manager",
+    "title": "YARA Manager",
+    "discovered_via": "crawl",
+    "slug": "en/ext-yara-manager"
+  },
+  "https://docs.limacharlie.io/v2/docs/reporting": {
+    "url": "https://docs.limacharlie.io/v2/docs/reporting",
+    "title": "Reporting",
+    "discovered_via": "crawl",
+    "slug": "reporting"
+  },
+  "https://docs.limacharlie.io/v2/docs/wel-monitoring": {
+    "url": "https://docs.limacharlie.io/v2/docs/wel-monitoring",
+    "title": "WEL Monitoring",
+    "discovered_via": "crawl",
+    "slug": "wel-monitoring"
+  },
+  "https://docs.limacharlie.io/docs/adapter-tutorials": {
+    "url": "https://docs.limacharlie.io/docs/adapter-tutorials",
+    "title": "Adapter Tutorials",
+    "discovered_via": "crawl",
+    "slug": "adapter-tutorials"
+  },
+  "https://docs.limacharlie.io/v2/docs/config-hive-yara": {
+    "url": "https://docs.limacharlie.io/v2/docs/config-hive-yara",
+    "title": "Config Hive: Yara",
+    "discovered_via": "crawl",
+    "slug": "config-hive-yara"
+  },
+  "https://docs.limacharlie.io/docs/en/building-a-custom-msi-installer-for-windows": {
+    "url": "https://docs.limacharlie.io/docs/en/building-a-custom-msi-installer-for-windows",
+    "title": "Building a custom MSI installer for Windows",
+    "discovered_via": "crawl",
+    "slug": "en/building-a-custom-msi-installer-for-windows"
+  },
+  "https://docs.limacharlie.io/docs/ext-git-sync": {
+    "url": "https://docs.limacharlie.io/docs/ext-git-sync",
+    "title": "Git Sync",
+    "discovered_via": "crawl",
+    "slug": "ext-git-sync"
+  },
+  "https://docs.limacharlie.io/docs/tags/detection and response": {
+    "url": "https://docs.limacharlie.io/docs/tags/detection and response",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/detection and response"
+  },
+  "https://docs.limacharlie.io/docs/en/tutorials-reporting-building-reports-with-bigquery-looker-studio": {
+    "url": "https://docs.limacharlie.io/docs/en/tutorials-reporting-building-reports-with-bigquery-looker-studio",
+    "title": "Building Reports with BigQuery + Looker Studio",
+    "discovered_via": "crawl",
+    "slug": "en/tutorials-reporting-building-reports-with-bigquery-looker-studio"
+  },
+  "https://docs.limacharlie.io/docs/config-hive-secrets": {
+    "url": "https://docs.limacharlie.io/docs/config-hive-secrets",
+    "title": "Config Hive: Secrets",
+    "discovered_via": "crawl",
+    "slug": "config-hive-secrets"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/defender": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/defender",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/defender"
+  },
+  "https://docs.limacharlie.io/docs/en/cloud-security": {
+    "url": "https://docs.limacharlie.io/docs/en/cloud-security",
+    "title": "Cloud Security",
+    "discovered_via": "crawl",
+    "slug": "en/cloud-security"
+  },
+  "https://docs.limacharlie.io/docs/en/sigma-converter": {
+    "url": "https://docs.limacharlie.io/docs/en/sigma-converter",
+    "title": "Sigma Converter",
+    "discovered_via": "crawl",
+    "slug": "en/sigma-converter"
+  },
+  "https://docs.limacharlie.io/docs/lookups": {
+    "url": "https://docs.limacharlie.io/docs/lookups",
+    "title": "Lookups",
+    "discovered_via": "crawl",
+    "slug": "lookups"
+  },
+  "https://docs.limacharlie.io/docs/azure-sql-audit-logs": {
+    "url": "https://docs.limacharlie.io/docs/azure-sql-audit-logs",
+    "title": "Azure SQL Audit Logs",
+    "discovered_via": "crawl",
+    "slug": "azure-sql-audit-logs"
+  },
+  "https://docs.limacharlie.io/v2/docs/windows-agent-installation": {
+    "url": "https://docs.limacharlie.io/v2/docs/windows-agent-installation",
+    "title": "Windows Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "windows-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/testing-outputs": {
+    "url": "https://docs.limacharlie.io/docs/testing-outputs",
+    "title": "Testing Outputs",
+    "discovered_via": "crawl",
+    "slug": "testing-outputs"
+  },
+  "https://docs.limacharlie.io/docs/tags/secops": {
+    "url": "https://docs.limacharlie.io/docs/tags/secops",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/secops"
+  },
+  "https://docs.limacharlie.io/docs/ext-govee": {
+    "url": "https://docs.limacharlie.io/docs/ext-govee",
+    "title": "Govee",
+    "discovered_via": "crawl",
+    "slug": "ext-govee"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/mergers%20and%20acquisitions": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/mergers%20and%20acquisitions",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/mergers%20and%20acquisitions"
+  },
+  "https://docs.limacharlie.io/docs/en/agent-deployment-microsoft-intune": {
+    "url": "https://docs.limacharlie.io/docs/en/agent-deployment-microsoft-intune",
+    "title": "Agent Deployment via Microsoft Intune",
+    "discovered_via": "crawl",
+    "slug": "en/agent-deployment-microsoft-intune"
+  },
+  "https://docs.limacharlie.io/docs/en/security-monitoring-for-devops": {
+    "url": "https://docs.limacharlie.io/docs/en/security-monitoring-for-devops",
+    "title": "Security Monitoring for DevOps",
+    "discovered_via": "crawl",
+    "slug": "en/security-monitoring-for-devops"
+  },
+  "https://docs.limacharlie.io/docs/en/faq-billing": {
+    "url": "https://docs.limacharlie.io/docs/en/faq-billing",
+    "title": "FAQ - Billing",
+    "discovered_via": "crawl",
+    "slug": "en/faq-billing"
+  },
+  "https://docs.limacharlie.io/v2/docs/artifacts": {
+    "url": "https://docs.limacharlie.io/v2/docs/artifacts",
+    "title": "Artifacts",
+    "discovered_via": "crawl",
+    "slug": "artifacts"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-okta": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-okta",
+    "title": "Okta",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-okta"
+  },
+  "https://docs.limacharlie.io/docs/en/purple-teaming": {
+    "url": "https://docs.limacharlie.io/docs/en/purple-teaming",
+    "title": "Purple Teaming",
+    "discovered_via": "crawl",
+    "slug": "en/purple-teaming"
+  },
+  "https://docs.limacharlie.io/docs/schema-data-types": {
+    "url": "https://docs.limacharlie.io/docs/schema-data-types",
+    "title": "Schema Data Types",
+    "discovered_via": "crawl",
+    "slug": "schema-data-types"
+  },
+  "https://docs.limacharlie.io/docs/detection-and-response-examples": {
+    "url": "https://docs.limacharlie.io/docs/detection-and-response-examples",
+    "title": "Detection and Response Examples",
+    "discovered_via": "crawl",
+    "slug": "detection-and-response-examples"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-sqs": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-sqs",
+    "title": "SQS",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-sqs"
+  },
+  "https://docs.limacharlie.io/docs/config-hive-lookups": {
+    "url": "https://docs.limacharlie.io/docs/config-hive-lookups",
+    "title": "Config Hive: Lookups",
+    "discovered_via": "crawl",
+    "slug": "config-hive-lookups"
+  },
+  "https://docs.limacharlie.io/v1/docs/whats-newx/publisheddate=7": {
+    "url": "https://docs.limacharlie.io/v1/docs/whats-newx/publisheddate=7",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "whats-newx/publisheddate=7"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-yara": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-yara",
+    "title": "YARA",
+    "discovered_via": "crawl",
+    "slug": "en/ext-yara"
+  },
+  "https://docs.limacharlie.io/docs/ext-zeek": {
+    "url": "https://docs.limacharlie.io/docs/ext-zeek",
+    "title": "Zeek",
+    "discovered_via": "crawl",
+    "slug": "ext-zeek"
+  },
+  "https://docs.limacharlie.io/docs/output-billing": {
+    "url": "https://docs.limacharlie.io/docs/output-billing",
+    "title": "Output Billing",
+    "discovered_via": "crawl",
+    "slug": "output-billing"
+  },
+  "https://docs.limacharlie.io/docs/en/query-console-ui": {
+    "url": "https://docs.limacharlie.io/docs/en/query-console-ui",
+    "title": "Query Console UI",
+    "discovered_via": "crawl",
+    "slug": "en/query-console-ui"
+  },
+  "https://docs.limacharlie.io/docs/en/tutorials-integratons-virustotal-integration": {
+    "url": "https://docs.limacharlie.io/docs/en/tutorials-integratons-virustotal-integration",
+    "title": "VirusTotal Integration",
+    "discovered_via": "crawl",
+    "slug": "en/tutorials-integratons-virustotal-integration"
+  },
+  "https://docs.limacharlie.io/docs/en/ingesting-defender-event-logs": {
+    "url": "https://docs.limacharlie.io/docs/en/ingesting-defender-event-logs",
+    "title": "Ingesting Defender Event Logs",
+    "discovered_via": "crawl",
+    "slug": "en/ingesting-defender-event-logs"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/dfir": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/dfir",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/dfir"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/ir": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/ir",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/ir"
+  },
+  "https://docs.limacharlie.io/docs/ext-cloud-cli-aws": {
+    "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-aws",
+    "title": "AWS",
+    "discovered_via": "crawl",
+    "slug": "ext-cloud-cli-aws"
+  },
+  "https://docs.limacharlie.io/docs/ext-dumper": {
+    "url": "https://docs.limacharlie.io/docs/ext-dumper",
+    "title": "Dumper",
+    "discovered_via": "crawl",
+    "slug": "ext-dumper"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/defender": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/defender",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/defender"
+  },
+  "https://docs.limacharlie.io/docs/1password": {
+    "url": "https://docs.limacharlie.io/docs/1password",
+    "title": "1Password",
+    "discovered_via": "crawl",
+    "slug": "1password"
+  },
+  "https://docs.limacharlie.io/docs/tags/lookups": {
+    "url": "https://docs.limacharlie.io/docs/tags/lookups",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/lookups"
+  },
+  "https://docs.limacharlie.io/docs/config-hive": {
+    "url": "https://docs.limacharlie.io/docs/config-hive",
+    "title": "Config Hive",
+    "discovered_via": "crawl",
+    "slug": "config-hive"
+  },
+  "https://docs.limacharlie.io/v2/docs/chromeos-support": {
+    "url": "https://docs.limacharlie.io/v2/docs/chromeos-support",
+    "title": "ChromeOS Support",
+    "discovered_via": "crawl",
+    "slug": "chromeos-support"
+  },
+  "https://docs.limacharlie.io/docs/single-sign-on": {
+    "url": "https://docs.limacharlie.io/docs/single-sign-on",
+    "title": "Single Sign-On",
+    "discovered_via": "crawl",
+    "slug": "single-sign-on"
+  },
+  "https://docs.limacharlie.io/docs/tags/use case": {
+    "url": "https://docs.limacharlie.io/docs/tags/use case",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/use case"
+  },
+  "https://docs.limacharlie.io/docs/en/soar-automation": {
+    "url": "https://docs.limacharlie.io/docs/en/soar-automation",
+    "title": "SOAR / Automation",
+    "discovered_via": "crawl",
+    "slug": "en/soar-automation"
+  },
+  "https://docs.limacharlie.io/v2/docs/endpoint-agent-uninstallation": {
+    "url": "https://docs.limacharlie.io/v2/docs/endpoint-agent-uninstallation",
+    "title": "Endpoint Agent Uninstallation",
+    "discovered_via": "crawl",
+    "slug": "endpoint-agent-uninstallation"
+  },
+  "https://docs.limacharlie.io/v2/docs/linux-agent-installation": {
+    "url": "https://docs.limacharlie.io/v2/docs/linux-agent-installation",
+    "title": "Linux Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "linux-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-artifact": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-artifact",
+    "title": "Artifact",
+    "discovered_via": "crawl",
+    "slug": "en/ext-artifact"
+  },
+  "https://docs.limacharlie.io/docs/sensors": {
+    "url": "https://docs.limacharlie.io/docs/sensors",
+    "title": "Sensors",
+    "discovered_via": "crawl",
+    "slug": "sensors"
+  },
+  "https://docs.limacharlie.io/docs/access-and-permissions": {
+    "url": "https://docs.limacharlie.io/docs/access-and-permissions",
+    "title": "Access and Permissions",
+    "discovered_via": "crawl",
+    "slug": "access-and-permissions"
+  },
+  "https://docs.limacharlie.io/docs/endpoint-agent-events-overview": {
+    "url": "https://docs.limacharlie.io/docs/endpoint-agent-events-overview",
+    "title": "Endpoint Agent Events Overview",
+    "discovered_via": "crawl",
+    "slug": "endpoint-agent-events-overview"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/SIEM": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/SIEM",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/SIEM"
+  },
+  "https://docs.limacharlie.io/docs/template-strings-and-transforms-1": {
+    "url": "https://docs.limacharlie.io/docs/template-strings-and-transforms-1",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "template-strings-and-transforms-1"
+  },
+  "https://docs.limacharlie.io/docs/en/endpoint-agent": {
+    "url": "https://docs.limacharlie.io/docs/en/endpoint-agent",
+    "title": "Endpoint Agent",
+    "discovered_via": "crawl",
+    "slug": "en/endpoint-agent"
+  },
+  "https://docs.limacharlie.io/docs/chromeos-support": {
+    "url": "https://docs.limacharlie.io/docs/chromeos-support",
+    "title": "ChromeOS Support",
+    "discovered_via": "crawl",
+    "slug": "chromeos-support"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/secops": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/secops",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/secops"
+  },
+  "https://docs.limacharlie.io/docs/reference-schedule-events": {
+    "url": "https://docs.limacharlie.io/docs/reference-schedule-events",
+    "title": "Reference: Schedule Events",
+    "discovered_via": "crawl",
+    "slug": "reference-schedule-events"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-syslog": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-syslog",
+    "title": "Syslog",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-syslog"
+  },
+  "https://docs.limacharlie.io/v2/docs/chrome-agent-installation": {
+    "url": "https://docs.limacharlie.io/v2/docs/chrome-agent-installation",
+    "title": "Chrome Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "chrome-agent-installation"
+  },
+  "https://docs.limacharlie.io/v2/docs/adapter-types-file": {
+    "url": "https://docs.limacharlie.io/v2/docs/adapter-types-file",
+    "title": "File",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-file"
+  },
+  "https://docs.limacharlie.io/v2/docs/uncovering-adversary-techniques": {
+    "url": "https://docs.limacharlie.io/v2/docs/uncovering-adversary-techniques",
+    "title": "Uncovering Adversary Techniques",
+    "discovered_via": "crawl",
+    "slug": "uncovering-adversary-techniques"
+  },
+  "https://docs.limacharlie.io/docs/en/building-products": {
+    "url": "https://docs.limacharlie.io/docs/en/building-products",
+    "title": "Building Products",
+    "discovered_via": "crawl",
+    "slug": "en/building-products"
+  },
+  "https://docs.limacharlie.io/docs/payload-manager": {
+    "url": "https://docs.limacharlie.io/docs/payload-manager",
+    "title": "Payload Manager",
+    "discovered_via": "crawl",
+    "slug": "payload-manager"
+  },
+  "https://docs.limacharlie.io/docs/whats-newx/publisheddate=7": {
+    "url": "https://docs.limacharlie.io/docs/whats-newx/publisheddate=7",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "whats-newx/publisheddate=7"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-infrastructure": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-infrastructure",
+    "title": "Infrastructure",
+    "discovered_via": "crawl",
+    "slug": "en/ext-infrastructure"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/linux": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/linux",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/linux"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-hayabusa": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-hayabusa",
+    "title": "Hayabusa",
+    "discovered_via": "crawl",
+    "slug": "en/ext-hayabusa"
+  },
+  "https://docs.limacharlie.io/docs/en/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer": {
+    "url": "https://docs.limacharlie.io/docs/en/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+    "title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+    "discovered_via": "crawl",
+    "slug": "en/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer"
+  },
+  "https://docs.limacharlie.io/docs/lcql-examples": {
+    "url": "https://docs.limacharlie.io/docs/lcql-examples",
+    "title": "LCQL Examples",
+    "discovered_via": "crawl",
+    "slug": "lcql-examples"
+  },
+  "https://docs.limacharlie.io/v2/docs/reference-id-schema": {
+    "url": "https://docs.limacharlie.io/v2/docs/reference-id-schema",
+    "title": "Reference: ID Schema",
+    "discovered_via": "crawl",
+    "slug": "reference-id-schema"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/adapters": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/adapters",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/adapters"
+  },
+  "https://docs.limacharlie.io/docs/stateful-rules": {
+    "url": "https://docs.limacharlie.io/docs/stateful-rules",
+    "title": "Stateful Rules",
+    "discovered_via": "crawl",
+    "slug": "stateful-rules"
+  },
+  "https://docs.limacharlie.io/docs/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer": {
+    "url": "https://docs.limacharlie.io/docs/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+    "title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+    "discovered_via": "crawl",
+    "slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer"
+  },
+  "https://docs.limacharlie.io/docs/adapter-examples": {
+    "url": "https://docs.limacharlie.io/docs/adapter-examples",
+    "title": "Adapter Examples",
+    "discovered_via": "crawl",
+    "slug": "adapter-examples"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/MSP": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/MSP",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/MSP"
+  },
+  "https://docs.limacharlie.io/v2/docs/adapter-types-aws-cloudtrail": {
+    "url": "https://docs.limacharlie.io/v2/docs/adapter-types-aws-cloudtrail",
+    "title": "AWS CloudTrail",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-aws-cloudtrail"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/WEL": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/WEL",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/WEL"
+  },
+  "https://docs.limacharlie.io/docs/ext-nims": {
+    "url": "https://docs.limacharlie.io/docs/ext-nims",
+    "title": "NIMS",
+    "discovered_via": "crawl",
+    "slug": "ext-nims"
+  },
+  "https://docs.limacharlie.io/docs/en/faq-invoices": {
+    "url": "https://docs.limacharlie.io/docs/en/faq-invoices",
+    "title": "FAQ - Invoices",
+    "discovered_via": "crawl",
+    "slug": "en/faq-invoices"
+  },
+  "https://docs.limacharlie.io/docs/adapters": {
+    "url": "https://docs.limacharlie.io/docs/adapters",
+    "title": "Adapters",
+    "discovered_via": "crawl",
+    "slug": "adapters"
+  },
+  "https://docs.limacharlie.io/docs/ext-epp": {
+    "url": "https://docs.limacharlie.io/docs/ext-epp",
+    "title": "Endpoint Protection",
+    "discovered_via": "crawl",
+    "slug": "ext-epp"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/enterprise": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/enterprise",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/enterprise"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/epp": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/epp",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/epp"
+  },
+  "https://docs.limacharlie.io/docs/billing": {
+    "url": "https://docs.limacharlie.io/docs/billing",
+    "title": "Billing",
+    "discovered_via": "crawl",
+    "slug": "billing"
+  },
+  "https://docs.limacharlie.io/v2/docs/building-a-custom-msi-installer-for-windows": {
+    "url": "https://docs.limacharlie.io/v2/docs/building-a-custom-msi-installer-for-windows",
+    "title": "Building a custom MSI installer for Windows",
+    "discovered_via": "crawl",
+    "slug": "building-a-custom-msi-installer-for-windows"
+  },
+  "https://docs.limacharlie.io/docs/en/payloads": {
+    "url": "https://docs.limacharlie.io/docs/en/payloads",
+    "title": "Payloads",
+    "discovered_via": "crawl",
+    "slug": "en/payloads"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/limacharlie": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/limacharlie",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/limacharlie"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/SOC": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/SOC",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/SOC"
+  },
+  "https://docs.limacharlie.io/v2/docs/endpoint-agent-events-overview": {
+    "url": "https://docs.limacharlie.io/v2/docs/endpoint-agent-events-overview",
+    "title": "Endpoint Agent Events Overview",
+    "discovered_via": "crawl",
+    "slug": "endpoint-agent-events-overview"
+  },
+  "https://docs.limacharlie.io/docs/platform-management": {
+    "url": "https://docs.limacharlie.io/docs/platform-management",
+    "title": "Platform Management",
+    "discovered_via": "crawl",
+    "slug": "platform-management"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-plaso": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-plaso",
+    "title": "Plaso",
+    "discovered_via": "crawl",
+    "slug": "en/ext-plaso"
+  },
+  "https://docs.limacharlie.io/v2/docs/threat-hunting": {
+    "url": "https://docs.limacharlie.io/v2/docs/threat-hunting",
+    "title": "Threat Hunting",
+    "discovered_via": "crawl",
+    "slug": "threat-hunting"
+  },
+  "https://docs.limacharlie.io/docs/ma-cyber-due-diligence": {
+    "url": "https://docs.limacharlie.io/docs/ma-cyber-due-diligence",
+    "title": "M&A Cyber Due Diligence",
+    "discovered_via": "crawl",
+    "slug": "ma-cyber-due-diligence"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-google-cloud-pubsub": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-google-cloud-pubsub",
+    "title": "Google Cloud Pubsub",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-google-cloud-pubsub"
+  },
+  "https://docs.limacharlie.io/docs/en/table-top-exercises": {
+    "url": "https://docs.limacharlie.io/docs/en/table-top-exercises",
+    "title": "Table Top Exercises",
+    "discovered_via": "crawl",
+    "slug": "en/table-top-exercises"
+  },
+  "https://docs.limacharlie.io/docs/reporting": {
+    "url": "https://docs.limacharlie.io/docs/reporting",
+    "title": "Reporting",
+    "discovered_via": "crawl",
+    "slug": "reporting"
+  },
+  "https://docs.limacharlie.io/docs/tags/extensions": {
+    "url": "https://docs.limacharlie.io/docs/tags/extensions",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/extensions"
+  },
+  "https://docs.limacharlie.io/docs/table-top-exercises": {
+    "url": "https://docs.limacharlie.io/docs/table-top-exercises",
+    "title": "Table Top Exercises",
+    "discovered_via": "crawl",
+    "slug": "table-top-exercises"
+  },
+  "https://docs.limacharlie.io/docs/outputs-destinations-webhook": {
+    "url": "https://docs.limacharlie.io/docs/outputs-destinations-webhook",
+    "title": "Webhook",
+    "discovered_via": "crawl",
+    "slug": "outputs-destinations-webhook"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/observability": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/observability",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/observability"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-microsoft-defender": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-microsoft-defender",
+    "title": "Microsoft Defender",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-microsoft-defender"
+  },
+  "https://docs.limacharlie.io/docs/en/endpoint-detection-and-response-edr": {
+    "url": "https://docs.limacharlie.io/docs/en/endpoint-detection-and-response-edr",
+    "title": "Endpoint Detection and Response (EDR)",
+    "discovered_via": "crawl",
+    "slug": "en/endpoint-detection-and-response-edr"
+  },
+  "https://docs.limacharlie.io/docs/quickstart": {
+    "url": "https://docs.limacharlie.io/docs/quickstart",
+    "title": "Quickstart",
+    "discovered_via": "crawl",
+    "slug": "quickstart"
+  },
+  "https://docs.limacharlie.io/v2/docs/network-monitoring": {
+    "url": "https://docs.limacharlie.io/v2/docs/network-monitoring",
+    "title": "Network Monitoring",
+    "discovered_via": "crawl",
+    "slug": "network-monitoring"
+  },
+  "https://docs.limacharlie.io/docs/en/installing-macos-agents-via-jamf-now": {
+    "url": "https://docs.limacharlie.io/docs/en/installing-macos-agents-via-jamf-now",
+    "title": "macOS Agent Installation via Jamf Now",
+    "discovered_via": "crawl",
+    "slug": "en/installing-macos-agents-via-jamf-now"
+  },
+  "https://docs.limacharlie.io/v1/docs/limacharlie-core-concepts": {
+    "url": "https://docs.limacharlie.io/v1/docs/limacharlie-core-concepts",
+    "title": "LimaCharlie Core Concepts",
+    "discovered_via": "crawl",
+    "slug": "limacharlie-core-concepts"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-velociraptor": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-velociraptor",
+    "title": "Velociraptor",
+    "discovered_via": "crawl",
+    "slug": "ext-velociraptor"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-yara-manager": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-yara-manager",
+    "title": "YARA Manager",
+    "discovered_via": "crawl",
+    "slug": "ext-yara-manager"
+  },
+  "https://docs.limacharlie.io/docs/en/hayabusa-to-bigquery": {
+    "url": "https://docs.limacharlie.io/docs/en/hayabusa-to-bigquery",
+    "title": "Hayabusa to BigQuery",
+    "discovered_via": "crawl",
+    "slug": "en/hayabusa-to-bigquery"
+  },
+  "https://docs.limacharlie.io/v1/docs/telemetry-sensors": {
+    "url": "https://docs.limacharlie.io/v1/docs/telemetry-sensors",
+    "title": "Sensors",
+    "discovered_via": "crawl",
+    "slug": "telemetry-sensors"
+  },
+  "https://docs.limacharlie.io/v2/docs/reference-platform-events": {
+    "url": "https://docs.limacharlie.io/v2/docs/reference-platform-events",
+    "title": "Reference: Platform Events",
+    "discovered_via": "crawl",
+    "slug": "reference-platform-events"
+  },
+  "https://docs.limacharlie.io/v2/docs/developer-grant-program": {
+    "url": "https://docs.limacharlie.io/v2/docs/developer-grant-program",
+    "title": "Developer Grant Program",
+    "discovered_via": "crawl",
+    "slug": "developer-grant-program"
+  },
+  "https://docs.limacharlie.io/docs/tags/limacharlie": {
+    "url": "https://docs.limacharlie.io/docs/tags/limacharlie",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/limacharlie"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensors-sensor-commands": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensors-sensor-commands",
+    "title": "Sensor Commands",
+    "discovered_via": "crawl",
+    "slug": "sensors-sensor-commands"
+  },
+  "https://docs.limacharlie.io/docs/writing-and-testing-rules": {
+    "url": "https://docs.limacharlie.io/docs/writing-and-testing-rules",
+    "title": "Writing and Testing Rules",
+    "discovered_via": "crawl",
+    "slug": "writing-and-testing-rules"
+  },
+  "https://docs.limacharlie.io/docs/en/sleeper": {
+    "url": "https://docs.limacharlie.io/docs/en/sleeper",
+    "title": "Sleeper Deployment",
+    "discovered_via": "crawl",
+    "slug": "en/sleeper"
+  },
+  "https://docs.limacharlie.io/v2/docs/config-hive-secrets": {
+    "url": "https://docs.limacharlie.io/v2/docs/config-hive-secrets",
+    "title": "Config Hive: Secrets",
+    "discovered_via": "crawl",
+    "slug": "config-hive-secrets"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-govee": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-govee",
+    "title": "Govee",
+    "discovered_via": "crawl",
+    "slug": "en/ext-govee"
+  },
+  "https://docs.limacharlie.io/v2/docs/build-cti-capabilities": {
+    "url": "https://docs.limacharlie.io/v2/docs/build-cti-capabilities",
+    "title": "Build CTI Capabilities",
+    "discovered_via": "crawl",
+    "slug": "build-cti-capabilities"
+  },
+  "https://docs.limacharlie.io/docs/faq-troubleshooting": {
+    "url": "https://docs.limacharlie.io/docs/faq-troubleshooting",
+    "title": "FAQ - Sensor Troubleshooting",
+    "discovered_via": "crawl",
+    "slug": "faq-troubleshooting"
+  },
+  "https://docs.limacharlie.io/docs/purple-teaming": {
+    "url": "https://docs.limacharlie.io/docs/purple-teaming",
+    "title": "Purple Teaming",
+    "discovered_via": "crawl",
+    "slug": "purple-teaming"
+  },
+  "https://docs.limacharlie.io/v2/docs/endpoint-detection-and-response-edr": {
+    "url": "https://docs.limacharlie.io/v2/docs/endpoint-detection-and-response-edr",
+    "title": "Endpoint Detection and Response (EDR)",
+    "discovered_via": "crawl",
+    "slug": "endpoint-detection-and-response-edr"
+  },
+  "https://docs.limacharlie.io/docs/extensions": {
+    "url": "https://docs.limacharlie.io/docs/extensions",
+    "title": "Extensions",
+    "discovered_via": "crawl",
+    "slug": "extensions"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/gcp": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/gcp",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/gcp"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/automation": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/automation",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/automation"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-exfil": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-exfil",
+    "title": "Exfil (Event Collection)",
+    "discovered_via": "crawl",
+    "slug": "en/ext-exfil"
+  },
+  "https://docs.limacharlie.io/docs/service-providers-mssp-msp-mdr": {
+    "url": "https://docs.limacharlie.io/docs/service-providers-mssp-msp-mdr",
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "discovered_via": "crawl",
+    "slug": "service-providers-mssp-msp-mdr"
+  },
+  "https://docs.limacharlie.io/docs/ingesting-macos-unified-logs": {
+    "url": "https://docs.limacharlie.io/docs/ingesting-macos-unified-logs",
+    "title": "Ingesting MacOS Unified Logs",
+    "discovered_via": "crawl",
+    "slug": "ingesting-macos-unified-logs"
+  },
+  "https://docs.limacharlie.io/v2/docs/unit-tests": {
+    "url": "https://docs.limacharlie.io/v2/docs/unit-tests",
+    "title": "Unit Tests",
+    "discovered_via": "crawl",
+    "slug": "unit-tests"
+  },
+  "https://docs.limacharlie.io/docs/security-monitoring-for-devops": {
+    "url": "https://docs.limacharlie.io/docs/security-monitoring-for-devops",
+    "title": "Security Monitoring for DevOps",
+    "discovered_via": "crawl",
+    "slug": "security-monitoring-for-devops"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-google-workspace": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-google-workspace",
+    "title": "Google Workspace",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-google-workspace"
+  },
+  "https://docs.limacharlie.io/docs/en/windows-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/en/windows-agent-installation",
+    "title": "Windows Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "en/windows-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/container-clusters": {
+    "url": "https://docs.limacharlie.io/docs/container-clusters",
+    "title": "Container Clusters",
+    "discovered_via": "crawl",
+    "slug": "container-clusters"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensor-commands-anomalies": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensor-commands-anomalies",
+    "title": "Anomalies",
+    "discovered_via": "crawl",
+    "slug": "sensor-commands-anomalies"
+  },
+  "https://docs.limacharlie.io/docs/tags/telemetry": {
+    "url": "https://docs.limacharlie.io/docs/tags/telemetry",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/telemetry"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/api": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/api",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/api"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-reliable-tasking": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-reliable-tasking",
+    "title": "Reliable Tasking",
+    "discovered_via": "crawl",
+    "slug": "en/ext-reliable-tasking"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/wel": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/wel",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/wel"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-reliable-tasking": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-reliable-tasking",
+    "title": "Reliable Tasking",
+    "discovered_via": "crawl",
+    "slug": "ext-reliable-tasking"
+  },
+  "https://docs.limacharlie.io/docs/en/1password": {
+    "url": "https://docs.limacharlie.io/docs/en/1password",
+    "title": "1Password",
+    "discovered_via": "crawl",
+    "slug": "en/1password"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-file": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-file",
+    "title": "File",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-file"
+  },
+  "https://docs.limacharlie.io/docs/velociraptor-to-bigquery": {
+    "url": "https://docs.limacharlie.io/docs/velociraptor-to-bigquery",
+    "title": "Velociraptor to BigQuery",
+    "discovered_via": "crawl",
+    "slug": "velociraptor-to-bigquery"
+  },
+  "https://docs.limacharlie.io/docs/tags/macos": {
+    "url": "https://docs.limacharlie.io/docs/tags/macos",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/macos"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/FIM": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/FIM",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/FIM"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-sophos": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-sophos",
+    "title": "Sophos",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-sophos"
+  },
+  "https://docs.limacharlie.io/v2/docs/tutorial-creating-a-webhook-adapter": {
+    "url": "https://docs.limacharlie.io/v2/docs/tutorial-creating-a-webhook-adapter",
+    "title": "Tutorial: Creating a Webhook Adapter",
+    "discovered_via": "crawl",
+    "slug": "tutorial-creating-a-webhook-adapter"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensor-commands-memory": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensor-commands-memory",
+    "title": "Memory",
+    "discovered_via": "crawl",
+    "slug": "sensor-commands-memory"
+  },
+  "https://docs.limacharlie.io/docs/faq-billing": {
+    "url": "https://docs.limacharlie.io/docs/faq-billing",
+    "title": "FAQ - Billing",
+    "discovered_via": "crawl",
+    "slug": "faq-billing"
+  },
+  "https://docs.limacharlie.io/docs/tags/epp": {
+    "url": "https://docs.limacharlie.io/docs/tags/epp",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/epp"
+  },
+  "https://docs.limacharlie.io/docs/en/enerprises": {
+    "url": "https://docs.limacharlie.io/docs/en/enerprises",
+    "title": "Enterprise SOC",
+    "discovered_via": "crawl",
+    "slug": "en/enerprises"
+  },
+  "https://docs.limacharlie.io/docs/en/config-hive-dr-rules": {
+    "url": "https://docs.limacharlie.io/docs/en/config-hive-dr-rules",
+    "title": "Config Hive: Detection & Response Rules",
+    "discovered_via": "crawl",
+    "slug": "en/config-hive-dr-rules"
+  },
+  "https://docs.limacharlie.io/v1/docs/detecting-related-events": {
+    "url": "https://docs.limacharlie.io/v1/docs/detecting-related-events",
+    "title": "Detecting Related Events",
+    "discovered_via": "crawl",
+    "slug": "detecting-related-events"
+  },
+  "https://docs.limacharlie.io/v2/docs/edge-agent-installation": {
+    "url": "https://docs.limacharlie.io/v2/docs/edge-agent-installation",
+    "title": "Edge Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "edge-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/tags/msp": {
+    "url": "https://docs.limacharlie.io/docs/tags/msp",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/msp"
+  },
+  "https://docs.limacharlie.io/docs/tags/api": {
+    "url": "https://docs.limacharlie.io/docs/tags/api",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/api"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/google%20workspace": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/google%20workspace",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/google%20workspace"
+  },
+  "https://docs.limacharlie.io/docs/ext-cloud-cli-1password": {
+    "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-1password",
+    "title": "1Password",
+    "discovered_via": "crawl",
+    "slug": "ext-cloud-cli-1password"
+  },
+  "https://docs.limacharlie.io/docs/ai-agent-engine": {
+    "url": "https://docs.limacharlie.io/docs/ai-agent-engine",
+    "title": "AI Agent Engine [LABS]",
+    "discovered_via": "crawl",
+    "slug": "ai-agent-engine"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-zeek": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-zeek",
+    "title": "Zeek",
+    "discovered_via": "crawl",
+    "slug": "ext-zeek"
+  },
+  "https://docs.limacharlie.io/docs/tags/development": {
+    "url": "https://docs.limacharlie.io/docs/tags/development",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/development"
+  },
+  "https://docs.limacharlie.io/docs/tags/enterprise": {
+    "url": "https://docs.limacharlie.io/docs/tags/enterprise",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/enterprise"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/mergers and acquisitions": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/mergers and acquisitions",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/mergers and acquisitions"
+  },
+  "https://docs.limacharlie.io/docs/limacharlie-cli": {
+    "url": "https://docs.limacharlie.io/docs/limacharlie-cli",
+    "title": "LimaCharlie CLI",
+    "discovered_via": "crawl",
+    "slug": "limacharlie-cli"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-sublime-security": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-sublime-security",
+    "title": "Sublime Security",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-sublime-security"
+  },
+  "https://docs.limacharlie.io/v1/docs/outputs": {
+    "url": "https://docs.limacharlie.io/v1/docs/outputs",
+    "title": "Outputs",
+    "discovered_via": "crawl",
+    "slug": "outputs"
+  },
+  "https://docs.limacharlie.io/docs/outputs-destinations-syslog": {
+    "url": "https://docs.limacharlie.io/docs/outputs-destinations-syslog",
+    "title": "Syslog",
+    "discovered_via": "crawl",
+    "slug": "outputs-destinations-syslog"
+  },
+  "https://docs.limacharlie.io/docs/tags/google workspace": {
+    "url": "https://docs.limacharlie.io/docs/tags/google workspace",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/google workspace"
+  },
+  "https://docs.limacharlie.io/v2/docs/logcollectionguide": {
+    "url": "https://docs.limacharlie.io/v2/docs/logcollectionguide",
+    "title": "Log Collection Guide",
+    "discovered_via": "crawl",
+    "slug": "logcollectionguide"
+  },
+  "https://docs.limacharlie.io/docs/template-strings-and-transforms-2": {
+    "url": "https://docs.limacharlie.io/docs/template-strings-and-transforms-2",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "template-strings-and-transforms-2"
+  },
+  "https://docs.limacharlie.io/docs/uncovering-adversary-techniques": {
+    "url": "https://docs.limacharlie.io/docs/uncovering-adversary-techniques",
+    "title": "Uncovering Adversary Techniques",
+    "discovered_via": "crawl",
+    "slug": "uncovering-adversary-techniques"
+  },
+  "https://docs.limacharlie.io/docs/en/writing-and-testing-rules": {
+    "url": "https://docs.limacharlie.io/docs/en/writing-and-testing-rules",
+    "title": "Writing and Testing Rules",
+    "discovered_via": "crawl",
+    "slug": "en/writing-and-testing-rules"
+  },
+  "https://docs.limacharlie.io/docs/adapter-examples-stdin": {
+    "url": "https://docs.limacharlie.io/docs/adapter-examples-stdin",
+    "title": "Stdin",
+    "discovered_via": "crawl",
+    "slug": "adapter-examples-stdin"
+  },
+  "https://docs.limacharlie.io/v2/docs/adapter-types-google-cloud-pubsub": {
+    "url": "https://docs.limacharlie.io/v2/docs/adapter-types-google-cloud-pubsub",
+    "title": "Google Cloud Pubsub",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-google-cloud-pubsub"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/tabletop": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/tabletop",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/tabletop"
+  },
+  "https://docs.limacharlie.io/docs/chrome-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/chrome-agent-installation",
+    "title": "Chrome Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "chrome-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/en/endpoint-agent-installation": {
+    "url": "https://docs.limacharlie.io/docs/en/endpoint-agent-installation",
+    "title": "Endpoint Agent Installation",
+    "discovered_via": "crawl",
+    "slug": "en/endpoint-agent-installation"
+  },
+  "https://docs.limacharlie.io/docs/ext-cloud-cli": {
+    "url": "https://docs.limacharlie.io/docs/ext-cloud-cli",
+    "title": "Cloud CLI",
+    "discovered_via": "crawl",
+    "slug": "ext-cloud-cli"
+  },
+  "https://docs.limacharlie.io/docs/en/config-hive-yara": {
+    "url": "https://docs.limacharlie.io/docs/en/config-hive-yara",
+    "title": "Config Hive: Yara",
+    "discovered_via": "crawl",
+    "slug": "en/config-hive-yara"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/lookups": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/lookups",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/lookups"
+  },
+  "https://docs.limacharlie.io/docs/en/template-strings-and-transforms-2": {
+    "url": "https://docs.limacharlie.io/docs/en/template-strings-and-transforms-2",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "en/template-strings-and-transforms-2"
+  },
+  "https://docs.limacharlie.io/docs/billing-options": {
+    "url": "https://docs.limacharlie.io/docs/billing-options",
+    "title": "Billing Options",
+    "discovered_via": "crawl",
+    "slug": "billing-options"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/msp": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/msp",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/msp"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-secureannex": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-secureannex",
+    "title": "Secure Annex",
+    "discovered_via": "crawl",
+    "slug": "en/ext-secureannex"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/browser%20agent": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/browser%20agent",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/browser%20agent"
+  },
+  "https://docs.limacharlie.io/v2/docs/ingesting-sysmon-event-logs": {
+    "url": "https://docs.limacharlie.io/v2/docs/ingesting-sysmon-event-logs",
+    "title": "Ingesting Sysmon Event Logs",
+    "discovered_via": "crawl",
+    "slug": "ingesting-sysmon-event-logs"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/monitoring": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/monitoring",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/monitoring"
+  },
+  "https://docs.limacharlie.io/v2/docs/endpoint-agent-commands": {
+    "url": "https://docs.limacharlie.io/v2/docs/endpoint-agent-commands",
+    "title": "Endpoint Agent Commands",
+    "discovered_via": "crawl",
+    "slug": "endpoint-agent-commands"
+  },
+  "https://docs.limacharlie.io/v2/docs/detection-on-alternate-targets": {
+    "url": "https://docs.limacharlie.io/v2/docs/detection-on-alternate-targets",
+    "title": "Detection on Alternate Targets",
+    "discovered_via": "crawl",
+    "slug": "detection-on-alternate-targets"
+  },
+  "https://docs.limacharlie.io/docs/ext-reliable-tasking": {
+    "url": "https://docs.limacharlie.io/docs/ext-reliable-tasking",
+    "title": "Reliable Tasking",
+    "discovered_via": "crawl",
+    "slug": "ext-reliable-tasking"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/sensors": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/sensors",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/sensors"
+  },
+  "https://docs.limacharlie.io/v1/docs/en/whats-newx": {
+    "url": "https://docs.limacharlie.io/v1/docs/en/whats-newx",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/whats-newx"
+  },
+  "https://docs.limacharlie.io/docs/tags/mdr": {
+    "url": "https://docs.limacharlie.io/docs/tags/mdr",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/mdr"
+  },
+  "https://docs.limacharlie.io/docs/updating-sensors-to-the-newest-version": {
+    "url": "https://docs.limacharlie.io/docs/updating-sensors-to-the-newest-version",
+    "title": "Updating Sensors to the Newest Version",
+    "discovered_via": "crawl",
+    "slug": "updating-sensors-to-the-newest-version"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/incident%20response": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/incident%20response",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/incident%20response"
+  },
+  "https://docs.limacharlie.io/docs/threat-hunting": {
+    "url": "https://docs.limacharlie.io/docs/threat-hunting",
+    "title": "Threat Hunting",
+    "discovered_via": "crawl",
+    "slug": "threat-hunting"
+  },
+  "https://docs.limacharlie.io/docs/macos-agent-installation-via-microsoft-intune": {
+    "url": "https://docs.limacharlie.io/docs/macos-agent-installation-via-microsoft-intune",
+    "title": "macOS Agent Installation via Microsoft Intune",
+    "discovered_via": "crawl",
+    "slug": "macos-agent-installation-via-microsoft-intune"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/events": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/events",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/events"
+  },
+  "https://docs.limacharlie.io/docs/hostname-resolution": {
+    "url": "https://docs.limacharlie.io/docs/hostname-resolution",
+    "title": "Hostname Resolution",
+    "discovered_via": "crawl",
+    "slug": "hostname-resolution"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-microsoft-365": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-microsoft-365",
+    "title": "Microsoft 365",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-microsoft-365"
+  },
+  "https://docs.limacharlie.io/docs/tutorial-ingesting-telemetry-from-cloud-based-external-sources": {
+    "url": "https://docs.limacharlie.io/docs/tutorial-ingesting-telemetry-from-cloud-based-external-sources",
+    "title": "Tutorial: Ingesting Telemetry from Cloud-Based External Sources",
+    "discovered_via": "crawl",
+    "slug": "tutorial-ingesting-telemetry-from-cloud-based-external-sources"
+  },
+  "https://docs.limacharlie.io/docs/ext-renigma": {
+    "url": "https://docs.limacharlie.io/docs/ext-renigma",
+    "title": "REnigma",
+    "discovered_via": "crawl",
+    "slug": "ext-renigma"
+  },
+  "https://docs.limacharlie.io/docs/sensor-connectivity": {
+    "url": "https://docs.limacharlie.io/docs/sensor-connectivity",
+    "title": "Sensor Connectivity",
+    "discovered_via": "crawl",
+    "slug": "sensor-connectivity"
+  },
+  "https://docs.limacharlie.io/docs/sleeper": {
+    "url": "https://docs.limacharlie.io/docs/sleeper",
+    "title": "Sleeper Deployment",
+    "discovered_via": "crawl",
+    "slug": "sleeper"
+  },
+  "https://docs.limacharlie.io/v1/docs/reference-events-responses-anomalies": {
+    "url": "https://docs.limacharlie.io/v1/docs/reference-events-responses-anomalies",
+    "title": "Anomalies",
+    "discovered_via": "crawl",
+    "slug": "reference-events-responses-anomalies"
+  },
+  "https://docs.limacharlie.io/docs/tags/faq": {
+    "url": "https://docs.limacharlie.io/docs/tags/faq",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/faq"
+  },
+  "https://docs.limacharlie.io/docs/query-console-ui": {
+    "url": "https://docs.limacharlie.io/docs/query-console-ui",
+    "title": "Query Console UI",
+    "discovered_via": "crawl",
+    "slug": "query-console-ui"
+  },
+  "https://docs.limacharlie.io/docs/en/service-providers-mssp-msp-mdr": {
+    "url": "https://docs.limacharlie.io/docs/en/service-providers-mssp-msp-mdr",
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "discovered_via": "crawl",
+    "slug": "en/service-providers-mssp-msp-mdr"
+  },
+  "https://docs.limacharlie.io/docs/en/tutorial-ingesting-google-cloud-logs": {
+    "url": "https://docs.limacharlie.io/docs/en/tutorial-ingesting-google-cloud-logs",
+    "title": "Tutorial: Ingesting Google Cloud Logs",
+    "discovered_via": "crawl",
+    "slug": "en/tutorial-ingesting-google-cloud-logs"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensor-commands-documents": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensor-commands-documents",
+    "title": "Documents",
+    "discovered_via": "crawl",
+    "slug": "sensor-commands-documents"
+  },
+  "https://docs.limacharlie.io/docs/community-rules": {
+    "url": "https://docs.limacharlie.io/docs/community-rules",
+    "title": "Community Rules",
+    "discovered_via": "crawl",
+    "slug": "community-rules"
+  },
+  "https://docs.limacharlie.io/docs/soar-automation": {
+    "url": "https://docs.limacharlie.io/docs/soar-automation",
+    "title": "SOAR / Automation",
+    "discovered_via": "crawl",
+    "slug": "soar-automation"
+  },
+  "https://docs.limacharlie.io/v1/docs/developer-grant-program": {
+    "url": "https://docs.limacharlie.io/v1/docs/developer-grant-program",
+    "title": "Developer Grant Program",
+    "discovered_via": "crawl",
+    "slug": "developer-grant-program"
+  },
+  "https://docs.limacharlie.io/docs/secops-development": {
+    "url": "https://docs.limacharlie.io/docs/secops-development",
+    "title": "SecOps Development",
+    "discovered_via": "crawl",
+    "slug": "secops-development"
+  },
+  "https://docs.limacharlie.io/docs/faq-account-management": {
+    "url": "https://docs.limacharlie.io/docs/faq-account-management",
+    "title": "FAQ - Account Management",
+    "discovered_via": "crawl",
+    "slug": "faq-account-management"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-dumper": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-dumper",
+    "title": "Dumper",
+    "discovered_via": "crawl",
+    "slug": "ext-dumper"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-stdin": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-stdin",
+    "title": "Stdin",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-stdin"
+  },
+  "https://docs.limacharlie.io/docs/playbook": {
+    "url": "https://docs.limacharlie.io/docs/playbook",
+    "title": "Playbook [LABS]",
+    "discovered_via": "crawl",
+    "slug": "playbook"
+  },
+  "https://docs.limacharlie.io/v2/docs/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer": {
+    "url": "https://docs.limacharlie.io/v2/docs/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+    "title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+    "discovered_via": "crawl",
+    "slug": "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer"
+  },
+  "https://docs.limacharlie.io/docs/tags/gcp": {
+    "url": "https://docs.limacharlie.io/docs/tags/gcp",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/gcp"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensor-commands-registry": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensor-commands-registry",
+    "title": "Registry",
+    "discovered_via": "crawl",
+    "slug": "sensor-commands-registry"
+  },
+  "https://docs.limacharlie.io/docs/en/endpoint-agent-events-overview": {
+    "url": "https://docs.limacharlie.io/docs/en/endpoint-agent-events-overview",
+    "title": "Endpoint Agent Events Overview",
+    "discovered_via": "crawl",
+    "slug": "en/endpoint-agent-events-overview"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/MSSP": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/MSSP",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/MSSP"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/SOAR": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/SOAR",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/SOAR"
+  },
+  "https://docs.limacharlie.io/docs/ext-twilio": {
+    "url": "https://docs.limacharlie.io/docs/ext-twilio",
+    "title": "Twilio",
+    "discovered_via": "crawl",
+    "slug": "ext-twilio"
+  },
+  "https://docs.limacharlie.io/docs/ext-integrity": {
+    "url": "https://docs.limacharlie.io/docs/ext-integrity",
+    "title": "Integrity",
+    "discovered_via": "crawl",
+    "slug": "ext-integrity"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/api": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/api",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/api"
+  },
+  "https://docs.limacharlie.io/docs/building-the-user-interface": {
+    "url": "https://docs.limacharlie.io/docs/building-the-user-interface",
+    "title": "Building the User Interface",
+    "discovered_via": "crawl",
+    "slug": "building-the-user-interface"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/development": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/development",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/development"
+  },
+  "https://docs.limacharlie.io/docs/config-hive-cloud-sensors": {
+    "url": "https://docs.limacharlie.io/docs/config-hive-cloud-sensors",
+    "title": "Config Hive: Cloud Sensors",
+    "discovered_via": "crawl",
+    "slug": "config-hive-cloud-sensors"
+  },
+  "https://docs.limacharlie.io/docs/en/template-strings-and-transforms-1": {
+    "url": "https://docs.limacharlie.io/docs/en/template-strings-and-transforms-1",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "en/template-strings-and-transforms-1"
+  },
+  "https://docs.limacharlie.io/docs/en/build-cti-capabilities": {
+    "url": "https://docs.limacharlie.io/docs/en/build-cti-capabilities",
+    "title": "Build CTI Capabilities",
+    "discovered_via": "crawl",
+    "slug": "en/build-cti-capabilities"
+  },
+  "https://docs.limacharlie.io/v2/docs/adapter-usage": {
+    "url": "https://docs.limacharlie.io/v2/docs/adapter-usage",
+    "title": "Adapter Usage",
+    "discovered_via": "crawl",
+    "slug": "adapter-usage"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-mac-unified-logging": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-mac-unified-logging",
+    "title": "Mac Unified Logging",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-mac-unified-logging"
+  },
+  "https://docs.limacharlie.io/v2/docs/binlib": {
+    "url": "https://docs.limacharlie.io/v2/docs/binlib",
+    "title": "BinLib",
+    "discovered_via": "crawl",
+    "slug": "binlib"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-it-glue": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-it-glue",
+    "title": "IT Glue",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-it-glue"
+  },
+  "https://docs.limacharlie.io/docs/api-integrations-virustotal": {
+    "url": "https://docs.limacharlie.io/docs/api-integrations-virustotal",
+    "title": "VirusTotal",
+    "discovered_via": "crawl",
+    "slug": "api-integrations-virustotal"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensor-tags": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensor-tags",
+    "title": "Sensor Tags",
+    "discovered_via": "crawl",
+    "slug": "sensor-tags"
+  },
+  "https://docs.limacharlie.io/docs/tags/automation": {
+    "url": "https://docs.limacharlie.io/docs/tags/automation",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/automation"
+  },
+  "https://docs.limacharlie.io/docs/en/adapter-types-mac-unified-logging": {
+    "url": "https://docs.limacharlie.io/docs/en/adapter-types-mac-unified-logging",
+    "title": "Mac Unified Logging",
+    "discovered_via": "crawl",
+    "slug": "en/adapter-types-mac-unified-logging"
+  },
+  "https://docs.limacharlie.io/docs/outputs-destinations-azure-storage-blob": {
+    "url": "https://docs.limacharlie.io/docs/outputs-destinations-azure-storage-blob",
+    "title": "Azure Storage Blob",
+    "discovered_via": "crawl",
+    "slug": "outputs-destinations-azure-storage-blob"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/ChromeOS": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/ChromeOS",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/ChromeOS"
+  },
+  "https://docs.limacharlie.io/docs/en/outputs-destinations-google-cloud-bigquery": {
+    "url": "https://docs.limacharlie.io/docs/en/outputs-destinations-google-cloud-bigquery",
+    "title": "Google Cloud BigQuery",
+    "discovered_via": "crawl",
+    "slug": "en/outputs-destinations-google-cloud-bigquery"
+  },
+  "https://docs.limacharlie.io/docs/en/incident-response": {
+    "url": "https://docs.limacharlie.io/docs/en/incident-response",
+    "title": "Incident Response",
+    "discovered_via": "crawl",
+    "slug": "en/incident-response"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/EDR": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/EDR",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/EDR"
+  },
+  "https://docs.limacharlie.io/docs/en/detection-logic-operators": {
+    "url": "https://docs.limacharlie.io/docs/en/detection-logic-operators",
+    "title": "Detection Logic Operators",
+    "discovered_via": "crawl",
+    "slug": "en/detection-logic-operators"
+  },
+  "https://docs.limacharlie.io/v2/docs/ext-plaso": {
+    "url": "https://docs.limacharlie.io/v2/docs/ext-plaso",
+    "title": "Plaso",
+    "discovered_via": "crawl",
+    "slug": "ext-plaso"
+  },
+  "https://docs.limacharlie.io/docs/template-strings-and-transforms": {
+    "url": "https://docs.limacharlie.io/docs/template-strings-and-transforms",
+    "title": "Template Strings and Transforms",
+    "discovered_via": "crawl",
+    "slug": "template-strings-and-transforms"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-google-cloud-storage": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-google-cloud-storage",
+    "title": "Google Cloud Storage",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-google-cloud-storage"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensor-commands-mitigation": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensor-commands-mitigation",
+    "title": "Mitigation",
+    "discovered_via": "crawl",
+    "slug": "sensor-commands-mitigation"
+  },
+  "https://docs.limacharlie.io/v1/docs/tags/pipeline": {
+    "url": "https://docs.limacharlie.io/v1/docs/tags/pipeline",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/pipeline"
+  },
+  "https://docs.limacharlie.io/docs/tags/linux": {
+    "url": "https://docs.limacharlie.io/docs/tags/linux",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/linux"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/m365": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/m365",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/m365"
+  },
+  "https://docs.limacharlie.io/docs/api-keys": {
+    "url": "https://docs.limacharlie.io/docs/api-keys",
+    "title": "API Keys",
+    "discovered_via": "crawl",
+    "slug": "api-keys"
+  },
+  "https://docs.limacharlie.io/docs/en/tags/DevOps": {
+    "url": "https://docs.limacharlie.io/docs/en/tags/DevOps",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "en/tags/DevOps"
+  },
+  "https://docs.limacharlie.io/docs/adapter-types-it-glue": {
+    "url": "https://docs.limacharlie.io/docs/adapter-types-it-glue",
+    "title": "IT Glue",
+    "discovered_via": "crawl",
+    "slug": "adapter-types-it-glue"
+  },
+  "https://docs.limacharlie.io/v1/docs/sensors-operating-systems-macos": {
+    "url": "https://docs.limacharlie.io/v1/docs/sensors-operating-systems-macos",
+    "title": "macOS",
+    "discovered_via": "crawl",
+    "slug": "sensors-operating-systems-macos"
+  },
+  "https://docs.limacharlie.io/docs/ext-cloud-cli-microsoft365": {
+    "url": "https://docs.limacharlie.io/docs/ext-cloud-cli-microsoft365",
+    "title": "Microsoft 365",
+    "discovered_via": "crawl",
+    "slug": "ext-cloud-cli-microsoft365"
+  },
+  "https://docs.limacharlie.io/docs/reference-platform-events": {
+    "url": "https://docs.limacharlie.io/docs/reference-platform-events",
+    "title": "Reference: Platform Events",
+    "discovered_via": "crawl",
+    "slug": "reference-platform-events"
+  },
+  "https://docs.limacharlie.io/docs/tags/ir": {
+    "url": "https://docs.limacharlie.io/docs/tags/ir",
+    "title": "LimaCharlie",
+    "discovered_via": "crawl",
+    "slug": "tags/ir"
+  },
+  "https://docs.limacharlie.io/docs/cost-effective-siem": {
+    "url": "https://docs.limacharlie.io/docs/cost-effective-siem",
+    "title": "Cost Effective SIEM Alternative",
+    "discovered_via": "crawl",
+    "slug": "cost-effective-siem"
+  },
+  "https://docs.limacharlie.io/docs/reference-permissions": {
+    "url": "https://docs.limacharlie.io/docs/reference-permissions",
+    "title": "Reference: Permissions",
+    "discovered_via": "crawl",
+    "slug": "reference-permissions"
+  },
+  "https://docs.limacharlie.io/docs/adapter-examples-stdin-json": {
+    "url": "https://docs.limacharlie.io/docs/adapter-examples-stdin-json",
+    "title": "Stdin JSON",
+    "discovered_via": "crawl",
+    "slug": "adapter-examples-stdin-json"
+  },
+  "https://docs.limacharlie.io/v2/docs/config-hive-lookups": {
+    "url": "https://docs.limacharlie.io/v2/docs/config-hive-lookups",
+    "title": "Config Hive: Lookups",
+    "discovered_via": "crawl",
+    "slug": "config-hive-lookups"
+  },
+  "https://docs.limacharlie.io/docs/logcollectionguide": {
+    "url": "https://docs.limacharlie.io/docs/logcollectionguide",
+    "title": "Log Collection Guide",
+    "discovered_via": "crawl",
+    "slug": "logcollectionguide"
+  },
+  "https://docs.limacharlie.io/v2/docs/playbook": {
+    "url": "https://docs.limacharlie.io/v2/docs/playbook",
+    "title": "Playbook [LABS]",
+    "discovered_via": "crawl",
+    "slug": "playbook"
+  },
+  "https://docs.limacharlie.io/v1/docs/telemetry-sensors-uninstallation": {
+    "url": "https://docs.limacharlie.io/v1/docs/telemetry-sensors-uninstallation",
+    "title": "Sensor Uninstallation",
+    "discovered_via": "crawl",
+    "slug": "telemetry-sensors-uninstallation"
+  },
+  "https://docs.limacharlie.io/docs/en/ext-cloud-cli-microsoft365": {
+    "url": "https://docs.limacharlie.io/docs/en/ext-cloud-cli-microsoft365",
+    "title": "Microsoft 365",
+    "discovered_via": "crawl",
+    "slug": "en/ext-cloud-cli-microsoft365"
+  },
+  "https://docs.limacharlie.io/docs/en/reference-platform-events": {
+    "url": "https://docs.limacharlie.io/docs/en/reference-platform-events",
+    "title": "Reference: Platform Events",
+    "discovered_via": "crawl",
+    "slug": "en/reference-platform-events"
+  }
+}

@@ -1,0 +1,293 @@
+[![LimaCharlie](https://cdn.document360.io/logo/84ec2311-0e05-4c58-90b9-baa9c041d22b/a8f5c28d58ea4df0b59badd4cebcc541-Logo_Blue.png)](/)
+
+* [LimaCharlie Log In](https://app.limacharlie.io)
+
+* v1
+
+  + [v1 Deprecated](/v1/docs "v1")
+  + [v2](/docs "v2")
+
+Contents x
+
+* [Getting Started](what-is-limacharlie)
+* [Telemetry](telemetry-sensors)
+* [Detection and Response](detecting-related-events)
+* [Platform Management](platform-configuration-limacharlie-sdk)
+* [Outputs](output-whitelisting)
+* [Add-Ons](developer-grant-program)
+* [FAQ](faq-privacy)
+
+[Powered by![Document360](https://cdn.document360.io/static/images/document360-logo.svg)](https://document360.com/powered-by-document360/?utm_source=docs&utm_medium=footer&utm_campaign=poweredbylogo)
+
+---
+
+Detecting Related Events
+
+* 02 Mar 2023
+* 4 Minutes to read
+
+Share this
+
+* Print
+* Share
+* Dark
+
+  Light
+
+Contents
+
+This documentation version is deprecated, please click here for the latest version.
+
+# Detecting Related Events
+
+* Updated on 02 Mar 2023
+* 4 Minutes to read
+
+* Print
+* Share
+* Dark
+
+  Light
+
+---
+
+Article summary
+
+Did you find this summary helpful?
+
+Thank you for your feedback!
+
+## Overview
+
+> It's recommended to first read [Detection & Response rules](/v1/docs/detection-and-response) before diving into detecting related events.
+
+Events in LimaCharlie have well-defined relationships to one another using `routing/this`, `routing/parent`, `routing/target`, and can even be implicitly related by occurring in a similar timeframe. The relation context can be useful for writing more complex rules.
+
+These are called "stateful" rules.
+
+## Detecting Children / Descendants
+
+To detect events in a tree you can use the following parameters:
+
+* `with child`: matches children of the initial event
+* `with descendant`: matches descendants (children, grandchildren, etc.) of the initial event
+
+Aside from how deep they match, the `with child` and `with descendant` parameters operate identically: they declare a nested stateful rule.
+
+For example, let's detect a `cmd.exe` process spawning a `calc.exe` process:
+
+```
+# Detect initial event
+event: NEW_PROCESS
+op: ends with
+path: event/FILE_PATH
+value: cmd.exe
+case sensitive: false
+with child: # Wait for child matching this nested rule
+  op: ends with
+  event: NEW_PROCESS
+  path: event/FILE_PATH
+  value: calc.exe
+  case sensitive: false
+```
+
+Simply put, this will detect:
+
+```
+cmd.exe --> calc.exe
+```
+
+Because it uses `with child` it will not detect:
+
+```
+cmd.exe --> firefox.exe --> calc.exe
+```
+
+To do that, we could use `with descendant` instead.
+
+## Detecting Proximal Events
+
+To detect repetition of events close together on the same sensor, we can use `with events`.
+
+The `with events` parameter functions very similarly to `with child` and `with descendant`: it declares a nested stateful rule.
+
+For example, let's detect a scenario where `5` bad login attempts occur within `60` seconds.
+
+```
+event: WEL
+op: is windows
+with events:
+  event: WEL
+  op: is
+  path: event/EVENT/System/EventID
+  value: '4625'
+  count: 5
+  within: 60
+```
+
+The top-level rule filters down meaningful events to [`WEL`](/v1/docs/reference-events#WEL) ones sent from Windows sensors using the `is windows` operator, and then it declares a stateful rule inside `with events`. It uses `count` and `within` to declare a suitable timespan to evaluate matching events.
+
+## Stateful Rules
+
+Stateful rules — the rules declared within `with child`, `with descendant` or `with events` — have full range. They can do anything a normal rule might do, including declaring nested stateful rules or using `and`/`or` operators to write more complex rules.
+
+Here's a stateful rule that uses `and` to detect a specific combination of child events:
+
+```
+event: NEW_PROCESS
+op: ends with
+path: event/FILE_PATH
+value: outlook.exe
+case sensitive: false
+with child:
+  op: and
+  rules:
+    - op: ends with
+      event: NEW_PROCESS
+      path: event/FILE_PATH
+      value: chrome.exe
+      case sensitive: false
+    - op: ends with
+      event: NEW_DOCUMENT
+      path: event/FILE_PATH
+      value: .ps1
+      case sensitive: false
+```
+
+The above example is looking for an `outlook.exe` process that spawns a `chrome.exe` process and drops a `.ps1` (powershell) file to disk. Like this:
+
+```
+outlook.exe
+|--+--> chrome.exe
+|--+--> .ps1 file
+```
+
+### Counting Events
+
+Rules declared using `with child` or `with descendant` also have the ability to use `count` and `within` to help scope the events it will statefully match.
+
+For example, a rule that matches on Outlook writing 5 new .ps1 documents within 60 seconds:
+
+```
+event: NEW_PROCESS
+op: ends with
+path: event/FILE_PATH
+value: outlook.exe
+case sensitive: false
+with child:
+  op: ends with
+  event: NEW_DOCUMENT
+  path: event/FILE_PATH
+  value: .ps1
+  case sensitive: false
+  count: 5
+  within: 60
+```
+
+### Choosing Event to Report
+
+A reported detection will include a copy of the event that was detected. When writing detections that match multiple events, the default behavior will be to include a copy of the initial parent event.
+
+In many cases it's more desirable to get the latest event in the chain instead. For this, there's a `report latest event: true` flag that can be set. Piggy-backing on the earlier example:
+
+```
+# Detection
+event: NEW_PROCESS
+op: ends with
+path: event/FILE_PATH
+value: outlook.exe
+case sensitive: false
+report latest event: true
+with child:
+  op: and
+  rules:
+    - op: ends with
+      event: NEW_PROCESS
+      path: event/FILE_PATH
+      value: chrome.exe
+      case sensitive: false
+    - op: ends with
+      event: NEW_DOCUMENT
+      path: event/FILE_PATH
+      value: .ps1
+      case sensitive: false
+
+# Response
+- action: report
+  name: Outlook Spawning Chrome & Powershell
+```
+
+The event returned in the detection will be either the `chrome.exe` `NEW_PROCESS` event or the `.ps1` `NEW_DOCUMENT` event, whichever was last. Without `report latest event: true` being set, it would default to including the `outlook.exe` `NEW PROCESS` event.
+
+## Caveats
+
+### Testing Stateful Rules
+
+Stateful rules are forward-looking only and changing a rule wil reset its state.
+
+Practically speaking, this means that if you change a rule that detects `excel.exe -> cmd.exe`, `excel.exe` will need to be relaunched while the updated rule is running for it to then begin watching for `cmd.exe`.
+
+### Using Events in Actions
+
+Using `report` to report a detection works according to the [Choosing Event to Report](/v1/docs/detecting-related-events#choosing-event-to-report) section earlier. Other actions have a subtle difference: they will *always* observe the latest event in the chain.
+
+Consider the `excel.exe -> cmd.exe` example. The `cmd.exe` event will be referenced inside the response action if using lookbacks (i.e. `<<routing/this>>`). If we wanted to end the `excel.exe` process (and its descendants), we would write a `task` that references the parent of the current event (`cmd.exe`):
+
+```
+- action: task
+  command: deny_tree <<routing/parent>>
+```
+
+---
+
+Was this article helpful?
+
+Yes    No
+
+Thank you for your feedback! Our team will get back to you
+
+How can we improve this article?
+
+Your feedback
+
+[ ]  Need more information
+
+[ ]  Difficult to understand
+
+[ ]  Inaccurate or irrelevant content
+
+[ ]  Missing/broken link
+
+[ ]  Others
+
+Comment
+
+Comment (Optional)
+
+Character limit : 500
+
+Please enter your comment
+
+Email (Optional)
+
+Email
+
+[ ]   Notify me about change
+
+Please enter a valid email
+
+Cancel
+
+---
+
+###### What's Next
+
+* [LimaCharlie Query Language](/v1/docs/detection-and-response-limacharlie-query-language)
+
+Table of contents
+
++ [Overview](#overview)
++ [Detecting Children / Descendants](#detecting-children-descendants)
++ [Detecting Proximal Events](#detecting-proximal-events)
++ [Stateful Rules](#stateful-rules)
++ [Caveats](#caveats)

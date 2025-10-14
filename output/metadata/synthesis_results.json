@@ -1,0 +1,2168 @@
+{
+  "tasks": [
+    {
+      "topic": "adapter-deployment",
+      "source_slugs": [
+        "adapter-deployment"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/adapter-deployment.md"
+    },
+    {
+      "topic": "stdin-adapter-examples",
+      "source_slugs": [
+        "adapter-examples-stdin",
+        "en-adapter-examples-stdin"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/stdin-adapter-examples.md"
+    },
+    {
+      "topic": "stdin-json-adapter-examples",
+      "source_slugs": [
+        "adapter-examples-stdin-json"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/stdin-json-adapter-examples.md"
+    },
+    {
+      "topic": "windows-event-logs-adapter-examples",
+      "source_slugs": [
+        "adapter-examples-windows-event-logs",
+        "en-adapter-examples-windows-event-logs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/windows-event-logs-adapter-examples.md"
+    },
+    {
+      "topic": "adapter-examples-overview",
+      "source_slugs": [
+        "adapter-examples"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/adapter-examples-overview.md"
+    },
+    {
+      "topic": "adapter-tutorials",
+      "source_slugs": [
+        "adapter-tutorials"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/adapter-tutorials.md"
+    },
+    {
+      "topic": "agent-deployment",
+      "source_slugs": [
+        "agent-deployment-microsoft-intune",
+        "en-agent-deployment-microsoft-intune"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/agent-deployment.md"
+    },
+    {
+      "topic": "building-a",
+      "source_slugs": [
+        "building-a-custom-msi-installer-for-windows",
+        "en-building-a-custom-msi-installer-for-windows"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/building-a.md"
+    },
+    {
+      "topic": "building-the",
+      "source_slugs": [
+        "building-the-user-interface",
+        "en-building-the-user-interface"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/building-the.md"
+    },
+    {
+      "topic": "chrome-agent",
+      "source_slugs": [
+        "chrome-agent-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/chrome-agent.md"
+    },
+    {
+      "topic": "chrome-enterprise",
+      "source_slugs": [
+        "chrome-enterprise"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/chrome-enterprise.md"
+    },
+    {
+      "topic": "clone-macos",
+      "source_slugs": [
+        "clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer",
+        "en-clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/clone-macos.md"
+    },
+    {
+      "topic": "create-a",
+      "source_slugs": [
+        "create-a-dr-rule-using-a-threat-feed",
+        "en-create-a-dr-rule-using-a-threat-feed"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/create-a.md"
+    },
+    {
+      "topic": "edge-agent",
+      "source_slugs": [
+        "edge-agent-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/edge-agent.md"
+    },
+    {
+      "topic": "adapter-usage",
+      "source_slugs": [
+        "en-adapter-usage"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/adapter-usage.md"
+    },
+    {
+      "topic": "en-endpoint-agent-installation",
+      "source_slugs": [
+        "en-endpoint-agent-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/en-endpoint-agent-installation.md"
+    },
+    {
+      "topic": "endpoint-agent-installation",
+      "source_slugs": [
+        "endpoint-agent-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/endpoint-agent-installation.md"
+    },
+    {
+      "topic": "endpoint-agent-uninstallation",
+      "source_slugs": [
+        "endpoint-agent-uninstallation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/endpoint-agent-uninstallation.md"
+    },
+    {
+      "topic": "hayabusa-to",
+      "source_slugs": [
+        "en-hayabusa-to-bigquery",
+        "hayabusa-to-bigquery"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/hayabusa-to.md"
+    },
+    {
+      "topic": "ingesting-defender",
+      "source_slugs": [
+        "en-ingesting-defender-event-logs",
+        "ingesting-defender-event-logs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/ingesting-defender.md"
+    },
+    {
+      "topic": "installation-keys",
+      "source_slugs": [
+        "en-installation-keys",
+        "installation-keys"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/installation-keys.md"
+    },
+    {
+      "topic": "installing-macos",
+      "source_slugs": [
+        "en-installing-macos-agents-via-jamf-now",
+        "installing-macos-agents-via-jamf-now"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/installing-macos.md"
+    },
+    {
+      "topic": "linux-agent",
+      "source_slugs": [
+        "en-linux-agent-installation",
+        "linux-agent-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/linux-agent.md"
+    },
+    {
+      "topic": "macos-agent-mdm-deployment",
+      "source_slugs": [
+        "en-macos-agent-installation-mdm-configuration-profiles",
+        "macos-agent-installation-mdm-configuration-profiles",
+        "macos-agent-installation-via-microsoft-intune"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/macos-agent-mdm-deployment.md"
+    },
+    {
+      "topic": "macos-agent-version-specific-installation",
+      "source_slugs": [
+        "en-macos-agent-installation-older-versions",
+        "macos-agent-installation-latest-os-versions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/macos-agent-version-specific-installation.md"
+    },
+    {
+      "topic": "macos-agent-general-overview",
+      "source_slugs": [
+        "macos-agent-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/macos-agent-general-overview.md"
+    },
+    {
+      "topic": "output-allowlisting",
+      "source_slugs": [
+        "en-output-allowlisting",
+        "output-allowlisting"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/output-allowlisting.md"
+    },
+    {
+      "topic": "reporting",
+      "source_slugs": [
+        "en-reporting",
+        "reporting"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/reporting.md"
+    },
+    {
+      "topic": "sleeper",
+      "source_slugs": [
+        "en-sleeper",
+        "sleeper"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/sleeper.md"
+    },
+    {
+      "topic": "ingesting-linux",
+      "source_slugs": [
+        "ingesting-linux-audit-logs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/ingesting-linux.md"
+    },
+    {
+      "topic": "ingesting-macos",
+      "source_slugs": [
+        "ingesting-macos-unified-logs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/ingesting-macos.md"
+    },
+    {
+      "topic": "ingesting-sysmon",
+      "source_slugs": [
+        "ingesting-sysmon-event-logs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/ingesting-sysmon.md"
+    },
+    {
+      "topic": "ingesting-windows",
+      "source_slugs": [
+        "ingesting-windows-event-logs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/ingesting-windows.md"
+    },
+    {
+      "topic": "logcollectionguide",
+      "source_slugs": [
+        "logcollectionguide"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/logcollectionguide.md"
+    },
+    {
+      "topic": "lookups",
+      "source_slugs": [
+        "lookups"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/lookups.md"
+    },
+    {
+      "topic": "sensor-removal",
+      "source_slugs": [
+        "sensor-removal"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/sensor-removal.md"
+    },
+    {
+      "topic": "test-a",
+      "source_slugs": [
+        "test-a-new-sensor-version"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/test-a.md"
+    },
+    {
+      "topic": "testing-outputs",
+      "source_slugs": [
+        "testing-outputs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/testing-outputs.md"
+    },
+    {
+      "topic": "tutorial-creating",
+      "source_slugs": [
+        "tutorial-creating-a-webhook-adapter"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/tutorial-creating.md"
+    },
+    {
+      "topic": "tutorial-ingesting",
+      "source_slugs": [
+        "tutorial-ingesting-google-cloud-logs",
+        "tutorial-ingesting-telemetry-from-cloud-based-external-sources"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/tutorial-ingesting.md"
+    },
+    {
+      "topic": "tutorials-integratons",
+      "source_slugs": [
+        "tutorials-integratons-virustotal-integration"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/tutorials-integratons.md"
+    },
+    {
+      "topic": "updating-sensors",
+      "source_slugs": [
+        "updating-sensors-to-the-newest-version"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/updating-sensors.md"
+    },
+    {
+      "topic": "velociraptor-to",
+      "source_slugs": [
+        "velociraptor-to-bigquery",
+        "en-velociraptor-to-bigquery"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/velociraptor-to.md"
+    },
+    {
+      "topic": "windows-agent",
+      "source_slugs": [
+        "windows-agent-installation",
+        "en-windows-agent-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/windows-agent.md"
+    },
+    {
+      "topic": "writing-and",
+      "source_slugs": [
+        "writing-and-testing-rules",
+        "en-writing-and-testing-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/writing-and.md"
+    },
+    {
+      "topic": "tutorials-reporting",
+      "source_slugs": [
+        "en-tutorials-reporting-building-reports-with-bigquery-looker-studio"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/tasks/tutorials-reporting.md"
+    }
+  ],
+  "concepts": [
+    {
+      "topic": "access-and",
+      "source_slugs": [
+        "access-and-permissions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/access-and.md"
+    },
+    {
+      "topic": "adapters",
+      "source_slugs": [
+        "adapters"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/adapters.md"
+    },
+    {
+      "topic": "adapters-as",
+      "source_slugs": [
+        "adapters-as-a-service"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/adapters-as.md"
+    },
+    {
+      "topic": "add-ons",
+      "source_slugs": [
+        "add-ons"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/add-ons.md"
+    },
+    {
+      "topic": "ai-agent",
+      "source_slugs": [
+        "ai-agent-engine"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/ai-agent.md"
+    },
+    {
+      "topic": "artifacts",
+      "source_slugs": [
+        "artifacts"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/artifacts.md"
+    },
+    {
+      "topic": "billing",
+      "source_slugs": [
+        "billing"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/billing.md"
+    },
+    {
+      "topic": "billing-options",
+      "source_slugs": [
+        "billing-options"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/billing-options.md"
+    },
+    {
+      "topic": "binlib",
+      "source_slugs": [
+        "binlib"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/binlib.md"
+    },
+    {
+      "topic": "build-cti",
+      "source_slugs": [
+        "build-cti-capabilities",
+        "en-build-cti-capabilities"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/build-cti.md"
+    },
+    {
+      "topic": "building-extensions",
+      "source_slugs": [
+        "building-extensions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/building-extensions.md"
+    },
+    {
+      "topic": "building-products",
+      "source_slugs": [
+        "building-products",
+        "en-building-products"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/building-products.md"
+    },
+    {
+      "topic": "chromeos-support",
+      "source_slugs": [
+        "chromeos-support"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/chromeos-support.md"
+    },
+    {
+      "topic": "cloud-security",
+      "source_slugs": [
+        "cloud-security",
+        "en-cloud-security"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/cloud-security.md"
+    },
+    {
+      "topic": "community-rules",
+      "source_slugs": [
+        "community-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/community-rules.md"
+    },
+    {
+      "topic": "config-hive",
+      "source_slugs": [
+        "config-hive"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/config-hive.md"
+    },
+    {
+      "topic": "en-config-hive-dr-rules",
+      "source_slugs": [
+        "en-config-hive-dr-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/en-config-hive-dr-rules.md"
+    },
+    {
+      "topic": "en-config-hive-yara",
+      "source_slugs": [
+        "en-config-hive-yara"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/en-config-hive-yara.md"
+    },
+    {
+      "topic": "container-clusters",
+      "source_slugs": [
+        "container-clusters"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/container-clusters.md"
+    },
+    {
+      "topic": "cost-effective",
+      "source_slugs": [
+        "cost-effective-siem"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/cost-effective.md"
+    },
+    {
+      "topic": "detecting-related",
+      "source_slugs": [
+        "detecting-related-events"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/detecting-related.md"
+    },
+    {
+      "topic": "detection-and",
+      "source_slugs": [
+        "detection-and-response"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/detection-and.md"
+    },
+    {
+      "topic": "detection-on",
+      "source_slugs": [
+        "detection-on-alternate-targets"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/detection-on.md"
+    },
+    {
+      "topic": "developer-grant",
+      "source_slugs": [
+        "developer-grant-program",
+        "en-developer-grant-program"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/developer-grant.md"
+    },
+    {
+      "topic": "endpoint-agent",
+      "source_slugs": [
+        "en-endpoint-agent",
+        "endpoint-agent"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/endpoint-agent.md"
+    },
+    {
+      "topic": "endpoint-detection",
+      "source_slugs": [
+        "en-endpoint-detection-and-response-edr",
+        "endpoint-detection-and-response-edr"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/endpoint-detection.md"
+    },
+    {
+      "topic": "enerprises",
+      "source_slugs": [
+        "en-enerprises",
+        "enerprises"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/enerprises.md"
+    },
+    {
+      "topic": "event-schemas",
+      "source_slugs": [
+        "en-event-schemas",
+        "event-schemas"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/event-schemas.md"
+    },
+    {
+      "topic": "false-positive",
+      "source_slugs": [
+        "en-false-positive-rules",
+        "false-positive-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/false-positive.md"
+    },
+    {
+      "topic": "file-and",
+      "source_slugs": [
+        "en-file-and-registry-integrity-monitoring-fim-deployments",
+        "file-and-registry-integrity-monitoring-fim-deployments"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/file-and.md"
+    },
+    {
+      "topic": "incident-response",
+      "source_slugs": [
+        "en-incident-response",
+        "incident-response"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/incident-response.md"
+    },
+    {
+      "topic": "mcp-server",
+      "source_slugs": [
+        "en-mcp-server",
+        "mcp-server"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/mcp-server.md"
+    },
+    {
+      "topic": "observability-pipeline",
+      "source_slugs": [
+        "en-observability-pipeline",
+        "observability-pipeline"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/observability-pipeline.md"
+    },
+    {
+      "topic": "purple-teaming",
+      "source_slugs": [
+        "en-purple-teaming",
+        "purple-teaming"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/purple-teaming.md"
+    },
+    {
+      "topic": "security-monitoring",
+      "source_slugs": [
+        "en-security-monitoring-for-devops",
+        "security-monitoring-for-devops"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/security-monitoring.md"
+    },
+    {
+      "topic": "service-providers",
+      "source_slugs": [
+        "en-service-providers-mssp-msp-mdr",
+        "service-providers-mssp-msp-mdr"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/service-providers.md"
+    },
+    {
+      "topic": "sleeper",
+      "source_slugs": [
+        "en-sleeper"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sleeper.md"
+    },
+    {
+      "topic": "soar-automation",
+      "source_slugs": [
+        "en-soar-automation",
+        "soar-automation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/soar-automation.md"
+    },
+    {
+      "topic": "stateful-rules",
+      "source_slugs": [
+        "en-stateful-rules",
+        "stateful-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/stateful-rules.md"
+    },
+    {
+      "topic": "sysmon-comparison",
+      "source_slugs": [
+        "en-sysmon-comparison",
+        "sysmon-comparison"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sysmon-comparison.md"
+    },
+    {
+      "topic": "table-top",
+      "source_slugs": [
+        "en-table-top-exercises",
+        "table-top-exercises"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/table-top.md"
+    },
+    {
+      "topic": "events",
+      "source_slugs": [
+        "events"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/events.md"
+    },
+    {
+      "topic": "extensions",
+      "source_slugs": [
+        "extensions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/extensions.md"
+    },
+    {
+      "topic": "hostname-resolution",
+      "source_slugs": [
+        "hostname-resolution"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/hostname-resolution.md"
+    },
+    {
+      "topic": "infrastructure-as",
+      "source_slugs": [
+        "infrastructure-as-code"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/infrastructure-as.md"
+    },
+    {
+      "topic": "lcql",
+      "source_slugs": [
+        "lcql"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/lcql.md"
+    },
+    {
+      "topic": "limacharlie-core",
+      "source_slugs": [
+        "limacharlie-core-concepts"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/limacharlie-core.md"
+    },
+    {
+      "topic": "limacharlie-sdk",
+      "source_slugs": [
+        "limacharlie-sdk"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/limacharlie-sdk.md"
+    },
+    {
+      "topic": "ma-cyber",
+      "source_slugs": [
+        "ma-cyber-due-diligence"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/ma-cyber.md"
+    },
+    {
+      "topic": "managed-rulesets",
+      "source_slugs": [
+        "managed-rulesets"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/managed-rulesets.md"
+    },
+    {
+      "topic": "network-monitoring",
+      "source_slugs": [
+        "network-monitoring"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/network-monitoring.md"
+    },
+    {
+      "topic": "output-billing",
+      "source_slugs": [
+        "output-billing"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/output-billing.md"
+    },
+    {
+      "topic": "outputs",
+      "source_slugs": [
+        "outputs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/outputs.md"
+    },
+    {
+      "topic": "payload-manager",
+      "source_slugs": [
+        "payload-manager"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/payload-manager.md"
+    },
+    {
+      "topic": "payloads",
+      "source_slugs": [
+        "payloads"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/payloads.md"
+    },
+    {
+      "topic": "platform-management",
+      "source_slugs": [
+        "platform-management"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/platform-management.md"
+    },
+    {
+      "topic": "playbook",
+      "source_slugs": [
+        "playbook"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/playbook.md"
+    },
+    {
+      "topic": "query-console",
+      "source_slugs": [
+        "query-console-ui"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/query-console.md"
+    },
+    {
+      "topic": "quickstart",
+      "source_slugs": [
+        "quickstart"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/quickstart.md"
+    },
+    {
+      "topic": "replay",
+      "source_slugs": [
+        "replay"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/replay.md"
+    },
+    {
+      "topic": "sensor-connectivity",
+      "source_slugs": [
+        "sensor-connectivity"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sensor-connectivity.md"
+    },
+    {
+      "topic": "sensor-tags",
+      "source_slugs": [
+        "sensor-tags"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sensor-tags.md"
+    },
+    {
+      "topic": "sensors",
+      "source_slugs": [
+        "sensors"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sensors.md"
+    },
+    {
+      "topic": "sensors-operating",
+      "source_slugs": [
+        "sensors-operating-systems-macos"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sensors-operating.md"
+    },
+    {
+      "topic": "sensors-sensor",
+      "source_slugs": [
+        "sensors-sensor-commands"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sensors-sensor.md"
+    },
+    {
+      "topic": "sigma-converter",
+      "source_slugs": [
+        "sigma-converter"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sigma-converter.md"
+    },
+    {
+      "topic": "single-sign",
+      "source_slugs": [
+        "single-sign-on"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/single-sign.md"
+    },
+    {
+      "topic": "sleeper-mode",
+      "source_slugs": [
+        "sleeper-mode"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/sleeper-mode.md"
+    },
+    {
+      "topic": "soc-prime",
+      "source_slugs": [
+        "soc-prime-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/soc-prime.md"
+    },
+    {
+      "topic": "soteria-rules",
+      "source_slugs": [
+        "soteria-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/soteria-rules.md"
+    },
+    {
+      "topic": "telemetry-artifacts",
+      "source_slugs": [
+        "telemetry-artifacts"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/telemetry-artifacts.md"
+    },
+    {
+      "topic": "telemetry-sensors",
+      "source_slugs": [
+        "telemetry-sensors",
+        "telemetry-sensors-uninstallation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/telemetry-sensors.md"
+    },
+    {
+      "topic": "threat-hunting",
+      "source_slugs": [
+        "threat-hunting"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/threat-hunting.md"
+    },
+    {
+      "topic": "uncovering-adversary",
+      "source_slugs": [
+        "uncovering-adversary-techniques"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/uncovering-adversary.md"
+    },
+    {
+      "topic": "unit-tests",
+      "source_slugs": [
+        "unit-tests"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/unit-tests.md"
+    },
+    {
+      "topic": "use-cases",
+      "source_slugs": [
+        "use-cases"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/use-cases.md"
+    },
+    {
+      "topic": "using-extensions",
+      "source_slugs": [
+        "using-extensions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/using-extensions.md"
+    },
+    {
+      "topic": "wel-monitoring",
+      "source_slugs": [
+        "wel-monitoring"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/wel-monitoring.md"
+    },
+    {
+      "topic": "what-is",
+      "source_slugs": [
+        "what-is-limacharlie"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/what-is.md"
+    },
+    {
+      "topic": "tags-ChromeOS",
+      "source_slugs": [
+        "en-tags-ChromeOS"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-ChromeOS.md"
+    },
+    {
+      "topic": "tags-DevOps",
+      "source_slugs": [
+        "en-tags-DevOps"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-DevOps.md"
+    },
+    {
+      "topic": "tags-EDR",
+      "source_slugs": [
+        "en-tags-EDR"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-EDR.md"
+    },
+    {
+      "topic": "tags-FIM",
+      "source_slugs": [
+        "en-tags-FIM"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-FIM.md"
+    },
+    {
+      "topic": "tags-LimaCharlie",
+      "source_slugs": [
+        "en-tags-LimaCharlie"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-LimaCharlie.md"
+    },
+    {
+      "topic": "tags-MDR",
+      "source_slugs": [
+        "en-tags-MDR"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-MDR.md"
+    },
+    {
+      "topic": "tags-MSP",
+      "source_slugs": [
+        "en-tags-MSP"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-MSP.md"
+    },
+    {
+      "topic": "tags-MSSP",
+      "source_slugs": [
+        "en-tags-MSSP"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-MSSP.md"
+    },
+    {
+      "topic": "tags-SIEM",
+      "source_slugs": [
+        "en-tags-SIEM"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-SIEM.md"
+    },
+    {
+      "topic": "tags-SOC",
+      "source_slugs": [
+        "en-tags-SOC"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-SOC.md"
+    },
+    {
+      "topic": "tags-SecOps",
+      "source_slugs": [
+        "en-tags-SecOps"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-SecOps.md"
+    },
+    {
+      "topic": "tags-WEL",
+      "source_slugs": [
+        "en-tags-WEL"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-WEL.md"
+    },
+    {
+      "topic": "tags-adapters",
+      "source_slugs": [
+        "en-tags-adapters"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-adapters.md"
+    },
+    {
+      "topic": "tags-add",
+      "source_slugs": [
+        "en-tags-add-ons",
+        "tags-add-ons"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-add.md"
+    },
+    {
+      "topic": "tags-api",
+      "source_slugs": [
+        "en-tags-api",
+        "tags-api"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-api.md"
+    },
+    {
+      "topic": "tags-automation",
+      "source_slugs": [
+        "en-tags-automation",
+        "tags-automation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-automation.md"
+    },
+    {
+      "topic": "tags-aws",
+      "source_slugs": [
+        "en-tags-aws",
+        "tags-aws"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-aws.md"
+    },
+    {
+      "topic": "tags-browser%20agent",
+      "source_slugs": [
+        "en-tags-browser%20agent"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-browser%20agent.md"
+    },
+    {
+      "topic": "tags-cloud",
+      "source_slugs": [
+        "en-tags-cloud",
+        "tags-cloud"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-cloud.md"
+    },
+    {
+      "topic": "tags-defender",
+      "source_slugs": [
+        "en-tags-defender",
+        "tags-defender"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-defender.md"
+    },
+    {
+      "topic": "tags-detection%20and%20response",
+      "source_slugs": [
+        "en-tags-detection%20and%20response"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-detection%20and%20response.md"
+    },
+    {
+      "topic": "tags-development",
+      "source_slugs": [
+        "en-tags-development",
+        "tags-development"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-development.md"
+    },
+    {
+      "topic": "tags-dfir",
+      "source_slugs": [
+        "en-tags-dfir",
+        "tags-dfir"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-dfir.md"
+    },
+    {
+      "topic": "tags-endpoint%20agent",
+      "source_slugs": [
+        "en-tags-endpoint%20agent"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-endpoint%20agent.md"
+    },
+    {
+      "topic": "tags-enterprise",
+      "source_slugs": [
+        "en-tags-enterprise",
+        "tags-enterprise"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-enterprise.md"
+    },
+    {
+      "topic": "tags-epp",
+      "source_slugs": [
+        "en-tags-epp",
+        "tags-epp"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-epp.md"
+    },
+    {
+      "topic": "tags-events",
+      "source_slugs": [
+        "en-tags-events"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-events.md"
+    },
+    {
+      "topic": "tags-extensions",
+      "source_slugs": [
+        "en-tags-extensions",
+        "tags-extensions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-extensions.md"
+    },
+    {
+      "topic": "tags-faq",
+      "source_slugs": [
+        "en-tags-faq",
+        "tags-faq"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-faq.md"
+    },
+    {
+      "topic": "tags-gcp",
+      "source_slugs": [
+        "en-tags-gcp",
+        "tags-gcp"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-gcp.md"
+    },
+    {
+      "topic": "tags-google%20workspace",
+      "source_slugs": [
+        "en-tags-google%20workspace"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-google%20workspace.md"
+    },
+    {
+      "topic": "tags-linux",
+      "source_slugs": [
+        "en-tags-linux",
+        "tags-linux"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-linux.md"
+    },
+    {
+      "topic": "tags-lookups",
+      "source_slugs": [
+        "en-tags-lookups",
+        "tags-lookups"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-lookups.md"
+    },
+    {
+      "topic": "tags-m365",
+      "source_slugs": [
+        "en-tags-m365"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-m365.md"
+    },
+    {
+      "topic": "tags-macos",
+      "source_slugs": [
+        "en-tags-macos",
+        "tags-macos"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-macos.md"
+    },
+    {
+      "topic": "tags-mergers%20and%20acquisitions",
+      "source_slugs": [
+        "en-tags-mergers%20and%20acquisitions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-mergers%20and%20acquisitions.md"
+    },
+    {
+      "topic": "tags-monitoring",
+      "source_slugs": [
+        "en-tags-monitoring"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-monitoring.md"
+    },
+    {
+      "topic": "tags-observability",
+      "source_slugs": [
+        "en-tags-observability",
+        "tags-observability"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-observability.md"
+    },
+    {
+      "topic": "tags-pipeline",
+      "source_slugs": [
+        "en-tags-pipeline",
+        "tags-pipeline"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-pipeline.md"
+    },
+    {
+      "topic": "tags-sensors",
+      "source_slugs": [
+        "en-tags-sensors",
+        "tags-sensors"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-sensors.md"
+    },
+    {
+      "topic": "tags-tabletop",
+      "source_slugs": [
+        "en-tags-tabletop"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-tabletop.md"
+    },
+    {
+      "topic": "tags-telemetry",
+      "source_slugs": [
+        "en-tags-telemetry"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-telemetry.md"
+    },
+    {
+      "topic": "tags-tutorial",
+      "source_slugs": [
+        "en-tags-tutorial",
+        "tags-tutorial"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-tutorial.md"
+    },
+    {
+      "topic": "tags-windows",
+      "source_slugs": [
+        "en-tags-windows",
+        "tags-windows"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-windows.md"
+    },
+    {
+      "topic": "tags-detection",
+      "source_slugs": [
+        "tags-detection-and-response"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-detection.md"
+    },
+    {
+      "topic": "tags-endpoint",
+      "source_slugs": [
+        "tags-endpoint-agent"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-endpoint.md"
+    },
+    {
+      "topic": "tags-google",
+      "source_slugs": [
+        "tags-google-workspace"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-google.md"
+    },
+    {
+      "topic": "tags-ir",
+      "source_slugs": [
+        "tags-ir"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-ir.md"
+    },
+    {
+      "topic": "tags-limacharlie",
+      "source_slugs": [
+        "tags-limacharlie"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-limacharlie.md"
+    },
+    {
+      "topic": "tags-mdr",
+      "source_slugs": [
+        "tags-mdr"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-mdr.md"
+    },
+    {
+      "topic": "tags-mergers",
+      "source_slugs": [
+        "tags-mergers-and-acquisitions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-mergers.md"
+    },
+    {
+      "topic": "tags-msp",
+      "source_slugs": [
+        "tags-msp"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-msp.md"
+    },
+    {
+      "topic": "tags-secops",
+      "source_slugs": [
+        "tags-secops"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-secops.md"
+    },
+    {
+      "topic": "tags-wel",
+      "source_slugs": [
+        "tags-wel"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/concepts/tags-wel.md"
+    }
+  ],
+  "reference": [
+    {
+      "topic": "1password",
+      "source_slugs": [
+        "1password",
+        "en-1password"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/1password.md"
+    },
+    {
+      "topic": "adapter-types-aws-cloudtrail",
+      "source_slugs": [
+        "adapter-types-aws-cloudtrail"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-aws-cloudtrail.md"
+    },
+    {
+      "topic": "adapter-types-azure-event-hub",
+      "source_slugs": [
+        "adapter-types-azure-event-hub"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-azure-event-hub.md"
+    },
+    {
+      "topic": "adapter-types-file",
+      "source_slugs": [
+        "adapter-types-file"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-file.md"
+    },
+    {
+      "topic": "adapter-types-google-cloud-pubsub",
+      "source_slugs": [
+        "adapter-types-google-cloud-pubsub"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-google-cloud-pubsub.md"
+    },
+    {
+      "topic": "en-adapter-types-google-cloud-pubsub",
+      "source_slugs": [
+        "en-adapter-types-google-cloud-pubsub"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-google-cloud-pubsub.md"
+    },
+    {
+      "topic": "adapter-types-google-cloud-storage",
+      "source_slugs": [
+        "adapter-types-google-cloud-storage"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-google-cloud-storage.md"
+    },
+    {
+      "topic": "en-adapter-types-google-cloud-storage",
+      "source_slugs": [
+        "en-adapter-types-google-cloud-storage"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-google-cloud-storage.md"
+    },
+    {
+      "topic": "adapter-types-google-workspace",
+      "source_slugs": [
+        "adapter-types-google-workspace"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-google-workspace.md"
+    },
+    {
+      "topic": "en-adapter-types-google-workspace",
+      "source_slugs": [
+        "en-adapter-types-google-workspace"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-google-workspace.md"
+    },
+    {
+      "topic": "adapter-types-hubspot",
+      "source_slugs": [
+        "adapter-types-hubspot"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-hubspot.md"
+    },
+    {
+      "topic": "adapter-types-it-glue",
+      "source_slugs": [
+        "adapter-types-it-glue"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-it-glue.md"
+    },
+    {
+      "topic": "en-adapter-types-it-glue",
+      "source_slugs": [
+        "en-adapter-types-it-glue"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-it-glue.md"
+    },
+    {
+      "topic": "adapter-types-mac-unified-logging",
+      "source_slugs": [
+        "adapter-types-mac-unified-logging"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-mac-unified-logging.md"
+    },
+    {
+      "topic": "en-adapter-types-mac-unified-logging",
+      "source_slugs": [
+        "en-adapter-types-mac-unified-logging"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-mac-unified-logging.md"
+    },
+    {
+      "topic": "adapter-types-microsoft-365",
+      "source_slugs": [
+        "adapter-types-microsoft-365"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-microsoft-365.md"
+    },
+    {
+      "topic": "adapter-types-microsoft-defender",
+      "source_slugs": [
+        "adapter-types-microsoft-defender"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-microsoft-defender.md"
+    },
+    {
+      "topic": "en-adapter-types-microsoft-defender",
+      "source_slugs": [
+        "en-adapter-types-microsoft-defender"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-microsoft-defender.md"
+    },
+    {
+      "topic": "adapter-types-mimecast",
+      "source_slugs": [
+        "adapter-types-mimecast"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-mimecast.md"
+    },
+    {
+      "topic": "adapter-types-okta",
+      "source_slugs": [
+        "adapter-types-okta"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-okta.md"
+    },
+    {
+      "topic": "adapter-types-sqs",
+      "source_slugs": [
+        "adapter-types-sqs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-sqs.md"
+    },
+    {
+      "topic": "en-adapter-types-sqs",
+      "source_slugs": [
+        "en-adapter-types-sqs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-sqs.md"
+    },
+    {
+      "topic": "adapter-types-stdin",
+      "source_slugs": [
+        "adapter-types-stdin"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-stdin.md"
+    },
+    {
+      "topic": "adapter-types-windows-event-log",
+      "source_slugs": [
+        "adapter-types-windows-event-log"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-windows-event-log.md"
+    },
+    {
+      "topic": "en-adapter-types-windows-event-log",
+      "source_slugs": [
+        "en-adapter-types-windows-event-log"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-windows-event-log.md"
+    },
+    {
+      "topic": "adapter-types-zendesk",
+      "source_slugs": [
+        "adapter-types-zendesk"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-types-zendesk.md"
+    },
+    {
+      "topic": "en-adapter-types-evtx",
+      "source_slugs": [
+        "en-adapter-types-evtx"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-evtx.md"
+    },
+    {
+      "topic": "en-adapter-types-iis",
+      "source_slugs": [
+        "en-adapter-types-iis"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-iis.md"
+    },
+    {
+      "topic": "en-adapter-types-sophos",
+      "source_slugs": [
+        "en-adapter-types-sophos"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-sophos.md"
+    },
+    {
+      "topic": "en-adapter-types-sublime-security",
+      "source_slugs": [
+        "en-adapter-types-sublime-security"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-sublime-security.md"
+    },
+    {
+      "topic": "en-adapter-types-syslog",
+      "source_slugs": [
+        "en-adapter-types-syslog"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-adapter-types-syslog.md"
+    },
+    {
+      "topic": "adapter-usage",
+      "source_slugs": [
+        "adapter-usage"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/adapter-usage.md"
+    },
+    {
+      "topic": "api-integrations-ip-geolocation",
+      "source_slugs": [
+        "api-integrations-ip-geolocation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/api-integrations-ip-geolocation.md"
+    },
+    {
+      "topic": "en-api-integrations-ip-geolocation",
+      "source_slugs": [
+        "en-api-integrations-ip-geolocation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-api-integrations-ip-geolocation.md"
+    },
+    {
+      "topic": "api-integrations-virustotal",
+      "source_slugs": [
+        "api-integrations-virustotal"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/api-integrations-virustotal.md"
+    },
+    {
+      "topic": "api-keys",
+      "source_slugs": [
+        "api-keys"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/api-keys.md"
+    },
+    {
+      "topic": "azure-monitor",
+      "source_slugs": [
+        "azure-monitor"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/azure-monitor.md"
+    },
+    {
+      "topic": "azure-sql",
+      "source_slugs": [
+        "azure-sql-audit-logs"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/azure-sql.md"
+    },
+    {
+      "topic": "config-hive",
+      "source_slugs": [
+        "config-hive-cloud-sensors",
+        "config-hive-dr-rules",
+        "config-hive-lookups",
+        "config-hive-secrets",
+        "config-hive-yara"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/config-hive.md"
+    },
+    {
+      "topic": "detection-and",
+      "source_slugs": [
+        "detection-and-response-examples",
+        "en-detection-and-response-examples"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/detection-and.md"
+    },
+    {
+      "topic": "detection-logic",
+      "source_slugs": [
+        "detection-logic-operators",
+        "en-detection-logic-operators"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/detection-logic.md"
+    },
+    {
+      "topic": "endpoint-agent",
+      "source_slugs": [
+        "en-endpoint-agent-commands",
+        "endpoint-agent-commands",
+        "en-endpoint-agent-events-overview",
+        "endpoint-agent-events-overview"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/endpoint-agent.md"
+    },
+    {
+      "topic": "ext-artifact",
+      "source_slugs": [
+        "en-ext-artifact"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-artifact.md"
+    },
+    {
+      "topic": "ext-atomic",
+      "source_slugs": [
+        "en-ext-atomic-red-team"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-atomic.md"
+    },
+    {
+      "topic": "en-ext-cloud-cli-microsoft365",
+      "source_slugs": [
+        "en-ext-cloud-cli-microsoft365"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-ext-cloud-cli-microsoft365.md"
+    },
+    {
+      "topic": "ext-cloud-cli-microsoft365",
+      "source_slugs": [
+        "ext-cloud-cli-microsoft365"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-cloud-cli-microsoft365.md"
+    },
+    {
+      "topic": "ext-cloud-cli",
+      "source_slugs": [
+        "ext-cloud-cli"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-cloud-cli.md"
+    },
+    {
+      "topic": "ext-cloud-cli-1password",
+      "source_slugs": [
+        "ext-cloud-cli-1password"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-cloud-cli-1password.md"
+    },
+    {
+      "topic": "ext-cloud-cli-aws",
+      "source_slugs": [
+        "ext-cloud-cli-aws"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-cloud-cli-aws.md"
+    },
+    {
+      "topic": "ext-exfil",
+      "source_slugs": [
+        "en-ext-exfil",
+        "ext-exfil"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-exfil.md"
+    },
+    {
+      "topic": "ext-govee",
+      "source_slugs": [
+        "en-ext-govee",
+        "ext-govee"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-govee.md"
+    },
+    {
+      "topic": "ext-hayabusa",
+      "source_slugs": [
+        "en-ext-hayabusa"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-hayabusa.md"
+    },
+    {
+      "topic": "ext-infrastructure",
+      "source_slugs": [
+        "en-ext-infrastructure",
+        "ext-infrastructure"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-infrastructure.md"
+    },
+    {
+      "topic": "ext-integrity",
+      "source_slugs": [
+        "en-ext-integrity",
+        "ext-integrity"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-integrity.md"
+    },
+    {
+      "topic": "ext-lookup",
+      "source_slugs": [
+        "en-ext-lookup-manager",
+        "ext-lookup-manager"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-lookup.md"
+    },
+    {
+      "topic": "ext-plaso",
+      "source_slugs": [
+        "en-ext-plaso",
+        "ext-plaso"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-plaso.md"
+    },
+    {
+      "topic": "ext-reliable",
+      "source_slugs": [
+        "en-ext-reliable-tasking",
+        "ext-reliable-tasking"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-reliable.md"
+    },
+    {
+      "topic": "ext-secureannex",
+      "source_slugs": [
+        "en-ext-secureannex"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-secureannex.md"
+    },
+    {
+      "topic": "ext-sensor",
+      "source_slugs": [
+        "en-ext-sensor-cull",
+        "ext-sensor-cull"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-sensor.md"
+    },
+    {
+      "topic": "ext-twilio",
+      "source_slugs": [
+        "en-ext-twilio",
+        "ext-twilio"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-twilio.md"
+    },
+    {
+      "topic": "en-ext-yara",
+      "source_slugs": [
+        "en-ext-yara"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-ext-yara.md"
+    },
+    {
+      "topic": "ext-yara",
+      "source_slugs": [
+        "ext-yara"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-yara.md"
+    },
+    {
+      "topic": "en-ext-yara-manager",
+      "source_slugs": [
+        "en-ext-yara-manager"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-ext-yara-manager.md"
+    },
+    {
+      "topic": "ext-yara-manager",
+      "source_slugs": [
+        "ext-yara-manager"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-yara-manager.md"
+    },
+    {
+      "topic": "ext-zeek",
+      "source_slugs": [
+        "en-ext-zeek",
+        "ext-zeek"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-zeek.md"
+    },
+    {
+      "topic": "faq-billing",
+      "source_slugs": [
+        "en-faq-billing",
+        "faq-billing"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/faq-billing.md"
+    },
+    {
+      "topic": "faq-general",
+      "source_slugs": [
+        "en-faq-general",
+        "faq-general"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/faq-general.md"
+    },
+    {
+      "topic": "faq-invoices",
+      "source_slugs": [
+        "en-faq-invoices"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/faq-invoices.md"
+    },
+    {
+      "topic": "faq-troubleshooting",
+      "source_slugs": [
+        "en-faq-troubleshooting",
+        "faq-troubleshooting"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/faq-troubleshooting.md"
+    },
+    {
+      "topic": "google-cloud-outputs",
+      "source_slugs": [
+        "en-outputs-destinations-google-cloud-bigquery",
+        "outputs-destinations-google-cloud-bigquery",
+        "outputs-destinations-google-cloud-storage"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/google-cloud-outputs.md"
+    },
+    {
+      "topic": "azure-outputs",
+      "source_slugs": [
+        "outputs-destinations-azure-storage-blob"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/azure-outputs.md"
+    },
+    {
+      "topic": "webhook-outputs",
+      "source_slugs": [
+        "outputs-destinations-webhook",
+        "outputs-destinations-webhook-bulk"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/webhook-outputs.md"
+    },
+    {
+      "topic": "syslog-outputs",
+      "source_slugs": [
+        "outputs-destinations-syslog"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/syslog-outputs.md"
+    },
+    {
+      "topic": "payloads",
+      "source_slugs": [
+        "en-payloads"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/payloads.md"
+    },
+    {
+      "topic": "query-console",
+      "source_slugs": [
+        "en-query-console-ui"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/query-console.md"
+    },
+    {
+      "topic": "reference-id",
+      "source_slugs": [
+        "en-reference-id-schema",
+        "reference-id-schema"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-id.md"
+    },
+    {
+      "topic": "reference-platform",
+      "source_slugs": [
+        "en-reference-platform-events",
+        "reference-platform-events"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-platform.md"
+    },
+    {
+      "topic": "replay",
+      "source_slugs": [
+        "en-replay"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/replay.md"
+    },
+    {
+      "topic": "response-actions",
+      "source_slugs": [
+        "en-response-actions",
+        "response-actions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/response-actions.md"
+    },
+    {
+      "topic": "sensor-connectivity",
+      "source_slugs": [
+        "en-sensor-connectivity"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/sensor-connectivity.md"
+    },
+    {
+      "topic": "sigma-converter",
+      "source_slugs": [
+        "en-sigma-converter"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/sigma-converter.md"
+    },
+    {
+      "topic": "soteria-aws",
+      "source_slugs": [
+        "en-soteria-aws-rules",
+        "soteria-aws-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/soteria-aws.md"
+    },
+    {
+      "topic": "soteria-edr",
+      "source_slugs": [
+        "en-soteria-edr-rules",
+        "soteria-edr-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/soteria-edr.md"
+    },
+    {
+      "topic": "soteria-m365",
+      "source_slugs": [
+        "en-soteria-m365-rules",
+        "soteria-m365-rules"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/soteria-m365.md"
+    },
+    {
+      "topic": "template-strings-and-transforms",
+      "source_slugs": [
+        "en-template-strings-and-transforms",
+        "template-strings-and-transforms",
+        "en-template-strings-and-transforms-1",
+        "template-strings-and-transforms-1",
+        "en-template-strings-and-transforms-2",
+        "template-strings-and-transforms-2",
+        "en-template-strings-and-transforms-3"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/template-strings-and-transforms.md"
+    },
+    {
+      "topic": "use-cases",
+      "source_slugs": [
+        "en-use-cases"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/use-cases.md"
+    },
+    {
+      "topic": "vdi-virtual",
+      "source_slugs": [
+        "en-vdi-virtual-machine-templates"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/vdi-virtual.md"
+    },
+    {
+      "topic": "wel-monitoring",
+      "source_slugs": [
+        "en-wel-monitoring"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/wel-monitoring.md"
+    },
+    {
+      "topic": "en-whats-newx",
+      "source_slugs": [
+        "en-whats-newx"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/en-whats-newx.md"
+    },
+    {
+      "topic": "whats-newx-publisheddate=1",
+      "source_slugs": [
+        "whats-newx-publisheddate=1"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/whats-newx-publisheddate=1.md"
+    },
+    {
+      "topic": "whats-newx-publisheddate=30",
+      "source_slugs": [
+        "whats-newx-publisheddate=30"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/whats-newx-publisheddate=30.md"
+    },
+    {
+      "topic": "whats-newx-publisheddate=7",
+      "source_slugs": [
+        "whats-newx-publisheddate=7"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/whats-newx-publisheddate=7.md"
+    },
+    {
+      "topic": "ext-dumper",
+      "source_slugs": [
+        "ext-dumper"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-dumper.md"
+    },
+    {
+      "topic": "ext-epp",
+      "source_slugs": [
+        "ext-epp"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-epp.md"
+    },
+    {
+      "topic": "ext-git",
+      "source_slugs": [
+        "ext-git-sync"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-git.md"
+    },
+    {
+      "topic": "ext-nims",
+      "source_slugs": [
+        "ext-nims"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-nims.md"
+    },
+    {
+      "topic": "ext-renigma",
+      "source_slugs": [
+        "ext-renigma"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-renigma.md"
+    },
+    {
+      "topic": "ext-usage",
+      "source_slugs": [
+        "ext-usage-alerts"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-usage.md"
+    },
+    {
+      "topic": "ext-velociraptor",
+      "source_slugs": [
+        "ext-velociraptor"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/ext-velociraptor.md"
+    },
+    {
+      "topic": "faq-account",
+      "source_slugs": [
+        "faq-account-management"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/faq-account.md"
+    },
+    {
+      "topic": "faq-sensor",
+      "source_slugs": [
+        "faq-sensor-installation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/faq-sensor.md"
+    },
+    {
+      "topic": "lcql-examples",
+      "source_slugs": [
+        "lcql-examples"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/lcql-examples.md"
+    },
+    {
+      "topic": "limacharlie-cli",
+      "source_slugs": [
+        "limacharlie-cli"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/limacharlie-cli.md"
+    },
+    {
+      "topic": "reference-authentication",
+      "source_slugs": [
+        "reference-authentication-resource-locator"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-authentication.md"
+    },
+    {
+      "topic": "reference-error",
+      "source_slugs": [
+        "reference-error-codes"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-error.md"
+    },
+    {
+      "topic": "reference-events",
+      "source_slugs": [
+        "reference-events-responses-anomalies"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-events.md"
+    },
+    {
+      "topic": "reference-permissions",
+      "source_slugs": [
+        "reference-permissions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-permissions.md"
+    },
+    {
+      "topic": "reference-schedule",
+      "source_slugs": [
+        "reference-schedule-events"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-schedule.md"
+    },
+    {
+      "topic": "reference-sensor",
+      "source_slugs": [
+        "reference-sensor-selector-expressions"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/reference-sensor.md"
+    },
+    {
+      "topic": "schema-data",
+      "source_slugs": [
+        "schema-data-types"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/schema-data.md"
+    },
+    {
+      "topic": "sensor-commands-anomalies",
+      "source_slugs": [
+        "sensor-commands-anomalies"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/sensor-commands-anomalies.md"
+    },
+    {
+      "topic": "sensor-commands-documents",
+      "source_slugs": [
+        "sensor-commands-documents"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/sensor-commands-documents.md"
+    },
+    {
+      "topic": "sensor-commands-memory",
+      "source_slugs": [
+        "sensor-commands-memory"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/sensor-commands-memory.md"
+    },
+    {
+      "topic": "sensor-commands-mitigation",
+      "source_slugs": [
+        "sensor-commands-mitigation"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/sensor-commands-mitigation.md"
+    },
+    {
+      "topic": "sensor-commands-registry",
+      "source_slugs": [
+        "sensor-commands-registry"
+      ],
+      "output_path": "/home/maxime/goProjects/github.com/refractionPOINT/documentation/output/topics/reference/sensor-commands-registry.md"
+    }
+  ]
+}

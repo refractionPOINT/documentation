@@ -1,0 +1,20 @@
+# EVTX
+
+## Overview
+
+This Adapter allows you to ingest and convert a `.evtx` file into LimaCharlie. The `.evtx` files are the binary format used by Microsoft for Windows Event Logs. This is useful to ingest historical Windows Event Logs, for example during an Incident Response (IR) engagement.
+
+For real-time collection of Windows Event Logs, see the [Windows Event Logs](/v2/docs/ingesting-windows-event-logs) documentation.
+
+## Configurations
+
+Adapter Type: `evtx`
+
+* `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
+* `file_path`: path to the `.evtx` file to ingest.
+
+## API Doc
+
+See the [unofficial documentation on EVTX](https://www.giac.org/paper/gcia/2999/evtx-windows-event-logging/115806).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

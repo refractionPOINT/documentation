@@ -1,0 +1,2060 @@
+{
+  "tasks/adapter-deployment": {
+    "title": "Adapter Deployment",
+    "description": "Adapters can be deployed in one of two ways:",
+    "word_count": 574,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/adapter-deployment.md"
+  },
+  "tasks/stdin-adapter-examples": {
+    "title": "Stdin Adapter",
+    "description": "The stdin adapter provides a method for ingesting arbitrary logs on disk or from other applications locally using the CLI Adapter's STDIN interface. This approach is similar to the Syslog adapter but ",
+    "word_count": 346,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/stdin-adapter-examples.md"
+  },
+  "tasks/stdin-json-adapter-examples": {
+    "title": "Stdin JSON",
+    "description": "This example is similar to the Stdin example above, except it assumes the data being read is JSON, not just text. If your data source is already JSON, it's much simpler to let LimaCharlie do the JSON ",
+    "word_count": 305,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/stdin-json-adapter-examples.md"
+  },
+  "tasks/windows-event-logs-adapter-examples": {
+    "title": "Windows Event Logs",
+    "description": "These documents are identical duplicates. Here is the synthesized version:",
+    "word_count": 298,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/windows-event-logs-adapter-examples.md"
+  },
+  "tasks/adapter-examples-overview": {
+    "title": "Adapter Examples",
+    "description": "This example is similar to the Syslog example above, except it uses the CLI Adapter and receives the data from the CLI's STDIN interface. This method is perfect for ingesting arbitrary logs on disk or",
+    "word_count": 139,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/adapter-examples-overview.md"
+  },
+  "tasks/adapter-tutorials": {
+    "title": "Adapter Tutorials",
+    "description": "LimaCharlie supports webhooks as a telemetry ingestion method. Webhooks are technically cloud Adapters, as they cannot be deployed on-prem or through the downloadable Adapter binary. Webhook adapters ",
+    "word_count": 170,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/adapter-tutorials.md"
+  },
+  "tasks/agent-deployment": {
+    "title": "Agent Deployment via Microsoft Intune",
+    "description": "These documents are **identical** - they cover the same topic with the same content. Here is the synthesized version:",
+    "word_count": 198,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/agent-deployment.md"
+  },
+  "tasks/building-a": {
+    "title": "Building a Custom MSI Installer for Windows",
+    "description": "You can white label the LimaCharlie installer for Windows by using an MSI wrapper. By going through this process you can not only brand the installer to show your name and details, but you can also ma",
+    "word_count": 535,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/building-a.md"
+  },
+  "tasks/building-the": {
+    "title": "Building the User Interface",
+    "description": "The Extensions UI uses the information provided in the schema to auto-determine its UI elements, and for most simple extensions, the UI will be able to auto conform based on the bare minimum schema de",
+    "word_count": 638,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/building-the.md"
+  },
+  "tasks/chrome-agent": {
+    "title": "Chrome Agent Installation",
+    "description": "LimaCharlie's Chrome Sensor is built as a browser extension and provides visibility for activity performed within the browser. This sensor is particularly useful for gaining affordable network visibil",
+    "word_count": 303,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/chrome-agent.md"
+  },
+  "tasks/chrome-enterprise": {
+    "title": "ChromeOS with Google Chrome Enterprise",
+    "description": "You can mass deploy the LimaCharlie Sensor for ChromeOS with Google Workspace and [Google Chrome Enterprise](https://chromeenterprise.google/).",
+    "word_count": 369,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/chrome-enterprise.md"
+  },
+  "tasks/clone-macos": {
+    "title": "macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)",
+    "description": "This document provides details of how to install, verify, and uninstall the LimaCharlie Endpoint Agent on macOS (versions 15 Sequoia and newer). We also offer separate documentation for older versions",
+    "word_count": 914,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/clone-macos.md"
+  },
+  "tasks/create-a": {
+    "title": "Create a D&R Rule Using a Threat Feed",
+    "description": "A common use case for rules is to use them to compare telemetry against known malicious IPs, domain names, or file hashes via threat feeds. With LimaCharlie, it is easy to leverage public threat feeds",
+    "word_count": 259,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/create-a.md"
+  },
+  "tasks/edge-agent": {
+    "title": "Edge Agent Installation",
+    "description": "LimaCharlie's Edge Sensor is delivered as the [LimaCharlie Sensor](https://microsoftedge.microsoft.com/addons/detail/limacharlie-sensor/nomgmkpkkncolnpbkbamfnjhbhmnjehp) extension, available as an Edg",
+    "word_count": 157,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/edge-agent.md"
+  },
+  "tasks/adapter-usage": {
+    "title": "Adapter Usage",
+    "description": "The Adapter can be used to access many different sources and many different event types. The main mechanisms specifying the source and type of events are:",
+    "word_count": 1763,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/adapter-usage.md"
+  },
+  "tasks/en-endpoint-agent-installation": {
+    "title": "Endpoint Agent Installation",
+    "description": "The Endpoint Agent is signed, and the same for everyone. The endpoint agent's customization, which indicates the owner, is done at installation based on the installation key used. The Installation Key",
+    "word_count": 634,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/en-endpoint-agent-installation.md"
+  },
+  "tasks/endpoint-agent-installation": {
+    "title": "Endpoint Agent Installation",
+    "description": "The Endpoint Agent is signed, and the same for everyone. The endpoint agent's customization, which indicates the owner, is done at installation based on the installation key used. The Installation Key",
+    "word_count": 634,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/endpoint-agent-installation.md"
+  },
+  "tasks/endpoint-agent-uninstallation": {
+    "title": "Endpoint Agent Uninstallation",
+    "description": "There are multiple options available to uninstall the LimaCharlie Sensor, depending on the operating system and/or method of installation. macOS and Windows systems allow for easy uninstallation via s",
+    "word_count": 413,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/endpoint-agent-uninstallation.md"
+  },
+  "tasks/hayabusa-to": {
+    "title": "Hayabusa to BigQuery Integration",
+    "description": "I'll help you synthesize this documentation. Let me first check if there are other related documents in the provided content.",
+    "word_count": 825,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/hayabusa-to.md"
+  },
+  "tasks/ingesting-defender": {
+    "title": "Ingesting Defender Event Logs",
+    "description": "```markdown",
+    "word_count": 153,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/ingesting-defender.md"
+  },
+  "tasks/installation-keys": {
+    "title": "Installation Keys",
+    "description": "Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way t",
+    "word_count": 474,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/installation-keys.md"
+  },
+  "tasks/installing-macos": {
+    "title": "macOS Agent Installation via Jamf Now",
+    "description": "[Jamf Now](https://www.jamf.com/products/jamf-now/) is an MDM solution that provides an easy way to manage Apple devices for small and medium-sized businesses. LimaCharlie sensors can be deployed via ",
+    "word_count": 901,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/installing-macos.md"
+  },
+  "tasks/linux-agent": {
+    "title": "Linux Agent Installation",
+    "description": "The LimaCharlie Linux Sensor interfaces with the kernel to acquire deep visibility into the host's activity while taking measures to preserve the host's performance. We make full use of eBPF, which **",
+    "word_count": 711,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/linux-agent.md"
+  },
+  "tasks/macos-agent-mdm-deployment": {
+    "title": "macOS Agent Installation - MDM Configuration Profiles",
+    "description": "This document provides comprehensive details for deploying the LimaCharlie agent to macOS enterprise fleets (versions 10.15 and newer) using Mobile Device Management (MDM) Configuration Profiles.",
+    "word_count": 803,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/macos-agent-mdm-deployment.md"
+  },
+  "tasks/macos-agent-version-specific-installation": {
+    "title": "macOS Agent Installation Guide",
+    "description": "This comprehensive guide covers installation, verification, and uninstallation of the LimaCharlie sensor across all macOS versions, organized by operating system version.",
+    "word_count": 1190,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/macos-agent-version-specific-installation.md"
+  },
+  "tasks/macos-agent-general-overview": {
+    "title": "macOS Agent Installation",
+    "description": "LimaCharlie's Mac Sensor interfaces with the kernel to acquire deep visibility into the host's activity while taking measures to preserve the host's performance. The Mac sensor currently supports all ",
+    "word_count": 222,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/macos-agent-general-overview.md"
+  },
+  "tasks/output-allowlisting": {
+    "title": "Adding Outputs to an Allow List",
+    "description": "At LimaCharlie, we rely on infrastructure with auto-scalers, and thus do not have static IPs nor a CIDR that you can rely on for an allow list (or \"whitelisting\").",
+    "word_count": 212,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/output-allowlisting.md"
+  },
+  "tasks/reporting": {
+    "title": "Reporting",
+    "description": "LimaCharlie does not include reporting by default, however our granular and customizable Output options allow you to push data to any source and use third-party tools for reporting. In this tutorial, ",
+    "word_count": 57,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/reporting.md"
+  },
+  "tasks/sleeper": {
+    "title": "Sleeper Deployment",
+    "description": "LimaCharlie's usage-based billing enables incident responders to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an Organization's entire fleet and lay do",
+    "word_count": 701,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/sleeper.md"
+  },
+  "tasks/ingesting-linux": {
+    "title": "Ingesting Linux Audit Logs",
+    "description": "One data source of common interest on Linux systems is the `audit.log` file. By default, this file stores entries from the Audit system, which contains information about logins, privilege escalations,",
+    "word_count": 540,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/ingesting-linux.md"
+  },
+  "tasks/ingesting-macos": {
+    "title": "Ingesting MacOS Unified Logs",
+    "description": "You can enable real-time MacOS Unified Logs (MUL) ingestion using the LimaCharlie EDR Sensor.",
+    "word_count": 171,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/ingesting-macos.md"
+  },
+  "tasks/ingesting-sysmon": {
+    "title": "Ingesting Sysmon Event Logs",
+    "description": "Sysmon can be a valuable addition to any defender's toolkit, given it's verbosity and generous log data. It's worth noting that LimaCharlie's native EDR capabilities mirror much of the same telemetry.",
+    "word_count": 370,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/ingesting-sysmon.md"
+  },
+  "tasks/ingesting-windows": {
+    "title": "Ingesting Windows Event Logs",
+    "description": "You can enable real-time Windows Event Log (WEL) ingestion using the LimaCharlie EDR Sensor.",
+    "word_count": 226,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/ingesting-windows.md"
+  },
+  "tasks/logcollectionguide": {
+    "title": "Log Collection Guide",
+    "description": "This guide covers how to collect various Linux system logs into LimaCharlie using USP adapters. LimaCharlie provides flexible log collection capabilities through file monitoring and syslog ingestion.",
+    "word_count": 874,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/logcollectionguide.md"
+  },
+  "tasks/lookups": {
+    "title": "Lookups",
+    "description": "Creating a lookup enables you to create a list that you can use as part of [detection and response rules](/v2/docs/detection-and-response). Once in place, you can refer to it using the `op: lookup` ru",
+    "word_count": 647,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/lookups.md"
+  },
+  "tasks/sensor-removal": {
+    "title": "FAQ - Sensor Removal",
+    "description": "After [performing an uninstallation](https://docs.limacharlie.io/docs/macos-agent-installation-latest-os-versions#uninstallation-flow) of the LimaCharlie Sensor for macOS, you can verify that the proc",
+    "word_count": 312,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/sensor-removal.md"
+  },
+  "tasks/test-a": {
+    "title": "Test a New Sensor Version",
+    "description": "Prior to rolling out a new Sensor version, we recommend testing to ensure everything works as intended within your environment. While we test Sensors before releasing them, we cannot predict every nic",
+    "word_count": 311,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/test-a.md"
+  },
+  "tasks/testing-outputs": {
+    "title": "Testing Outputs",
+    "description": "The easiest way to test if the outputs are configured correctly is to set the stream to `Audit` which will send auditing events about activity around the management of the platform in the cloud. You c",
+    "word_count": 147,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/testing-outputs.md"
+  },
+  "tasks/tutorial-creating": {
+    "title": "Tutorial: Creating a Webhook Adapter",
+    "description": "LimaCharlie supports webhooks as a telemetry ingestion method. Webhooks are technically cloud [Adapters](/v2/docs/adapters), as they cannot be deployed on-prem or through the downloadable Adapter bina",
+    "word_count": 571,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/tutorial-creating.md"
+  },
+  "tasks/tutorial-ingesting": {
+    "title": "Ingesting Telemetry from External Sources",
+    "description": "I'll analyze these two documents to determine if they should be merged or kept separate.",
+    "word_count": 1277,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/tutorial-ingesting.md"
+  },
+  "tasks/tutorials-integratons": {
+    "title": "VirusTotal Integration",
+    "description": "You can easily integrate LimaCharlie with VirusTotal to enhance your data enrichment and detections. You will need a VirusTotal API key in order to utilize this add-on.",
+    "word_count": 163,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/tutorials-integratons.md"
+  },
+  "tasks/updating-sensors": {
+    "title": "Updating Sensors to the Newest Version",
+    "description": "LimaCharlie releases a new version of the Sensor frequently - often every few weeks. However, we give you full control over what sensor version is running in your Organization. Sensors are not updated",
+    "word_count": 261,
+    "has_code_examples": false,
+    "file_path": "output/topics/tasks/updating-sensors.md"
+  },
+  "tasks/velociraptor-to": {
+    "title": "Velociraptor to BigQuery",
+    "description": "Our BigQuery output allows you to send Velociraptor hunt results to a BigQuery table allowing SQL-like queries against the hunt data. This is very similar to using [Velociraptor notebooks](https://doc",
+    "word_count": 863,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/velociraptor-to.md"
+  },
+  "tasks/windows-agent": {
+    "title": "Windows Agent Installation",
+    "description": "Our MSI packages are created programmatically, and thus will have a version of `1.0.0.0` upon compilation and download. Note Sensor versions will reflect the latest version as of the MSI download, and",
+    "word_count": 524,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/windows-agent.md"
+  },
+  "tasks/writing-and": {
+    "title": "Writing and Testing Detection & Response Rules",
+    "description": "Detection & Response (D&R) Rules are similar to Google Cloud Functions or AWS Lambda. They allow you to push D&R rules to the LimaCharlie cloud where the rules will be applied in real-time to data com",
+    "word_count": 2257,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/writing-and.md"
+  },
+  "tasks/tutorials-reporting": {
+    "title": "Building Reports with BigQuery + Looker Studio",
+    "description": "LimaCharlie does not include reporting by default, however our granular and customizable [Output](/v2/docs/outputs) options allow you to push data to any source and use third-party tools for reporting",
+    "word_count": 690,
+    "has_code_examples": true,
+    "file_path": "output/topics/tasks/tutorials-reporting.md"
+  },
+  "concepts/access-and": {
+    "title": "Access and Permissions",
+    "description": "LimaCharlie is [multi-tenant](https://en.wikipedia.org/wiki/Multitenancy); tenants are called Organizations and both data and billing are tied to the Organization.",
+    "word_count": 207,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/access-and.md"
+  },
+  "concepts/adapters": {
+    "title": "Adapters",
+    "description": "The LimaCharlie Adapter provides real-time ingestion of logs and other telemetry. Adapters allow you to send *any* data to LimaCharlie, which becomes an observable telemetry stream. All ingested data ",
+    "word_count": 448,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/adapters.md"
+  },
+  "concepts/adapters-as": {
+    "title": "Adapters as a Service",
+    "description": "In some cases, users may need to install the LimaCharlie Adapter with persistence, to ensure that data collection survives a reboot and/or other disruptions.",
+    "word_count": 375,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/adapters-as.md"
+  },
+  "concepts/add-ons": {
+    "title": "Add-Ons",
+    "description": "LimaCharlie allows you to extend the capability of the platform via various add-ons. These can be enabled via the add-ons marketplace.",
+    "word_count": 405,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/add-ons.md"
+  },
+  "concepts/ai-agent": {
+    "title": "AI Agent Engine [LABS]",
+    "description": "The AI Agent Engine Extension allows you to easily codify and execute AI Agents within the context of your Organization with access to the LimaCharlie APIs for investigation, remediation and automatio",
+    "word_count": 787,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/ai-agent.md"
+  },
+  "concepts/artifacts": {
+    "title": "Artifacts",
+    "description": "The Artifact Collection system allows you to ingest artifact types like:",
+    "word_count": 1856,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/artifacts.md"
+  },
+  "concepts/billing": {
+    "title": "Billing",
+    "description": "Billing in LimaCharlie is done on monthly cycles and per-Organization (multi-tenant). Sensors can be billed on a quota, set within the organization, or billed on a usage basis.",
+    "word_count": 870,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/billing.md"
+  },
+  "concepts/billing-options": {
+    "title": "Billing Options",
+    "description": "LimaCharlie users have multiple billing options available to them, depending on their unique needs. We'll walk through these two options, *Default Billing* and *Unified Billing*, below.",
+    "word_count": 737,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/billing-options.md"
+  },
+  "concepts/binlib": {
+    "title": "BinLib",
+    "description": "Binary Library, or \"BinLib\", is a collection of executable binaries (such as EXE or ELF files) that have been observed within your environment. If enabled, this Extension helps you build your own priv",
+    "word_count": 741,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/binlib.md"
+  },
+  "concepts/build-cti": {
+    "title": "Build CTI Capabilities",
+    "description": "Ready to ditch the data silos and blind spots? LimaCharlie empowers you with a centralized intelligence hub, seamless integrations, BinLib, your own private VirusTotal-like solution, and the unparalle",
+    "word_count": 306,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/build-cti.md"
+  },
+  "concepts/building-extensions": {
+    "title": "Building Extensions",
+    "description": "Building functionality as a LimaCharlie Extension provides you specific convenience:",
+    "word_count": 1697,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/building-extensions.md"
+  },
+  "concepts/building-products": {
+    "title": "Building Products on the SecOps Cloud Platform",
+    "description": "The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.",
+    "word_count": 1446,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/building-products.md"
+  },
+  "concepts/chromeos-support": {
+    "title": "ChromeOS Support",
+    "description": "Gain visibility in your Chrome fleet and enhance ChromeOS security to unify endpoint protection across your organization with LimaCharlie's comprehensive, centralized, and adaptable platform.",
+    "word_count": 258,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/chromeos-support.md"
+  },
+  "concepts/cloud-security": {
+    "title": "Cloud Security",
+    "description": "These documents are identical duplicates covering the same Cloud Security topic. Here is the synthesized content:",
+    "word_count": 278,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/cloud-security.md"
+  },
+  "concepts/community-rules": {
+    "title": "Community Rules",
+    "description": "The LimaCharlie Endpoint Agent is a cross platform endpoint Sensor. It is a low-level, light-weight sensor which executes detection and response functionality in real-time.",
+    "word_count": 618,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/community-rules.md"
+  },
+  "concepts/config-hive": {
+    "title": "Config Hive",
+    "description": "The Config Hive, or \"Hive\", is the main configuration system for LimaCharlie. It is a generic set of APIs using by LimaCharlie to maintain the configuration of various systems within the platform. We ",
+    "word_count": 884,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/config-hive.md"
+  },
+  "concepts/en-config-hive-dr-rules": {
+    "title": "Config Hive: Detection & Response Rules",
+    "description": "There are three \"sub-categories\" within detection and response rules contained in Hive.",
+    "word_count": 334,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/en-config-hive-dr-rules.md"
+  },
+  "concepts/en-config-hive-yara": {
+    "title": "Config Hive: Yara",
+    "description": "A yara record in `hive` has a very basic format:",
+    "word_count": 329,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/en-config-hive-yara.md"
+  },
+  "concepts/container-clusters": {
+    "title": "Container Clusters",
+    "description": "You can also run LimaCharlie at the host level in a container cluster system like Kubernetes in order to monitor all running containers on the host with a single Sensor. In fact, this is the preferred",
+    "word_count": 732,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/container-clusters.md"
+  },
+  "concepts/cost-effective": {
+    "title": "Cost Effective SIEM Alternative",
+    "description": "LimaCharlie's SecOps Cloud Platform provides a cost-effective and flexible alternative or supplement to traditional Security Information and Event Management (SIEM) offering essential capabilities whi",
+    "word_count": 391,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/cost-effective.md"
+  },
+  "concepts/detecting-related": {
+    "title": "Detecting Related Events",
+    "description": "> It's recommended to first read [Detection & Response rules](/v1/docs/detection-and-response) before diving into detecting related events.",
+    "word_count": 856,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/detecting-related.md"
+  },
+  "concepts/detection-and": {
+    "title": "Detection and Response",
+    "description": "Detection & Response rules automate actions based on the real-time events streaming into LimaCharlie. Each rule has two YAML descriptors: one that describes what to detect, and another that describes ",
+    "word_count": 1719,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/detection-and.md"
+  },
+  "concepts/detection-on": {
+    "title": "Detection on Alternate Targets",
+    "description": "Detection & Response rules run against `edr` events by default, however, there are 7 other targets:",
+    "word_count": 757,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/detection-on.md"
+  },
+  "concepts/developer-grant": {
+    "title": "Developer Grant Program",
+    "description": "The Developer Grant Program is designed to help fuel the growth of LimaCharlie add-ons and other projects that utilize the LimaCharlie platform. To help developers with their projects, we offer a $1,0",
+    "word_count": 91,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/developer-grant.md"
+  },
+  "concepts/endpoint-agent": {
+    "title": "Endpoint Agent",
+    "description": "The LimaCharlie Endpoint Agent is a key component of LimaCharlie's security platform, acting as a Sensor that collects rich endpoint detection and response (EDR) telemetry. Installed on endpoint devic",
+    "word_count": 428,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/endpoint-agent.md"
+  },
+  "concepts/endpoint-detection": {
+    "title": "Endpoint Detection and Response (EDR)",
+    "description": "The SecOps Cloud Platform revolutionizes endpoint security by providing true real-time visibility, versatile detection capabilities, integration with open-source and managed rulesets, and vendor-agnos",
+    "word_count": 412,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/endpoint-detection.md"
+  },
+  "concepts/enerprises": {
+    "title": "Enterprise SOC",
+    "description": "The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.",
+    "word_count": 1371,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/enerprises.md"
+  },
+  "concepts/event-schemas": {
+    "title": "Event Schemas",
+    "description": "These two documents are **identical** - they both cover the exact same topic: LimaCharlie's Event Schema API. I'll output the single unified version:",
+    "word_count": 405,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/event-schemas.md"
+  },
+  "concepts/false-positive": {
+    "title": "False Positive Rules",
+    "description": "To reduce the number of false positives, you may want to create false positive (FP) rules. FP rules filter out detections generated by the `report` action of detection & response (D&R) rules. These ru",
+    "word_count": 610,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/false-positive.md"
+  },
+  "concepts/file-and": {
+    "title": "File and Registry Integrity Monitoring (FIM) Deployments",
+    "description": "Use the SecOps Cloud Platform to gain comprehensive visibility, control, and proactive protection for sensitive files and registry keys with LimaCharlie's robust FIM capabilities.",
+    "word_count": 257,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/file-and.md"
+  },
+  "concepts/incident-response": {
+    "title": "Incident Response",
+    "description": "These documents are **identical** - they contain the exact same content about LimaCharlie's incident response capabilities. I'll output the synthesized version once:",
+    "word_count": 304,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/incident-response.md"
+  },
+  "concepts/mcp-server": {
+    "title": "MCP Server",
+    "description": "The Model Context Protocol (MCP) is a standardized protocol used by AI Agents to access and leverage external tools and resources.",
+    "word_count": 792,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/mcp-server.md"
+  },
+  "concepts/observability-pipeline": {
+    "title": "Observability Pipeline",
+    "description": "The SecOps Cloud Platform (SCP) creates a scalable, versatile, and actionable observability pipeline by collecting and standardizing telemetry from the full security stack. Stream data from any input,",
+    "word_count": 494,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/observability-pipeline.md"
+  },
+  "concepts/purple-teaming": {
+    "title": "Purple Teaming",
+    "description": "LimaCharlie introduces a dynamic, continuous approach to purple teaming. Experience rapid deployment, centralized visibility, flexible outputs, and automated validation to keep your security posture a",
+    "word_count": 305,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/purple-teaming.md"
+  },
+  "concepts/security-monitoring": {
+    "title": "Security Monitoring for DevOps",
+    "description": "Ditch the data silos and sluggish response – LimaCharlie illuminates your DevOps pipeline, automates threat detection and response, and fosters real-time collaboration, empowering you to build secure ",
+    "word_count": 224,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/security-monitoring.md"
+  },
+  "concepts/service-providers": {
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "description": "The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.",
+    "word_count": 1654,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/service-providers.md"
+  },
+  "concepts/sleeper": {
+    "title": "Sleeper Deployment",
+    "description": "LimaCharlie's usage-based billing enables incident responders to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an Organization's entire fleet and lay do",
+    "word_count": 694,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/sleeper.md"
+  },
+  "concepts/soar-automation": {
+    "title": "SOAR / Automation",
+    "description": "These documents are **identical duplicates** about the same topic. I'll output a single, consolidated version:",
+    "word_count": 409,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/soar-automation.md"
+  },
+  "concepts/stateful-rules": {
+    "title": "Stateful Rules",
+    "description": "> It's recommended to first read [Detection & Response rules](/v2/docs/detection-and-response) before diving into stateful rules.",
+    "word_count": 1045,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/stateful-rules.md"
+  },
+  "concepts/sysmon-comparison": {
+    "title": "Sysmon Comparison",
+    "description": "System Monitor, or \"Sysmon\", is a Windows server and device driver that monitors and logs operating system activity. It is part of the Sysinternals toolkit. More information on Sysmon can be found [he",
+    "word_count": 312,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/sysmon-comparison.md"
+  },
+  "concepts/table-top": {
+    "title": "Table Top Exercises",
+    "description": "Enhance your security preparedness table-top exercises with LimaCharlie. Conduct realistic multi-platform simulations, optimize incident response procedures, and empower your team to face evolving cyb",
+    "word_count": 259,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/table-top.md"
+  },
+  "concepts/events": {
+    "title": "Events",
+    "description": "LimaCharlie provides a multitude of events based on actions generated by sensors, systems, services, artifacts, and other key functions of the platform. The following pages provide details on structur",
+    "word_count": 721,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/events.md"
+  },
+  "concepts/extensions": {
+    "title": "Extensions",
+    "description": "LimaCharlie Extensions provide a robust framework for enhancing and customizing the LimaCharlie Cloud's capabilities, enabling seamless integration with third-party tools, services, and custom logic. ",
+    "word_count": 1157,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/extensions.md"
+  },
+  "concepts/hostname-resolution": {
+    "title": "Hostname Resolution",
+    "description": "The Endpoint Agent reports its hostname to the LimaCharlie cloud where it shows up as the `hostname` field for the Sensor.",
+    "word_count": 165,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/hostname-resolution.md"
+  },
+  "concepts/infrastructure-as": {
+    "title": "Infrastructure as Code",
+    "description": "LimaCharlie leverages YAML templates to define and manage the configurations for an Organization, enabling a powerful infrastructure-as-code (IaC) approach. These templates capture all the essential s",
+    "word_count": 626,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/infrastructure-as.md"
+  },
+  "concepts/lcql": {
+    "title": "LimaCharlie Query Language",
+    "description": "LimaCharlie Query Language (LCQL) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie. Telemetry ingested via EDR sensors or adapters are searchable via LCQL, and ca",
+    "word_count": 572,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/lcql.md"
+  },
+  "concepts/limacharlie-core": {
+    "title": "LimaCharlie Core Concepts",
+    "description": "The LimaCharlie endpoint agent is a cross platform endpoint Sensor. It is a low-level, light-weight sensor which executes detection and response functionality in real-time.",
+    "word_count": 760,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/limacharlie-core.md"
+  },
+  "concepts/limacharlie-sdk": {
+    "title": "LimaCharlie SDK & CLI",
+    "description": "The Go library is a simple abstraction to the [LimaCharlie.io REST API](https://api.limacharlie.io/). The REST API currently supports many more functions. If it's missing a function available in the R",
+    "word_count": 2269,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/limacharlie-sdk.md"
+  },
+  "concepts/ma-cyber": {
+    "title": "M&A Cyber Due Diligence",
+    "description": "LimaCharlie makes merger and acquisition (M&A) cyber due diligence cost-effective and easy to deploy, allowing you to only pay for the resources you need. However, our extensible platform allows you t",
+    "word_count": 263,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/ma-cyber.md"
+  },
+  "concepts/managed-rulesets": {
+    "title": "Managed Rulesets",
+    "description": "In addition to LimaCharlie's powerful custom detection & response capabilities, we also offer native integration with several managed rulesets. LimaCharlie currently offers:",
+    "word_count": 321,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/managed-rulesets.md"
+  },
+  "concepts/network-monitoring": {
+    "title": "Network Monitoring",
+    "description": "LimaCharlie's SecOps Cloud Platform, through its integration with Zeek, revolutionizes network security monitoring by providing scalable semantic analysis, seamless artifact ingestion, and powerful de",
+    "word_count": 336,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/network-monitoring.md"
+  },
+  "concepts/output-billing": {
+    "title": "Output Billing",
+    "description": "LimaCharlie aims to bill outputs at cost. This means that as a default outputs are billed accordingly to the [published pricing](https://limacharlie.io/pricing).",
+    "word_count": 131,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/output-billing.md"
+  },
+  "concepts/outputs": {
+    "title": "Outputs",
+    "description": "LimaCharlie provides multiple output options, referred to as streams, for you to send data from LimaCharlie to other destination(s). We provide native support for output with multiple different provid",
+    "word_count": 987,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/outputs.md"
+  },
+  "concepts/payload-manager": {
+    "title": "Payload Manager",
+    "description": "[Payloads](/v2/docs/payloads), such as scripts, pre-built binaries, or other files, can be deployed to LimaCharlie sensors for any reason necessary.",
+    "word_count": 235,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/payload-manager.md"
+  },
+  "concepts/payloads": {
+    "title": "Payloads",
+    "description": "Payloads are executables or scripts that can be delivered and executed through LimaCharlie's Endpoint Agent.",
+    "word_count": 468,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/payloads.md"
+  },
+  "concepts/platform-management": {
+    "title": "Platform Management",
+    "description": "The Platform Management section covers essential tools and settings that help you control and configure your LimaCharlie environment. Whether you're managing user permissions, handling billing, or cus",
+    "word_count": 68,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/platform-management.md"
+  },
+  "concepts/playbook": {
+    "title": "Playbook [LABS]",
+    "description": "> LimaCharlie LABS",
+    "word_count": 956,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/playbook.md"
+  },
+  "concepts/query-console": {
+    "title": "Query Console UI",
+    "description": "Many critical security operations require a query console with strong search functionality. It enables analysts to query large volumes of telemetry, logs, and events for investigations, hunting, and i",
+    "word_count": 928,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/query-console.md"
+  },
+  "concepts/quickstart": {
+    "title": "Quickstart",
+    "description": "LimaCharlie is infrastructure to connect sources of security data, automate activity based on what's being observed, and forward data to where you need it. There's no *correct* way to use it - every e",
+    "word_count": 920,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/quickstart.md"
+  },
+  "concepts/replay": {
+    "title": "Replay",
+    "description": "Replay allows you to run [Detection & Response (D&R) rules](/v2/docs/detection-and-response) against historical traffic. This can be done in a few combinations of sources:",
+    "word_count": 940,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/replay.md"
+  },
+  "concepts/sensor-connectivity": {
+    "title": "Sensor Connectivity",
+    "description": "The network connection required by the LimaCharlie Sensor is very simple. It requires a single TCP connection over port 443 to a specific domain, and optionally another destination for the [Artifact C",
+    "word_count": 388,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/sensor-connectivity.md"
+  },
+  "concepts/sensor-tags": {
+    "title": "Sensor Tags",
+    "description": "Tags in LimaCharlie are simple strings that can be associated with any number of sensors. A Sensor can also have an arbitrary number of tags associated with it.",
+    "word_count": 917,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/sensor-tags.md"
+  },
+  "concepts/sensors": {
+    "title": "Sensors",
+    "description": "In LimaCharlie, **Sensors** refer to the broad set of telemetry collection mechanisms used to gather, process, and act on data across a variety of environments. Sensors come in different forms, each d",
+    "word_count": 348,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/sensors.md"
+  },
+  "concepts/sensors-operating": {
+    "title": "macOS",
+    "description": "LimaCharlie's Mac sensor interfaces with the kernel to acquire deep visibility into the host's activity while taking measures to preserve the host's performance. The Mac sensor currently supports all ",
+    "word_count": 309,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/sensors-operating.md"
+  },
+  "concepts/sensors-sensor": {
+    "title": "Sensor Commands",
+    "description": "Sensor commands offer a safe way to interact with a sensor's host either for investigation, management, or threat mitigation purposes. Commands are categorized by their overall functionality, and incl",
+    "word_count": 765,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/sensors-sensor.md"
+  },
+  "concepts/sigma-converter": {
+    "title": "Sigma Converter",
+    "description": "LimaCharlie is happy to contribute to the [Sigma Project](https://github.com/SigmaHQ/sigma) by maintaining the LimaCharlie Backend for Sigma, enabling most Sigma rules to be converted to the [Detectio",
+    "word_count": 829,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/sigma-converter.md"
+  },
+  "concepts/single-sign": {
+    "title": "Single Sign-On",
+    "description": "Single sign-on (SSO) is available at no extra cost for customers that leverage LimaCharlie's custom branded offering. If this applies to your Organization, and if you are interested in using the SSO, ",
+    "word_count": 356,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/single-sign.md"
+  },
+  "concepts/sleeper-mode": {
+    "title": "Sleeper Mode",
+    "description": "LimaCharlie's sleeper mode is not just about cost-efficiency; it's about transforming your entire network into a dynamic, responsive security infrastructure. By pre-deploying sensors and strategically",
+    "word_count": 375,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/sleeper-mode.md"
+  },
+  "concepts/soc-prime": {
+    "title": "SOC Prime Rules",
+    "description": "To use SOC Prime rules in LimaCharlie, start by configuring lists in [SOC Prime](https://socprime.com/). You can learn how to do it [here](https://socprime.com/blog/enable-continuous-content-managemen",
+    "word_count": 258,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/soc-prime.md"
+  },
+  "concepts/soteria-rules": {
+    "title": "Soteria Rules",
+    "description": "[Soteria](https://soteria.io/) is a US-based MSSP and longtime MSSP, and has built a wealth of experience writing and managing LimaCharlie [detection & response](/v2/docs/detection-and-response) rules",
+    "word_count": 240,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/soteria-rules.md"
+  },
+  "concepts/telemetry-artifacts": {
+    "title": "Artifacts",
+    "description": "The Artifact Collection system allows you to ingest artifact types like:",
+    "word_count": 1855,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/telemetry-artifacts.md"
+  },
+  "concepts/telemetry-sensors": {
+    "title": "Sensors",
+    "description": "Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.",
+    "word_count": 1099,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/telemetry-sensors.md"
+  },
+  "concepts/threat-hunting": {
+    "title": "Threat Hunting",
+    "description": "Stop settling for static defenses – become a threat hunting powerhouse with LimaCharlie! One-year historical data, intuitive exploration, and seamless rule creation empower you to uncover hidden threa",
+    "word_count": 270,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/threat-hunting.md"
+  },
+  "concepts/uncovering-adversary": {
+    "title": "Uncovering Adversary Techniques",
+    "description": "LimaCharlie's SecOps Cloud Platform provides a comprehensive approach to combating ransomware, focusing on early detection during the reconnaissance stage and rapid response in the event of a detonati",
+    "word_count": 486,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/uncovering-adversary.md"
+  },
+  "concepts/unit-tests": {
+    "title": "Unit Tests",
+    "description": "A D&R rule record can optionally contain unit tests. These tests describe events that should match, and events that should not match. When a D&R rule is updated or created, LimaCharlie will simulate t",
+    "word_count": 928,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/unit-tests.md"
+  },
+  "concepts/use-cases": {
+    "title": "Use Cases",
+    "description": "LimaCharlie's vast array of capabilities can be applied to countless scenarios.",
+    "word_count": 199,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/use-cases.md"
+  },
+  "concepts/using-extensions": {
+    "title": "Using Extensions",
+    "description": "Extensions can be interacted with using two main components:",
+    "word_count": 349,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/using-extensions.md"
+  },
+  "concepts/wel-monitoring": {
+    "title": "WEL Monitoring",
+    "description": "LimaCharlie's SecOps Cloud Platform transforms Windows Event Log monitoring by providing real-time visibility, streamlined infrastructure, and powerful detection and response capabilities. Effectively",
+    "word_count": 305,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/wel-monitoring.md"
+  },
+  "concepts/what-is": {
+    "title": "What is LimaCharlie?",
+    "description": "LimaCharlie is the **SecOps Cloud Platform** - delivering security operations for the modern era.",
+    "word_count": 262,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/what-is.md"
+  },
+  "concepts/tags-ChromeOS": {
+    "title": "ChromeOS Support",
+    "description": "LimaCharlie provides support for ChromeOS endpoints through its sensor deployment capabilities.",
+    "word_count": 141,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-ChromeOS.md"
+  },
+  "concepts/tags-DevOps": {
+    "title": "Security Monitoring for DevOps",
+    "description": "DevOps practices emphasize speed, automation, and continuous delivery, but security often becomes an afterthought. LimaCharlie provides security monitoring capabilities specifically designed to integr",
+    "word_count": 893,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-DevOps.md"
+  },
+  "concepts/tags-EDR": {
+    "title": "Endpoint Detection and Response (EDR)",
+    "description": "Endpoint Detection and Response (EDR) is a comprehensive security solution that provides continuous monitoring, threat detection, investigation, and response capabilities for endpoint devices (worksta",
+    "word_count": 667,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-EDR.md"
+  },
+  "concepts/tags-FIM": {
+    "title": "File Integrity Monitoring (FIM) Deployments",
+    "description": "File Integrity Monitoring (FIM) allows you to track changes to critical files and registry keys on your endpoints. This capability is essential for detecting unauthorized modifications to system files",
+    "word_count": 417,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-FIM.md"
+  },
+  "concepts/tags-LimaCharlie": {
+    "title": "Use Cases",
+    "description": "LimaCharlie provides a flexible security infrastructure platform that supports various security operations and detection engineering workflows. Below are common use cases and implementation patterns.",
+    "word_count": 290,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-LimaCharlie.md"
+  },
+  "concepts/tags-MDR": {
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "description": "LimaCharlie provides a comprehensive platform for Security Service Providers including MSSPs (Managed Security Service Providers), MSPs (Managed Service Providers), and MDR (Managed Detection and Resp",
+    "word_count": 709,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-MDR.md"
+  },
+  "concepts/tags-MSP": {
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "description": "LimaCharlie is designed to support security service providers, including MSSPs (Managed Security Service Providers), MSPs (Managed Service Providers), and MDR (Managed Detection and Response) provider",
+    "word_count": 642,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-MSP.md"
+  },
+  "concepts/tags-MSSP": {
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "description": "LimaCharlie provides a comprehensive platform for security service providers to deliver managed security services at scale. The platform is designed to support MSSPs (Managed Security Service Provider",
+    "word_count": 432,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-MSSP.md"
+  },
+  "concepts/tags-SIEM": {
+    "title": "Cost Effective SIEM Alternative",
+    "description": "Traditional Security Information and Event Management (SIEM) solutions have long been the cornerstone of enterprise security operations. However, their high costs, complexity, and rigid architectures ",
+    "word_count": 653,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-SIEM.md"
+  },
+  "concepts/tags-SOC": {
+    "title": "Enterprise SOC",
+    "description": "LimaCharlie provides enterprise-grade Security Operations Center (SOC) capabilities designed to scale with your organization's security needs. This documentation covers the key features and capabiliti",
+    "word_count": 31,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-SOC.md"
+  },
+  "concepts/tags-SecOps": {
+    "title": "SecOps Development",
+    "description": "**LimaCharlie's SecOps capabilities allow security teams to build, deploy, and operate custom security tooling at scale.**",
+    "word_count": 643,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-SecOps.md"
+  },
+  "concepts/tags-WEL": {
+    "title": "WEL Monitoring",
+    "description": "Windows Event Logs (WEL) are a critical source of security and operational data on Windows systems. LimaCharlie provides comprehensive WEL monitoring capabilities to help you detect threats, troublesh",
+    "word_count": 304,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-WEL.md"
+  },
+  "concepts/tags-adapters": {
+    "title": "Adapter",
+    "description": "The adapter service is a core component of LimaCharlie that allows you to ingest data from various external sources and transform it into telemetry that can be processed by the platform. Adapters act ",
+    "word_count": 446,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-adapters.md"
+  },
+  "concepts/tags-add": {
+    "title": "Atomic Red Team Add-on",
+    "description": "Looking at these documents, I can see they cover **three distinct topics** that should NOT be merged:",
+    "word_count": 1114,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-add.md"
+  },
+  "concepts/tags-api": {
+    "title": "Config Hive: Secrets",
+    "description": "I'll synthesize these related documentation pages into cohesive, self-contained topics. Let me validate the content first - I can see these documents are all about LimaCharlie's configuration and API ",
+    "word_count": 3167,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-api.md"
+  },
+  "concepts/tags-automation": {
+    "title": "SOAR / Automation",
+    "description": "LimaCharlie provides powerful Security Orchestration, Automation, and Response (SOAR) capabilities that enable you to automate detection, response, and remediation workflows across your security opera",
+    "word_count": 662,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-automation.md"
+  },
+  "concepts/tags-aws": {
+    "title": "Soteria AWS Rules",
+    "description": "These documents are **UNRELATED** - they cover different AWS integration topics in LimaCharlie. They should be kept separate.",
+    "word_count": 1833,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-aws.md"
+  },
+  "concepts/tags-browser%20agent": {
+    "title": "Browser Agent",
+    "description": "Comprehensive reference documentation for all EDR events captured by LimaCharlie agents.",
+    "word_count": 157,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-browser%20agent.md"
+  },
+  "concepts/tags-cloud": {
+    "title": "Cloud Security",
+    "description": "LimaCharlie provides comprehensive cloud security capabilities to help you monitor, detect, and respond to threats across your cloud infrastructure.",
+    "word_count": 299,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-cloud.md"
+  },
+  "concepts/tags-defender": {
+    "title": "Endpoint Protection",
+    "description": "I need to analyze these two documents to determine if they should be merged or kept separate.",
+    "word_count": 469,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-defender.md"
+  },
+  "concepts/tags-detection%20and%20response": {
+    "title": "Tag: detection and response",
+    "description": "10 Oct 2025",
+    "word_count": 158,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-detection%20and%20response.md"
+  },
+  "concepts/tags-development": {
+    "title": "SecOps Development",
+    "description": "LimaCharlie provides a comprehensive development environment for security operations teams to build, test, and deploy detection and response capabilities.",
+    "word_count": 1173,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-development.md"
+  },
+  "concepts/tags-dfir": {
+    "title": "DFIR Tag Index",
+    "description": "Looking at these two documents, they appear to be **different versions or states of the same DFIR tag index page**. The first has content while the second appears to be an empty state. I'll output the",
+    "word_count": 201,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-dfir.md"
+  },
+  "concepts/tags-endpoint%20agent": {
+    "title": "Ingesting Linux Audit Logs",
+    "description": "The LimaCharlie sensor can ingest Linux Audit logs and forward them to the LimaCharlie cloud for processing, storage, and analysis.",
+    "word_count": 672,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-endpoint%20agent.md"
+  },
+  "concepts/tags-enterprise": {
+    "title": "Enterprise SOC",
+    "description": "LimaCharlie provides enterprise-grade Security Operations Center (SOC) capabilities designed for organizations that need to manage security at scale. The platform offers centralized management, multi-",
+    "word_count": 762,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-enterprise.md"
+  },
+  "concepts/tags-epp": {
+    "title": "Endpoint Protection Platform (EPP)",
+    "description": "The Endpoint Protection Platform (EPP) extension provides traditional anti-malware capabilities within LimaCharlie, combining signature-based detection with behavioral analysis to protect endpoints fr",
+    "word_count": 820,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-epp.md"
+  },
+  "concepts/tags-events": {
+    "title": "Reference: Platform Events",
+    "description": "Platform events are generated by the LimaCharlie cloud infrastructure itself, rather than by endpoint agents. These events capture system-level activities, infrastructure changes, and platform operati",
+    "word_count": 2845,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-events.md"
+  },
+  "concepts/tags-extensions": {
+    "title": "Extensions",
+    "description": "Extensions enhance LimaCharlie's platform capabilities across security testing, threat detection, forensics, data collection, automation, and integrations. Each extension integrates seamlessly with th",
+    "word_count": 765,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-extensions.md"
+  },
+  "concepts/tags-faq": {
+    "title": "Frequently Asked Questions (FAQ)",
+    "description": "These documents are **unrelated** - one is a structured FAQ hub with actual navigation links, while the other is an empty placeholder. They should be kept separate but merged into a clearer navigation",
+    "word_count": 272,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-faq.md"
+  },
+  "concepts/tags-gcp": {
+    "title": "LimaCharlie GCP Integration",
+    "description": "LimaCharlie provides comprehensive integration with Google Cloud Platform (GCP) services, enabling bidirectional data flow for security monitoring, analysis, and compliance. This documentation covers ",
+    "word_count": 665,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-gcp.md"
+  },
+  "concepts/tags-google%20workspace": {
+    "title": "Google Workspace",
+    "description": "*Content to be extracted from the linked article at `/docs/en/adapter-types-google-workspace`*",
+    "word_count": 86,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-google%20workspace.md"
+  },
+  "concepts/tags-linux": {
+    "title": "Linux Tag - Documentation Index",
+    "description": "This tag indexes documentation articles related to Linux in the LimaCharlie platform.",
+    "word_count": 215,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-linux.md"
+  },
+  "concepts/tags-lookups": {
+    "title": "Lookup Manager",
+    "description": "I need to validate whether these two documents are about the same topic and then synthesize them appropriately.",
+    "word_count": 1301,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-lookups.md"
+  },
+  "concepts/tags-m365": {
+    "title": "Soteria M365 Rules",
+    "description": "[Documentation content appears to be missing from the provided page]",
+    "word_count": 115,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-m365.md"
+  },
+  "concepts/tags-macos": {
+    "title": "macOS",
+    "description": "This topic covers macOS-related functionality in LimaCharlie, including agent installation, configuration, event ingestion, and management.",
+    "word_count": 640,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-macos.md"
+  },
+  "concepts/tags-mergers%20and%20acquisitions": {
+    "title": "M&A Cyber Due Diligence",
+    "description": "Mergers and acquisitions (M&A) represent critical inflection points where cyber risk assessment can make or break deal value. Traditional due diligence often treats cybersecurity as a checkbox exercis",
+    "word_count": 1813,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-mergers%20and%20acquisitions.md"
+  },
+  "concepts/tags-monitoring": {
+    "title": "Network Monitoring",
+    "description": "Network monitoring in LimaCharlie provides visibility into network traffic, connections, and communications across your infrastructure. This enables detection of malicious network activity, unauthoriz",
+    "word_count": 549,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-monitoring.md"
+  },
+  "concepts/tags-observability": {
+    "title": "Observability Pipeline",
+    "description": "LimaCharlie provides a comprehensive observability pipeline that allows you to collect, process, and route security telemetry data across your infrastructure.",
+    "word_count": 187,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-observability.md"
+  },
+  "concepts/tags-pipeline": {
+    "title": "Observability Pipeline",
+    "description": "Looking at these two documents, they are both about the **same topic** - the Observability Pipeline in LimaCharlie. They cover overlapping concepts but with different levels of detail. I'll merge them",
+    "word_count": 630,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-pipeline.md"
+  },
+  "concepts/tags-sensors": {
+    "title": "Stdin Adapter",
+    "description": "The Stdin adapter allows you to pipe data into the LimaCharlie sensor adapter from standard input.",
+    "word_count": 138,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-sensors.md"
+  },
+  "concepts/tags-tabletop": {
+    "title": "Table Top Exercises",
+    "description": "LimaCharlie provides a comprehensive framework for conducting security tabletop exercises to test and improve your organization's incident response capabilities.",
+    "word_count": 183,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-tabletop.md"
+  },
+  "concepts/tags-telemetry": {
+    "title": "Ingesting Linux Audit Logs",
+    "description": "The LimaCharlie sensor can ingest Linux audit logs and forward them as telemetry events. This guide shows you how to configure audit log ingestion.",
+    "word_count": 436,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-telemetry.md"
+  },
+  "concepts/tags-tutorial": {
+    "title": "Tutorial",
+    "description": "A collection of hands-on guides and step-by-step tutorials for LimaCharlie platform capabilities (16 articles):",
+    "word_count": 336,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-tutorial.md"
+  },
+  "concepts/tags-windows": {
+    "title": "Windows",
+    "description": "I need to validate whether these are actually related documents about the same topic or just a tag-based grouping. Let me examine them more carefully.",
+    "word_count": 521,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-windows.md"
+  },
+  "concepts/tags-detection": {
+    "title": "Detection and Response",
+    "description": "[No documentation content available for this tag page]",
+    "word_count": 12,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-detection.md"
+  },
+  "concepts/tags-endpoint": {
+    "title": "Ingesting Linux Audit Logs",
+    "description": "Linux Audit is a native kernel-level auditing framework that provides detailed logging of system calls, file access, and security events. LimaCharlie can ingest and process these audit logs alongside ",
+    "word_count": 523,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-endpoint.md"
+  },
+  "concepts/tags-google": {
+    "title": "Google Workspace Integration",
+    "description": "**Last Updated: 31 Oct 2024**",
+    "word_count": 83,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-google.md"
+  },
+  "concepts/tags-ir": {
+    "title": "Incident Response Documentation",
+    "description": "This page contains articles related to incident response (IR) capabilities and workflows in LimaCharlie.",
+    "word_count": 55,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-ir.md"
+  },
+  "concepts/tags-limacharlie": {
+    "title": "LimaCharlie Tag",
+    "description": "No articles found for this tag.",
+    "word_count": 9,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-limacharlie.md"
+  },
+  "concepts/tags-mdr": {
+    "title": "Security Service Providers (MSSP, MSP, MDR)",
+    "description": "LimaCharlie was purpose-built for Security Service Providers like MSSPs, MSPs, and MDR providers. The platform's multi-tenant architecture, flexible pricing, and automation capabilities make it an ide",
+    "word_count": 1003,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-mdr.md"
+  },
+  "concepts/tags-mergers": {
+    "title": "Tag: mergers and acquisitions",
+    "description": "No Articles found for mergers and acquisitions Tag",
+    "word_count": 13,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-mergers.md"
+  },
+  "concepts/tags-msp": {
+    "title": "Multi-Tenancy and Service Provider Operations",
+    "description": "LimaCharlie's multi-tenancy architecture enables Managed Security Service Providers (MSSPs), Managed Service Providers (MSPs), and Managed Detection and Response (MDR) providers to manage multiple cli",
+    "word_count": 281,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-msp.md"
+  },
+  "concepts/tags-secops": {
+    "title": "SecOps Development",
+    "description": "SecOps Development in LimaCharlie provides a comprehensive platform for building, testing, and deploying security operations capabilities. This guide covers the key concepts and workflows for developi",
+    "word_count": 449,
+    "has_code_examples": false,
+    "file_path": "output/topics/concepts/tags-secops.md"
+  },
+  "concepts/tags-wel": {
+    "title": "No Content Found",
+    "description": "I notice this appears to be a navigation/search results page showing \"No Articles found for wel Tag\" rather than an actual documentation page with content to clean.",
+    "word_count": 183,
+    "has_code_examples": true,
+    "file_path": "output/topics/concepts/tags-wel.md"
+  },
+  "reference/1password": {
+    "title": "1Password",
+    "description": "[1Password](https://1password.com/) provides an events API to fetch audit logs. Events can be ingested directly via a cloud-to-cloud or CLI Adapter.",
+    "word_count": 277,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/1password.md"
+  },
+  "reference/adapter-types-aws-cloudtrail": {
+    "title": "AWS CloudTrail",
+    "description": "[AWS CloudTrail](https://docs.aws.amazon.com/cloudtrail/) logs allow you to monitor AWS deployments. CloudTrail logs can provide granular visibility into AWS instances and can be used within [D&R rule",
+    "word_count": 455,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-aws-cloudtrail.md"
+  },
+  "reference/adapter-types-azure-event-hub": {
+    "title": "Azure Event Hub",
+    "description": "This Adapter allows you to connect to an Azure Event Hub to fetch structured data stored there.",
+    "word_count": 433,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-azure-event-hub.md"
+  },
+  "reference/adapter-types-file": {
+    "title": "File",
+    "description": "This Adapter allows you to ingest logs from a file, either as a one time operation or by following its output (like `tail -f`). A more detailed guide to file collection can be found in the [Log Collec",
+    "word_count": 273,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-file.md"
+  },
+  "reference/adapter-types-google-cloud-pubsub": {
+    "title": "Google Cloud Pubsub",
+    "description": "This Adapter allows you to ingest events from a Google Cloud Pubsub subscription.",
+    "word_count": 312,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-google-cloud-pubsub.md"
+  },
+  "reference/en-adapter-types-google-cloud-pubsub": {
+    "title": "Google Cloud Pubsub",
+    "description": "This Adapter allows you to ingest events from a Google Cloud Pubsub subscription.",
+    "word_count": 312,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-google-cloud-pubsub.md"
+  },
+  "reference/adapter-types-google-cloud-storage": {
+    "title": "Google Cloud Storage",
+    "description": "This Adapter allows you to ingest files/blobs stored in Google Cloud Storage (GCS).",
+    "word_count": 189,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-google-cloud-storage.md"
+  },
+  "reference/en-adapter-types-google-cloud-storage": {
+    "title": "Google Cloud Storage",
+    "description": "This Adapter allows you to ingest files/blobs stored in Google Cloud Storage (GCS).",
+    "word_count": 189,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-google-cloud-storage.md"
+  },
+  "reference/adapter-types-google-workspace": {
+    "title": "Google Workspace",
+    "description": "[Google Workspace](https://workspace.google.com/) provides various communication, collaboration, and productivity applications for businesses of all sizes. [Google Workspace audit logs](https://cloud.",
+    "word_count": 260,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/adapter-types-google-workspace.md"
+  },
+  "reference/en-adapter-types-google-workspace": {
+    "title": "Google Workspace",
+    "description": "[Google Workspace](https://workspace.google.com/) provides various communication, collaboration, and productivity applications for businesses of all sizes. [Google Workspace audit logs](https://cloud.",
+    "word_count": 260,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/en-adapter-types-google-workspace.md"
+  },
+  "reference/adapter-types-hubspot": {
+    "title": "HubSpot",
+    "description": "This Adapter allows you to connect to HubSpot to fetch [account activity logs](https://developers.hubspot.com/docs/guides/api/settings/account-activity-api).",
+    "word_count": 272,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-hubspot.md"
+  },
+  "reference/adapter-types-it-glue": {
+    "title": "IT Glue",
+    "description": "This Adapter allows you to connect to IT Glue to fetch activity logs.",
+    "word_count": 258,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-it-glue.md"
+  },
+  "reference/en-adapter-types-it-glue": {
+    "title": "IT Glue",
+    "description": "This Adapter allows you to connect to IT Glue to fetch activity logs.",
+    "word_count": 258,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-it-glue.md"
+  },
+  "reference/adapter-types-mac-unified-logging": {
+    "title": "Mac Unified Logging",
+    "description": "This Adapter allows you to collect events from MacOS Unified Logging.",
+    "word_count": 386,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-mac-unified-logging.md"
+  },
+  "reference/en-adapter-types-mac-unified-logging": {
+    "title": "Mac Unified Logging",
+    "description": "This Adapter allows you to collect events from MacOS Unified Logging.",
+    "word_count": 386,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-mac-unified-logging.md"
+  },
+  "reference/adapter-types-microsoft-365": {
+    "title": "Microsoft 365",
+    "description": "Microsoft 365, formerly Office 365, is a product family of productivity software, collaboration and cloud-based services owned by Microsoft. This Adapter allows you to ingest audit events from the [Of",
+    "word_count": 800,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-microsoft-365.md"
+  },
+  "reference/adapter-types-microsoft-defender": {
+    "title": "Microsoft Defender",
+    "description": "LimaCharlie can ingest [Microsoft 365 Defender logs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide) via three methods [Azure Event Hub](/",
+    "word_count": 380,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-microsoft-defender.md"
+  },
+  "reference/en-adapter-types-microsoft-defender": {
+    "title": "Microsoft Defender",
+    "description": "LimaCharlie can ingest [Microsoft 365 Defender logs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide) via three methods [Azure Event Hub](/",
+    "word_count": 380,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-microsoft-defender.md"
+  },
+  "reference/adapter-types-mimecast": {
+    "title": "Mimecast",
+    "description": "This Adapter allows you to connect to the Mimecast API to stream audit events as they happen.",
+    "word_count": 235,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-mimecast.md"
+  },
+  "reference/adapter-types-okta": {
+    "title": "Okta",
+    "description": "This Adapter allows you to connect to Okta to fetch system logs.",
+    "word_count": 298,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-okta.md"
+  },
+  "reference/adapter-types-sqs": {
+    "title": "SQS",
+    "description": "This Adapter allows you to ingest events received from an AWS SQS instance.",
+    "word_count": 147,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-sqs.md"
+  },
+  "reference/en-adapter-types-sqs": {
+    "title": "SQS",
+    "description": "This Adapter allows you to ingest events received from an AWS SQS instance.",
+    "word_count": 147,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-sqs.md"
+  },
+  "reference/adapter-types-stdin": {
+    "title": "Stdin",
+    "description": "This Adapter allows you to ingest logs from the adapter stdin.",
+    "word_count": 46,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/adapter-types-stdin.md"
+  },
+  "reference/adapter-types-windows-event-log": {
+    "title": "Windows Event Log",
+    "description": "This Adapter allows you to connect to the local Windows Event Logs API on Windows. This means this Adapter is only available from Windows builds and only works locally (will not connect to remote Wind",
+    "word_count": 268,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-windows-event-log.md"
+  },
+  "reference/en-adapter-types-windows-event-log": {
+    "title": "Windows Event Log",
+    "description": "This Adapter allows you to connect to the local Windows Event Logs API on Windows. This means this Adapter is only available from Windows builds and only works locally (will not connect to remote Wind",
+    "word_count": 198,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-windows-event-log.md"
+  },
+  "reference/adapter-types-zendesk": {
+    "title": "Zendesk",
+    "description": "This Adapter allows you to connect to Zendesk to fetch [account activity logs](https://developer.zendesk.com/api-reference/ticketing/account-configuration/audit_logs/#list-audit-logs).",
+    "word_count": 248,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-types-zendesk.md"
+  },
+  "reference/en-adapter-types-evtx": {
+    "title": "EVTX",
+    "description": "This Adapter allows you to ingest and convert a `.evtx` file into LimaCharlie. The `.evtx` files are the binary format used by Microsoft for Windows Event Logs. This is useful to ingest historical Win",
+    "word_count": 106,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/en-adapter-types-evtx.md"
+  },
+  "reference/en-adapter-types-iis": {
+    "title": "IIS Logs",
+    "description": "Microsoft's Internet Information Services (IIS) web server is a web server commonly found on Microsoft Windows servers. This Adapter assists with sending IIS web logs to LimaCharlie via the Adapter bi",
+    "word_count": 756,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-iis.md"
+  },
+  "reference/en-adapter-types-sophos": {
+    "title": "Sophos",
+    "description": "This Adapter allows you to connect to Sophos Central to fetch event logs.",
+    "word_count": 467,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-sophos.md"
+  },
+  "reference/en-adapter-types-sublime-security": {
+    "title": "Sublime Security",
+    "description": "[Sublime Security](https://sublime.security/) is a comprehensive email security platform that allows users to create custom detections, gain visibility and control, and focus on prevention of maliciou",
+    "word_count": 527,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-sublime-security.md"
+  },
+  "reference/en-adapter-types-syslog": {
+    "title": "Syslog",
+    "description": "Syslog is both a protocol and common logging format that consolidate events to a central location for storage. On \\*nix systems, Syslog often outputs to predefined locations, such as `/var/log`. The L",
+    "word_count": 954,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-adapter-types-syslog.md"
+  },
+  "reference/adapter-usage": {
+    "title": "Adapter Usage",
+    "description": "The Adapter can be used to access many different sources and many different event types. The main mechanisms specifying the source and type of events are:",
+    "word_count": 1763,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/adapter-usage.md"
+  },
+  "reference/api-integrations-ip-geolocation": {
+    "title": "IP Geolocation",
+    "description": "With the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo) subscribed, it can be used as an API-based lookup.",
+    "word_count": 204,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/api-integrations-ip-geolocation.md"
+  },
+  "reference/en-api-integrations-ip-geolocation": {
+    "title": "IP Geolocation",
+    "description": "With the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo) subscribed, it can be used as an API-based lookup.",
+    "word_count": 204,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-api-integrations-ip-geolocation.md"
+  },
+  "reference/api-integrations-virustotal": {
+    "title": "VirusTotal",
+    "description": "The VirusTotal API key is added via the [integrations](https://docs.limacharlie.io/v2/docs/add-ons-api-integrations#configuration) menu within LimaCharlie.",
+    "word_count": 127,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/api-integrations-virustotal.md"
+  },
+  "reference/api-keys": {
+    "title": "API Keys",
+    "description": "LimaCharlie Cloud has a concept of API keys. Those are secret keys that can be created and named, and then in turn be used to retrieve a JWT that can be associated with the LC REST API at https://api.",
+    "word_count": 953,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/api-keys.md"
+  },
+  "reference/azure-monitor": {
+    "title": "Azure Monitor",
+    "description": "Azure Monitor Logs are a feature of Azure Monitor that collect and organize log and performance data from monitored resources. More information on Azure Monitor Logs can be found [here](https://learn.",
+    "word_count": 72,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/azure-monitor.md"
+  },
+  "reference/azure-sql": {
+    "title": "Azure SQL Audit Logs",
+    "description": "Microsoft Azure SQL is a scalable, cloud-hosted database that integrates with the Azure ecosystem. More information on Azure SQL can be found [here](https://azure.microsoft.com/en-us/products/azure-sq",
+    "word_count": 71,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/azure-sql.md"
+  },
+  "reference/config-hive": {
+    "title": "Config Hive Reference",
+    "description": "The Config Hive is LimaCharlie's centralized configuration storage system that allows you to manage various security components including cloud sensors, detection rules, lookups, secrets, and Yara rul",
+    "word_count": 1577,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/config-hive.md"
+  },
+  "reference/detection-and": {
+    "title": "Detection and Response Examples",
+    "description": "The following are sample detection and response rules can help you get started in crafting efficient rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out",
+    "word_count": 1560,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/detection-and.md"
+  },
+  "reference/detection-logic": {
+    "title": "Detection Logic Operators",
+    "description": "Operators are used in the Detection part of a Detection & Response rule. Operators may also be accompanied by other available parameters, such as transforms, times, and others, referenced later in thi",
+    "word_count": 1711,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/detection-logic.md"
+  },
+  "reference/endpoint-agent": {
+    "title": "Endpoint Agent Commands and Events",
+    "description": "Endpoint Agent commands offer a safe way to interact with a Sensor's host either for investigation, management, or threat mitigation purposes.",
+    "word_count": 1154,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/endpoint-agent.md"
+  },
+  "reference/ext-artifact": {
+    "title": "Artifact",
+    "description": "The Artifact Extension provides low-level collection capabilities which can be configured to run automatically via Detection & Response rules, Sensor collections, or pushed via REST API. When enabled,",
+    "word_count": 281,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/ext-artifact.md"
+  },
+  "reference/ext-atomic": {
+    "title": "Atomic Red Team",
+    "description": "**Atomic Red Team** is a library of tests mapped to the MITRE ATT&CK framework, provided by Red Canary. With this Extension, LimaCharlie users can use Atomic Red Team to quickly, portably, and reprodu",
+    "word_count": 591,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/ext-atomic.md"
+  },
+  "reference/en-ext-cloud-cli-microsoft365": {
+    "title": "Microsoft 365",
+    "description": "The CLI for Microsoft 365 is a tool created to help manage Microsoft 365 tenant(s) and SharePoint framework projects. With this component of the Cloud CLI Extension, you can interact with a Microsoft ",
+    "word_count": 176,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-ext-cloud-cli-microsoft365.md"
+  },
+  "reference/ext-cloud-cli-microsoft365": {
+    "title": "Microsoft 365",
+    "description": "The CLI for Microsoft 365 is a tool created to help manage Microsoft 365 tenant(s) and SharePoint framework projects. With this component of the Cloud CLI Extension, you can interact with a Microsoft ",
+    "word_count": 176,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-cloud-cli-microsoft365.md"
+  },
+  "reference/ext-cloud-cli": {
+    "title": "Cloud CLI",
+    "description": "LimaCharlie's Cloud CLI Extension (`ext-cloud-cli`) allows you to trigger actions against CLI or API endpoints for third-party products. This extension facilitates bi-directional communication between",
+    "word_count": 290,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-cloud-cli.md"
+  },
+  "reference/ext-cloud-cli-1password": {
+    "title": "1Password",
+    "description": "The 1Password CLI brings 1Password to the terminal, allowing you to interact with a 1Password instance from LimaCharlie.",
+    "word_count": 146,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-cloud-cli-1password.md"
+  },
+  "reference/ext-cloud-cli-aws": {
+    "title": "AWS",
+    "description": "AWS CLI is a unified tool that provides a consistent interface for interacting with AWS from the command line. With this component of the Cloud CLI Extension, you can interact with AWS directly from L",
+    "word_count": 183,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-cloud-cli-aws.md"
+  },
+  "reference/ext-exfil": {
+    "title": "Exfil (Event Collection)",
+    "description": "The Exfil Extension helps manage which real-time [events](/v2/docs/reference-edr-events) get sent from EDR sensors to LimaCharlie. By default, LimaCharlie Sensors send events to the cloud based on a s",
+    "word_count": 875,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-exfil.md"
+  },
+  "reference/ext-govee": {
+    "title": "Govee Extension",
+    "description": "These documents are identical - they both describe the Govee Extension with the exact same content. I'll output a single synthesized version:",
+    "word_count": 411,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-govee.md"
+  },
+  "reference/ext-hayabusa": {
+    "title": "Hayabusa",
+    "description": "While it is free to enable the Hayabusa extension, pricing is applied to downloaded and processed artifacts -- $0.02/GB for the original artifact, and $0.5/GB for the generation of the Hayabusa artifa",
+    "word_count": 887,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-hayabusa.md"
+  },
+  "reference/ext-infrastructure": {
+    "title": "Infrastructure Extension",
+    "description": "The Infrastructure Extension allows you to perform infrastructure-as-code (IaC) modifications to your Organization. IaC modifications can be made in the web UI or via the LimaCharlie [CLI tool](https:",
+    "word_count": 463,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-infrastructure.md"
+  },
+  "reference/ext-integrity": {
+    "title": "Integrity Extension",
+    "description": "The Integrity Extension helps you manage all aspects of file or registry integrity monitoring (FIM and RIM, respectively). This extension automates integrity checks of file system and registry values ",
+    "word_count": 525,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-integrity.md"
+  },
+  "reference/ext-lookup": {
+    "title": "Lookup Manager",
+    "description": "The Lookup Manager Extension allows you to create, maintain & automatically refresh lookups in the Organization to then reference them in Detection & Response Rules.",
+    "word_count": 361,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-lookup.md"
+  },
+  "reference/ext-plaso": {
+    "title": "Plaso Extension",
+    "description": "[Plaso](https://plaso.readthedocs.io/) is a Python-based suite of tools used for creation of analysis timelines from forensic artifacts acquired from an endpoint.",
+    "word_count": 1080,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-plaso.md"
+  },
+  "reference/ext-reliable": {
+    "title": "Reliable Tasking",
+    "description": "These documents are identical duplicates about the same topic - the Reliable Tasking Extension. I'll output a single, consolidated version:",
+    "word_count": 591,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-reliable.md"
+  },
+  "reference/ext-secureannex": {
+    "title": "Secure Annex",
+    "description": "[Secure Annex](https://secureannex.com/) is a browser extension security platform that provides a comprehensive analysis of the Chrome extensions installed across your organization's endpoints.",
+    "word_count": 610,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/ext-secureannex.md"
+  },
+  "reference/ext-sensor": {
+    "title": "Sensor Cull",
+    "description": "These documents are about the SAME topic - the Sensor Cull extension. I'll merge them into a single, comprehensive document.",
+    "word_count": 343,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-sensor.md"
+  },
+  "reference/ext-twilio": {
+    "title": "Twilio Extension",
+    "description": "The [Twilio](https://www.twilio.com/) Extension allows you to send SMS messages through Twilio's messaging service directly from LimaCharlie. This extension requires you to configure Twilio authentica",
+    "word_count": 413,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-twilio.md"
+  },
+  "reference/en-ext-yara": {
+    "title": "YARA",
+    "description": "The [YARA](https://github.com/Yara-Rules/rules) Extension is designed to help you with all aspects of YARA scanning. It takes what is normally a manual piecewise process, provides a framework and auto",
+    "word_count": 533,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/en-ext-yara.md"
+  },
+  "reference/ext-yara": {
+    "title": "YARA",
+    "description": "The [YARA](https://github.com/Yara-Rules/rules) Extension is designed to help you with all aspects of YARA scanning. It takes what is normally a manual piecewise process, provides a framework and auto",
+    "word_count": 533,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-yara.md"
+  },
+  "reference/en-ext-yara-manager": {
+    "title": "YARA Manager",
+    "description": "The [YARA](https://github.com/Yara-Rules/rules) manager Extension allows you to reference external YARA rules (rules maintained in GitHub, for example) to use in your YARA scans within LimaCharlie.",
+    "word_count": 434,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/en-ext-yara-manager.md"
+  },
+  "reference/ext-yara-manager": {
+    "title": "YARA Manager",
+    "description": "The [YARA](https://github.com/Yara-Rules/rules) manager Extension allows you to reference external YARA rules (rules maintained in GitHub, for example) to use in your YARA scans within LimaCharlie.",
+    "word_count": 434,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/ext-yara-manager.md"
+  },
+  "reference/ext-zeek": {
+    "title": "Zeek",
+    "description": "[Zeek](https://zeek.org/) is a comprehensive platform for network traffic analysis and intrusion detection.",
+    "word_count": 723,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-zeek.md"
+  },
+  "reference/faq-billing": {
+    "title": "FAQ - Billing",
+    "description": "This page contains frequently asked questions about billing within LimaCharlie.",
+    "word_count": 891,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/faq-billing.md"
+  },
+  "reference/faq-general": {
+    "title": "FAQ - General",
+    "description": "LimaCharlie data is secured starting at the endpoint all the way through your infrastructure. The LimaCharlie platform is hosted on the Google Cloud Platform, leveraging multiple capabilities from cre",
+    "word_count": 1484,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/faq-general.md"
+  },
+  "reference/faq-invoices": {
+    "title": "FAQ - Invoices",
+    "description": "This page contains frequently asked questions about invoices you receive for LimaCharlie service.",
+    "word_count": 586,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/faq-invoices.md"
+  },
+  "reference/faq-troubleshooting": {
+    "title": "FAQ - Sensor Troubleshooting",
+    "description": "When running Sensor [console commands](/v2/docs/endpoint-agent-commands), you may encounter a \"spinning wheel\" or no output back from the Sensor. Oftentimes, this is due to the *response* event not en",
+    "word_count": 1825,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/faq-troubleshooting.md"
+  },
+  "reference/google-cloud-outputs": {
+    "title": "Google Cloud Storage and BigQuery Output Destinations",
+    "description": "LimaCharlie supports outputting events and detections to Google Cloud Platform services including Cloud Storage buckets and BigQuery tables.",
+    "word_count": 352,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/google-cloud-outputs.md"
+  },
+  "reference/azure-outputs": {
+    "title": "Azure Storage Blob",
+    "description": "Output events and detections to a Blob Container in Azure Storage Blobs.",
+    "word_count": 60,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/azure-outputs.md"
+  },
+  "reference/webhook-outputs": {
+    "title": "Webhook Output Destinations",
+    "description": "LimaCharlie supports two webhook output destination types: individual event webhooks and bulk batch webhooks. Both send data via HTTP(S) POST requests with optional authentication and signature verifi",
+    "word_count": 365,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/webhook-outputs.md"
+  },
+  "reference/syslog-outputs": {
+    "title": "Syslog",
+    "description": "Output events and detections to a syslog target.",
+    "word_count": 93,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/syslog-outputs.md"
+  },
+  "reference/payloads": {
+    "title": "Payloads",
+    "description": "Payloads are executables or scripts that can be delivered and executed through LimaCharlie's Endpoint Agent.",
+    "word_count": 468,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/payloads.md"
+  },
+  "reference/query-console": {
+    "title": "Query Console UI",
+    "description": "Many critical security operations require a query console with strong search functionality. It enables analysts to query large volumes of telemetry, logs, and events for investigations, hunting, and i",
+    "word_count": 928,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/query-console.md"
+  },
+  "reference/reference-id": {
+    "title": "Reference: ID Schema",
+    "description": "An AgentID is a 5-tuple that completely describes a Sensor, while a Sensor ID is the smallest single unique identifier that can identify a sensor.",
+    "word_count": 1210,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/reference-id.md"
+  },
+  "reference/reference-platform": {
+    "title": "Reference: Platform Events",
+    "description": "Platform events are system-level events generated by the LimaCharlie platform to provide visibility into sensor operations, organizational changes, and internal system activities. These events differ ",
+    "word_count": 1712,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/reference-platform.md"
+  },
+  "reference/replay": {
+    "title": "Replay",
+    "description": "Replay allows you to run [Detection & Response (D&R) rules](/v2/docs/detection-and-response) against historical traffic. This can be done in a few combinations of sources:",
+    "word_count": 940,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/replay.md"
+  },
+  "reference/response-actions": {
+    "title": "Response Actions",
+    "description": "Actions in LimaCharlie Detection & Response (D&R) rules define what happens after a detection is triggered. Common actions include generating reports, tagging sensors, isolating networks, and the freq",
+    "word_count": 2064,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/response-actions.md"
+  },
+  "reference/sensor-connectivity": {
+    "title": "Sensor Connectivity",
+    "description": "The network connection required by the LimaCharlie Sensor is very simple. It requires a single TCP connection over port 443 to a specific domain, and optionally another destination for the [Artifact C",
+    "word_count": 388,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/sensor-connectivity.md"
+  },
+  "reference/sigma-converter": {
+    "title": "Sigma Converter",
+    "description": "LimaCharlie is happy to contribute to the [Sigma Project](https://github.com/SigmaHQ/sigma) by maintaining the LimaCharlie Backend for Sigma, enabling most Sigma rules to be converted to the [Detectio",
+    "word_count": 829,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/sigma-converter.md"
+  },
+  "reference/soteria-aws": {
+    "title": "Soteria AWS Rules",
+    "description": "Soteria's AWS ruleset provides coverage across multiple AWS telemetry streams, including:",
+    "word_count": 263,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/soteria-aws.md"
+  },
+  "reference/soteria-edr": {
+    "title": "Soteria EDR Rules",
+    "description": "Soteria's EDR ruleset provides comprehensive threat detection coverage across Windows, Linux, and macOS platforms. You can review the dynamic MITRE ATT&CK mapping for each platform:",
+    "word_count": 322,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/soteria-edr.md"
+  },
+  "reference/soteria-m365": {
+    "title": "Soteria M365 Rules",
+    "description": "Soteria's O365 ruleset provides coverage across O365 (aka M365) telemetry streams. The ruleset is designed for in-depth analysis of the Office 365 ecosystem which includes:",
+    "word_count": 438,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/soteria-m365.md"
+  },
+  "reference/template-strings-and-transforms": {
+    "title": "Template Strings and Transforms",
+    "description": "Many areas of LimaCharlie support template strings and transforms.",
+    "word_count": 1530,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/template-strings-and-transforms.md"
+  },
+  "reference/use-cases": {
+    "title": "Use Cases",
+    "description": "LimaCharlie's vast array of capabilities can be applied to countless scenarios.",
+    "word_count": 199,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/use-cases.md"
+  },
+  "reference/vdi-virtual": {
+    "title": "VDI & Virtual Machine Templates",
+    "description": "The LimaCharlie Endpoint Agent can be installed in template-based environments whether they're VMs or VDIs.",
+    "word_count": 477,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/vdi-virtual.md"
+  },
+  "reference/wel-monitoring": {
+    "title": "WEL Monitoring",
+    "description": "LimaCharlie's SecOps Cloud Platform transforms Windows Event Log monitoring by providing real-time visibility, streamlined infrastructure, and powerful detection and response capabilities. Effectively",
+    "word_count": 306,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/wel-monitoring.md"
+  },
+  "reference/en-whats-newx": {
+    "title": "Clean Documentation Task",
+    "description": "I'll extract the clean documentation content from this page, removing all UI chrome and navigation elements.",
+    "word_count": 182,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/en-whats-newx.md"
+  },
+  "reference/whats-newx-publisheddate=1": {
+    "title": "Release Notes",
+    "description": "**13 Oct 2025**",
+    "word_count": 296,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/whats-newx-publisheddate=1.md"
+  },
+  "reference/whats-newx-publisheddate=30": {
+    "title": "Release Notes",
+    "description": "**New behavior added**",
+    "word_count": 916,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/whats-newx-publisheddate=30.md"
+  },
+  "reference/whats-newx-publisheddate=7": {
+    "title": "YARA",
+    "description": "LimaCharlie supports YARA for pattern matching and malware detection through both sensor commands and extensions.",
+    "word_count": 383,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/whats-newx-publisheddate=7.md"
+  },
+  "reference/ext-dumper": {
+    "title": "Dumper",
+    "description": "The Dumper Extension provides the ability to do dumping of several forensic artifacts on Windows hosts. It supports a single action, which is to dump.",
+    "word_count": 296,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-dumper.md"
+  },
+  "reference/ext-epp": {
+    "title": "Endpoint Protection",
+    "description": "The Endpoint Protection (EPP) management in LimaCharlie enables users to view the status of existing EPP solutions (including Windows Free Defender), manage parameters of the deployment and unify aler",
+    "word_count": 603,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-epp.md"
+  },
+  "reference/ext-git": {
+    "title": "Git Sync",
+    "description": "The Git Sync Extension is a tool that automates the management of Infrastructure-as-Code (IaC) configurations. It simplifies the process of deploying and managing infrastructure by synchronizing chang",
+    "word_count": 1053,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-git.md"
+  },
+  "reference/ext-nims": {
+    "title": "NIMS",
+    "description": "Notion Incident Management System (NIMS) helps SOC/IR teams streamline their incident collaboration. While not a replacement for advanced SIEM or SOAR case management systems, it offers a practical al",
+    "word_count": 496,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-nims.md"
+  },
+  "reference/ext-renigma": {
+    "title": "REnigma",
+    "description": "[REnigma](https://dtrsec.com/) is an advanced malware analysis platform leveraging its unique Record and Replay technology to deliver unparalleled precision and depth. By recording every state change ",
+    "word_count": 445,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-renigma.md"
+  },
+  "reference/ext-usage": {
+    "title": "Usage Alerts",
+    "description": "The usage alerts Extension allows you to create, maintain, & automatically refresh usage alert conditions for an Organization.",
+    "word_count": 559,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-usage.md"
+  },
+  "reference/ext-velociraptor": {
+    "title": "Velociraptor",
+    "description": "[Velociraptor](https://github.com/Velocidex/Velociraptor) is an open source endpoint visibility tool that includes power digital forensic, incident response, and incident triage capabilities. LimaChar",
+    "word_count": 747,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/ext-velociraptor.md"
+  },
+  "reference/faq-account": {
+    "title": "FAQ - Account Management",
+    "description": "By default, LimaCharlie has a limit of two organizations. If you need to create more organizations, please reach out to the support team and we will change this limit.",
+    "word_count": 516,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/faq-account.md"
+  },
+  "reference/faq-sensor": {
+    "title": "FAQ - Sensor Installation",
+    "description": "The tables below show the hostnames and IPs used to connect to LimaCharlie. All connections use TCP port 443 and TLS 1.2+",
+    "word_count": 1674,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/faq-sensor.md"
+  },
+  "reference/lcql-examples": {
+    "title": "LCQL Examples",
+    "description": "LimaCharlie Query Language (LCQL) lets you write well-structured queries to search across telemetry within LimaCharlie. The following examples can help you perform targeted searches or hunts across yo",
+    "word_count": 705,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/lcql-examples.md"
+  },
+  "reference/limacharlie-cli": {
+    "title": "LimaCharlie CLI",
+    "description": "LimaCharlie CLI Extension allows you to issue [LimaCharlie CLI commands](/v2/docs/limacharlie-sdk) using extension requests.",
+    "word_count": 123,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/limacharlie-cli.md"
+  },
+  "reference/reference-authentication": {
+    "title": "Reference: Authenticated Resource Locator",
+    "description": "Many features in LimaCharlie require access to external resources, sometimes authenticated, provided by users.",
+    "word_count": 264,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/reference-authentication.md"
+  },
+  "reference/reference-error": {
+    "title": "Reference: Error Codes",
+    "description": "The follow error codes are found within various Report (`*_REP`) events found within the EDR Events, often in response to an endpoint agent command.",
+    "word_count": 278,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/reference-error.md"
+  },
+  "reference/reference-events": {
+    "title": "Anomalies",
+    "description": "Generated when a [`hidden_module_scan`](/v1/docs/sensor-commands-anomalies#hiddenmodulescan) command is issued.",
+    "word_count": 49,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/reference-events.md"
+  },
+  "reference/reference-permissions": {
+    "title": "Reference: Permissions",
+    "description": "LimaCharlie uses a granular permission system that controls access to all platform functionality. Permissions are applied through User accounts, API Keys, or Groups and follow a hierarchical naming co",
+    "word_count": 1290,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/reference-permissions.md"
+  },
+  "reference/reference-schedule": {
+    "title": "Reference: Schedule Events",
+    "description": "Schedule events are triggered automatically at various intervals per Organization or per Sensor, observable in rules via the `schedule` target.",
+    "word_count": 325,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/reference-schedule.md"
+  },
+  "reference/reference-sensor": {
+    "title": "Reference: Sensor Selector Expressions",
+    "description": "Many components in LimaCharlie require selecting a set of Sensors based on some characteristics. The selector expression is a text field that describe what matching characteristics the selector is loo",
+    "word_count": 525,
+    "has_code_examples": false,
+    "file_path": "output/topics/reference/reference-sensor.md"
+  },
+  "reference/schema-data": {
+    "title": "Schema Data Types",
+    "description": "The data types in your schema can be further subdivided into three categories. Primitives, Code Blocks, and Objects (including tables). These data types allow for a cleaner UI and a more intuitive sch",
+    "word_count": 621,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/schema-data.md"
+  },
+  "reference/sensor-commands-anomalies": {
+    "title": "Anomalies",
+    "description": "Look for hidden modules in a process's (or all) memory. Hidden modules are DLLs or dylibs loaded manually (not by the OS).",
+    "word_count": 51,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/sensor-commands-anomalies.md"
+  },
+  "reference/sensor-commands-documents": {
+    "title": "Documents",
+    "description": "Retrieve a document / file that was cached on the sensor.",
+    "word_count": 127,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/sensor-commands-documents.md"
+  },
+  "reference/sensor-commands-memory": {
+    "title": "Memory",
+    "description": "The following sensor commands perform actions against memory on EDR sensors.",
+    "word_count": 411,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/sensor-commands-memory.md"
+  },
+  "reference/sensor-commands-mitigation": {
+    "title": "Mitigation",
+    "description": "The following sensor commands perform mitigation actions against EDR sensors.",
+    "word_count": 201,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/sensor-commands-mitigation.md"
+  },
+  "reference/sensor-commands-registry": {
+    "title": "Registry",
+    "description": "List the keys and values in a Windows registry key.",
+    "word_count": 41,
+    "has_code_examples": true,
+    "file_path": "output/topics/reference/sensor-commands-registry.md"
+  }
+}
