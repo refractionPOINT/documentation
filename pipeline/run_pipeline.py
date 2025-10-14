@@ -23,7 +23,7 @@ from utils import log, log_error, log_success, log_warning
 class PipelineRunner:
     """Orchestrates the complete documentation transformation pipeline."""
 
-    def __init__(self, start_phase: int = 1, end_phase: int = 6):
+    def __init__(self, start_phase: int = 1, end_phase: int = 7):
         self.start_phase = start_phase
         self.end_phase = end_phase
         self.phases = [
@@ -33,6 +33,7 @@ class PipelineRunner:
             ("Transform with Claude", "04_transform.py"),
             ("Verify & Generate Outputs", "05_verify.py"),
             ("Topic Synthesis", "06_synthesize.py"),
+            ("Validation & Quality Checks", "07_validate.py"),
         ]
         self.start_time = None
         self.phase_times = []
@@ -159,16 +160,16 @@ Examples:
         '--start',
         type=int,
         default=1,
-        choices=range(1, 7),
-        help='Start from phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify, 6=synthesize)'
+        choices=range(1, 8),
+        help='Start from phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify, 6=synthesize, 7=validate)'
     )
 
     parser.add_argument(
         '--end',
         type=int,
-        default=6,
-        choices=range(1, 7),
-        help='End at phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify, 6=synthesize)'
+        default=7,
+        choices=range(1, 8),
+        help='End at phase (1=discover, 2=fetch, 3=convert, 4=transform, 5=verify, 6=synthesize, 7=validate)'
     )
 
     args = parser.parse_args()

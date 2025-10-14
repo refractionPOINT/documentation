@@ -211,20 +211,32 @@ Do not include any other text or explanation. Only output the JSON.
 
         combined_text = "\n\n---\n\n".join(combined_content)
 
-        # Use Claude to synthesize into coherent topic
+        # Use Claude to synthesize into coherent topic with strict validation
         synthesis_prompt = f"""You are synthesizing multiple related documentation pages into a single, cohesive, self-contained topic.
 
 Category: {category}
 
-Your task:
-1. Merge related content intelligently
-2. Remove redundancy while preserving all important information
-3. Organize with clear sections and hierarchy
-4. Ensure the result is self-contained (no "see page X for details")
-5. Keep all code examples, commands, and technical details
-6. Maintain all links and references
+CRITICAL REQUIREMENTS:
+1. **VALIDATE FIRST**: Confirm these documents are about the SAME specific topic
+2. **IF UNRELATED**: Output them SEPARATELY with clear section breaks, DO NOT MERGE
+3. **IF RELATED**: Merge intelligently while preserving ALL technical details
+4. **PRESERVE DEPTH**: Keep ALL code examples, commands, configurations, parameters
+5. **NO SUMMARIZATION**: Include complete content, not abbreviated versions
+6. **SELF-CONTAINED**: No "see page X for details" - include all necessary information
+7. **TECHNICAL ACCURACY**: Preserve exact commands, syntax, and technical details
 
 Output ONLY the synthesized markdown content. Do not add commentary or explanations about what you did.
+
+If documents are unrelated, output them as separate sections like:
+```
+# Topic 1 Title
+[Full content of topic 1]
+
+---
+
+# Topic 2 Title
+[Full content of topic 2]
+```
 
 {combined_text}
 """
@@ -249,26 +261,255 @@ Output ONLY the synthesized markdown content. Do not add commentary or explanati
             utils.log_error(f"Synthesis failed for {category}: {e}")
             return combined_text
 
+    def strip_language_prefix(self, slug: str) -> str:
+        """Strip language prefix from slug (e.g., 'en-config-hive' -> 'config-hive')."""
+        # Common language prefixes used in documentation
+        language_prefixes = ['en-', 'fr-', 'es-', 'de-', 'ja-', 'zh-']
+
+        for prefix in language_prefixes:
+            if slug.startswith(prefix):
+                return slug[len(prefix):]
+
+        return slug
+
+    def extract_topic_keywords(self, slug: str, content: str) -> str:
+        """Extract key information for grouping decision."""
+        # Get title
+        lines = content.split('\n')
+        title = slug
+        for line in lines:
+            if line.startswith('#'):
+                title = line.lstrip('#').strip()
+                break
+
+        # Get first 500 characters of content
+        text_content = []
+        for line in lines:
+            if line.strip() and not line.startswith('#'):
+                text_content.append(line.strip())
+                if len(' '.join(text_content)) > 500:
+                    break
+
+        preview = ' '.join(text_content)[:500]
+
+        return f"**{slug}** | Title: {title} | Content: {preview}..."
+
+    def semantic_group_topics(self, category: str, slugs: List[str], docs: Dict[str, str]) -> Dict[str, List[str]]:
+        """
+        Intelligently group related documents using semantic analysis.
+
+        Key improvements:
+        1. Strip language prefixes before grouping
+        2. Use content similarity instead of string matching
+        3. Keep groups small (max 5 docs)
+        4. Validate that grouped items are actually related
+        """
+        utils.log(f"Semantically grouping {len(slugs)} documents in {category}...")
+
+        # Step 1: Strip language prefixes and create initial mapping
+        normalized_slugs = {}  # normalized_slug -> [original_slugs]
+        for slug in slugs:
+            normalized = self.strip_language_prefix(slug)
+            if normalized not in normalized_slugs:
+                normalized_slugs[normalized] = []
+            normalized_slugs[normalized].append(slug)
+
+        utils.log(f"After stripping language prefixes: {len(normalized_slugs)} unique topics")
+
+        # Step 2: Create initial groups based on normalized slugs
+        # Use smarter prefix matching that considers topic hierarchy
+        initial_groups = {}
+
+        for normalized, slug_list in normalized_slugs.items():
+            # Split on hyphens and build hierarchy
+            parts = normalized.split('-')
+
+            # Strategy: Only group if share a meaningful prefix (at least 2 segments)
+            # and total slug length is similar
+            if len(parts) >= 3:
+                # Multi-part slug: group by first 2-3 segments
+                base = '-'.join(parts[:2])
+            else:
+                # Short slug: use full slug as base (don't merge different topics)
+                base = normalized
+
+            if base not in initial_groups:
+                initial_groups[base] = []
+            initial_groups[base].extend(slug_list)
+
+        # Step 3: Validate groups and split large ones using semantic analysis
+        final_groups = {}
+
+        for base, group_slugs in initial_groups.items():
+            # If only 1-2 docs, keep as-is
+            if len(group_slugs) <= 2:
+                final_groups[base] = group_slugs
+                continue
+
+            # If 3-5 docs, validate they're related
+            if len(group_slugs) <= 5:
+                if self.validate_group_relatedness(group_slugs, docs):
+                    final_groups[base] = group_slugs
+                else:
+                    # Split into individual topics
+                    for slug in group_slugs:
+                        final_groups[slug] = [slug]
+                continue
+
+            # If >5 docs, definitely split using semantic analysis
+            subgroups = self.split_large_group(base, group_slugs, docs)
+            final_groups.update(subgroups)
+
+        utils.log_success(f"Created {len(final_groups)} semantic topic groups from {len(slugs)} documents")
+
+        # Log large groups for inspection
+        for topic_name, topic_slugs in final_groups.items():
+            if len(topic_slugs) > 3:
+                utils.log(f"  Large group '{topic_name}': {len(topic_slugs)} docs - {topic_slugs[:3]}...")
+
+        return final_groups
+
+    def validate_group_relatedness(self, slugs: List[str], docs: Dict[str, str]) -> bool:
+        """
+        Use Claude to validate that documents in a group are actually related.
+
+        Returns True if documents should be merged, False if they should stay separate.
+        """
+        if len(slugs) <= 1:
+            return True
+
+        # Prepare document summaries
+        doc_summaries = []
+        for slug in slugs[:5]:  # Limit to first 5 to keep prompt manageable
+            if slug in docs:
+                summary = self.extract_topic_keywords(slug, docs[slug])
+                doc_summaries.append(summary)
+
+        summaries_text = '\n'.join(doc_summaries)
+
+        # Ask Claude if these documents are related
+        validation_prompt = f"""Analyze if these documents are about the SAME topic and should be merged:
+
+{summaries_text}
+
+Answer with ONLY one word:
+- "MERGE" if they are about the same specific topic (e.g., all about "Config Hive", or all about "Windows Agent Installation")
+- "SEPARATE" if they are about different topics (e.g., one about BinLib, another about Enterprise SOC)
+
+Consider them SAME topic only if they would naturally belong in a single cohesive article.
+
+Answer:"""
+
+        try:
+            result = subprocess.run(
+                [config.CLAUDE_CLI],
+                input=validation_prompt,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                encoding='utf-8'
+            )
+
+            if result.returncode == 0:
+                response = result.stdout.strip().upper()
+                # Look for MERGE or SEPARATE in response
+                if 'MERGE' in response and 'SEPARATE' not in response:
+                    return True
+                elif 'SEPARATE' in response:
+                    return False
+        except Exception as e:
+            utils.log_warning(f"Validation failed: {e}, defaulting to separate")
+
+        # Default to keeping separate to avoid bad merges
+        return False
+
+    def split_large_group(self, base: str, slugs: List[str], docs: Dict[str, str]) -> Dict[str, List[str]]:
+        """
+        Split a large group (>5 docs) into semantic subgroups.
+
+        Uses Claude to cluster documents by semantic similarity.
+        """
+        utils.log(f"Splitting large group '{base}' with {len(slugs)} documents...")
+
+        # For very large groups, use more aggressive splitting
+        if len(slugs) > 10:
+            # Split into individual topics to avoid creating mega-files
+            result = {}
+            for slug in slugs:
+                result[slug] = [slug]
+            utils.log(f"Large group split into {len(result)} individual topics")
+            return result
+
+        # For moderate groups (6-10), try to find natural subgroups
+        # Prepare summaries
+        doc_summaries = []
+        for slug in slugs:
+            if slug in docs:
+                summary = self.extract_topic_keywords(slug, docs[slug])
+                doc_summaries.append(summary)
+
+        summaries_text = '\n'.join(doc_summaries)
+
+        # Ask Claude to suggest grouping
+        grouping_prompt = f"""Analyze these {len(slugs)} documents and group them into logical subgroups.
+Each subgroup should contain documents about the SAME specific topic.
+
+Documents:
+{summaries_text}
+
+Output ONLY a JSON object mapping group names to lists of slugs:
+{{
+  "group-name-1": ["slug1", "slug2"],
+  "group-name-2": ["slug3"],
+  "group-name-3": ["slug4", "slug5"]
+}}
+
+Keep groups small (max 3-4 documents per group). If documents are unrelated, keep them separate.
+Use the original slugs exactly as shown above."""
+
+        try:
+            result = subprocess.run(
+                [config.CLAUDE_CLI],
+                input=grouping_prompt,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                encoding='utf-8'
+            )
+
+            if result.returncode == 0:
+                response = result.stdout.strip()
+                # Extract JSON
+                start_idx = response.find('{')
+                end_idx = response.rfind('}') + 1
+                if start_idx != -1 and end_idx > 0:
+                    json_str = response[start_idx:end_idx]
+                    groups = json.loads(json_str)
+
+                    # Validate the grouping
+                    all_slugs = set(slugs)
+                    grouped_slugs = set()
+                    for group_slugs in groups.values():
+                        grouped_slugs.update(group_slugs)
+
+                    # If grouping is valid, use it
+                    if grouped_slugs == all_slugs:
+                        utils.log_success(f"Split into {len(groups)} semantic subgroups")
+                        return groups
+        except Exception as e:
+            utils.log_warning(f"Semantic splitting failed: {e}")
+
+        # Fallback: split into individual topics
+        result = {}
+        for slug in slugs:
+            result[slug] = [slug]
+        utils.log(f"Fallback: split into {len(result)} individual topics")
+        return result
+
     def group_related_topics(self, category: str, slugs: List[str], docs: Dict[str, str]) -> Dict[str, List[str]]:
         """Group related documents that should be merged into single topics."""
-        utils.log(f"Grouping {len(slugs)} documents in {category}...")
-
-        # For now, use simple grouping based on slug prefixes
-        # A more sophisticated approach would use Claude to analyze content similarity
-        groups = {}
-
-        for slug in slugs:
-            # Extract base topic from slug (before last hyphen/underscore)
-            base = slug.rsplit('-', 1)[0] if '-' in slug else slug
-            base = base.rsplit('_', 1)[0] if '_' in base else base
-
-            # Group similar slugs together
-            if base not in groups:
-                groups[base] = []
-            groups[base].append(slug)
-
-        utils.log_success(f"Created {len(groups)} topic groups from {len(slugs)} documents")
-        return groups
+        # Use the new semantic grouping algorithm
+        return self.semantic_group_topics(category, slugs, docs)
 
     def write_topic_file(self, category: str, topic_name: str, content: str):
         """Write a synthesized topic to the appropriate directory."""
