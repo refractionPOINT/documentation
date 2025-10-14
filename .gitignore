@@ -1,4 +1,5 @@
 .worktrees/
+.serena/
 
 # Python bytecode and cache
 *.pyc
