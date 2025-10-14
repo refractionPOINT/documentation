@@ -1,1 +1,4 @@
 .worktrees/
+
+# Generated pipeline outputs
+output/
