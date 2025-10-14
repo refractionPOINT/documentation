@@ -1,1 +1,12 @@
 .worktrees/
+
+# Python bytecode and cache
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+
+# Intermediate pipeline artifacts (not needed for final output)
+output/raw-html/
+output/raw-markdown/
