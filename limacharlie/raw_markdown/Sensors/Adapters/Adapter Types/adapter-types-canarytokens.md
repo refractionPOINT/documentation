@@ -1,0 +1,220 @@
+---
+title: Canarytokens
+slug: adapter-types-canarytokens
+breadcrumb: Sensors > Adapters > Adapter Types
+source: https://docs.limacharlie.io/docs/adapter-types-canarytokens
+articleId: 9d87bbfa-3759-4499-a6a2-638fc87ef5d9
+---
+
+* * *
+
+Canarytokens
+
+  *  __24 Apr 2025
+  *  __ 3 Minutes to read 
+
+
+
+Share this __
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+ __Contents
+
+# Canarytokens
+
+  *  __Updated on 24 Apr 2025
+  *  __ 3 Minutes to read 
+
+
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+* * *
+
+Article summary
+
+ __
+
+Did you find this summary helpful? __ __ __ __
+
+__
+
+Thank you for your feedback!
+
+Canarytokens are a free, quick, painless way to help defenders discover they've been breached (by having attackers announce themselves). Canarytokens are digital traps, or tripwires, that can be placed in an organization's network as a "lure" for adversaries. When actioned against, canaries will fire an alert, that can be forwarded to LimaCharlie.
+
+Canarytokens can be ingested in LimaCharlie via a Webhook Adapter, and are recognized as the `canary_token` platform.
+
+A Little More
+
+LimaCharlie published a blog post in April 2023 to discuss the Canarytoken integration. You can read more about that [here](https://limacharlie.io/blog/early-warnings-with-limacharlie-and-canarytokens).
+
+## Adapter Deployment
+
+Canarytoken alerts are ingested via a cloud-to-cloud webhook Adapter configured to receive JSON events. The LimaCharlie platform has pre-built mapping for Canarytoken alerts. A Canarytokens Adapter can be initially deployed in two ways:
+
+  * Via the LimaCharlie web UI
+
+  * Via the LimaCharlie CLI
+
+
+
+
+Regardless of which method utilized, Steps 2 and 3 will still be the same.
+
+### 1a. Initial deployment via the LimaCharlie web UI
+
+Within the LimaCharlie UI, navigate to **Sensors** > **Sensors List** > **\+ Add** Sensor. Select the **Canary Token** option.
+
+After selecting or creating an Installation Key, the web UI will ask you to name the Adapter and select a Secret value.
+
+Click **Complete Cloud Installation** to create the cloud-to-cloud Adapter. Proceed to step 2 to continue.
+
+### 1b. Initial deployment via the LimaCharlie CLI
+
+A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation, found [here](/v2/docs/tutorial-creating-a-webhook-adapter).
+
+The following configuration can be modified to easily configure a Webhook Adapter for receiving Canarytokens events.
+    
+    
+    {
+        "sensor_type": "webhook",
+        "webhook": {
+           "secret": "canarytoken-secret",
+            "client_options": {
+                "hostname": "canarytokens",
+                "identity": {
+                    "oid": "<your_oid>",
+                    "installation_key": "<your_installation_key>"
+                },
+                "platform": "canary_token",
+                "sensor_seed_key": "canary-super-secret-key",
+                "mapping" : {
+                    "event_type_path" : {{ 'Canarytoken Hit' }}
+                }
+            }
+        }
+    }
+    
+
+Note that in the mapping above, the `event_type_path` field is set to a static string of `Canarytoken Hit`. You can change this to any desired value.
+
+To create this webhook adapter, run the following command, replacing `<json_config_file>` with the name of the config file from above:
+
+`limacharlie hive set cloud_sensor --key canarytoken --data <json_config_file>`
+
+### 2\. Building the Webhook URL
+
+After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://docs.limacharlie.io/apidocs/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
+
+  * Organization ID
+
+  * Webhook name (from the config)
+
+  * Secret (from the config)
+
+
+
+
+Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.io`, the format of the URL would be:
+
+`https://9157798c50af372c.hook.limacharlie.io/OID/HOOKNAME/SECRET`
+
+Note that the `secret` value can be provided in the webhook URL or as an HTTP header named `lc-secret`.
+
+### 3\. Configuring the Canaryalert Webhook Output
+
+Navigate to the [Canarytokens generate page](https://canarytokens.org/generate) to create your token of choice.
+
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28173%29.png)
+
+Utilize the URL from Step 2 as the webhook URL. Provide a reminder note, which will also appear in the Canarytoken alert when tripped. Click **Create my Canarytoken** , which will provide you the content related to the selected token. When the Canarytoken is tripped, a webhook alert will be forwarded to the LimaCharlie Adapter.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments. 
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+* * *
+
+Was this article helpful?
+
+__Yes __No
+
+ __
+
+Thank you for your feedback! Our team will get back to you
+
+How can we improve this article?
+
+Your feedback
+
+Need more information
+
+Difficult to understand
+
+Inaccurate or irrelevant content
+
+Missing/broken link
+
+Others
+
+Comment
+
+Comment (Optional)
+
+Character limit : 500
+
+Please enter your comment
+
+Email (Optional)
+
+Email
+
+Notify me about change  
+
+
+Please enter a valid email
+
+Cancel
+
+* * *
+
+###### What's Next
+
+  * [ Cato ](/docs/adapter-types-cato) __
+
+
+
+Table of contents
+
+    * Adapter Deployment 
+
+
+
+Tags
+
+  * [ adapters ](/docs/en/tags/adapters)
+  * [ sensors ](/docs/en/tags/sensors)
+
+

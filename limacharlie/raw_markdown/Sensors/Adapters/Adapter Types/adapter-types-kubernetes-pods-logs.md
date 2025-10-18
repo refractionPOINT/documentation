@@ -1,0 +1,226 @@
+---
+title: Kubernetes Pods Logs
+slug: adapter-types-kubernetes-pods-logs
+breadcrumb: Sensors > Adapters > Adapter Types
+source: https://docs.limacharlie.io/docs/adapter-types-kubernetes-pods-logs
+articleId: 8144eaa2-dc73-4900-a3c5-d90135094d94
+---
+
+* * *
+
+Kubernetes Pods Logs
+
+  *  __16 Jul 2025
+  *  __ 2 Minutes to read 
+
+
+
+Share this __
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+ __Contents
+
+# Kubernetes Pods Logs
+
+  *  __Updated on 16 Jul 2025
+  *  __ 2 Minutes to read 
+
+
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+* * *
+
+Article summary
+
+ __
+
+Did you find this summary helpful? __ __ __ __
+
+__
+
+Thank you for your feedback!
+
+## Overview
+
+This Adapter allows you to ingest the logs from the pods running in a Kubernetes cluster.
+
+The adapter relies on local filesystem access to the standard Kubernetes pod logging structure. This means the adapter is best run as a Daemon Set in Kubernetes with the pod logs location mounted (usually `/var/log/pods`).
+
+A public Docker container is available [here](https://hub.docker.com/r/refractionpoint/lc-adapter-k8s-pods) as `refractionpoint/lc-adapter-k8s-pods`.
+
+## Configurations
+
+Adapter Type: `k8s_pods`
+
+The following fields are required for configuration:
+
+  * `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
+
+  * `root`: The root of the Kubernetes directory storing logs, usually `/var/log/pods`.
+
+
+
+
+### Infrastructure as Code Deployment
+    
+    
+    # Kubernetes Pods Specific Docs: https://docs.limacharlie.io/docs/adapter-types-k8s-pods
+    
+    sensor_type: "k8_pods"
+    k8s_pods:
+        client_options:
+          identity:
+            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            installation_key: "YOUR_LC_INSTALLATION_KEY_K8SPODS"
+          hostname: "k8s-worker-node"
+          platform: "k8s_pods"
+          sensor_seed_key: "k8s-pods-sensor"
+        root: "/var/log/pods"                              # Required: Pod logs directory
+        write_timeout_sec: 600                             # Optional: defaults to 600
+        include_pods_re: "^production_.*"                  # Optional: include filter
+        exclude_pods_re: "^kube-system_kube-proxy-.*$"    # Optional: exclude filter
+
+## Sample Kubernetes Configuration
+
+An example Daemon Set configuration for Kubernetes:
+    
+    
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: lc-adapter-k8s-pods
+      namespace: default
+    spec:
+      minReadySeconds: 30
+      selector:
+        matchLabels:
+          name: lc-adapter-k8s-pods
+      template:
+        metadata:
+          labels:
+            name: lc-adapter-k8s-pods
+        spec:
+          containers:
+          - image: refractionpoint/lc-adapter-k8s-pods
+            name: lc-adapter-k8s-pods
+            volumeMounts:
+            - mountPath: /k8s-pod-logs
+              name: pod-logs
+            env:
+            - name: K8S_POD_LOGS
+              value: /k8s-pod-logs
+            - name: OID
+              value: aaaaaaaa-bfa1-bbbb-cccc-138cd51389cd
+            - name: IKEY
+              value: aaaaaaaa-9ae6-bbbb-cccc-5e42b854adf5
+            - name: NAME
+              value: k8s-pods
+          volumes:
+          - hostPath:
+              path: /var/log/pods
+            name: pod-logs
+      updateStrategy:
+        rollingUpdate:
+          maxUnavailable: 1
+        type: RollingUpdate
+    
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments. 
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
+
+* * *
+
+Was this article helpful?
+
+__Yes __No
+
+ __
+
+Thank you for your feedback! Our team will get back to you
+
+How can we improve this article?
+
+Your feedback
+
+Need more information
+
+Difficult to understand
+
+Inaccurate or irrelevant content
+
+Missing/broken link
+
+Others
+
+Comment
+
+Comment (Optional)
+
+Character limit : 500
+
+Please enter your comment
+
+Email (Optional)
+
+Email
+
+Notify me about change  
+
+
+Please enter a valid email
+
+Cancel
+
+* * *
+
+###### Related articles
+
+  * [ Container Clusters ](/docs/container-clusters)
+  * [ Docker Agent Installation ](/docs/docker-agent-installation)
+
+
+
+* * *
+
+###### What's Next
+
+  * [ Mac Unified Logging ](/docs/adapter-types-mac-unified-logging) __
+
+
+
+Table of contents
+
+    * Overview 
+    * Configurations 
+    * Sample Kubernetes Configuration 
+
+
+
+Tags
+
+  * [ adapters ](/docs/en/tags/adapters)
+  * [ linux ](/docs/en/tags/linux)
+  * [ sensors ](/docs/en/tags/sensors)
+
+

@@ -1,0 +1,248 @@
+---
+title: Adapter Deployment
+slug: adapter-deployment
+breadcrumb: Sensors > Adapters
+source: https://docs.limacharlie.io/docs/adapter-deployment
+articleId: fc2503dc-b196-44d2-8253-c02499486fd7
+---
+
+* * *
+
+Adapter Deployment
+
+  *  __25 Apr 2025
+  *  __ 2 Minutes to read 
+
+
+
+Share this __
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+ __Contents
+
+# Adapter Deployment
+
+  *  __Updated on 25 Apr 2025
+  *  __ 2 Minutes to read 
+
+
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+* * *
+
+Article summary
+
+ __
+
+Did you find this summary helpful? __ __ __ __
+
+__
+
+Thank you for your feedback!
+
+Adapters can be deployed in one of two ways:
+
+  * **On-prem** , Adapters utilize the LC Adapter binary to ingest a data source and forward it to LimaCharlie.
+
+  * **Cloud-to-cloud** , connects the LimaCharlie cloud directly with your cloud source and automatically ingests data.
+
+
+
+
+Which Adapter Do I Use for Cloud Data?
+
+You can use on-prem adapters to forward cloud data, or you could acquire the same data with a cloud-to-cloud connection. So, which one to use?
+
+The answer lies in _how_ you want to send your data to LimaCharlie. Are you OK with configuring a connector from our platform, or would you rather use a bastion box in between? Either way works for us!
+
+The data ingested from adapters is parsed/mapped into JSON by LimaCharlie, according to the parameters you provided, unless using a pre-defined format.
+
+## Adapter Binaries
+
+Software-based, or "on-prem" adapters are available in the following formats:
+
+  * Binaries:
+
+    * *nix
+
+      * [AIX ppc64](https://downloads.limacharlie.io/adapter/aix/ppc64)
+
+      * [Linux (Generic) 64-bit](https://downloads.limacharlie.io/adapter/linux/64)
+
+      * [Linux (Generic) arm](https://downloads.limacharlie.io/adapter/linux/arm)
+
+      * [Linux (Generic) arm64](https://downloads.limacharlie.io/adapter/linux/arm64)
+
+      * [FreeBSD 64-bit](https://downloads.limacharlie.io/adapter/freebsd/64)
+
+      * [OpenBSD 64-bit](https://downloads.limacharlie.io/adapter/openbsd/64)
+
+      * [NetBSD 64-bit](https://downloads.limacharlie.io/adapter/netbsd/64)
+
+      * [Solaris 64-bit](https://downloads.limacharlie.io/adapter/solaris/64)
+
+    * macOS
+
+      * [macOS x64](https://downloads.limacharlie.io/adapter/mac/64)
+
+      * [macOS arm64](https://downloads.limacharlie.io/adapter/mac/arm64)
+
+    * Windows
+
+      * [Windows x64](https://downloads.limacharlie.io/adapter/windows/64)
+
+  * Docker:
+
+    * <https://hub.docker.com/r/refractionpoint/lc-adapter>
+
+
+
+
+Another platform?
+
+If you need support for a specific platform, or require more information about supported platforms, please [let us know](https://www.limacharlie.io/contact).
+
+## On-Prem + Cloud Management
+
+LimaCharlie Adapters deployed manually (on-prem) also support cloud-based management. This makes the deployment of the adapter extremely easy while also making it easy to update the configs remotely after the fact. This is particularly critical for service providers that may be deploying adapters on customer networks where gaining access to the local adapter may be difficult.
+
+To accomplish this, you need the `externaladapter.*` permissions.
+
+### Preparing
+
+The first step of deploying this way is to create a new External Adapter record. These are found in the `external_adapter` Hive or under the Sensors section of the web app.
+
+The content of an external adapter is exactly the same as a traditional [adapter configuration](/v2/docs/adapter-usage) in YAML. It describes what you want your external adapter to do, like collect from file, operate as a syslog server etc. For example:
+    
+    
+    sensor_type: syslog
+    syslog:
+      client_options:
+        buffer_options: {}
+        hostname: test-syslog
+        identity:
+          installation_key: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+          oid: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+        mapping: {}
+        platform: text
+        sensor_seed_key: test-syslog
+      port: 4242
+    
+
+Once your external adapter record is created, take note of the `GUID` (Globally Unique ID) found under the `sys_mtd` section of the JSON record, or on the right-hand side of the record view in the web app
+
+.![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image\(308\).png)
+
+This `GUID` is a shared secret value you will use in the deployed adapter to reference it to the record it should update and operate from.
+
+### Deploying
+
+Now that the configuration of the adapter is ready, you can deploy the adapter on-prem according to the [normal process](/v2/docs/adapter-usage). The only difference is that instead of running it with the full configuration locally, you can run it with the `cloud` collection method like this:
+    
+    
+    ./lc_adapter cloud conf_guid=XXXXXXXXXXXXXXXXXXXXx oid=YYYYYYYYYYYYYYYYYYY
+
+This will start the adapter telling it to fetch the configuration it requires from the cloud based on the Organization ID (your tenant in LC) and the `GUID` of the record it should use.
+
+From this point on, updating the record in LimaCharlie will automatically reconfigure the adapter on-prem, within about 1 minute of the change.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments. 
+
+* * *
+
+Was this article helpful?
+
+__Yes __No
+
+ __
+
+Thank you for your feedback! Our team will get back to you
+
+How can we improve this article?
+
+Your feedback
+
+Need more information
+
+Difficult to understand
+
+Inaccurate or irrelevant content
+
+Missing/broken link
+
+Others
+
+Comment
+
+Comment (Optional)
+
+Character limit : 500
+
+Please enter your comment
+
+Email (Optional)
+
+Email
+
+Notify me about change  
+
+
+Please enter a valid email
+
+Cancel
+
+* * *
+
+###### Related articles
+
+  * [ Adapter Usage ](/docs/adapter-usage)
+  * [ Adapter Types ](/docs/adapter-types)
+  * [ Adapter Examples ](/docs/adapter-examples)
+  * [ Adapter Tutorials ](/docs/adapter-tutorials)
+  * [ Tutorial: Ingesting Telemetry from Cloud-Based External Sources ](/docs/tutorial-ingesting-telemetry-from-cloud-based-external-sources)
+  * [ Installation Keys ](/docs/installation-keys)
+  * [ Mimecast ](/docs/adapter-types-mimecast)
+
+
+
+* * *
+
+###### What's Next
+
+  * [ Adapters as a Service ](/docs/adapters-as-a-service) __
+
+
+
+Table of contents
+
+    * Adapter Binaries 
+    * On-Prem + Cloud Management 
+
+
+
+Tags
+
+  * [ adapters ](/docs/en/tags/adapters)
+  * [ sensors ](/docs/en/tags/sensors)
+
+
