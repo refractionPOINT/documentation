@@ -1,64 +1,4 @@
----
-title: Hybrid Analysis
-slug: api-integrations-hybrid-analysis
-breadcrumb: Add-Ons > API Integrations
-source: https://docs.limacharlie.io/docs/api-integrations-hybrid-analysis
-articleId: 65ad6db9-a5f8-4e14-b712-2ff799131c37
----
-
-* * *
-
-Hybrid Analysis
-
-  *  __29 Aug 2025
-  *  __ 112 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Hybrid Analysis
-
-  *  __Updated on 29 Aug 2025
-  *  __ 112 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 Hybrid Analysis, aka Falcon Sandbox, is a powerful, free malware analysis service for the community that detects and analyzes unknown threats. Hybrid Analysis has its own unique approach, and offers both public-facing and private team-based sandboxing capabilities.
 
@@ -67,9 +7,6 @@ LimaCharlie integrates with the following Hybrid Analysis API calls:
   * [Overview](https://www.hybrid-analysis.com/docs/api/v2#/Analysis%20Overview/get_overview__sha256_)
 
   * [Search](https://www.hybrid-analysis.com/docs/api/v2#/Search/post_search_hash)
-
-
-
 
 ## Detection & Response Rules
 
@@ -225,9 +162,6 @@ The Search lookup provides a basic lookup of a hash value. This look accepts one
   * SHA1
 
   * SHA256
-
-
-
 
 **D &R Rule:**
     
@@ -3284,67 +3218,3 @@ The Search lookup provides a basic lookup of a hash value. This look accepts one
         ]
       }
     ]
-    
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ IP Geolocation ](/docs/api-integrations-ip-geolocation) __
-
-
-
-Table of contents
-
-    * Detection &amp; Response Rules 
-
-
-
-Tags
-
-  * [ add-ons ](/docs/en/tags/add-ons)
-
-

@@ -1,64 +1,4 @@
----
-title: Reference: Endpoint Agent Commands
-slug: reference-endpoint-agent-commands
-breadcrumb: Sensors > Endpoint Agent > Endpoint Agent Commands
-source: https://docs.limacharlie.io/docs/reference-endpoint-agent-commands
-articleId: 84ca8375-abcb-4934-909f-beb387ced018
----
-
-* * *
-
-Reference: Endpoint Agent Commands
-
-  *  __07 Aug 2025
-  *  __ 22 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Reference: Endpoint Agent Commands
-
-  *  __Updated on 07 Aug 2025
-  *  __ 22 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 ## Supported Commands by OS
 
@@ -120,10 +60,8 @@ Command| Report/Reply Event| macOS| Windows| Linux| Chrome| Edge
 [epp_scan](/v2/docs/reference-endpoint-agent-commands#eppscan)| [EPP_SCAN_REP]| ☑️| | | |   
 [epp_list_exclusions](/v2/docs/reference-endpoint-agent-commands#epplistexclusions)| [EPP_LIST_EXCLUSIONS_REP]| ☑️| | | |   
 [epp_add_exclusion](/v2/docs/reference-endpoint-agent-commands#eppaddexclusion)| [EPP_ADD_EXCLUSION_REP]| ☑️| | | |   
-[epp_rem_exclusion](/v2/docs/reference-endpoint-agent-commands#eppremexclusion)| [EPP_REM_EXCLUSION_REP]| ☑️| | | |   
-[epp_list_quarantine](/v2/docs/reference-endpoint-agent-commands#epplistquarantine)| [EPP_LIST_QUARANTINE_REP]| ☑️| | | |   
-  
-* * *
+[epp_rem_exclusion](/v2/docs/reference-endpoint-agent-commands#eppremexclusion)| [EPP_REM_EXCLUSION_REP]| ☑️| | | |
+[epp_list_quarantine](/v2/docs/reference-endpoint-agent-commands#epplistquarantine)| [EPP_LIST_QUARANTINE_REP]| ☑️| | | |
 
 ## Command Descriptions
 
@@ -164,8 +102,6 @@ Note on usage scenarios for the `--is-ignore-cert` flag: If the sensor is deploy
 
 Unlike the main sensor transport (which uses a pinned certificate), the Artifact Collection feature uses Google infrastructure and their public SSL certificates. This may sometimes come up in unexpected ways. For example fresh Windows Server installations do not have the root CAs for `google.com` enabled by default.
 
-* * *
-
 ### deny_tree
 
 Tells the sensor that all activity starting at a specific process (and its children) should be denied and killed. This particular command is excellent for ransomware mitigation.
@@ -181,8 +117,6 @@ ______
     positional arguments:
       atom        atoms to deny from
     
-
-* * *
 
 ### dir_find_hash
 
@@ -210,8 +144,6 @@ ______
                             single level
       --hash HASHES         sha256 to search for, can be specified multiple times
     
-
-* * *
 
 ### dir_list
 
@@ -259,8 +191,6 @@ ______
                             single level
     
 
-* * *
-
 ### dns_resolve
 
 Cause the sensor to do a network resolution. Mainly used for internal purposes. An error code of 0 indicates a successful command.
@@ -297,8 +227,6 @@ You wll also see a corresponding `DNS_REQUEST` event in the Sensor timeline.
       "MESSAGE_ID": 30183
     }
     
-
-* * *
 
 ### doc_cache_get
 
@@ -372,8 +300,6 @@ This command is currently listed to the following document types:
                             hash of the document to get
     
 
-* * *
-
 ### exfil_add
 
 Add an LC event to the list of events sent back to the backend by default.
@@ -398,8 +324,6 @@ ______
                             number of seconds before stopping exfil of event
     
 
-* * *
-
 ### exfil_del
 
 Remove an LC event from the list of events always sent back to the backend.
@@ -421,8 +345,6 @@ ______
     
     
 
-* * *
-
 ### exfil_get
 
 List all LC events sent back to the backend by default.
@@ -438,8 +360,6 @@ ______
     
     usage: exfil_get [-h]
     
-
-* * *
 
 ### file_del
 
@@ -460,8 +380,6 @@ ______
       file        file path to delete
     
     
-
-* * *
 
 ### file_get
 
@@ -491,8 +409,6 @@ ______
                             10MB
     
 
-* * *
-
 ### file_hash
 
 Compute the hash of a file.
@@ -512,8 +428,6 @@ ______
       file        file path to hash
     
     
-
-* * *
 
 ### file_info
 
@@ -535,8 +449,6 @@ ______
     
     
 
-* * *
-
 ### file_mov
 
 Move / rename a file on the endpoint.
@@ -557,8 +469,6 @@ ______
       dstFile     destination file path
     
     
-
-* * *
 
 ### fim_add
 
@@ -611,8 +521,6 @@ Which would result in: `fim_add --pattern "?:\*\Programs\Startup\*" --pattern "\
       --pattern PATTERNS  file path or registry path pattern to monitor
     
 
-* * *
-
 ### fim_del
 
 Remove a pattern from monitoring.
@@ -630,8 +538,6 @@ ______(see[this](/v2/docs/linux-agent-installation) for notes on Linux support)
       --pattern PATTERNS  file path or registry path pattern to stop monitoring
     
 
-* * *
-
 ### fim_get
 
 Get the list of the current monitored pattern(s).
@@ -646,8 +552,6 @@ ______(see[this](/v2/docs/linux-agent-installation) for notes on Linux support)
     usage: fim_get [-h]
     
 
-* * *
-
 ### get_debug_data
 
 Retrieve debug data from the EDR sensor.
@@ -657,8 +561,6 @@ ______
 
 **Report/Reply Event:**  
 [DEBUG_DATA_REP](/v2/docs/reference-edr-events#debugdatarep)
-
-* * *
 
 ### hidden_module_scan
 
@@ -678,8 +580,6 @@ __
     positional arguments:
       pid         pid of the process to scan, or "-1" for ALL processes
     
-
-* * *
 
 ### history_dump
 
@@ -704,8 +604,6 @@ ______
                             dump events of this type only
     
 
-* * *
-
 ### log_get
 
 `log_get` is a legacy command that has been replaced with `artifact_get`. You can still issue a `log_get` command from the Sensor, however the parameters and output are the same as `artifact_get`.
@@ -719,8 +617,6 @@ ______
     
     
     usage: logoff --is-confirmed
-
-* * *
 
 ### mem_find_handle
 
@@ -740,8 +636,6 @@ __
     positional arguments:
       needle      substring of the handle names to get
     
-
-* * *
 
 ### mem_find_string
 
@@ -768,8 +662,6 @@ ______
                             list of strings to look for
     
 
-* * *
-
 ### mem_handles
 
 List all open handles from a process (or all) on Windows.
@@ -791,8 +683,6 @@ __
       -a PROCESSATOM, --processatom PROCESSATOM
                             the atom of the target process
     
-
-* * *
 
 ### mem_map
 
@@ -816,8 +706,6 @@ ______
       -a PROCESSATOM, --processatom PROCESSATOM
                             the atom of the target proces
     
-
-* * *
 
 ### mem_read
 
@@ -846,8 +734,6 @@ ______
                             the atom of the target process
     
 
-* * *
-
 ### mem_strings
 
 List strings from a process's memory.
@@ -870,8 +756,6 @@ ______
       -a PROCESSATOM, --processatom PROCESSATOM
                             the atom of the target process
     
-
-* * *
 
 ### netstat
 
@@ -929,8 +813,6 @@ State| Value
 11| TIME-WAIT  
 12| DELETE TCB  
   
-* * *
-
 ### os_autoruns
 
 List pieces of code executing at startup, similar to SysInternals autoruns.
@@ -941,8 +823,6 @@ ______
     
     usage: os_autoruns [-h]
 
-* * *
-
 ### os_drivers
 
 List all drivers on Windows.
@@ -952,8 +832,6 @@ __
     
     
     usage: os_drivers [-h]
-
-* * *
 
 ### os_kill_process
 
@@ -970,8 +848,6 @@ ______
       -a PROCESSATOM, --processatom PROCESSATOM
                             the atom of the target process
 
-* * *
-
 ### os_packages
 
 List installed software packages.
@@ -981,8 +857,6 @@ ____
     
     
     usage: os_packages [-h]
-
-* * *
 
 ### os_processes
 
@@ -1000,8 +874,6 @@ ______
       -p PID, --pid PID  only get information on process id
       --is-no-modules    do not report modules in processes
 
-* * *
-
 ### os_resume
 
 Resume execution of a process on the endpoint.
@@ -1018,8 +890,6 @@ ______
                             the atom of the target process
       -t TID, --tid TID     thread id
 
-* * *
-
 ### os_services
 
 List all services (Windows, launchctl on MacOS and initd on Linux).
@@ -1029,8 +899,6 @@ ______
     
     
     usage: os_services [-h]
-
-* * *
 
 ### os_suspend
 
@@ -1048,8 +916,6 @@ ______
                             the atom of the target process
       -t TID, --tid TID     thread id
 
-* * *
-
 ### os_users
 
 List system users.
@@ -1060,8 +926,6 @@ __
     
     usage: os_users [-h]
 
-* * *
-
 ### os_version
 
 Get detailed OS information on the endpoint.
@@ -1071,8 +935,6 @@ ______
     
     
     usage: os_version [-h]
-
-* * *
 
 ### put
 
@@ -1123,8 +985,6 @@ If successful, this action will yield the following `RECEIPT` event:
         }
     "routing" : {...}
     
-
-* * *
 
 ### pcap_ifaces
 
@@ -1181,8 +1041,6 @@ __
     }
     
 
-* * *
-
 ### reboot
 
 Execute an immediate system reboot (no warnings and zero delay time)
@@ -1192,8 +1050,6 @@ ______
     
     
     usage: reboot --is-confirmed
-
-* * *
 
 ### reg_list
 
@@ -1207,8 +1063,6 @@ __
     
     positional arguments:
       reg         registry path to list, must start with one of "hkcr", "hkcc", "hkcu", "hklm", "hku", e.g. "hklm\software"...
-
-* * *
 
 ### rejoin_network
 
@@ -1226,16 +1080,12 @@ ______
     usage: rejoin_network [-h]
     
 
-* * *
-
 ### restart
 
 Forces the LimaCharlie agent to re-initialize. This is typically only useful when dealing with cloned sensor IDs in combination with the remote deletion of the identity file on disk.
 
 **Platforms:**  
 ______
-
-* * *
 
 ### run
 
@@ -1280,8 +1130,6 @@ Some shell execution requires embedding quotes within the command, for example w
 
 The above starts `powershell.exe` and passes it the `-command` argument and the value of the `-command` is `"Get-MpComputerStatus | Select-Object AMRunningMode”`.
 
-* * *
-
 ### 
 
 ### seal
@@ -1318,8 +1166,6 @@ On Sensors version 4.29.0 or newer, you will see the following metadata within `
     }
     
 
-* * *
-
 ### segregate_network
 
 Tells the sensor to stop all network connectivity on the host except LC comms to the backend. So it's network isolation, great to stop lateral movement.
@@ -1340,8 +1186,6 @@ ______
     usage: segregate_network [-h]
     
 
-* * *
-
 ### set_performance_mode
 
 Turn on or off the high performance mode on a sensor. This mode is designed for very high performance servers requiring high IO throughout. This mode reduces the accuracy of certain events which in turn reduces impact on the system, and is not useful for the vast majority of hosts. You can read more about Performance Mode and its caveats [here](/v2/docs/ext-exfil#performance-rules).
@@ -1359,8 +1203,6 @@ __
                     disabled
     
 
-* * *
-
 ### shutdown
 
 Execute an immediate system shut down (no warnings and zero delay time)
@@ -1370,8 +1212,6 @@ ______
     
     
     usage: shutdown --is-confirmed
-
-* * *
 
 ### uninstall
 
@@ -1391,8 +1231,6 @@ ____
       --is-confirmed  must be specified as a confirmation you want to uninstall
                       the sensor
     
-
-* * *
 
 ### yara_scan
 
@@ -1425,8 +1263,6 @@ ______
                              optional maximum depth of the search for files to scan, defaults to a single level
     
 
-* * *
-
 ### yara_update
 
 Update the compiled yara signature bundle that is being used for constant memory and file scanning on the sensor.
@@ -1444,8 +1280,6 @@ ______
     positional arguments:
       rule        rule to compile and set on sensor for constant scanning, literal rule or "https://" URL or base64 encoded rule
 
-* * *
-
 ### epp_status
 
 Get the current status of EPP on a sensor.
@@ -1455,8 +1289,6 @@ __
     
     
     usage: epp_status [-h]
-
-* * *
 
 ### epp_scan
 
@@ -1471,8 +1303,6 @@ __
     positional arguments:
       path        File or directory to scan
 
-* * *
-
 ### epp_list_exclusions
 
 List all the exclusions for EPP on a sensor.
@@ -1482,8 +1312,6 @@ __
     
     
     usage: epp_list_exclusions [-h]
-
-* * *
 
 ### epp_add_exclusion
 
@@ -1500,8 +1328,6 @@ __
     optional arguments:
       --type  Type of exclusion. Options are: extension, path, process
 
-* * *
-
 ### epp_rem_exclusion
 
 Remove an exclusion for EPP on a sensor.
@@ -1517,114 +1343,14 @@ __
     optional arguments:
       --type  Type of exclusion. Options are: extension, path, process
 
-* * *
-
 ### epp_list_quarantine
 
 List quarantined EPP on a sensor.
 
-**Platforms:**  
+**Platforms:**
 __
-    
-    
+
+
     usage: epp_list_quarantine [-h]
-
-* * *
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Endpoint Detection & Response
-
-In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events, they must be enabled within the Exfil or Event Collection settings.
-
-In LimaCharlie, a Sensor ID (SID) is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
-
-  
-  
-
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ Reference: EDR Events ](/docs/reference-edr-events)
-  * [ Detection and Response ](/docs/detection-and-response)
-  * [ Exfil (Event Collection) ](/docs/ext-exfil)
-  * [ Payloads ](/docs/payloads)
-  * [ Reference: Error Codes ](/docs/reference-error-codes)
-  * [ Integrity ](/docs/ext-integrity)
-  * [ Payload Manager ](/docs/payload-manager)
-  * [ YARA Manager ](/docs/ext-yara-manager)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ Endpoint Agent Installation ](/docs/endpoint-agent-installation) __
-
-
-
-Table of contents
-
-    * Supported Commands by OS 
-    * Command Descriptions 
-
-
-
-Tags
-
-  * [ browser agent ](/docs/en/tags/browser%20agent)
-  * [ detection and response ](/docs/en/tags/detection%20and%20response)
-  * [ dfir ](/docs/en/tags/dfir)
-  * [ endpoint agent ](/docs/en/tags/endpoint%20agent)
-  * [ linux ](/docs/en/tags/linux)
-  * [ macos ](/docs/en/tags/macos)
-  * [ sensors ](/docs/en/tags/sensors)
-  * [ windows ](/docs/en/tags/windows)
 
 

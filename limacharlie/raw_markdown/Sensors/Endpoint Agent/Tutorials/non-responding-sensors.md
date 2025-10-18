@@ -1,70 +1,10 @@
----
-title: Detecting Sensors No Longer Sending Data
-slug: non-responding-sensors
-breadcrumb: Sensors > Endpoint Agent > Tutorials
-source: https://docs.limacharlie.io/docs/non-responding-sensors
-articleId: 80f2a63e-c9f6-4676-a59f-3f8c6a5ae4de
----
-
-* * *
-
-Detecting Sensors No Longer Sending Data
-
-  *  __19 Aug 2025
-  *  __ 2 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Detecting Sensors No Longer Sending Data
 
-  *  __Updated on 19 Aug 2025
-  *  __ 2 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
-
-### **Overview**
+## Overview
 
 A common request is to alert an administrator if a Sensor that normally forwards data, stops or fails to send data. This LimaCharlie Playbook is meant to be triggered on a schedule by  rule. It checks for data sent, via the LimaCharlie Python SDK, within a given time window. If no data is sent during the time period, then an alert is generated, one per sensor.
 
-#### Example Playbook Code
+## Example Playbook Code
     
     
     import limacharlie
@@ -126,61 +66,5 @@ A common request is to alert an administrator if a Sensor that normally forwards
                 "stopped_sensors": [sensor.sid for sensor in stopped_sensors]
             }}
         return None
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ Ingesting Defender Event Logs ](/docs/ingesting-defender-event-logs) __
-
-
-
-Table of contents
-
 
 

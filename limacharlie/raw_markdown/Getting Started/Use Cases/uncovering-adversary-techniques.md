@@ -1,64 +1,4 @@
----
-title: Uncovering Adversary Techniques
-slug: uncovering-adversary-techniques
-breadcrumb: Getting Started > Use Cases
-source: https://docs.limacharlie.io/docs/uncovering-adversary-techniques
-articleId: 7bcfa367-5ff7-4689-b765-f1a72cf0e9a5
----
-
-* * *
-
-Uncovering Adversary Techniques
-
-  *  __31 Jul 2025
-  *  __ 2 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Uncovering Adversary Techniques
-
-  *  __Updated on 31 Jul 2025
-  *  __ 2 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 LimaCharlie's SecOps Cloud Platform provides a comprehensive approach to combating ransomware, focusing on early detection during the reconnaissance stage and rapid response in the event of a detonation. By gathering telemetry from a wide range of sources, enabling widespread deployment, and leveraging real-time response capabilities, LimaCharlie empowers organizations to effectively detect, stop, and mitigate ransomware attacks, minimizing damage and ensuring business continuity.
 
@@ -72,10 +12,7 @@ Ransomware attacks have become increasingly sophisticated and targeted, posing a
 
   * **Rapid spread and damage:** In the event of a successful ransomware detonation, the malware can spread rapidly, encrypting files and causing significant damage before security teams can respond.
 
-
-
-
-#### LimaCharlie’s solution
+#### LimaCharlie's solution
 
 LimaCharlie's SecOps Cloud Platform offers a comprehensive approach to combating ransomware, focusing on early detection during the reconnaissance stage and rapid response in the event of a detonation:
 
@@ -86,65 +23,3 @@ LimaCharlie's SecOps Cloud Platform offers a comprehensive approach to combating
   * **Real-time response with semi-persistent TLS connection:** In the event of a ransomware detonation, LimaCharlie's real-time, semi-persistent TLS connection with endpoints enables an unparalleled response capability. If detection logic is in place to catch a ransomware event, response actions can be taken across the entire fleet in real-time. This allows security teams to instantly isolate affected machines from the network while maintaining command and control through LimaCharlie, minimizing further damage and data exfiltration.
 
   * **Advanced threat hunting and remediation:** With LimaCharlie, analysts responding to a ransomware event have access to all affected machines and a full year's history of telemetry. This enables them to run remediation scripts on the endpoints, kill process trees, and hunt for any malicious presence. By leveraging advanced indicators, such as FILE_TYPE_ACCESSED events, security teams can detect ransomware detonation events before the malware proliferates, significantly reducing the impact of the attack.
-
-
-
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ WEL Monitoring ](/docs/wel-monitoring) __
-
-
-
-Tags
-
-  * [ adversary ](/docs/en/tags/adversary)
-  * [ techniques ](/docs/en/tags/techniques)
-  * [ use case ](/docs/en/tags/use%20case)
-
-

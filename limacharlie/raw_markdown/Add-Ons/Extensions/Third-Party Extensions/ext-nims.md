@@ -1,64 +1,4 @@
----
-title: NIMS
-slug: ext-nims
-breadcrumb: Add-Ons > Extensions > Third-Party Extensions
-source: https://docs.limacharlie.io/docs/ext-nims
-articleId: 6873efa1-19e4-4c91-aa5d-3f62751fc161
----
-
-* * *
-
-NIMS
-
-  *  __24 Jan 2025
-  *  __ 2 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # NIMS
-
-  *  __Updated on 24 Jan 2025
-  *  __ 2 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 Notion Incident Management System (NIMS) helps SOC/IR teams streamline their incident collaboration. While not a replacement for advanced SIEM or SOAR case management systems, it offers a practical alternative for teams that don't have access to these tools.
 
@@ -75,13 +15,8 @@ More information about NIMS, including the template and corresponding docs, can 
 In order to use this extension, you will need 3 pieces of data:
 
   * Notion authentication token
-
   * NIMS Alert database ID
-
   * NIMS Asset database ID
-
-
-
 
 #### Find your database IDs
 
@@ -102,9 +37,6 @@ In order to use this extension, you will need 3 pieces of data:
   4. Copy the ID
 
   5. Repeat the above for the Asset database
-
-
-
 
 #### Generate an auth token
 
@@ -145,9 +77,6 @@ While completing the following steps, be sure to add the connection to all 3 dat
 
   9. Repeat steps 7 and 8 for the `Asset Database` and the `Incident Database`
 
-
-
-
 ### Example D&R rule
 
 **Detect:**
@@ -171,59 +100,4 @@ While completing the following steps, be sure to add the connection to all 3 dat
         int_ip: '{{ .routing.int_ip }}'
         link: '{{ .link }}'
         metadata: '{{json .detect_mtd }}'
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ OTX ](/docs/ext-otx) __
-
-
-
-Table of contents
-
-
 

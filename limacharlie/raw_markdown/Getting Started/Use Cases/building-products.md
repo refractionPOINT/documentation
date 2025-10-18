@@ -1,64 +1,4 @@
----
-title: Building Products
-slug: building-products
-breadcrumb: Getting Started > Use Cases
-source: https://docs.limacharlie.io/docs/building-products
-articleId: d12a3e88-131d-496c-9bbd-ff4c3d56359e
----
-
-* * *
-
-Building Products
-
-  *  __31 Jul 2025
-  *  __ 6 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Building Products
-
-  *  __Updated on 31 Jul 2025
-  *  __ 6 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.
 
@@ -75,9 +15,6 @@ The SecOps Cloud Platform provides the tools and infrastructure needed to secure
   * Reduce Up-front Costs
 
   * Build to Scale
-
-
-
 
 ### Focus on Your Core Value
 
@@ -134,66 +71,3 @@ Any successful cybersecurity business will encounter challenges as it attempts t
 The SecOps Cloud Platform offers an alternative route. Leverage the SCP's pay-per-use pricing to scale your infrastructure spending with your revenue. Even if you start off with a small customer base, you won't be losing money on infrastructure costs. Conserve your resources and allocate your spending to development, marketing, and sales efforts instead.
 
 The SCP offers builders a firm foundation for success. It provides a platform that is built to scale—and its pay-as-you-go pricing helps startups extend their runway and grow gradually and safely.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ Incident Response ](/docs/incident-response) __
-
-
-
-Table of contents
-
-
-
-
-Tags
-
-  * [ builders ](/docs/en/tags/builders)
-  * [ use case ](/docs/en/tags/use%20case)
-
-

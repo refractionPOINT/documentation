@@ -1,66 +1,6 @@
----
-title: Hayabusa
-slug: ext-hayabusa
-breadcrumb: Add-Ons > Extensions > Third-Party Extensions
-source: https://docs.limacharlie.io/docs/ext-hayabusa
-articleId: 42a360c0-dafd-4e67-814a-fd9fa85b493f
----
-
-* * *
-
-Hayabusa
-
-  *  __07 Oct 2025
-  *  __ 5 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Hayabusa
 
-  *  __Updated on 07 Oct 2025
-  *  __ 5 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
-
-Hayabusa Extension Pricing
+## Hayabusa Extension Pricing
 
 While it is free to enable the Hayabusa extension, pricing is applied to downloaded and processed artifacts -- $0.02/GB for the original artifact, and $0.5/GB for the generation of the Hayabusa artifact.
 
@@ -68,9 +8,9 @@ The [Hayabusa](https://github.com/Yamato-Security/hayabusa) extension allows you
 
 Hayabusa is a Windows event log fast forensics timeline generator and threat hunting tool created by the Yamato Security group in Japan.
 
-LimaCharlie will automatically kick off the analysis based off of the artifact ID provided in a  rule action, or you can run it manually via the extension.
+LimaCharlie will automatically kick off the analysis based off of the artifact ID provided in a rule action, or you can run it manually via the extension.
 
-### Configuration
+## Configuration
 
 When enabled, you may configure the response of a D&R rule to run a Hayabusa analysis against an artifact event. Consider the following example D&R rule:
 
@@ -99,7 +39,7 @@ When enabled, you may configure the response of a D&R rule to run a Hayabusa ana
 
 Note that the only required field here is the `artifact_id`. The other values supplied in the example are the defaults.
 
-### Results
+## Results
     
     
     hayabusa update-rules
@@ -121,10 +61,7 @@ Several events will be pushed to the `ext-hayabusa` Sensor timeline:
 
   * `hayabusa_event`: many of these will be sent to the timeline if you check the checkbox or parameter for `Send to timeline`, and it contains the raw contents of the Hayabusa CSV output in JSON format
 
-
-
-
-### Arguments
+## Arguments
 
   * `artifact_id`: ID of the LimaCharlie artifact to process
 
@@ -140,10 +77,7 @@ Several events will be pushed to the `ext-hayabusa` Sensor timeline:
 
   * `send_to_timeline`: whether or not to ingest the Hayabusa results into the sensor timeline as events, boolean, default `true`
 
-
-
-
-### Usage
+## Usage
 
 If you use the LimaCharlie Velociraptor extension, a good use case of this extension would be to trigger Hayabusa analysis upon ingestion of a Velociraptor KAPE files artifact.
 
@@ -159,9 +93,6 @@ Kick off a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Ve
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/hayabusa-2.png)
 
   * `KapeTriage=Y` \- this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using `EventLogs=Y`.
-
-
-
 
 Configure a D&R rule to look for these events upon ingestion, and then trigger the Hayabusa extension:
 
@@ -191,11 +122,9 @@ Configure a D&R rule to look for these events upon ingestion, and then trigger t
           send_to_timeline: true    # `false` if you only want the CSV artifact
     
 
-### Generate LC Detections from Hayabusa Output
+## Generate LC Detections from Hayabusa Output
 
-Note
-
-This capability depends on setting the parameter to send Hayabusa output to the sensor timeline with `send_to_timeline: true`
+**Note:** This capability depends on setting the parameter to send Hayabusa output to the sensor timeline with `send_to_timeline: true`
 
 Assuming you want Hayabusa detections of a certain `Level` or severity sent directly to your LimaCharlie detections stream, you can use the following D&R rule to accomplish this:
 
@@ -302,85 +231,3 @@ The resulting detection would look something like this:
         "source_rule": "replay-rule"
       }
     }
-    
-
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ Hayabusa to BigQuery ](/docs/hayabusa-to-bigquery)
-  * [ Windows Event Log ](/docs/adapter-types-windows-event-log)
-  * [ Windows Event Logs ](/docs/adapter-examples-windows-event-logs)
-  * [ Ingesting Sysmon Event Logs ](/docs/ingesting-sysmon-event-logs)
-  * [ Ingesting Windows Event Logs ](/docs/ingesting-windows-event-logs)
-  * [ EVTX ](/docs/adapter-types-evtx)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ NIMS ](/docs/ext-nims) __
-
-
-
-Table of contents
-
-
-
-
-Tags
-
-  * [ add-ons ](/docs/en/tags/add-ons)
-  * [ dfir ](/docs/en/tags/dfir)
-  * [ extensions ](/docs/en/tags/extensions)
-
-

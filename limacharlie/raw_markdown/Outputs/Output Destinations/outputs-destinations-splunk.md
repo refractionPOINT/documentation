@@ -1,64 +1,4 @@
----
-title: Splunk
-slug: outputs-destinations-splunk
-breadcrumb: Outputs > Output Destinations
-source: https://docs.limacharlie.io/docs/outputs-destinations-splunk
-articleId: 3cbc82c2-a235-488a-88d8-929da3cace76
----
-
-* * *
-
-Splunk
-
-  *  __08 Oct 2025
-  *  __ 1 Minute to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Splunk
-
-  *  __Updated on 08 Oct 2025
-  *  __ 1 Minute to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 To send data from LimaCharlie to Splunk, you will need to configure an output.
 
@@ -92,8 +32,8 @@ Enter the [correct HEC URI](https://docs.splunk.com/Documentation/Splunk/8.0.2/D
 
 Here is a sample Splunk HEC configuration:
 
-Destination Host = `https://host.domain.com:8088/services/collector/raw`  
-Auth Header Name = Authorization  
+Destination Host = `https://host.domain.com:8088/services/collector/raw`
+Auth Header Name = Authorization
 Auth Header value = Splunk xxxxxx-xxxx-xxxx-xxxx-xxxxxx
 
 Before saving the output, you can configure any of the advanced Output settings.
@@ -113,65 +53,3 @@ You can choose to only send a specific list of event types by configuring an all
 **Do not include routing** flag allows users to forward only the original logs to outputs, excluding the routing label. This can be helpful for users wanting to use LimaCharlie for storage optimization since the routing label can add significant overhead.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-5.png)
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ Syslog ](/docs/outputs-destinations-syslog) __
-
-
-
-Table of contents
-
-
-
-
-Tags
-
-  * [ outputs ](/docs/en/tags/outputs)
-
-

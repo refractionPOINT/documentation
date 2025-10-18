@@ -1,64 +1,4 @@
----
-title: VDI & Virtual Machine Templates
-slug: vdi-virtual-machine-templates
-breadcrumb: Sensors > Endpoint Agent > Endpoint Agent Installation
-source: https://docs.limacharlie.io/docs/vdi-virtual-machine-templates
-articleId: af5819b0-f543-41d2-9ffb-2949d7601d4d
----
-
-* * *
-
-VDI & Virtual Machine Templates
-
-  *  __01 Nov 2024
-  *  __ 2 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # VDI & Virtual Machine Templates
-
-  *  __Updated on 01 Nov 2024
-  *  __ 2 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 The LimaCharlie Endpoint Agent can be installed in template-based environments whether they're VMs or VDIs.
 
@@ -72,9 +12,6 @@ If these occur, a [sensor_clone](/v2/docs/reference-platform-events#sensorclone)
 
   2. Run a de-duplication process with a Detection & Response rule [like this](/v2/docs/detection-and-response-examples#deduplicate-cloned-sensors).
 
-
-
-
 Preparing sensors to run properly from templates can be done by creating a special `hcp_vdi` (macOS and Linux) or `hcp_vdi.dat` (Windows) file in the relevant configuration directory:
 
   * Windows: `%SYSTEMROOT%\system32\`
@@ -83,94 +20,14 @@ Preparing sensors to run properly from templates can be done by creating a speci
 
   * Linux: usually `/etc/` but fundamentally the current working directory of the sensor execution.
 
-
-
-
 The contents of the `hcp_vdi` file should be a string representation of the second-based epoch timestamp when you want the sensors to begin enrolling. For example if the current time is `1696876542`, setting a value of `1696882542` will mean the sensor will only attempt to enroll in 10 minutes in the future. This allows you to install the sensor without risking it enrolling right away before the base image is created.
 
 A shortcut for creating this file is to invoke the LimaCharlie EDR binary (like `lc_sensor.exe`) with the `-t` option, which will create a `hcp_vdi.dat` file with a value +1 day. This is usually plenty of time to finish the creation of the base image, submit it to a VDI platform (which often boots up the image) etc. The next day, any machine generated from this base image will start enrolling.
 
 Example `hcp_vdi.dat` file content:
-    
-    
+
+
     1696882542
-    
+
 
 Note that if a sensor is already enrolled, the presence of the `hcp_vdi` file will be completely ignored.
-
-Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
-
-Endpoint Detection & Response
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ Endpoint Agent Installation ](/docs/endpoint-agent-installation)
-  * [ Windows Agent Installation ](/docs/windows-agent-installation)
-  * [ Building a custom MSI installer for Windows ](/docs/building-a-custom-msi-installer-for-windows)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ Windows Agent Installation ](/docs/windows-agent-installation) __
-
-
-
-Tags
-
-  * [ endpoint agent ](/docs/en/tags/endpoint%20agent)
-  * [ sensors ](/docs/en/tags/sensors)
-  * [ windows ](/docs/en/tags/windows)
-
-

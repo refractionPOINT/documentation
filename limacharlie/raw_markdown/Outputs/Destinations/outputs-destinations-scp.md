@@ -1,64 +1,4 @@
----
-title: SCP
-slug: outputs-destinations-scp
-breadcrumb: Outputs > Destinations
-source: https://docs.limacharlie.io/docs/outputs-destinations-scp
-articleId: 8e9dbe8f-0cb4-471b-92b9-61d72d7c67b7
----
-
-* * *
-
-SCP
-
-  *  __05 Oct 2024
-  *  __ 1 Minute to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # SCP
-
-  *  __Updated on 05 Oct 2024
-  *  __ 1 Minute to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 Output events and detections over SCP (SSH file transfer).
 
@@ -72,71 +12,10 @@ Output events and detections over SCP (SSH file transfer).
 
   * `secret_key`: the optional SSH private key to authenticate with.
 
-
-
-
 Example:
-    
-    
+
+
     dest_host: storage.corp.com
     dir: /uploads/
     username: storage_user
     password: XXXXXXXXXXXX
-    
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ SFTP ](/docs/outputs-destinations-sftp) __
-
-
-
-Tags
-
-  * [ outputs ](/docs/en/tags/outputs)
-
-

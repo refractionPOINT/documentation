@@ -1,64 +1,4 @@
----
-title: SecOps Development
-slug: secops-development
-breadcrumb: Getting Started > Use Cases
-source: https://docs.limacharlie.io/docs/secops-development
-articleId: 6be287e5-7b61-4492-91c6-022022a67321
----
-
-* * *
-
-SecOps Development
-
-  *  __31 Jul 2025
-  *  __ 1 Minute to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # SecOps Development
-
-  *  __Updated on 31 Jul 2025
-  *  __ 1 Minute to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 The SecOps Cloud Platform accelerates building, customizing, integrating, and scaling security operations. By handling the infrastructure-intensive aspects of security engineering, LimaCharlie takes on the heavy lifting making it easy for developers to focus on their core projects.
 
@@ -74,10 +14,7 @@ Innovating new security products and modifying existing ones is crucial for prot
 
   * **Lack of control:** Your project relies on third-party or open source tooling that lacks the flexibility you need to succeed.
 
-
-
-
-#### LimaCharlie’s solution
+#### LimaCharlie's solution
 
 The SecOps Cloud Platform delivers core security capabilities in the form of “primitives” that can be modified to accommodate specific needs. It offers infrastructure-as-code and other resources that can improve a developer’s mean-time-to-market, including:
 
@@ -88,65 +25,3 @@ The SecOps Cloud Platform delivers core security capabilities in the form of “
   * **Seamless scalability:** The SCP is a cloud platform, and scales effortlessly with the growth of your company.
 
   * **Maximum flexibility:** The SCP offers full transparency and granular management of the resources you choose to incorporate. Where third-party tools or open source solutions offer roadblocks, the SCP provides the capability to customize, innovate, and create needed capabilities.
-
-
-
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ Observability Pipeline ](/docs/observability-pipeline) __
-
-
-
-Tags
-
-  * [ development ](/docs/en/tags/development)
-  * [ SecOps ](/docs/en/tags/SecOps)
-  * [ use case ](/docs/en/tags/use%20case)
-
-

@@ -1,64 +1,4 @@
----
-title: VirusTotal Integration
-slug: tutorials-integratons-virustotal-integration
-breadcrumb: Getting Started > Tutorials > Integrations
-source: https://docs.limacharlie.io/docs/tutorials-integratons-virustotal-integration
-articleId: 86f0d38f-fb28-4f05-ad51-b544b65691d3
----
-
-* * *
-
-VirusTotal Integration
-
-  *  __07 Oct 2025
-  *  __ 1 Minute to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # VirusTotal Integration
-
-  *  __Updated on 07 Oct 2025
-  *  __ 1 Minute to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 You can easily integrate LimaCharlie with VirusTotal to enhance your data enrichment and detections. You will need a VirusTotal API key in order to utilize this add-on.
 
@@ -71,83 +11,14 @@ Once you have your VirusTotal API key, you can add it in the Organization integr
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/vt-key.png)
 
 Once you have entered your API key, you can then create a  rule to perform a lookup of a hash. For example, the following rule will let you know if there is a hit from VirusTotal on a hash with at least two different engines.
-    
-    
+
+
     path: event/HASH
     op: lookup
     resource: hives://lookup/vt
     event: CODE_IDENTITY
     metadata_rules:
-      path: /
-      value: 2
-      length of: true
-      op: is greater than
-    
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ VirusTotal ](/docs/api-integrations-virustotal)
-  * [ Detection and Response Examples ](/docs/detection-and-response-examples)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ Building Reports with BigQuery + Looker Studio ](/docs/tutorials-reporting-building-reports-with-bigquery-looker-studio) __
-
-
-
-Tags
-
-  * [ add-ons ](/docs/en/tags/add-ons)
-  * [ extensions ](/docs/en/tags/extensions)
-  * [ tutorial ](/docs/en/tags/tutorial "Tutorial")
-
-
+      path: /
+      value: 2
+      length of: true
+      op: is greater than

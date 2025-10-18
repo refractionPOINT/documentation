@@ -1,64 +1,4 @@
----
-title: Webhook (Bulk)
-slug: outputs-destinations-webhook-bulk
-breadcrumb: Outputs > Destinations
-source: https://docs.limacharlie.io/docs/outputs-destinations-webhook-bulk
-articleId: fbc2da5a-5303-4b17-bc63-ee5f57f93823
----
-
-* * *
-
-Webhook (Bulk)
-
-  * __05 Oct 2024
-  *  __ 1 Minute to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Webhook (Bulk)
-
-  * __Updated on 05 Oct 2024
-  *  __ 1 Minute to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 Output batches of events, detections, audits, deployments or artifacts through a POST webhook.
 
@@ -72,79 +12,10 @@ Output batches of events, detections, audits, deployments or artifacts through a
 
   * `is_no_sharding`: do not add a shard directory at the root of the files generated.
 
-
-
-
 Example:
-    
-    
+
+
     dest_host: https://webhooks.corp.com/new_detection
     secret_key: this-is-my-secret-shared-key
     auth_header_name: x-my-special-auth
     auth_header_value: 4756345846583498
-    
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ Tutorial: Creating a Webhook Adapter ](/docs/tutorial-creating-a-webhook-adapter)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ Testing Outputs ](/docs/testing-outputs) __
-
-
-
-Tags
-
-  * [ outputs ](/docs/en/tags/outputs)
-
-

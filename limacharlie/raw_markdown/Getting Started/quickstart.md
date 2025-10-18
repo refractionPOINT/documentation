@@ -1,64 +1,4 @@
----
-title: Quickstart
-slug: quickstart
-breadcrumb: Getting Started
-source: https://docs.limacharlie.io/docs/quickstart
-articleId: 4155aced-25c3-4011-bc9b-0ea8f3e71136
----
-
-* * *
-
-Quickstart
-
-  *  __31 Oct 2024
-  *  __ 4 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Quickstart
-
-  *  __Updated on 31 Oct 2024
-  *  __ 4 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 LimaCharlie is infrastructure to connect sources of security data, automate activity based on what's being observed, and forward data to where you need it. There's no _correct_ way to use it - every environment is different.
 
@@ -85,8 +25,6 @@ LimaCharlie organizations are isolated tenants in the cloud, conceptually equiva
 
 After accepting the initial Terms of Service, you'll be offered a prompt to create an organization in a selected `Region` with a globally unique `Name`.
 
-Region Selection
-
 The region that you select for an organization is permanent. Please also consider regulatory requirements for you and/or your customers' data.
 
 Once the organization is created, you'll be forwarded to our initial dashboard and Sensor list, which will be empty and ready for the next step.
@@ -94,8 +32,6 @@ Once the organization is created, you'll be forwarded to our initial dashboard a
 ## Deploying a Sensor
 
 From the Sensors page in your new organization, click `Add Sensor` to open the setup flow for new sensors. Generally speaking, Sensors are executables that install on hosts and connect them to the LimaCharlie cloud to send telemetry, receive commands, and other capabilities.
-
-Sensors Overview
 
 For a full overview of types of sensors and their capabilities, check out [Sensors](/v2/docs/sensors).
 
@@ -111,11 +47,6 @@ The setup flow should make this process straightforward. For example's sake, let
 
   * See immediate feedback when the sensor registers successfully with the cloud
 
-
-
-
-Potential Issues
-
 Since sensors are executables that talk to the cloud, antivirus software and networking layers may interfere with installation. If you run into an issue, take a look at troubleshooting.
 
 With a Windows sensor connected to the cloud, you should gain a lot of visibility into the endpoint. If we view the new sensor inside the web application, we'll have access to views such as:
@@ -130,9 +61,6 @@ With a Windows sensor connected to the cloud, you should gain a lot of visibilit
 
   * `Live Feed`: a running view of the live output of all the sensor's events
 
-
-
-
 With telemetry coming in from the cloud, let's add rules to detect potentially malicious activity.
 
 ## Adding Sigma Rules
@@ -140,8 +68,6 @@ With telemetry coming in from the cloud, let's add rules to detect potentially m
 Writing security rules and automations from scratch is a huge effort. To set an open, baseline standard of coverage, LimaCharlie maintains a `sigma` add-on which can be enabled for free, and is kept up to date with the [openly maintained threat signatures](https://github.com/SigmaHQ/sigma).
 
 Enabling the Sigma add-on will automatically apply rules to your organization to match these threat signatures so we can begin to see Detections on incoming endpoint telemetry.
-
-Writing Detection and Response rules
 
 Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](/v2/docs/detection-and-response) when you're finished.
 
@@ -169,84 +95,4 @@ From the Outputs page in your organization, click `Add Output` to open the setup
 
   * Optionally, you can view samples of the detection stream's data (assuming recent detections have occurred)
 
-
-
-
 With this output in place you can extend the life of your detections beyond the 1 year LimaCharlie retains them, and stage them for any tool that can pull from S3.
-
-Endpoint Detection & Response
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ Managed Rulesets ](/docs/managed-rulesets)
-  * [ Sigma Rules ](/docs/sigma-rules)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ LimaCharlie Core Concepts ](/docs/limacharlie-core-concepts) __
-
-
-
-Table of contents
-
-    * Creating an Organization 
-    * Deploying a Sensor 
-    * Adding Sigma Rules 
-    * Output 
-
-

@@ -1,64 +1,4 @@
----
-title: Security Service Providers (MSSP, MSP, MDR)
-slug: service-providers-mssp-msp-mdr
-breadcrumb: Getting Started > Use Cases
-source: https://docs.limacharlie.io/docs/service-providers-mssp-msp-mdr
-articleId: c8413b81-ce8f-4ef4-9a3b-9459cc7e44d4
----
-
-* * *
-
-Security Service Providers (MSSP, MSP, MDR)
-
-  * __31 Jul 2025
-  *  __ 8 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Security Service Providers (MSSP, MSP, MDR)
-
-  * __Updated on 31 Jul 2025
-  *  __ 8 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.
 
@@ -90,7 +30,7 @@ The second source of telemetry data can be classed as log-type data. This data c
 
 It's impossible to protect what you can't see. The SCP makes it possible to gain full visibility into a client environment, visualize that telemetry in a single interface and data format, and take action on telemetry data via a powerful detection, automation, and response engine.
 
-#### Implement scalable SecOps and simplified client management
+### Implement scalable SecOps and simplified client management
 
 The SecOps Cloud Platform is multitenant by design, offers fine-grained role-based access control (RBAC), and supports an Infrastructure-as-Code (IaC) approach to configuration management. These core aspects of the SCP enable service providers to practice modern cybersecurity operations at scale.
 
@@ -106,7 +46,7 @@ Create new organizations quickly by cloning an existing organization's configura
 
 The SecOps Cloud Platform helps service providers adopt a truly modern and scalable approach to cybersecurity operations. For a more detailed look at how these SCP concepts work in practice, watch [Setting Up an MSSP with LimaCharlie](https://limacharlie.io/secops-cloud-platform-guide-service-providers#:~:text=Setting%20Up%20an%20MSSP%20with%20LimaCharlie).
 
-#### Improve incident response times and offer unbeatable service-level agreements
+### Improve incident response times and offer unbeatable service-level agreements
 
 The SecOps Cloud Platform can be tremendously valuable for service providers doing incident response (IR) work. Here are some of the most significant capabilities for IR teams:
 
@@ -123,86 +63,3 @@ Mass-deploy SCP sensors using an enterprise deployment tool. Then, use those sen
 **Build a true rapid-response capability.** LimaCharlie sensors can be pre-deployed to client environments in "sleeper" mode: i.e., with the telemetry collection settings tuned down to a bare minimum to keep costs to just pennies per month. If an incident occurs, the sensors are already there, ready and waiting on the endpoints, and can turned on for an immediate response. This use case has allowed SCP service provider partners to offer service-level agreements of as little as 20 minutes—a considerable advantage when it comes to pitching (and closing) new MDR or MSSP clients.
 
 IR work is high-stakes and high-pressure—and, unfortunately, is far too often complicated by the cumbersome sales processes and technical limitations of legacy cybersecurity vendors. The SCP allows incident responders to take action quickly and independently during an incident. It also lets cybersecurity service providers improve their overall response capabilities, enabling attractive service-level agreements that can help win over prospective clients.
-
-Managed Detection & Response
-
-Digital Forensics & Incident Response
-
-Managed Security Services Provider
-
-Endpoint Detection & Response
-
-Amazon Web Services
-
-Google Cloud Platform
-
-Command-line Interface
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ Quickstart ](/docs/quickstart) __
-
-
-
-Table of contents
-
-
-
-
-Tags
-
-  * [ MDR ](/docs/en/tags/MDR)
-  * [ MSP ](/docs/en/tags/MSP)
-  * [ MSSP ](/docs/en/tags/MSSP)
-  * [ use case ](/docs/en/tags/use%20case)
-
-

@@ -1,64 +1,4 @@
----
-title: Reference: ID Schema
-slug: reference-id-schema
-breadcrumb: Sensors > Reference
-source: https://docs.limacharlie.io/docs/reference-id-schema
-articleId: bdeb56c0-b34c-4123-b7e7-e1c9f59959e6
----
-
-* * *
-
-Reference: ID Schema
-
-  *  __03 Sep 2025
-  *  __ 10 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Reference: ID Schema
-
-  *  __Updated on 03 Sep 2025
-  *  __ 10 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 ## Agent IDs
 
@@ -197,103 +137,15 @@ Tip: If you're writing a  rule to target a specific platform, consider using the
 
 The Sensor ID (SID) is a UUID that identifies a unique sensor.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
 
-In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
 
   
   
 
 
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
-
-In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
-
-In LimaCharlie, a Sensor ID (SID) is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
-
-  
-  
 
 
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ Reference: Sensor Selector Expressions ](/docs/reference-sensor-selector-expressions)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ Reference: Sensor Selector Expressions ](/docs/reference-sensor-selector-expressions) __
-
-
-
-Table of contents
-
-    * Agent IDs 
-    * Architecture 
-    * Device IDs 
-    * Installer ID 
-    * {{glossary.Organization ID}} 
-    * Platform 
-    * Sensor ID 
-
-
-
-Tags
-
-  * [ platform ](/docs/en/tags/platform)
-  * [ reference ](/docs/en/tags/reference)
-  * [ sensors ](/docs/en/tags/sensors)
 
 

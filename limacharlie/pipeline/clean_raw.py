@@ -1,0 +1,282 @@
+#!/usr/bin/env python3
+"""
+Script to clean up raw markdown documentation files using Claude Code.
+
+This script:
+1. Finds all markdown files in ./limacharlie/raw_markdown/
+2. Launches a headless Claude Code instance
+3. Instructs Claude to spawn parallel sub-agents to clean each file
+4. Each sub-agent either:
+   - Cleans the markdown file (removes navigation, headers/footers, etc.)
+   - Deletes the file with git rm if it only contains navigation/links
+
+Dependencies:
+- claude (Claude Code CLI must be installed)
+"""
+
+import os
+import sys
+import subprocess
+import threading
+import time
+from pathlib import Path
+
+# Configuration
+RAW_MARKDOWN_DIR = "./limacharlie/raw_markdown"
+CLAUDE_BINARY = "claude"
+
+# Prompt template for Claude to process all files
+CLEANING_PROMPT_TEMPLATE = """You are tasked with cleaning up raw markdown documentation files.
+
+TASK: Process ALL markdown files in the current directory (and subdirectories) using parallel sub-agents. Do NOT ask for confirmation - proceed immediately.
+
+STEP 1: Use the Glob tool with pattern "**/*.md" to find all markdown files recursively (excluding __pycache__).
+IMMEDIATELY after finding files, output: "Found X markdown files. Starting batch processing..."
+
+STEP 2: For EACH .md file found, dispatch a Task agent with subagent_type='general-purpose'. Dispatch agents IN PARALLEL using a single message with multiple Task tool calls. Process files in batches of 10-20 at a time for efficiency.
+
+BEFORE dispatching each batch, output: "Dispatching batch N (files X-Y)..."
+AFTER each batch completes, output: "Batch N complete. Processed X files."
+
+STEP 3: Each sub-agent must:
+1. Read the markdown file
+2. Analyze the content to determine if it's worth keeping
+3. Take one of two actions:
+
+**Action A: Clean and Replace** (for files with actual documentation content)
+- Remove all navigation elements, UI elements, and metadata cruft
+- Specifically remove:
+  * The YAML frontmatter (the --- delimited section at the top with title, slug, breadcrumb, source, articleId, etc.)
+  * "Share this", "Print", "Dark", "Light" toggles
+  * Duplicate titles and headers
+  * "Contents" sections
+  * "Article summary" and feedback widgets ("Did you find this summary helpful?")
+  * "Was this article helpful?" feedback forms
+  * Comment forms and email signup forms
+  * "Related articles", "What's Next", "Tags", "Table of contents" sections at the end
+  * Any "Updated on" timestamps that are in the body
+  * Horizontal rules (---/***) that are just decorative
+- KEEP:
+  * The actual documentation content (paragraphs, lists, code blocks)
+  * Legitimate section headings (##, ###, etc.)
+  * Links that are part of the documentation content
+  * Code examples and technical content
+- Use the Edit tool to replace the file content with the cleaned version
+
+**Action B: Delete** (for files that are just navigation/category pages)
+- If a file contains ONLY navigation links, category listings, and UI elements with NO actual documentation content
+- Use the Bash tool to run git rm with THE ACTUAL FILE PATH you are currently processing
+- For example, if you are processing "Add-Ons/developer-grant-program.md", run: git rm "Add-Ons/developer-grant-program.md"
+- DO NOT use placeholder text - use the real file path from the file you just read
+
+IMPORTANT:
+- Be thorough but decisive - if in doubt whether to keep content, keep it.
+- OUTPUT FREQUENT STATUS UPDATES - before and after each batch
+- Print progress messages BEFORE using tools, not just after
+- Use simple text output (not just tool results) so the user sees activity
+
+START NOW - find all .md files and dispatch the parallel cleaning agents immediately."""
+
+
+class MarkdownCleaner:
+    """Manages the Claude Code-based markdown cleaning process"""
+
+    def __init__(self, raw_markdown_dir):
+        self.raw_markdown_dir = Path(raw_markdown_dir).resolve()
+        self.initial_file_mtimes = {}
+        self.processed_count = 0
+        self.monitoring = False
+
+        if not self.raw_markdown_dir.exists():
+            raise ValueError(f"Directory does not exist: {self.raw_markdown_dir}")
+
+        if not self.raw_markdown_dir.is_dir():
+            raise ValueError(f"Not a directory: {self.raw_markdown_dir}")
+
+    def count_markdown_files(self):
+        """Count total markdown files to be processed"""
+        md_files = list(self.raw_markdown_dir.rglob("*.md"))
+        return len(md_files)
+
+    def capture_initial_state(self):
+        """Capture modification times of all markdown files"""
+        for md_file in self.raw_markdown_dir.rglob("*.md"):
+            try:
+                self.initial_file_mtimes[md_file] = md_file.stat().st_mtime
+            except OSError:
+                pass
+
+    def monitor_progress(self):
+        """Monitor file changes and report progress"""
+        print(f"[{time.strftime('%H:%M:%S')}] Monitoring file changes...")
+        sys.stdout.flush()
+
+        last_count = 0
+        no_change_count = 0
+
+        while self.monitoring:
+            time.sleep(2)  # Check every 2 seconds
+
+            current_count = 0
+            modified_files = []
+
+            # Check for modifications
+            for md_file in self.raw_markdown_dir.rglob("*.md"):
+                try:
+                    current_mtime = md_file.stat().st_mtime
+                    initial_mtime = self.initial_file_mtimes.get(md_file, 0)
+
+                    if current_mtime > initial_mtime:
+                        current_count += 1
+                        if len(modified_files) < 3:  # Keep track of recent changes
+                            modified_files.append(md_file.name)
+                except OSError:
+                    # File might have been deleted
+                    if md_file in self.initial_file_mtimes:
+                        current_count += 1
+
+            # Report progress if count changed
+            if current_count != last_count:
+                self.processed_count = current_count
+                recent = f" (recent: {', '.join(modified_files)})" if modified_files else ""
+                print(f"[{time.strftime('%H:%M:%S')}] Progress: {current_count} files processed{recent}")
+                sys.stdout.flush()
+                last_count = current_count
+                no_change_count = 0
+            else:
+                no_change_count += 1
+                # Show heartbeat every 15 seconds if no changes
+                if no_change_count >= 7:  # 7 * 2 seconds = ~14 seconds
+                    print(f"[{time.strftime('%H:%M:%S')}] Still working... ({current_count} files processed so far)")
+                    sys.stdout.flush()
+                    no_change_count = 0
+
+    def run_claude_headless(self):
+        """Run Claude Code in headless mode to clean markdown files"""
+        print(f"Running Claude Code in: {self.raw_markdown_dir}")
+        print("This will take a while as Claude processes all files...")
+        print("-" * 80)
+        print()
+        sys.stdout.flush()
+
+        # Capture initial state
+        print("Capturing initial file states...")
+        self.capture_initial_state()
+        total_files = len(self.initial_file_mtimes)
+        print(f"Tracking {total_files} files")
+        print()
+
+        # Build the command - run Claude directly
+        cmd = [
+            CLAUDE_BINARY,
+            "--print",
+            "--dangerously-skip-permissions",
+            CLEANING_PROMPT_TEMPLATE
+        ]
+
+        try:
+            # Set environment for unbuffered output
+            env = os.environ.copy()
+            env['PYTHONUNBUFFERED'] = '1'
+
+            print("Starting Claude Code processing...")
+            print(f"[{time.strftime('%H:%M:%S')}] Launching Claude...")
+            print("=" * 80)
+            sys.stdout.flush()
+
+            # Start monitoring thread
+            self.monitoring = True
+            monitor_thread = threading.Thread(target=self.monitor_progress, daemon=True)
+            monitor_thread.start()
+
+            # Run Claude directly - let it write to our stdout/stderr
+            # This avoids all buffering issues from pipes
+            returncode = subprocess.call(
+                cmd,
+                cwd=self.raw_markdown_dir,
+                env=env,
+                stdin=subprocess.DEVNULL
+            )
+
+            # Stop monitoring
+            self.monitoring = False
+            monitor_thread.join(timeout=1)
+
+            print("=" * 80)
+            print(f"[{time.strftime('%H:%M:%S')}] Claude process completed")
+            print(f"Total files processed: {self.processed_count}/{total_files}")
+
+            if returncode != 0:
+                print(f"Claude process failed with return code {returncode}")
+                return False
+
+            return True
+
+        except FileNotFoundError:
+            self.monitoring = False
+            print(f"Error: Claude Code CLI ('{CLAUDE_BINARY}') not found in PATH")
+            return False
+        except KeyboardInterrupt:
+            self.monitoring = False
+            print("\n[Interrupted] Exiting...")
+            raise
+        except Exception as e:
+            self.monitoring = False
+            print(f"Unexpected error running Claude: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def run(self):
+        """Main execution flow"""
+        print("=" * 80)
+        print("LimaCharlie Markdown Documentation Cleaner")
+        print("=" * 80)
+        print(f"Target directory: {self.raw_markdown_dir}")
+
+        # Count files
+        file_count = self.count_markdown_files()
+        print(f"Found {file_count} markdown files to process")
+        print("")
+
+        # Confirm with user
+        response = input(f"Proceed with cleaning {file_count} files? [y/N]: ").strip().lower()
+        if response != 'y':
+            print("Aborted by user.")
+            return 1
+
+        print("")
+
+        # Run Claude Code
+        success = self.run_claude_headless()
+
+        if success:
+            print("\n" + "=" * 80)
+            print("Success! Documentation has been cleaned.")
+            print("Review the changes and commit when ready.")
+            print("=" * 80)
+            return 0
+        else:
+            print("\n" + "=" * 80)
+            print("Failed to complete cleaning process.")
+            print("=" * 80)
+            return 1
+
+
+def main():
+    """Entry point"""
+    try:
+        cleaner = MarkdownCleaner(RAW_MARKDOWN_DIR)
+        return cleaner.run()
+    except KeyboardInterrupt:
+        print("\n\nInterrupted by user. Exiting...")
+        return 130
+    except Exception as e:
+        print(f"Fatal error: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

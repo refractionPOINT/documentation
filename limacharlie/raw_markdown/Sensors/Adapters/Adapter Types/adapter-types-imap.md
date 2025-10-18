@@ -1,64 +1,4 @@
----
-title: IMAP
-slug: adapter-types-imap
-breadcrumb: Sensors > Adapters > Adapter Types
-source: https://docs.limacharlie.io/docs/adapter-types-imap
-articleId: 92e95b5f-a441-4725-9ee6-d1674411b6b9
----
-
-* * *
-
-IMAP
-
-  *  __07 Aug 2025
-  *  __ 6 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # IMAP
-
-  *  __Updated on 07 Aug 2025
-  *  __ 6 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 ## Overview
 
@@ -135,9 +75,6 @@ Documentation for common platforms:
   * [Exchange Online](https://learn.microsoft.com/en-us/exchange/security-and-compliance/journaling/journaling)
 
   * [Google Workspace](https://support.google.com/a/answer/7276605?product_name=UnuFlow&hl=en&visit_id=638608978952474178-2452031765&rd=1&src=supportwidget0&hl=en)
-
-
-
 
 ## Example Format
 
@@ -259,83 +196,5 @@ Emails ingested through the IMAP Adapter are in raw format so that detailed head
             "this": "f4925ea82ef44d18b349695466d6055a"
         }
     }
-    
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments. 
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ SMTP ](/docs/outputs-destinations-smtp)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ IT Glue ](/docs/adapter-types-it-glue) __
-
-
-
-Table of contents
-
-    * Overview 
-    * Configurations 
-    * Use Cases 
-    * Example Format 
-
-
-
-Tags
-
-  * [ adapters ](/docs/en/tags/adapters)
-  * [ sensors ](/docs/en/tags/sensors)
 
 

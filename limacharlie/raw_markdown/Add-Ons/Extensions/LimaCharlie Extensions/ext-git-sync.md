@@ -1,64 +1,4 @@
----
-title: Git Sync
-slug: ext-git-sync
-breadcrumb: Add-Ons > Extensions > LimaCharlie Extensions
-source: https://docs.limacharlie.io/docs/ext-git-sync
-articleId: 33d6fbc0-3f4e-4ae4-afd8-364f529ddc87
----
-
-* * *
-
-Git Sync
-
-  *  __06 May 2025
-  *  __ 6 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # Git Sync
-
-  *  __Updated on 06 May 2025
-  *  __ 6 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 The Git Sync Extension is a tool that automates the management of Infrastructure-as-Code (IaC) configurations. It simplifies the process of deploying and managing infrastructure by synchronizing changes between a Git repository and target organizations.
 
@@ -74,14 +14,11 @@ The Git Sync Extension is a tool that automates the management of Infrastructure
 
   * **Automated Deployment:** Helps automate the deployment process, reducing manual effort.
 
-  * MSSP**-Friendly:** Designed to accommodate multiple organizations within a single repository, allowing for global configurations to be shared between orgs.
+  * **MSSP-Friendly:** Designed to accommodate multiple organizations within a single repository, allowing for global configurations to be shared between orgs.
 
   * **Flexible Configuration:** Allows for customization and additional configuration directories.
 
   * **Transparent Operations:** Tracks operations through an extension Sensor.
-
-
-
 
 By using `ext-git-sync`, you can streamline your IaC workflows, improve consistency, and reduce the risk of errors.
 
@@ -217,22 +154,13 @@ This guide walks you through the process of configuring Git synchronization betw
 
   * First create the directory
 
-
-
-
 `mkdir -p ~/.ssh/gitsync`
 
   * Set appropriate permissions for the directory
 
-
-
-
 `chmod 700 ~/.ssh/gitsync`
 
   * Now generate the SSH key
-
-
-
 
 `ssh-keygen -t ed25519 -C "limacharlie-gitsync" -f ~/.ssh/gitsync/id_ed25519`
 
@@ -254,9 +182,6 @@ This guide walks you through the process of configuring Git synchronization betw
 
   8. Click **Add key** to save
 
-
-
-
 ### Step 2: Store SSH Private Key in LimaCharlie
 
   1. Log in to your LimaCharlie account
@@ -270,9 +195,6 @@ This guide walks you through the process of configuring Git synchronization betw
   5. Paste the **private** part of your SSH key into the value field
 
   6. Save the secret
-
-
-
 
 ### Step 3: Configure Git Sync in LimaCharlie
 
@@ -296,20 +218,11 @@ This guide walks you through the process of configuring Git synchronization betw
 
   10. Click **save settings**.
 
-
-
-
 ### Step 4: Verify Integration
 
-  1. Perform a test commit to your GitHub repository by clicking “Push to Git” in the upper right corner.
-
-
-
+  1. Perform a test commit to your GitHub repository by clicking "Push to Git" in the upper right corner.
 
   2. Verify that your configuration has been pushed to Github.
-
-
-
 
 ### Troubleshooting
 
@@ -320,77 +233,3 @@ If you encounter synchronization issues:
   * Ensure the correct SSH URL format is used (should begin with `git@github.com:`)
 
   * Check that the private key in Secret Manager matches the public key added to GitHub
-
-
-
-
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
-
-Managed Security Services Provider
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### What's Next
-
-  * [ Infrastructure ](/docs/ext-infrastructure) __
-
-
-
-Table of contents
-
-    * Use Cases 
-    * Git Repo Structure 
-    * Setting up Git Sync with Github 
-
-

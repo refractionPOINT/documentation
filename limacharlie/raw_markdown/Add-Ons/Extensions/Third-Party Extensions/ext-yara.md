@@ -1,64 +1,4 @@
----
-title: YARA
-slug: ext-yara
-breadcrumb: Add-Ons > Extensions > Third-Party Extensions
-source: https://docs.limacharlie.io/docs/ext-yara
-articleId: cb1fb61a-9ddf-4a7c-b252-799015ad4b00
----
-
-* * *
-
-YARA
-
-  *  __07 Oct 2025
-  *  __ 3 Minutes to read 
-
-
-
-Share this __
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
- __Contents
-
 # YARA
-
-  *  __Updated on 07 Oct 2025
-  *  __ 3 Minutes to read 
-
-
-
-  * __ Print
-
-  *  __ Share
-
-  *  __ Dark
-
- __ Light
-
-
-
-
-* * *
-
-Article summary
-
- __
-
-Did you find this summary helpful? __ __ __ __
-
-__
-
-Thank you for your feedback!
 
 The [YARA](https://github.com/Yara-Rules/rules) Extension is designed to help you with all aspects of YARA scanning. It takes what is normally a manual piecewise process, provides a framework and automates it. Once configured, YARA scans can be run on demand for a particular endpoint or continuously in the background across your entire fleet.
 
@@ -67,34 +7,22 @@ Yara configurations are synchronized with sensors every few minutes.
 There are three main sections to the YARA job:
 
   * Sources
-
   * Rules
-
   * Scan
 
-
-
-
-Where Does My YARA Scan?
+## Where Does My YARA Scan?
 
 Automated YARA scanners in LimaCharlie will run on all files loaded in memory (e.g. exe, dll, etc), and on the memory itself.
 
 Files on disk can be scanned using a Sensor command. You can trigger a Manual Scan that's run on-demand by:
 
-  * Clicking the Run YARA scan button on the sensor details page,
-
+  * Clicking the Run YARA scan button on the sensor details page
   * Clicking the Scan button on the YARA Scanners page
-
   * Using the console
-
-  * Within the Response section of a  rule (sample below)
-
+  * Within the Response section of a rule (sample below)
   * Using the LimaCharlie API
 
-
-
-
-### Rules
+## Rules
 
 This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](/v2/docs/ext-yara-manager). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](/v2/docs/reference-authentication-resource-locator) to a YARA rule.
 
@@ -102,7 +30,7 @@ This is where you define your YARA rule(s). You can copy and paste your YARA rul
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/yara-2.png)
 
-### Scanners
+## Scanners
 
 Scanners define which sets of sensors should be scanned with which sets of YARA rules.
 
@@ -128,10 +56,7 @@ A Yara scan request can be executed with a blank selector OR Sensor ID. However,
 
 ### Migrating D&R Rule from legacy Service to new Extension
 
-** _LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024._**
-
-  
-
+**LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024.**
 
 The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference legacy Yara service, preview the change and execute the conversion required in the rule "response".
 
@@ -149,88 +74,3 @@ Command line to execute Yara rule conversion:
     
     
     limacharlie extension convert_rules --name ext-yara --no-dry-run
-    
-
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
-
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
-
-* * *
-
-Was this article helpful?
-
-__Yes __No
-
- __
-
-Thank you for your feedback! Our team will get back to you
-
-How can we improve this article?
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change  
-
-
-Please enter a valid email
-
-Cancel
-
-* * *
-
-###### Related articles
-
-  * [ YARA Manager ](/docs/ext-yara-manager)
-  * [ Config Hive: Yara ](/docs/config-hive-yara)
-  * [ Detection and Response Examples ](/docs/detection-and-response-examples)
-  * [ BinLib ](/docs/binlib)
-
-
-
-* * *
-
-###### What's Next
-
-  * [ Zeek ](/docs/ext-zeek) __
-
-
-
-Table of contents
-
-    * Using Yara in D&amp;R Rules 
-
-
-
-Tags
-
-  * [ add-ons ](/docs/en/tags/add-ons)
-  * [ dfir ](/docs/en/tags/dfir)
-  * [ extensions ](/docs/en/tags/extensions)
-
-
