@@ -131,6 +131,8 @@ class LimaCharlieFetcher:
         path_str = re.sub(r'[<>:"|?*]', '', path_str)
         # Replace forward/back slashes with dashes (except for path separators)
         path_str = path_str.replace('\\', '-')
+        # Replace spaces with underscores
+        path_str = path_str.replace(' ', '_')
         return path_str.strip()
 
     def create_directory_structure(self, breadcrumb):

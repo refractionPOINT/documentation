@@ -8,7 +8,7 @@ This script:
 3. Instructs Claude to spawn parallel sub-agents to clean each file
 4. Each sub-agent either:
    - Cleans the markdown file (removes navigation, headers/footers, etc.)
-   - Deletes the file with git rm if it only contains navigation/links
+   - Deletes the file with rm if it only contains navigation/links
 
 Dependencies:
 - claude (Claude Code CLI must be installed)
@@ -65,8 +65,8 @@ STEP 3: Each sub-agent must:
 
 **Action B: Delete** (for files that are just navigation/category pages)
 - If a file contains ONLY navigation links, category listings, and UI elements with NO actual documentation content
-- Use the Bash tool to run git rm with THE ACTUAL FILE PATH you are currently processing
-- For example, if you are processing "Add-Ons/developer-grant-program.md", run: git rm "Add-Ons/developer-grant-program.md"
+- Use the Bash tool to run rm with THE ACTUAL FILE PATH you are currently processing
+- For example, if you are processing "Add-Ons/developer-grant-program.md", run: rm "Add-Ons/developer-grant-program.md"
 - DO NOT use placeholder text - use the real file path from the file you just read
 
 **STEP 4: Link Processing** (for files being cleaned, not deleted)
@@ -91,9 +91,10 @@ For links pointing to `doc.limacharlie.io` or `docs.limacharlie.io`:
    - Handle both `doc.limacharlie.io` and `docs.limacharlie.io` domains
 
    **Finding the Target File:**
+   - IMPORTANT: All directory and file names use underscores (_) instead of spaces. When matching URLs to files, replace spaces with underscores.
    - First, use Glob with pattern `**/*.md` to get a list of all markdown files in the directory tree
    - Extract the slug/path from the URL (e.g., from `https://docs.limacharlie.io/docs/adapter-types-aws-cloudtrail`, extract `adapter-types-aws-cloudtrail`)
-   - Try fuzzy filename matching: look for .md files whose names closely match the URL slug
+   - Try fuzzy filename matching: look for .md files whose names closely match the URL slug (remember: spaces in URLs may be underscores in filenames)
    - If multiple candidates exist, use your judgment to pick the most relevant one (consider directory structure, topic, etc.)
    - If filename matching doesn't work, use the Grep tool to search for content that matches the topic
    - If still uncertain, Read a few candidate files to verify which one is the correct target
@@ -109,10 +110,11 @@ For links pointing to `doc.limacharlie.io` or `docs.limacharlie.io`:
    **Creating the Relative Link:**
    - Only proceed with this step if you have verified the target file exists (see above)
    - Calculate the relative path from the current file being processed to the verified target file
-   - Example: if current file is `Outputs/Destinations/webhook.md` and target is `Platform Management/outputs.md`, the relative path would be `../../Platform Management/outputs.md`
+   - Remember: directory and file names use underscores instead of spaces
+   - Example: if current file is `Outputs/Destinations/webhook.md` and target is `Platform_Management/outputs.md`, the relative path would be `../../Platform_Management/outputs.md`
    - Preserve any URL fragment/anchor (e.g., `#webhook-details`) in the converted link
    - Replace the external URL with the relative markdown link
-   - Example: `[See details](https://doc.limacharlie.io/docs/outputs#webhook-details)` → `[See details](../../Platform Management/outputs.md#webhook-details)`
+   - Example: `[See details](https://doc.limacharlie.io/docs/outputs#webhook-details)` → `[See details](../../Platform_Management/outputs.md#webhook-details)`
    - Bare URLs should also be converted to markdown links with appropriate link text
 
 IMPORTANT:
@@ -283,14 +285,6 @@ class MarkdownCleaner:
         # Count files
         file_count = self.count_markdown_files()
         print(f"Found {file_count} markdown files to process")
-        print("")
-
-        # Confirm with user
-        response = input(f"Proceed with cleaning {file_count} files? [y/N]: ").strip().lower()
-        if response != 'y':
-            print("Aborted by user.")
-            return 1
-
         print("")
 
         # Run Claude Code
