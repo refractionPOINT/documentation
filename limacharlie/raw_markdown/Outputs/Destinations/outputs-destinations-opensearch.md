@@ -10,9 +10,12 @@ Output events and detections to [OpenSearch](https://opensearch.org/).
 
   * `password`: password if using username/password auth
 
+
+
+
 Example:
-
-
+    
+    
     addresses: https://1.2.3.4:9200, https://elastic.mydomain.com:9200
     username: some
     password: pass1234

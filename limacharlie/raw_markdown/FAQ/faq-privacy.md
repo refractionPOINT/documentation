@@ -141,7 +141,7 @@ VOLUME_UNMOUNT
 WEL  
 YARA_DETECTION
 
-Users can opt in / out of collection of event types on a per-platform basis. The default list varies based on OS platform and may change over time. For a full list of events, along with descriptions and samples, please see [Events](/v2/docs/events).
+Users can opt in / out of collection of event types on a per-platform basis. The default list varies based on OS platform and may change over time. For a full list of events, along with descriptions and samples, please see [Events](../Events/event-schemas.md).
 
 ## Examples of LimaCharlie Sensor Data
 
@@ -184,12 +184,7 @@ Users can opt in / out of collection of event types on a per-platform basis. The
   13. Timeline with Event Details  
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-14.png)
 
-  14. Users  
+  14. Users
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-15.png)
-
-
-
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 

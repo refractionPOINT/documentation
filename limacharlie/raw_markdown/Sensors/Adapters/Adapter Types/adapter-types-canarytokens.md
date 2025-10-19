@@ -1,3 +1,5 @@
+# Canarytokens
+
 Canarytokens are a free, quick, painless way to help defenders discover they've been breached (by having attackers announce themselves). Canarytokens are digital traps, or tripwires, that can be placed in an organization's network as a "lure" for adversaries. When actioned against, canaries will fire an alert, that can be forwarded to LimaCharlie.
 
 Canarytokens can be ingested in LimaCharlie via a Webhook Adapter, and are recognized as the `canary_token` platform.
@@ -29,30 +31,30 @@ Click **Complete Cloud Installation** to create the cloud-to-cloud Adapter. Proc
 
 ### 1b. Initial deployment via the LimaCharlie CLI
 
-A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation, found [here](/v2/docs/tutorial-creating-a-webhook-adapter).
+A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation.
 
 The following configuration can be modified to easily configure a Webhook Adapter for receiving Canarytokens events.
-    
-    
+
+
     {
-        "sensor_type": "webhook",
-        "webhook": {
-           "secret": "canarytoken-secret",
-            "client_options": {
-                "hostname": "canarytokens",
-                "identity": {
-                    "oid": "<your_oid>",
-                    "installation_key": "<your_installation_key>"
-                },
-                "platform": "canary_token",
-                "sensor_seed_key": "canary-super-secret-key",
-                "mapping" : {
-                    "event_type_path" : {{ 'Canarytoken Hit' }}
-                }
-            }
-        }
+        "sensor_type": "webhook",
+        "webhook": {
+           "secret": "canarytoken-secret",
+            "client_options": {
+                "hostname": "canarytokens",
+                "identity": {
+                    "oid": "<your_oid>",
+                    "installation_key": "<your_installation_key>"
+                },
+                "platform": "canary_token",
+                "sensor_seed_key": "canary-super-secret-key",
+                "mapping" : {
+                    "event_type_path" : {{ 'Canarytoken Hit' }}
+                }
+            }
+        }
     }
-    
+
 
 Note that in the mapping above, the `event_type_path` field is set to a static string of `Canarytoken Hit`. You can change this to any desired value.
 
@@ -83,8 +85,6 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Navigate to the [Canarytokens generate page](https://canarytokens.org/generate) to create your token of choice.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28173%29.png)
+![Canarytoken Creation](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(173).png)
 
 Utilize the URL from Step 2 as the webhook URL. Provide a reminder note, which will also appear in the Canarytoken alert when tripped. Click **Create my Canarytoken** , which will provide you the content related to the selected token. When the Canarytoken is tripped, a webhook alert will be forwarded to the LimaCharlie Adapter.
-
-

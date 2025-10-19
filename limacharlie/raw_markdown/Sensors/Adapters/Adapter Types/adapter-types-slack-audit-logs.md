@@ -17,15 +17,14 @@ Slack API telemetry can be configured directly from the LimaCharlie web applicat
 ### Deploying via the CLI Adapter
 
 The LimaCharlie CLI Adapter can also be used to ingest Slack events, if you do not wish to create a cloud-to-cloud connector. The following sample configuration can be used to create a Slack CLI Adapter:
-    
-    
+
+
     slack:
-      client_options:
-        hostname: slack-audit
-        identity:
-          installation_key: <INSTALLATION_KEY>
-          oid: <OID>
-        platform: slack
-        sensor_seed_key: super-special-seed-key
-      token: <SLACK OAUTH TOKEN>
-    
+      client_options:
+        hostname: slack-audit
+        identity:
+          installation_key: <INSTALLATION_KEY>
+          oid: <OID>
+        platform: slack
+        sensor_seed_key: super-special-seed-key
+      token: <SLACK OAUTH TOKEN>

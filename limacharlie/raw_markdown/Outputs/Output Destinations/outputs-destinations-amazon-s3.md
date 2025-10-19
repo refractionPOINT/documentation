@@ -122,6 +122,3 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
   6. After a minute, the data should start getting written to your bucket
 
 
-
-
-

@@ -1,4 +1,6 @@
-Schedule events are triggered automatically at various intervals per Organization or per Sensor, observable in  rules via the `schedule` target.
+# Reference: Schedule Events
+
+Schedule events are triggered automatically at various intervals per Organization or per Sensor, observable in rules via the `schedule` target.
 
 Scheduling events have a very similar structure whether they are per-sensor or per-org.
 
@@ -38,16 +40,14 @@ Scheduling events are generated for each sensor that meets the following criteri
 
 
 Scheduling events are not retained as part of the year retention in LimaCharlie. To leverage them, create D&R rules that target the `schedule` target and take the relevant `action` when matched. For example to issue an `os_packages` once per week on Windows hosts:
-    
-    
-    detect:
-      target: schedule
-      event: 168h_per_sensor
-      op: is platform
-      name: windows
-    respond:
-      - action: task
-        command: os_packages
-        investigation: weekly-package-list
-    
 
+
+    detect:
+      target: schedule
+      event: 168h_per_sensor
+      op: is platform
+      name: windows
+    respond:
+      - action: task
+        command: os_packages
+        investigation: weekly-package-list

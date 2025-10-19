@@ -7,25 +7,29 @@ This extension makes use of Tailscale's native CLI, which can be found [here](ht
 ## Example
 
 Returns the current Tailscale status.
-
-```
-- action: extension request
-  extension action: run
-  extension name: ext-cloud-cli
-  extension request:
-    cloud: '{{ "tailscale" }}'
-    command_line: '{{ "status --json" }}'
-    credentials: '{{ "hive://secret/secret-name" }}'
-```
+    
+    
+    - action: extension request
+      extension action: run
+      extension name: ext-cloud-cli
+      extension request:
+        cloud: '{{ "tailscale" }}' 
+        command_line: '{{ "status --json" }}'
+        credentials: '{{ "hive://secret/secret-name" }}'
+    
 
 ## Credentials
 
 To utilize Tailscale's CLI capabilities, you will need:
 
-* An [auth key](https://tailscale.com/kb/1085/auth-keys)
+  * An [auth key](https://tailscale.com/kb/1085/auth-keys)
 
-* Create a secret in the secrets manager in the following format:
+  * Create a secret in the secrets manager in the following format:
 
-```
-authKey
-```
+
+
+    
+    
+    authKey
+    
+

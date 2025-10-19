@@ -30,3 +30,5 @@ Example:
     username: lc
     password: letmein
     literal_topic: telemetry
+
+

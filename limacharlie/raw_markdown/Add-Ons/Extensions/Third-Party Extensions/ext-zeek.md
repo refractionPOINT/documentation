@@ -1,6 +1,6 @@
 # Zeek
 
-Zeek Extension Pricing
+## Zeek Extension Pricing
 
 While it is Free to enable the Zeek extension, pricing is applied to processed PCAPs at a rate of $0.02/GB.
 

@@ -2,7 +2,7 @@
 
 With its multitude of data ingestion and output options, LimaCharlie users can end up with a myriad of credentials and secret keys to faciliate unique data operations. However, not all users should be privy to these secret keys. Within the Config Hive, the `secrets` hive component allows you to decouple secrets from their usage or configuration across LimaCharlie. Furthermore, you can also grant permissions to users that allows them to see the configuration of an output, but not have access to the associated credentials.
 
-The most common usage is for storing secret keys used by various [Adapters](/v2/docs/adapters) or [Outputs](/v2/docs/outputs). By referencing `secrets` within the Config Hive, we can configure these services without needing to reveal secret keys to all users.
+The most common usage is for storing secret keys used by various [Adapters](../../Sensors/Adapters/adapter-usage.md) or [Outputs](../../Outputs/output-billing.md). By referencing `secrets` within the Config Hive, we can configure these services without needing to reveal secret keys to all users.
 
 Watch the video below to learn more about hive secrets, or continue reading below.
 
@@ -32,6 +32,9 @@ The `secret` hive requires the following permissions for the various operations:
 
   * `secret.set.mtd`
 
+
+
+
 ## Secret Management
 
 Over time, and with enough integrations, you may need to create and/or update secrets on demand. We provide quick options for both via either the LimaCharlie CLI or web app.
@@ -44,6 +47,9 @@ With the appropriate permissions, users can create secrets in the following ways
 
   2. Via the web app, under **Organization Settings** > **Secrets Manager**.
 
+
+
+
 ### Updating Secrets
 
 Once they are set, secrets can be updated via the following methods:
@@ -52,6 +58,9 @@ Once they are set, secrets can be updated via the following methods:
 
   2. Via the web app, **Organization Settings** > **Secrets Manager**. Select the secret you wish to update, and update in the dialog box. Click **Save Secret** to save changes in the platform.
 
+
+
+
 ## Usage
 
 Using a secret in combination with an output has very few steps:
@@ -59,6 +68,9 @@ Using a secret in combination with an output has very few steps:
   1. Create a secret in the `secret` hive
 
   2. Create an Output and use the format `hive://secret/my-secret-name` as the value for a credentials field.
+
+
+
 
 ## Example
 

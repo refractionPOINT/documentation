@@ -6,9 +6,9 @@
 
   * a Jamf Now account;
 
-  * a provisioning profile that grants the necessary pre-authorizations (such as is [available here](/v2/docs/macos-agent-installation-latest-os-versions)) for deployment on the clients;
+  * a provisioning profile that grants the necessary pre-authorizations (such as is [available here](macos-agent-installation-latest-os-versions.md)) for deployment on the clients;
 
-  * a LimaCharlie Mac Sensor installer package (`.pkg`) that’s configured as desired for deployment on the clients.
+  * a LimaCharlie Mac Sensor installer package (`.pkg`) that's configured as desired for deployment on the clients.
 
 
 
@@ -17,54 +17,54 @@
 
   1. Create a Jamf Now account at [https://signup.jamfnow.com](https://signup.jamfnow.com/), and log in.
 
-  2. Choose the “APNs” tab in the sidebar, and click “Get Started”.
+  2. Choose the "APNs" tab in the sidebar, and click "Get Started".
 
-  3. Click “Download Certificate Signing Request.plist” and save the plist.
+  3. Click "Download Certificate Signing Request.plist" and save the plist.
 
   4. Click Next in the lower right.
 
-  5. As per the “Create an Apple Push Certificate” checklist shown, click “Open the Apple Push Certificates Portal”.
+  5. As per the "Create an Apple Push Certificate" checklist shown, click "Open the Apple Push Certificates Portal".
 
   6. Log in with your Apple ID.
 
-  7. On the “Apple Push Certificates Portal” page to which you are redirected, click the green “Create Certificate” button.
+  7. On the "Apple Push Certificates Portal" page to which you are redirected, click the green "Create Certificate" button.
 
   8. Accept the Terms of Use, and click Continue.
 
-  9. On the “Create a New Push Certificate” page to which you’re redirected, specify the plist you downloaded in step 2 and click Upload.
+  9. On the "Create a New Push Certificate" page to which you're redirected, specify the plist you downloaded in step 2 and click Upload.
 
-  10. On the “Confirmation” page, click Download and save the new PEM certificate file.
+  10. On the "Confirmation" page, click Download and save the new PEM certificate file.
 
   11. Navigate back to the Jamf Now page as at step 5, and click Next in the lower right.
 
-  12. On the “Upload Push Certificate” page, specify the PEM you downloaded in step 10.
+  12. On the "Upload Push Certificate" page, specify the PEM you downloaded in step 10.
 
-  13. Under “Save Your Apple ID”, annotate same as Jamf invites to do so, and click Save.
+  13. Under "Save Your Apple ID", annotate same as Jamf invites to do so, and click Save.
 
 
 
 
 ## Prepare the LimaCharlie sensor installer package on Jamf
 
-As a prerequisite you must have on hand a LimaCharlie Sensor installer package (.pkg) that’s configured as desired.
+As a prerequisite you must have on hand a LimaCharlie Sensor installer package (.pkg) that's configured as desired.
 
-  1. Choose the “Apps” tab in the Jamf Now sidebar. It will show “No apps yet, let’s fix that.”
+  1. Choose the "Apps" tab in the Jamf Now sidebar. It will show "No apps yet, let's fix that."
 
-  2. Click “Add an App”.
+  2. Click "Add an App".
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28117%29.png)
 
-  3. On the “Add an App” page, click “Upload Your App” in the top menu.
+  3. On the "Add an App" page, click "Upload Your App" in the top menu.
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28118%29.png)
 
-  4. Drag your [LC Sensor package installer]() onto the page (or click “browse” to locate it) to upload it to Jamf.
+  4. Drag your [LC Sensor package installer]() onto the page (or click "browse" to locate it) to upload it to Jamf.
 
   5. Give the package an appropriate name, and click Done.
 
@@ -75,9 +75,9 @@ As a prerequisite you must have on hand a LimaCharlie Sensor installer package (
 
 ## Prepare the LimaCharlie sensor provisioning on Jamf
 
-  1. Choose the “Blueprints” tab in the Jamf Now sidebar.
+  1. Choose the "Blueprints" tab in the Jamf Now sidebar.
 
-  2. Click “Create New Blueprint” at the top.
+  2. Click "Create New Blueprint" at the top.
 
 
 
@@ -98,53 +98,53 @@ As a prerequisite you must have on hand a LimaCharlie Sensor installer package (
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28122%29.png)
 
-  5. On the inner tab bar that appears, click “Custom Profiles”, and then “Add a Custom Profile”.
+  5. On the inner tab bar that appears, click "Custom Profiles", and then "Add a Custom Profile".
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28123%29.png)
 
-  6. Drag your [LimaCharlie mobileconfig]() file onto the page (or click “browse” to locate it) to upload it to Jamf.
+  6. Drag your [LimaCharlie mobileconfig]() file onto the page (or click "browse" to locate it) to upload it to Jamf.
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28124%29.png)
 
-  7. Click “Add Custom Profile” in the lower right.
+  7. Click "Add Custom Profile" in the lower right.
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28125%29.png)
 
-  8. On the inner tab bar, click “Apps”, and then click “Add App”.
+  8. On the inner tab bar, click "Apps", and then click "Add App".
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28126%29.png)
 
-  9. In the list, enable the “Install Automatically” checkbox for with the installer package that you uploaded earlier.
+  9. In the list, enable the "Install Automatically" checkbox for with the installer package that you uploaded earlier.
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28127%29.png)
 
-  10. Click “Save Changes” in the lower right.
+  10. Click "Save Changes" in the lower right.
 
 
 
 
 ## Prepare Jamf Now to enroll devices
 
-  1. Choose the “Devices” tab in the Jamf Now sidebar. It will show “No devices yet, let’s fix that.”
+  1. Choose the "Devices" tab in the Jamf Now sidebar. It will show "No devices yet, let's fix that."
 
-  2. Click “Enable Open Enrollment”.
+  2. Click "Enable Open Enrollment".
 
-  3. On the “Open Enrollment” page, activate the “Enable Open Enrollment” checkbox, enter an Access Code as prompted, and click Save Settings.
+  3. On the "Open Enrollment" page, activate the "Enable Open Enrollment" checkbox, enter an Access Code as prompted, and click Save Settings.
 
   4. Take note of the indicated enrollment link.
 
@@ -164,41 +164,41 @@ The following recipe presumes the use of MacOS 13 (Ventura).
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28128%29.png)
 
-  3. Save the “enroll.mobileconfig” file that begins to download, and then open it in the Finder by double-clicking.
+  3. Save the "enroll.mobileconfig" file that begins to download, and then open it in the Finder by double-clicking.
 
   4. Open the System Settings app and navigate to the newly-installed profile.
 
-    1. Choose “Privacy & Security”.
+    1. Choose "Privacy & Security".
 
-    2. Scroll to the bottom, and under the “Others” heading, click “Profiles”.
+    2. Scroll to the bottom, and under the "Others" heading, click "Profiles".
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28129%29.png)
 
-  5. Double-click on the “ Profile”.
+  5. Double-click on the " Profile".
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28130%29.png)
 
-  6. Click “Install…” in the lower left.
+  6. Click "Install…" in the lower left.
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28131%29.png)
 
-  7. Authenticate with the appropriate password when prompted with “Profiles is trying to enroll you in a remote management (MDM) service”.
+  7. Authenticate with the appropriate password when prompted with "Profiles is trying to enroll you in a remote management (MDM) service".
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28132%29.png)
 
-  8. Observe that System Settings declares “This Mac is supervised and managed by ”.
+  8. Observe that System Settings declares "This Mac is supervised and managed by ".
 
 
 
@@ -207,23 +207,23 @@ The following recipe presumes the use of MacOS 13 (Ventura).
 
 ## Provision a Mac with the LimaCharlie sensor
 
-  1. Choose the “Blueprints” tab in the Jamf Now sidebar.
+  1. Choose the "Blueprints" tab in the Jamf Now sidebar.
 
-  2. Click the entry for the custom Blueprint you created from [Step 6]() onward in the “Prepare the LC sensor package on Jamf” section above.
+  2. Click the entry for the custom Blueprint you created from [Step 6]() onward in the "Prepare the LC sensor package on Jamf" section above.
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28134%29.png)
 
-  3. On the inner tab bar that appears, click “Devices”, and then “Add a Device”.
+  3. On the inner tab bar that appears, click "Devices", and then "Add a Device".
 
 
 
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28135%29.png)
 
-  4. Click on a device you want to provision, and then click “Add Devices” in the lower right corner.
+  4. Click on a device you want to provision, and then click "Add Devices" in the lower right corner.
 
 
 
@@ -232,7 +232,7 @@ The following recipe presumes the use of MacOS 13 (Ventura).
 
   5. Observe after a few moments that both the provisioning profile and the LimaCharlie sensor have been installed on the subject Mac.
 
-    1. The Mac appear in the Jamf Devices list on the Blueprints tab with the label “Settings applied”. (It may initially appear as “Settings not applied”; simply refresh the page.)
+    1. The Mac appear in the Jamf Devices list on the Blueprints tab with the label "Settings applied". (It may initially appear as "Settings not applied"; simply refresh the page.)
 
 
 
@@ -243,8 +243,10 @@ The following recipe presumes the use of MacOS 13 (Ventura).
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28138%29.png)
 
-3\. A “Background Items Added” notification is displayed.
+3\. A "Background Items Added" notification is displayed.
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28139%29.png)
 
 4\. The RPHCP.app appears in the Mac's Applications folder, and the rphcp daemon is running.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

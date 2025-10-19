@@ -6,13 +6,13 @@ YARA rule sources defined in the YARA manager configuration will be synced every
 
 If you add rule sources and want them to become available immediately, you will need to click the `Manual Sync` button to trigger the initial sync of the rules.
 
-Rule sources can be either direct links (URLs) to a given YARA rule or [ARLs](/v2/docs/reference-authentication-resource-locator).
+Rule sources can be either direct links (URLs) to a given YARA rule or [ARLs](../../Reference/reference-authentication-resource-locator.md).
 
 ### Option 1: Predefined YARA rules
 
-LimaCharlie provides a list of YARA rule repositories, available in the configuration menu. To leverage these rules select "Predefined" and a list of LimaCharlie and Community rules will populate. By selecting one or more of these repositories, the respective rules will be automatically imported and will appear in your YARA rules under Automation → YARA Rules.
+LimaCharlie provides a list of YARA rule repositories, available in the configuration menu. To leverage these rules select “Predefined” and a list of LimaCharlie and Community rules will populate. By selecting one or more of these repositories, the respective rules will be automatically imported and will appear in your YARA rules under Automation → YARA Rules.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image\(322\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(322).png)
 
 ### Option 2: Publicly available YARA rules
 
@@ -30,14 +30,14 @@ Giving the rule configuration a name, the URL or ARL, and clicking the Save butt
 
 ### Option 3: Private YARA Repository
 
-To use a YARA rule from a private Gihub repository you will need to make use of an [Authentication Resource Locator](/v2/docs/reference-authentication-resource-locator).
+To use a YARA rule from a private Gihub repository you will need to make use of an [Authentication Resource Locator](../../Reference/reference-authentication-resource-locator.md).
 
-**Step 1: Create a token in GitHub**
+**Step 1: Create a token in GitHub**  
 In GitHub go to _Settings_ and click _Developer settings_ in the left hand side bar.
 
 Next click _Personal access token_ followed by _Generate new token_. Select repo permissions and finally _Generate token_.
 
-**Step 2: Connect LimaCharlie to your GitHub repository**
+**Step 2: Connect LimaCharlie to your GitHub repository**  
 Inside of LimaCharlie, click on _Yara Manager_ in the left hand menu. Then click _Add New Yara Configuration_.
 
 Give your rule a name and then use the token you generated with the following format linked to your repo.

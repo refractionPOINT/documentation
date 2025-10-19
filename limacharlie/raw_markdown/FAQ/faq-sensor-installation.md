@@ -1,6 +1,4 @@
-# FAQ - Sensor Installation
-
-## How can I add LimaCharlie traffic to an allow list?
+# How can I add LimaCharlie traffic to an allow list?
 
 The tables below show the hostnames and IPs used to connect to LimaCharlie. All connections use TCP port 443 and TLS 1.2+
 
@@ -137,7 +135,7 @@ You can confirm if there is SSL interception by performing the following steps t
 **Confirm the region of your** Organization
 
 If you already know where your organization's region is located, you can move to the next step. To verify the organization's region where the data is processed and stored, click `Add Sensor` from the `Sensors` view. You will then see the region listed under `Sensor Connectivity`.  
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/installation\(1\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/installation(1).png)
 
 **Open the test URL**  
 Via web browser, navigate to one of the below test URLs that corresponds to the correct region:
@@ -176,7 +174,7 @@ Canada| D3 40 8B 59 AE 5A 28 75 D1 65 71 50 52 2E 6F 45 26 EE E8 19 3A 9A 74 39 
 
 When the host is offline, the Sensor will keep collecting telemetry and store it locally in a "ring buffer" (which limits the total possible size). The buffer is ~60mb, so the amount of time it will cover will vary based on how much telemetry the individual endpoint generates. e.g. A domain controller will likely be generating many more events than a regular end user workstation.
 
-When the host is back online, the content of this buffer will be flushed to the cloud where [detection and response](/v2/docs/detection-and-response) () rules will apply as usual.
+When the host is back online, the content of this buffer will be flushed to the cloud where [detection and response](../Detection and Response/detection-and-response-examples.md) rules will apply as usual.
 
 The same ring buffer is used when the Sensor runs normally, even if data is not sent to the cloud in real-time. The cloud can then retroactively request the full or partial content of the ring buffer, bringing your telemetry current.
 
@@ -195,10 +193,4 @@ On occasion you may need to check which installation key was used to enroll a se
 
 If you need to check a large list of sensors, you can perform an export of all sensors from the main sensors list page, or use the LimaCharlie API.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

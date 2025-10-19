@@ -2,12 +2,12 @@
 
 ## Overview
 
-Our BigQuery output allows you to send Velociraptor hunt results to a BigQuery table allowing SQL-like queries against the hunt data. This is very similar to using [Velociraptor notebooks](https://docs.velociraptor.app/docs/vql/notebooks/), allowing you to perform hunt analysis at scale against massive datasets. For guidance on using LimaCharlie to execute Velociraptor hunts, see [Velociraptor Extension](/v2/docs/ext-velociraptor).
+Our BigQuery output allows you to send Velociraptor hunt results to a BigQuery table allowing SQL-like queries against the hunt data. This is very similar to using [Velociraptor notebooks](https://docs.velociraptor.app/docs/vql/notebooks/), allowing you to perform hunt analysis at scale against massive datasets. For guidance on using LimaCharlie to execute Velociraptor hunts, see [Velociraptor Extension](../../Third-Party%20Extensions/ext-velociraptor.md).
 
 Imagine you wanted to obtain running processes from 10s, 100s, or 1000s of systems using Velociraptor. You could easily issue a `Windows.System.Pslist` hunt across these systems, and let LimaCharlie push Velociraptor to the endpoints and collect the results. The issue is, if you want to run queries against all of the data returned by the hunts, you'll need a database-like tool to do that which is where BigQuery comes in.
 
-BigQuery dataset containing Velociraptor hunt results:  
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28186%29.png)
+BigQuery dataset containing Velociraptor hunt results:
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(186).png)
 
 ### Steps to Accomplish
 
@@ -23,13 +23,13 @@ BigQuery dataset containing Velociraptor hunt results:
 
     4. Click on newly created Service Account and create a new key
 
-      1. ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28188%29.png)
+      1. ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(188).png)
 
       2. This will provide you with the JSON format secret key you will later setup in your LimaCharlie output
 
     5. In BigQuery, create a Dataset, Table, & Schema similar to the screenshot below
 
-      1. ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28189%29.png)
+      1. ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(189).png)
 
   3. Now we're ready to create our LimaCharlie tailored output
 
@@ -98,7 +98,7 @@ BigQuery dataset containing Velociraptor hunt results:
 
 Once the data arrives in BigQuery, it will be in three simple columns: `sid`, `job_id`, and `artifact`. The `artifact` column contains the raw JSON of the hunt results from each sensor that returned results.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28191%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(191).png)
 
 Let's say we wanted to split out all results of a `Windows.System.Pslist` hunt so that each process, from each system, is returned in it's own row. Here is an example notebook to accomplish this:
     
@@ -121,8 +121,8 @@ Let's say we wanted to split out all results of a `Windows.System.Pslist` hunt s
 
 Be sure to swap out `lc-demo-infra.velociraptor.hunts` for your own `project.dataset.table` names.
 
-This results in the following view of our data  
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28200%29.png)
+This results in the following view of our data
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(200).png)
 
 Suppose we wanted to perform some stacking analysis to identify the rarest combinations of `Exe` and `CommandLine`; the following query could help:
     
@@ -141,8 +141,8 @@ Suppose we wanted to perform some stacking analysis to identify the rarest combi
       Count ASC
     
 
-This results in the following view of our data  
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28201%29.png)
+This results in the following view of our data
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(201).png)
 
 Now let's say you wanted to look for only processes that are `Authenticode` = `untrusted`, you would use a query such as this:
     
@@ -204,4 +204,4 @@ In the `Windows.System.Pslist` examples above, there are a few columns which con
     
 
 See the output of this query below:
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28202%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(202).png)

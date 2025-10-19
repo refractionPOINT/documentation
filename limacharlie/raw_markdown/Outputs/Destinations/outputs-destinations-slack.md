@@ -6,14 +6,17 @@ Output detections and audit (only) to a Slack community and channel.
 
   * `slack_channel`: the channel to output to within the community.
 
+
+
+
 Example:
-
-
+    
+    
     slack_api_token: sample_api_token
     slack_channel: #detections
+    
 
-
-## Provisioning
+**Provisioning:**
 
 To use this Output, you need to create a Slack App and Bot. This is very simple:
 

@@ -1,3 +1,5 @@
+# Event Schemas
+
 Since LimaCharlie standardizes on JSON, including arbitrary sources of data, it means that Schema in LimaCharlie is generally dynamic.
 
 To enable users to create schemas in external systems that expect more strictly typed data, LimaCharlie makes a Schema API available.
@@ -133,3 +135,5 @@ The value is a path within the JSON. For example, the schema above would represe
         "this": "a443f9c48bef700740ef27e062c333c6"
       }
     }
+
+

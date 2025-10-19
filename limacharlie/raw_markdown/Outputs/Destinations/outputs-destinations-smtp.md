@@ -10,9 +10,12 @@ To utilize SMTP output, you will need:
 
   * A destination email, to receive output
 
+
+
+
 ## Webapp Configuration
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/smtp\(1\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/smtp(1).png)
 
 Output individually each event, detection, audit, deployment or log through an email.
 
@@ -36,9 +39,12 @@ Output individually each event, detection, audit, deployment or log through an e
 
   * `subject`: is specified, use this as the alternate "subject" line.
 
+
+
+
 Example:
-
-
+    
+    
     dest_host: smtp.gmail.com
     dest_email: soc@corp.com
     from_email: lc@corp.com

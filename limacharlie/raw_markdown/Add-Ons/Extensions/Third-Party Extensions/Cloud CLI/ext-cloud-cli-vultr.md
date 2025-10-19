@@ -7,16 +7,16 @@ This extension makes use of Vultr's official CLI tool, which can be found [here]
 ## Example
 
 The following example of a response action will enumerate a list of instance within a Vultr account.
-
-
+    
+    
     - action: extension request
-      extension action: run
-      extension name: ext-cloud-cli
-      extension request:
-        cloud: '{{ "vultr-cli" }}'
-        command_line: '{{ "instance list" }}'
-        credentials: '{{ "hive://secret/secret-name" }}'
-
+      extension action: run
+      extension name: ext-cloud-cli
+      extension request:
+        cloud: '{{ "vultr-cli" }}' 
+        command_line: '{{ "instance list" }}'
+        credentials: '{{ "hive://secret/secret-name" }}'
+    
 
 ## Credentials
 
@@ -24,9 +24,12 @@ To utilize `vultr-cli` capabilities, you will need:
 
   * A personal access token. To create one, click [here](https://my.vultr.com/settings/#settingsapi).
 
-  * Your access token will need to have access control open to IPv6
+  * Your access token will need to have access control open to IPv6  
 ![Screenshot 2024-04-25 at 10.31.29 AM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot%202024-04-25%20at%2010.31.29%E2%80%AFAM.png)
 
   * Create a secret in the secrets manager in the following format:
-
+    
         personalAccessToken
+    
+
+

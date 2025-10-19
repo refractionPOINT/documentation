@@ -10,7 +10,10 @@ Ditch the data silos and sluggish response – LimaCharlie illuminates your DevO
 
   * **DevSecOps Disconnect:** Disparate tools and fragmented communication between security and operations teams lead to inefficient incident response and missed opportunities for proactive mitigation.
 
-#### LimaCharlie's solution
+
+
+
+#### LimaCharlie’s solution
 
   * **Unified Visibility Across the Flow:** LimaCharlie's architecture effortlessly ingests telemetry from all your DevOps data sources, providing a unified view of your entire pipeline from code commits to production deployments.
 

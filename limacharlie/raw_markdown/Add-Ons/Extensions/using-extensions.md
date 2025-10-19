@@ -6,7 +6,7 @@ Extensions can be interacted with using two main components:
 
 ### Configurations
 
-Extension Configurations are records in [Hive](/v2/docs/config-hive). Each Extension has its configuration in the Hive record of the same name in the `extension_configuration` Hive.
+Extension Configurations are records in [Hive](../../Platform%20Management/Config%20Hive/config-hive-lookups.md). Each Extension has its configuration in the Hive record of the same name in the `extension_configuration` Hive.
 
 These configurations are manipulated by simply storing the value in the record, LimaCharlie takes care of validating and notifying the Extension with the new value.
 
@@ -32,16 +32,14 @@ The LimaCharlie webapp automatically displays a machine-generated user interface
 
 ### Automation
 
-[Detection & Response Rules](/docs/detection-and-response), the main automation mechanism in LimaCharlie can interact with Extensions using the `extension request` action in the Response component.
+[Detection & Response Rules](../../Detection%20and%20Response/detection-and-response-examples.md), the main automation mechanism in LimaCharlie can interact with Extensions using the `extension request` action in the Response component.
 
 ### API
 
 Extensions can be interacted with using a few different APIs:
 
-  * Getting the schema for an Extension: [https://api.limacharlie.io/static/swagger/#/Extension-Schema](https://api.limacharlie.io/static/swagger/#/Extension-Request)
+  * Getting the schema for an Extension: https://api.limacharlie.io/static/swagger/#/Extension-Schema
 
-  * Making requests to an Extension: <https://api.limacharlie.io/static/swagger/#/Extension-Request>
+  * Making requests to an Extension: https://api.limacharlie.io/static/swagger/#/Extension-Request
 
 LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
-

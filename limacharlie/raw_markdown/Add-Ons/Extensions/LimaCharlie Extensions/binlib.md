@@ -2,13 +2,13 @@
 
 Binary Library, or "BinLib", is a collection of executable binaries (such as EXE or ELF files) that have been observed within your environment. If enabled, this Extension helps you build your own private collection of observed executables for subsequent analysis and searching.
 
-When LimaCharlie observes a binary and path for the first time a `CODE_IDENTITY` event is generated. The metadata from this event is stored within `binlib`, and is available for searching, tagging, and downloading. Additionally, you can run [YARA](/v2/docs/ext-yara) scans against observed binaries.
+When LimaCharlie observes a binary and path for the first time a `CODE_IDENTITY` event is generated. The metadata from this event is stored within `binlib`, and is available for searching, tagging, and downloading. Additionally, you can run [YARA](../Third-Party%20Extensions/ext-yara.md) scans against observed binaries.
 
-Enabling BinLib
+## Enabling BinLib
 
 BinLib requires subscribing to the `ext-reliable-tasking` Extension in order to function properly. This can be enabled [in the Add-ons marketplace](https://app.limacharlie.io/add-ons/extension-detail/ext-reliable-tasking).
 
-BinLib can be a powerful additional to your detection and response capabilities. Analysts can:
+BinLib can be a powerful addition to your detection and response capabilities. Analysts can:
 
   * Look for historical evidence of malicious binaries
 
@@ -16,7 +16,7 @@ BinLib can be a powerful additional to your detection and response capabilities.
 
   * Compare observed hashes to known good or known bad lists
 
-  * [YARA scan](/v2/docs/ext-yara) and auto-tag for integration in detection & response rules
+  * [YARA scan](../Third-Party%20Extensions/ext-yara.md) and auto-tag for integration in detection & response rules
 
 
 
@@ -176,7 +176,7 @@ The `yara_scan` operation lets you run YARA scans across observed files. Scans r
 
   * Criteria or hash to filter files to be scanned
 
-  * [Rule name(s)](/v2/docs/config-hive-yara) or rule(s)
+  * [Rule name(s)](../../../Platform%20Management/Config%20Hive/config-hive-yara.md) or rule(s)
 
 
 

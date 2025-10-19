@@ -15,8 +15,13 @@ More information about NIMS, including the template and corresponding docs, can 
 In order to use this extension, you will need 3 pieces of data:
 
   * Notion authentication token
+
   * NIMS Alert database ID
+
   * NIMS Asset database ID
+
+
+
 
 #### Find your database IDs
 
@@ -37,6 +42,9 @@ In order to use this extension, you will need 3 pieces of data:
   4. Copy the ID
 
   5. Repeat the above for the Asset database
+
+
+
 
 #### Generate an auth token
 
@@ -77,6 +85,9 @@ While completing the following steps, be sure to add the connection to all 3 dat
 
   9. Repeat steps 7 and 8 for the `Asset Database` and the `Incident Database`
 
+
+
+
 ### Example D&R rule
 
 **Detect:**
@@ -100,4 +111,3 @@ While completing the following steps, be sure to add the connection to all 3 dat
         int_ip: '{{ .routing.int_ip }}'
         link: '{{ .link }}'
         metadata: '{{json .detect_mtd }}'
-

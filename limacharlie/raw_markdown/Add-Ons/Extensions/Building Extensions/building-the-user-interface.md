@@ -65,7 +65,7 @@ Some other configurations that conditionally apply to specific data_types:
 
 
 
-For the complete list of all data types, please see the [page on data types](/v2/docs/schema-data-types).
+For the complete list of all data types, please see the [page on data types](./schema-data-types.md).
 
 ## Nuanced Usage
 

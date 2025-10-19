@@ -1,6 +1,4 @@
-# FAQ - Sensor Removal
-
-## How do I verify the LimaCharlie agent was uninstalled from macOS systems?
+# How do I verify the LimaCharlie agent was uninstalled from macOS systems?
 
 After [performing an uninstallation](https://docs.limacharlie.io/docs/macos-agent-installation-latest-os-versions#uninstallation-flow) of the LimaCharlie Sensor for macOS, you can verify that the process was successful by manually checking several items on the endpoint, as described below.
 
@@ -80,3 +78,4 @@ Open the Terminal and run the following commands
 ✅ If no result is returned, the security extension was successfully removed.
 
 ❌ If instead you see something similar to the below, the extension was not properly removed and you may need to take some additional measures to do so (i.e. manual removal after booting into Recovery mode).
+

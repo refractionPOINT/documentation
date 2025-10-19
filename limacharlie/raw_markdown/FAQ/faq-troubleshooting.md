@@ -1,8 +1,6 @@
-# FAQ - Sensor Troubleshooting
+# Why is there no output in the console?
 
-## Why is there no output in the console?
-
-When running Sensor [console commands](/v2/docs/endpoint-agent-commands), you may encounter a "spinning wheel" or no output back from the Sensor. Oftentimes, this is due to the _response_ event not enabled in [Event Collection](/v2/docs/ext-exfil). You will need to configure the response event in order to receive feedback in the console.
+When running Sensor [console commands](../Sensors/Endpoint Agent/Endpoint Agent Commands/reference-endpoint-agent-commands.md), you may encounter a "spinning wheel" or no output back from the Sensor. Oftentimes, this is due to the _response_ event not enabled in [Event Collection](../Add-Ons/Extensions/LimaCharlie Extensions/ext-exfil.md). You will need to configure the response event in order to receive feedback in the console.
 
 For example, the `os_users` Sensor command has two components:
 
@@ -370,4 +368,5 @@ The log data is formatted similarly to the example below:
 ## Additional Help
 
 If these steps do not help, get in touch with us, and we will help you figure out the issue. The best way of contacting us is via our [Community Site](https://community.limacharlie.com/), followed by `support@limacharlie.io`.
+
 

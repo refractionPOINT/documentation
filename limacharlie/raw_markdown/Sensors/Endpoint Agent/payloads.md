@@ -12,7 +12,7 @@ We encourage you to look at LimaCharlie native functionality first as it has sev
 
   * Data returned is always well structured JSON.
 
-  * Can be tasked automatically and [Detection & Response Rules](/v2/docs/detection-and-response) can be created from their data.
+  * Can be tasked automatically and [Detection & Response Rules](../../Detection%20and%20Response/detection-and-response-examples.md) can be created from their data.
 
   * Data returned is indexed and searchable.
 
@@ -32,10 +32,10 @@ The payload is retrieved by the endpoint agent over HTTPS to the Ingestion API D
 ## Upload / Download via REST
 
 Creating and getting Payloads is done asynchronously. The relevant REST APIs will return specific signed URLs instead of the actual Payload. In the case of a retrieving an existing payload, simply doing an HTTP GET using the returned URL will download the payload content. When creating a Payload the returned URL should be used in an HTTP PUT using the URL like:
-    
-    
+
+
     curl -X PUT "THE-SIGNED-URL-HERE" -H "Content-Type: application/octet-stream" --upload-file your-file.exe
-    
+
 
 Note that the signed URLs are only valid for a few minutes.
 
@@ -46,3 +46,10 @@ Payloads are managed with two permissions:
   * `payload.ctrl` allows you to create and delete payloads.
 
   * `payload.use` allows you to run a given payload.
+
+
+
+
+Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

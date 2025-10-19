@@ -3,17 +3,23 @@
 Soteria's AWS ruleset provides coverage across multiple AWS telemetry streams, including:
 
   * [AWS CloudTrail](https://aws.amazon.com/cloudtrail/)
+
   * [AWS GuardDuty](https://aws.amazon.com/guardduty/)
 
 ## Data access
 
-Please note that Soteria won't get access to your data, and you won't be able to see or edit their rules - LimaCharlie acts as a broker between the two parties.
+Please note that Soteria won’t get access to your data, and you won’t be able to see or edit their rules - LimaCharlie acts as a broker between the two parties.
 
 To leverage detection logic provided by the ruleset:
 
   1. Subscribe your tenant to the Soteria AWS [ruleset extension](https://app.limacharlie.io/add-ons/extension-detail/soteria-rules-aws).
-  2. Subscribe your tenant to [tor](/v2/docs/ext-lookup-manager) lookup (provided at no cost).
-  3. Configure [AWS CloudTrail](/v2/docs/adapter-types-aws-cloudtrail) and [AWS GuardDuty](/v2/docs/adapter-types-aws-guardduty) adapters to start collecting AWS audit logs.
+
+  2. Subscribe your tenant to [tor](../../../Add-Ons/Extensions/LimaCharlie%20Extensions/ext-lookup-manager.md) lookup (provided at no cost).
+
+  3. Configure [AWS CloudTrail](../../../Sensors/Adapters/Adapter%20Types/adapter-types-aws-cloudtrail.md) and [AWS GuardDuty](../../../Sensors/Adapters/Adapter%20Types/adapter-types-aws-guardduty.md) adapters to start collecting AWS audit logs.
+
+
+
 
 ## Enabling Soteria's AWS Rules
 
@@ -38,9 +44,5 @@ You can also manage add-ons from the **Subscriptions** menu under **Billing**.
 ### Infrastructure as Code
 
 Alternatively, to manage tenants and LimaCharlie functionality at scale, you can leverage our Infrastructure as Code functionality.
-
-Amazon Web Services
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 

@@ -51,7 +51,7 @@ Upon running Hayabusa, a CSV file is generated. The CSV file will be uploaded as
 
 The resulting CSV is compatible with Timesketch, and can be imported [as a timeline](https://timesketch.org/guides/user/upload-data/).
 
-Outputting your data to Google BigQuery is another option, and is [outlined here](/v2/docs/hayabusa-to-bigquery)
+Outputting your data to Google BigQuery is another option, and is [outlined here](../Tutorials/hayabusa-to-bigquery.md)
 
 Several events will be pushed to the `ext-hayabusa` Sensor timeline:
 
@@ -89,10 +89,10 @@ Kick off a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Ve
 
 **Argument options:**
 
-  * `EventLogs=Y`  
+  * `EventLogs=Y`
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/hayabusa-2.png)
 
-  * `KapeTriage=Y` \- this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using `EventLogs=Y`.
+  * `KapeTriage=Y` - this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using `EventLogs=Y`.
 
 Configure a D&R rule to look for these events upon ingestion, and then trigger the Hayabusa extension:
 

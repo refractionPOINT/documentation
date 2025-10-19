@@ -1,6 +1,6 @@
 # Endpoint Detection and Response (EDR)
 
-The SecOps Cloud Platform, revolutionizes endpoint security by providing true real-time visibility, versatile detection capabilities, integration with open-source and managed rulesets, and vendor-agnostic telemetry ingestion. By leveraging LimaCharlie's API-first approach, flexible billing model, and seamless integration with your existing security stack, security teams can effectively detect, investigate, and respond to threats while avoiding the limitations of traditional EDR solutions.
+The SecOps Cloud Platform revolutionizes endpoint security by providing true real-time visibility, versatile detection capabilities, integration with open-source and managed rulesets, and vendor-agnostic telemetry ingestion. By leveraging LimaCharlie's API-first approach, flexible billing model, and seamless integration with your existing security stack, security teams can effectively detect, investigate, and respond to threats while avoiding the limitations of traditional EDR solutions.
 
 #### EDR problems
 
@@ -26,5 +26,3 @@ Endpoint Detection and Response (EDR) solutions are crucial for organizations to
   * **Reduced mean time to respond (MTTR):** LimaCharlie allows security teams to execute a full suite of remediation responses, such as triggering memory dumps or killing process trees. By simplifying the process of activating rulesets and building custom rules, LimaCharlie significantly reduces MTTR.
 
   * **Vendor-agnostic telemetry ingestion:** Ingest data from any source, including existing EDR solutions, in real-time. This allows security teams to avoid vendor lock-in and leverage the SCP's powerful Detection, Automation, and Response Engine on all of their telemetry, regardless of the source.
-
-

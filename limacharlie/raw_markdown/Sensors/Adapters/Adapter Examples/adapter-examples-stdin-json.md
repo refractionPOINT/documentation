@@ -1,13 +1,15 @@
+# Stdin JSON
+
 This example is similar to the Stdin example above, except it assumes the data being read is JSON, not just text. If your data source is already JSON, it's much simpler to let LimaCharlie do the JSON parsing directly.
-    
-    
+
+
     ./lc_adapter stdin client_options.identity.installation_key=e9a3bcdf-efa2-47ae-b6df-579a02f3a54d \
-        client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
-        client_options.platform=json \
-        client_options.sensor_seed_key=testclient3 \
-        client_options.mapping.event_type_path=type \
-        client_options.hostname=testclient3
-    
+        client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
+        client_options.platform=json \
+        client_options.sensor_seed_key=testclient3 \
+        client_options.mapping.event_type_path=type \
+        client_options.hostname=testclient3
+
 
 Here's a breakdown of the above example:
 
@@ -27,15 +29,10 @@ Here's a breakdown of the above example:
 
   * `client_options.hostname=....`: specifies the sensor hostname for the adapter
 
-
-
-
 Note that we did not need to specify a `parsing_re` or `parsing_grok ` because the data ingested is not text, but already JSON, so the Parsing step is already done for us by setting a `platform=json`.
 
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments. 
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
 
 Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-

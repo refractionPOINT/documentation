@@ -2,7 +2,7 @@
 
 Output events and detections to a Google Cloud BigQuery Table.
 
-For a practical use case of this output, see this [tutorial on pushing Velociraptor data to BigQuery](/v2/docs/velociraptor-to-bigquery).
+For a practical use case of this output, see this [tutorial on pushing Velociraptor data to BigQuery](../../Add-Ons/Extensions/Tutorials/velociraptor-to-bigquery.md).
 
   * `schema`: describes the column names, data types, and other information; should match the text-formatted schema from bigquery
 
@@ -17,6 +17,9 @@ For a practical use case of this output, see this [tutorial on pushing Velocirap
   * `sec_per_file`: the number of seconds after which a batch of data is loaded.
 
   * `custom_transform`: should align with the schema fields/formats
+
+
+
 
 Example:
 

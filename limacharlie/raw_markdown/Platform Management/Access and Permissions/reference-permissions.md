@@ -279,7 +279,3 @@ Permissions can be applied through:
   4. **Separate Environments** : Use different permission sets for development, staging, and production
 
   5. **API Key Management** : Rotate API keys regularly and scope them appropriately
-
-
-
-

@@ -16,14 +16,19 @@ Output events and detections to a Kafka target.
 
   * `literal_topic`: use this specific value as a topic.
 
+
+
+
 **Note on authentication:** if you specify `username` and `password`, the authentication mechanism assumed is SASL_SSL + SCRAM-SHA-512, which should be compatible with services like [AWS Manages Streaming Kafka](https://aws.amazon.com/msk/). If you require different paramaters around authentication please contact us at [support@limacharlie.io](mailto:support@limacharlie.io).
 
 Example:
-
-
+    
+    
     dest_host: kafka.corp.com
     is_tls: "true"
     is_strict_tls: "true"
     username: lc
     password: letmein
     literal_topic: telemetry
+    
+

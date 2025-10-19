@@ -1,8 +1,8 @@
 # Sigma Converter
 
-LimaCharlie is happy to contribute to the [Sigma Project](https://github.com/SigmaHQ/sigma) by maintaining the LimaCharlie Backend for Sigma, enabling most Sigma rules to be converted to the [Detection & Response rule](/v2/docs/detection-and-response) format.
+LimaCharlie is happy to contribute to the [Sigma Project](https://github.com/SigmaHQ/sigma) by maintaining the LimaCharlie Backend for Sigma, enabling most Sigma rules to be converted to the Detection & Response rule format.
 
-A LimaCharlie [Service](/v2/docs/sigma-rules) is available to apply [many of those converted rules](https://github.com/refractionPOINT/sigma-limacharlie/tree/rules) with a single click to an Organization.
+A LimaCharlie Service is available to apply [many of those converted rules](https://github.com/refractionPOINT/sigma-limacharlie/tree/rules) with a single click to an Organization.
 
 For cases where you either have your own Sigma rules, or you would like to convert/apply specific rules yourself, the Sigma Converter service described below can help streamline the process.
 
@@ -18,7 +18,7 @@ Form Parameters:
 
   * `rule`: the content of a literal Sigma rule to be converted.
 
-  * `target`: optional [target](/v2/docs/detection-on-alternate-targets) within LimaCharlie, one of `edr` (default) or `artifact`.  
+  * `target`: optional [target](../../detection-on-alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.  
 Output Example:
 
 
@@ -52,9 +52,9 @@ Form Parameters:
 
       * `https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation`
 
-    * An [Authenticated Resource Locator](/v2/docs/reference-authentication-resource-locator)
+    * An [Authenticated Resource Locator](../../../Add-Ons/Reference/reference-authentication-resource-locator.md)
 
-  * `target`: optional [target](/v2/docs/detection-on-alternate-targets) within LimaCharlie, one of `edr` (default) or `artifact`.
+  * `target`: optional [target](../../detection-on-alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.
 
 
 
@@ -77,6 +77,4 @@ CURL Example:
     
     curl -X POST  https://sigma.limacharlie.io/convert/repo -d "repo=https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_ad_find_discovery.yml"
     
-
-
 

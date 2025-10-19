@@ -2,13 +2,13 @@
 
 ## macOS Sensor (macOS 10.15 Catalina to macOS 14 Sonoma)
 
-This document provides details of how to install, verify, and uninstall the LimaCharlie Endpoint Agent on macOS (versions 10.15 Catalina though to macOS 14 Sonoma). We also offer documentation for [macOS 10.14 and prior](/v2/docs/macos-agent-installation-older-versions), and [macOS 10.15 and newer](/v2/docs/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer).
+This document provides details of how to install, verify, and uninstall the LimaCharlie Endpoint Agent on macOS (versions 10.15 Catalina though to macOS 14 Sonoma). We also offer documentation for [macOS 10.14 and prior](macos-agent-installation-older-versions.md), and [macOS 10.15 and newer](clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer.md).
 
 ### Installer Options
 
 When running the installer from the command line, you can pass the following arguments:
-    
-    
+
+
     -v: display build version.
     -q: quiet; do not display banner.
     -d <INSTALLATION_KEY>: the installation key to use to enroll, no permanent installation.
@@ -17,7 +17,7 @@ When running the installer from the command line, you can pass the following arg
     -c: uninstall executable as a service and delete identity files.
     -w: executable is running as a macOS service.
     -h: displays the list of accepted arguments.
-    
+
 
 ### Installation Flow
 
@@ -39,7 +39,7 @@ When running the installer from the command line, you can pass the following arg
 
 ![Basic installation](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/01-Basic_installation.png)
 
-You can obtain the installation key from the [Installation Keys](/v2/docs/installation-keys) section of the LimaCharlie web application.
+You can obtain the installation key from the [Installation Keys](../../installation-keys.md) section of the LimaCharlie web application.
 
 The sensor will be installed as a launchctl service. Installation will trigger the sensors enrollment with the LimaCharlie cloud.
 
@@ -145,4 +145,10 @@ The related system extension will be removed and the `RPHCP.app` will be removed
 
 ### Install Using MDM Solutions
 
-See our document [macOS Agent Installation with MDM Solutions](/docs/macos-agent-installation-mdm-configuration-profiles) for the Mobile Device Management (MDM) Configuration Profile that can be used to deploy the LimaCharlie agent to an enterprise fleet.
+See our document [macOS Agent Installation with MDM Solutions](macos-agent-installation-mdm-configuration-profiles.md) for the Mobile Device Management (MDM) Configuration Profile that can be used to deploy the LimaCharlie agent to an enterprise fleet.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

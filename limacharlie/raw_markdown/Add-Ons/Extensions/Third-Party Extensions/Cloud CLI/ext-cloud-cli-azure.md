@@ -7,16 +7,16 @@ This extension makes use of the Azure CLI, which can be found [here](https://lea
 ## Example
 
 The following example returns a list of virtual machines and their respective details in Azure.
-
-
+    
+    
     - action: extension request
-      extension action: run
-      extension name: ext-cloud-cli
-      extension request:
-        cloud: '{{ "az" }}'
-        command_line: '{{ "vm list" }}'
-        credentials: '{{ "hive://secret/secret-name" }}'
-
+      extension action: run
+      extension name: ext-cloud-cli
+      extension request:
+        cloud: '{{ "az" }}' 
+        command_line: '{{ "vm list" }}'
+        credentials: '{{ "hive://secret/secret-name" }}'
+    
 
 ## Credentials
 
@@ -27,4 +27,7 @@ To utilize the Azure CLI, you will need:
   * Create a secret in the secrets manager in the following format:
 
 
+
+    
+    
     appID/clientSecret/tenantID

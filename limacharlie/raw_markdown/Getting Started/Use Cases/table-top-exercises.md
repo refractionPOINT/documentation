@@ -16,7 +16,7 @@ Enhance your security preparedness table-top exercises with LimaCharlie. Conduct
 
   * **Rapid deployment and customization:** Get started with LimaCharlie's quickly and easily. Launch realistic cyber attack simulations within minutes, tailored to your specific environment and security concerns.
 
-  * **Comprehensive multi-platform simulations:** Test your team's response to complex attack scenarios across Windows, macOS, Linux, and cloud environments, mimicking real-world threats. Leverage LimaCharlie’s API to integrate your existing security tools, creating a truly holistic response simulation.
+  * **Comprehensive multi-platform simulations:** Test your team's response to complex attack scenarios across Windows, macOS, Linux, and cloud environments, mimicking real-world threats. Leverage LimaCharlie's API to integrate your existing security tools, creating a truly holistic response simulation.
 
   * **Detailed reporting and insights:** Gain valuable insights from post-exercise reports that analyze team performance, identify skill gaps, and offer actionable recommendations for improving your incident response procedures.
 

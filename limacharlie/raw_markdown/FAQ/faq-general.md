@@ -99,7 +99,7 @@ While sending detections and events data from LimaCharlie into the SIEM is the m
 
 LimaCharlie stores management/audit logs for one year.
 
-We suggest you set up an [Output](/v2/docs/outputs) to send logs to an external destination if you are looking to have your logs stored for over one year.
+We suggest you set up an Output to send logs to an external destination if you are looking to have your logs stored for over one year.
 
 ## Does LimaCharlie offer reporting capabilities?
 
@@ -108,3 +108,5 @@ It is very common for users to bring different log, network and endpoint data in
 In LimaCharlie web app, you can track information such as detections and events over time and number of sensors online.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/dashboard.png)
+
+

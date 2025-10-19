@@ -1,3 +1,5 @@
+# Azure Event Hub
+
 ## Overview
 
 This Adapter allows you to connect to an Azure Event Hub to fetch structured data stored there.
@@ -46,33 +48,30 @@ LimaCharlie offers several helpers within the webapp that allow you to ingest Mi
 ### CLI Deployment
 
 The following example configures a binary Adapter to collect Microsoft Defender data from an Azure Event Hub:
-    
-    
+
+
     ./lc_adapter azure_event_hub client_options.identity.installation_key=<INSTALLATION_KEY> \
     client_options.identity.oid=<OID> \
     client_options.platform=msdefender \
     client_options.sensor_seed_key=<SENSOR_SEED_KEY> \
     client_options.hostname=<HOSTNAME> \
     "connection_string=Endpoint=sb://mynamespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=fnaaaaaaaaaaaaaaak0g54alYbbbbbbbbbbbbbbbALQ=;EntityPath=lc-stream"
-    
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # Azure Event Hub Specific Docs: https://docs.limacharlie.io/docs/adapter-types-azure-event-hub
-    
+
     sensor_type: "azure_event_hub"
-      azure_event_hub:
-        connection_string: "Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_EVENT_HUB_SHARED_ACCESS_K
-      EY_HERE;EntityPath=your-actual-event-hub-name"
-        client_options:
-          identity:
-            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            installation_key: "YOUR_LC_INSTALLATION_KEY_FOR_AZURE"
-          hostname: "azure-eventhub-adapter"
-          platform: "json"
-          sensor_seed_key: "azure-eventhub-prod-sensor"
-          indexing: []
-    
-
-
+      azure_event_hub:
+        connection_string: "Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_EVENT_HUB_SHARED_ACCESS_K
+      EY_HERE;EntityPath=your-actual-event-hub-name"
+        client_options:
+          identity:
+            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            installation_key: "YOUR_LC_INSTALLATION_KEY_FOR_AZURE"
+          hostname: "azure-eventhub-adapter"
+          platform: "json"
+          sensor_seed_key: "azure-eventhub-prod-sensor"
+          indexing: []

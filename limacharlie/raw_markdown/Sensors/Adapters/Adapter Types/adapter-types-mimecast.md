@@ -28,11 +28,11 @@ Adapter Type: `mimecast`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binaries).
-    
-    
+Adapter downloads can be found [here](../../adapter-deployment.md#adapter-binaries).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter mimecast client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
@@ -40,33 +40,33 @@ Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binari
     client_options.hostname=$SENSOR_NAME \
     client_options.mappings.event_type_path=category \
     client_id=$CLIENT_ID client_secret=$CLIENT_SECRET
-    
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # Mimecast Specific Docs: https://docs.limacharlie.io/docs/adapter-types-mimecast
     # For cloud sensor deployment, store credentials as hive secrets:
-    
-    #   client_id: "hive://secret/mimecast-client-id"
-    #   client_secret: "hive://secret/mimecast-client-secret"
-    
+
+    #   client_id: "hive://secret/mimecast-client-id"
+    #   client_secret: "hive://secret/mimecast-client-secret"
+
     sensor_type: "mimecast"
     mimecast:
-      client_id: "hive://secret/mimecast-client-id"
-      client_secret: "hive://secret/mimecast-client-secret"
-      client_options:
-        identity:
-          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          installation_key: "YOUR_LC_INSTALLATION_KEY_MIMECAST"
-        hostname: "mimecast-logs-adapter"
-        platform: "json"
-        sensor_seed_key: "mimecast-audit-sensor"
-        mapping:
-          sensor_hostname_path: "sender"
-          event_type_path: "eventType"
-          event_time_path: "eventTime"
-        indexing: []
+      client_id: "hive://secret/mimecast-client-id"
+      client_secret: "hive://secret/mimecast-client-secret"
+      client_options:
+        identity:
+          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          installation_key: "YOUR_LC_INSTALLATION_KEY_MIMECAST"
+        hostname: "mimecast-logs-adapter"
+        platform: "json"
+        sensor_seed_key: "mimecast-audit-sensor"
+        mapping:
+          sensor_hostname_path: "sender"
+          event_type_path: "eventType"
+          event_time_path: "eventTime"
+        indexing: []
 
 ## API Doc
 

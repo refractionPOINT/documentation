@@ -283,3 +283,7 @@ The `run_lcql_query` tool supports:
   * No OAuth flow is used - authentication is via bearer tokens only
 
   * If you encounter missing capabilities, contact <https://community.limacharlie.com> for quick additions
+
+
+
+

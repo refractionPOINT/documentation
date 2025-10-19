@@ -12,9 +12,12 @@ Output events and detections over SFTP.
 
   * `secret_key`: the optional SSH private key to authenticate with.
 
+
+
+
 Example:
-
-
+    
+    
     dest_host: storage.corp.com
     dir: /uploads/
     username: storage_user

@@ -1,6 +1,6 @@
 # Building Reports with BigQuery + Looker Studio
 
-LimaCharlie does not include reporting by default, however our granular and customizable [Output](/v2/docs/outputs) options allow you to push data to any source and use third-party tools for reporting. In this tutorial, we'll push a subset of LimaCharlie EDR telemetry to [BigQuery](https://cloud.google.com/bigquery) and analyze our data using Google's [Looker Studio](https://lookerstudio.google.com/). We'll be doing the work in the web UI, however this could also be done via the API.
+LimaCharlie does not include reporting by default, however our granular and customizable [Output](../../Outputs/output-billing.md) options allow you to push data to any source and use third-party tools for reporting. In this tutorial, we'll push a subset of LimaCharlie EDR telemetry to [BigQuery](https://cloud.google.com/bigquery) and analyze our data using Google's [Looker Studio](https://lookerstudio.google.com/). We'll be doing the work in the web UI, however this could also be done via the API.
 
 For this example, we will aggregate and analyze Windows processes making network connections.
 
@@ -46,7 +46,7 @@ The following values must be provided in order for the Output to work:
 
 Where to Store the Secret?
 
-The secret key for this output can be inserted directly in the web app helper, however we recommend keeping secrets in the [Secret hive](/v2/docs/config-hive-secrets) for centralized management.
+The secret key for this output can be inserted directly in the web app helper, however we recommend keeping secrets in the [Secret hive](../../Platform%20Management/Config%20Hive/config-hive-secrets.md) for centralized management.
 
 Within the `Advanced Options`, we'll need to provide the following details:
 
@@ -95,3 +95,5 @@ And that's it! From here, you can manipulate and move around the data as needed.
 Reports can also be styled, additional statistics generated, etc. The following example continues to pull on the basic data we exported to provide some unique insights:
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28106%29.png)
+
+

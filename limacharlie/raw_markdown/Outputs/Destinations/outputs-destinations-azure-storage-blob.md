@@ -8,9 +8,12 @@ Output events and detections to a Blob Container in Azure Storage Blobs.
 
   * `account_name`: the account name used to authenticate in Azure.
 
+
+
+
 Example:
-
-
+    
+    
     blob_container: testlcdatabucket
     account_name: lctestdata
     secret_key: dkndsgnlngfdlgfd

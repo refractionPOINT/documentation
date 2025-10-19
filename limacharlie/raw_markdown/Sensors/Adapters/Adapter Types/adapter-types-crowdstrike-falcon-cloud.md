@@ -1,3 +1,5 @@
+# CrowdStrike Falcon Cloud
+
 ## Overview
 
 This Adapter allows you to connect to CrowdStrike Falcon Cloud to stream events as they happen in the CrowdStrike Falcon Console.
@@ -26,11 +28,11 @@ Adapter Type: `falconcloud`
 
 ### Manual Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binaries).
-    
-    
+Adapter downloads can be found [here](../../adapter-deployment.md#adapter-binaries).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter falconcloud client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
@@ -39,32 +41,30 @@ Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binari
     client_options.mappings.event_type_path=metadata/eventType \
     client_id=$CLIENT_ID \
     client_secret=$CLIENT_SECRET
-    
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # CrowdStrike Falcon ("falconcloud") Specific Docs: https://docs.limacharlie.io/docs/adapter-types-crowdstrike
-    
+
     sensor_type: "falconcloud"
-      falconcloud:
-        client_id: "YOUR_CROWDSTRIKE_FALCON_API_CLIENT_ID"
-        client_secret: "YOUR_CROWDSTRIKE_FALCON_API_CLIENT_SECRET"
-        client_options:
-          identity:
-            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            installation_key: "YOUR_LC_INSTALLATION_KEY_FALCONCLOUD"
-          hostname: "crowdstrike-falcon-adapter"
-          platform: "falconcloud"
-          sensor_seed_key: "falcon-cloud-sensor"
-          indexing: []
-        # Optional configuration
-        write_timeout_sec: 600  # Default: 10 minutes
-        is_using_offset: false  # Default: false (recommended)
-        offset: 0               # Only used if is_using_offset is true
+      falconcloud:
+        client_id: "YOUR_CROWDSTRIKE_FALCON_API_CLIENT_ID"
+        client_secret: "YOUR_CROWDSTRIKE_FALCON_API_CLIENT_SECRET"
+        client_options:
+          identity:
+            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            installation_key: "YOUR_LC_INSTALLATION_KEY_FALCONCLOUD"
+          hostname: "crowdstrike-falcon-adapter"
+          platform: "falconcloud"
+          sensor_seed_key: "falcon-cloud-sensor"
+          indexing: []
+        # Optional configuration
+        write_timeout_sec: 600  # Default: 10 minutes
+        is_using_offset: false  # Default: false (recommended)
+        offset: 0               # Only used if is_using_offset is true
 
 ## API Doc
 
 See the official [documentation](https://developer.crowdstrike.com/docs/openapi/) and [additional docs on the library used to access the Falcon APIs](https://github.com/CrowdStrike/gofalcon).
-
-

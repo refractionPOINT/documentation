@@ -18,7 +18,7 @@ From the **Outputs** view, click `Add Output`.
 
 Choose the type of stream you want to output from LimaCharlie.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-2\(1\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-2(1).png)
 
 Set `Webhook` or `Webhook Bulk` as a destination.
 
@@ -32,8 +32,8 @@ Enter the [correct HEC URI](https://docs.splunk.com/Documentation/Splunk/8.0.2/D
 
 Here is a sample Splunk HEC configuration:
 
-Destination Host = `https://host.domain.com:8088/services/collector/raw`
-Auth Header Name = Authorization
+Destination Host = `https://host.domain.com:8088/services/collector/raw`  
+Auth Header Name = Authorization  
 Auth Header value = Splunk xxxxxx-xxxx-xxxx-xxxx-xxxxxx
 
 Before saving the output, you can configure any of the advanced Output settings.

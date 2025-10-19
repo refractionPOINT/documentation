@@ -12,7 +12,10 @@ The capabilities of SIEM solutions are essential for managing logs, correlating 
 
   * **Complexity:** SIEMs can be complex to set up and manage, requiring specialized skills and resources that may strain already overburdened security teams.
 
-#### LimaCharlie's solution
+
+
+
+#### LimaCharlie’s solution
 
 LimaCharlie's SecOps Cloud Platform offers a cost-effective alternative to traditional SIEMs, providing essential capabilities while addressing the challenges of high costs, vendor lock-in, and complexity:
 

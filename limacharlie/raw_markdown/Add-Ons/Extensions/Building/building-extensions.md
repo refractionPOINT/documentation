@@ -142,11 +142,11 @@ For example:
 
 When getting started, we recommend utilizing the simplest data type applicable. This will enable you to get a grasp of the whole extensions framework and allow you to quickly test our your service. Such as `string`, `boolean`, `json`, etc.
 
-Afterwards, we recommend you define the data_type and other optional fields further, so that the UI may adapt to your defined data types. For more details, please see the [page on data types ](/v2/docs/schema-data-types)or review the code definitions [here](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go).
+Afterwards, we recommend you define the data_type and other optional fields further, so that the UI may adapt to your defined data types. For more details, please see the [page on data types](schema-data-types.md) or review the code definitions [here](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go).
 
 #### Config Schema (optional)
 
-The config schema is a description of what the extension's config should look like, when stored as a Hive record in the `extension_configuration` [Hive](/v2/docs/config-hive) for convenience.
+The config schema is a description of what the extension's config should look like, when stored as a Hive record in the `extension_configuration` [Hive](../../../Platform%20Management/Config%20Hive/config-hive-dr-rules.md) for convenience.
 
 Not all extensions will have a configuration, feel free to reach out on the community slack if you need help determining whether or not your extension needs a configuration.
 

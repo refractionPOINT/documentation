@@ -24,26 +24,29 @@ If you have your own visualization stack, or you just need the data archived, yo
 
   * `is_no_sharding`: do not add a shard directory at the root of the files generated.
 
+
+
+
 Example:
-
-
+    
+    
     bucket: my-bucket-name
     key_id: AKIAABCDEHPUXHHHHSSQ
     secret_key: fonsjifnidn8anf4fh74y3yr34gf3hrhgh8er
     is_indexing: "true"
     is_compression: "true"
+    
 
-
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/aws.png)
+![aws.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/aws.png)
 
 If the `is_indexing` option is enabled, data uploaded to S3 will be in a specific format enabling some indexed queries.
 
-LC data files begin with a `d`, while special manifest files (indicating
+LC data files begin with a `d`, while special manifest files (indicating  
 which data files contain which sensors' data) begin with an `m`. Otherwise (not `is_indexing`), data is uploaded as flat files with a UUID name.
 
 The `is_compression` flag, if on, will compress each file as a GZIP when uploaded. It is recommended you enable `is_compression`.
 
-## AWS IAM Configuration
+### AWS IAM Configuration
 
   1. Log in to AWS console and go to the IAM service.
 
@@ -63,7 +66,10 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 
   9. Take note of the "Access key", "Secret access key" and ARN name for the user (starts with "arn:", shown on the user summary screen).
 
-## AWS S3 Configuration
+
+
+
+### AWS S3 Configuration
 
   1. Go to the S3 service.
 
@@ -79,26 +85,29 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 
   7. Click `Save Changes`
 
-### Policy Sample
 
 
+
+#### Policy Sample
+    
+    
     {
-       "Version": "2012-10-17",
-       "Statement": [
-          {
-             "Sid": "PermissionForObjectOperations",
-             "Effect": "Allow",
-             "Principal": {
-                "AWS": "<<USER_ARN>>"
-             },
-             "Action": "s3:PutObject",
-             "Resource": "arn:aws:s3:::<<BUCKET_NAME>>/*"
-          }
-       ]
+       "Version": "2012-10-17",
+       "Statement": [
+          {
+             "Sid": "PermissionForObjectOperations",
+             "Effect": "Allow",
+             "Principal": {
+                "AWS": "<<USER_ARN>>"
+             },
+             "Action": "s3:PutObject",
+             "Resource": "arn:aws:s3:::<<BUCKET_NAME>>/*"
+          }
+       ]
     }
+    
 
-
-## LimaCharlie Configuration
+### LimaCharlie Configuration
 
   1. Back in the LimaCharlie GUI, in your organization view, click `Outputs` and `Add Output`
 
@@ -111,3 +120,7 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
   5. Click `Save Output`
 
   6. After a minute, the data should start getting written to your bucket
+
+
+
+

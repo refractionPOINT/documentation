@@ -26,11 +26,11 @@ Adapter Type: `pandadoc`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binaries).
-    
-    
+Adapter downloads can be found [here](../../adapter-deployment.md#adapter-binaries).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter pandadoc client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
@@ -38,34 +38,32 @@ Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binari
     client_options.hostname=$SENSOR_NAME \
     client_options.mappings.event_type_path=method \
     api_key=$API_KEY
-    
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # PandaDoc Specific Docs: https://docs.limacharlie.io/docs/adapter-types-pandadoc
     # For cloud sensor deployment, store credentials as hive secrets:
-    
-    #   api_key: "hive://secret/pandadoc-api-key"
-    
+
+    #   api_key: "hive://secret/pandadoc-api-key"
+
     sensor_type: "pandadoc"
     pandadoc:
-      api_key: "hive://secret/pandadoc-api-key"
-      client_options:
-        identity:
-          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          installation_key: "YOUR_LC_INSTALLATION_KEY_PANDADOC"
-        hostname: "pandadoc-events-adapter"
-        platform: "json"
-        sensor_seed_key: "pandadoc-logs-sensor"
-        mapping:
-          sensor_hostname_path: "ip"
-          event_type_path: "method"
-          event_time_path: "request_time"
-        indexing: []
+      api_key: "hive://secret/pandadoc-api-key"
+      client_options:
+        identity:
+          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          installation_key: "YOUR_LC_INSTALLATION_KEY_PANDADOC"
+        hostname: "pandadoc-events-adapter"
+        platform: "json"
+        sensor_seed_key: "pandadoc-logs-sensor"
+        mapping:
+          sensor_hostname_path: "ip"
+          event_type_path: "method"
+          event_time_path: "request_time"
+        indexing: []
 
 ## API Doc
 
 See the official [documentation](https://developers.pandadoc.com/reference/list-api-logs).
-
-

@@ -13,24 +13,19 @@ All adapters support the same `client_options`, which you should always specify 
   * `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
   * `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
-
-
 ### Adapter-specific Options
 
 Adapter Type: `hubspot`
 
   * `access_token`: your HubSpot access token
 
-
-
-
 ### Manual Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binaries).
-    
-    
+Adapter downloads can be found [here](../adapter-deployment.md).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter hubspot client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
@@ -38,28 +33,32 @@ Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binari
     client_options.hostname=$SENSOR_NAME \
     client_options.mappings.event_type_path=category \
     access_token=$ACCESS_TOKEN
-    
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     sensor_type: hubspot
-      hubspot:
-        access_token: "YOUR_HUBSPOT_PRIVATE_APP_ACCESS_TOKEN"
-        client_options:
-          identity:
-            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            installation_key: "YOUR_LC_INSTALLATION_KEY_HUBSPOT"
-          destination:
-            hostname: "input.limacharlie.io"
-            port: 443
-            is_tls: true
-          net:
-            identity_timeout: 30
-            request_timeout: 30
-            heartbeat_timeout: 120
-          indexing: []
+      hubspot:
+        access_token: "YOUR_HUBSPOT_PRIVATE_APP_ACCESS_TOKEN"
+        client_options:
+          identity:
+            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            installation_key: "YOUR_LC_INSTALLATION_KEY_HUBSPOT"
+          destination:
+            hostname: "input.limacharlie.io"
+            port: 443
+            is_tls: true
+          net:
+            identity_timeout: 30
+            request_timeout: 30
+            heartbeat_timeout: 120
+          indexing: []
 
 ## API Doc
 
 See the official [documentation](https://developers.hubspot.com/docs/reference/api/settings/account-activity-api).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

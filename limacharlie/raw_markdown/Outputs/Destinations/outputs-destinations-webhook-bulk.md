@@ -4,7 +4,7 @@ Output batches of events, detections, audits, deployments or artifacts through a
 
   * `dest_host`: the IP or DNS, port and page to HTTP(S) POST to, format `https://www.myorg.com:514/whatever`.
 
-  * `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the webhook to verify authenticity. This is a required field. [See "Webhook Details" section.](https://doc.limacharlie.io/docs/documentation/ZG9jOjE5MzExMTY-outputs#webhook-details)
+  * `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the webhook to verify authenticity. This is a required field. See "Webhook Details" section.
 
   * `auth_header_name` and `auth_header_value`: set a specific value to a specific HTTP header name in the outgoing webhooks.
 
@@ -12,10 +12,15 @@ Output batches of events, detections, audits, deployments or artifacts through a
 
   * `is_no_sharding`: do not add a shard directory at the root of the files generated.
 
+
+
+
 Example:
-
-
+    
+    
     dest_host: https://webhooks.corp.com/new_detection
     secret_key: this-is-my-secret-shared-key
     auth_header_name: x-my-special-auth
     auth_header_value: 4756345846583498
+
+

@@ -69,6 +69,52 @@ STEP 3: Each sub-agent must:
 - For example, if you are processing "Add-Ons/developer-grant-program.md", run: git rm "Add-Ons/developer-grant-program.md"
 - DO NOT use placeholder text - use the real file path from the file you just read
 
+**STEP 4: Link Processing** (for files being cleaned, not deleted)
+After cleaning the content, process all links in the file:
+
+**A. Unescape cdn.document360.io URLs:**
+- Find any URLs containing `cdn.document360.io`
+- If they contain backslash escape sequences (like `\\(`, `\\)`, or other `\\X` patterns), unescape them
+- Example: `cdn.document360.io/file\\(1\\).png` should become `cdn.document360.io/file(1).png`
+- Replace `\\(` with `(`, `\\)` with `)`, etc.
+
+**B. Convert External LimaCharlie Documentation Links to Local Relative Links:**
+
+For links pointing to `doc.limacharlie.io` or `docs.limacharlie.io`:
+
+1. **Special Case - API Documentation Links:**
+   - If the link points to `docs.limacharlie.io/apidocs/*`, replace the entire URL with `https://api.limacharlie.io/static/swagger/`
+   - Example: `https://docs.limacharlie.io/apidocs/get-org-urls` → `https://api.limacharlie.io/static/swagger/`
+
+2. **Regular Documentation Links - Convert to Local Relative Links:**
+   - Detect both markdown links `[text](https://doc.limacharlie.io/...)` and bare URLs
+   - Handle both `doc.limacharlie.io` and `docs.limacharlie.io` domains
+
+   **Finding the Target File:**
+   - First, use Glob with pattern `**/*.md` to get a list of all markdown files in the directory tree
+   - Extract the slug/path from the URL (e.g., from `https://docs.limacharlie.io/docs/adapter-types-aws-cloudtrail`, extract `adapter-types-aws-cloudtrail`)
+   - Try fuzzy filename matching: look for .md files whose names closely match the URL slug
+   - If multiple candidates exist, use your judgment to pick the most relevant one (consider directory structure, topic, etc.)
+   - If filename matching doesn't work, use the Grep tool to search for content that matches the topic
+   - If still uncertain, Read a few candidate files to verify which one is the correct target
+   - Be thorough and persistent - the correct file almost certainly exists
+
+   **Verifying the Target File Exists:**
+   - BEFORE creating a relative link, you MUST verify the target file actually exists
+   - Use the Read tool to attempt reading the first few lines of the target file
+   - If the Read succeeds, the file exists and you can proceed to create the relative link
+   - If the Read fails or the file doesn't exist, continue searching for alternative files
+   - IMPORTANT: If after exhaustive searching you cannot find any existing file that matches, keep the original external URL unchanged - do NOT create a broken relative link to a non-existent file
+
+   **Creating the Relative Link:**
+   - Only proceed with this step if you have verified the target file exists (see above)
+   - Calculate the relative path from the current file being processed to the verified target file
+   - Example: if current file is `Outputs/Destinations/webhook.md` and target is `Platform Management/outputs.md`, the relative path would be `../../Platform Management/outputs.md`
+   - Preserve any URL fragment/anchor (e.g., `#webhook-details`) in the converted link
+   - Replace the external URL with the relative markdown link
+   - Example: `[See details](https://doc.limacharlie.io/docs/outputs#webhook-details)` → `[See details](../../Platform Management/outputs.md#webhook-details)`
+   - Bare URLs should also be converted to markdown links with appropriate link text
+
 IMPORTANT:
 - Be thorough but decisive - if in doubt whether to keep content, keep it.
 - OUTPUT FREQUENT STATUS UPDATES - before and after each batch

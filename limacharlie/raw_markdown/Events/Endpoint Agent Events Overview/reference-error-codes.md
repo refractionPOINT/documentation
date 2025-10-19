@@ -1,6 +1,6 @@
 # Reference: Error Codes
 
-The follow error codes are found within various Report (`*_REP`) events found within the [EDR Events](/v2/docs/reference-edr-events), often in response to an [endpoint agent command](/v2/docs/endpoint-agent-commands).
+The follow error codes are found within various Report (`*_REP`) events found within the [EDR Events](reference-edr-events.md), often in response to an [endpoint agent command](../../Sensors/Endpoint%20Agent/Endpoint%20Agent%20Commands/reference-endpoint-agent-commands.md).
 
 Error Code| Value  
 ---|---  
@@ -54,5 +54,65 @@ When dealing with Payloads or Artifact collection, you may receive HTTP specific
 
 When doing Yara scanning operations, you may receive Yara specific error codes.
 
-These are documented here:
+These are documented here:  
 <https://github.com/VirusTotal/yara/blob/master/libyara/include/yara/error.h>
+
+* * *
+
+Was this article helpful?
+
+__Yes __No
+
+ __
+
+Thank you for your feedback! Our team will get back to you
+
+How can we improve this article?
+
+Your feedback
+
+Need more information
+
+Difficult to understand
+
+Inaccurate or irrelevant content
+
+Missing/broken link
+
+Others
+
+Comment
+
+Comment (Optional)
+
+Character limit : 500
+
+Please enter your comment
+
+Email (Optional)
+
+Email
+
+Notify me about change  
+
+
+Please enter a valid email
+
+Cancel
+
+* * *
+
+###### Related articles
+
+  * [ Endpoint Agent Commands ](/docs/endpoint-agent-commands)
+  * [ Endpoint Agent Events Overview ](/docs/endpoint-agent-events-overview)
+  * [ Reference: Endpoint Agent Commands ](/docs/reference-endpoint-agent-commands)
+  * [ Reference: EDR Events ](/docs/reference-edr-events)
+
+
+
+* * *
+
+###### What's Next
+
+  * [ Template Strings and Transforms ](/docs/template-strings-and-transforms) __

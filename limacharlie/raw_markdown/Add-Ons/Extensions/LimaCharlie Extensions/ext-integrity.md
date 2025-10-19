@@ -6,7 +6,7 @@ The Integrity Extension helps you manage all aspects of file or registry integri
 
 To enable the Integrity extension, navigate to the [Integrity extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-integrity) in the marketplace. Select the Organization you wish to enable the extension for, and select **Subscribe**.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/integrity-1\(1\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/integrity-1(1).png)
 
 After clicking **Subscribe** , the Infrastructure extension should be available almost immediately.
 
@@ -110,5 +110,3 @@ The following REST API actions can be sent to interact with the Integrity extens
       "action": "remove_rule",
       "name": "linux-ssh-configs"
     }
-
-

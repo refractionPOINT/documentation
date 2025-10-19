@@ -26,11 +26,11 @@ The second source of telemetry data can be classed as log-type data. This data c
 
 **Bring your data under a single plane.** All telemetry data brought into the SCP is normalized to a common JSON format and explorable through a single interface. In itself, this represents a huge step forward for many service providers because they will no longer have to deal with a fragmented jumble of UIs or competing data formats in order to view and act on their telemetry data.
 
-**Operationalize your telemetry data.** Seeing into your clients' environments is an essential first step—but this is only the beginning of what is possible with the SecOps Cloud Platform. The SCP's advanced detection and response engine can act on every piece of telemetry brought into the platform, making it possible to apply sophisticated detection and response () logic to telemetry data. Applying D&R logic can be as tailored or as simple as you choose, from using custom detections that you write yourself to leveraging curated rulesets like Sigma, Soteria, or SOC Prime rules—or a combination of both approaches.
+**Operationalize your telemetry data.** Seeing into your clients' environments is an essential first step—but this is only the beginning of what is possible with the SecOps Cloud Platform. The SCP's advanced detection and response engine can act on every piece of telemetry brought into the platform, making it possible to apply sophisticated detection and response logic to telemetry data. Applying D&R logic can be as tailored or as simple as you choose, from using custom detections that you write yourself to leveraging curated rulesets like Sigma, Soteria, or SOC Prime rules—or a combination of both approaches.
 
 It's impossible to protect what you can't see. The SCP makes it possible to gain full visibility into a client environment, visualize that telemetry in a single interface and data format, and take action on telemetry data via a powerful detection, automation, and response engine.
 
-### Implement scalable SecOps and simplified client management
+#### Implement scalable SecOps and simplified client management
 
 The SecOps Cloud Platform is multitenant by design, offers fine-grained role-based access control (RBAC), and supports an Infrastructure-as-Code (IaC) approach to configuration management. These core aspects of the SCP enable service providers to practice modern cybersecurity operations at scale.
 
@@ -40,13 +40,13 @@ The SecOps Cloud Platform is multitenant by design, offers fine-grained role-bas
 
 Organization Groups give the same permissions and organizational access to any user added to the group. Typically, Organization Groups are set up by job function. For example, you might create an Organization Group for security engineers that allows members to edit telemetry ingestion configurations for all of your client organizations, and a separate Organization Group for non-technical roles that provides read-only access or the ability to view general organizational information.
 
-**Build SecOps workflows that scale.** The SecOps Cloud Platform enables service providers to take an infrastructure-as-code approach to security operations. All of your client organizations' security [configurations](https://limacharlie.io/secops-cloud-platform-guide-service-providers#:~:text=client%20organizations%27%20security-,configurations,-%E2%80%94from%20D%26R)—from D&R rules to data forwarding and output settings—can be stored and managed as simple YAML files.
+**Build SecOps workflows that scale.** The SecOps Cloud Platform enables service providers to take an infrastructure-as-code approach to security operations. All of your client organizations' security configurations—from D&R rules to data forwarding and output settings—can be stored and managed as simple YAML files.
 
-Create new organizations quickly by cloning an existing organization's configurations or using a [configuration template](https://limacharlie.io/secops-cloud-platform-guide-service-providers#:~:text=configuration%20template). Maintain a global set of configuration settings for all client organizations and then add per-client config files as needed. If you need to make changes to multiple client organizations, this is as simple as editing a global configuration file via CLI or web UI and pushing out the change to all of your organizations at scale.
+Create new organizations quickly by cloning an existing organization's configurations or using a configuration template. Maintain a global set of configuration settings for all client organizations and then add per-client config files as needed. If you need to make changes to multiple client organizations, this is as simple as editing a global configuration file via CLI or web UI and pushing out the change to all of your organizations at scale.
 
-The SecOps Cloud Platform helps service providers adopt a truly modern and scalable approach to cybersecurity operations. For a more detailed look at how these SCP concepts work in practice, watch [Setting Up an MSSP with LimaCharlie](https://limacharlie.io/secops-cloud-platform-guide-service-providers#:~:text=Setting%20Up%20an%20MSSP%20with%20LimaCharlie).
+The SecOps Cloud Platform helps service providers adopt a truly modern and scalable approach to cybersecurity operations.
 
-### Improve incident response times and offer unbeatable service-level agreements
+#### Improve incident response times and offer unbeatable service-level agreements
 
 The SecOps Cloud Platform can be tremendously valuable for service providers doing incident response (IR) work. Here are some of the most significant capabilities for IR teams:
 

@@ -7,25 +7,29 @@ This extension makes use of the GitHub CLI, which can be found [here](https://cl
 ## Example
 
 The following example returns a list of GitHub organizations.
-
-```
-- action: extension request
-  extension action: run
-  extension name: ext-cloud-cli
-  extension request:
-    cloud: '{{ "gh" }}'
-    command_line: '{{ "org list" }}'
-    credentials: '{{ "hive://secret/secret-name" }}'
-```
+    
+    
+    - action: extension request
+      extension action: run
+      extension name: ext-cloud-cli
+      extension request:
+        cloud: '{{ "gh" }}' 
+        command_line: '{{ "org list" }}'
+        credentials: '{{ "hive://secret/secret-name" }}'
+    
 
 ## Credentials
 
 To utilize the GitHub CLI, you will need:
 
-* A [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+  * A [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 
-* Create a secret in the secrets manager in the following format:
+  * Create a secret in the secrets manager in the following format:
 
-```
-access_token
-```
+
+
+    
+    
+    access_token
+    
+

@@ -12,14 +12,20 @@ Once you have your VirusTotal API key, you can add it in the Organization integr
 
 Once you have entered your API key, you can then create a rule to perform a lookup of a hash. For example, the following rule will let you know if there is a hit from VirusTotal on a hash with at least two different engines.
 
-```
-path: event/HASH
-op: lookup
-resource: hives://lookup/vt
-event: CODE_IDENTITY
-metadata_rules:
-  path: /
-  value: 2
-  length of: true
-  op: is greater than
-```
+
+    path: event/HASH
+    op: lookup
+    resource: hives://lookup/vt
+    event: CODE_IDENTITY
+    metadata_rules:
+      path: /
+      value: 2
+      length of: true
+      op: is greater than
+
+
+## Related articles
+
+- [VirusTotal](../API%20Integrations/api-integrations-virustotal.md)
+- [Detection and Response Examples](../../Detection%20and%20Response/detection-and-response-examples.md)
+- [Building Reports with BigQuery + Looker Studio](../../Getting%20Started/Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md)

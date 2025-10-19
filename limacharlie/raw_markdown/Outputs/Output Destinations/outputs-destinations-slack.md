@@ -10,11 +10,11 @@ Output detections and audit (only) to a Slack community and channel.
 
 
 Example:
-    
-    
+
+
     slack_api_token: sample_api_token
     slack_channel: #detections
-    
+
 
 **Provisioning:**
 

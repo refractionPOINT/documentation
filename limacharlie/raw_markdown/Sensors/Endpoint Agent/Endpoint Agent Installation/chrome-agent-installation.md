@@ -8,7 +8,8 @@ It is delivered as the [LimaCharlie Sensor](https://chrome.google.com/webstore/d
 
 The Chrome sensor is available in the Chrome Web Store.
 
-  1. In the LimaCharlie web app (app.limacharlie.io), go to the "Installation Keys" section, select your Installation Key and click the "Chrome Key" copy icon to copy the key to your clipboard.
+  1. In the LimaCharlie web app (app.limacharlie.io), go to the "Installation Keys" section, select your Installation Key and click the "Chrome Key" copy icon to
+copy the key to your clipboard.
 
   2. Install the sensor from: <https://downloads.limacharlie.io/sensor/chrome>
 
@@ -17,6 +18,9 @@ The Chrome sensor is available in the Chrome Web Store.
     1. From the Extensions page at chrome://extensions/ click on the "Details" button of the LimaCharlie Sensor extension.
 
     2. Go to the "Extension options" section, and enter your installation key from the previous step. Click save.
+
+
+
 
 The installation key can also be pre-configured through the Managed Storage feature (key named `installation_key`) if you are using a managed Chrome deployment.
 
@@ -34,12 +38,27 @@ If the extension continues to fail to connect, please provide the LimaCharlie su
 
   3. Ensure "Developer Mode" is enabled (see toggle in the top right)
 
+
+
+
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2838%29.png)
 
   4. Click the `background.html` link in the LimaCharlie Sensor entry.
+
+
+
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2839%29.png)
 
   5. In the window that opens, click Console and provide us with a screenshot of what appears for analysis.
 
+
+
+
 Please also include your Organization ID, which can be found within the LimaCharlie web interface in the REST API section under `OID`.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.

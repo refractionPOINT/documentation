@@ -14,8 +14,8 @@ Output events and detections to [OpenSearch](https://opensearch.org/).
 
 
 Example:
-    
-    
+
+
     addresses: https://1.2.3.4:9200, https://elastic.mydomain.com:9200
     username: some
     password: pass1234

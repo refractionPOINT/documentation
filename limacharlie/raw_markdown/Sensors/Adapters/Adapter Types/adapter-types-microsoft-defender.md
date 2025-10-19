@@ -2,7 +2,7 @@
 
 ## Overview
 
-LimaCharlie can ingest [Microsoft 365 Defender logs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide) via three methods [Azure Event Hub](/v2/docs/adapter-types-azure-event-hub) Adapter, the [Microsoft Defender API](https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-create-app-nativeapp), or a Custom Webhook
+LimaCharlie can ingest [Microsoft 365 Defender logs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide) via three methods [Azure Event Hub](../adapter-types-azure-event-hub.md) Adapter, the [Microsoft Defender API](https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-create-app-nativeapp), or a Custom Webhook
 
 Documentation for creating an event hub can be found here [here](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 
@@ -33,40 +33,40 @@ In the LimaCharlie web app, you can find a Microsoft Defender helper for connect
 ### CLI Deployment
 
 The following example configuration ingests Microsoft Defender logs from an Azure Event Hub to LimaCharlie.
-    
-    
+
+
     ./lc_adapter azure_event_hub client_options.identity.installation_key=<INSTALLATION_KEY> \
     client_options.identity.oid=<OID> \
     client_options.platform=msdefender \
     client_options.sensor_seed_key=<SENSOR_SEED_KEY> \
     client_options.hostname=msdefender \
     "connection_string=Endpoint=sb://mynamespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=fnaaaaaaaaaaaaaaak0g54alYbbbbbbbbbbbbbbbALQ=;EntityPath=lc-stream"
-    
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # Adapter Documentation: https://docs.limacharlie.io/docs/adapter-types
     # For cloud sensor deployment, store credentials as hive secrets:
-    
-    #   tenant_id: "hive://secret/azure-tenant-id"
-    #   client_id: "hive://secret/defender-client-id"
-    #   client_secret: "hive://secret/defender-client-secret"
-    
+
+    #   tenant_id: "hive://secret/azure-tenant-id"
+    #   client_id: "hive://secret/defender-client-id"
+    #   client_secret: "hive://secret/defender-client-secret"
+
     sensor_type: "defender"
     defender:
-      tenant_id: "hive://secret/azure-tenant-id"
-      client_id: "hive://secret/azure-defender-client-id"
-      client_secret: "hive://secret/azure-defender-client-secret"
-      client_options:
-        identity:
-          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          installation_key: "YOUR_LC_INSTALLATION_KEY_DEFENDER"
-        hostname: "ms-defender-adapter"
-        platform: "json"
-        sensor_seed_key: "defender-sensor"
-        mapping:
-          sensor_hostname_path: "machineDnsName"
-          event_type_path: "alertType"
-          event_time_path: "lastUpdateTime"
-        indexing: []
+      tenant_id: "hive://secret/azure-tenant-id"
+      client_id: "hive://secret/azure-defender-client-id"
+      client_secret: "hive://secret/azure-defender-client-secret"
+      client_options:
+        identity:
+          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          installation_key: "YOUR_LC_INSTALLATION_KEY_DEFENDER"
+        hostname: "ms-defender-adapter"
+        platform: "json"
+        sensor_seed_key: "defender-sensor"
+        mapping:
+          sensor_hostname_path: "machineDnsName"
+          event_type_path: "alertType"
+          event_time_path: "lastUpdateTime"
+        indexing: []

@@ -12,4 +12,4 @@ Example:
 
 Detections or events sent to Tines via an output can be used to subsequently create cases, or take other actions within Tines.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28251%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(251).png)

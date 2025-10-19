@@ -1,3 +1,5 @@
+# 1Password
+
 [1Password](https://1password.com/) provides an events API to fetch audit logs. Events can be ingested directly via a cloud-to-cloud or CLI Adapter.
 
 See 1Password's official API documentation [here](https://developer.1password.com/docs/events-api/reference/).
@@ -36,7 +38,7 @@ LimaCharlie offers a 1Password guided configuration in the web UI. From your 1Pa
 
 
 
-After providing an [Installation Key](/v2/docs/installation-keys), provide the required values and LimaCharlie will establish a Cloud Adapter for 1Password events
+After providing an Installation Key, provide the required values and LimaCharlie will establish a Cloud Adapter for 1Password events
 
 ### Infrastructure as Code Deployment
 
@@ -57,9 +59,4 @@ LimaCharlie IaC Adapter can also be used to ingest Slack events.
           platform: "json"
           sensor_seed_key: "1password-sensor-unique-name"
     
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
 

@@ -28,46 +28,44 @@ Adapter Type: `okta`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binaries).
-    
-    
+Adapter downloads can be found [here](../../adapter-deployment.md#adapter-binaries).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter okta client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
     client_options.sensor_seed_key=$SENSOR_NAME \
     client_options.hostname=$SENSOR_NAME \
     apikey=$API_KEY url=$URL
-    
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # Okta Specific Docs: https://docs.limacharlie.io/docs/adapter-types-okta
     # For cloud sensor deployment, store credentials as hive secrets:
-    
-    #   apikey: "hive://secret/okta-api-token"
-    
+
+    #   apikey: "hive://secret/okta-api-token"
+
     sensor_type: "okta"
     okta:
-      apikey: "hive://secret/okta-api-key"
-      url: "https://your-company.okta.com"
-      client_options:
-        identity:
-          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          installation_key: "YOUR_LC_INSTALLATION_KEY_OKTA"
-        hostname: "okta-systemlog-adapter"
-        platform: "json"
-        sensor_seed_key: "okta-system-logs-sensor"
-        mapping:
-          sensor_hostname_path: "client.device"
-          event_type_path: "eventType"
-          event_time_path: "published"
-        indexing: []
+      apikey: "hive://secret/okta-api-key"
+      url: "https://your-company.okta.com"
+      client_options:
+        identity:
+          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          installation_key: "YOUR_LC_INSTALLATION_KEY_OKTA"
+        hostname: "okta-systemlog-adapter"
+        platform: "json"
+        sensor_seed_key: "okta-system-logs-sensor"
+        mapping:
+          sensor_hostname_path: "client.device"
+          event_type_path: "eventType"
+          event_time_path: "published"
+        indexing: []
 
 ## API Doc
 
 See the official [documentation](https://developer.okta.com/docs/reference/api/system-log/).
-
-

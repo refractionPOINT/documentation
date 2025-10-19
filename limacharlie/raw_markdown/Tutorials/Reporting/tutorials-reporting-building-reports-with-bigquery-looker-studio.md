@@ -1,6 +1,6 @@
 # Building Reports with BigQuery + Looker Studio
 
-LimaCharlie does not include reporting by default, however our granular and customizable [Output](/v2/docs/outputs) options allow you to push data to any source and use third-party tools for reporting. In this tutorial, we'll push a subset of LimaCharlie EDR telemetry to [BigQuery](https://cloud.google.com/bigquery) and analyze our data using Google's [Looker Studio](https://lookerstudio.google.com/). We'll be doing the work in the web UI, however this could also be done via the API.
+LimaCharlie does not include reporting by default, however our granular and customizable [Output](../../Outputs/outputs.md) options allow you to push data to any source and use third-party tools for reporting. In this tutorial, we'll push a subset of LimaCharlie EDR telemetry to [BigQuery](https://cloud.google.com/bigquery) and analyze our data using Google's [Looker Studio](https://lookerstudio.google.com/). We'll be doing the work in the web UI, however this could also be done via the API.
 
 For this example, we will aggregate and analyze Windows processes making network connections.
 
@@ -9,16 +9,16 @@ For this example, we will aggregate and analyze Windows processes making network
 Within your project of choice, begin by creating a new dataset. For the purposes of this tutorial, I'm going to create a dataset named `windows_process_details`. Within this dataset, I'll create a table named `network_connections`.
 
 Let's examine this hierarchy for a moment:
-    
-    
+
+
     ├── limacharlie-bq-testing    # project
     │   ├── windows_process_details    # dataset
     │   │   ├── network_connections    # table
-    
+
 
 The nice part about this type of hierarchy is that I can build out multiple tables of process details within the same dataset, and then link/analyze them as needed. We'll focus on the `network_connections` data for now, but we could also look at exporting other process details into the same dataset.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2897%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(97).png)
 
 Within the Google Cloud Console, we also want to create a Service Account and gather an API key. More details on that can be found [here](https://cloud.google.com/iam/docs/service-accounts-create).
 
@@ -42,25 +42,22 @@ The following values must be provided in order for the Output to work:
   * Project (from the previous section)
   * Secret Key (the API key from the GCP service account)
 
-
-
 Where to Store the Secret?
 
-The secret key for this output can be inserted directly in the web app helper, however we recommend keeping secrets in the [Secret hive](/v2/docs/config-hive-secrets) for centralized management.
+The secret key for this output can be inserted directly in the web app helper, however we recommend keeping secrets in the [Secret hive](../../Platform%20Management/Config%20Hive/config-hive-secrets.md) for centralized management.
 
 Within the `Advanced Options`, we'll need to provide the following details:
 
   * Custom Transform - we don't want to include _all_ the details from the `NETWORK_CONNECTIONS` event. For this output, we are interested in processes making network connections and the users associated with them. Thus, we'll apply the following transform to pare this down:
 
 
-    
-    
+
     {
       "hostname": "routing.hostname",
       "command_line": "event.COMMAND_LINE",
       "user": "event.USER_NAME"
     }
-    
+
 
 Within the `Specific Event Types` field, we'll specify only `NETWORK_CONNECTIONS`. This is another way to pare down the number of events processed and exported.
 
@@ -76,22 +73,22 @@ Save the output details, and then check `View Samples` in the Outputs menu to se
 
 Navigating back to BigQuery, we can see some initial events flowing in:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28102%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(102).png)
 
 Let's hop over to Looker Studio. Create a Blank Report, and select `BigQuery` in the `Connect to Data` menu.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28103%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(103).png)
 
 Select the Project, Dataset, and Table of interest, and click `Add`.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28104%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(104).png)
 
 Looker Studio may prompt you about permissions of connected data. However, once connected, we'll be able to see a starter table with aggregate details from our `network_connections` table.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28105%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(105).png)
 
 And that's it! From here, you can manipulate and move around the data as needed. You can also blend with another table, allowing you to combine multiple data points.
 
 Reports can also be styled, additional statistics generated, etc. The following example continues to pull on the basic data we exported to provide some unique insights:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28106%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(106).png)

@@ -12,6 +12,9 @@ Similar to detection & response rules, false positive rules are created on a per
 
   * using our infrastructure as code functionality, push your FP rules to multiple tenants within seconds.
 
+
+
+
 ## Use Cases
 
 The typical use case for FP rules is to add exceptions from some detections that are cross-cutting (for example ignore all detections from a specific host), organization-specific exceptions (like ignoring alerts relating to a custom piece of software used in an organization), or suppressing errors from managed  rules you don't have direct access to.
@@ -57,28 +60,31 @@ Clicking the button will pre-populate the details of the event and automatically
 ### Suppress a Specific Detection
 
 Prevent a specific detection:
-
-
+    
+    
     op: is
     path: cat
     value: my-detect-name
-
+    
 
 ### Ignore Detections for Specific File Name
 
 Ignore any detection that relates to a file name in any path.
-
-
+    
+    
     op: ends with
     path: detect/event/FILE_PATH
     value: this_is_fine.exe
-
+    
 
 ### Ignore Detections on a Specific Host
 
 Any detection originating from a specific host will be ignored.
-
-
+    
+    
     op: is
     path: routing/hostname
     value: web-server-2
+    
+
+

@@ -1,4 +1,4 @@
-## Syslog (TCP)
+# Syslog (TCP)
 
 Output events and detections to a syslog target.
 
@@ -12,10 +12,15 @@ Output events and detections to a syslog target.
 
   * `structured_data`: arbitrary field to include in syslog "Structured Data" headers. Sometimes useful for cloud SIEMs integration.
 
+
+
+
 Example:
-
-
+    
+    
     dest_host: storage.corp.com
     is_tls: "true"
     is_strict_tls: "true"
     is_no_header: "false"
+
+

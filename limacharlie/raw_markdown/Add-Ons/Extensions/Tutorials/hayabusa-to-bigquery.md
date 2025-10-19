@@ -2,7 +2,7 @@
 
 ## Overview
 
-Our BigQuery output allows you to send Hayabusa analysis results to a BigQuery table allowing SQL-like queries against the data. This allows you to perform analysis at scale against massive datasets. For guidance on using Hayabusa within LimaCharlie, see [Hayabusa Extension](/v2/docs/ext-hayabusa).
+Our BigQuery output allows you to send Hayabusa analysis results to a BigQuery table allowing SQL-like queries against the data. This allows you to perform analysis at scale against massive datasets. For guidance on using Hayabusa within LimaCharlie, see [Hayabusa Extension](../Third-Party%20Extensions/ext-hayabusa.md).
 
 Imagine you wanted to analyze event logs from 10s, 100s, or 1000s of systems using Hayabusa. You have a couple options:
 

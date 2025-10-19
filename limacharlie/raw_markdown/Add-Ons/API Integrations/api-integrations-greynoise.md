@@ -14,26 +14,25 @@ LimaCharlie offers integrations with two GreyNoise API lookups:
 
 ## IP Context
 
-```json
-{
-  "api_greynoise-noise-context": {
-    "ip": "35.184.178.65",
-    "seen": false
-  }
-}
-```
+
+    {
+      "api_greynoise-noise-context": {
+        "ip": "35.184.178.65",
+        "seen": false
+      }
+    }
+
 
 ## RIOT IP Lookup
 
-```json
-{
-  "ip": "8.8.8.8",
-  "noise": false,
-  "riot": true,
-  "classification": "benign",
-  "name": "Google Public DNS",
-  "link": "https://viz.greynoise.io/riot/8.8.8.8",
-  "last_seen": "2023-08-02",
-  "message": "Success"
-}
-```
+
+    {
+      "ip": "8.8.8.8",
+      "noise": false,
+      "riot": true,
+      "classification": "benign",
+      "name": "Google Public DNS",
+      "link": "https://viz.greynoise.io/riot/8.8.8.8",
+      "last_seen": "2023-08-02",
+      "message": "Success"
+    }

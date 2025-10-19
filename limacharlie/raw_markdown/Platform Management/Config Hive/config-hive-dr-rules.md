@@ -12,6 +12,9 @@ There are three "sub-categories" within detection and response rules contained i
 
   * `dr-service` is a protected namespace, and users will only ever have metadata permissions.
 
+
+
+
 ### dr-general
 
   * `dr.list`
@@ -19,6 +22,9 @@ There are three "sub-categories" within detection and response rules contained i
   * `dr.set`
 
   * `dr.del`
+
+
+
 
 ### dr-managed
 
@@ -28,11 +34,17 @@ There are three "sub-categories" within detection and response rules contained i
 
   * `dr.del.managed`
 
+
+
+
 ### dr-service
 
   * `dr.list` or `dr.list.managed` (metadata only)
 
   * `dr.set` or `dr.set.managed` (metadata only)
+
+
+
 
 ## Command-Line Usage
 

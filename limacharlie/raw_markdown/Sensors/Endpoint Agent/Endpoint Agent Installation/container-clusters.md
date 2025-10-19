@@ -1,6 +1,9 @@
 # Container Clusters
 
-You can also run LimaCharlie at the host level in a container cluster system like Kubernetes in order to monitor all running containers on the host with a single Sensor. In fact, this is the preferred method as it reduces the overhead of running LC within every single container.
+You can also run LimaCharlie at the host level in a container cluster system
+like Kubernetes in order to monitor all running containers on the host with
+a single Sensor. In fact, this is the preferred method as it reduces the overhead
+of running LC within every single container.
 
 This is accomplished by a combination of a few techniques:
 
@@ -11,6 +14,9 @@ This is accomplished by a combination of a few techniques:
   3. LC runs with the `NET_NS` environment variable pointing to the host's directory listing network namespaces.
 
   4. Running the container with the required flags to make sure it can have proper access.
+
+
+
 
 The first step is straight forward. For example, set the environment like `ENV HOST_FS=/rootfs` and `ENV NET_NS=/netns` as part of your `Dockerfile`. This will let the LC sensor know where it can expect host-level information.
 
@@ -196,3 +202,5 @@ a cluster not supporting eBPF (kernel < 5.7):
 On some hardened versions of Linux, certain file paths are prevented from loading `.so` (Shared Object) files. LimaCharlie requires a location where
 it can write `.so` files and load them. To enable this on hardened versions of Linux, you can specify a `LC_MOD_LOAD_LOC` environment variable containing
 a path to a valid directory for loading, like `/lc` for example. This environment variable needs to be set for the sensor executable (`rphcp`) at runtime.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

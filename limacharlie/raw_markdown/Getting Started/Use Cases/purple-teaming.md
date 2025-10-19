@@ -12,7 +12,10 @@ LimaCharlie introduces a dynamic, continuous approach to purple teaming. Experie
 
   * **Static security posture:** Traditional setups rarely provide continuous validation, leaving organizations vulnerable to evolving threats and undetected weaknesses between infrequent purple teaming exercises.
 
-#### LimaCharlie's solution
+
+
+
+#### LimaCharlie’s solution
 
   * **Rapid deployment and execution:** Leverage LimaCharlie's multi-platform, full-parity Sensors and pre-built Atomic Red Team integrations to launch sophisticated attack simulations instantly across your entire infrastructure. No need for time-consuming manual setups or specialized red team expertise.
 

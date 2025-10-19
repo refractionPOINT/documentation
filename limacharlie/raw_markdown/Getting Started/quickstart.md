@@ -4,13 +4,13 @@ LimaCharlie is infrastructure to connect sources of security data, automate acti
 
 That said, the majority of LimaCharlie users require basic endpoint detection and response (EDR) capabilities. This guide will cover:
 
-  1. Creating a new [**Organization**](/v2/docs/quickstart#creating-an-organization)
+  1. Creating a new **Organization**
 
-  2. Deploying a [**Sensor**](/v2/docs/quickstart#deploying-a-sensor) to the Organization
+  2. Deploying a **Sensor** to the Organization
 
-  3. Adding [**Sigma rules**](/v2/docs/quickstart#adding-sigma-rules) to detect suspicious activity
+  3. Adding **Sigma rules** to detect suspicious activity
 
-  4. Forwarding detections to an external destination as an [**Output**](/v2/docs/quickstart#output)
+  4. Forwarding detections to an external destination as an **Output**
 
 
 
@@ -25,6 +25,8 @@ LimaCharlie organizations are isolated tenants in the cloud, conceptually equiva
 
 After accepting the initial Terms of Service, you'll be offered a prompt to create an organization in a selected `Region` with a globally unique `Name`.
 
+Region Selection
+
 The region that you select for an organization is permanent. Please also consider regulatory requirements for you and/or your customers' data.
 
 Once the organization is created, you'll be forwarded to our initial dashboard and Sensor list, which will be empty and ready for the next step.
@@ -33,7 +35,9 @@ Once the organization is created, you'll be forwarded to our initial dashboard a
 
 From the Sensors page in your new organization, click `Add Sensor` to open the setup flow for new sensors. Generally speaking, Sensors are executables that install on hosts and connect them to the LimaCharlie cloud to send telemetry, receive commands, and other capabilities.
 
-For a full overview of types of sensors and their capabilities, check out [Sensors](/v2/docs/sensors).
+Sensors Overview
+
+For a full overview of types of sensors and their capabilities, check out [Sensors](../Sensors/installation-keys.md).
 
 The setup flow should make this process straightforward. For example's sake, let's say we're installing a sensor on a Windows 10 (64 bit) machine we have in front of us.
 
@@ -46,6 +50,11 @@ The setup flow should make this process straightforward. For example's sake, let
   * Follow the on-screen instructions to execute the installer properly
 
   * See immediate feedback when the sensor registers successfully with the cloud
+
+
+
+
+Potential Issues
 
 Since sensors are executables that talk to the cloud, antivirus software and networking layers may interfere with installation. If you run into an issue, take a look at troubleshooting.
 
@@ -61,6 +70,9 @@ With a Windows sensor connected to the cloud, you should gain a lot of visibilit
 
   * `Live Feed`: a running view of the live output of all the sensor's events
 
+
+
+
 With telemetry coming in from the cloud, let's add rules to detect potentially malicious activity.
 
 ## Adding Sigma Rules
@@ -69,7 +81,9 @@ Writing security rules and automations from scratch is a huge effort. To set an 
 
 Enabling the Sigma add-on will automatically apply rules to your organization to match these threat signatures so we can begin to see Detections on incoming endpoint telemetry.
 
-Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](/v2/docs/detection-and-response) when you're finished.
+Writing Detection and Response rules
+
+Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](../Detection and Response/detection-and-response-examples.md) when you're finished.
 
 ## Output
 
@@ -95,4 +109,8 @@ From the Outputs page in your organization, click `Add Output` to open the setup
 
   * Optionally, you can view samples of the detection stream's data (assuming recent detections have occurred)
 
+
+
+
 With this output in place you can extend the life of your detections beyond the 1 year LimaCharlie retains them, and stage them for any tool that can pull from S3.
+

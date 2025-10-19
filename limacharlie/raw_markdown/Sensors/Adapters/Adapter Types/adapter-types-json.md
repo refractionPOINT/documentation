@@ -15,18 +15,19 @@ All adapters support the same `client_options`, which you should always specify 
   * `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
   * `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
-
-
 ## Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment).
-    
-    
+Adapter downloads can be found [here](../adapter-deployment.md).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter file client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
     client_options.sensor_seed_key=$SENSOR_NAME \
     client_options.hostname=$SENSOR_NAME \
     file_path=/path/to/file
+
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

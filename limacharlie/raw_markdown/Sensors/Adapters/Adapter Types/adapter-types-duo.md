@@ -1,3 +1,5 @@
+# Duo
+
 ## Overview
 
 This Adapter allows you to connect to the Duo Admin API and fetch logs from it.
@@ -6,7 +8,7 @@ This Adapter allows you to connect to the Duo Admin API and fetch logs from it.
 
 Adapter Type: `duo`
 
-  * `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
+  * `client_options`: common configuration for adapter as defined [here](../../adapters.md#usage).
 
   * `integration_key`: an integration key created from within Duo that associated with your "app".
 
@@ -18,26 +20,26 @@ Adapter Type: `duo`
 
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # Duo Security Specific Docs: https://docs.limacharlie.io/docs/adapter-types-duo
-    
+
     # For cloud sensor deployment, store credentials as hive secrets:
-    #   integration_key: "hive://secret/duo-integration-key"
-    #   secret_key: "hive://secret/duo-secret-key"
-    
+    #   integration_key: "hive://secret/duo-integration-key"
+    #   secret_key: "hive://secret/duo-secret-key"
+
     sensor_type: "duo"
-      duo:
-        integration_key: "YOUR_DUO_INTEGRATION_KEY_DIXXXXXXXXXXXXXXXXXX"
-        secret_key: "YOUR_DUO_SECRET_KEY_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-        api_hostname: "api-xxxxxxxx.duosecurity.com"
-        client_options:
-          identity:
-            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            installation_key: "YOUR_LC_INSTALLATION_KEY_DUO"
-          hostname: "duo-security-adapter"
-          platform: "duo"
-          sensor_seed_key: "duo-sensor-prod"
+      duo:
+        integration_key: "YOUR_DUO_INTEGRATION_KEY_DIXXXXXXXXXXXXXXXXXX"
+        secret_key: "YOUR_DUO_SECRET_KEY_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        api_hostname: "api-xxxxxxxx.duosecurity.com"
+        client_options:
+          identity:
+            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            installation_key: "YOUR_LC_INSTALLATION_KEY_DUO"
+          hostname: "duo-security-adapter"
+          platform: "duo"
+          sensor_seed_key: "duo-sensor-prod"
 
 ## API Doc
 

@@ -7,8 +7,8 @@ This document provides details of how to install, verify, and uninstall the Lima
 ### Installer Options
 
 When running the installer from the command line, you can pass the following arguments:
-    
-    
+
+
     -v: display build version.
     -q: quiet; do not display banner.
     -d <INSTALLATION_KEY>: the installation key to use to enroll, no permanent installation.
@@ -17,7 +17,7 @@ When running the installer from the command line, you can pass the following arg
     -c: uninstall executable as a service and delete identity files.
     -w: executable is running as a macOS service.
     -h: displays the list of accepted arguments.
-    
+
 
 ### Installation Flow
 
@@ -37,7 +37,7 @@ When running the installer from the command line, you can pass the following arg
 
 > sudo ./lc_sensor -i YOUR_INSTALLATION_KEY_GOES_HERE
 
-You can obtain the installation key from the [Installation Keys](/v2/docs/installation-keys) section of the LimaCharlie web application.
+You can obtain the installation key from the [Installation Keys](../../installation-keys.md) section of the LimaCharlie web application.
 
 The sensor will be installed as a launchctl service. Installation will trigger the sensors enrollment with the LimaCharlie cloud
 
@@ -52,14 +52,14 @@ You will be prompted to grant permissions for system extensions to be installed.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/2-Endpoint_Extension_Installation_Dialog.png)
 
-  6. Ensure the toggle for “Allow in the Background” next to “Refraction Point, Inc.” is toggled On.
+  6. Ensure the toggle for "Allow in the Background" next to "Refraction Point, Inc." is toggled On.
 
 
 
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/2.5-Login_Items_and_Extensions.png)
 
-  7. Click the “i” info icon next to “Endpoint Security Extensions”, then ensure the toggle next to “RPHCP” is on.
+  7. Click the "i" info icon next to "Endpoint Security Extensions", then ensure the toggle next to "RPHCP" is on.
 
 
 
@@ -68,7 +68,7 @@ You will be prompted to grant permissions for system extensions to be installed.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/EndpointSecurityExtension-Enabled.png)
 
-  8. After enabling that toggle you’ll need to click the “Allow” button to allow RPHCP to filter network content.
+  8. After enabling that toggle you'll need to click the "Allow" button to allow RPHCP to filter network content.
 
 
 
@@ -104,7 +104,7 @@ You can also check the /Applications folder and launch the RPHCP.app.
 
 ![Applications folder](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/10-Applications.png)
 
-You can confirm the network filter was properly installed and enabled by going to System Settings → Network → VPN & Filters. You should expect to see “RPHCP” in the list with the status showing as Enabled.
+You can confirm the network filter was properly installed and enabled by going to System Settings → Network → VPN & Filters. You should expect to see "RPHCP" in the list with the status showing as Enabled.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/7-Network_Filter_Confirmation\(1\).png)
 
@@ -155,4 +155,10 @@ Note: After uninstallation the LimaCharlie sensor along with the related extensi
 
 ### Install Using MDM Solutions
 
-See our document [macOS Agent Installation with MDM Solutions](/docs/macos-agent-installation-mdm-configuration-profiles) for the Mobile Device Management (MDM) Configuration Profile that can be used to deploy the LimaCharlie agent to an enterprise fleet.
+See our document [macOS Agent Installation with MDM Solutions](macos-agent-installation-mdm-configuration-profiles.md) for the Mobile Device Management (MDM) Configuration Profile that can be used to deploy the LimaCharlie agent to an enterprise fleet.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

@@ -15,22 +15,19 @@ All adapters support the same `client_options`, which you should always specify 
   * `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
   * `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
-
-
 ## Config File
 
 VMWare Carbon Black data can be exported via the API to an S3 bucket, and then ingested with LimaCharlie. The following command utilizes a CLI Adapter to ingest these events
-    
-    
+
     ./lc_adapter s3 client_options.identity.installation_key=<INSTALLATION_KEY> \
     client_options.identity.oid=<OID> \
     client_options.platform=carbon_black \
     client_options.sensor_seed_key=tests3 \
     bucket_name=lc-cb-test \
     access_key=YYYYYYYYYY \
-    secret_key=XXXXXXXX  \
+    secret_key=XXXXXXXX  \
     "prefix=events/org_key=NKZAAAEM/"
-    
+
 
 Here's a breakdown of the above example:
 

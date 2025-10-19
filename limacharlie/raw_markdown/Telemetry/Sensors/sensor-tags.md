@@ -2,7 +2,7 @@
 
 Tags in LimaCharlie are simple strings that can be associated with any number of sensors. A Sensor can also have an arbitrary number of tags associated with it.
 
-Tags appear in every event coming from a sensor under the `routing` component of the event. This greatly simplifies the writing of detection and response rules based on the presence of specific tags, at the cost of including more non-unique data per event.  
+Tags appear in every event coming from a sensor under the `routing` component of the event. This greatly simplifies the writing of detection and response rules based on the presence of specific tags, at the cost of including more non-unique data per event.
 Tags can be used for a variety of purposes, including:
 
   * to classify endpoints
@@ -12,9 +12,6 @@ Tags can be used for a variety of purposes, including:
   * create powerful workflows
 
   * trigger automations
-
-
-
 
 ## Use Cases for Sensor Tags
 
@@ -56,9 +53,6 @@ Tags can be added to a sensor a few different ways:
 
   3. Detection & Response: automated detection and response rules can programatically add a tag (and check for tags).
 
-
-
-
 ### Manual API
 
 Issue a `POST` to `/{sid}/tags` REST endpoint
@@ -66,11 +60,11 @@ Issue a `POST` to `/{sid}/tags` REST endpoint
 ### Detection & Response
 
 In detection and response rules. To achieve this, in the response part of the detection & response rule, specify the add tag action. For example, to tag a device as DESKTOP, you would say:
-    
-    
+
+
     - action: add tag
     tag: DESKTOP
-    
+
 
 ## Removing Tags
 
@@ -130,6 +124,8 @@ When you tag a sensor with _lc:sleeper_ , the sensor will keep its connection to
 
 ### lc:usage
 
-When you tag a sensor with _lc:usage_ , the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](/v2/docs/sleeper).
+When you tag a sensor with _lc:usage_ , the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](../../Getting%20Started/Use%20Cases/sleeper.md).
 
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

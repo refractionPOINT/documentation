@@ -18,6 +18,9 @@ If you already use Google Chronicle, we make it easy to send telemetry you've co
 
   * `dir`: the directory prefix where to output the files on the remote host.
 
+
+
+
 Example:
 
 

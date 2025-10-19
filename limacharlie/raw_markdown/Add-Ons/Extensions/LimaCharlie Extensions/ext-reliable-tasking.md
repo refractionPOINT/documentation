@@ -91,15 +91,15 @@ The above example cURL command has a `context` of `version` so the below D&R rul
     - action: report
       name: "Reliable task ran"  # Detect on the task being run
 
-## Migrating  Rule from legacy Service to new Extension
+## Migrating D&R Rule from legacy Service to new Extension
 
-** _LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024._**
+**_LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024._**
 
 The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference legacy reliable tasking service, preview the change and execute the conversion required in the rule "response".
 
 Command line to preview Reliable Tasking rule conversion:
-    
-    
+
+
     limacharlie extension convert_rules --name ext-reliable-tasking
 
 A dry-run response (default) will display the rule name being changed, a JSON of the service request rule and a JSON of the incoming extension request change.
@@ -107,8 +107,6 @@ A dry-run response (default) will display the rule name being changed, a JSON of
 To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-run`
 
 Command line to execute reliable tasking rule conversion:
-    
-    
+
+
     limacharlie extension convert_rules --name ext-reliable-tasking --no-dry-run
-
-

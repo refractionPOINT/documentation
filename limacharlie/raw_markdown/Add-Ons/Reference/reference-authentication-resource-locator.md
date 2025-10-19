@@ -9,16 +9,16 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
 ## Format
 
 ### With authentication
-
-
+    
+    
     [methodName,methodDest,authType,authData]
-
+    
 
 ### Without authentication
-
-
+    
+    
     [methodName,methodDest]
-
+    
 
   * `methodName`: the transport to use, one of `http`, `https`, `gcs` and `github`.
 
@@ -27,6 +27,9 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
   * `authType`: how to authenticate, one of `basic`, `bearer`, `token`, `gaia` or `otx`.
 
   * `authData`: the auth data, like `username:password` for `basic`, or access token values. If the value is a complex structure, like a `gaia` JSON service key, it must be base64-encoded.
+
+
+
 
 ## Examples
 
@@ -58,14 +61,14 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
 
 `[github,myGithubUserOrOrg/repoName/path/to/file]`
 
-**Note:** The path to the repo is NOT the same as the URL. Utilize the UI breadcrumbs for the correct path.
+**Note:** The path to the repo is NOT the same as the URL. Utilize the UI breadcrumbs for the correct path.  
 For example, in the following screenshot:
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image-1734104784118.png)
 
-The GitHub user is: _romainmarcoux_
-The repo name is: _malicious-domains_
-The path is: _sources/alienvault-phishing-scam_
+The GitHub user is: _romainmarcoux_  
+The repo name is: _malicious-domains_  
+The path is: _sources/alienvault-phishing-scam_  
 So the ARL would be: `[github,romainmarcoux/malicious-domains/sources/alienvault-phishing-scam]`
 
 ### Retrieve from GitHub repo with Github Personal Access Token
@@ -75,5 +78,4 @@ So the ARL would be: `[github,romainmarcoux/malicious-domains/sources/alienvault
 ### Retrieve from public GitHub repo at a specific branch
 
 `[github,refractionPOINT/sigma/some-sub-dir?ref=my-branch]`
-
 

@@ -14,9 +14,12 @@ Output events and detections to [Elastic](https://www.elastic.co/).
 
   * `api_key`: API key; if using it for auth. (use either username/password -or- API key)
 
+
+
+
 Example:
-
-
+    
+    
     addresses: 11.10.10.11,11.10.11.11
     username: some
     password: pass1234

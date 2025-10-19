@@ -4,22 +4,19 @@
 
 The AI Agent Engine Extension allows you to easily codify and execute AI Agents within the context of your Organization with access to the LimaCharlie APIs for investigation, remediation and automation.
 
-The AI Agent definition themselves are managed in the `ai_agent` [Hive](/v2/docs/config-hive) Configurations and can be managed across tenants using the Infrastructure as Code extension. This hive requires the `ai_agent.*` permissions.
+The AI Agent definition themselves are managed in the `ai_agent` [Hive](../../../Platform%20Management/Config%20Hive/config-hive-secrets.md) Configurations and can be managed across tenants using the Infrastructure as Code extension. This hive requires the `ai_agent.*` permissions.
 
 The execution of an AI Agent can be triggered through the following means:
 
   1. Interactively in the web app by going to the Extensions section for the AI Agent Engine extension.
 
-  2. By issuing an `extension request` action through a [D&R rule](/v2/docs/detection-and-response-examples).
+  2. By issuing an `extension request` action through a [D&R rule](../../../Detection%20and%20Response/detection-and-response-examples.md).
 
-  3. By issuing an extension request on the API directly: <https://api.limacharlie.io/static/swagger/#/Extensions/createExtensionRequest>
+  3. By issuing an extension request on the API directly: https://api.limacharlie.io/static/swagger/#/Extensions/createExtensionRequest
 
-  4. By issuing an extension request through the Python CLI/SDK or Golang SDK, which means they’re also available to [Playbooks](/v2/docs/playbook).
+  4. By issuing an extension request through the Python CLI/SDK or Golang SDK, which means they're also available to [Playbooks](playbook.md).
 
-
-
-
-This means agents can be invoked in a fully automated fashion based on events, detections, audit messages or any other [target](/v2/docs/detection-on-alternate-targets) of  rules. But it can also be used in an ad-hoc fashion triggered manually.
+This means agents can be invoked in a fully automated fashion based on events, detections, audit messages or any other [target](../../../Detection%20and%20Response/detection-on-alternate-targets.md) of rules. But it can also be used in an ad-hoc fashion triggered manually.
 
 ## Usage
 
@@ -38,7 +35,7 @@ Common tips:
 
 
 
-The credentials provided to the engine are simply a LimaCharlie API key, we recommend storing it in a [secret](/v2/docs/config-hive-secrets) and referencing as `hive://secret/my-lc-creds`.
+The credentials provided to the engine are simply a LimaCharlie API key, we recommend storing it in a [secret](../../../Platform%20Management/Config%20Hive/config-hive-secrets.md) and referencing as `hive://secret/my-lc-creds`.
 
 ### Actions
 
@@ -103,7 +100,7 @@ The following is a sample AI Agent definition that simply aims at summarizing de
 
 ### Available Tools
 
-The tools available to the AI Agents are the same ones available from the official [LimaCharlie MCP Server](/v2/docs/mcp-server).
+The tools available to the AI Agents are the same ones available from the official [LimaCharlie MCP Server](../../../Connecting/mcp-server.md).
 
 ## Infrastructure as Code
 
@@ -118,5 +115,3 @@ The AI Agent Engine is billed per token processed, including initial messages, p
 Currently, the model in use is the commercial Gemini models.
 
 Although the models may change (and eventually Bring-Your-Own-Model), these models will never use your data to train more models and LimaCharlie never uses the data to train models.
-
-

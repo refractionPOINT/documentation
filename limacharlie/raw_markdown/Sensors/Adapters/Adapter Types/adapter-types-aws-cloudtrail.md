@@ -1,4 +1,6 @@
-[AWS CloudTrail](https://docs.aws.amazon.com/cloudtrail/) logs allow you to monitor AWS deployments. CloudTrail logs can provide granular visibility into AWS instances and can be used within [D&R rules](/v2/docs/detection-and-response) to identify AWS abuse.
+# AWS CloudTrail
+
+[AWS CloudTrail](https://docs.aws.amazon.com/cloudtrail/) logs allow you to monitor AWS deployments. CloudTrail logs can provide granular visibility into AWS instances and can be used within D&R rules to identify AWS abuse.
 
 This Adapter allows you to ingest AWS CloudTrail events via either an [S3 bucket](https://aws.amazon.com/s3/) or [SQS message queue](https://aws.amazon.com/sqs/).
 
@@ -23,7 +25,7 @@ CloudTrail logs can be collected via a cloud-to-cloud Adapter, or via the CLI Ad
 
 Within the LimaCharlie web application, you can create an AWS CloudTrail Cloud Connector using the `+ Add Sensor` option.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28160%29.png)
+![Add AWS CloudTrail Sensor](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(160).png)
 
 After providing an Installation Key, you will be guided through connecting either an S3 bucket or SQS queue to ingest AWS CloudTrail events.
 
@@ -87,5 +89,4 @@ The following sample configuration can be used to create an SQS CLI Adapter for 
       access_key: <SQS_ACCESS_KEY>
       queue_url: <SQS_QUEUE_URL>
     
-
 

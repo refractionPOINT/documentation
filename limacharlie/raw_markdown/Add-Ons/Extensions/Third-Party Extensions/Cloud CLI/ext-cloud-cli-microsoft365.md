@@ -7,23 +7,23 @@ This extension makes use of the PnP Microsoft 365 CLI, which can be found [here]
 ## Example
 
 The following example disables the user account with the provided user ID.
-
-
+    
+    
     - action: extension request
-      extension action: run
-      extension name: ext-cloud-cli
-      extension request:
-        cloud: '{{ "m365" }}'
-        command_tokens:
-          - entra
-          - user
-          - set
-          - '--id'
-          - '{{ .event.user_id  }}'
-          - '--accountEnabled'
-          - false
-        credentials: '{{ "hive://secret/secret-name" }}'
-
+      extension action: run
+      extension name: ext-cloud-cli
+      extension request:
+        cloud: '{{ "m365" }}' 
+        command_tokens:
+          - entra
+          - user
+          - set
+          - '--id'
+          - '{{ .event.user_id  }}'
+          - '--accountEnabled'
+          - false
+        credentials: '{{ "hive://secret/secret-name" }}'
+    
 
 ## Credentials
 
@@ -32,5 +32,7 @@ The following example disables the user account with the provided user ID.
   * Upon invocation, LimaCharlie will first run the `m365 login` command with the credentials provided.
 
   * Create a secret in the secrets manager in the following format:
-
+    
         appID/clientSecret/tenantID
+
+

@@ -12,15 +12,15 @@ Output events and detections to the [Humio.com](https://humio.com) service.
 
 
 Example:
-    
-    
+
+
     humio_repo: sandbox
     humio_api_token: fdkoefj0erigjre8iANUDBFyfjfoerjfi9erge
-    
+
 
 Note: You may need to [create a new parser in Humio](https://docs.humio.com/docs/parsers/creating-a-parser/) to correctly [parse timestamps](https://docs.humio.com/reference/query-functions/functions/parsetimestamp/). You can use the following JSON parser:
-    
-    
+
+
     parseJson() | parseTimestamp(field=@timestamp,format="unixTimeMillis",timezone="Etc/UTC")
 
 

@@ -6,23 +6,22 @@ This document provides details of the Mobile Device Management (MDM) Configurati
 
 Once the configuration profile is deployed using an approved MDM server, users will not need to provide approval to complete the agent installation. In particular, the following three system approval dialogs will no longer be presented:
 
-System Extension  
+System Extension
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/04-System_Extension_Required.png)
 
-Network Filter  
+Network Filter
 ![Network filter](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/07--Network_Filter.png)
 
-Full Disk Access  
+Full Disk Access
 ![Full disk access](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/08-Full_Disk_Access.png)
 
-Application Installation  
+Application Installation
 ![RPHCP application install](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/03-Permissions_Required.png)
 
 ## Configuration Profile Details
 
-We have provided a sample configuration profile for reference: [![MobileConfig icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/mobileconfig-icon.png)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)  
-  
-  
+We have provided a sample configuration profile for reference: [![MobileConfig icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/mobileconfig-icon.png)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)
+
 [ Download LimaCharlie.mobileconfig sample configuration profile](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)
 
 This profile includes the following permissions:
@@ -40,9 +39,8 @@ This profile includes the following permissions:
 
 In addition to the MDM profile, you will also want to place the following preference file in the /Library/Preferences folder on the endpoint prior to installation. With this preference file in place the application will provide for a silent installation.
 
-The required preference file can be downloaded here: [![Preference file icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/preference-icon.png)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/com.refractionpoint.rphcp.client.plist.zip)  
-  
-  
+The required preference file can be downloaded here: [![Preference file icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/preference-icon.png)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/com.refractionpoint.rphcp.client.plist.zip)
+
 [ Download com.refractionpoint.rphcp.client.plist preference file (to be placed in the /Library/Preferences folder on the endpoint)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/com.refractionpoint.rphcp.client.plist.zip)
 
 ## Installation Scripts
@@ -75,19 +73,19 @@ While any Apple / user approved MDM provider may be used, we have provided speci
 
 
 
-Identifier:  
+Identifier:
 com.refractionpoint.rphcp.extension
 
-Identifier Type:  
+Identifier Type:
 Bundle ID
 
-Code Requirement:  
+Code Requirement:
 anchor apple generic and identifier "com.refractionpoint.rphcp.extension" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = N7N82884NH)
 
-App or Service:  
+App or Service:
 SystemPolicyAllFiles
 
-Access:  
+Access:
 Allow
 
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-2-PPPC.png)
@@ -118,21 +116,26 @@ Identifier: com.refractionpoint.rphcp.client
 
 Filter Order: Firewall
 
-Add a Socket Filter with the following details:  
-Socket Filter Bundle Identifier:  
+Add a Socket Filter with the following details:
+Socket Filter Bundle Identifier:
 com.refractionpoint.rphcp.client
 
-Socket Filter Designated Requirement  
+Socket Filter Designated Requirement
 anchor apple generic and identifier "com.refractionpoint.rphcp.client" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = N7N82884NH)
 
 Add a Network Filter with the following details:
 
-Network Filter Bundle Identifier:  
+Network Filter Bundle Identifier:
 com.refractionpoint.rphcp.client
 
-Network Filter Designated Requirement:  
+Network Filter Designated Requirement:
 anchor apple generic and identifier "com.refractionpoint.rphcp.client" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = N7N82884NH)
 
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-4-ContentFilter.png)
 
   7. Deploy the configuration profile to your devices.
+
+
+
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

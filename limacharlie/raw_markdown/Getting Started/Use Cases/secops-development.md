@@ -14,7 +14,10 @@ Innovating new security products and modifying existing ones is crucial for prot
 
   * **Lack of control:** Your project relies on third-party or open source tooling that lacks the flexibility you need to succeed.
 
-#### LimaCharlie's solution
+
+
+
+#### LimaCharlie’s solution
 
 The SecOps Cloud Platform delivers core security capabilities in the form of “primitives” that can be modified to accommodate specific needs. It offers infrastructure-as-code and other resources that can improve a developer’s mean-time-to-market, including:
 

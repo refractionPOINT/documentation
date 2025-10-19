@@ -8,7 +8,7 @@ If you've written a unique query or have one you'd like to share with the commun
 
 ## General Queries
 
-Search _all_ event types across _all_ Windows sytems for a particular string showing up in _any_ field.  
+Search _all_ event types across _all_ Windows sytems for a particular string showing up in _any_ field.
 `-24h | plat == windows | * | event/* contains 'psexec'`
 
 ## GitHub Telemetry
@@ -22,14 +22,14 @@ Show me all the GitHub branch protection override (force pushing to repo without
 `-12h | plat == github | protected_branch.policy_override | event/public_repo is false and event/actor_location/country_code is not "us" | event/repo as repo event/actor as actor COUNT(event) as count GROUP BY(repo actor)`
 
 which could result in:
-    
-    
-    | actor    |   count | repo                               |
+
+
+    | actor    |   count | repo                               |
     |----------|---------|------------------------------------|
-    | mXXXXXXa |      11 | acmeCorpCodeRep/customers          |
-    | aXXXXXXb |      11 | acmeCorpCodeRep/analysis           |
-    | cXXXXXXd |       3 | acmeCorpCodeRep/devops             |
-    
+    | mXXXXXXa |      11 | acmeCorpCodeRep/customers          |
+    | aXXXXXXb |      11 | acmeCorpCodeRep/analysis           |
+    | cXXXXXXd |       3 | acmeCorpCodeRep/devops             |
+
 
 ## Network Telemetry
 
@@ -42,13 +42,13 @@ Show me all domains resolved by Windows hosts that contain "google" in the last 
 `-10m | plat == windows | DNS_REQUEST | event/DOMAIN_NAME contains 'google' | event/DOMAIN_NAME as domain COUNT(event) as count GROUP BY(domain)`
 
 which could result in:
-    
-    
-    |   count | domain                     |
+
+
+    |   count | domain                     |
     |---------|----------------------------|
-    |      14 | logging.googleapis.com     |
-    |      36 | logging-alv.googleapis.com |
-    
+    |      14 | logging.googleapis.com     |
+    |      36 | logging-alv.googleapis.com |
+
 
 ### Domain Prevalence
 
@@ -57,19 +57,19 @@ Show me all domains resolved by Windows hosts that contain "google" in the last 
 `-10m | plat == windows | DNS_REQUEST | event/DOMAIN_NAME contains 'google' | event/DOMAIN_NAME as domain COUNT_UNIQUE(routing/sid) as count GROUP BY(domain)`
 
 which could result in:
-    
-    
-    |   count | domain                     |
+
+
+    |   count | domain                     |
     |---------|----------------------------|
-    |       4 | logging.googleapis.com     |
-    |       3 | logging-alv.googleapis.com |
-    
+    |       4 | logging.googleapis.com     |
+    |       3 | logging-alv.googleapis.com |
+
 
 ## Process Activity
 
 ### Unsigned Binaries
 
-Grouped and counted.  
+Grouped and counted.
 `-24h | plat == windows | CODE_IDENTITY | event/SIGNATURE/FILE_IS_SIGNED != 1 | event/FILE_PATH as Path event/HASH as Hash event/ORIGINAL_FILE_NAME as OriginalFileName COUNT_UNIQUE(Hash) as Count GROUP BY(Path Hash OriginalFileName)`
 
 ### Process Command Line Args
@@ -110,3 +110,8 @@ When ingested with EDR telemetry, or as a separate Adapter, `WEL` type events ar
 
 `-1h | plat==windows | WEL | event/EVENT/System/EventID == "4625" | event/EVENT/EventData/IpAddress as SrcIP event/EVENT/EventData/LogonType as LogonType event/EVENT/EventData/TargetUserName as Username event/EVENT/EventData/WorkstationName as SrcHostname`
 
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Endpoint Detection & Response
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

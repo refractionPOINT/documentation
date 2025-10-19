@@ -20,6 +20,9 @@ The Git Sync Extension is a tool that automates the management of Infrastructure
 
   * **Transparent Operations:** Tracks operations through an extension Sensor.
 
+
+
+
 By using `ext-git-sync`, you can streamline your IaC workflows, improve consistency, and reduce the risk of errors.
 
 ## Use Cases
@@ -28,13 +31,13 @@ By using `ext-git-sync`, you can streamline your IaC workflows, improve consiste
 
 If you have a properly structured git repository containing org configurations, the extension can sync the running org configurations with the contents of the configs in git.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2 \(1\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2(1).png)
 
 ### Export TO Git
 
 Assuming you have an empty git repository, you can configure the extension to export the current org configuration to the repository. It will be placed in an `exports` subdirectory.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2 \(2\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2(2).png)
 
 ## Git Repo Structure
 
@@ -154,13 +157,22 @@ This guide walks you through the process of configuring Git synchronization betw
 
   * First create the directory
 
+
+
+
 `mkdir -p ~/.ssh/gitsync`
 
   * Set appropriate permissions for the directory
 
+
+
+
 `chmod 700 ~/.ssh/gitsync`
 
   * Now generate the SSH key
+
+
+
 
 `ssh-keygen -t ed25519 -C "limacharlie-gitsync" -f ~/.ssh/gitsync/id_ed25519`
 
@@ -182,6 +194,9 @@ This guide walks you through the process of configuring Git synchronization betw
 
   8. Click **Add key** to save
 
+
+
+
 ### Step 2: Store SSH Private Key in LimaCharlie
 
   1. Log in to your LimaCharlie account
@@ -195,6 +210,9 @@ This guide walks you through the process of configuring Git synchronization betw
   5. Paste the **private** part of your SSH key into the value field
 
   6. Save the secret
+
+
+
 
 ### Step 3: Configure Git Sync in LimaCharlie
 
@@ -218,11 +236,20 @@ This guide walks you through the process of configuring Git synchronization betw
 
   10. Click **save settings**.
 
+
+
+
 ### Step 4: Verify Integration
 
-  1. Perform a test commit to your GitHub repository by clicking "Push to Git" in the upper right corner.
+  1. Perform a test commit to your GitHub repository by clicking “Push to Git” in the upper right corner.
+
+
+
 
   2. Verify that your configuration has been pushed to Github.
+
+
+
 
 ### Troubleshooting
 
@@ -233,3 +260,4 @@ If you encounter synchronization issues:
   * Ensure the correct SSH URL format is used (should begin with `git@github.com:`)
 
   * Check that the private key in Secret Manager matches the public key added to GitHub
+

@@ -4,7 +4,7 @@ The LimaCharlie Linux Sensor interfaces with the kernel to acquire deep visibili
 
 The Sensor current supports all Linux distributions (including ARM and MIPS).
 
-## Linux Distribution Support
+Linux Distribution Support
 
 Our Linux Sensor fully utilizes eBPF, which requires at least Linux 4.4 or above. Use the command `uname -r` to check your kernel version to determine support.
 
@@ -16,7 +16,7 @@ All versions of Debian and CentOS starting around Debian 5 should be supported. 
 
 ### Deb Package
 
-If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](https://docs.limacharlie.io/docs/endpoint-agent-installation#downloading-the-agents).
+If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](../endpoint-agent-installation.md#downloading-the-agents).
 
 The deb package will install the LimaCharlie sensor using a `systemd` service, or if unavailable a `system V` service.
 
@@ -64,6 +64,9 @@ Debian packages are offered for the various architectures the Linux sensor suppo
 
   * **arm64** : <https://downloads.limacharlie.io/sensor/linux/debarm64>
 
+
+
+
 ### Custom Installation
 
 For non-Debian systems, download the installer using the following command:
@@ -95,13 +98,16 @@ You may also pass the value `-` instead of the `INSTALLATION_KEY` like: `-d -`. 
 
   * Text file in current working directory: `lc_installation_key.txt`
 
+
+
+
 ### Disabling Netlink
 
 By default, the Linux sensor makes use of Netlink if available. In some rare configurations this auto-detection may be unwanted and Netlink usage can be disabled by setting the environment variable `DISABLE_NETLINK` to any value on the sensor process.
 
 ## Uninstalling the Agent
 
-For additional agent uninstall options, see [Endpoint Agent Uninstallation](/v2/docs/endpoint-agent-uninstallation)
+For additional agent uninstall options, see [Endpoint Agent Uninstallation](../endpoint-agent-uninstallation.md)
 
 Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (`dpkg` file), you should uninstall via the same mechanism. If you installed via the SystemV installation method, please utilize the bottom of [this script](https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97).
 
@@ -121,3 +127,10 @@ If the sensor was originally installed with the .deb file, this option is the cl
 
 
     apt remove limacharlie
+
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

@@ -16,6 +16,9 @@ The SecOps Cloud Platform provides the tools and infrastructure needed to secure
 
   * Build to Scale
 
+
+
+
 ### Focus on Your Core Value
 
 The SecOps Cloud Platform delivers foundational, well-understood security technologies as capabilities: as open, cloud-native primitives instead of black-box tools. Here's how builders can use this fact to create better products and service offerings:
@@ -71,3 +74,5 @@ Any successful cybersecurity business will encounter challenges as it attempts t
 The SecOps Cloud Platform offers an alternative route. Leverage the SCP's pay-per-use pricing to scale your infrastructure spending with your revenue. Even if you start off with a small customer base, you won't be losing money on infrastructure costs. Conserve your resources and allocate your spending to development, marketing, and sales efforts instead.
 
 The SCP offers builders a firm foundation for success. It provides a platform that is built to scale—and its pay-as-you-go pricing helps startups extend their runway and grow gradually and safely.
+
+

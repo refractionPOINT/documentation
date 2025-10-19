@@ -8,24 +8,23 @@ This extension makes use of Tailscale's native CLI, which can be found [here](ht
 
 The following response action returns information about the currently authentication Sublime Security user.
 
-```
-- action: extension request
-  extension action: run
-  extension name: ext-cloud-cli
-  extension request:
-    cloud: '{{ "sublime" }}'
-    command_line: '{{ "me" }}'
-    credentials: '{{ "hive://secret/secret-name" }}'
-```
+
+    - action: extension request
+      extension action: run
+      extension name: ext-cloud-cli
+      extension request:
+        cloud: '{{ "sublime" }}'
+        command_line: '{{ "me" }}'
+        credentials: '{{ "hive://secret/secret-name" }}'
+
 
 ## Credentials
 
 To utilize Sublime's CLI capabilities, you will need:
 
-* You will need an API key. More information about provisioning an API key can be found [here](https://docs.sublimesecurity.com/reference/authentication).
+  * You will need an API key. More information about provisioning an API key can be found [here](https://docs.sublimesecurity.com/reference/authentication).
 
-* Create a secret in the secrets manager in the following format:
+  * Create a secret in the secrets manager in the following format:
 
-```
-api_key
-```
+
+    api_key

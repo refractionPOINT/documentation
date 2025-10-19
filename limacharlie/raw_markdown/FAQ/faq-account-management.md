@@ -14,7 +14,7 @@ Please navigate to the bottom of the Billing & Usage section of the organization
 
 You can wipe the data retention by disabling the `Insight` add on on the marketplace and re-enabling it again. Please note that unsubscribing from `Insight` will delete all telemetry stored for a selected organization, and this action cannot be undone.
 
-To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](/v2/docs/ext-infrastructure).
+To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](../Add-Ons/Extensions/LimaCharlie%20Extensions/ext-infrastructure.md).
 
 ## Can I Transfer Ownership of an Organization?
 
@@ -26,7 +26,7 @@ With LimaCharlie's granular role-based access control you can be granted access 
 
   * On a per-organization basis
 
-  * To a set of organizations using [Organization Groups](/v2/docs/user-access)
+  * To a set of organizations using [Organization Groups](../Platform%20Management/Access%20and%20Permissions/user-access.md)
 
 
 
@@ -56,3 +56,5 @@ You can unsubscribe / cancel your subscription from app.limacharlie.io by loggin
 Account activation emails are sent when you sign up for a new LimaCharlie account. If you do not see the activation email in your inbox, it can typically be found in a spam / junk folder. If you're a user of Microsoft Office 365, or similar service that has server-side filtering, you may wish to check your online Quarantine (or equivalent). See the [Microsoft instructions](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/quarantine-email-messages?view=o365-worldwide) for details.
 
 Please reach out to our support team and we can verify if a successful delivery response message was received from your mail server.
+
+

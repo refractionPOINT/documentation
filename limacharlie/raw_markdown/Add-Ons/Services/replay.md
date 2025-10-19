@@ -1,6 +1,6 @@
 # Replay
 
-Replay allows you to run [Detection & Response (D&R) rules](/v2/docs/detection-and-response) against historical traffic.  
+Replay allows you to run [Detection & Response (D&R) rules](../../Detection%20and%20Response/writing-and-testing-rules.md) against historical traffic.  
 This can be done in a few combinations of sources:
 
 Rule Source:
@@ -19,7 +19,7 @@ Traffic:
 
 ## Using
 
-Using the Replay API requires the [API key](/v2/docs/api-keys) to have the following permissions:
+Using the Replay API requires the [API key](../../Platform%20Management/Access%20and%20Permissions/api-keys.md) to have the following permissions:
 
   * `insight.evt.get`
 
@@ -51,7 +51,7 @@ The returned data from the API contains the following:
 
 ### Query Language
 
-To use Replay in [LCQL Mode](/v2/docs/lcql) (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie query --help`.
+To use Replay in [LCQL Mode](../../Detection%20and%20Response/LimaCharlie%20Query%20Language/lcql-examples.md) (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie query --help`.
 
 ### Python CLI
 
@@ -144,6 +144,4 @@ Finally, you may also set `trace` to `true` in the request to receive a detailed
 
 ## Billing
 
-The Replay service is billed on a per event evaluated. 
-
-
+The Replay service is billed on a per event evaluated.

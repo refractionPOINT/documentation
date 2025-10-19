@@ -6,15 +6,15 @@ Syslog data can also be ingested via other data platforms, such as an S3 bucket.
 
 Syslog events are observed in LimaCharlie as the `text` platform.
 
-A more detailed guide to syslog collection can be found in the [Log Collection Guide](/v2/docs/logcollectionguide).
+A more detailed guide to syslog collection can be found in the [Log Collection Guide](../../Reference/logcollectionguide.md).
 
 ## Adapter Deployment
 
-Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/log and streaming formats. For non-streaming methods, please refer to the corresponding Adapter type (such as [S3](/v2/docs/adapter-types-s3), [GCP](/v2/docs/adapter-types-google-cloud-pubsub), etc.)
+Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/log and streaming formats. For non-streaming methods, please refer to the corresponding Adapter type (such as [S3](adapter-types-s3.md), [GCP](adapter-types-google-cloud-pubsub.md), etc.)
 
 ### Syslog-specific Configurations
 
-All Adapters have the same common client configuration options, found [here](/v2/docs/adapter-usage). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
+All Adapters have the same common client configuration options, found [here](../adapter-usage.md). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
 
   * `port`: port to listen for syslog from.
 
@@ -26,22 +26,18 @@ All Adapters have the same common client configuration options, found [here](/v2
 
   * `ssl_key`: path to a file with the SSL key to use to receive logs over TCP.
 
-
-
-
 ### Collecting Syslog via Docker
 
 The following example walks through configuring a Docker container as a syslog Adapter.
-    
-    
+
     docker run --rm -it -p 1514:1514 refractionpoint/lc-adapter:latest syslog port=1514 \
-      client_options.identity.installation_key=e9a3bcdf-efa2-47ae-b6df-579a02f3a54d \
-      client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
-      client_options.platform=text "client_options.mapping.parsing_grok=%{DATESTAMP:date} %{HOSTNAME:host} %{WORD:exe}\[%{INT:pid}\]: %{GREEDYDATA:msg}" \
-      client_options.sensor_seed_key=testclient1 \
-      client_options.mapping.rename_only=true \
-      "client_options.mapping.mapping[0].src_field=host" \
-      "client_options.mapping.mapping[0].dst_field=syslog_hostname"
+      client_options.identity.installation_key=e9a3bcdf-efa2-47ae-b6df-579a02f3a54d \
+      client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
+      client_options.platform=text "client_options.mapping.parsing_grok=%{DATESTAMP:date} %{HOSTNAME:host} %{WORD:exe}\[%{INT:pid}\]: %{GREEDYDATA:msg}" \
+      client_options.sensor_seed_key=testclient1 \
+      client_options.mapping.rename_only=true \
+      "client_options.mapping.mapping[0].src_field=host" \
+      "client_options.mapping.mapping[0].dst_field=syslog_hostname"
 
 Here's a breakdown of the above example:
 
@@ -73,14 +69,10 @@ Here's a breakdown of the above example:
 
   * `client_options.mapping.mapping[0].dst_field=....`: the destination field of the first mapping record.
 
-
-
-
 To test it, assuming we're on the same Debian box as the container, pipe the syslog to the container:
-    
-    
+
     journalctl -f -q | netcat 127.0.0.1 1514
-    
+
 
 ### Collecting Syslog via Binary Adapter
 
@@ -95,59 +87,55 @@ We recommend utilizing a unique installation key for this deployment, specifical
 Syslog events are typically ingested as `text`, however often have specific structures to them. Utilizing a config file allows for easy management of a regex string to extract relevant fields from syslog output.
 
 The following example config file can be a starting point. However, you might need to modify the regex to match your specific message.
-    
-    
+
     # Syslog Specific Docs: https://docs.limacharlie.io/docs/adapter-types-syslog
-    
+
     sensor_type: "syslog"
-      syslog:
-        port: 1514
-        iface: "0.0.0.0"
-        client_options:
-          identity:
-            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            installation_key: "YOUR_LC_INSTALLATION_KEY_SYSLOG"
-          hostname: "syslog-adapter"
-          platform: "linux"
-          sensor_seed_key: "syslog-collector"
-          mapping:
-            parsing_grok:
-              message: "^<%{INT:pri}>%{SYSLOGTIMESTAMP:timestamp}\\s+%{HOSTNAME:hostname}\\s+%{WORD:tag}(?:\\[%{INT:pid}\\])?:\\s+%{GREEDYDATA:message}"
-            sensor_hostname_path: "hostname"
-            event_type_path: "tag"
-            event_time_path: "timestamp"
-        # Optional syslog-specific configuration
-        is_udp: false                               # TCP (default) vs UDP
-        write_timeout_sec: 30                       # Write timeout
-        ssl_cert: "/certs/syslog_server.pem"       # Optional SSL cert
-        ssl_key: "/certs/syslog_server.key"        # Optional SSL key
-        mutual_tls_cert: "/certs/client_ca.pem"    # Optional mTLS
-    
+      syslog:
+        port: 1514
+        iface: "0.0.0.0"
+        client_options:
+          identity:
+            oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            installation_key: "YOUR_LC_INSTALLATION_KEY_SYSLOG"
+          hostname: "syslog-adapter"
+          platform: "linux"
+          sensor_seed_key: "syslog-collector"
+          mapping:
+            parsing_grok:
+              message: "^<%{INT:pri}>%{SYSLOGTIMESTAMP:timestamp}\\s+%{HOSTNAME:hostname}\\s+%{WORD:tag}(?:\\[%{INT:pid}\\])?:\\s+%{GREEDYDATA:message}"
+            sensor_hostname_path: "hostname"
+            event_type_path: "tag"
+            event_time_path: "timestamp"
+        # Optional syslog-specific configuration
+        is_udp: false                               # TCP (default) vs UDP
+        write_timeout_sec: 30                       # Write timeout
+        ssl_cert: "/certs/syslog_server.pem"       # Optional SSL cert
+        ssl_key: "/certs/syslog_server.key"        # Optional SSL key
+        mutual_tls_cert: "/certs/client_ca.pem"    # Optional mTLS
+
 
 #### Step 3: Configure syslog output to send messages to a local listener
 
 This step will depend on the type of syslog daemon you are using (syslog, rsyslog, syslog-ng, etc.) Within the daemon configuration file, configure the desired facility(-ies) to direct to the local listener. In the following example, we configured `auth` and `authpriv` events to write to both `/var/log/audit.log` and `127.0.0.1:1514`.
-    
-    
+
     auth,authpriv.*			/var/log/auth.log
     auth,authpriv.*			@@127.0.0.1:1514
-    
+
 
 After applying the appropriate configuration, restart the syslog daemon.
 
 #### Step 4: Confirm that syslog messages are sent to the correct location
 
 Utilizing a tool like `netcat`, you can listen on the appropriate port to confirm that messages are being sent. The following command will spawn a `netcat` listener on port 1514:
-    
-    
+
     nc -l -p 1514
-    
+
 
 #### Step 5: Run the LimaCharlie Adapter
 
 Execute the binary Adapter with the syslog configuration file in order to start the LimaCharlie listener. If started correctly, you should see the following messages in `stdout`:
-    
-    
+
     DBG <date>: usp-client connecting
     DBG <date>: usp-client connected
     DBG <date>: listening for connections on :1514

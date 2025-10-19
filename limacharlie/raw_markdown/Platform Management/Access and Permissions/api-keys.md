@@ -44,7 +44,7 @@ You may also use a User API Key to get the list of organizations available to it
 
 #### Ingestion Keys
 
-The [artifact collection](/v2/docs/artifacts) in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
+The artifact collection in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
 
 ## Python
 
@@ -94,4 +94,3 @@ The following flairs are currently supported:
 ## Allowed IP Range
 
 When creating an API key, you can optionally include an `allowed_ip_range`, which should be a [CIDR notation](https://aws.amazon.com/what-is/cidr/) IP range from which the API key can be used. Any use of the API key from a different IP address will fail. This is currently only configurable when creating an API key via the API and not in the UI.
-

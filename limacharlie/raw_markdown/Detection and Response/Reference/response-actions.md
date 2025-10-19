@@ -32,7 +32,7 @@ The above example means that the `evil-process-detected` detection will be gener
 
 The `is_global: true` means that the suppression should operate globally within the Org (tenant), if the value was `false`, the suppression would be scoped per-Sensor.
 
-The `keys` parameter is a list of strings that support [templating](/v2/docs/template-strings-and-transforms). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil-process detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then _all_ actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
+The `keys` parameter is a list of strings that support [templating](../../Events/template-strings-and-transforms.md). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil-process detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then _all_ actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
 
 > Supported Time Period Formats
 > 
@@ -150,13 +150,13 @@ Perform an asynchronous request to an extension the Organization is subscribed t
         pid: event.PROCESS_ID
     
 
-The `extension request` parameters will vary depending on the extension (see the relevant extension's schema). The `extension request` parameter is a [transform](/v2/docs/template-strings-and-transforms).
+The `extension request` parameters will vary depending on the extension (see the relevant extension's schema). The `extension request` parameter is a [transform](../../Events/template-strings-and-transforms.md).
 
 You can also specify a `based on report: true` parameter. When true (defaults to false), the transform for the `extension request` will be based on the latest `report` action's report instead of the original event. This means you MUST have a `report` action _before_ the `extension request`.
 
 ### isolate network
 
-Isolates the sensor from the network in a persistent fashion (if the sensor/host reboots, it will remain isolated). Only works on platforms supporting the `segregate_network` [sensor command](/v2/docs/reference-endpoint-agent-commands#segregatenetwork).
+Isolates the sensor from the network in a persistent fashion (if the sensor/host reboots, it will remain isolated). Only works on platforms supporting the `segregate_network` [sensor command](../../Sensors/Endpoint%20Agent/Endpoint%20Agent%20Commands/reference-endpoint-agent-commands.md#segregatenetwork).
     
     
     - action: isolate network
@@ -168,7 +168,7 @@ When the network isolation feature is used, LimaCharlie will block connections t
 
 ### seal
 
-Seals the sensor in a persistent fashion (if the sensor/host reboots, it will remain sealed). Only works on platforms supporting the `seal` [sensor command](/v2/docs/reference-endpoint-agent-commands#seal).
+Seals the sensor in a persistent fashion (if the sensor/host reboots, it will remain sealed). Only works on platforms supporting the `seal` [sensor command](../../Sensors/Endpoint%20Agent/Endpoint%20Agent%20Commands/reference-endpoint-agent-commands.md#seal).
     
     
     - action: seal
@@ -232,7 +232,7 @@ Reports the match as a detection. Think of it as an alert. Detections go a few p
 
 
 
-The `name`, `metadata` and `detect_data` parameters support [string templates](/v2/docs/template-strings-and-transforms) like `detected {{ .cat }} on {{ .routing.hostname }}`, note that the context of the transform is the detection itself and not the original event, so you would refer to `.detect.event.USER_NAME` and not `.event.USER_NAME` for example.
+The `name`, `metadata` and `detect_data` parameters support [string templates](../../Events/template-strings-and-transforms.md) like `detected {{ .cat }} on {{ .routing.hostname }}`, note that the context of the transform is the detection itself and not the original event, so you would refer to `.detect.event.USER_NAME` and not `.event.USER_NAME` for example.
 
 The `metadata` is generally used to populate information about the rule, its author, remediation etc.
 
@@ -263,9 +263,9 @@ Sends a task in the `command` parameter to the sensor that the event under evalu
 
 An optional `investigation` parameter can be given to create a unique identifier for the task and any events emitted from the sensor as a result of the task.
 
-The `command` parameter supports [string templates](/v2/docs/template-strings-and-transforms) like `artifact_get {{ .event.FILE_PATH }}`.
+The `command` parameter supports [string templates](../../Events/template-strings-and-transforms.md) like `artifact_get {{ .event.FILE_PATH }}`.
 
-> To view all possible commands, see [Endpoint Agent Commands](/v2/docs/reference-endpoint-agent-commands)
+> To view all possible commands, see [Endpoint Agent Commands](../../Sensors/Endpoint%20Agent/Endpoint%20Agent%20Commands/reference-endpoint-agent-commands.md)
 
 ### undelete sensor
 
@@ -352,3 +352,4 @@ Removes a tag from a Hive record.
       record name: my-rule
       tag: high-hit
     
+

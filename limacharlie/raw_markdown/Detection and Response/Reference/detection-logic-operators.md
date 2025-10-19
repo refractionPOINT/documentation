@@ -2,7 +2,7 @@
 
 Operators are used in the Detection part of a Detection & Response rule. Operators may also be accompanied by other available parameters, such as transforms, times, and others, referenced later in this page.
 
-> For more information on how to use operators, read [Detection & Response Rules](/v2/docs/detection-and-response).
+> For more information on how to use operators, read [Detection & Response Rules](../writing-and-testing-rules.md).
 
 ## Operators
 
@@ -255,9 +255,9 @@ The value is supplied via the `path` parameter and the lookup is defined in the 
 
 Supports the file name and sub domain transforms.
 
-> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](/v2/docs/add-ons-api-integrations).
+> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see the API Integrations documentation in Add-Ons.
 
-> You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](/v2/docs/config-hive-lookups) and [Lookup Manager](/v2/docs/ext-lookup-manager).
+> You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](../../Platform Management/Config Hive/config-hive-lookups.md) and [Lookup Manager](../../Add-Ons/Extensions/LimaCharlie Extensions/ext-lookup-manager.md).
 
 ### scope
 

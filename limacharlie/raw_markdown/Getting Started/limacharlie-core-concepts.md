@@ -1,6 +1,4 @@
-# LimaCharlie Core Concepts
-
-### Sensors
+## Sensors
 
 #### Endpoint Agents
 
@@ -18,7 +16,7 @@ as well as some forensic features like dumping memory.
 
 Sensors are designed to limit the potential for abuse resulting from unauthorized access to the LimaCharlie platform. This is achieved by limiting open-ended commands which might enable an attacker to covertly upload malicious software to your hosts. This means the LimaCharlie sensor is extremely powerful but also keeps its "read-only" qualities on your infrastructure. Of course, all access and interactions with the hosts are also logged for audit both within the cloud and tamper-proof forwarding to your own infrastructure.
 
-Full commands list is in the [Endpoint Agent Commands](/v2/docs/endpoint-agent-commands) section.
+Full commands list is in the [Endpoint Agent Commands](../Sensors/Endpoint Agent/Endpoint Agent Commands/reference-endpoint-agent-commands.md) section.
 
 #### Adapters
 
@@ -28,19 +26,19 @@ The LimaCharlie Adapter allows for real-time ingestion of any structured data, s
 
 Installation Keys are used to install a sensor. By specifying a key during installation the sensor can cryptographically be tied to your account.
 
-Get more details in the [Installation Keys section](/v2/docs/installation-keys).
+Get more details in the [Installation Keys section](../Sensors/installation-keys.md).
 
 ### Tags
 
 Sensors can have Tags associated with them. Tags are added during creation or dynamically through the UI, API or Detection & Response Rules.
 
-Get more information in the [Sensor tags section](/v2/docs/sensor-tags).
+Get more information in the [Sensor tags section](../Sensors/sensor-tags.md).
 
 ### Detection & Response Rules
 
 The Detection & Response Rules act as an automation engine. The Detection component is a rule that either matches an event or not. If the Detection component matches, the Response component of the rule is actioned. This can be used to automatically investigate, mitigate or apply Tags.
 
-Detailed explanation in the [Detection & Response section](/v2/docs/detection-and-response).
+Detailed explanation in the [Detection & Response section](../Detection and Response/detection-and-response-examples.md).
 
 ### Insight
 
@@ -71,12 +69,10 @@ Output is also split between four categories:
 
 Selecting a Stream when creating an Output will select the relevant type of data to flow through it.
 
-More details and exact configuration possibilities in the [Outputs section](/v2/docs/outputs).
+More details and exact configuration possibilities in the [Outputs section](../Outputs/output-billing.md).
 
 ### API Keys
 
-The API keys are represented as UUIDs. They are linked to your specific organization and enable you to programmatically acquire authorization tokens that can be used on our REST API. See the [API key section](/v2/docs/api-keys) for more details.
+The API keys are represented as UUIDs. They are linked to your specific organization and enable you to programmatically acquire authorization tokens that can be used on our REST API. See the [API key section](../Platform Management/Access and Permissions/api-keys.md) for more details.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

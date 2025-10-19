@@ -1,3 +1,5 @@
+# Cato
+
 ## Overview
 
 This Adapter allows you to connect to the Cato API to fetch logs from the [events feed](https://support.catonetworks.com/hc/en-us/articles/360019839477-Cato-API-EventsFeed-Large-Scale-Event-Monitoring).
@@ -26,11 +28,11 @@ Adapter Type: `cato`
 
 ### Manual Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment).
-    
-    
+Adapter downloads can be found [here](../../adapter-deployment.md).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter cato client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
@@ -38,10 +40,8 @@ Adapter downloads can be found [here](/v2/docs/adapter-deployment).
     client_options.hostname=$SENSOR_NAME \
     apikey=$API_KEY \
     accountid=$ACCOUNT_ID
-    
+
 
 ## API Doc
 
 See the official [documentation](https://support.catonetworks.com/hc/en-us/articles/360019839477-Cato-API-EventsFeed-Large-Scale-Event-Monitoring).
-
-

@@ -2,6 +2,8 @@
 
 This page contains frequently asked questions about billing within LimaCharlie.
 
+Pricing Details
+
 Please note that our pricing is transparent, and is available via our [Pricing webpage](https://limacharlie.io/pricing).
 
 ## How Can I Change My Quota/Upgrade to the Paid Tier?
@@ -10,9 +12,14 @@ When you sign up for the LimaCharlie account, you will automatically be on a fre
 
 To upgrade to paid tier, simply navigate to the Setup section of the Organization you are looking to upgrade and perform the following actions:
 
-  1. Ensure you have a payment method on file by clicking the **Billing & Usage** tab.
+  1. Ensure you have a payment method on file by clicking the**Billing & Usage **tab.
 
   2. In the **Billing & Usage** tab, set the quota number you would like and click **Update Quota**. Quota is the number of sensors concurrently online you would like to support.
+
+
+
+
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/billing-1.png)
 
 ## What is the Cost of Deploying Payloads via LimaCharlie?
 
@@ -22,15 +29,20 @@ This only impacts organizations that leverage Payloads functionality, as well as
 
 To understand the impact on your organization, check the **Metered Usage** section of the **Billing** page. You will notice the new **Payload Data Sent** metric along with the size of payloads deployed and price.
 
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/billing-2.png)
+
 ## What is Usage-Based Billing?
 
-Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. You can find more information about our billing options [here](/v2/docs/billing).
+Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. You can find more information about our billing options [here](../Platform%20Management/Billing/billing-options.md).
 
 We acknowledge that some might not need the entirety of available components all the time, and might benefit from having access to an Endpoint Agent on an ad-hoc basis. This approach enables the following:
 
-  1. Incident responders will now be able to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an organization's entire fleet and lay dormant in [sleeper mode](/v2/docs/sleeper). With agents deployed ahead of an incident, responders can offer competitive SLA's.
+  1. Incident responders will now be able to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an organization's entire fleet and lay dormant in [sleeper mode](../Sensors/Endpoint%20Agent/sleeper.md). With agents deployed ahead of an incident, responders can offer competitive SLA's.
 
   2. Product developers can take advantage of usage-based billing to leverage narrow bands of functionality at a low cost. This means getting the functionality they need without building it from the ground up or paying for a full EDR deployment.
+
+
+
 
 ## For Lc Adapters Billed on Usage, What Does "Block of Data" Mean & How Will It Impact the Price I Pay?
 
@@ -54,7 +66,7 @@ There are two categories of Sensors: sensors billed on Quota set by the user (vS
 
 ### vSensors
 
-LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of [Endpoint Agents](/v2/docs/endpoint-agent). vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
+LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of Endpoint Agents. vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
 
 Our transparent pricing and quota-based approach allows you to easily mix and match deployments, while staying within a certain price point.
 
@@ -68,6 +80,9 @@ If you set the quota to 100 vSensors, you can have concurrently:
 
   * Or any other combination as long as the total number of sensors does not exceed the quota of 100 vSensors.
 
+
+
+
 ### Sensors Over Quota
 
 If the quota is maxed out when a sensor attempts to come online, the sensor will be given a message to go away for a period of time and then they can check again. A `sensor_over_quota` event will be emitted in the deployments stream as well enabling users to set up alerts and be notified about this happening. The amount of time sensors are told to go away for increases if they connect again and the organization is still over quota.
@@ -79,3 +94,5 @@ Quota-based items are charged a month ahead, while usage items are billed the mo
 ## How Do I Change My Billing Credit Card?
 
 If you are using a credit card for payment and wish to change your address or card details, navigate to **Billing > Billing & Usage** within the web UI. From there, select **Change Payment Details** to update the appropriate details.
+
+

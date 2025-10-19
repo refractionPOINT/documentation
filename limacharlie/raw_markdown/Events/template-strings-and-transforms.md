@@ -1,3 +1,5 @@
+# Template Strings and Transforms
+
 Many areas of LimaCharlie support template strings and transforms.
 
 A template string allows you to customize the value of a configuration based on the context. For example to adjust the Detection Name a D&R rule to include a value from the detection itself. Transforms can also be used to select, modify, or remove fields upon data ingestion from an Adapter.
@@ -59,7 +61,7 @@ Other examples:
 
 ### Template Strings and Adapter Transforms
 
-Template strings can also be used with in conjunction the `client_options.mapping.transform` option in [Adapter configuration](/v2/docs/adapter-usage). These allow you to modify data prior to ingestion, having control over _what_ fields get ingested and resulting field names.
+Template strings can also be used with in conjunction the `client_options.mapping.transform` option in [Adapter configuration](../Sensors/Adapters/adapter-usage.md). These allow you to modify data prior to ingestion, having control over _what_ fields get ingested and resulting field names.
 
 The following options are available in Adapter configurations:
 
@@ -265,7 +267,7 @@ Then the resulting Output would be:
 
 When passing events to an output, you have the option to transform the original event in multiple ways. When creating an output, Custom Transforms are applied in the CUSTOM TRANSFORM area of the screenshot below. In this example we are transforming a detection event to pass via a custom webhook to a web application.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image\(310\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(310).png)
 
 ### Examples
 
@@ -325,7 +327,7 @@ The following Output Transform would extract only the `IpAddress`, `TargetUserNa
     }
     
 
-The following example outputs text and specified fields using [Template Strings](/v2/docs/template-strings-and-transforms).
+The following example outputs text and specified fields using Template Strings.
     
     
     {
@@ -413,5 +415,5 @@ would result in:
         "some": "embeded value"
       }
     }
-    
+
 

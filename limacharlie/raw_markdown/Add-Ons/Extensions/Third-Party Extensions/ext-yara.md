@@ -7,30 +7,42 @@ Yara configurations are synchronized with sensors every few minutes.
 There are three main sections to the YARA job:
 
   * Sources
+
   * Rules
+
   * Scan
 
-## Where Does My YARA Scan?
+
+
+
+Where Does My YARA Scan?
 
 Automated YARA scanners in LimaCharlie will run on all files loaded in memory (e.g. exe, dll, etc), and on the memory itself.
 
 Files on disk can be scanned using a Sensor command. You can trigger a Manual Scan that's run on-demand by:
 
-  * Clicking the Run YARA scan button on the sensor details page
+  * Clicking the Run YARA scan button on the sensor details page,
+
   * Clicking the Scan button on the YARA Scanners page
+
   * Using the console
-  * Within the Response section of a rule (sample below)
+
+  * Within the Response section of a  rule (sample below)
+
   * Using the LimaCharlie API
 
-## Rules
 
-This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](/v2/docs/ext-yara-manager). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](/v2/docs/reference-authentication-resource-locator) to a YARA rule.
+
+
+### Rules
+
+This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](../LimaCharlie%20Extensions/ext-yara-manager.md). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](../../Reference/reference-authentication-resource-locator.md) to a YARA rule.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/yara-1.png)
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/yara-2.png)
 
-## Scanners
+### Scanners
 
 Scanners define which sets of sensors should be scanned with which sets of YARA rules.
 
@@ -56,7 +68,10 @@ A Yara scan request can be executed with a blank selector OR Sensor ID. However,
 
 ### Migrating D&R Rule from legacy Service to new Extension
 
-**LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024.**
+** _LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024._**
+
+  
+
 
 The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference legacy Yara service, preview the change and execute the conversion required in the rule "response".
 
@@ -74,3 +89,6 @@ Command line to execute Yara rule conversion:
     
     
     limacharlie extension convert_rules --name ext-yara --no-dry-run
+    
+
+

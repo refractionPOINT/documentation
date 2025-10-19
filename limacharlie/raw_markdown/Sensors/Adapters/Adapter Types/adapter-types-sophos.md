@@ -39,39 +39,39 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
   2. Get your client ID and client secret from the credentials you just created
 
   3. Get your JWT -- be sure to replace the values with the client ID and secret from the last step
-    
+
         curl -XPOST -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&scope=token" https://id.sophos.com/api/v2/oauth2/token
-    
+
 
 Response content -- grab the `access_token` from the output:
-    
+
         {
-       "access_token": "SAVE_THIS_VALUE",
-       "errorCode": "success",
-       "expires_in": 3600,
-       "message": "OK",
-       "refresh_token": "<token>",
-       "token_type": "bearer",
-       "trackingId": "<uuid>"
+       "access_token": "SAVE_THIS_VALUE",
+       "errorCode": "success",
+       "expires_in": 3600,
+       "message": "OK",
+       "refresh_token": "<token>",
+       "token_type": "bearer",
+       "trackingId": "<uuid>"
     }
-    
+
 
   4. Get your tenant ID -- you will need the `access_token` (JWT) from the last step.
-    
+
         curl -XGET -H "Authorization: Bearer YOUR_JWT_HERE" https://api.central.sophos.com/whoami/v1
-    
+
 
 Response content -- grab the `id` (`tenant_id`) and `dataRegion` (`url`) from the output. You will need these for your LimaCharlie Sophos adapter configuration.
-    
+
         {
-        "id": "57ca9a6b-885f-4e36-95ec-290548c26059",
-        "idType": "tenant",
-        "apiHosts": {
-            "global": "https://api.central.sophos.com",
-            "dataRegion": "https://api-us03.central.sophos.com"
-        }
+        "id": "57ca9a6b-885f-4e36-95ec-290548c26059",
+        "idType": "tenant",
+        "apiHosts": {
+            "global": "https://api.central.sophos.com",
+            "dataRegion": "https://api-us03.central.sophos.com"
+        }
     }
-    
+
 
   5. Now you have all the pieces for your adapter:
 
@@ -87,37 +87,35 @@ Response content -- grab the `id` (`tenant_id`) and `dataRegion` (`url`) from th
 
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # Sophos Central Specific Docs: https://docs.limacharlie.io/docs/adapter-types-sophos-central
     # For cloud sensor deployment, store credentials as hive secrets:
-    
-    #   clientid: "hive://secret/sophos-client-id"
-    #   clientsecret: "hive://secret/sophos-client-secret"
-    #   tenantid: "hive://secret/sophos-tenant-id"
-    
+
+    #   clientid: "hive://secret/sophos-client-id"
+    #   clientsecret: "hive://secret/sophos-client-secret"
+    #   tenantid: "hive://secret/sophos-tenant-id"
+
     sensor_type: "sophos"
     sophos:
-      clientid: "hive://secret/sophos-client-id"
-      clientsecret: "hive://secret/sophos-client-secret"
-      tenantid: "hive://secret/sophos-tenant-id"
-      url: "https://api-us01.central.sophos.com"
-      client_options:
-        identity:
-          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          installation_key: "YOUR_LC_INSTALLATION_KEY_SOPHOS"
-        hostname: "sophos-central-adapter"
-        platform: "json"
-        sensor_seed_key: "sophos-siem-sensor"
-        mapping:
-          sensor_hostname_path: "endpoint.hostname"
-          event_type_path: "type"
-          event_time_path: "raisedAt"
-        indexing: []
-    
+      clientid: "hive://secret/sophos-client-id"
+      clientsecret: "hive://secret/sophos-client-secret"
+      tenantid: "hive://secret/sophos-tenant-id"
+      url: "https://api-us01.central.sophos.com"
+      client_options:
+        identity:
+          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          installation_key: "YOUR_LC_INSTALLATION_KEY_SOPHOS"
+        hostname: "sophos-central-adapter"
+        platform: "json"
+        sensor_seed_key: "sophos-siem-sensor"
+        mapping:
+          sensor_hostname_path: "endpoint.hostname"
+          event_type_path: "type"
+          event_time_path: "raisedAt"
+        indexing: []
+
 
 ## API Doc
 
 See the official [documentation](https://developer.sophos.com/docs/siem-v1/1/overview).
-
-

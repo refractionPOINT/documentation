@@ -9,31 +9,31 @@ Note that this adapter operates as a sink by default, meaning it will "consume" 
 ### AWS S3 Requirements
 
 Required IAM Permissions:
-    
-    
+
+
     {
-        "Version": "2012-10-17",
-        "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": [
-              "s3:ListBucket",
-              "s3:GetObject",
-              "s3:DeleteObject"
-            ],
-            "Resource": [
-              "arn:aws:s3:::your-bucket-name",
-              "arn:aws:s3:::your-bucket-name/*"
-            ]
-          }
-        ]
-      }
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:ListBucket",
+              "s3:GetObject",
+              "s3:DeleteObject"
+            ],
+            "Resource": [
+              "arn:aws:s3:::your-bucket-name",
+              "arn:aws:s3:::your-bucket-name/*"
+            ]
+          }
+        ]
+      }
 
 ## Configurations
 
 Adapter Type: `s3`
 
-  * `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
+  * `client_options`: common configuration for adapter as defined [here](../../adapters.md#usage).
 
   * `bucket_name`: the name of the bucket to ingest from.
 
@@ -49,38 +49,36 @@ Adapter Type: `s3`
 
 
 ### Infrastructure as Code Deployment
-    
-    
+
+
     # AWS S3 Specific Docs: https://docs.limacharlie.io/docs/adapter-types-s3
     # For cloud sensor deployment, store credentials as hive secrets:
-    
-    #   access_key: "hive://secret/aws-access-key"
-    #   secret_key: "hive://secret/aws-secret-key"
-    
+
+    #   access_key: "hive://secret/aws-access-key"
+    #   secret_key: "hive://secret/aws-secret-key"
+
     sensor_type: "s3"
     s3:
-      bucket_name: "your-s3-bucket-name-for-logs"
-      access_key: "hive://secret/aws-s3-access-key"
-      secret_key: "hive://secret/aws-s3-secret-key"
-      client_options:
-        identity:
-          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          installation_key: "YOUR_LC_INSTALLATION_KEY_S3"
-        hostname: "aws-s3-adapter"
-        platform: "json"
-        sensor_seed_key: "s3-log-processor"
-        mapping:
-          sensor_hostname_path: "source_host"
-          event_type_path: "event_category"
-          event_time_path: "timestamp"
-        indexing: []
-      # Optional S3-specific configuration
-      prefix: "logs/application_xyz/"              # Filter by object prefix
-      parallel_fetch: 5                           # Parallel downloads
-      single_load: false                          # Continuous processing
+      bucket_name: "your-s3-bucket-name-for-logs"
+      access_key: "hive://secret/aws-s3-access-key"
+      secret_key: "hive://secret/aws-s3-secret-key"
+      client_options:
+        identity:
+          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          installation_key: "YOUR_LC_INSTALLATION_KEY_S3"
+        hostname: "aws-s3-adapter"
+        platform: "json"
+        sensor_seed_key: "s3-log-processor"
+        mapping:
+          sensor_hostname_path: "source_host"
+          event_type_path: "event_category"
+          event_time_path: "timestamp"
+        indexing: []
+      # Optional S3-specific configuration
+      prefix: "logs/application_xyz/"              # Filter by object prefix
+      parallel_fetch: 5                           # Parallel downloads
+      single_load: false                          # Continuous processing
 
 ## API Doc
 
 See the [official documentation](https://aws.amazon.com/s3/).
-
-

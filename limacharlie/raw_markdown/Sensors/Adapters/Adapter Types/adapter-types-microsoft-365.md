@@ -97,7 +97,7 @@ To establish an Office 365 adapter, we will need to complete a few steps within 
 
 
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2873%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(73).png)
 
   * Additionally, you'll need to ensure that the app has the correct permissions to view Office 365 data via the Management API. Within `API Permissions`, configure the following permissions:
 
@@ -108,7 +108,7 @@ To establish an Office 365 adapter, we will need to complete a few steps within 
 
 
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2874%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(74).png)
 
 Additionally, you may need to grant admin consent to the above permissions.
 
@@ -173,5 +173,3 @@ We can also reference Office 365 events directly. The following sample rule look
     
 
 Note that in the detection above, we pivot on the `FileAccessed` event, which is associated with SharePoint activity. Available event types will depend on source activity and events ingested. More information on audit log activities can be found [here](https://learn.microsoft.com/en-us/purview/audit-log-activities).
-
-

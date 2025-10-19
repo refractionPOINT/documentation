@@ -2,13 +2,13 @@
 
 ## macOS Sensor (macOS 10.14 and prior)
 
-This document provides details of how to install, verify, and uninstall the LimaCharlie sensor on macOS (versions 10.14 and prior). We also offer [documentation for macOS 10.15 and newer](/v2/docs/macos-agent-installation-latest-os-versions).
+This document provides details of how to install, verify, and uninstall the LimaCharlie sensor on macOS (versions 10.14 and prior). We also offer [documentation for macOS 10.15 and newer](macos-agent-installation-latest-os-versions.md).
 
 ### Installer Options
 
 When running the installer from the command line, you can pass the following arguments:
-    
-    
+
+
     -v: display build version.
     -q: quiet; do not display banner.
     -d <INSTALLATION_KEY>: the installation key to use to enroll, no permanent installation.
@@ -17,7 +17,7 @@ When running the installer from the command line, you can pass the following arg
     -c: uninstall executable as a service and delete identity files.
     -w: executable is running as a macOS service.
     -h: displays the list of accepted arguments.
-    
+
 
 ### Installation Flow
 
@@ -111,4 +111,12 @@ You'll pass the argument -c
 ![Uninstall progress](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/macOS_10.14/Installed_correctly.png)
 
   2. You should see a message indicating that the uninstallation was successful.
+
+
+
+
 ![Uninstall success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/3-Uninstall_Success.png)
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

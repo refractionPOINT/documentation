@@ -1,6 +1,8 @@
+# File
+
 ## Overview
 
-This Adapter allows you to ingest logs from a file, either as a one time operation or by following its output (like `tail -f`). A more detailed guide to file collection can be found in the [Log Collection Guide](/v2/docs/logcollectionguide).
+This Adapter allows you to ingest logs from a file, either as a one time operation or by following its output (like `tail -f`). A more detailed guide to file collection can be found in the [Log Collection Guide](../../Reference/logcollectionguide.md).
 
 ### Configuration
 
@@ -30,17 +32,14 @@ Adapter type `file`:
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment).
-    
-    
+Adapter downloads can be found [here](../../adapter-deployment.md).
+
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter file client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=text \
     client_options.sensor_seed_key=$SENSOR_NAME \
     client_options.hostname=$SENSOR_NAME \
     file_path=/path/to/file
-    
-
-

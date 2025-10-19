@@ -13,8 +13,8 @@ You can white label the LimaCharlie installer for Windows by using an MSI wrappe
 
 Without a digital code signing certificate the installer will show a warning that it is from an unknown publisher.
 
-![UAC Signed](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/uac-signed.png)   
-\- vs -   
+![UAC Signed](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/uac-signed.png)
+\- vs -
 ![UAC Warning](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/uac-warning.png)
 
 ## Instructions
@@ -33,7 +33,6 @@ Without a digital code signing certificate the installer will show a warning tha
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_1_-_First_screen_after_launch.png)
 
   5. Select the executable
-
 
 
   * Set the `Setup executable input file name` to be the LimaCharlie EXE that you'd downloaded
@@ -64,7 +63,6 @@ Without a digital code signing certificate the installer will show a warning tha
   8. Specify Application IDs
 
 
-
   * In the Upgrade Code section, click the "Create New" button next to generate a code. This will be used to allow uninstallation.
 
 
@@ -73,7 +71,6 @@ Without a digital code signing certificate the installer will show a warning tha
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_5_-_Application_Ids.png)
 
   9. Specify Properties (optional: customize options here to have the installer show your brand)
-
 
 
   * You can change the drop-down menu of each line item from "Executable" to "Manual" in order to set your own values for the Product Name, Manufacturer, Version, Comments, and Product icon
@@ -145,3 +142,7 @@ When inspecting the properties of the MSI you'll see the details you'd specified
 In the Apps & Features section of Windows, you'll see the application listed under your name.
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/Shown_in_Control_Panel_-_Apps_and_Features.png)
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

@@ -1,3 +1,5 @@
+# Sysmon Comparison
+
 System Monitor, or "Sysmon", is a Windows server and device driver that monitors and logs operating system activity. It is part of the Sysinternals toolkit. More information on Sysmon can be found [here](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon).
 
 Many organizations deploy Sysmon and structure their detection events around Sysmon-specific event logs, which can offer granular insight into operating system changes. LimaCharlie's EDR telemetry can offer similar events, allowing you to write detections against these events directly.
@@ -22,9 +24,10 @@ Event ID 18 (PipeEvent Connected)| OPEN_NAMED_PIPE
   
 Why not both? ¯\_(ツ)_ /¯
 
-Note, LC's Endpoint Agent is easily able to [consume Sysmon events](/v2/docs/ingesting-sysmon-event-logs) as well.
+Note, LC's Endpoint Agent is easily able to [consume Sysmon events](../../Sensors/Endpoint%20Agent/Tutorials/ingesting-sysmon-event-logs.md) as well.
 
 ## Executable Tracking
 
-Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality with LimaCharlie with BinLib. More information on that can be found [here](/v2/docs/binlib).
+Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality with LimaCharlie with BinLib. More information on that can be found [here](../../Add-Ons/Extensions/LimaCharlie%20Extensions/binlib.md).
+
 

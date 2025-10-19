@@ -2,31 +2,37 @@
 
 The Dumper Extension provides the ability to do dumping of several forensic artifacts on Windows hosts. It supports a single action, which is to dump.
 
-It supports multiple targets -- `memory` to dump the memory of the host, and `mft` to dump the MFT of the file system to CSV. The extension then automates the ingestion of the resulting dump (and dump metadata) to LimaCharlie's [Artifact Ingestion system](/v2/docs/artifacts) where it can be downloaded or analyzed, and where you can create rules to automate detections of characteristics of those dumps.
+It supports multiple targets -- `memory` to dump the memory of the host, and `mft` to dump the MFT of the file system to CSV. The extension then automates the ingestion of the resulting dump (and dump metadata) to LimaCharlie's [Artifact Ingestion system](ext-artifact.md) where it can be downloaded or analyzed, and where you can create  rules to automate detections of characteristics of those dumps.
 
 ### Usage
 
 When enabled, dumper will be added to the Extensions view inside your Organization. It will accept the following parameters:
 
-* `sid` - a Sensor ID for the host to perform the memory dump
-* `target` - memory or mft
-* `retention` - the number of days the memory dump should be retained for (default is 30)
-* `ignore_cert` - ignore cert errors for payload and collection purposes (default `false`)
+  * `sid` \- a Sensor ID for the host to perform the memory dump
+
+  * `target` \- memory or mft
+
+  * `retention` \- the number of days the memory dump should be retained for (default is 30)
+
+  * `ignore_cert` \- ignore cert errors for payload and collection purposes (default `false`)
+
+
+
 
 Upon submission of a request, the extension will perform a full memory dump of a host and upload the resulting dumps to LimaCharlie's artifact ingestion system and delete the local dumps afterwards.
 
 Dumper requests can also be made via D&R rules. Here is is example of a D&R rule action that makes a request to Dumper:
-
-```
-- action: extension request
-  extension name: ext-dumper
-  extension action: request_dump
-  extension request:
-    target: memory
-    sid: <<routing.sid>>
-    retention: 30 #default 30
-    ignore_cert: true # default false
-```
+    
+    
+    - action: extension request
+      extension name: ext-dumper
+      extension action: request_dump
+      extension request:
+        target: memory
+        sid: <<routing.sid>> 
+        retention: 30 #default 30
+        ignore_cert: true # default false
+    
 
 **Notes:**
 

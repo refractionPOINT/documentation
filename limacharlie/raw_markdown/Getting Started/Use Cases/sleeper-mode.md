@@ -12,7 +12,10 @@ Traditional IR relies on reactive deployment of sensors, leaving critical blind 
 
   * **Delayed response:** Increased potential for damage and lateral movement of threats while waiting for sensor deployment and data collection.
 
-#### LimaCharlie's solution
+
+
+
+#### LimaCharlie’s solution
 
 Sleeper mode transforms your entire network into a pre-wired security grid. Sensors sit silently, consuming minimal resources while collecting basic system information and detecting critical events. This provides:
 

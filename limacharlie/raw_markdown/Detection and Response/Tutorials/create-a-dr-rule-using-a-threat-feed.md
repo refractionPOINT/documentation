@@ -4,7 +4,7 @@ A common use case for rules is to use them to compare telemetry against known ma
 
 To configure a threat feed, it must first be enabled within the Add-ons Marketplace. First, select a threat feed from the plethora available for free. In the following example, we will enable `crimeware-ips`.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/crimeware-ips\(1\).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/crimeware-ips(1).png)
 
 Select `Subscribe`, which will make the feed available to the respective Organization.
 
@@ -35,3 +35,8 @@ Configure a lookup based on domain name(s):
     event: DNS_REQUEST
     path: event/DOMAIN_NAME
     resource: hive://lookup/my-dns-lookup
+
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+

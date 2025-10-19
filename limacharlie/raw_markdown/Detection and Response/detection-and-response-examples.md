@@ -1,6 +1,6 @@
 # Detection and Response Examples
 
-The following are sample detection and response rules can help you get started in crafting efficient  rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](/v2/docs/sigma-rules) for more rules.
+The following are sample detection and response rules can help you get started in crafting efficient  rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](./Managed%20Rulesets/Sigma%20Rules/sigma-converter.md) for more rules.
 
 ## Translating Existing Rules
 
@@ -93,7 +93,7 @@ The following example looks for connections to/from `sshd` involving a non-RFC19
         SSH from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
     
 
-The `report` uses [Go Templates](/v2/docs/template-strings-and-transforms) to include the offending IP address in the detection name.
+The `report` uses [Go Templates](../Events/template-strings-and-transforms.md) to include the offending IP address in the detection name.
 
 ### RDP from External IP Address
 
@@ -122,7 +122,7 @@ Similar to the above SSH example, this example looks for RDP connections from an
         RDP from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
     
 
-The `report` uses [Go Templates](/v2/docs/template-strings-and-transforms) to include the offending IP address in the detection name.
+The `report` uses [Go Templates](../Events/template-strings-and-transforms.md) to include the offending IP address in the detection name.
 
 ### Suspicious Windows Executable Names
     
@@ -257,13 +257,13 @@ Adding a FIM pattern with `fim_add` by itself will only cause `FIM_HIT` events t
 
 Resource Utilization
 
-Performing CPU intensive actions such as YARA scanning can impact endpoint performance if not optimized. Be sure to always test rules that carry out sensor commands (like the examples below) before deploying at scale in production. Use [suppression](/v2/docs/response-actions#suppression) to prevent runaway conditions.
+Performing CPU intensive actions such as YARA scanning can impact endpoint performance if not optimized. Be sure to always test rules that carry out sensor commands (like the examples below) before deploying at scale in production. Use [suppression](./Reference/response-actions.md#suppression) to prevent runaway conditions.
 
 Here are a few examples of using D&R rules to initiate automatic YARA scans on an endpoint. Note that the defined YARA rule must exist in your org before using it in a D&R rule.
 
 #### YARA Scan Processes
 
-This example looks for `NEW_PROCESS` events that meet certain criteria, then initiates a YARA scan against the offending process ID in memory. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](/v2/docs/detection-and-response-examples#yara-detections) rule.
+This example looks for `NEW_PROCESS` events that meet certain criteria, then initiates a YARA scan against the offending process ID in memory. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](#yara-detections) rule.
     
     
     # Detection
@@ -298,7 +298,7 @@ Notice the use of `suppression` to prevent the same `PROCESS_ID` from being scan
 
 #### YARA Scan Files
 
-This example looks for `NEW_DOCUMENT` events that meet certain criteria, then initiates a YARA scan against the offending file path. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](/v2/docs/detection-and-response-examples#yara-detections) rule.
+This example looks for `NEW_DOCUMENT` events that meet certain criteria, then initiates a YARA scan against the offending file path. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](#yara-detections) rule.
     
     
     # Detection
@@ -411,3 +411,6 @@ We can use these events to deduplicate. This example targets Windows clones.
     
     # Response
     - action: re-enroll
+    
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

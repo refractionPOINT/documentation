@@ -1,3 +1,5 @@
+# AWS GuardDuty
+
 ## Overview
 
 This Adapter allows you to ingest AWS GuardDuty events via either an [S3 bucket](https://aws.amazon.com/s3/) or [SQS message queue](https://aws.amazon.com/sqs/).
@@ -77,4 +79,4 @@ The following command will create an Adapter using the (1) Adapter binary and (2
 
 Within the LimaCharlie web application, you can create an AWS GuardDuty Cloud Connector using the `+ Add Sensor` option.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image\(304\).png)
+![AWS GuardDuty Setup](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(304).png)

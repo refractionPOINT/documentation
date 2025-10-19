@@ -12,7 +12,10 @@ Organizations are increasingly embracing the benefits of cloud services and solu
 
   * **Multi-cloud challenges:** Many organizations use multiple cloud platforms causing visibility challenges across platforms.
 
-#### LimaCharlie's solution
+
+
+
+#### LimaCharlie’s solution
 
 LimaCharlie simplifies management of cloud and multi-cloud environments by unifying them on a single platform. In addition to making integrations easier and bringing scalability to security operations, the SecOps Cloud Platform offers:
 

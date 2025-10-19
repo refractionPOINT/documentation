@@ -13,8 +13,6 @@ All adapters support the same `client_options`, which you should always specify 
   * `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
   * `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
-
-
 ### Adapter-specific Options
 
 Adapter Type: `zendesk`
@@ -25,16 +23,12 @@ Adapter Type: `zendesk`
 
   * `zendesk_email`: your Zendesk email address that created the API token
 
-
-
-
 ### CLI Deployment
 
-Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binaries).
-    
-    
+Adapter downloads can be found [here](../adapter-deployment.md#adapter-binaries).
+
     chmod +x /path/to/lc_adapter
-    
+
     /path/to/lc_adapter zendesk client_options.identity.installation_key=$INSTALLATION_KEY \
     client_options.identity.oid=$OID \
     client_options.platform=json \
@@ -43,35 +37,34 @@ Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binari
     client_options.mappings.event_type_path=action \
     api_token=$API_TOKEN \
     zendesk_domain='$YOUR_COMPANY.zendesk.com' \
-    zendesk_email=you@yourcompany.com 
-    
+    zendesk_email=you@yourcompany.com
+
 
 ### Infrastructure as Code Deployment
-    
-    
+
     # Zendesk Specific Docs: https://docs.limacharlie.io/docs/adapter-types-zendesk
     # For cloud sensor deployment, store credentials as hive secrets:
-    #   api_token: "hive://secret/zendesk-api-token"
-    #   zendesk_email: "hive://secret/zendesk-email"
-    
+    #   api_token: "hive://secret/zendesk-api-token"
+    #   zendesk_email: "hive://secret/zendesk-email"
+
     sensor_type: "zendesk"
     zendesk:
-      api_token: "hive://secret/zendesk-api-token"
-      zendesk_domain: "yourcompany.zendesk.com"
-      zendesk_email: "hive://secret/zendesk-api-email"
-      client_options:
-        identity:
-          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          installation_key: "YOUR_LC_INSTALLATION_KEY_ZENDESK"
-        hostname: "zendesk-support-adapter"
-        platform: "json"
-        sensor_seed_key: "zendesk-audit-sensor"
-        mapping:
-          sensor_hostname_path: "actor_name"
-          event_type_path: "action"
-          event_time_path: "created_at"
-        indexing: []
-    
+      api_token: "hive://secret/zendesk-api-token"
+      zendesk_domain: "yourcompany.zendesk.com"
+      zendesk_email: "hive://secret/zendesk-api-email"
+      client_options:
+        identity:
+          oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          installation_key: "YOUR_LC_INSTALLATION_KEY_ZENDESK"
+        hostname: "zendesk-support-adapter"
+        platform: "json"
+        sensor_seed_key: "zendesk-audit-sensor"
+        mapping:
+          sensor_hostname_path: "actor_name"
+          event_type_path: "action"
+          event_time_path: "created_at"
+        indexing: []
+
 
 ## API Doc
 

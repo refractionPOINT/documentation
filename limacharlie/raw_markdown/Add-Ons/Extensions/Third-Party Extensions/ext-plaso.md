@@ -74,7 +74,7 @@ LimaCharlie can automatically kick off evidence processing with Plaso based off 
 
 ### Velociraptor Triage Acquisition Processing
 
-If you use the LimaCharlie [Velociraptor](/v2/docs/ext-velociraptor) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
+If you use the LimaCharlie [Velociraptor](ext-velociraptor.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
 
   1. Configure a D&R rule to watch for Velociraptor collection events upon ingestion, and then trigger the Plaso extension:
 
@@ -105,18 +105,18 @@ If you use the LimaCharlie [Velociraptor](/v2/docs/ext-velociraptor) extension, 
 
 **Argument options:**
 
-     * `EventLogs=Y` \- EventLogs only, quicker processing time for proof of concept
+     * `EventLogs=Y` - EventLogs only, quicker processing time for proof of concept
 
-     * `KapeTriage=Y` \- full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-3.png)
+     * `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-3.png)
 
-  3. Once Velociraptor collects, zips, and uploads the evidence, the previously created D&R rule will send the triage `.zip` to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](/v2/docs/ext-plaso#working-with-the-output).
+  3. Once Velociraptor collects, zips, and uploads the evidence, the previously created D&R rule will send the triage `.zip` to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
 
 
 
 
 ### MFT Processing
 
-If you use the LimaCharlie [Dumper](/v2/docs/ext-dumper) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a MFT CSV artifact.
+If you use the LimaCharlie [Dumper](../LimaCharlie%20Extensions/ext-dumper.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a MFT CSV artifact.
 
   1. Configure a D&R rule to watch for MFT collection events upon ingestion, and then trigger the Plaso extension:
 
@@ -146,7 +146,7 @@ If you use the LimaCharlie [Dumper](/v2/docs/ext-dumper) extension, a good use c
   2. Launch an MFT dump in the LimaCharlie Dumper extension.  
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/plaso-ext-1.png)
 
-  3. Once dumper is complete and uploads the evidence, the previously created D&R rule will send the zipped MFT CSV to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](/v2/docs/ext-plaso#working-with-the-output).
+  3. Once dumper is complete and uploads the evidence, the previously created D&R rule will send the zipped MFT CSV to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
 
 
 
@@ -217,3 +217,8 @@ The downloadable `.plaso` file contains the raw output of `log2timeline.py` and 
 
   * `csv` artifact  
 The downloadable `.csv` file can be easily viewed in any CSV viewer, but a highly recommended tool for this is [Timeline Explorer](https://ericzimmerman.github.io/) from Eric Zimmerman.
+
+
+
+
+

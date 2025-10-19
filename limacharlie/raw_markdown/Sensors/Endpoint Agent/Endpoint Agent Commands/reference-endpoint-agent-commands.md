@@ -1,4 +1,46 @@
+* * *
+
+Reference: Endpoint Agent Commands
+
+  *  __07 Aug 2025
+  *  __ 22 Minutes to read 
+
+
+
+Share this __
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+ __Contents
+
 # Reference: Endpoint Agent Commands
+
+  *  __Updated on 07 Aug 2025
+  *  __ 22 Minutes to read 
+
+
+
+  * __ Print
+
+  *  __ Share
+
+  *  __ Dark
+
+ __ Light
+
+
+
+
+* * *
 
 ## Supported Commands by OS
 
@@ -6,62 +48,64 @@ For commands which emit a report/reply event type from the agent, the correspond
 
 Command| Report/Reply Event| macOS| Windows| Linux| Chrome| Edge  
 ---|---|---|---|---|---|---  
-[artifact_get](/v2/docs/reference-endpoint-agent-commands#artifactget)| N/A| ☑️| ☑️| ☑️| |   
-[deny_tree](/v2/docs/reference-endpoint-agent-commands#denytree)| N/A| ☑️| ☑️| ☑️| |   
-[dir_find_hash](/v2/docs/reference-endpoint-agent-commands#dirfindhash)| [DIR_FINDHASH_REP](/v2/docs/edr-events#dirfindhashrep)| ☑️| ☑️| ☑️| |   
-[dir_list](/v2/docs/reference-endpoint-agent-commands#dirlist)| [DIR_LIST_REP](/v2/docs/edr-events#dirlistrep)| ☑️| ☑️| ☑️| |   
-[dns_resolve](/v2/docs/reference-endpoint-agent-commands#dnsresolve)| [DNS_REQUEST](/v2/docs/edr-events#dnsrequest)| ☑️| ☑️| ☑️| ☑️| ☑️  
-[doc_cache_get](/v2/docs/reference-endpoint-agent-commands#doccacheget)| [GET_DOCUMENT_REP](/v2/docs/edr-events#getdocumentrep)| ☑️| ☑️| | |   
-[get_debug_data](/v2/docs/reference-endpoint-agent-commands#getdebugdata)| [DEBUG_DATA_REP](/v2/docs/edr-events#debugdatarep)| ☑️| ☑️| ☑️| |   
-[exfil_add](/v2/docs/reference-endpoint-agent-commands#exfiladd)| [CLOUD_NOTIFICATION](/v2/docs/edr-events#cloudnotification)| ☑️| ☑️| ☑️| |   
-[exfil_del](/v2/docs/reference-endpoint-agent-commands#exfildel)| [CLOUD_NOTIFICATION](/v2/docs/edr-events#cloudnotification)| ☑️| ☑️| ☑️| |   
-[exfil_get](/v2/docs/reference-endpoint-agent-commands#exfilget)| [GET_EXFIL_EVENT_REP](/v2/docs/edr-events#getexfileventrep)| ☑️| ☑️| ☑️| |   
-[file_del](/v2/docs/reference-endpoint-agent-commands#filedel)| [FILE_DEL_REP](/v2/docs/edr-events#filedelrep)| ☑️| ☑️| ☑️| |   
-[file_get](/v2/docs/reference-endpoint-agent-commands#fileget)| [FILE_GET_REP](/v2/docs/edr-events#filegetrep)| ☑️| ☑️| ☑️| |   
-[file_hash](/v2/docs/reference-endpoint-agent-commands#filehash)| [FILE_HASH_REP](/v2/docs/edr-events#filehashrep)| ☑️| ☑️| ☑️| |   
-[file_info](/v2/docs/reference-endpoint-agent-commands#fileinfo)| [FILE_INFO_REP](/v2/docs/edr-events#fileinforep)| ☑️| ☑️| ☑️| |   
-[file_mov](/v2/docs/reference-endpoint-agent-commands#filemov)| [FILE_MOV_REP](/v2/docs/edr-events#filemovrep)| ☑️| ☑️| ☑️| |   
-[fim_add](/v2/docs/reference-endpoint-agent-commands#fimadd)| [FIM_ADD](/v2/docs/edr-events#fimadd)| ☑️| ☑️| ☑️| |   
-[fim_del](/v2/docs/reference-endpoint-agent-commands#fimdel)| [FIM_DEL](/v2/docs/edr-events#fimdel)| ☑️| ☑️| ☑️| |   
-[fim_get](/v2/docs/reference-endpoint-agent-commands#fimget)| [FIM_LIST_REP](/v2/docs/edr-events#fimlistrep)| ☑️| ☑️| ☑️| |   
-[hidden_module_scan](/v2/docs/reference-endpoint-agent-commands#hiddenmodulescan)| [HIDDEN_MODULE_DETECTED](/v2/docs/edr-events#hiddenmoduledetected)| | ☑️| ☑️| |   
-[history_dump](/v2/docs/reference-endpoint-agent-commands#historydump)| [HISTORY_DUMP_REP](/v2/docs/edr-events#historydumprep)| ☑️| ☑️| ☑️| ☑️| ☑️  
-[log_get](/v2/docs/reference-endpoint-agent-commands#logget)| N/A| | ☑️| | |   
-[logoff](/v2/docs/reference-endpoint-agent-commands#logoff)| N/A| ☑️| ☑️| ☑️| |   
-[mem_find_handle](/v2/docs/reference-endpoint-agent-commands#memfindhandle)| [MEM_FIND_HANDLES_REP](/v2/docs/edr-events#memfindhandlesrep)| | ☑️| | |   
-[mem_find_string](/v2/docs/reference-endpoint-agent-commands#memfindstring)| [MEM_FIND_STRING_REP](/v2/docs/edr-events#memfindstringrep)| ☑️| ☑️| ☑️| |   
-[mem_handles](/v2/docs/reference-endpoint-agent-commands#memhandles)| [MEM_HANDLES_REP](/v2/docs/edr-events#memhandlesrep)| | ☑️| | |   
-[mem_map](/v2/docs/reference-endpoint-agent-commands#memmap)| [MEM_MAP_REP](/v2/docs/edr-events#memmaprep)| ☑️| ☑️| ☑️| |   
-[mem_read](/v2/docs/reference-endpoint-agent-commands#memread)| [MEM_READ_REP](/v2/docs/edr-events#memreadrep)| ☑️| ☑️| ☑️| |   
-[mem_strings](/v2/docs/reference-endpoint-agent-commands#memstrings)| [MEM_STRINGS_REP](/v2/docs/edr-events#memstringsrep)| ☑️| ☑️| ☑️| |   
-[netstat](/v2/docs/reference-endpoint-agent-commands#netstat)| [NETSTAT_REP](/v2/docs/edr-events#netstatrep)| ☑️| ☑️| ☑️| |   
-[os_autoruns](/v2/docs/reference-endpoint-agent-commands#osautoruns)| [OS_AUTORUNS_REP](/v2/docs/edr-events#osautorunsrep)| ☑️| ☑️| | |   
-[os_drivers](/v2/docs/reference-endpoint-agent-commands#osdrivers)| N/A| | ☑️| | |   
-[os_kill_process](/v2/docs/reference-endpoint-agent-commands#oskillprocess)| [OS_KILL_PROCESS_REP](/v2/docs/edr-events#oskillprocessrep)| ☑️| ☑️| ☑️| |   
-[os_packages](/v2/docs/reference-endpoint-agent-commands#ospackages)| [OS_PACKAGES_REP](/v2/docs/edr-events#ospackagesrep)| | ☑️| ☑️| ☑️| ☑️  
-[os_processes](/v2/docs/reference-endpoint-agent-commands#osprocesses)| [OS_PROCESSES_REP](/v2/docs/edr-events#osprocessesrep)| ☑️| ☑️| ☑️| |   
-[os_resume](/v2/docs/reference-endpoint-agent-commands#osresume)| [OS_RESUME_REP](/v2/docs/edr-events#osresumerep)| ☑️| ☑️| ☑️| |   
-[os_services](/v2/docs/reference-endpoint-agent-commands#osservices)| [OS_SERVICES_REP](/v2/docs/edr-events#osservicesrep)| ☑️| ☑️| ☑️| |   
-[os_suspend](/v2/docs/reference-endpoint-agent-commands#ossuspend)| [OS_SUSPEND_REP](/v2/docs/edr-events#ossuspendrep)| ☑️| ☑️| ☑️| |   
-[os_users](/v2/docs/reference-endpoint-agent-commands#osusers)| [OS_USERS_REP](/v2/docs/edr-events#osusersrep)| | ☑️| | |   
-[os_version](/v2/docs/reference-endpoint-agent-commands#osversion)| [OS_VERSION_REP](/v2/docs/edr-events#osversionrep)| ☑️| ☑️| ☑️| |   
-[put](/v2/docs/reference-endpoint-agent-commands#put)| [RECEIPT](/v2/docs/edr-events#receipt)| ☑️| ☑️| ☑️| |   
-[rejoin_network](/v2/docs/reference-endpoint-agent-commands#rejoinnetwork)| [REJOIN_NETWORK](/v2/docs/edr-events#rejoinnetwork)| ☑️| ☑️| ☑️| ☑️| ☑️  
-[restart](/v2/docs/reference-endpoint-agent-commands#restart)| N/A| ☑️| ☑️| ☑️| |   
-[run](/v2/docs/reference-endpoint-agent-commands#run)| N/A| ☑️| ☑️| ☑️| |   
-[seal](/v2/docs/reference-endpoint-agent-commands#seal)| | | ☑️| | |   
-[segregate_network](/v2/docs/reference-endpoint-agent-commands#segregatenetwork)| [SEGREGATE_NETWORK](/v2/docs/edr-events#segregatenetwork)| ☑️| ☑️| ☑️| ☑️| ☑️  
-[set_performance_mode](/v2/docs/reference-endpoint-agent-commands#setperformancemode)| N/A| ☑️| ☑️| ☑️| |   
-[shutdown](/v2/docs/reference-endpoint-agent-commands#shutdown)| | ☑️| ☑️| ☑️| |   
-[uninstall](/v2/docs/reference-endpoint-agent-commands#uninstall)| N/A| ☑️| ☑️| ☑️| |   
-[yara_scan](/v2/docs/reference-endpoint-agent-commands#yarascan)| [YARA_DETECTION](/v2/docs/edr-events#yaradetection)| ☑️| ☑️| ☑️| |   
-[yara_update](/v2/docs/reference-endpoint-agent-commands#yaraupdate)| N/A| ☑️| ☑️| ☑️| |   
-[epp_status](/v2/docs/reference-endpoint-agent-commands#eppstatus)| [EPP_STATUS_REP]| ☑️| | | |   
-[epp_scan](/v2/docs/reference-endpoint-agent-commands#eppscan)| [EPP_SCAN_REP]| ☑️| | | |   
-[epp_list_exclusions](/v2/docs/reference-endpoint-agent-commands#epplistexclusions)| [EPP_LIST_EXCLUSIONS_REP]| ☑️| | | |   
-[epp_add_exclusion](/v2/docs/reference-endpoint-agent-commands#eppaddexclusion)| [EPP_ADD_EXCLUSION_REP]| ☑️| | | |   
-[epp_rem_exclusion](/v2/docs/reference-endpoint-agent-commands#eppremexclusion)| [EPP_REM_EXCLUSION_REP]| ☑️| | | |
-[epp_list_quarantine](/v2/docs/reference-endpoint-agent-commands#epplistquarantine)| [EPP_LIST_QUARANTINE_REP]| ☑️| | | |
+[artifact_get](../../../reference-endpoint-agent-commands#artifactget.md)| N/A| ☑️| ☑️| ☑️| |   
+[deny_tree](../../../reference-endpoint-agent-commands#denytree.md)| N/A| ☑️| ☑️| ☑️| |   
+[dir_find_hash](../../../reference-endpoint-agent-commands#dirfindhash.md)| [DIR_FINDHASH_REP](../../../edr-events#dirfindhashrep.md)| ☑️| ☑️| ☑️| |   
+[dir_list](../../../reference-endpoint-agent-commands#dirlist.md)| [DIR_LIST_REP](../../../edr-events#dirlistrep.md)| ☑️| ☑️| ☑️| |   
+[dns_resolve](../../../reference-endpoint-agent-commands#dnsresolve.md)| [DNS_REQUEST](../../../edr-events#dnsrequest.md)| ☑️| ☑️| ☑️| ☑️| ☑️  
+[doc_cache_get](../../../reference-endpoint-agent-commands#doccacheget.md)| [GET_DOCUMENT_REP](../../../edr-events#getdocumentrep.md)| ☑️| ☑️| | |   
+[get_debug_data](../../../reference-endpoint-agent-commands#getdebugdata.md)| [DEBUG_DATA_REP](../../../edr-events#debugdatarep.md)| ☑️| ☑️| ☑️| |   
+[exfil_add](../../../reference-endpoint-agent-commands#exfiladd.md)| [CLOUD_NOTIFICATION](../../../edr-events#cloudnotification.md)| ☑️| ☑️| ☑️| |   
+[exfil_del](../../../reference-endpoint-agent-commands#exfildel.md)| [CLOUD_NOTIFICATION](../../../edr-events#cloudnotification.md)| ☑️| ☑️| ☑️| |   
+[exfil_get](../../../reference-endpoint-agent-commands#exfilget.md)| [GET_EXFIL_EVENT_REP](../../../edr-events#getexfileventrep.md)| ☑️| ☑️| ☑️| |   
+[file_del](../../../reference-endpoint-agent-commands#filedel.md)| [FILE_DEL_REP](../../../edr-events#filedelrep.md)| ☑️| ☑️| ☑️| |   
+[file_get](../../../reference-endpoint-agent-commands#fileget.md)| [FILE_GET_REP](../../../edr-events#filegetrep.md)| ☑️| ☑️| ☑️| |   
+[file_hash](../../../reference-endpoint-agent-commands#filehash.md)| [FILE_HASH_REP](../../../edr-events#filehashrep.md)| ☑️| ☑️| ☑️| |   
+[file_info](../../../reference-endpoint-agent-commands#fileinfo.md)| [FILE_INFO_REP](../../../edr-events#fileinforep.md)| ☑️| ☑️| ☑️| |   
+[file_mov](../../../reference-endpoint-agent-commands#filemov.md)| [FILE_MOV_REP](../../../edr-events#filemovrep.md)| ☑️| ☑️| ☑️| |   
+[fim_add](../../../reference-endpoint-agent-commands#fimadd.md)| [FIM_ADD](../../../edr-events#fimadd.md)| ☑️| ☑️| ☑️| |   
+[fim_del](../../../reference-endpoint-agent-commands#fimdel.md)| [FIM_DEL](../../../edr-events#fimdel.md)| ☑️| ☑️| ☑️| |   
+[fim_get](../../../reference-endpoint-agent-commands#fimget.md)| [FIM_LIST_REP](../../../edr-events#fimlistrep.md)| ☑️| ☑️| ☑️| |   
+[hidden_module_scan](../../../reference-endpoint-agent-commands#hiddenmodulescan.md)| [HIDDEN_MODULE_DETECTED](../../../edr-events#hiddenmoduledetected.md)| | ☑️| ☑️| |   
+[history_dump](../../../reference-endpoint-agent-commands#historydump.md)| [HISTORY_DUMP_REP](../../../edr-events#historydumprep.md)| ☑️| ☑️| ☑️| ☑️| ☑️  
+[log_get](../../../reference-endpoint-agent-commands#logget.md)| N/A| | ☑️| | |   
+[logoff](../../../reference-endpoint-agent-commands#logoff.md)| N/A| ☑️| ☑️| ☑️| |   
+[mem_find_handle](../../../reference-endpoint-agent-commands#memfindhandle.md)| [MEM_FIND_HANDLES_REP](../../../edr-events#memfindhandlesrep.md)| | ☑️| | |   
+[mem_find_string](../../../reference-endpoint-agent-commands#memfindstring.md)| [MEM_FIND_STRING_REP](../../../edr-events#memfindstringrep.md)| ☑️| ☑️| ☑️| |   
+[mem_handles](../../../reference-endpoint-agent-commands#memhandles.md)| [MEM_HANDLES_REP](../../../edr-events#memhandlesrep.md)| | ☑️| | |   
+[mem_map](../../../reference-endpoint-agent-commands#memmap.md)| [MEM_MAP_REP](../../../edr-events#memmaprep.md)| ☑️| ☑️| ☑️| |   
+[mem_read](../../../reference-endpoint-agent-commands#memread.md)| [MEM_READ_REP](../../../edr-events#memreadrep.md)| ☑️| ☑️| ☑️| |   
+[mem_strings](../../../reference-endpoint-agent-commands#memstrings.md)| [MEM_STRINGS_REP](../../../edr-events#memstringsrep.md)| ☑️| ☑️| ☑️| |   
+[netstat](../../../reference-endpoint-agent-commands#netstat.md)| [NETSTAT_REP](../../../edr-events#netstatrep.md)| ☑️| ☑️| ☑️| |   
+[os_autoruns](../../../reference-endpoint-agent-commands#osautoruns.md)| [OS_AUTORUNS_REP](../../../edr-events#osautorunsrep.md)| ☑️| ☑️| | |   
+[os_drivers](../../../reference-endpoint-agent-commands#osdrivers.md)| N/A| | ☑️| | |   
+[os_kill_process](../../../reference-endpoint-agent-commands#oskillprocess.md)| [OS_KILL_PROCESS_REP](../../../edr-events#oskillprocessrep.md)| ☑️| ☑️| ☑️| |   
+[os_packages](../../../reference-endpoint-agent-commands#ospackages.md)| [OS_PACKAGES_REP](../../../edr-events#ospackagesrep.md)| | ☑️| ☑️| ☑️| ☑️  
+[os_processes](../../../reference-endpoint-agent-commands#osprocesses.md)| [OS_PROCESSES_REP](../../../edr-events#osprocessesrep.md)| ☑️| ☑️| ☑️| |   
+[os_resume](../../../reference-endpoint-agent-commands#osresume.md)| [OS_RESUME_REP](../../../edr-events#osresumerep.md)| ☑️| ☑️| ☑️| |   
+[os_services](../../../reference-endpoint-agent-commands#osservices.md)| [OS_SERVICES_REP](../../../edr-events#osservicesrep.md)| ☑️| ☑️| ☑️| |   
+[os_suspend](../../../reference-endpoint-agent-commands#ossuspend.md)| [OS_SUSPEND_REP](../../../edr-events#ossuspendrep.md)| ☑️| ☑️| ☑️| |   
+[os_users](../../../reference-endpoint-agent-commands#osusers.md)| [OS_USERS_REP](../../../edr-events#osusersrep.md)| | ☑️| | |   
+[os_version](../../../reference-endpoint-agent-commands#osversion.md)| [OS_VERSION_REP](../../../edr-events#osversionrep.md)| ☑️| ☑️| ☑️| |   
+[put](../../../reference-endpoint-agent-commands#put.md)| [RECEIPT](../../../edr-events#receipt.md)| ☑️| ☑️| ☑️| |   
+[rejoin_network](../../../reference-endpoint-agent-commands#rejoinnetwork.md)| [REJOIN_NETWORK](../../../edr-events#rejoinnetwork.md)| ☑️| ☑️| ☑️| ☑️| ☑️  
+[restart](../../../reference-endpoint-agent-commands#restart.md)| N/A| ☑️| ☑️| ☑️| |   
+[run](../../../reference-endpoint-agent-commands#run.md)| N/A| ☑️| ☑️| ☑️| |   
+[seal](../../../reference-endpoint-agent-commands#seal.md)| | | ☑️| | |   
+[segregate_network](../../../reference-endpoint-agent-commands#segregatenetwork.md)| [SEGREGATE_NETWORK](../../../edr-events#segregatenetwork.md)| ☑️| ☑️| ☑️| ☑️| ☑️  
+[set_performance_mode](../../../reference-endpoint-agent-commands#setperformancemode.md)| N/A| ☑️| ☑️| ☑️| |   
+[shutdown](../../../reference-endpoint-agent-commands#shutdown.md)| | ☑️| ☑️| ☑️| |   
+[uninstall](../../../reference-endpoint-agent-commands#uninstall.md)| N/A| ☑️| ☑️| ☑️| |   
+[yara_scan](../../../reference-endpoint-agent-commands#yarascan.md)| [YARA_DETECTION](../../../edr-events#yaradetection.md)| ☑️| ☑️| ☑️| |   
+[yara_update](../../../reference-endpoint-agent-commands#yaraupdate.md)| N/A| ☑️| ☑️| ☑️| |   
+[epp_status](../../../reference-endpoint-agent-commands#eppstatus.md)| [EPP_STATUS_REP]| ☑️| | | |   
+[epp_scan](../../../reference-endpoint-agent-commands#eppscan.md)| [EPP_SCAN_REP]| ☑️| | | |   
+[epp_list_exclusions](../../../reference-endpoint-agent-commands#epplistexclusions.md)| [EPP_LIST_EXCLUSIONS_REP]| ☑️| | | |   
+[epp_add_exclusion](../../../reference-endpoint-agent-commands#eppaddexclusion.md)| [EPP_ADD_EXCLUSION_REP]| ☑️| | | |   
+[epp_rem_exclusion](../../../reference-endpoint-agent-commands#eppremexclusion.md)| [EPP_REM_EXCLUSION_REP]| ☑️| | | |   
+[epp_list_quarantine](../../../reference-endpoint-agent-commands#epplistquarantine.md)| [EPP_LIST_QUARANTINE_REP]| ☑️| | | |   
+  
+* * *
 
 ## Command Descriptions
 
@@ -102,6 +146,8 @@ Note on usage scenarios for the `--is-ignore-cert` flag: If the sensor is deploy
 
 Unlike the main sensor transport (which uses a pinned certificate), the Artifact Collection feature uses Google infrastructure and their public SSL certificates. This may sometimes come up in unexpected ways. For example fresh Windows Server installations do not have the root CAs for `google.com` enabled by default.
 
+* * *
+
 ### deny_tree
 
 Tells the sensor that all activity starting at a specific process (and its children) should be denied and killed. This particular command is excellent for ransomware mitigation.
@@ -118,6 +164,8 @@ ______
       atom        atoms to deny from
     
 
+* * *
+
 ### dir_find_hash
 
 Find files matching hashes starting at a root directory.
@@ -126,7 +174,7 @@ Find files matching hashes starting at a root directory.
 ______
 
 **Reply/Report Event:**  
-[DIR_FINDHASH_REP](/v2/docs/reference-edr-events#dirfindhashrep)
+[DIR_FINDHASH_REP](../../../reference-edr-events#dirfindhashrep.md)
 
 **Usage:**
     
@@ -144,6 +192,8 @@ ______
                             single level
       --hash HASHES         sha256 to search for, can be specified multiple times
     
+
+* * *
 
 ### dir_list
 
@@ -173,7 +223,7 @@ List the contents of a directory.
 ______
 
 **Report/Reply Event:**  
-[DIR_LIST_REP](/v2/docs/reference-edr-events#dirlistrep)
+[DIR_LIST_REP](../../../reference-edr-events#dirlistrep.md)
 
 **Usage:**
     
@@ -190,6 +240,8 @@ ______
                             optional maximum depth of the listing, defaults to a
                             single level
     
+
+* * *
 
 ### dns_resolve
 
@@ -228,6 +280,8 @@ You wll also see a corresponding `DNS_REQUEST` event in the Sensor timeline.
     }
     
 
+* * *
+
 ### doc_cache_get
 
 Retrieve a document / file that was cached on the sensor.
@@ -236,7 +290,7 @@ Retrieve a document / file that was cached on the sensor.
 ____
 
 **Report/Reply Event:**  
-[GET_DOCUMENT_REP](/v2/docs/reference-edr-events#getdocumentrep)
+[GET_DOCUMENT_REP](../../../reference-edr-events#getdocumentrep.md)
 
 This command is currently listed to the following document types:
 
@@ -300,13 +354,15 @@ This command is currently listed to the following document types:
                             hash of the document to get
     
 
+* * *
+
 ### exfil_add
 
 Add an LC event to the list of events sent back to the backend by default.
 
 Exfil Service
 
-Rather than using the `exfil_add` and `exfil_del` commands exclusively, it is recommended to use the [Exfil extension](/v2/docs/ext-exfil) available through the web UI and REST interface.
+Rather than using the `exfil_add` and `exfil_del` commands exclusively, it is recommended to use the [Exfil extension](../../../ext-exfil.md) available through the web UI and REST interface.
 
 **Platforms:**  
 ______
@@ -324,13 +380,15 @@ ______
                             number of seconds before stopping exfil of event
     
 
+* * *
+
 ### exfil_del
 
 Remove an LC event from the list of events always sent back to the backend.
 
 Exfil Service
 
-Rather than using the `exfil_add` and `exfil_del` commands exclusively, it is recommended to use the [Exfil extension](/v2/docs/ext-exfil) available through the web UI and REST interface.
+Rather than using the `exfil_add` and `exfil_del` commands exclusively, it is recommended to use the [Exfil extension](../../../ext-exfil.md) available through the web UI and REST interface.
 
 **Platforms:**  
 ______
@@ -345,6 +403,8 @@ ______
     
     
 
+* * *
+
 ### exfil_get
 
 List all LC events sent back to the backend by default.
@@ -353,13 +413,15 @@ List all LC events sent back to the backend by default.
 ______
 
 **Report/Reply Event:**  
-[GET_EXFIL_EVENT_REP](/v2/docs/reference-edr-events#getexfileventrep)
+[GET_EXFIL_EVENT_REP](../../../reference-edr-events#getexfileventrep.md)
 
 **Usage:**
     
     
     usage: exfil_get [-h]
     
+
+* * *
 
 ### file_del
 
@@ -369,7 +431,7 @@ Delete a file from the endpoint.
 ______
 
 **Report/Reply Event:**  
-[FILE_DEL_REP](/v2/docs/reference-edr-events#filedelrep)
+[FILE_DEL_REP](../../../reference-edr-events#filedelrep.md)
 
 **Usage: **
     
@@ -381,6 +443,8 @@ ______
     
     
 
+* * *
+
 ### file_get
 
 Retrieve a file from the endpoint.
@@ -391,7 +455,7 @@ _Note: The_`file_get` _command is limited to 10MB in size. For files larger than
 ______
 
 **Report/Reply Event:**  
-[FILE_GET_REP](/v2/docs/reference-edr-events#filegetrep)
+[FILE_GET_REP](../../../reference-edr-events#filegetrep.md)
 
 **Usage:**
     
@@ -409,6 +473,8 @@ ______
                             10MB
     
 
+* * *
+
 ### file_hash
 
 Compute the hash of a file.
@@ -417,7 +483,7 @@ Compute the hash of a file.
 ______
 
 **Report/Reply Event:**  
-[FILE_HASH_REP](/v2/docs/reference-edr-events#filehashrep)
+[FILE_HASH_REP](../../../reference-edr-events#filehashrep.md)
 
 **Usage:**
     
@@ -429,6 +495,8 @@ ______
     
     
 
+* * *
+
 ### file_info
 
 Get file information, timestamps, sizes, etc.
@@ -437,7 +505,7 @@ Get file information, timestamps, sizes, etc.
 ______
 
 **Report/Reply Event:**  
-[FILE_INFO_REP](/v2/docs/reference-edr-events#fileinforep)
+[FILE_INFO_REP](../../../reference-edr-events#fileinforep.md)
 
 **Usage:**
     
@@ -449,6 +517,8 @@ ______
     
     
 
+* * *
+
 ### file_mov
 
 Move / rename a file on the endpoint.
@@ -457,7 +527,7 @@ Move / rename a file on the endpoint.
 ______
 
 **Report/Reply Event:**  
-[FILE_MOV_REP](/v2/docs/reference-edr-events#filemovrep)
+[FILE_MOV_REP](../../../reference-edr-events#filemovrep.md)
 
 **Usage:**
     
@@ -470,21 +540,23 @@ ______
     
     
 
+* * *
+
 ### fim_add
 
 Add a file or registry path pattern to monitor for modifications.
 
-FIM rules are not persistent. This means that once an asset restarts, the rules will be gone. The recommended way of managing rule application is to use [Detection & Response rules](/v2/docs/detection-and-response) in a similar way to managing events sent to the cloud.
+FIM rules are not persistent. This means that once an asset restarts, the rules will be gone. The recommended way of managing rule application is to use [Detection & Response rules](../../../detection-and-response.md) in a similar way to managing events sent to the cloud.
 
-A sample  rule is available [here](/v2/docs/detection-and-response-examples).
+A sample  rule is available [here](../../../detection-and-response-examples.md).
 
-Note that instead of using the `fim_add` and `fim_del` commands directly it is recommended to use [the Integrity extension](/v2/docs/ext-integrity) available through the web UI and REST interface.
+Note that instead of using the `fim_add` and `fim_del` commands directly it is recommended to use [the Integrity extension](../../../ext-integrity.md) available through the web UI and REST interface.
 
 **Platforms:**  
-______(see[this](/v2/docs/linux-agent-installation) for notes on Linux support)
+______(see[this](../../../linux-agent-installation.md) for notes on Linux support)
 
 **Report/Reply Event:**  
-[FIM_ADD](/v2/docs/reference-edr-events#fimadd)
+[FIM_ADD](../../../reference-edr-events#fimadd.md)
 
 Patterns include basic wildcards:
 
@@ -521,15 +593,17 @@ Which would result in: `fim_add --pattern "?:\*\Programs\Startup\*" --pattern "\
       --pattern PATTERNS  file path or registry path pattern to monitor
     
 
+* * *
+
 ### fim_del
 
 Remove a pattern from monitoring.
 
 **Platforms:**  
-______(see[this](/v2/docs/linux-agent-installation) for notes on Linux support)
+______(see[this](../../../linux-agent-installation.md) for notes on Linux support)
 
 **Report/Reply Event:**  
-[FIM_DEL](/v2/docs/reference-edr-events#fimdel)
+[FIM_DEL](../../../reference-edr-events#fimdel.md)
     
     
     usage: fim_del [-h] --pattern PATTERNS
@@ -538,19 +612,23 @@ ______(see[this](/v2/docs/linux-agent-installation) for notes on Linux support)
       --pattern PATTERNS  file path or registry path pattern to stop monitoring
     
 
+* * *
+
 ### fim_get
 
 Get the list of the current monitored pattern(s).
 
 **Platforms:**  
-______(see[this](/v2/docs/linux-agent-installation) for notes on Linux support)
+______(see[this](../../../linux-agent-installation.md) for notes on Linux support)
 
 **Report/Reply Event:**  
-[FIM_LIST_REP](/v2/docs/reference-edr-events#fimlistrep)
+[FIM_LIST_REP](../../../reference-edr-events#fimlistrep.md)
     
     
     usage: fim_get [-h]
     
+
+* * *
 
 ### get_debug_data
 
@@ -560,7 +638,9 @@ Retrieve debug data from the EDR sensor.
 ______
 
 **Report/Reply Event:**  
-[DEBUG_DATA_REP](/v2/docs/reference-edr-events#debugdatarep)
+[DEBUG_DATA_REP](../../../reference-edr-events#debugdatarep.md)
+
+* * *
 
 ### hidden_module_scan
 
@@ -570,7 +650,7 @@ Look for hidden modules in a process's (or all) memory. Hidden modules are DLLs 
 __
 
 **Report/Reply Event:**  
-[HIDDEN_MODULE_DETECTED](/v2/docs/reference-edr-events#hiddenmoduledetected)
+[HIDDEN_MODULE_DETECTED](../../../reference-edr-events#hiddenmoduledetected.md)
 
 **Usage:**
     
@@ -581,6 +661,8 @@ __
       pid         pid of the process to scan, or "-1" for ALL processes
     
 
+* * *
+
 ### history_dump
 
 Send to the backend the entire contents of the sensor event cache, i.e. detailed events of everything that happened recently.
@@ -589,7 +671,7 @@ Send to the backend the entire contents of the sensor event cache, i.e. detailed
 ______
 
 **Report/Reply Event:**  
-[HISTORY_DUMP_REP](/v2/docs/reference-edr-events#historydumprep)
+[HISTORY_DUMP_REP](../../../reference-edr-events#historydumprep.md)
 
 **Usage:**
     
@@ -603,6 +685,8 @@ ______
       -e EVENT, --event EVENT
                             dump events of this type only
     
+
+* * *
 
 ### log_get
 
@@ -618,6 +702,8 @@ ______
     
     usage: logoff --is-confirmed
 
+* * *
+
 ### mem_find_handle
 
 Find specific open handles in memory on Windows.
@@ -626,7 +712,7 @@ Find specific open handles in memory on Windows.
 __
 
 **Report/Reply Event:**  
-[MEM_FIND_HANDLES_REP](/v2/docs/reference-edr-events#memfindhandlesrep)
+[MEM_FIND_HANDLES_REP](../../../reference-edr-events#memfindhandlesrep.md)
 
 **Usage:**
     
@@ -637,6 +723,8 @@ __
       needle      substring of the handle names to get
     
 
+* * *
+
 ### mem_find_string
 
 Find specific strings in memory.
@@ -645,7 +733,7 @@ Find specific strings in memory.
 ______
 
 **Report/Reply Event:**  
-[MEM_FIND_STRING_REP](/v2/docs/reference-edr-events#memfindstringrep)
+[MEM_FIND_STRING_REP](../../../reference-edr-events#memfindstringrep.md)
 
 **Due to recent changes in MacOS, this may be less reliable on that platform.**
 
@@ -662,6 +750,8 @@ ______
                             list of strings to look for
     
 
+* * *
+
 ### mem_handles
 
 List all open handles from a process (or all) on Windows.
@@ -670,7 +760,7 @@ List all open handles from a process (or all) on Windows.
 __
 
 **Report/Reply Event:**  
-[MEM_HANDLES_REP](/v2/docs/reference-edr-events#memhandlesrep)
+[MEM_HANDLES_REP](../../../reference-edr-events#memhandlesrep.md)
 
 **Usage:**
     
@@ -684,6 +774,8 @@ __
                             the atom of the target process
     
 
+* * *
+
 ### mem_map
 
 Display the map of memory pages from a process including size, access rights, etc.
@@ -692,7 +784,7 @@ Display the map of memory pages from a process including size, access rights, et
 ______
 
 **Report/Reply Event:**  
-[MEM_MAP_REP](/v2/docs/reference-edr-events#memmaprep)
+[MEM_MAP_REP](../../../reference-edr-events#memmaprep.md)
 
 **Due to recent changes in MacOS, this may be less reliable on that platform.**
 
@@ -707,6 +799,8 @@ ______
                             the atom of the target proces
     
 
+* * *
+
 ### mem_read
 
 Retrieve a chunk of memory from a process given a base address and size.
@@ -715,7 +809,7 @@ Retrieve a chunk of memory from a process given a base address and size.
 ______
 
 **Report/Reply Event:**  
-[MEM_READ_REP](/v2/docs/reference-edr-events#memreadrep)
+[MEM_READ_REP](../../../reference-edr-events#memreadrep.md)
 
 **Due to recent changes in MacOS, this may be less reliable on that platform.**
 
@@ -734,6 +828,8 @@ ______
                             the atom of the target process
     
 
+* * *
+
 ### mem_strings
 
 List strings from a process's memory.
@@ -742,7 +838,7 @@ List strings from a process's memory.
 ______
 
 **Report/Reply Event:**  
-[MEM_STRINGS_REP](/v2/docs/reference-edr-events#memstringsrep)
+[MEM_STRINGS_REP](../../../reference-edr-events#memstringsrep.md)
 
 **Due to recent changes in MacOS, this may be less reliable on that platform.**
 
@@ -756,6 +852,8 @@ ______
       -a PROCESSATOM, --processatom PROCESSATOM
                             the atom of the target process
     
+
+* * *
 
 ### netstat
 
@@ -813,6 +911,8 @@ State| Value
 11| TIME-WAIT  
 12| DELETE TCB  
   
+* * *
+
 ### os_autoruns
 
 List pieces of code executing at startup, similar to SysInternals autoruns.
@@ -823,6 +923,8 @@ ______
     
     usage: os_autoruns [-h]
 
+* * *
+
 ### os_drivers
 
 List all drivers on Windows.
@@ -832,6 +934,8 @@ __
     
     
     usage: os_drivers [-h]
+
+* * *
 
 ### os_kill_process
 
@@ -848,6 +952,8 @@ ______
       -a PROCESSATOM, --processatom PROCESSATOM
                             the atom of the target process
 
+* * *
+
 ### os_packages
 
 List installed software packages.
@@ -857,6 +963,8 @@ ____
     
     
     usage: os_packages [-h]
+
+* * *
 
 ### os_processes
 
@@ -874,6 +982,8 @@ ______
       -p PID, --pid PID  only get information on process id
       --is-no-modules    do not report modules in processes
 
+* * *
+
 ### os_resume
 
 Resume execution of a process on the endpoint.
@@ -890,6 +1000,8 @@ ______
                             the atom of the target process
       -t TID, --tid TID     thread id
 
+* * *
+
 ### os_services
 
 List all services (Windows, launchctl on MacOS and initd on Linux).
@@ -899,6 +1011,8 @@ ______
     
     
     usage: os_services [-h]
+
+* * *
 
 ### os_suspend
 
@@ -916,6 +1030,8 @@ ______
                             the atom of the target process
       -t TID, --tid TID     thread id
 
+* * *
+
 ### os_users
 
 List system users.
@@ -926,6 +1042,8 @@ __
     
     usage: os_users [-h]
 
+* * *
+
 ### os_version
 
 Get detailed OS information on the endpoint.
@@ -935,6 +1053,8 @@ ______
     
     
     usage: os_version [-h]
+
+* * *
 
 ### put
 
@@ -957,7 +1077,7 @@ ______
 
 Error Codes
 
-A 200 `ERROR` code implies a successful `put` command, and will include the resulting file path. Any other error codes can be investigated [here](/v2/docs/reference-error-codes).
+A 200 `ERROR` code implies a successful `put` command, and will include the resulting file path. Any other error codes can be investigated [here](../../../reference-error-codes.md).
 
 **Command Notes:**
 
@@ -985,6 +1105,8 @@ If successful, this action will yield the following `RECEIPT` event:
         }
     "routing" : {...}
     
+
+* * *
 
 ### pcap_ifaces
 
@@ -1041,6 +1163,8 @@ __
     }
     
 
+* * *
+
 ### reboot
 
 Execute an immediate system reboot (no warnings and zero delay time)
@@ -1050,6 +1174,8 @@ ______
     
     
     usage: reboot --is-confirmed
+
+* * *
 
 ### reg_list
 
@@ -1064,6 +1190,8 @@ __
     positional arguments:
       reg         registry path to list, must start with one of "hkcr", "hkcc", "hkcu", "hklm", "hku", e.g. "hklm\software"...
 
+* * *
+
 ### rejoin_network
 
 Tells the sensor to allow network connectivity again (after it was segregated).
@@ -1072,7 +1200,7 @@ Tells the sensor to allow network connectivity again (after it was segregated).
 ______
 
 **Report/Reply Event:**  
-[REJOIN_NETWORK](/v2/docs/reference-edr-events#rejoinnetwork)
+[REJOIN_NETWORK](../../../reference-edr-events#rejoinnetwork.md)
 
 **Usage:**
     
@@ -1080,12 +1208,16 @@ ______
     usage: rejoin_network [-h]
     
 
+* * *
+
 ### restart
 
 Forces the LimaCharlie agent to re-initialize. This is typically only useful when dealing with cloned sensor IDs in combination with the remote deletion of the identity file on disk.
 
 **Platforms:**  
 ______
+
+* * *
 
 ### run
 
@@ -1130,6 +1262,8 @@ Some shell execution requires embedding quotes within the command, for example w
 
 The above starts `powershell.exe` and passes it the `-command` argument and the value of the `-command` is `"Get-MpComputerStatus | Select-Object AMRunningMode”`.
 
+* * *
+
 ### 
 
 ### seal
@@ -1140,7 +1274,7 @@ Seal Availability
 
 Supported on sensor version 4.29.0 or newer and currently only supported on Windows.
 
-Important note: the `seal` direct sensor command is stateless, meaning it will not survive a reboot. For this reason, in almost all cases, you want to automate the change of status in D&R rules using the `seal` and `unseal` [response actions](/v2/docs/response-actions) instead of this task. Alternatively you can also use the REST API endpoint `{`SID`}/seal` to change the status in a way that survives reboots.
+Important note: the `seal` direct sensor command is stateless, meaning it will not survive a reboot. For this reason, in almost all cases, you want to automate the change of status in D&R rules using the `seal` and `unseal` [response actions](../../../response-actions.md) instead of this task. Alternatively you can also use the REST API endpoint `{`SID`}/seal` to change the status in a way that survives reboots.
 
 The `should_seal` Boolean parameter indicates whether a Sensor has yet to complete the `seal` command.
 
@@ -1166,19 +1300,21 @@ On Sensors version 4.29.0 or newer, you will see the following metadata within `
     }
     
 
+* * *
+
 ### segregate_network
 
 Tells the sensor to stop all network connectivity on the host except LC comms to the backend. So it's network isolation, great to stop lateral movement.
 
 Note that you should never upgrade a sensor version while the network is isolated through this mechanism. Doing so may result in the agent not regaining connectivity to the cloud, requiring a reboot to undo.
 
-This command primitive is NOT persistent, meaning a sensor you segregate from the network using this command alone, upon reboot will rejoin the network. To achieve isolation from the network in a persistent way, see the `isolate network` and `rejoin network` [Detection & Response rule actions](/v2/docs/response-actions).
+This command primitive is NOT persistent, meaning a sensor you segregate from the network using this command alone, upon reboot will rejoin the network. To achieve isolation from the network in a persistent way, see the `isolate network` and `rejoin network` [Detection & Response rule actions](../../../response-actions.md).
 
 **Platforms:**  
 ______
 
 **Report/Reply Event:**  
-[SEGREGATE_NETWORK](/v2/docs/reference-edr-events#segregatenetwork)
+[SEGREGATE_NETWORK](../../../reference-edr-events#segregatenetwork.md)
 
 **Usage:**
     
@@ -1186,9 +1322,11 @@ ______
     usage: segregate_network [-h]
     
 
+* * *
+
 ### set_performance_mode
 
-Turn on or off the high performance mode on a sensor. This mode is designed for very high performance servers requiring high IO throughout. This mode reduces the accuracy of certain events which in turn reduces impact on the system, and is not useful for the vast majority of hosts. You can read more about Performance Mode and its caveats [here](/v2/docs/ext-exfil#performance-rules).
+Turn on or off the high performance mode on a sensor. This mode is designed for very high performance servers requiring high IO throughout. This mode reduces the accuracy of certain events which in turn reduces impact on the system, and is not useful for the vast majority of hosts. You can read more about Performance Mode and its caveats [here](../../../ext-exfil#performance-rules.md).
 
 **Platforms:**  
 __
@@ -1203,6 +1341,8 @@ __
                     disabled
     
 
+* * *
+
 ### shutdown
 
 Execute an immediate system shut down (no warnings and zero delay time)
@@ -1213,11 +1353,13 @@ ______
     
     usage: shutdown --is-confirmed
 
+* * *
+
 ### uninstall
 
 Uninstall the sensor from that host.
 
-_For more information on Sensor uninstallation, including Linux systems, check_[ _here_](/v2/docs/endpoint-agent-uninstallation) _._
+_For more information on Sensor uninstallation, including Linux systems, check_[ _here_](../../../endpoint-agent-uninstallation.md) _._
 
 **Platforms:**  
 ____
@@ -1231,6 +1373,8 @@ ____
       --is-confirmed  must be specified as a confirmation you want to uninstall
                       the sensor
     
+
+* * *
 
 ### yara_scan
 
@@ -1263,13 +1407,15 @@ ______
                              optional maximum depth of the search for files to scan, defaults to a single level
     
 
+* * *
+
 ### yara_update
 
 Update the compiled yara signature bundle that is being used for constant memory and file scanning on the sensor.
 
 Note
 
-Instead of using the `yara_update` command directly it is recommended to use [the YARA extension](/v2/docs/ext-yara) available through the web UI and REST interface.
+Instead of using the `yara_update` command directly it is recommended to use [the YARA extension](../../../ext-yara.md) available through the web UI and REST interface.
 
 **Platforms:**  
 ______
@@ -1280,6 +1426,8 @@ ______
     positional arguments:
       rule        rule to compile and set on sensor for constant scanning, literal rule or "https://" URL or base64 encoded rule
 
+* * *
+
 ### epp_status
 
 Get the current status of EPP on a sensor.
@@ -1289,6 +1437,8 @@ __
     
     
     usage: epp_status [-h]
+
+* * *
 
 ### epp_scan
 
@@ -1303,6 +1453,8 @@ __
     positional arguments:
       path        File or directory to scan
 
+* * *
+
 ### epp_list_exclusions
 
 List all the exclusions for EPP on a sensor.
@@ -1312,6 +1464,8 @@ __
     
     
     usage: epp_list_exclusions [-h]
+
+* * *
 
 ### epp_add_exclusion
 
@@ -1328,6 +1482,8 @@ __
     optional arguments:
       --type  Type of exclusion. Options are: extension, path, process
 
+* * *
+
 ### epp_rem_exclusion
 
 Remove an exclusion for EPP on a sensor.
@@ -1343,14 +1499,16 @@ __
     optional arguments:
       --type  Type of exclusion. Options are: extension, path, process
 
+* * *
+
 ### epp_list_quarantine
 
 List quarantined EPP on a sensor.
 
-**Platforms:**
+**Platforms:**  
 __
-
-
+    
+    
     usage: epp_list_quarantine [-h]
 
-
+* * *

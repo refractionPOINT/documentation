@@ -10,48 +10,50 @@ The Strelka extension receives files using Artifacts by specifying an `artifact_
 
 ## Configuration
 
-Example rule that processes all Artifacts ingested with the type `zeek-extract`:
+Example  rule that processes all Artifacts ingested with the type `zeek-extract`:
 
 **Detect:**
-
-
+    
+    
     event: ingest
     op: is
     path: routing/log_type
     target: artifact_event
     value: zeek-extract
-
+    
 
 **Respond:**
-
-
+    
+    
     - action: extension request
-      extension action: run_on
-      extension name: ext-strelka
-      extension request:
-        artifact_id: '{{ .routing.log_id }}'
-
+      extension action: run_on
+      extension name: ext-strelka
+      extension request:
+        artifact_id: '{{ .routing.log_id }}'
+    
 
 ## Usage
 
-If you use the LimaCharlie [Zeek](https://beta.app.limacharlie.io/add-ons/extension-detail/ext-zeek) extension, a good use case would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example.
+If you use the LimaCharlie [Zeek](ext-zeek.md) extension, a good use case would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example.
 
 **Detect:**
-
-
+    
+    
     op: exists
     event: ingest
     artifact type: pcap
     path: /
     target: artifact_event
-
+    
 
 **Respond:**
-
-
+    
+    
     - action: extension request
-      extension action: run_on
-      extension name: ext-zeek
-      extension request:
-        artifact_id: '{{ .routing.log_id }}'
-        retention: 30
+      extension action: run_on
+      extension name: ext-zeek
+      extension request:
+        artifact_id: '{{ .routing.log_id }}'
+        retention: 30
+    
+
