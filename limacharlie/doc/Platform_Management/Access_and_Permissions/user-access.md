@@ -14,7 +14,7 @@ Permissions can be controlled individually, or you can apply pre-set permission 
 
 User Permissions
 
-We offer granular user permissions, allowing you to customize what roles and how much access users should have. For a full list of permissions, see [Reference: Permissions](reference/reference-permissions.md).
+We offer granular user permissions, allowing you to customize what roles and how much access users should have. For a full list of permissions, see [[reference-permissions|Reference: Permissions]].
 
 ## Access on a per-organization basis
 

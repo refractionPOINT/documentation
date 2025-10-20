@@ -1,6 +1,6 @@
 # Govee
 
-The Govee Extension allows you to trigger color changes on your [supported Govee lights](https://developer.govee.com/docs/support-product-model) via a rule response action. It requires you to configure a Govee API key in the extension.
+The Govee Extension allows you to trigger color changes on your [supported Govee lights](https://developer.govee.com/docs/support-product-model) via a  rule response action. It requires you to configure a Govee API key in the extension.
 
 ### Setup
 
@@ -81,9 +81,3 @@ curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --hea
 ```
 
 LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
----
-
-###### What's Next
-
-* [Hayabusa](ext-hayabusa.md)

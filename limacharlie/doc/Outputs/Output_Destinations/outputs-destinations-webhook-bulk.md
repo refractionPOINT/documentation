@@ -16,7 +16,3 @@ secret_key: this-is-my-secret-shared-key
 auth_header_name: x-my-special-auth
 auth_header_value: 4756345846583498
 ```
-
-## Related articles
-
-* [Tutorial: Creating a Webhook Adapter](../../Sensors/Adapters/Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md)

@@ -14,7 +14,7 @@ Tailscale events are ingested via a cloud-to-cloud webhook Adapter configured to
 
 ### 1. Creating the LimaCharlie Webhook Adapter
 
-The following steps are modified from the generic Webhook Adapter creation doc, found [here](../Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md).
+The following steps are modified from the generic Webhook Adapter creation doc, found [here](/v2/docs/tutorial-creating-a-webhook-adapter).
 
 Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details. The following configuration has been provided to configure a Webhook Adapter for ingesting Tailscale events:
 
@@ -45,7 +45,7 @@ The mapping above is based on the expected Webhook event from Tailscale ([exampl
 
 ### 2. Building the Webhook URL
 
-After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://docs.limacharlie.io/apidocs/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
+After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/) API call. You'll need the following information to complete the Webhook URL:
 
 * Organization ID
 * Webhook name (from the config)

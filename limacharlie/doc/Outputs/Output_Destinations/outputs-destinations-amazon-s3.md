@@ -34,7 +34,7 @@ LC data files begin with a `d`, while special manifest files (indicating
 
 The `is_compression` flag, if on, will compress each file as a GZIP when uploaded. It is recommended you enable `is_compression`.
 
-### AWS IAM Configuration
+## AWS IAM Configuration
 
 1. Log in to AWS console and go to the IAM service.
 2. Click on `Users` from the menu.
@@ -46,7 +46,7 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 8. Provide a description (optional) and click `Create access key`
 9. Take note of the "Access key", "Secret access key" and ARN name for the user (starts with "arn:", shown on the user summary screen).
 
-### AWS S3 Configuration
+## AWS S3 Configuration
 
 1. Go to the S3 service.
 2. Click `Create bucket`, enter a name and select a region.
@@ -56,7 +56,7 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 6. Input the policy in [sample below](#policy-sample) where you replace the `<<USER_ARN>>` with the ARN name of the user you created and the `<<BUCKET_NAME>>` with the name of the bucket you just created.
 7. Click `Save Changes`
 
-#### Policy Sample
+### Policy Sample
 
 ```
 {
@@ -75,7 +75,7 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 }
 ```
 
-### LimaCharlie Configuration
+## LimaCharlie Configuration
 
 1. Back in the LimaCharlie GUI, in your organization view, click `Outputs` and `Add Output`
 2. Select the stream you would like to send (events, detections, etc)
@@ -83,14 +83,3 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 4. Give it a name, enter the bucket name, key\_id, and secret\_key you noted from AWS, and any other parameters you wish to configure
 5. Click `Save Output`
 6. After a minute, the data should start getting written to your bucket
-
-## Related articles
-
-* [AWS CloudTrail](../../Sensors/Adapters/Adapter_Types/adapter-types-aws-cloudtrail.md)
-* [S3](../../Sensors/Adapters/Adapter_Types/adapter-types-s3.md)
-* [AWS](../../Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-aws.md)
-* [AWS GuardDuty](../../Sensors/Adapters/Adapter_Types/adapter-types-aws-guardduty.md)
-
-## What's Next
-
-* [Apache Kafka](outputs-destinations-apache-kafka.md)

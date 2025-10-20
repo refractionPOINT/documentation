@@ -1,6 +1,6 @@
 # Strelka
 
-## Strelka Extension Pricing
+Strelka Extension Pricing
 
 Note that usage of ext-strelka will incur usage of Artifact Exporting (applied to processed artifacts at a rate of $0.02/GB) as well as webhook data received in LimaCharlie and the related costs on top of the ext-strelka specific pricing.
 
@@ -34,7 +34,7 @@ value: zeek-extract
 
 ### Usage
 
-If you use the LimaCharlie [Zeek](ext-zeek.md) extension, a good use case would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example.
+If you use the LimaCharlie [Zeek](https://beta.app.limacharlie.io/add-ons/extension-detail/ext-zeek) extension, a good use case would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example.
 
 **Detect:**
 

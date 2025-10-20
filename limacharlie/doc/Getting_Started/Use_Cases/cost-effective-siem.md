@@ -18,3 +18,7 @@ LimaCharlie's SecOps Cloud Platform offers a cost-effective alternative to tradi
 * **Interoperability and customization:** Built with interoperability in mind, LimaCharlie seamlessly integrates with a wide range of security tools and platforms, enabling organizations to create custom workflows and avoid vendor lock-in. The platform's open architecture and extensive API support make it easy to integrate with existing security infrastructure.
 * **Automation and ease of use:** LimaCharlie's Detection, Automation, and Response Engine enables security teams to create sophisticated detection rulesets and automate response actions, reducing alert fatigue and simplifying security operations. The SecOps Cloud Platform's powerful query language (LCQL) makes it easy for security professionals to access and analyze telemetry data without the complexity of traditional SIEMs.
 * **Advanced capabilities:** LimaCharlie offers advanced threat hunting and integration with third-party threat intelligence platforms, providing security teams with the context and insights they need to identify and respond to threats effectively.
+
+## What's Next
+
+* [[endpoint-detection-and-response-edr|Endpoint Detection and Response (EDR)]]

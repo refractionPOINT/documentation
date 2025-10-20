@@ -6,7 +6,7 @@ The Model Context Protocol (MCP) is a standardized protocol used by AI Agents to
 
 Note that MCP itself is still experimental and cutting edge.
 
-LimaCharlie offers an MCP server at https://mcp.limacharlie.io which enables AI agents to:
+LimaCharlie offers an MCP server at <https://mcp.limacharlie.io> which enables AI agents to:
 
 * **Query and analyze** historical telemetry from any sensor
 * **Actively investigate** endpoints using the LimaCharlie Agent (EDR) in real-time
@@ -19,9 +19,9 @@ This opens up the entire LimaCharlie platform to AI agents, regardless of their 
 
 ## Transport Modes
 
-The server supports two transport modes based on the PUBLIC_MODE environment variable:
+The server supports two transport modes based on the PUBLIC\_MODE environment variable:
 
-### STDIO Mode (PUBLIC_MODE=false, default)
+### STDIO Mode (PUBLIC\_MODE=false, default)
 
 Used for local MCP clients like Claude Desktop or Claude Code:
 
@@ -29,7 +29,7 @@ Used for local MCP clients like Claude Desktop or Claude Code:
 * Uses LimaCharlie SDK's default authentication
 * Reads credentials from environment variables or config files
 
-### HTTP Mode (PUBLIC_MODE=true)
+### HTTP Mode (PUBLIC\_MODE=true)
 
 Used when deploying as a public service:
 
@@ -81,7 +81,7 @@ The LimaCharlie MCP server exposes over 100 tools organized by category:
 * **Sensor management**: `add_tag`, `remove_tag`, `delete_sensor`
 * **Reliable tasking**: `reliable_tasking`, `list_reliable_tasks`
 
-### AI-Powered Generation (requires GOOGLE_API_KEY)
+### AI-Powered Generation (requires GOOGLE\_API\_KEY)
 
 * **Query generation**: `generate_lcql_query` - Create LCQL queries from natural language
 * **Rule creation**: `generate_dr_rule_detection`, `generate_dr_rule_respond` - Generate D&R rules
@@ -182,4 +182,4 @@ claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp \
 * The server is stateless when running in HTTP mode
 * HTTP mode uses JSON responses (not Server-Sent Events)
 * No OAuth flow is used - authentication is via bearer tokens only
-* If you encounter missing capabilities, contact https://community.limacharlie.com for quick additions
+* If you encounter missing capabilities, contact <https://community.limacharlie.com> for quick additions

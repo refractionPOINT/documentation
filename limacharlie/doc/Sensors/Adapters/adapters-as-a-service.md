@@ -95,3 +95,5 @@ sudo systemctl disable lc-adapter-name
 sudo rm /etc/systemd/system/lc-adapter-name.service
 sudo rm /path/to/adapter-directory/lc-adapter
 ```
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

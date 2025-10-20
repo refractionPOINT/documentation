@@ -12,7 +12,7 @@ Details on manual uninstallation is found at the bottom of each respective OS' i
 
 ### Sensor Commands
 
-For macOS and Windows operating systems, you can uninstall a sensor with the `uninstall` command. More information on that can be found in the endpoint agent commands documentation.
+For macOS and Windows operating systems, you can uninstall a sensor with the `uninstall` command. More information on that can be found [here](endpoint-agent-commands.md#uninstall).
 
 On Windows, the command defaults to uninstalling the sensor as if installed from the direct installer exe. If an MSI was used for installation, you can add a `--msi` flag to the `uninstall` command to trigger an uninstallation that is compatible with MSI.
 
@@ -46,7 +46,3 @@ op: is windows
 ## Package Management Tools
 
 For Package Management tools, and other enterprise application-management tools, we recommend utilizing the integrated program removal options, rather than installing from LimaCharlie. This will help keep software inventories up to date.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.

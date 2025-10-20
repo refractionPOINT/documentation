@@ -24,9 +24,13 @@ To utilize `vultr-cli` capabilities, you will need:
 
 * A personal access token. To create one, click [here](https://my.vultr.com/settings/#settingsapi).
 * Your access token will need to have access control open to IPv6
-  ![Screenshot 2024-04-25 at 10.31.29 AM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot%202024-04-25%20at%2010.31.29%E2%80%AFAM.png)
+  ![Screenshot 2024-04-25 at 10.31.29 AM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot 2024-04-25 at 10.31.29 AM.png)
 * Create a secret in the secrets manager in the following format:
 
   ```
   personalAccessToken
   ```
+
+Command-line Interface
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.

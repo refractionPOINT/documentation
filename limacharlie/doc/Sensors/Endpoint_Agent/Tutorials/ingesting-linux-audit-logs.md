@@ -42,7 +42,7 @@ Want more than just the most recent `auth.log`? Specify a regular expression to 
 
 ## File Adapter Ingestion
 
-It is also possible to deploy a LimaCharlie Adapter pointed to `auth.log` to collect and stream the events in directly. Note that Adapters will create a separate telemetry "stream" - thus, it is recommended to combine file types where possible.
+It is also possible to deploy a LimaCharlie [Adapter](../../Adapters/adapters.md) pointed to `auth.log` to collect and stream the events in directly. Note that Adapters will create a separate telemetry "stream" - thus, it is recommended to combine file types where possible.
 
 **Step 1:** Create an Installation Key for your adapter and download the appropriate binary.
 
@@ -72,6 +72,6 @@ The adapter should load the config and display options to the terminal.
 
 **Step 4:** Returning to the LimaCharlie web UI, you should start to see events flowing in almost instantaneously.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28115%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(115).png)
 
 Note that a `text` platform will ingest data as basic text, however you could use formatting options to parse the fields respective to your `auth.log` format.

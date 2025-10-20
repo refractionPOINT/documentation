@@ -25,7 +25,3 @@ custom_transform: |
       "text": "Detection {{ .cat }} on {{ .routing.hostname }}: {{ .link }}"
    }
 ```
-
-## Related articles
-
-* [Tutorial: Creating a Webhook Adapter](../../Sensors/Adapters/Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md)

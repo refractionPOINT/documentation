@@ -48,11 +48,11 @@ The follow error codes are found within various Report (`*_REP`) events found wi
 ## Payload Specific
 
 When dealing with Payloads or Artifact collection, you may receive HTTP specific error codes:
-https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+<https://developer.mozilla.org/en-US/docs/Web/HTTP/Status>
 
 ## Yara Specific
 
 When doing Yara scanning operations, you may receive Yara specific error codes.
 
 These are documented here:
-https://github.com/VirusTotal/yara/blob/master/libyara/include/yara/error.h
+<https://github.com/VirusTotal/yara/blob/master/libyara/include/yara/error.h>

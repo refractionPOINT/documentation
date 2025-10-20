@@ -2,7 +2,7 @@
 
 This page contains frequently asked questions about billing within LimaCharlie.
 
-## Pricing Details
+Pricing Details
 
 Please note that our pricing is transparent, and is available via our [Pricing webpage](https://limacharlie.io/pricing).
 
@@ -58,7 +58,7 @@ There are two categories of Sensors: sensors billed on Quota set by the user (vS
 
 ### vSensors
 
-LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of Endpoint Agents. vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
+LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of [Endpoint Agents](/v2/docs/endpoint-agent). vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
 
 Our transparent pricing and quota-based approach allows you to easily mix and match deployments, while staying within a certain price point.
 

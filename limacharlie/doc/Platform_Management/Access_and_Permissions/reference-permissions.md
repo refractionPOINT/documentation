@@ -266,8 +266,3 @@ Permissions can be applied through:
 3. **Regular Auditing**: Periodically review and audit permission assignments
 4. **Separate Environments**: Use different permission sets for development, staging, and production
 5. **API Key Management**: Rotate API keys regularly and scope them appropriately
-
-## Related articles
-
-* [API Keys](api-keys.md)
-* [User Access](user-access.md)

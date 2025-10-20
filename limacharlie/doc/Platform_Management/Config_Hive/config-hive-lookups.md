@@ -2,7 +2,7 @@
 
 ## Format
 
-Lookups are dictionaries/maps/key-value-pairs where the key is a string. The lookup can then be queried by various parts of LimaCharlie (like rules). The value component of a lookup must be a dictionary and represents metadata associated with the given key, which will be returned to the rule using the lookup.
+Lookups are dictionaries/maps/key-value-pairs where the key is a string. The lookup can then be queried by various parts of LimaCharlie (like  rules). The value component of a lookup must be a dictionary and represents metadata associated with the given key, which will be returned to the rule using the lookup.
 
 Lookup data can be ingested by specifying one of the following root keys indicating the format of the lookupd data:
 
@@ -73,7 +73,7 @@ LimaCharlie also provides several publicly available lookups for use in your Org
 
 ### Automatically via the Lookup Manager
 
-If your lookups change frequently and you wish to keep them up to date, LimaCharlie offers the lookup manager extension as a mechanism to automatically update your lookups every 24 hours. Documentation on the lookup manager can be found [here](../../../Extensions/ext-lookup-manager.md).
+If your lookups change frequently and you wish to keep them up to date, LimaCharlie offers the lookup manager extension as a mechanism to automatically update your lookups every 24 hours. Documentation on the lookup manager can be found [here](ext-lookup-manager.md).
 
 ## Example Lookup
 

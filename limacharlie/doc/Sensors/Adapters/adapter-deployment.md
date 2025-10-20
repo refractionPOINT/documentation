@@ -88,3 +88,5 @@ Now that the configuration of the adapter is ready, you can deploy the adapter o
 This will start the adapter telling it to fetch the configuration it requires from the cloud based on the Organization ID (your tenant in LC) and the `GUID` of the record it should use.
 
 From this point on, updating the record in LimaCharlie will automatically reconfigure the adapter on-prem, within about 1 minute of the change.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

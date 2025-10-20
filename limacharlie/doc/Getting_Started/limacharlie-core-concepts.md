@@ -9,7 +9,8 @@ The LimaCharlie endpoint agent is a cross platform endpoint Sensor. It is a low-
 The sensor provides a wide range of advanced capability.
 
 * Flight Data Recorder (FDR) type functionality like Processes, Network Connections, Domain Name requests etc.
-* Host isolation, automated response rules, intelligent local caching of events for in-depth Incident Response (IR) as well as some forensic features like dumping memory.
+* Host isolation, automated response rules, intelligent local caching of events for in-depth Incident Response (IR)
+   as well as some forensic features like dumping memory.
 
 Sensors are designed to limit the potential for abuse resulting from unauthorized access to the LimaCharlie platform. This is achieved by limiting open-ended commands which might enable an attacker to covertly upload malicious software to your hosts. This means the LimaCharlie sensor is extremely powerful but also keeps its "read-only" qualities on your infrastructure. Of course, all access and interactions with the hosts are also logged for audit both within the cloud and tamper-proof forwarding to your own infrastructure.
 
@@ -23,7 +24,7 @@ The LimaCharlie Adapter allows for real-time ingestion of any structured data, s
 
 Installation Keys are used to install a sensor. By specifying a key during installation the sensor can cryptographically be tied to your account.
 
-Get more details in the [Installation Keys section](../Platform_Management/Installation_Keys/installation-keys.md).
+Get more details in the [Installation Keys section](../Sensors/installation-keys.md).
 
 ### Tags
 
@@ -35,7 +36,7 @@ Get more information in the [Sensor tags section](../Sensors/sensor-tags.md).
 
 The Detection & Response Rules act as an automation engine. The Detection component is a rule that either matches an event or not. If the Detection component matches, the Response component of the rule is actioned. This can be used to automatically investigate, mitigate or apply Tags.
 
-Detailed explanation in the [Detection & Response section](../Detection_and_Response/detection-and-response.md).
+Detailed explanation in the [Detection & Response section](../Detection_and_Response/writing-and-testing-rules.md).
 
 ### Insight
 
@@ -60,7 +61,7 @@ Output is also split between four categories:
 
 Selecting a Stream when creating an Output will select the relevant type of data to flow through it.
 
-More details and exact configuration possibilities in the [Outputs section](../Outputs/outputs.md).
+More details and exact configuration possibilities in the Outputs section.
 
 ### API Keys
 

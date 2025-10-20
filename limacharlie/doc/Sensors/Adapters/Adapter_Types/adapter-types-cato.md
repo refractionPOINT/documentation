@@ -22,7 +22,7 @@ Adapter Type: `cato`
 
 ### Manual Deployment
 
-Adapter downloads can be found in [Adapter Deployment](../adapter-deployment.md).
+Adapter downloads can be found here.
 
 ```
 chmod +x /path/to/lc_adapter
@@ -39,3 +39,5 @@ accountid=$ACCOUNT_ID
 ## API Doc
 
 See the official [documentation](https://support.catonetworks.com/hc/en-us/articles/360019839477-Cato-API-EventsFeed-Large-Scale-Event-Monitoring).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

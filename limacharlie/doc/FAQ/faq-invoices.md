@@ -2,7 +2,7 @@
 
 This page contains frequently asked questions about invoices you receive for LimaCharlie service.
 
-## Pricing Details
+Pricing Details
 
 Please note that our pricing is transparent and is available via our [Pricing webpage](https://limacharlie.io/pricing).
 

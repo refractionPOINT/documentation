@@ -18,11 +18,3 @@ is_tls: "true"
 is_strict_tls: "true"
 is_no_header: "false"
 ```
-
-## Related articles
-
-* [Syslog](../../Sensors/Adapters/Adapter_Types/adapter-types-syslog.md)
-
-## What's Next
-
-* [Tines](../Output_Destinations/output-destinations-tines.md)

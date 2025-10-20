@@ -10,7 +10,7 @@ We encourage you to look at LimaCharlie native functionality first as it has sev
 
 * Usually has better performance.
 * Data returned is always well structured JSON.
-* Can be tasked automatically and Detection & Response Rules can be created from their data.
+* Can be tasked automatically and [Detection & Response Rules](../Detection_and_Response/detection-and-response.md) can be created from their data.
 * Data returned is indexed and searchable.
 
 It is possible to set the Payload's file extension on the endpoint by making the Payload name end with that extension. For example, naming a Payload `extract_everything.bat`, the Payload will be sent as a batch file (`.bat`) and executed as such.  This is also true for PowerShell files (`.ps1`).
@@ -39,7 +39,3 @@ Payloads are managed with two permissions:
 
 * `payload.ctrl` allows you to create and delete payloads.
 * `payload.use` allows you to run a given payload.
-
-Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

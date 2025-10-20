@@ -22,7 +22,7 @@ Jira events are ingested via a cloud-to-cloud webhook Adapter, configured to rec
 
 ### 1. Creating the LimaCharlie Webhook Adapter
 
-The following steps are modified from the generic webhook adapter creation documentation, found [here](../Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md).
+The following steps are modified from the generic webhook adapter creation documentation, found [here](tutorial-creating-a-webhook-adapter).
 
 Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details. The following configuration has been provided to configure a webhook Adapter for ingesting Jira events:
 
@@ -71,7 +71,7 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Within the Atlassian Admin window, navigate to **Jira Administration** > **Jira settings** > **Advanced** > **WebHooks**. Select **+ Create a WebHook**.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(178).png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28178%29.png)
 
 * Choose an appropriate name to differentiate that this is a LimaCharlie webhook
 * Provide the webhook URL (see step 2 above)
@@ -300,7 +300,3 @@ If configured properly, you should see your Jira events in LimaCharlie. Here's a
 ```
 
 Note that the Jira "webhookEvent" becomes the event type, also represented in the LimaCharlie Adapter timeline.
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

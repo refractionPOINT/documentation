@@ -25,7 +25,7 @@ Without a digital code signing certificate the installer will show a warning tha
 5. Select the executable
 
 * Set the `Setup executable input file name` to be the LimaCharlie EXE that you'd downloaded
-* Optionally, specify a MSI output file name of your choosing (e.g. Acme_Installer.msi)
+* Optionally, specify a MSI output file name of your choosing (e.g. Acme\_Installer.msi)
 * Set the MSI platform architecture to match the executable (i.e. x86 for 32-bit, and x64 for 64-bit)
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_2_-__Select_the_executable.png)
@@ -62,8 +62,8 @@ Without a digital code signing certificate the installer will show a warning tha
 
 11. Specify Parameters
 
-    * In the "Install arguments" box, enter "-i", add a space and then enter your installation key
-    * -i YOUR_INSTALLATION_KEY_GOES_HERE
+    * In the "Install arguments" box, enter "-i", add a space and then enter your [installation key](https://doc.limacharlie.io/docs/documentation/docs/manage_keys.md)
+    * -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_8b_-_Parameters_-_filled.png)
 
@@ -83,8 +83,6 @@ To provide the option to uninstall, set the Uninstall argument to "-c" (note tha
 
 Once you have created the MSI package you should sign it using your digital signature.  You can [learn more about signing the MSI on the exemsi website](https://www.exemsi.com/documentation/sign-your-msi/).
 
----
-
 ## Experience when running the MSI
 
 When installing the application using the MSI you'll see your application name in the title bar.
@@ -98,7 +96,3 @@ When inspecting the properties of the MSI you'll see the details you'd specified
 In the Apps & Features section of Windows, you'll see the application listed under your name.
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/Shown_in_Control_Panel_-_Apps_and_Features.png)
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

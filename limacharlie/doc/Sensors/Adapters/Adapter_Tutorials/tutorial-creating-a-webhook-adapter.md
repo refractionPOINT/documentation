@@ -87,3 +87,7 @@ When sending data via POST requests to the URL, the body of your request is expe
 Or, one of the above, but compressed using gzip.
 
 With the completed webhook URL, you can begin sending events and will see them in the Timeline for your webhook Adapater.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

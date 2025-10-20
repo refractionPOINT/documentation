@@ -20,7 +20,7 @@ The Endpoint Protection add-on requires agent version `4.33.5` or higher.
 
 ## Enabling and configuring Endpoint Protection
 
-To enable Endpoint Protection, first ensure LimaCharlie Endpoint Agent version is 4.33.5 and above, [update](../../Sensors/Endpoint_Agent/endpoint-agent-versioning-and-upgrades.md) if necessary.
+To enable Endpoint Protection, first ensure LimaCharlie Endpoint Agent version is 4.33.5 and above, [update](../../../Sensors/Endpoint_Agent/endpoint-agent-versioning-and-upgrades.md) if necessary.
 
 Navigate to the [Endpoint Protection extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-epp) in the Add-Ons marketplace. Choose the target Organization and select `Subscribe`.
 
@@ -87,6 +87,16 @@ For reference, this is a list of Endpoint Protection commands:
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(330).png)
 
-## Related Documentation
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
 
-* [Exfil (Event Collection)](ext-exfil.md)
+Endpoint Detection & Response
+
+Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events, they must be enabled within the Exfil or Event Collection settings.
+
+In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events, they must be enabled within the Exfil or Event Collection settings.

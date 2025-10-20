@@ -302,7 +302,7 @@ The following Output Transform would extract only the `IpAddress`, `TargetUserNa
 }
 ```
 
-The following example outputs text and specified fields using Template Strings.
+The following example outputs text and specified fields using [Template Strings](./template-strings-and-transforms.md).
 
 ```
 {

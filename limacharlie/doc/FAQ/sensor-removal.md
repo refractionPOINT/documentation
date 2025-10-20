@@ -40,9 +40,9 @@ You may optionally remove the log file located at: /usr/local/hcp.log
 3. Select VPN & Filters
 4. Check if. "RPHCP" appears in the list.
 
-✅ If it does not appear, the Network Extension was successfully removed.
+If it does not appear, the Network Extension was successfully removed.
 
-❌ If you see RPHCP in the list, the Network Extension was not properly removed and you should perform uninstallation again.
+If you see RPHCP in the list, the Network Extension was not properly removed and you should perform uninstallation again.
 
 ## Verify LimaCharlie Security Extension was removed
 
@@ -52,9 +52,9 @@ Open the Terminal and run the following commands
 
 `sudo systemextensionsctl list | grep rphcp`
 
-✅ No result would indicate that the uninstall was successful.
+No result would indicate that the uninstall was successful.
 
-❌ The following result would indicate that the uninstall was not successful:
+The following result would indicate that the uninstall was not successful:
 
 ```
 *	*	N7N82884NH	com.refractionpoint.rphcp.extension (1.0.241204/1.0.241204)	RPHCP	[activated enabled]
@@ -64,14 +64,8 @@ Open the Terminal and run the following commands
 
 `sudo cat /Library/SystemExtensions/db.plist | grep rphcp`
 
-✅ If no result is returned, the security extension was successfully removed.
+If no result is returned, the security extension was successfully removed.
 
-❌ If instead you see something similar to the below, the extension was not properly removed and you may need to take some additional measures to do so (i.e. manual removal after booting into Recovery mode).
+If instead you see something similar to the below, the extension was not properly removed and you may need to take some additional measures to do so (i.e. manual removal after booting into Recovery mode).
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
----
-
-**What's Next**
-
-* [FAQ - Sensor Troubleshooting](./faq-troubleshooting.md)

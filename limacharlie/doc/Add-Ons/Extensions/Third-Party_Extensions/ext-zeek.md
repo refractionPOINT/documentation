@@ -1,6 +1,6 @@
 # Zeek
 
-## Zeek Extension Pricing
+Zeek Extension Pricing
 
 While it is Free to enable the Zeek extension, pricing is applied to processed PCAPs at a rate of $0.02/GB.
 
@@ -8,7 +8,7 @@ While it is Free to enable the Zeek extension, pricing is applied to processed P
 
 Once enabled, this extension allows you to generate Zeek logs from packet capture (PCAP) files collected via Artifacts. The resulting Zeek log files are subsequently parsed and pushed into the `ext-zeek` Sensor timeline as JSON. You can create detection & response rules to automate based on Zeek log data.
 
-LimaCharlie will automatically kick off Zeek based on the artifact ID provided in a rule action.
+LimaCharlie will automatically kick off Zeek based on the artifact ID provided in a  rule action.
 
 ## Configuration
 

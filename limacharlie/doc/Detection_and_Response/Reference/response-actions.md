@@ -4,7 +4,7 @@
 
 Actions in LimaCharlie Detection & Response () rules define what happens after a detection is triggered. Common actions include generating reports, tagging sensors, isolating networks, and the frequently used `task` action, which sends commands to an Endpoint Agent to interrogate or take action on the endpoint. This is useful for tasks like gathering system information or isolating a compromised endpoint. Suppression settings manage repetitive alerts by limiting action frequency, ensuring efficient automation and response workflows.
 
-> For more information on how to use Actions, read [Detection & Response rules](../detection-and-response.md).
+> For more information on how to use Actions, read [Detection & Response rules](/v2/docs/detection-and-response).
 
 ## Suppression
 
@@ -188,7 +188,7 @@ Removes the seal status of a sensor that had it set using `seal`.
 
 ### output
 
-Forwards the matched event to an Output identified by `name` in the `tailored` [stream](../../outputs.md).
+Forwards the matched event to an Output identified by `name` in the `tailored` [stream](/v2/docs/outputs).
 
 This allows you to create highly granular Outputs for specific events.
 

@@ -4,14 +4,14 @@ The LimaCharlie Endpoint Agent is a cross platform endpoint Sensor. It is a low-
 
 Our Community Rules feature leverages the power of AI to quickly transform a plethora of third-party rules into LimaCharlie syntax so you can make them your own. The process is fast and efficient: Browse thousands of community rules, select one as a starting point, convert it to LimaCharlie syntax with one click, and customize it to your liking.
 
-## Accessing the Community Rules
+### Accessing the Community Rules
 
 To access the Community Rules:
 
 1. Log into LimaCharlie
 2. Select an Organization
 3. Click the Automation drop down on the left panel
-4. Select Rules
+4. Select  Rules
 5. Look in the upper right corner of the D&R Rules page for the Add Rule button
 6. Click the Add Rule button
 7. Look in the upper right corner of the rule creation page for the Community Library button
@@ -23,7 +23,7 @@ This takes you to the Community Rules search page, and gives you access to thous
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(337).png)
 
-## Loading a Community Rule
+### Loading a Community Rule
 
 Once you find the rule you want to use, import it to the organization by clicking "Load Rule", and our AI engine will create it using verified LimaCharlie syntax.
 
@@ -39,7 +39,7 @@ The example below shows what appears when you click Anvilogic's Potential CVE-20
 
 Under the rule name you will see the options to load the rule, check its source code, and read additional licensing information. There is also a reference section at the bottom left corner of the window providing links related to the rule.
 
-![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXf3SZQZu4j4kEp2Y0wpnoeHA0t_XaR5VqaoB9SupPHl0t91e-12QhMj0epDi742peW0gpu8e44HhJ4lDN1esspiMRUfpFr3W2aNiQcIeff2HhNCxmgp1h3oLqphpqJ8AohoDDxFdA?key=7BgiNipN3DxRQXGQyEk06w)
+**![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXf3SZQZu4j4kEp2Y0wpnoeHA0t_XaR5VqaoB9SupPHl0t91e-12QhMj0epDi742peW0gpu8e44HhJ4lDN1esspiMRUfpFr3W2aNiQcIeff2HhNCxmgp1h3oLqphpqJ8AohoDDxFdA?key=7BgiNipN3DxRQXGQyEk06w)**
 
 Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
 

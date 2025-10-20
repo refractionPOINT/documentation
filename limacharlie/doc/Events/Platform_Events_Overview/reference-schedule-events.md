@@ -41,3 +41,15 @@ respond:
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+## Related articles
+
+* [Detection on Alternate Targets](../../Detection_and_Response/detection-on-alternate-targets.md)
+* [Detection and Response Examples](../../Detection_and_Response/detection-and-response-examples.md)
+* [Detection and Response](/docs/detection-and-response)
+* [Platform Events Overview](/docs/platform-events-overview)
+* [Reference: Platform Events](./reference-platform-events.md)
+
+## What's Next
+
+* [Query Console](../../Query_Console/query-console-ui.md)

@@ -25,3 +25,11 @@ Endpoint Detection & Response
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events, they must be enabled within the Exfil or Event Collection settings.
+
+Related articles:
+- [[macos-agent-installation|macOS Agent Installation]]
+- [[adapter-types-mac-unified-logging|Mac Unified Logging]]
+- [[artifacts|Artifacts]]
+
+What's Next:
+- [[logcollectionguide|Log Collection Guide]]

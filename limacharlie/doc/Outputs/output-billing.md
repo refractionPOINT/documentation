@@ -19,10 +19,8 @@ The supported GCP mechanism for free output are:
 * `pubsub`
 * `bigquery`
 
-Google Cloud Platform general region list: https://cloud.google.com/about/locations
+Google Cloud Platform general region list: <https://cloud.google.com/about/locations>
 
-IP ranges of GCP resources per region change over time. Google publishes these ranges as a JSON file here: https://www.gstatic.com/ipranges/cloud.json
+IP ranges of GCP resources per region change over time. Google publishes these ranges as a JSON file here: <https://www.gstatic.com/ipranges/cloud.json>
 
-## What's Next
-
-* [Amazon S3](Output_Destinations/outputs-destinations-amazon-s3.md)
+Google Cloud Platform

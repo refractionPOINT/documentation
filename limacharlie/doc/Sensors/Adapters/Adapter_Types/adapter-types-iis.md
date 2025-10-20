@@ -19,7 +19,7 @@ IIS web logs often have a standardized schema, unless manually changed by admini
 
 `#Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) sc-status sc-substatus sc-win32-status time-taken`
 
-**Log Structure**
+Log Structure
 
 If your IIS logs are a different structure from above, please let us know and we can assist in customizing the parser!
 

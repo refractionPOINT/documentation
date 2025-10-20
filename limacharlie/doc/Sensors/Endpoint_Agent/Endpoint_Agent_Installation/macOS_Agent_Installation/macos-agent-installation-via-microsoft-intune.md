@@ -59,7 +59,3 @@ Max number of times to retry if script fails:  3
 Assignments:  Set the `Included groups` to be `All Users` if you wish all users to get the application to be installed, or simply select the correct group to whom you wish to have LimaCharlie be installed for.
 
 ![Screenshot of MS Intune -> Devices | Scripts | Details](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Script-details.png)
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

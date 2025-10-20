@@ -80,7 +80,3 @@ The format of the metadata returned is documented [here](https://github.com/maxm
 ```
 
 The geolocation data comes from GeoLite2 data created by [MaxMind](http://www.maxmind.com).
-
-## What's Next
-
-* [Pangea](api-integrations-pangea.md)

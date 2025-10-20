@@ -29,3 +29,7 @@ Note, LC's Endpoint Agent is easily able to [consume Sysmon events](../../Sensor
 ## Executable Tracking
 
 Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality with LimaCharlie with BinLib. More information on that can be found [here](../../Add-Ons/Extensions/LimaCharlie_Extensions/binlib.md).
+
+Endpoint Detection & Response
+
+Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.

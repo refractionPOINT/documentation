@@ -6,7 +6,7 @@ If your organization does not currently have a custom branded site with LimaChar
 
 Strict SSO Enforcement
 
-LimaCharlie offers the ability to implement strict SSO enforcement. This means that SSO can be configured as the only authentication option.
+LimaCharlie offers the ability to implement strict SSO enforcement. This means that  SSO can be configured as the only authentication option.
 
 With this capability, you may say that any user with your email domain @example.com must authenticate via Google. This way you can disable the login + password, GitHub, and Microsoft login options for users with your email domain (@example.com) - regardless if they are logging in via your custom branded site, or via app.limacharlie.io
 

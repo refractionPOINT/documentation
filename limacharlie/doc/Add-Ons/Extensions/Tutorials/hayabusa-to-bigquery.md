@@ -10,7 +10,7 @@ Imagine you wanted to analyze event logs from 10s, 100s, or 1000s of systems usi
 2. Run queries against all of the data returned by Hayabusa in BigQuery
 
 BigQuery dataset containing Hayabusa results:
-![Screenshot 2024-02-27 10.50.46 AM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot%202024-02-27%2010.50.46%20AM.png)
+![Screenshot 2024-02-27 10.50.46 AM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot 2024-02-27 10.50.46 AM.png)
 
 ### Steps to Accomplish
 

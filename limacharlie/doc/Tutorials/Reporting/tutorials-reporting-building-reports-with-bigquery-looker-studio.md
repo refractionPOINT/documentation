@@ -18,7 +18,7 @@ Let's examine this hierarchy for a moment:
 
 The nice part about this type of hierarchy is that I can build out multiple tables of process details within the same dataset, and then link/analyze them as needed. We'll focus on the `network_connections` data for now, but we could also look at exporting other process details into the same dataset.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2897%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(97).png)
 
 Within the Google Cloud Console, we also want to create a Service Account and gather an API key. More details on that can be found [here](https://cloud.google.com/iam/docs/service-accounts-create).
 
@@ -72,22 +72,22 @@ Save the output details, and then check `View Samples` in the Outputs menu to se
 
 Navigating back to BigQuery, we can see some initial events flowing in:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28102%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(102).png)
 
 Let's hop over to Looker Studio. Create a Blank Report, and select `BigQuery` in the `Connect to Data` menu.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28103%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(103).png)
 
 Select the Project, Dataset, and Table of interest, and click `Add`.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28104%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(104).png)
 
 Looker Studio may prompt you about permissions of connected data. However, once connected, we'll be able to see a starter table with aggregate details from our `network_connections` table.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28105%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(105).png)
 
 And that's it! From here, you can manipulate and move around the data as needed. You can also blend with another table, allowing you to combine multiple data points.
 
 Reports can also be styled, additional statistics generated, etc. The following example continues to pull on the basic data we exported to provide some unique insights:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28106%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(106).png)

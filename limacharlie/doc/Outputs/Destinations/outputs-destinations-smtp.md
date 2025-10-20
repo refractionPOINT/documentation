@@ -39,11 +39,3 @@ is_starttls: false
 is_authlogin: false
 subject: LC Detection- <Name>
 ```
-
-## Related articles
-
-* [IMAP](../../Sensors/Adapters/Adapter_Types/adapter-types-imap.md)
-
-## What's Next
-
-* [Splunk](outputs-destinations-splunk.md)

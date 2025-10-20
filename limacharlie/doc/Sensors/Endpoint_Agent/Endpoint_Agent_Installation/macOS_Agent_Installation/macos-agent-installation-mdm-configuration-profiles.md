@@ -22,7 +22,7 @@ Application Installation
 
 We have provided a sample configuration profile for reference: [![MobileConfig icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/mobileconfig-icon.png)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)
 
-[Download LimaCharlie.mobileconfig sample configuration profile](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)
+ [Download LimaCharlie.mobileconfig sample configuration profile](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip)
 
 This profile includes the following permissions:
 
@@ -36,7 +36,7 @@ In addition to the MDM profile, you will also want to place the following prefer
 
 The required preference file can be downloaded here: [![Preference file icon](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/preference-icon.png)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/com.refractionpoint.rphcp.client.plist.zip)
 
-[Download com.refractionpoint.rphcp.client.plist preference file (to be placed in the /Library/Preferences folder on the endpoint)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/com.refractionpoint.rphcp.client.plist.zip)
+ [Download com.refractionpoint.rphcp.client.plist preference file (to be placed in the /Library/Preferences folder on the endpoint)](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/com.refractionpoint.rphcp.client.plist.zip)
 
 ## Installation Scripts
 
@@ -115,5 +115,3 @@ anchor apple generic and identifier "com.refractionpoint.rphcp.client" and (cert
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-4-ContentFilter.png)
 
 7. Deploy the configuration profile to your devices.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

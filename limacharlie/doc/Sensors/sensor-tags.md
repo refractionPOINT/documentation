@@ -119,8 +119,4 @@ When you tag a sensor with *lc:sleeper*, the sensor will keep its connection to 
 
 ### lc:usage
 
-When you tag a sensor with *lc:usage*, the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](../Endpoint_Agent/sleeper.md).
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+When you tag a sensor with *lc:usage*, the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](Endpoint_Agent/sleeper.md).

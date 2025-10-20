@@ -10,7 +10,7 @@ Once you subscribe an org to the extension, it creates a D&R rule that sends all
 
 More information about NIMS, including the template and corresponding docs, can be found [here](https://nims-template.notion.site/).
 
-## Configuration
+### Configuration
 
 In order to use this extension, you will need 3 pieces of data:
 
@@ -18,7 +18,7 @@ In order to use this extension, you will need 3 pieces of data:
 * NIMS Alert database ID
 * NIMS Asset database ID
 
-### Find your database IDs
+#### Find your database IDs
 
 1. Navigate to the Alert database within NIMS under `Databases`
 2. Right click on the database and click `Copy link`[![link](https://github.com/shortstack/nims-webhook/raw/main/screenshots/link.png)](https://github.com/shortstack/nims-webhook/blob/main/screenshots/link.png)
@@ -32,7 +32,7 @@ In order to use this extension, you will need 3 pieces of data:
 4. Copy the ID
 5. Repeat the above for the Asset database
 
-### Generate an auth token
+#### Generate an auth token
 
 This will walk you through creating a Notion integration, getting the auth token, and adding the integration to the proper NIMS databases.
 
@@ -59,7 +59,7 @@ While completing the following steps, be sure to add the connection to all 3 dat
    [![connection](https://github.com/shortstack/nims-webhook/raw/main/screenshots/confirm.png)](https://github.com/shortstack/nims-webhook/blob/main/screenshots/confirm.png)
 9. Repeat steps 7 and 8 for the `Asset Database` and the `Incident Database`
 
-## Example D&R rule
+### Example D&R rule
 
 **Detect:**
 

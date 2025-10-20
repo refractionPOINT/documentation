@@ -2,7 +2,7 @@
 
 Output events and detections to a Google Cloud BigQuery Table.
 
-For a practical use case of this output, see this tutorial on pushing Velociraptor data to BigQuery.
+For a practical use case of this output, see this [[velociraptor-to-bigquery|tutorial on pushing Velociraptor data to BigQuery]].
 
 * `schema`: describes the column names, data types, and other information; should match the text-formatted schema from bigquery
 * `table`: the table name where to send data.

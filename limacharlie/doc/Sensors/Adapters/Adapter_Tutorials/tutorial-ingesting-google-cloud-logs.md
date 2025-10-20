@@ -161,4 +161,12 @@ That's it, you're good to go!
 
 The next step towards production would be to run the Adapter as a service, or within tmux/screen on the Linux host. Alternatively you could also replicate the above setup using the [Docker container](https://hub.docker.com/r/refractionpoint/lc-adapter) and a serverless platform like Cloud Run.
 
-For more documentation on configuring Adapters, see [Adapter Deployment](../adapter-deployment.md).
+For more documentation on configuring Adapters, see here.
+
+Google Cloud Platform
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

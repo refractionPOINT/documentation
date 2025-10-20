@@ -110,7 +110,3 @@ table: {
   }
 }
 ```
-
-## What's Next
-
-* [Building the User Interface](building-the-user-interface.md)

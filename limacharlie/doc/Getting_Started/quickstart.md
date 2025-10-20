@@ -4,10 +4,10 @@ LimaCharlie is infrastructure to connect sources of security data, automate acti
 
 That said, the majority of LimaCharlie users require basic endpoint detection and response (EDR) capabilities. This guide will cover:
 
-1. Creating a new [**Organization**](#creating-an-organization)
-2. Deploying a [**Sensor**](#deploying-a-sensor) to the Organization
-3. Adding [**Sigma rules**](#adding-sigma-rules) to detect suspicious activity
-4. Forwarding detections to an external destination as an [**Output**](#output)
+1. Creating a new [**Organization**](/v2/docs/quickstart#creating-an-organization)
+2. Deploying a [**Sensor**](/v2/docs/quickstart#deploying-a-sensor) to the Organization
+3. Adding [**Sigma rules**](/v2/docs/quickstart#adding-sigma-rules) to detect suspicious activity
+4. Forwarding detections to an external destination as an [**Output**](/v2/docs/quickstart#output)
 
 All of this can be done within our free tier, which offers full platform functionality for up to two (2) sensors. If you haven't already signed up for a free account, please do so at [app.limacharlie.io](https://app.limacharlie.io).
 
@@ -31,7 +31,7 @@ From the Sensors page in your new organization, click `Add Sensor` to open the s
 
 Sensors Overview
 
-For a full overview of types of sensors and their capabilities, check out [Sensors](../Sensors/sensors.md).
+For a full overview of types of sensors and their capabilities, check out [Sensors](/v2/docs/sensors).
 
 The setup flow should make this process straightforward. For example's sake, let's say we're installing a sensor on a Windows 10 (64 bit) machine we have in front of us.
 
@@ -63,7 +63,7 @@ Enabling the Sigma add-on will automatically apply rules to your organization to
 
 Writing Detection and Response rules
 
-Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](../Detection_and_Response/detection-and-response.md) when you're finished.
+Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](/v2/docs/detection-and-response) when you're finished.
 
 ## Output
 

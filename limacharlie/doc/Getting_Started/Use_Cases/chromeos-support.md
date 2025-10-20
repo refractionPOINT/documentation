@@ -15,3 +15,7 @@ Gain visibility in your Chrome fleet and enhance ChromeOS security to unify endp
 * **Advanced detection and threat hunting:** Utilize LimaCharlie's advanced analytics and threat intelligence to proactively identify suspicious activities, hunt for hidden threats, and respond effectively to evolving cyber threats.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+## What's Next
+
+* [[uncovering-adversary-techniques|Uncovering Adversary Techniques]]

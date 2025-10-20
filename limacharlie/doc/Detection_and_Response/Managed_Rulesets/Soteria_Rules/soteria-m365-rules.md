@@ -10,7 +10,7 @@ Soteria's O365 ruleset provides coverage across O365 (aka M365) telemetry stream
 * OneDrive
 * ...and other productivity applications.
 
-## Data access
+Data access
 
 Please note that Soteria won't get access to your data, and you won't be able to see or edit their rules - LimaCharlie acts as a broker between the two parties.
 
@@ -18,7 +18,7 @@ To leverage detection logic provided by the ruleset:
 
 1. Subscribe your tenant to the [Soteria Office 365 ruleset extension](https://app.limacharlie.io/add-ons/extension-detail/soteria-rules-o365)
 2. Subscribe your tenant to [tor](https://app.limacharlie.io/add-ons/detail/tor-ips) lookup (provided at no cost).
-3. Configure Office 365 Sensor to start collecting [Office 365 audit logs](../../../Sensors/Adapters/Adapter_Types/adapter-types-microsoft-365.md).
+3. Configure Office 365 Sensor to start collecting [Office 365 audit logs](../../../../doc/Sensors/Adapters/Adapter_Types/adapter-types-microsoft-365.md).
 
 ## Enabling Soteria's O365 Rules
 
@@ -51,14 +51,3 @@ LimaCharlie Extensions allow users to expand and customize their security enviro
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
-## Related articles
-
-* [Soteria AWS Rules](./soteria-aws-rules.md)
-* [Soteria EDR Rules](./soteria-edr-rules.md)
-* [Microsoft 365](../../../Sensors/Adapters/Adapter_Types/adapter-types-microsoft-365.md)
-* [Microsoft 365](../../../Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-microsoft365.md)
-
-## What's Next
-
-* [SOC Prime Rules](../soc-prime-rules.md)

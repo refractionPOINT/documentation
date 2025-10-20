@@ -10,7 +10,7 @@ There are three main sections to the YARA job:
 * Rules
 * Scan
 
-## Where Does My YARA Scan?
+Where Does My YARA Scan?
 
 Automated YARA scanners in LimaCharlie will run on all files loaded in memory (e.g. exe, dll, etc), and on the memory itself.
 
@@ -24,7 +24,7 @@ Files on disk can be scanned using a Sensor command.  You can trigger a Manual S
 
 ### Rules
 
-This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [YARA Manager](../../LimaCharlie_Extensions/ext-yara-manager.md). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](../../Reference/reference-authentication-resource-locator.md) to a YARA rule.
+This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](../LimaCharlie_Extensions/ext-yara-manager.md). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](../../Reference/reference-authentication-resource-locator.md) to a YARA rule.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/yara-1.png)
 

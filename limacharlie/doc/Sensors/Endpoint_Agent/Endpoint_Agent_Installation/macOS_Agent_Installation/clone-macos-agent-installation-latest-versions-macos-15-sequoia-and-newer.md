@@ -21,22 +21,22 @@ When running the installer from the command line, you can pass the following arg
 
 ### Installation Flow
 
-1. Download the Sensor installer file. Installer for: [Intel Mac](https://downloads.limacharlie.io/sensor/mac/64) -or- [Apple Silicon Mac](https://downloads.limacharlie.io/sensor/mac/arm64).
+1. Download the Sensor installer file.  Installer for: [Intel Mac](https://downloads.limacharlie.io/sensor/mac/64) -or- [Apple Silicon Mac](https://downloads.limacharlie.io/sensor/mac/arm64).
 2. Add execute permission to the installer file via the command line
 
-> chmod +x lc_sensor
+> chmod +x lc\_sensor
 
-3. Run the installer via the command line. You'll pass the argument -i and your Installation Key.
+3. Run the installer via the command line.  You'll pass the argument -i and your Installation Key.
 
-> sudo ./lc_sensor -i YOUR_INSTALLATION_KEY_GOES_HERE
+> sudo ./lc\_sensor -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
-You can obtain the installation key from the [Installation Keys](../../../../installation-keys.md) section of the LimaCharlie web application.
+You can obtain the installation key from the [Installation Keys](../../Platform_Management/installation-keys.md) section of the LimaCharlie web application.
 
 The sensor will be installed as a launchctl service. Installation will trigger the sensors enrollment with the LimaCharlie cloud
 
 ![macOS Terminal application showing LimaCharlie installation](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/1-Terminal_install.png)
 
-4. An application (`RPHCP.app`) will be installed in the /Applications folder and will automatically launch. Note that it may take a few minutes before you see this happened after installation.
+4. An application (`RPHCP.app`) will be installed in the /Applications folder and will automatically launch.  Note that it may take a few minutes before you see this happened after installation.
 
    You will be prompted to grant permissions for system extensions to be installed. Click the "**Open System Settings**" button
 
@@ -56,7 +56,7 @@ The sensor will be installed as a launchctl service. Installation will trigger t
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/4-Network_Filter_Enablement.png)
 
-8. You'll be prompted to grant Full Disk Access. Check the checkbox next to the RPHCP app in System Preferences -> Privacy -> Full Disk Access
+8. You'll be prompted to grant Full Disk Access.  Check the checkbox next to the RPHCP app in System Preferences -> Privacy -> Full Disk Access
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/5-Full_Disk_Access_Permission_Dialog.png)
 
@@ -104,13 +104,13 @@ We're aware this is an inconvenience and hope Apple will provide better solution
 
 To uninstall the sensor:
 
-1. Run the installer via the command line. You'll pass the argument -c
+1. Run the installer via the command line.  You'll pass the argument -c
 
-> sudo ./hcp_osx_x64_release_4.23.0 -c
+> sudo ./hcp\_osx\_x64\_release\_4.23.0 -c
 
 ![Uninstall progress](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/1-Uninstall_Progress.png)
 
-2. You will be prompted for credentials to modify system extensions. Enteryour password and press OK.
+2. You will be prompted for credentials to modify system extensions.  Enteryour password and press OK.
 
 ![Uninstall permissions](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/2-Uninstaller_Permissions.png)
 
@@ -125,9 +125,3 @@ Note: After uninstallation the LimaCharlie sensor along with the related extensi
 ### Install Using MDM Solutions
 
 See our document [macOS Agent Installation with MDM Solutions](macos-agent-installation-mdm-configuration-profiles.md) for the Mobile Device Management (MDM) Configuration Profile that can be used to deploy the LimaCharlie agent to an enterprise fleet.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

@@ -28,7 +28,7 @@ Each rule specifies a single sensor `tag` used as a selector for the sensors the
 
 The following REST API actions can be sent to interact with the Sensor Cull extension:
 
-### get_rules
+### get\_rules
 
 Get the list of existing rules
 
@@ -48,7 +48,7 @@ Perform an ad-hoc cleanup.
 }
 ```
 
-### add_rule
+### add\_rule
 
 The following example creates a rule name `my new rule` that applies to all sensors with the `vip` Tag, and cleans them up when they have not connected in 30 days.
 
@@ -61,7 +61,7 @@ The following example creates a rule name `my new rule` that applies to all sens
 }
 ```
 
-### del_rule
+### del\_rule
 
 Delete an existing rule by name.
 
@@ -79,8 +79,3 @@ LimaCharlie Extensions allow users to expand and customize their security enviro
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
-
-## Related Articles
-
-* [VDI & Virtual Machine Templates](../../../Sensors/Endpoint_Agent/Endpoint_Agent_Installation/vdi-virtual-machine-templates.md)
-* [Usage Alerts](./ext-usage-alerts.md)

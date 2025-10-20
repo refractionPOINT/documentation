@@ -21,7 +21,7 @@ Adapter Type: `pandadoc`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](../adapter-deployment.md#adapter-binaries).
+Adapter downloads can be found [here](/v2/docs/adapter-deployment#adapter-binaries).
 
 ```
 chmod +x /path/to/lc_adapter

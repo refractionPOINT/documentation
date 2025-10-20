@@ -2,7 +2,7 @@
 
 With its multitude of data ingestion and output options, LimaCharlie users can end up with a myriad of credentials and secret keys to faciliate unique data operations. However, not all users should be privy to these secret keys. Within the Config Hive, the `secrets` hive component allows you to decouple secrets from their usage or configuration across LimaCharlie. Furthermore, you can also grant permissions to users that allows them to see the configuration of an output, but not have access to the associated credentials.
 
-The most common usage is for storing secret keys used by various [Adapters](../../Adapters/adapters.md) or [Outputs](../../Outputs/outputs.md). By referencing `secrets` within the Config Hive, we can configure these services without needing to reveal secret keys to all users.
+The most common usage is for storing secret keys used by various [Adapters](adapters.md) or [Outputs](outputs.md). By referencing `secrets` within the Config Hive, we can configure these services without needing to reveal secret keys to all users.
 
 Watch the video below to learn more about hive secrets, or continue reading below.
 

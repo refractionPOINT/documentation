@@ -12,106 +12,106 @@ These are the events emitted by the endpoint agent for each supported operating 
 
 | EDR Event Type | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- |
-| [AUTORUN_CHANGE](#autorunchange) |  | ☑️ |  |  |  |
-| [CLOUD_NOTIFICATION](#cloudnotification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [CODE_IDENTITY](#codeidentity) | ☑️ | ☑️ | ☑️ |  |  |
+| [AUTORUN\_CHANGE](#autorunchange) |  | ☑️ |  |  |  |
+| [CLOUD\_NOTIFICATION](#cloudnotification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [CODE\_IDENTITY](#codeidentity) | ☑️ | ☑️ | ☑️ |  |  |
 | [CONNECTED](#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [DATA_DROPPED](#datadropped) | ☑️ | ☑️ | ☑️ |  |  |
-| [DEBUG_DATA_REP](#getdebugdata) |  | ☑️ |  |  |  |
-| [DELETED_SENSOR](#deletedsensor) | ☑️ | ☑️ | ☑️ |  |  |
-| [DIR_FINDHASH_REP](#dirfindhash) | ☑️ | ☑️ | ☑️ |  |  |
-| [DIR_LIST_REP](#dirlist) | ☑️ | ☑️ | ☑️ |  |  |
+| [DATA\_DROPPED](#datadropped) | ☑️ | ☑️ | ☑️ |  |  |
+| [DEBUG\_DATA\_REP](#getdebugdata) |  | ☑️ |  |  |  |
+| [DELETED\_SENSOR](#deletedsensor) | ☑️ | ☑️ | ☑️ |  |  |
+| [DIR\_FINDHASH\_REP](#dirfindhash) | ☑️ | ☑️ | ☑️ |  |  |
+| [DIR\_LIST\_REP](#dirlist) | ☑️ | ☑️ | ☑️ |  |  |
 | [DISCONNECTED](#disconnected) |  | ☑️ |  |  |  |
-| [DNS_REQUEST](#dnsrequest) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [DRIVER_CHANGE](#driverchange) |  | ☑️ |  |  |  |
-| [EXEC_OOB](#execoob) | ☑️ |  | ☑️ |  |  |
-| [EXISTING_PROCESS](#existingprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [EXPORT_COMPLETE](#exportcomplete) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM_ADD](#fimadd) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM_DEL](#fimdel) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM_HIT](#fimhit) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE_CREATE](#filecreate) | ☑️ | ☑️ |  |  |  |
-| [FILE_DEL_REP](#filedel) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE_DELETE](#filedelete) | ☑️ | ☑️ |  |  |  |
-| [FILE_GET_REP](#fileget) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE_HASH_REP](#filehash) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE_INFO_REP](#fileinfo) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE_MODIFIED](#filemodified) | ☑️ | ☑️ |  |  |  |
-| [FILE_MOV_REP](#filemov) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE_TYPE_ACCESSED](#filetypeaccessed) | ☑️ | ☑️ |  |  |  |
-| [GET_DOCUMENT_REP](#doccacheget) | ☑️ | ☑️ |  |  |  |
-| [GET_EXFIL_EVENT_REP](#exfilget) | ☑️ | ☑️ | ☑️ |  |  |
-| [HIDDEN_MODULE_DETECTED](#hiddenmoduledetected) |  | ☑️ |  |  |  |
-| [HISTORY_DUMP_REP](#historydump) | ☑️ | ☑️ | ☑️ |  |  |
-| [HTTP_REQUEST](#httprequest) |  |  |  | ☑️ | ☑️ |
-| [HTTP_REQUEST_HEADERS](#httprequestheaders) |  |  |  | ☑️ |  |
-| [HTTP_RESPONSE_HEADERS](#httpresponseheaders) |  |  |  | ☑️ |  |
+| [DNS\_REQUEST](#dnsrequest) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [DRIVER\_CHANGE](#driverchange) |  | ☑️ |  |  |  |
+| [EXEC\_OOB](#execoob) | ☑️ |  | ☑️ |  |  |
+| [EXISTING\_PROCESS](#existingprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [EXPORT\_COMPLETE](#exportcomplete) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM\_ADD](#fimadd) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM\_DEL](#fimdel) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM\_HIT](#fimhit) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_CREATE](#filecreate) | ☑️ | ☑️ |  |  |  |
+| [FILE\_DEL\_REP](#filedel) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_DELETE](#filedelete) | ☑️ | ☑️ |  |  |  |
+| [FILE\_GET\_REP](#fileget) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_HASH\_REP](#filehash) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_INFO\_REP](#fileinfo) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_MODIFIED](#filemodified) | ☑️ | ☑️ |  |  |  |
+| [FILE\_MOV\_REP](#filemov) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_TYPE\_ACCESSED](#filetypeaccessed) | ☑️ | ☑️ |  |  |  |
+| [GET\_DOCUMENT\_REP](#doccacheget) | ☑️ | ☑️ |  |  |  |
+| [GET\_EXFIL\_EVENT\_REP](#exfilget) | ☑️ | ☑️ | ☑️ |  |  |
+| [HIDDEN\_MODULE\_DETECTED](#hiddenmoduledetected) |  | ☑️ |  |  |  |
+| [HISTORY\_DUMP\_REP](#historydump) | ☑️ | ☑️ | ☑️ |  |  |
+| [HTTP\_REQUEST](#httprequest) |  |  |  | ☑️ | ☑️ |
+| [HTTP\_REQUEST\_HEADERS](#httprequestheaders) |  |  |  | ☑️ |  |
+| [HTTP\_RESPONSE\_HEADERS](#httpresponseheaders) |  |  |  | ☑️ |  |
 | [INGEST](#ingest) | ☑️ | ☑️ | ☑️ |  |  |
-| [LOG_GET_REP](#logget) |  |  |  |  |  |
-| [LOG_LIST_REP](#loglist) |  |  |  |  |  |
-| [MEM_FIND_HANDLES_REP](#memfindhandle) |  | ☑️ |  |  |  |
-| [MEM_FIND_STRING_REP](#memfindstring) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM_HANDLES_REP](#memhandles) |  | ☑️ |  |  |  |
-| [MEM_MAP_REP](#memmap) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM_READ_REP](#memread) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM_STRINGS_REP](#memstrings) | ☑️ | ☑️ | ☑️ |  |  |
-| [MODULE_LOAD](#moduleload) |  | ☑️ | ☑️ |  |  |
-| [MODULE_MEM_DISK_MISMATCH](#modulememdiskmismatch) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETSTAT_REP](#netstat) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETWORK_CONNECTIONS](#networkconnections) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETWORK_SUMMARY](#networksummary) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW_DOCUMENT](#newdocument) | ☑️ | ☑️ |  |  |  |
-| [NEW_NAMED_PIPE](#newnamedpipe) |  | ☑️ |  |  |  |
-| [NEW_PROCESS](#newprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW_REMOTE_THREAD](#newremotethread) |  | ☑️ |  |  |  |
-| [NEW_TCP4_CONNECTION](#newtcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW_TCP6_CONNECTION](#newtcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW_UDP4_CONNECTION](#newudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW_UDP6_CONNECTION](#newudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [OPEN_NAMED_PIPE](#opennamedpipe) |  | ☑️ |  |  |  |
-| [OS_AUTORUNS_REP](#osautoruns) | ☑️ | ☑️ |  |  |  |
-| [OS_DRIVERS_REP](#osdrivers) |  | ☑️ |  |  |  |
-| [OS_KILL_PROCESS_REP](#oskillprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS_PACKAGES_REP](#ospackages) |  | ☑️ |  |  |  |
-| [OS_PROCESSES_REP](#osprocesses) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS_RESUME_REP](#osresume) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS_SERVICES_REP](#osservices) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS_SUSPEND_REP](#ossuspend) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS_USERS_REP](#osusers) |  | ☑️ |  |  |  |
-| [OS_VERSION_REP](#osversion) | ☑️ | ☑️ | ☑️ |  |  |
-| [PCAP_LIST_INTERFACES_REP](#pcapifaces) |  |  | ☑️ |  |  |
-| [PROCESS_ENVIRONMENT](#processenvironment) |  | ☑️ | ☑️ |  |  |
+| [LOG\_GET\_REP](#logget) |  |  |  |  |  |
+| [LOG\_LIST\_REP](#loglist) |  |  |  |  |  |
+| [MEM\_FIND\_HANDLES\_REP](#memfindhandle) |  | ☑️ |  |  |  |
+| [MEM\_FIND\_STRING\_REP](#memfindstring) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM\_HANDLES\_REP](#memhandles) |  | ☑️ |  |  |  |
+| [MEM\_MAP\_REP](#memmap) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM\_READ\_REP](#memread) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM\_STRINGS\_REP](#memstrings) | ☑️ | ☑️ | ☑️ |  |  |
+| [MODULE\_LOAD](#moduleload) |  | ☑️ | ☑️ |  |  |
+| [MODULE\_MEM\_DISK\_MISMATCH](#modulememdiskmismatch) | ☑️ | ☑️ | ☑️ |  |  |
+| [NETSTAT\_REP](#netstat) | ☑️ | ☑️ | ☑️ |  |  |
+| [NETWORK\_CONNECTIONS](#networkconnections) | ☑️ | ☑️ | ☑️ |  |  |
+| [NETWORK\_SUMMARY](#networksummary) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_DOCUMENT](#newdocument) | ☑️ | ☑️ |  |  |  |
+| [NEW\_NAMED\_PIPE](#newnamedpipe) |  | ☑️ |  |  |  |
+| [NEW\_PROCESS](#newprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_REMOTE\_THREAD](#newremotethread) |  | ☑️ |  |  |  |
+| [NEW\_TCP4\_CONNECTION](#newtcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_TCP6\_CONNECTION](#newtcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_UDP4\_CONNECTION](#newudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_UDP6\_CONNECTION](#newudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [OPEN\_NAMED\_PIPE](#opennamedpipe) |  | ☑️ |  |  |  |
+| [OS\_AUTORUNS\_REP](#osautoruns) | ☑️ | ☑️ |  |  |  |
+| [OS\_DRIVERS\_REP](#osdrivers) |  | ☑️ |  |  |  |
+| [OS\_KILL\_PROCESS\_REP](#oskillprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_PACKAGES\_REP](#ospackages) |  | ☑️ |  |  |  |
+| [OS\_PROCESSES\_REP](#osprocesses) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_RESUME\_REP](#osresume) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_SERVICES\_REP](#osservices) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_SUSPEND\_REP](#ossuspend) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_USERS\_REP](#osusers) |  | ☑️ |  |  |  |
+| [OS\_VERSION\_REP](#osversion) | ☑️ | ☑️ | ☑️ |  |  |
+| [PCAP\_LIST\_INTERFACES\_REP](#pcapifaces) |  |  | ☑️ |  |  |
+| [PROCESS\_ENVIRONMENT](#processenvironment) |  | ☑️ | ☑️ |  |  |
 | [RECEIPT](#receipt) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [REGISTRY_CREATE](#registrycreate) |  | ☑️ |  |  |  |
-| [REGISTRY_DELETE](#registrydelete) |  | ☑️ |  |  |  |
-| [REGISTRY_LIST_REP](#reglist) |  | ☑️ |  |  |  |
-| [REGISTRY_WRITE](#registrywrite) |  | ☑️ |  |  |  |
-| [REJOIN_NETWORK](#rejoinnetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [REMOTE_PROCESS_HANDLE](#remoteprocesshandle) |  | ☑️ |  |  |  |
-| [SEGREGATE_NETWORK](#segregatenetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [SENSITIVE_PROCESS_ACCESS](#sensitiveprocessaccess) |  | ☑️ |  |  |  |
-| [SERVICE_CHANGE](#servicechange) | ☑️ | ☑️ | ☑️ |  |  |
-| [SHUTTING_DOWN](#shuttingdown) | ☑️ | ☑️ | ☑️ |  |  |
-| [SSH_LOGIN](#sshlogin) | ☑️ |  |  |  |  |
-| [SSH_LOGOUT](#sshlogout) | ☑️ |  |  |  |  |
-| [STARTING_UP](#startingup) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE_PROCESS](#terminateprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE_TCP4_CONNECTION](#terminatetcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE_TCP6_CONNECTION](#terminatetcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE_UDP4_CONNECTION](#terminateudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE_UDP6_CONNECTION](#terminateudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [THREAD_INJECTION](#threadinjection) |  | ☑️ |  |  |  |
-| [USER_LOGIN](#userlogin) | ☑️ |  |  |  |  |
-| [USER_LOGOUT](#userlogout) | ☑️ |  |  |  |  |
-| [USER_OBSERVED](#userobserved) | ☑️ | ☑️ | ☑️ |  |  |
-| [VOLUME_MOUNT](#volumemount) | ☑️ | ☑️ |  |  |  |
-| [VOLUME_UNMOUNT](#volumeunmount) | ☑️ | ☑️ |  |  |  |
+| [REGISTRY\_CREATE](#registrycreate) |  | ☑️ |  |  |  |
+| [REGISTRY\_DELETE](#registrydelete) |  | ☑️ |  |  |  |
+| [REGISTRY\_LIST\_REP](#reglist) |  | ☑️ |  |  |  |
+| [REGISTRY\_WRITE](#registrywrite) |  | ☑️ |  |  |  |
+| [REJOIN\_NETWORK](#rejoinnetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
+| [REMOTE\_PROCESS\_HANDLE](#remoteprocesshandle) |  | ☑️ |  |  |  |
+| [SEGREGATE\_NETWORK](#segregatenetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
+| [SENSITIVE\_PROCESS\_ACCESS](#sensitiveprocessaccess) |  | ☑️ |  |  |  |
+| [SERVICE\_CHANGE](#servicechange) | ☑️ | ☑️ | ☑️ |  |  |
+| [SHUTTING\_DOWN](#shuttingdown) | ☑️ | ☑️ | ☑️ |  |  |
+| [SSH\_LOGIN](#sshlogin) | ☑️ |  |  |  |  |
+| [SSH\_LOGOUT](#sshlogout) | ☑️ |  |  |  |  |
+| [STARTING\_UP](#startingup) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_PROCESS](#terminateprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_TCP4\_CONNECTION](#terminatetcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_TCP6\_CONNECTION](#terminatetcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_UDP4\_CONNECTION](#terminateudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_UDP6\_CONNECTION](#terminateudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [THREAD\_INJECTION](#threadinjection) |  | ☑️ |  |  |  |
+| [USER\_LOGIN](#userlogin) | ☑️ |  |  |  |  |
+| [USER\_LOGOUT](#userlogout) | ☑️ |  |  |  |  |
+| [USER\_OBSERVED](#userobserved) | ☑️ | ☑️ | ☑️ |  |  |
+| [VOLUME\_MOUNT](#volumemount) | ☑️ | ☑️ |  |  |  |
+| [VOLUME\_UNMOUNT](#volumeunmount) | ☑️ | ☑️ |  |  |  |
 | [WEL](#wel) |  | ☑️ |  |  |  |
-| [YARA_DETECTION](#yaradetection) | ☑️ | ☑️ | ☑️ |  |  |
+| [YARA\_DETECTION](#yaradetection) | ☑️ | ☑️ | ☑️ |  |  |
 
 ## Event Descriptions
 
-### AUTORUN_CHANGE
+### AUTORUN\_CHANGE
 
 Generated when an Autorun is changed.
 
@@ -124,7 +124,7 @@ Generated when an Autorun is changed.
 }
 ```
 
-### CLOUD_NOTIFICATION
+### CLOUD\_NOTIFICATION
 
 This event is a receipt from the agent that it has received the task sent to it, and includes high-level errors (if any).
 
@@ -147,11 +147,11 @@ This event is a receipt from the agent that it has received the task sent to it,
 }
 ```
 
-### CODE_IDENTITY
+### CODE\_IDENTITY
 
 Unique combinations of file hash and file path. This event is emitted the first time the combination is seen, typically when the binary is executed or loaded. Therefore it's a great event to look for hashes without being overwhelmed by process execution or module loads.
 
-ONGOING_IDENTITY
+ONGOING\_IDENTITY
 
 The `ONGOING_IDENTITY` event emits code signature information even if not newly seen, however this data can become duplicative and verbose.
 
@@ -187,13 +187,13 @@ This event is generated when a Sensor connects to the cloud.
 }
 ```
 
-### DEBUG_DATA_REP
+### DEBUG\_DATA\_REP
 
 Response from a `get_debug_data` request.
 
 **Platforms:**
 
-### DIR_FINDHASH_REP
+### DIR\_FINDHASH\_REP
 
 Response event for the `dir_find_hash` sensor command.
 
@@ -235,7 +235,7 @@ Response event for the `dir_find_hash` sensor command.
 }
 ```
 
-### DIR_LIST_REP
+### DIR\_LIST\_REP
 
 Response event for the `dir_list` sensor command. Includes Alternate Data Streams on Windows.
 
@@ -297,9 +297,9 @@ This event is generated when a Sensor disconnects from the cloud.
 }
 ```
 
-### DNS_REQUEST
+### DNS\_REQUEST
 
-Generated from DNS responses and therefore includes both the requested domain and the response from the server. If the server responds with multiple responses (as allowed by the DNS protocol) the N answers will become N DNS_REQUEST events, so you can always assume one DNS_REQUEST event means one answer.
+Generated from DNS responses and therefore includes both the requested domain and the response from the server. If the server responds with multiple responses (as allowed by the DNS protocol) the N answers will become N DNS\_REQUEST events, so you can always assume one DNS\_REQUEST event means one answer.
 
 **Platforms:**
 
@@ -312,7 +312,7 @@ Generated from DNS responses and therefore includes both the requested domain an
 }
 ```
 
-### DRIVER_CHANGE
+### DRIVER\_CHANGE
 
 Generated when a driver is changed.
 
@@ -329,13 +329,13 @@ Generated when a driver is changed.
 }
 ```
 
-### EXISTING_PROCESS
+### EXISTING\_PROCESS
 
-This event is similar to the NEW_PROCESS event.  It gets emitted when a process existed prior to the LimaCharlie sensor loading.
+This event is similar to the NEW\_PROCESS event.  It gets emitted when a process existed prior to the LimaCharlie sensor loading.
 
 **Platforms:**
 
-### FILE_CREATE
+### FILE\_CREATE
 
 Generated when a file is created.
 
@@ -348,7 +348,7 @@ Generated when a file is created.
 }
 ```
 
-### FILE_DEL_REP
+### FILE\_DEL\_REP
 
 Response event for the `file_del` sensor command.
 
@@ -362,7 +362,7 @@ Response event for the `file_del` sensor command.
 }
 ```
 
-### FILE_DELETE
+### FILE\_DELETE
 
 Generated when a file is deleted.
 
@@ -390,7 +390,7 @@ Generated when a file is deleted.
 }
 ```
 
-### FILE_GET_REP
+### FILE\_GET\_REP
 
 Response event for the `file_get` sensor command.
 
@@ -406,7 +406,7 @@ Response event for the `file_get` sensor command.
 }
 ```
 
-### FILE_HASH_REP
+### FILE\_HASH\_REP
 
 Response event for the `file_hash` sensor command.
 
@@ -429,7 +429,7 @@ Response event for the `file_hash` sensor command.
 }
 ```
 
-### FILE_INFO_REP
+### FILE\_INFO\_REP
 
 Response event for the `file_info` sensor command.
 
@@ -449,7 +449,7 @@ Response event for the `file_info` sensor command.
 }
 ```
 
-### FILE_MODIFIED
+### FILE\_MODIFIED
 
 Generated when a file is modified.
 
@@ -477,7 +477,7 @@ Generated when a file is modified.
 }
 ```
 
-### FILE_MOV_REP
+### FILE\_MOV\_REP
 
 Response event for the `file_mov` sensor command.
 
@@ -492,7 +492,7 @@ Response event for the `file_mov` sensor command.
 }
 ```
 
-### FILE_TYPE_ACCESSED
+### FILE\_TYPE\_ACCESSED
 
 Generated when a new process is observed interacting with certain file types.
 
@@ -517,7 +517,7 @@ The `RULE_NAME` component is the class of file extension involved:
 }
 ```
 
-### FIM_ADD
+### FIM\_ADD
 
 Response event for the `fim_add` sensor command. An `ERROR: 0` implies the path was successfully added.
 
@@ -531,7 +531,7 @@ Response event for the `fim_add` sensor command. An `ERROR: 0` implies the path 
 }
 ```
 
-### FIM_DEL
+### FIM\_DEL
 
 Response event for the `fim_del` sensor command. An `ERROR: 0` implies the path was successfully removed.
 
@@ -547,7 +547,7 @@ An `ERROR: 3` response implies the provided path was not found in the list of FI
 }
 ```
 
-### FIM_HIT
+### FIM\_HIT
 
 A file, directory, or registry key being monitored by File & Registry Integrity Monitoring has been modified.
 
@@ -570,7 +570,7 @@ A file, directory, or registry key being monitored by File & Registry Integrity 
 }
 ```
 
-### FIM_LIST_REP
+### FIM\_LIST\_REP
 
 Response event for the `fim_get` sensor command. The response will be a JSON list of FIM patterns.
 
@@ -588,19 +588,19 @@ Response event for the `fim_get` sensor command. The response will be a JSON lis
 }
 ```
 
-### GET_DOCUMENT_REP
+### GET\_DOCUMENT\_REP
 
 Generated when a `doc_cache_get` task requests a cached document.
 
 **Platforms:**
 
-### GET_EXFIL_EVENT_REP
+### GET\_EXFIL\_EVENT\_REP
 
 Response from an `exfil_get` sensor command.
 
 **Platforms:**
 
-### HIDDEN_MODULE_DETECTED
+### HIDDEN\_MODULE\_DETECTED
 
 Generated when a `hidden_module_scan` command is issued.
 
@@ -619,13 +619,13 @@ confirm whether a hidden module was detected.
 }
 ```
 
-### HISTORY_DUMP_REP
+### HISTORY\_DUMP\_REP
 
 Response from `history_dump` sensor command. Does not itself contain the historic events but will be generated along them.
 
 **Platforms:**
 
-### HTTP_REQUEST
+### HTTP\_REQUEST
 
 This event is emitted whenever an HTTP request is made.
 
@@ -644,7 +644,7 @@ This event is emitted whenever an HTTP request is made.
 }
 ```
 
-### HTTP_REQUEST_HEADERS
+### HTTP\_REQUEST\_HEADERS
 
 Provides HTTP Request headers.
 
@@ -667,7 +667,7 @@ Provides HTTP Request headers.
 }
 ```
 
-### HTTP_RESPONSE_HEADERS
+### HTTP\_RESPONSE\_HEADERS
 
 Provides HTTP Response headers.
 
@@ -754,27 +754,27 @@ Provides HTTP Response headers.
 }
 ```
 
-### LOG_GET_REP
+### LOG\_GET\_REP
 
 Response from a `log_get` request.
 
-### LOG_LIST_REP
+### LOG\_LIST\_REP
 
 Response from a `log_list` request.
 
-### MEM_FIND_HANDLES_REP
+### MEM\_FIND\_HANDLES\_REP
 
 Response event for the `mem_find_handle` sensor command.
 
 **Platforms:**
 
-### MEM_FIND_STRING_REP
+### MEM\_FIND\_STRING\_REP
 
 Response event for the `mem_find_string` sensor command.
 
 **Platforms:**
 
-### MEM_HANDLES_REP
+### MEM\_HANDLES\_REP
 
 Response event for the `mem_handles` sensor command. This event will contain an array of handles identified in memory.
 
@@ -801,7 +801,7 @@ Response event for the `mem_handles` sensor command. This event will contain an 
 }
 ```
 
-### MEM_MAP_REP
+### MEM\_MAP\_REP
 
 Response event for the `mem_map` sensor command. This event will contain an array of arrays, representing processes and their associated memory data.
 
@@ -822,7 +822,7 @@ Sample Event:
 }
 ```
 
-### MEM_READ_REP
+### MEM\_READ\_REP
 
 Response event for the `mem_read` sensor command.
 
@@ -837,7 +837,7 @@ Response event for the `mem_read` sensor command.
 }
 ```
 
-### MEM_STRINGS_REP
+### MEM\_STRINGS\_REP
 
 Response event for the `mem_strings` sensor command. The response will contain two arrays of arrays, `STRINGSA` and `STRINGSW`.
 
@@ -857,7 +857,7 @@ Response event for the `mem_strings` sensor command. The response will contain t
 }
 ```
 
-### MODULE_LOAD
+### MODULE\_LOAD
 
 Generated when a module (like DLL on Windows) is loaded in a process.
 
@@ -874,7 +874,7 @@ Generated when a module (like DLL on Windows) is loaded in a process.
 }
 ```
 
-### NETSTAT_REP
+### NETSTAT\_REP
 
 Response from a  `netstat` command to list active network sockets.
 
@@ -902,7 +902,7 @@ Response from a  `netstat` command to list active network sockets.
 }
 ```
 
-### NETWORK_CONNECTIONS
+### NETWORK\_CONNECTIONS
 
 List of recent network connections performed by a process.
 
@@ -988,7 +988,7 @@ List of recent network connections performed by a process.
 }
 ```
 
-### NEW_DOCUMENT
+### NEW\_DOCUMENT
 
 Generated when a file is created that matches a set list of locations and extensions. It indicates the file has been cached in memory and can be retrieved using the `doc_cache_get` task.
 
@@ -1034,7 +1034,7 @@ The following file patterns are considered "documents":
 }
 ```
 
-### NEW_NAMED_PIPE
+### NEW\_NAMED\_PIPE
 
 This event is emitted when a new Named Pipe is created by a process.
 
@@ -1047,7 +1047,7 @@ This event is emitted when a new Named Pipe is created by a process.
 }
 ```
 
-### NEW_PROCESS
+### NEW\_PROCESS
 
 Generated when a new process starts.
 
@@ -1075,7 +1075,7 @@ Generated when a new process starts.
 }
 ```
 
-### NEW_REMOTE_THREAD
+### NEW\_REMOTE\_THREAD
 
 Generated when a thread is created by a process in another process. This is often used by malware during various forms of code injection.
 
@@ -1091,7 +1091,7 @@ In this case, the process id `492` created a thread (with id `9012`) in the proc
 }
 ```
 
-### NEW_TCP4_CONNECTION
+### NEW\_TCP4\_CONNECTION
 
 Generated when a new TCPv4 connection is established, either inbound or outbound.
 
@@ -1113,13 +1113,13 @@ Generated when a new TCPv4 connection is established, either inbound or outbound
 }
 ```
 
-### NEW_TCP6_CONNECTION
+### NEW\_TCP6\_CONNECTION
 
 Generated when a new TCPv6 connection is established, either inbound or outbound.
 
 **Platforms:**
 
-### NEW_UDP4_CONNECTION
+### NEW\_UDP4\_CONNECTION
 
 Generated when a new UDPv4 socket "connection" is established, either inbound or outbound.
 
@@ -1134,13 +1134,13 @@ Generated when a new UDPv4 socket "connection" is established, either inbound or
 }
 ```
 
-### NEW_UDP6_CONNECTION
+### NEW\_UDP6\_CONNECTION
 
 Generated when a new UDPv6 socket "connection" is established, either inbound or outbound.
 
 **Platforms:**
 
-### OPEN_NAMED_PIPE
+### OPEN\_NAMED\_PIPE
 
 This event is emitted when an existing Named Pipe is opened by a process.
 
@@ -1153,7 +1153,7 @@ This event is emitted when an existing Named Pipe is opened by a process.
 }
 ```
 
-### OS_AUTORUNS_REP
+### OS\_AUTORUNS\_REP
 
 Response from an `os_autoruns` request.
 
@@ -1174,7 +1174,7 @@ Response from an `os_autoruns` request.
 }
 ```
 
-### OS_DRIVERS_REP
+### OS\_DRIVERS\_REP
 
 Response from an `os_drivers` request.
 
@@ -1198,7 +1198,7 @@ Response from an `os_drivers` request.
 }
 ```
 
-### OS_KILL_PROCESS_REP
+### OS\_KILL\_PROCESS\_REP
 
 Response from an `os_kill_process` request.
 
@@ -1213,7 +1213,7 @@ Response from an `os_kill_process` request.
 }
 ```
 
-### OS_PACKAGES_REP
+### OS\_PACKAGES\_REP
 
 List of packages installed on the system. This is currently Windows only but will be expanded to MacOS and Linux in the future.
 
@@ -1229,7 +1229,7 @@ List of packages installed on the system. This is currently Windows only but wil
 ]
 ```
 
-### OS_PROCESSES_REP
+### OS\_PROCESSES\_REP
 
 Response from an `os_process` request.
 
@@ -1249,13 +1249,13 @@ Response from an `os_process` request.
 }
 ```
 
-### OS_RESUME_REP
+### OS\_RESUME\_REP
 
 Response from an `os_resume` request.
 
 **Platforms:**
 
-### OS_SERVICES_REP
+### OS\_SERVICES\_REP
 
 Response from an `os_services` request.
 
@@ -1276,13 +1276,13 @@ Response from an `os_services` request.
 }
 ```
 
-### OS_SUSPEND_REP
+### OS\_SUSPEND\_REP
 
 Response from an `os_suspend` request.
 
 **Platforms:**
 
-### OS_USERS_REP
+### OS\_USERS\_REP
 
 Response from an `os_users` request.
 
@@ -1300,7 +1300,7 @@ Response from an `os_users` request.
 }
 ```
 
-### OS_VERSION_REP
+### OS\_VERSION\_REP
 
 Response from an `os_version` request.
 
@@ -1314,7 +1314,7 @@ Response from an `os_version` request.
 }
 ```
 
-### PCAP_LIST_INTERFACES_REP
+### PCAP\_LIST\_INTERFACES\_REP
 
 Response from a `pcap_ifaces` request.
 
@@ -1333,7 +1333,7 @@ Response from a `pcap_ifaces` request.
 }
 ```
 
-### PROCESS_ENVIRONMENT
+### PROCESS\_ENVIRONMENT
 
 Generated when a process starts. It lists all environment variables associated with that new process.
 
@@ -1354,11 +1354,11 @@ Generated when a process starts. It lists all environment variables associated w
 
 ### RECEIPT
 
-This event is used as a generic response to some commands. The contents of a `RECEIPT` event usually contain an `ERROR` code that you can use to determine if the command was successful (`ERROR` codes can be explored [here](./reference-error-codes.md)). It's often a good idea to issue the original command with an `investigation_id` which will get echoed in the `RECEIPT` related to that command to make it easier to track.
+This event is used as a generic response to some commands. The contents of a `RECEIPT` event usually contain an `ERROR` code that you can use to determine if the command was successful (`ERROR` codes can be explored [here](reference-error-codes.md)). It's often a good idea to issue the original command with an `investigation_id` which will get echoed in the `RECEIPT` related to that command to make it easier to track.
 
 **Platforms:**
 
-### REGISTRY_CREATE
+### REGISTRY\_CREATE
 
 This event is generated whenever a registry key / value is created on a Windows OS.
 
@@ -1371,7 +1371,7 @@ This event is generated whenever a registry key / value is created on a Windows 
 }
 ```
 
-### REGISTRY_DELETE
+### REGISTRY\_DELETE
 
 This event is generated whenever a registry key / value is deleted on a Windows OS.
 
@@ -1384,7 +1384,7 @@ This event is generated whenever a registry key / value is deleted on a Windows 
 }
 ```
 
-### REGISTRY_LIST_REP
+### REGISTRY\_LIST\_REP
 
 This event is generated in response to the `reg_list` command to list keys and values in a registry key.
 
@@ -1408,7 +1408,7 @@ This event is generated in response to the `reg_list` command to list keys and v
 }
 ```
 
-### REGISTRY_WRITE
+### REGISTRY\_WRITE
 
 This event is generated whenever a registry value is written to on a Windows OS.
 
@@ -1441,7 +1441,7 @@ Binary payload:
 }
 ```
 
-### REJOIN_NETWORK
+### REJOIN\_NETWORK
 
 Emitted after a sensor is allowed network connectivity again (after it was previously segregated). An error code of 0 indicates success.
 
@@ -1455,7 +1455,7 @@ Emitted after a sensor is allowed network connectivity again (after it was previ
 }
 ```
 
-### REMOTE_PROCESS_HANDLE
+### REMOTE\_PROCESS\_HANDLE
 
 Generated whenever a process opens a handle to another process with access flags like `VM_READ`, `VM_WRITE`, or `PROCESS_CREATE_THREAD`.
 
@@ -1471,7 +1471,7 @@ The `ACCESS_FLAGS` is the access mask as defined [here](https://docs.microsoft.c
 }
 ```
 
-### SEGREGATE_NETWORK
+### SEGREGATE\_NETWORK
 
 Emitted when a sensor is segregated (isolated) from the network using the `segregate_network` command. An error code of 0 indicates success.
 
@@ -1485,13 +1485,13 @@ Emitted when a sensor is segregated (isolated) from the network using the `segre
 }
 ```
 
-### SENSITIVE_PROCESS_ACCESS
+### SENSITIVE\_PROCESS\_ACCESS
 
 Generated when a process gains sensitive access to operating system processes like `lsass.exe` on Windows.
 
 Note
 
-SENSITIVE_PROCESS_ACCESS currently is only emitted for processes accessing `lsass.exe` on Windows.
+SENSITIVE\_PROCESS\_ACCESS currently is only emitted for processes accessing `lsass.exe` on Windows.
 
 **Platforms:**
 
@@ -1512,7 +1512,7 @@ SENSITIVE_PROCESS_ACCESS currently is only emitted for processes accessing `lsas
 }
 ```
 
-### SERVICE_CHANGE
+### SERVICE\_CHANGE
 
 Generated when a Service is changed.
 
@@ -1532,7 +1532,7 @@ Generated when a Service is changed.
 }
 ```
 
-### SSH_LOGIN
+### SSH\_LOGIN
 
 Generated when a user logs in via SSH.
 
@@ -1545,11 +1545,11 @@ Generated when a user logs in via SSH.
 }
 ```
 
-### SELF_TEST
+### SELF\_TEST
 
 Internal event to manually request a power-on-self-test (POST) from the sensor.
 
-### SHUTTING_DOWN
+### SHUTTING\_DOWN
 
 Event generated when the sensor shuts down. Note: this event may not be observed if the host shuts down abruptly or too quickly.
 
@@ -1571,7 +1571,7 @@ Event generated when the sensor shuts down. Note: this event may not be observed
 }
 ```
 
-### SSH_LOGOUT
+### SSH\_LOGOUT
 
 Generated when a user logs out via SSH.
 
@@ -1584,7 +1584,7 @@ Generated when a user logs out via SSH.
 }
 ```
 
-### STARTING_UP
+### STARTING\_UP
 
 Event generated when the sensor starts.
 
@@ -1606,7 +1606,7 @@ Event generated when the sensor starts.
 }
 ```
 
-### TERMINATE_PROCESS
+### TERMINATE\_PROCESS
 
 Generated when a process exits.
 
@@ -1620,7 +1620,7 @@ Generated when a process exits.
 }
 ```
 
-### TERMINATE_TCP4_CONNECTION
+### TERMINATE\_TCP4\_CONNECTION
 
 Generated when a TCPv4 connection terminates.
 
@@ -1638,19 +1638,19 @@ Generated when a TCPv4 connection terminates.
 }
 ```
 
-### TERMINATE_TCP6_CONNECTION
+### TERMINATE\_TCP6\_CONNECTION
 
 Generated when a TCPv6 connection terminates.
 
-### TERMINATE_UDP4_CONNECTION
+### TERMINATE\_UDP4\_CONNECTION
 
 Generated when a UDPv4 socket terminates.
 
-### TERMINATE_UDP6_CONNECTION
+### TERMINATE\_UDP6\_CONNECTION
 
 Generated when a UDPv6 socket terminates.
 
-### THREAD_INJECTION
+### THREAD\_INJECTION
 
 This event is generated when the sensor detects what looks like a thread injection into a remote process.
 
@@ -1780,19 +1780,19 @@ This event is generated when the sensor detects what looks like a thread injecti
 }
 ```
 
-### USER_LOGIN
+### USER\_LOGIN
 
 Generated when a user logs in to the operating system.
 
 **Platforms:**
 
-### USER_LOGOUT
+### USER\_LOGOUT
 
 Generated when a user logs out of the operating system.
 
 **Platforms:**
 
-### USER_OBSERVED
+### USER\_OBSERVED
 
 Generated the first time a user is observed on a host.
 
@@ -1805,7 +1805,7 @@ Generated the first time a user is observed on a host.
 }
 ```
 
-### VOLUME_MOUNT
+### VOLUME\_MOUNT
 
 This event is generated when a volume is mounted.
 
@@ -1818,7 +1818,7 @@ This event is generated when a volume is mounted.
 }
 ```
 
-### VOLUME_UNMOUNT
+### VOLUME\_UNMOUNT
 
 This event is generated when a volume is unmounted.
 
@@ -1831,7 +1831,7 @@ This event is generated when a volume is unmounted.
 }
 ```
 
-### YARA_DETECTION
+### YARA\_DETECTION
 
 Generated when a YARA scan finds a match.
 

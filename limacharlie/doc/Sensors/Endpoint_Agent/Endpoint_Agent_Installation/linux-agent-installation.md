@@ -4,7 +4,7 @@ The LimaCharlie Linux Sensor interfaces with the kernel to acquire deep visibili
 
 The Sensor current supports all Linux distributions (including ARM and MIPS).
 
-**Linux Distribution Support**
+Linux Distribution Support
 
 Our Linux Sensor fully utilizes eBPF, which requires at least Linux 4.4 or above. Use the command `uname -r` to check your kernel version to determine support.
 
@@ -16,7 +16,7 @@ All versions of Debian and CentOS starting around Debian 5 should be supported. 
 
 ### Deb Package
 
-If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](../endpoint-agent-installation.md#downloading-the-agents).
+If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](endpoint-agent-installation.md#downloading-the-agents).
 
 The deb package will install the LimaCharlie sensor using a `systemd` service, or if unavailable a `system V` service.
 
@@ -60,8 +60,8 @@ echo "limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE" | s
 
 Debian packages are offered for the various architectures the Linux sensor supports, like:
 
-* **x64**: https://downloads.limacharlie.io/sensor/linux/deb64
-* **arm64**: https://downloads.limacharlie.io/sensor/linux/debarm64
+* **x64**: <https://downloads.limacharlie.io/sensor/linux/deb64>
+* **arm64**: <https://downloads.limacharlie.io/sensor/linux/debarm64>
 
 ### Custom Installation
 
@@ -77,7 +77,7 @@ wget https://downloads.limacharlie.io/sensor/linux/64 -O /tmp/lc_sensor
 
 Executing the installer via the command line, pass the `-d INSTALLATION_KEY` argument where `INSTALLATION_KEY` is the key mentioned above.
 
-Because Linux supports a plethora of service management frameworks, by default the LC sensor does not install itself onto the system. Rather it assumes the "current working directory" is the installation directory and immediately begins enrollment from there.
+Because Linux supports a plethora of service management frameworks, by default the LC sensor does not install itself onto the system. Rather it assumes the "current working directory" is the installation directory and  immediately begins enrollment from there.
 
 This means you can wrap the executable using the specific service management technology used within your Organization by simply specifying the location of the installer, the `-d INSTALLATION_KEY` parameter and making sure the current working directory is the directory where you want the few sensor-related files written to disk to reside.
 
@@ -100,7 +100,7 @@ By default, the Linux sensor makes use of Netlink if available. In some rare con
 
 ## Uninstalling the Agent
 
-For additional agent uninstall options, see [Endpoint Agent Uninstallation](../endpoint-agent-uninstallation.md)
+For additional agent uninstall options, see [Endpoint Agent Uninstallation](endpoint-agent-uninstallation.md)
 
 Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (`dpkg` file), you should uninstall via the same mechanism. If you installed via the SystemV installation method, please utilize the bottom of [this script](https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97).
 
@@ -109,10 +109,10 @@ Linux agent uninstallation depends on how the sensor was installed. For example,
 The `uninstall` command does not work for Linux systems. However, there is a chained command that can be run from the Sensor Console:
 
 ```
-run --shell-command "service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs"
+ run --shell-command "service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs"
 ```
 
-The above command removes LimaCharlie and associated files from the system when run remotely. Note that the above command could also be coupled with a rule for automated sensor uninstallation, if necessary.
+The above command removes LimaCharlie and associated files from the system when run remotely. Note that the above command could also be coupled with a  rule for automated sensor uninstallation, if necessary.
 
 ### Debian Systems
 
@@ -121,9 +121,3 @@ If the sensor was originally installed with the .deb file, this option is the cl
 ```
 apt remove limacharlie
 ```
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

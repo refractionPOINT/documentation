@@ -3,7 +3,7 @@
 Output individually each event, detection, audit, deployment or artifact through a POST webhook.
 
 * `dest_host`: the IP or DNS, port and page to HTTP(S) POST to, format `https://www.myorg.com:514/whatever`.
-* `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the webhook to verify authenticity. See "Webhook Details" section.
+* `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the webhook to verify authenticity. [See "Webhook Details" section.](https://doc.limacharlie.io/docs/documentation/ZG9jOjE5MzExMTY-outputs#webhook-details)
 * `auth_header_name` and `auth_header_value`: set a specific value to a specific HTTP header name in the outgoing webhooks.
 
 Example:
@@ -25,11 +25,3 @@ custom_transform: |
       "text": "Detection {{ .cat }} on {{ .routing.hostname }}: {{ .link }}"
    }
 ```
-
-## Related articles
-
-* [Tutorial: Creating a Webhook Adapter](../../Sensors/Adapters/Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md)
-
-## What's Next
-
-* [Webhook (Bulk)](outputs-destinations-webhook-bulk.md)

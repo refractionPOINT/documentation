@@ -17,3 +17,7 @@ LimaCharlie simplifies management of cloud and multi-cloud environments by unify
 * **Centralized monitoring:** The LimaCharlie SecOps Cloud Platform offers a unified view across cloud environments that gives users granular visibility into their operation and current state.
 * **Highly efficient storage:** LimaCharlie's proprietary high performance storage reduces the complexity and cost associated with long term data retention. All data ingested and alerts generated include a full year of searchable data retention to meet regulatory compliance and security requirements.
 * **Platform-independence:** LimaCharlie is platform-independent and can ingest log data from any cloud platform or SaaS application with log retention often cheaper than the cloud vendors themselves.
+
+## What's Next
+
+* [[secops-development|SecOps Development]]

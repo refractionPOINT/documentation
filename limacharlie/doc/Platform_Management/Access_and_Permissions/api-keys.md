@@ -4,7 +4,7 @@ LimaCharlie Cloud has a concept of API keys. Those are secret keys that can be c
 
 This allows construction of headless applications able to securely acquire time-restricted REST authentication tokens it can then use.
 
-The list of available permissions can be programmatically retrieved from this URL: https://app.limacharlie.io/owner_permissions
+The list of available permissions can be programmatically retrieved from this URL: <https://app.limacharlie.io/owner_permissions>
 
 ## Managing
 
@@ -42,9 +42,9 @@ You may also use a User API Key to get the list of organizations available to it
 
 `https://app.limacharlie.io/user_key_info?secret=<YOUR_USER_API_KEY>&uid=<YOUR_USER_ID>&with_names=true`
 
-### Ingestion Keys
+#### Ingestion Keys
 
-The artifact collection in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
+The [artifact collection](artifacts.md) in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
 
 ## Python
 
@@ -92,8 +92,3 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-## Related articles
-
-* [LimaCharlie SDK & CLI](../limacharlie-sdk.md)
-* [User Access](user-access.md)

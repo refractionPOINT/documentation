@@ -8,7 +8,7 @@ This Adapter allows you to connect to the Duo Admin API and fetch logs from it.
 
 Adapter Type: `duo`
 
-* `client_options`: common configuration for adapter as defined in [Adapter Usage](../adapter-usage.md).
+* `client_options`: common configuration for adapter as defined here.
 * `integration_key`: an integration key created from within Duo that associated with your "app".
 * `secret_key`: the secret key for your "app".
 * `api_hostname`: the DNS for your "app", a value given to you by Duo.
@@ -39,3 +39,7 @@ sensor_type: "duo"
 ## API Doc
 
 See the [official documentation](https://duo.com/docs/adminapi).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

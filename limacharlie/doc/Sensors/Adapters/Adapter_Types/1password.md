@@ -27,7 +27,7 @@ LimaCharlie offers a 1Password guided configuration in the web UI. From your 1Pa
   + 1Password.ca
   + 1Password.eu
 
-After providing an [Installation Key](../../installation-keys.md), provide the required values and LimaCharlie will establish a Cloud Adapter for 1Password events
+After providing an Installation Key, provide the required values and LimaCharlie will establish a Cloud Adapter for 1Password events
 
 ### Infrastructure as Code Deployment
 
@@ -48,3 +48,9 @@ sensor_type: "1password"
       platform: "json"
       sensor_seed_key: "1password-sensor-unique-name"
 ```
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

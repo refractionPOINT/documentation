@@ -195,7 +195,7 @@ docker run -v ${HOME}/.limacharlie:/root/.limacharlie:ro refractionpoint/limacha
 Authenticating to use the SDK / CLI can be done in a few ways.
 
 **Option 1 - Logging In**
- The simplest is to login to an Organization using an API key.
+ The simplest is to login to an Organization using an [API key](https://doc.limacharlie.io/docs/documentation/docs/api_keys.md).
 
 Use `limacharlie login` to store credentials locally. You will need an `OID` (Organization ID) and an API key, and (optionally) a `UID` (User ID), all of which you can get from the Access Management --> REST API section of the web interface.
 
@@ -307,7 +307,7 @@ The `task` function sends a task to the sensor unidirectionally, meaning it does
 
 #### Artifacts
 
-The `Artifacts` is a helpful class to upload artifacts to LimaCharlie without going through a sensor.
+The `Artifacts` is a helpful class to upload [artifacts](artifacts.md) to LimaCharlie without going through a sensor.
 
 #### Extensions
 
@@ -324,11 +324,11 @@ ext.subscribe('binlib')
 
 #### Payloads
 
-The `Payloads` can be used to manage various executable payloads accessible to sensors.
+The `Payloads` can be used to manage various executable [payloads](payloads.md) accessible to sensors.
 
 #### Replay
 
-The `Replay` object allows you to interact with Replay jobs managed by LimaCharlie. These allow you to re-run D&R Rules on historical data.
+The `Replay` object allows you to interact with [Replay](replay.md) jobs managed by LimaCharlie. These allow you to re-run [D&R Rules](detection-and-response.md) on historical data.
 
 Sample command line to query one sensor:
 
@@ -357,7 +357,7 @@ The `Configs` is used to retrieve an organization's configuration as a config fi
 
 #### Webhook
 
-The `Webhook` object demonstrates handling webhooks emitted by the LimaCharlie cloud, including verifying the shared-secret signing of the webhooks.
+The `Webhook` object demonstrates handling [webhooks emitted by the LimaCharlie cloud](tutorial-creating-a-webhook-adapter.md), including verifying the shared-secret signing of the webhooks.
 
 ### Examples:
 
@@ -373,7 +373,7 @@ Many of the objects available as part of the LimaCharlie Python SDK also support
 
 #### Query
 
-LimaCharlie Query Language (LCQL) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie.
+[LimaCharlie Query Language (LCQL)](lcql.md) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie.
 
 ```
 limacharlie query --help
@@ -381,9 +381,9 @@ limacharlie query --help
 
 #### ARLs
 
-Authenticated Resource Locators (ARLs) describe a way to specify access to a remote resource, supporting many methods, including authentication data, and all that within a single string.
+[Authenticated Resource Locators (ARLs)](reference-authentication-resource-locator.md) describe a way to specify access to a remote resource, supporting many methods, including authentication data, and all that within a single string.
 
-ARLs can be used in the YARA manager to import rules from GitHub repositories and other locations.
+ARLs can be used in the [YARA manager](ext-yara-manager.md) to import rules from GitHub repositories and other locations.
 
 Testing an ARL before applying it somewhere can be helpful to shake out access or authentication errors beforehand. You can test an ARL and see what files are fetched, and their contents, by running the following command:
 
@@ -473,7 +473,7 @@ limacharlie extension --help
 
 #### Artifact Upload
 
-Shortcut utility to upload and retrieve Artifacts within LimaCharlie with just the CLI (no agent).
+Shortcut utility to upload and retrieve [Artifacts](artifacts.md) within LimaCharlie with just the CLI (no agent).
 
 ```
 limacharlie artifacts --help
@@ -481,7 +481,7 @@ limacharlie artifacts --help
 
 #### Artifact Download
 
-Shortcut utility to download Artifact Collection in LimaCharlie locally.
+Shortcut utility to download [Artifact Collection](artifacts.md) in LimaCharlie locally.
 
 ```
 limacharlie artifacts get_original --help
@@ -489,7 +489,7 @@ limacharlie artifacts get_original --help
 
 #### Replay
 
-Shortcut utility to perform Replay jobs from the CLI.
+Shortcut utility to perform [Replay](replay.md) jobs from the CLI.
 
 ```
 limacharlie replay --help
@@ -514,7 +514,7 @@ limacharlie detections --help
 
 #### List Sensors
 
-Print out all basic sensor information for all sensors matching the selector.
+Print out all basic sensor information for all sensors matching the [selector](reference-sensor-selector-expressions.md).
 
 ```
 limacharlie sensors --selector 'plat == windows'
@@ -550,3 +550,15 @@ user3@example.com
 ```
 limacharlie users invite --file=users_to_invite.txt
 ```
+
+In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+
+Command-line Interface
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

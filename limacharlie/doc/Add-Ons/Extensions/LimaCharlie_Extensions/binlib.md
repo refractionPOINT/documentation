@@ -4,7 +4,7 @@ Binary Library, or "BinLib", is a collection of executable binaries (such as EXE
 
 When LimaCharlie observes a binary and path for the first time a `CODE_IDENTITY` event is generated. The metadata from this event is stored within `binlib`, and is available for searching, tagging, and downloading. Additionally, you can run [YARA](../Third-Party_Extensions/ext-yara.md) scans against observed binaries.
 
-## Enabling BinLib
+Enabling BinLib
 
 BinLib requires subscribing to the `ext-reliable-tasking` Extension in order to function properly. This can be enabled [in the Add-ons marketplace](https://app.limacharlie.io/add-ons/extension-detail/ext-reliable-tasking).
 
@@ -50,7 +50,7 @@ Sample Output:
 
 *Accepted Values: MD5, SHA1, SHA256*
 
-**Careful Downloading Binaries**
+Careful Downloading Binaries
 
 LimaCharlie does not filter the binaries observed by your organization. You must exercise caution if downloading a malicious file. We recommend downloading potential malicious binaries to an isolated analysis system.
 
@@ -166,7 +166,7 @@ Note that search criteria are ANDed. Binaries must meet ALL criteria to be retur
 
 ## Automating
 
-Here are some examples of useful rules that could be used to automate interactions with Binlib.
+Here are some examples of useful  rules that could be used to automate interactions with Binlib.
 
 ### Scan all acquired files with Yara
 
@@ -206,3 +206,11 @@ respond:
 - action: report
   name: YARA Match via Binlib
 ```
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.

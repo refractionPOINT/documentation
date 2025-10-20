@@ -17,7 +17,7 @@ All adapters support the same `client_options`, which you should always specify 
 
 ## Deployment
 
-Adapter downloads can be found [here](../adapter-deployment.md).
+Adapter downloads can be found [here](adapter-deployment.md).
 
 ```
 chmod +x /path/to/lc_adapter

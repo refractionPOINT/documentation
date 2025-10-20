@@ -53,7 +53,3 @@ You can choose to only send a specific list of event types by configuring an all
 **Do not include routing** flag allows users to forward only the original logs to outputs, excluding the routing label. This can be helpful for users wanting to use LimaCharlie for storage optimization since the routing label can add significant overhead.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-5.png)
-
-## What's Next
-
-* [Syslog](outputs-destinations-syslog.md)

@@ -34,7 +34,7 @@ Required IAM Permissions:
 
 Adapter Type: `s3`
 
-* `client_options`: common configuration for adapter as defined [here](../adapter-deployment.md#usage).
+* `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
 * `bucket_name`: the name of the bucket to ingest from.
 * `access_key`: an Access Key from S3 used to access the bucket.
 * `secret_key`: the secret key associated with the `access_key` used to access the bucket.

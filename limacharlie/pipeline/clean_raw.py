@@ -59,7 +59,13 @@ STEP 3: Each sub-agent must:
 - KEEP:
   * The actual documentation content (paragraphs, lists, code blocks)
   * Legitimate section headings (##, ###, etc.)
-  * Links that are part of the documentation content
+  * **ALL markdown link syntax EXACTLY as-is** - this is CRITICAL:
+    - Preserve absolute external URLs: `[text](https://docs.limacharlie.io/...)`
+    - Preserve Document360 relative paths: `[text](/v2/docs/...)` or `[text](/docs/...)`
+    - Preserve local relative paths: `[text](../../other-file.md)`
+    - Even if links appear broken or point to non-existent paths, YOU MUST PRESERVE THEM
+    - Link conversion and fixing happens in STEP 4 - STEP 3 must preserve ALL link syntax AS-IS
+    - Do NOT strip link syntax, do NOT convert links to plain text, do NOT remove "broken" links
   * Code examples and technical content
 - Use the Write tool to completely replace the file with the cleaned content
   * Write is designed for complete file replacement and handles large files reliably

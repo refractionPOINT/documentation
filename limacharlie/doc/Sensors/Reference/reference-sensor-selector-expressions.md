@@ -7,9 +7,9 @@ The following fields are available in this evaluation:
 * `sid`: the Sensor ID
 * `oid`: the Organization ID
 * `iid`: the Installation Key ID
-* `plat`: the Platform name (see [platforms](./reference-id-schema.md#platform))
-* `ext_plat`: the Extended Platform name (see [platforms](./reference-id-schema.md#platform))
-* `arch`: the Architecture name (see [architectures](./reference-id-schema.md#architecture))
+* `plat`: the Platform name (see [platforms](reference-id-schema.md#platform))
+* `ext_plat`: the Extended Platform name (see [platforms](reference-id-schema.md#platform))
+* `arch`: the Architecture name (see [architectures](reference-id-schema.md#architecture))
 * `enroll`: the Enrollment as a second epoch timestamp
 * `hostname`: the hostname
 * `mac_addr`: the latest MAC address

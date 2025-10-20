@@ -1,10 +1,14 @@
 # Detection and Response Examples
 
-The following are sample detection and response rules can help you get started in crafting efficient rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out Sigma Rules for more rules.
+The following are sample detection and response rules can help you get started in crafting efficient  rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](Managed_Rulesets/Sigma_Rules/sigma-converter.md) for more rules.
 
 ## Translating Existing Rules
 
 Before listing examples, it's worth mentioning [uncoder.io](https://uncoder.io/) by [SOC Prime](https://socprime.com/) is a great resource for learning by analogy. If you're already familiar with another platform for rules or search queries (Sigma, Splunk, Kibana, etc.) you can use uncoder to translate to LimaCharlie's D&R rules.
+
+Looking for more?
+
+Check out this video that shows you the power of leveraging community resources with LimaCharlie
 
 ## Examples
 

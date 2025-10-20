@@ -8,7 +8,7 @@ This Adapter allows you to ingest logs from the adapter stdin.
 
 Adapter Type: `stdin`
 
-* `client_options`: common configuration for adapter as defined [here](../adapter-usage.md).
+* `client_options`: common configuration for adapter as defined [here](/v2/docs/adapters#usage).
 
 ## API Doc
 

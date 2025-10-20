@@ -31,4 +31,4 @@ metadata_rules:
 
 ## What's Next
 
-* [Building Reports with BigQuery + Looker Studio](../../Getting_Started/Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md)
+* [Building Reports with BigQuery + Looker Studio](../../Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md)

@@ -2,7 +2,7 @@
 
 ## macOS Sensor (macOS 10.14 and prior)
 
-This document provides details of how to install, verify, and uninstall the LimaCharlie sensor on macOS (versions 10.14 and prior). We also offer [documentation for macOS 10.15 and newer](macos-agent-installation-latest-os-versions.md).
+This document provides details of how to install, verify, and uninstall the LimaCharlie sensor on macOS (versions 10.14 and prior).  We also offer [documentation for macOS 10.15 and newer](macos-agent-installation-latest-os-versions.md).
 
 ### Installer Options
 
@@ -24,17 +24,17 @@ When running the installer from the command line, you can pass the following arg
 1. Download the [Sensor installer file](https://downloads.limacharlie.io/sensor/mac/64)
 2. Add execute permission to the installer file via the command line
 
-> chmod +x hcp_osx_x64_release_4.23.0
+> chmod +x hcp\_osx\_x64\_release\_4.23.0
 
-3. Run the installer via the command line. You'll pass the argument -i and your Installation Key.
+3. Run the installer via the command line.  You'll pass the argument -i and your Installation Key.
 
-> sudo ./hcp_osx_x64_release_4.23.0 -i YOUR_INSTALLATION_KEY_GOES_HERE
+> sudo ./hcp\_osx\_x64\_release\_4.23.0 -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
 ![Basic installation](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/01-Basic_installation.png)
 
-You can obtain the installation key from the Installation Keys section of the LimaCharlie web application. [More information about installation keys](https://doc.limacharlie.io/docs/documentation/docs/manage_keys.md).
+You can obtain the installation key from the Installation Keys section of the LimaCharlie web application.  [More information about installation keys](https://doc.limacharlie.io/docs/documentation/docs/manage_keys.md).
 
-The sensor will be installed as a launchctl service. Installation will trigger the sensors enrollment with the LimaCharlie cloud.
+The sensor will be installed as a launchctl service.  Installation will trigger the sensors enrollment with the LimaCharlie cloud.
 
 ![Installation success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/02-Installation_success.png)
 
@@ -51,7 +51,7 @@ The installation is now complete and you should see a message indicating that th
 
 ## Verifying Installation
 
-To verify that the sensor was installed successfully, you can log into the LimaCharlie web application and see if the device has appeared in the Sensors section. Additionally, you can check the following on the device itself:
+To verify that the sensor was installed successfully, you can log into the LimaCharlie web application and see if the device has appeared in the Sensors section.  Additionally, you can check the following on the device itself:
 
 **Ensure the process is running**
 
@@ -75,7 +75,7 @@ If the extension is loaded, this command should return a record as shown above.
 
 ### A note on permissions
 
-Apple has purposely made installing extensions (like the ones used by LimaCharlie) a process that requires several clicks on macOS. The net effect of this is that the first time the sensor is installed on a macOS system, permissions will need to be granted via System Preferences
+Apple has purposely made installing extensions (like the ones used by LimaCharlie) a process that requires several clicks on macOS.  The net effect of this is that the first time the sensor is installed on a macOS system, permissions will need to be granted via System Preferences
 
 Currently, the only way to automate the installation is to use an Apple-approved MDM solution. These solutions are often used by large organizations to manage their Mac fleet. If you are using such a solution, see your vendor's documentation on how to add extensions to the allow list which can be applied to your entire fleet.
 
@@ -89,14 +89,10 @@ To uninstall the sensor:
 
 You'll pass the argument -c
 
-> sudo ./hcp_osx_x64_release_4.23.0 -c
+> sudo ./hcp\_osx\_x64\_release\_4.23.0 -c
 
 ![Uninstall progress](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/macOS_10.14/Installed_correctly.png)
 
 2. You should see a message indicating that the uninstallation was successful.
 
 ![Uninstall success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/3-Uninstall_Success.png)
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

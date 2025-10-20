@@ -27,7 +27,7 @@ Click **Complete Cloud Installation** to create the cloud-to-cloud Adapter. Proc
 
 ### 1b. Initial deployment via the LimaCharlie CLI
 
-A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation, found in the [Tutorial: Creating a Webhook Adapter](../Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md).
+A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation, found here.
 
 The following configuration can be modified to easily configure a Webhook Adapter for receiving Canarytokens events.
 
@@ -79,3 +79,9 @@ Navigate to the [Canarytokens generate page](https://canarytokens.org/generate) 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28173%29.png)
 
 Utilize the URL from Step 2 as the webhook URL. Provide a reminder note, which will also appear in the Canarytoken alert when tripped. Click **Create my Canarytoken**, which will provide you the content related to the selected token. When the Canarytoken is tripped, a webhook alert will be forwarded to the LimaCharlie Adapter.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

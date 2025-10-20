@@ -21,7 +21,7 @@ LimaCharlie supports the following Pangea lookups:
 >
 > A Pangea subscription is required to utilize this service. Pangea offers a $5 monthly credit for development purposes, provided the account balance is not negative.
 
-The Pangea API key (known as a token within the Pangea platform) is added via the integrations menu within LimaCharlie.
+The Pangea API key (known as a token within the Pangea platform) is added via the [integrations](/v2/docs/add-ons-api-integrations#configuration) menu within LimaCharlie.
 
 The API key follows this format:
 

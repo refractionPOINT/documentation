@@ -98,7 +98,7 @@ This behavior is typical with SSL interception. Sometimes it's a network device,
 
 You can confirm if there is SSL interception by performing the following steps to check the SSL fingerprint of the LimaCharlie cloud from the host.
 
-**Confirm the region of your Organization**
+**Confirm the region of your** Organization
 
 If you already know where your organization's region is located, you can move to the next step. To verify the organization's region where the data is processed and stored, click `Add Sensor` from the `Sensors` view. You will then see the region listed under `Sensor Connectivity`.
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/installation(1).png)
@@ -140,7 +140,7 @@ If the SHA-1 and SHA-256 fingerprints you are seeing do not match what's listed 
 
 When the host is offline, the Sensor will keep collecting telemetry and store it locally in a "ring buffer" (which limits the total possible size). The buffer is ~60mb, so the amount of time it will cover will vary based on how much telemetry the individual endpoint generates. e.g. A domain controller will likely be generating many more events than a regular end user workstation.
 
-When the host is back online, the content of this buffer will be flushed to the cloud where detection and response rules will apply as usual.
+When the host is back online, the content of this buffer will be flushed to the cloud where [detection and response](../Detection_and_Response/detection-and-response-examples.md) rules will apply as usual.
 
 The same ring buffer is used when the Sensor runs normally, even if data is not sent to the cloud in real-time. The cloud can then retroactively request the full or partial content of the ring buffer, bringing your telemetry current.
 

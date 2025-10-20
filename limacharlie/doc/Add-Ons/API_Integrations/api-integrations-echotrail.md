@@ -334,7 +334,3 @@ EchoTrail's response data includes the following:
   ]
 }
 ```
-
-## What's Next
-
-* [GreyNoise](./api-integrations-greynoise.md)

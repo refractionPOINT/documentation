@@ -1,6 +1,6 @@
 # Plaso
 
-## Plaso Extension Pricing
+Plaso Extension Pricing
 
 While it is free to enable the Plaso extension, pricing is applied to both the original downloaded artifact and the processed (Plaso) artifacts -- $0.02/GB for the original downloaded artifact, and $1.0/GB for the generation of the processed artifacts.
 
@@ -55,7 +55,7 @@ LimaCharlie can automatically kick off evidence processing with Plaso based off 
 
 ### Velociraptor Triage Acquisition Processing
 
-If you use the LimaCharlie [Velociraptor](ext-velociraptor.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
+If you use the LimaCharlie [Velociraptor](./ext-velociraptor.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
 
 1. Configure a D&R rule to watch for Velociraptor collection events upon ingestion, and then trigger the Plaso extension:
 
@@ -129,7 +129,7 @@ If you use the LimaCharlie [Dumper](../LimaCharlie_Extensions/ext-dumper.md) ext
 
 Running the extension generates the following useful outputs:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28254%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(254).png)
 
 * `pinfo` on `ext-plaso` sensor timeline
    First and foremost, after the completion of a processing job by `ext-plaso`, it is highly encouraged to analyze the resulting `pinfo` event on the `ext-plaso` sensor timeline. This event provides a detailed summary with metrics of the processing that occurred, as well as any relevant errors you should be aware of.
@@ -180,7 +180,7 @@ Running the extension generates the following useful outputs:
 
 ### Downloadable Artifacts
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28253%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(253).png)
 
 * `plaso` artifact
    The downloadable `.plaso` file contains the raw output of `log2timeline.py` and can be [imported into Timesketch](https://timesketch.org/guides/user/upload-data/) as a timeline.

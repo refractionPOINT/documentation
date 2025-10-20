@@ -8,7 +8,7 @@ More information about Azure Kubernetes logs and metrics can be found [here](htt
 
 AKS logs can be ingested via:
 
-* Azure Event Hub
-* LimaCharlie Webhooks
+* [Azure Event Hub](adapter-types-azure-event-hub)
+* LimaCharlie [Webhooks](tutorial-creating-a-webhook-adapter)
 
 Upon ingestion, the log `category` field is used to define the Event Type.

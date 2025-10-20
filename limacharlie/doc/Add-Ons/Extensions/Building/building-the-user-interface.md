@@ -34,17 +34,17 @@ Every field has the following optional details to further adjust the UI.
 * **label**: Add a label if you want a more 'human-legible' label on this field
 * **placeholder**: Placeholder text on the input can serve as an example for the user
 * **description**: A description for this field can be added that will be available as a tooltip on the UI next to the field label
-* **display_index**: The display index starts at 1 (not 0) and guides the GUI on the order to show the fields. A display index of 1, will display before a display index of 2.
-* **default_value**: A default value for the field, will auto-populate the field with this value
+* **display\_index**: The display index starts at 1 (not 0) and guides the GUI on the order to show the fields. A display index of 1, will display before a display index of 2.
+* **default\_value**: A default value for the field, will auto-populate the field with this value
 
-Some other configurations that conditionally apply to specific data_types:
+Some other configurations that conditionally apply to specific data\_types:
 
-* **filter**: Available on select primitive data_types.
-* **enum_values**: Details on the available enums, to support the enum data type.
-* **complex_enum_values**: Details to support the complex enum data type. Supports reference links, and categories.
+* **filter**: Available on select primitive data\_types.
+* **enum\_values**: Details on the available enums, to support the enum data type.
+* **complex\_enum\_values**: Details to support the complex enum data type. Supports reference links, and categories.
 * **object**: An object that contains nested key-value pairs for more fields, and serves to detail the nested fields.
 
-For the complete list of all data types, please see the [page on data types](schema-data-types.md).
+For the complete list of all data types, please see the [page on data types](./schema-data-types.md).
 
 ## Nuanced Usage
 

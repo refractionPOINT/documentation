@@ -44,7 +44,7 @@ Some other configurations that conditionally apply to specific data\_types:
 * **complex\_enum\_values**: Details to support the complex enum data type. Supports reference links, and categories.
 * **object**: An object that contains nested key-value pairs for more fields, and serves to detail the nested fields.
 
-For the complete list of all data types, please see the [page on data types](schema-data-types.md).
+For the complete list of all data types, please see the [page on data types](../Building/schema-data-types.md).
 
 ## Nuanced Usage
 

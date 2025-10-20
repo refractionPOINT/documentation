@@ -12,11 +12,9 @@ A yara record in `hive` has a very basic format:
 
 The `data` portion of the records in this hive must have a single key called `rule` who's value will be the yara rule content used by various LimaCharlie components.
 
-A single rule record can contain a series of actual Yara rule, like this: https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar
-
-## Permissions
-
-The `yara` hive requires the following permissions for the various operations:
+A single rule record can contain a series of actual Yara rule, like this: https://github.com/Yara-Rules/rules/blob/master/malware/APT\_APT1.yar
+ ## Permissions
+ The `yara` hive requires the following permissions for the various operations:
 
 * `yara.get`
 * `yara.set`
@@ -31,7 +29,7 @@ Yara rules can be create in the `yara` Hive. Those rules will then be available,
 ## Example
 
 Let's create a new Yara rule using the LimaCharlie CLI in a terminal.
-Assuming you have a Yara rule in the `rule.yara` file.
+ Assuming you have a Yara rule in the `rule.yara` file.
 
 Load the rule in the LimaCharlie Hive via the CLI:
 
@@ -52,7 +50,7 @@ You should get a confirmation that the rule was created, including metadata of t
 }
 ```
 
-Next, assuming you want to issue a scan command directly to a Sensor (via the Console or a rule):
+Next, assuming you want to issue a scan command directly to a Sensor (via the Console or a  rule):
 
 ```
 yara_scan hive://yara/my-rule

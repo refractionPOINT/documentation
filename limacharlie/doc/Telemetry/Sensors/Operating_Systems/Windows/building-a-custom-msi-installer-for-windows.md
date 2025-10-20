@@ -62,7 +62,7 @@ Without a digital code signing certificate the installer will show a warning tha
 
 11. Specify Parameters
 
-    * In the "Install arguments" box, enter "-i", add a space and then enter your installation key
+    * In the "Install arguments" box, enter "-i", add a space and then enter your [installation key](https://doc.limacharlie.io/docs/documentation/docs/manage_keys.md)
     * -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_8b_-_Parameters_-_filled.png)
@@ -82,8 +82,6 @@ To provide the option to uninstall, set the Uninstall argument to "-c" (note tha
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_11_-_Status.png)
 
 Once you have created the MSI package you should sign it using your digital signature.  You can [learn more about signing the MSI on the exemsi website](https://www.exemsi.com/documentation/sign-your-msi/).
-
----
 
 ## Experience when running the MSI
 

@@ -1,15 +1,15 @@
 # Writing and Testing Rules
 
-Detection & Response (D&R) Rules are similar to Google Cloud Functions or AWS Lambda.
+Detection & Response () Rules are similar to Google Cloud Functions or AWS Lambda.
 They allow you to push D&R rules to the LimaCharlie cloud where the rules will be applied
 in real-time to data coming from the sensors.
 
-D&R rules can also be applied to Artifact Collection, but for now we will focus
+D&R rules can also be applied to [Artifact Collection](/v2/docs/artifacts), but for now we will focus
 on the simple case where it is applied to Sensor events.
 
-For a full list of all rule operators and detailed documentation see the Detection and Response section.
+For a full list of all rule operators and detailed documentation see the [Detection and Response](/v2/docs/detection-and-response) section.
 
-## Life of a Rule
+### Life of a Rule
 
 D&R rules are generally applied on a per-event basis. When the rule is applied, the "detection"
 component of the rule is processed to determine if it matches. If there is a match, the "response"
@@ -102,7 +102,7 @@ to apply the following constraints:
 LC supports a lot of different event types, this means that the first thing we should strive to
 do to try to make the rule fail as quickly as possible is to filter all events we don't care about.
 
-In this case, we only care about [CODE_IDENTITY](../../Events/Endpoint_Agent_Events_Overview/reference-edr-events.md#codeidentity) events. We also know that
+In this case, we only care about [CODE\_IDENTITY](/v2/docs/reference-edr-events#codeidentity) events. We also know that
 our rule will use more than one criteria, and those criteria will be AND-ed together because we only
 want to match when they all match.
 
@@ -369,7 +369,7 @@ No matches should look like that:
 
 ### Moving to Unit Tests
 
-Once your rule is done and you've evaluated various events for matches, you can move these to [D&R Rules Unit Tests](../unit-tests.md) so that the tests are run during rule update.
+Once your rule is done and you've evaluated various events for matches, you can move these to [D&R Rules Unit Tests](/v2/docs/unit-tests) so that the tests are run during rule update.
 
 ## Publish Rule
 

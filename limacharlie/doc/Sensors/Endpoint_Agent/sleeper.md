@@ -32,14 +32,4 @@ This means a sample scenario around pre-deploying in an enterprise could look so
 
 Switching to sleeper mode does not change the binary on disk, however, the code running in memory does change. Whether putting an org into sleeper mode or changing versions, the binary on disk remains as-is.
 
-The changes to sleeper mode go into effect without the need for a reboot. In sleeper mode, activities such as read other process' memory (e.g. [YARA](../../Add-Ons/Extensions/Third-Party_Extensions/ext-yara.md)) will stop.
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
-
-Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
-
-Endpoint Detection & Response
+The changes to sleeper mode go into effect without the need for a reboot. In sleeper mode, activities such as read other process' memory (e.g. [YARA](../../Extensions/ext-yara.md)) will stop.

@@ -6,11 +6,11 @@ Want to reduce Splunk spend?
 
 [Watch the webinar recording](https://www.youtube.com/watch?v=lqPqkDkd7I8) to learn about using LimaCharlie to reduce spending on Splunk and other high-cost security data solutions.
 
-## Splunk Setup
+### Splunk Setup
 
 Follow Splunk's guide to [set up an HEC](https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector), and as you do, set the source type to `_json`.
 
-## LimaCharlie Setup
+### LimaCharlie Setup
 
 From the **Outputs** view, click `Add Output`.
 

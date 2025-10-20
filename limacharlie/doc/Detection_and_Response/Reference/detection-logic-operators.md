@@ -2,7 +2,7 @@
 
 Operators are used in the Detection part of a Detection & Response rule. Operators may also be accompanied by other available parameters, such as transforms, times, and others, referenced later in this page.
 
-> For more information on how to use operators, read Detection & Response Rules.
+> For more information on how to use operators, read [Detection & Response Rules](/v2/docs/detection-and-response).
 
 ## Operators
 
@@ -238,7 +238,7 @@ The value is supplied via the `path` parameter and the lookup is defined in the 
 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
-> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see Using API-based lookups.
+> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](/v2/docs/add-ons-api-integrations).
 
 > You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](../../Platform_Management/Config_Hive/config-hive-lookups.md) and [Lookup Manager](../../Add-Ons/Extensions/LimaCharlie_Extensions/ext-lookup-manager.md).
 
@@ -388,12 +388,12 @@ times:
 
 The `tz` should match a TZ database name from the [Time Zones Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
-## Related Articles
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
-* [Detection and Response Examples](../detection-and-response-examples.md)
-* [Detection on Alternate Targets](../detection-on-alternate-targets.md)
-* [Stateful Rules](../stateful-rules.md)
+Google Cloud Platform
 
-## What's Next
+Amazon Web Services
 
-* [Response Actions](./response-actions.md)
+Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

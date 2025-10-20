@@ -6,7 +6,7 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
 
 1. Install [Sysmon](https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon) on the endpoint.
 
-   * This can easily be done via LimaCharlie's Payload functionality, with a rule, or manually.
+   * This can easily be done via LimaCharlie's Payload functionality, with a  rule, or manually.
    * Please note that the LimaCharlie agent must be restarted in order for Sysmon data to show up in the timeline.
    * Example rule to deploy Sysmon via payloads on Windows systems tagged with `deploy-sysmon`:
 
@@ -58,7 +58,7 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
 
 **Note:** You can use tagging or other filters to narrow down the systems that logs are collected from.
 
-## Event Filtering
+Event Filtering
 
 You can filter events by event ID to import select events. For example:
 
@@ -69,4 +69,4 @@ You can filter events by event ID to import select events. For example:
 5. Allow up to 10 minutes for data to come into LimaCharlie after setting up a new Artifact Collection rule. Data will flow in real-time after that point.
 6. Navigate to the Timeline view of a Sensor to confirm that Sysmon logs are present. You can search for Event Type `WEL` and Search for `Microsoft-Windows-Sysmon` to validate the telemetry.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2896%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(96).png)

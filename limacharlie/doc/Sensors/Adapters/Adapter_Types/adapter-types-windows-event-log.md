@@ -8,7 +8,7 @@ This Adapter allows you to connect to the local Windows Event Logs API on Window
 
 Adapter Type: `wel`
 
-* `client_options`: common configuration for adapter as defined [here](../adapter-usage.md).
+* `client_options`: common configuration for adapter as defined [here](adapters#usage).
 * `evt_sources`: a comma separated list of elements in the format `SOURCE:FILTER`, where `SOURCE` is an Event Source name like `Application`, `System` or `Security` and `FILTER` is an `XPath` filter value as described in the documentation linked below.
 
 ### Infrastructure as Code Deployment
@@ -66,7 +66,3 @@ Specific Provider:
 ## API Doc
 
 See the [official documentation](https://learn.microsoft.com/en-us/windows/win32/wes/consuming-events).
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

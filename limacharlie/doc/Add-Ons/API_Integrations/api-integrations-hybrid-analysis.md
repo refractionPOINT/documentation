@@ -3216,7 +3216,3 @@ resource: hive://lookup/hybrid-analysis-search
   }
 ]
 ```
-
-## Related
-
-* [IP Geolocation](./api-integrations-ip-geolocation.md)

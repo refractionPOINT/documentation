@@ -22,7 +22,7 @@ Adapter Type: `falconcloud`
 
 ### Manual Deployment
 
-Adapter downloads can be found in [Adapter Deployment](../adapter-deployment.md#adapter-binaries).
+Adapter downloads can be found here.
 
 ```
 chmod +x /path/to/lc_adapter
@@ -63,3 +63,7 @@ sensor_type: "falconcloud"
 ## API Doc
 
 See the official [documentation](https://developer.crowdstrike.com/docs/openapi/) and [additional docs on the library used to access the Falcon APIs](https://github.com/CrowdStrike/gofalcon).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

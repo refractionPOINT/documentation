@@ -14,11 +14,11 @@ Every hour, LimaCharlie will sync all of the usage alert rules in the configurat
 
 ## Usage - GUI
 
-To define a new usage alert, simply click on the `Add New Usage Alert` button in the extension UI. Give it a name, like `Output data over threshold`, select a SKU (in this case, `output_data`), a timeframe, a limit, and click `Save`. ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(275).png "image(275).png")
+To define a new usage alert, simply click on the `Add New Usage Alert` button in the extension UI. Give it a name, like `Output data over threshold`, select a SKU (in this case, `output_data`), a timeframe, a limit, and click `Save`. ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(275).png)
 
 If you want it to be added immediately, click on the `Sync Usage Alert Rules` button. Otherwise, it will get pushed automatically at the next hour interval.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(278).png "image(278).png")
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(278).png)
 
 This will create a managed D&R rule on the backend in the `dr-managed` hive and will sync automatically every hour.
 

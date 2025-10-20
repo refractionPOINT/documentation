@@ -10,7 +10,7 @@ Output events and detections to a Kafka target.
 * `routing_topic`: use the element with this name from the `routing` of the event as the Kafka topic name.
 * `literal_topic`: use this specific value as a topic.
 
-**Note on authentication:** if you specify `username` and `password`, the authentication mechanism assumed is SASL_SSL + SCRAM-SHA-512, which should be compatible with services like [AWS Manages Streaming Kafka](https://aws.amazon.com/msk/). If you require different paramaters around authentication please contact us at [support@limacharlie.io](mailto:support@limacharlie.io).
+**Note on authentication:** if you specify `username` and `password`, the authentication mechanism assumed is SASL\_SSL + SCRAM-SHA-512, which should be compatible with services like [AWS Manages Streaming Kafka](https://aws.amazon.com/msk/). If you require different paramaters around authentication please contact us at [support@limacharlie.io](mailto:support@limacharlie.io).
 
 Example:
 

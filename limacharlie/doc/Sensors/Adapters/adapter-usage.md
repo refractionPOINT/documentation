@@ -142,16 +142,16 @@ The following configurations allow you to customize the way data is ingested by 
 * `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
 * `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
 * `client_options.mapping.hostname`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
-* `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
+* `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports [template strings](template-strings-and-transforms) based on each event.
 * `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
 * `client_options.mapping.rename_only`: *deprecated*
 * `client_options.mapping.mappings`: *deprecated*
-* `client_options.mapping.transform`: a Transform to apply to events.
+* `client_options.mapping.transform`: a [Transform](template-strings-and-transforms) to apply to events.
 * `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
 
-Mapping Fields Deprecated
-
-The `client_options.mapping.rename_only` and `client_options.mapping.mappings` fields have been deprecated in favor of `client_options.mapping.transform`. Please see associated documentation for use of the `transform` config.
+> Mapping Fields Deprecated
+>
+> The `client_options.mapping.rename_only` and `client_options.mapping.mappings` fields have been deprecated in favor of `client_options.mapping.transform`. Please see [associated documentation](template-strings-and-transforms) for use of the `transform` config.
 
 ### Parsing
 
@@ -308,7 +308,7 @@ The following extractors can be specified:
 
 * `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
 * `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
-* `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
+* `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports [template strings](template-strings-and-transforms) based on each event.
 * `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
 
 ### Indexing
@@ -379,9 +379,3 @@ This is the list of currently supported index types:
 USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SID) is generated based on the Organization ID (OID) and the Sensor Seed Key.
 
 This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same OID and Sensor Seed Key, the generated SIDs will be stable despite the IID change.
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

@@ -21,7 +21,7 @@ Adapter Type: `hubspot`
 
 ### Manual Deployment
 
-Adapter downloads can be found [here](../adapter-deployment.md#adapter-binaries).
+Adapter downloads can be found [here](adapter-deployment.md#adapter-binaries).
 
 ```
 chmod +x /path/to/lc_adapter
