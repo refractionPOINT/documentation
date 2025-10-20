@@ -22,6 +22,8 @@ import sys
 import json
 import time
 import requests
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from markdownify import markdownify
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -30,7 +32,8 @@ from bs4 import BeautifulSoup
 BASE_URL = "https://docs.limacharlie.io"
 DOCS_URL = f"{BASE_URL}/docs"
 OUTPUT_DIR = "./limacharlie/raw_markdown"
-RATE_LIMIT_DELAY = 0.5  # seconds between requests
+RATE_LIMIT_DELAY = 0.05  # seconds between requests (reduced for concurrent fetching)
+MAX_WORKERS = 10  # number of concurrent download threads
 MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
 
@@ -47,6 +50,11 @@ class LimaCharlieFetcher:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
         # markdownify doesn't need configuration - it's just a function
+
+        # Thread-safe counters for concurrent processing
+        self.lock = threading.Lock()
+        self.success_count = 0
+        self.fail_count = 0
 
     def extract_api_credentials(self):
         """Extract Algolia API credentials from the docs page source"""
@@ -264,6 +272,30 @@ articleId: {article_metadata.get('articleId', '')}
             traceback.print_exc()
             return False
 
+    def process_article_threadsafe(self, article_with_index):
+        """Thread-safe wrapper for process_article with rate limiting"""
+        article, idx, total = article_with_index
+        try:
+            # Rate limiting (spread out requests)
+            if RATE_LIMIT_DELAY > 0:
+                time.sleep(RATE_LIMIT_DELAY)
+
+            success = self.process_article(article, idx, total)
+
+            # Update counters thread-safely
+            with self.lock:
+                if success:
+                    self.success_count += 1
+                else:
+                    self.fail_count += 1
+
+            return success
+        except Exception as e:
+            print(f"  ✗ Unexpected error: {e}")
+            with self.lock:
+                self.fail_count += 1
+            return False
+
     def enhance_formatting(self, content):
         """Enhance plain text content with basic markdown formatting"""
         import html
@@ -377,37 +409,42 @@ articleId: {article_id}
         # Create output directory
         os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-        success_count = 0
-        fail_count = 0
+        # Reset counters
+        self.success_count = 0
+        self.fail_count = 0
 
-        for idx, article in enumerate(articles, 1):
-            try:
-                if self.process_article(article, idx, len(articles)):
-                    success_count += 1
-                else:
-                    fail_count += 1
+        # Prepare articles with indices for parallel processing
+        articles_with_indices = [(article, idx, len(articles)) for idx, article in enumerate(articles, 1)]
 
-                # Rate limiting to be nice to the server
-                if idx < len(articles):
-                    time.sleep(RATE_LIMIT_DELAY)
+        # Process articles concurrently
+        print(f"Using {MAX_WORKERS} concurrent workers for faster fetching...")
+        print()
 
-            except KeyboardInterrupt:
-                print("\n\nInterrupted by user. Exiting...")
-                break
-            except Exception as e:
-                print(f"  ✗ Unexpected error: {e}")
-                fail_count += 1
+        try:
+            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+                # Submit all tasks
+                futures = {executor.submit(self.process_article_threadsafe, item): item for item in articles_with_indices}
+
+                # Process completed tasks
+                for future in as_completed(futures):
+                    try:
+                        future.result()
+                    except Exception as e:
+                        print(f"  ✗ Thread exception: {e}")
+
+        except KeyboardInterrupt:
+            print("\n\nInterrupted by user. Exiting...")
 
         # Summary
         print("\n" + "=" * 80)
         print("Summary:")
         print(f"  Total articles: {len(articles)}")
-        print(f"  Successfully processed: {success_count}")
-        print(f"  Failed: {fail_count}")
+        print(f"  Successfully processed: {self.success_count}")
+        print(f"  Failed: {self.fail_count}")
         print(f"  Output directory: {os.path.abspath(OUTPUT_DIR)}")
         print("=" * 80)
 
-        return 0 if fail_count == 0 else 1
+        return 0 if self.fail_count == 0 else 1
 
 
 def main():
