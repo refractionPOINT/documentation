@@ -160,7 +160,23 @@ class LimaCharlieFetcher:
             response.raise_for_status()
             return response.text
 
+        except requests.exceptions.HTTPError as e:
+            # Handle 404s specially - don't retry, just skip silently
+            if e.response.status_code == 404:
+                print(f"    Article not found (404), skipping")
+                return None
+
+            # For other HTTP errors, retry as usual
+            if retry_count < MAX_RETRIES:
+                print(f"    Retry {retry_count + 1}/{MAX_RETRIES} after HTTP error: {e}")
+                time.sleep(RETRY_DELAY)
+                return self.fetch_article_html(slug, retry_count + 1)
+            else:
+                print(f"    Failed after {MAX_RETRIES} retries: {e}")
+                return None
+
         except Exception as e:
+            # For non-HTTP errors (timeouts, connection errors, etc.), retry as usual
             if retry_count < MAX_RETRIES:
                 print(f"    Retry {retry_count + 1}/{MAX_RETRIES} after error: {e}")
                 time.sleep(RETRY_DELAY)
