@@ -61,7 +61,10 @@ STEP 3: Each sub-agent must:
   * Legitimate section headings (##, ###, etc.)
   * Links that are part of the documentation content
   * Code examples and technical content
-- Use the Edit tool to replace the file content with the cleaned version
+- Use the Write tool to completely replace the file with the cleaned content
+  * Write is designed for complete file replacement and handles large files reliably
+  * After cleaning the content, call Write with the same file path you just Read and the cleaned markdown as the content
+  * This ensures even very large files (20KB+) are properly cleaned
 
 **Action B: Delete** (for files that are just navigation/category pages)
 - If a file contains ONLY navigation links, category listings, and UI elements with NO actual documentation content
@@ -122,6 +125,7 @@ IMPORTANT:
 - OUTPUT FREQUENT STATUS UPDATES - before and after each batch
 - Print progress messages BEFORE using tools, not just after
 - Use simple text output (not just tool results) so the user sees activity
+- If you encounter any errors when cleaning a file, output a clear error message with the file path so it can be tracked
 
 START NOW - find all .md files and dispatch the parallel cleaning agents immediately."""
 
