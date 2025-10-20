@@ -8,7 +8,7 @@ This Adapter allows you to ingest emails as events from an IMAP server.
 
 Adapter Type: `imap`
 
-* `client_options`: common configuration for adapter as defined [here](../adapters.md#usage).
+* `client_options`: common configuration for adapter as defined [here](../adapter-usage.md#usage).
 * `server`: the domain and port of the IMAP server, like `imap.gmail.com:993`.
 * `username`: the user name to log in to IMAP as.
 * `password`: the password for the above user name.
@@ -17,7 +17,7 @@ Adapter Type: `imap`
 * `from_zero`: collect all existing emails in the inbox.
 * `include_attachments`: send attachment data to LimaCharlie, used to generate attachent hashes in the cloud.
 * `max_body_size`: only send attachments below this many bytes to LimaCharlie.
-* `attachment_ingest_key`: if specified, an [Ingestion Key](../../../Administration/api-keys.md) used to ingest attachment as Artifacts into LimaCharlie.
+* `attachment_ingest_key`: if specified, an [Ingestion Key](../../../API/api-keys.md) used to ingest attachment as Artifacts into LimaCharlie.
 * `attachment_retention_days`: the number of days to retain Artifact attachment for.
 
 ### Infrastructure as Code Deployment

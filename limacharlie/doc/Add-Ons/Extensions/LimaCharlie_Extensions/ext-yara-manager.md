@@ -8,13 +8,13 @@ If you add rule sources and want them to become available immediately, you will 
 
 Rule sources can be either direct links (URLs) to a given YARA rule or [ARLs](../../Reference/reference-authentication-resource-locator.md).
 
-### Option 1: Predefined YARA rules
+## Option 1: Predefined YARA rules
 
 LimaCharlie provides a list of YARA rule repositories, available in the configuration menu. To leverage these rules select "Predefined" and a list of LimaCharlie and Community rules will populate. By selecting one or more of these repositories, the respective rules will be automatically imported and will appear in your YARA rules under Automation → YARA Rules.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(322).png)
 
-### Option 2: Publicly available YARA rules
+## Option 2: Publicly available YARA rules
 
 An example of setting up a rule using this repo: [Yara-Rules](https://github.com/Yara-Rules/rules)
 
@@ -28,7 +28,7 @@ For creating a rule out of multiple YARA rules, we could use the following ARL, 
 
 Giving the rule configuration a name, the URL or ARL, and clicking the Save button will create the new rule source to sync to your YARA rules.
 
-### Option 3: Private YARA Repository
+## Option 3: Private YARA Repository
 
 To use a YARA rule from a private Gihub repository you will need to make use of an [Authentication Resource Locator](../../Reference/reference-authentication-resource-locator.md).
 

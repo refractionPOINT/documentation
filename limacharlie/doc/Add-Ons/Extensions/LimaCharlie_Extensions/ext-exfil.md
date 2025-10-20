@@ -173,3 +173,19 @@ The following REST API actions can be sent to interact with the Exfil extension:
   "name": "sql-servers"
 }
 ```
+
+In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events, they must be enabled within the Exfil or Event Collection settings.
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+## Related Articles
+
+* [Endpoint Agent Events Overview](../../../Events/Endpoint_Agent_Events_Overview/reference-edr-events.md)
+* [Reference: EDR Events](../../../Events/Endpoint_Agent_Events_Overview/reference-edr-events.md)
+* [Endpoint Agent Commands](../../../Sensors/Endpoint_Agent/Endpoint_Agent_Commands/reference-endpoint-agent-commands.md)
+* [Ingesting Sysmon Event Logs](../../../Sensors/Endpoint_Agent/Tutorials/ingesting-sysmon-event-logs.md)
+* [Ingesting Windows Event Logs](../../../Sensors/Endpoint_Agent/Tutorials/ingesting-windows-event-logs.md)
+
+## What's Next
+
+* [Git Sync](./ext-git-sync.md)

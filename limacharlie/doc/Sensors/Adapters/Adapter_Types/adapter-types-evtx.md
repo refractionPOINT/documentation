@@ -10,7 +10,7 @@ For real-time collection of Windows Event Logs, see the [Windows Event Logs](../
 
 Adapter Type: `evtx`
 
-* `client_options`: common configuration for adapter as defined [here](../adapters.md#usage).
+* `client_options`: common configuration for adapter as defined [here](../adapter-usage.md#usage).
 * `file_path`: path to the `.evtx` file to ingest.
 
 ## API Doc

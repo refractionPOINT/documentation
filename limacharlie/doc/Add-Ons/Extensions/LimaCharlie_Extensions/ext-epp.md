@@ -86,3 +86,7 @@ For reference, this is a list of Endpoint Protection commands:
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(329).png)![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(328).png)
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(330).png)
+
+## Related Documentation
+
+* [Exfil (Event Collection)](ext-exfil.md)

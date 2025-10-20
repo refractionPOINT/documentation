@@ -4,7 +4,7 @@
 
 The AI Agent Engine Extension allows you to easily codify and execute AI Agents within the context of your Organization with access to the LimaCharlie APIs for investigation, remediation and automation.
 
-The AI Agent definition themselves are managed in the `ai_agent` Hive Configurations and can be managed across tenants using the Infrastructure as Code extension. This hive requires the `ai_agent.*` permissions.
+The AI Agent definition themselves are managed in the `ai_agent` [Hive](../../Platform_Management/Config_Hive/config-hive-secrets.md) Configurations and can be managed across tenants using the Infrastructure as Code extension. This hive requires the `ai_agent.*` permissions.
 
 The execution of an AI Agent can be triggered through the following means:
 
@@ -13,7 +13,7 @@ The execution of an AI Agent can be triggered through the following means:
 3. By issuing an extension request on the API directly: https://api.limacharlie.io/static/swagger/#/Extensions/createExtensionRequest
 4. By issuing an extension request through the Python CLI/SDK or Golang SDK, which means they're also available to [Playbooks](playbook.md).
 
-This means agents can be invoked in a fully automated fashion based on events, detections, audit messages or any other [target](../../Detection_and_Response/detection-on-alternate-targets.md) of  rules. But it can also be used in an ad-hoc fashion triggered manually.
+This means agents can be invoked in a fully automated fashion based on events, detections, audit messages or any other [target](../../Detection_and_Response/detection-on-alternate-targets.md) of rules. But it can also be used in an ad-hoc fashion triggered manually.
 
 ## Usage
 

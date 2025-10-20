@@ -1,38 +1,4 @@
----
-
-SMTP
-
-* 08 Oct 2025
-* 1 Minute to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # SMTP
-
-* Updated on 08 Oct 2025
-* 1 Minute to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 One option to export data from LimaCharlie is via SMTP, allowing you to send emails directly to a ticketing inbox or send high-priority detections to an on-call, shared email.
 
@@ -74,56 +40,6 @@ is_authlogin: false
 subject: LC Detection- <Name>
 ```
 
----
+## Related articles
 
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [IMAP](/docs/adapter-types-imap)
-
----
-
-###### What's Next
-
-* [Splunk](/docs/outputs-destinations-splunk)
-
-Table of contents
-
-+ [Webapp Configuration](#webapp-configuration)
-
-Tags
-
-* [outputs](/docs/en/tags/outputs)
+* [IMAP](../../Sensors/Adapters/Adapter_Types/adapter-types-imap.md)

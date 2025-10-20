@@ -22,7 +22,7 @@ Adapter Type: `cato`
 
 ### Manual Deployment
 
-Adapter downloads can be found [here](../adapter-deployment.md).
+Adapter downloads can be found in [Adapter Deployment](../adapter-deployment.md).
 
 ```
 chmod +x /path/to/lc_adapter

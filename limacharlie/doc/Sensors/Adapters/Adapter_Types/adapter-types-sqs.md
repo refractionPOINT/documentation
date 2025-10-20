@@ -45,3 +45,9 @@ sqs:
 ## API Doc
 
 See the [official documentation](https://aws.amazon.com/sqs/).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Amazon Web Services
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

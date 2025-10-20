@@ -1,15 +1,15 @@
 # Writing and Testing Rules
 
-Detection & Response () Rules are similar to Google Cloud Functions or AWS Lambda.
+Detection & Response (D&R) Rules are similar to Google Cloud Functions or AWS Lambda.
 They allow you to push D&R rules to the LimaCharlie cloud where the rules will be applied
 in real-time to data coming from the sensors.
 
-D&R rules can also be applied to [Artifact Collection](../../Add-Ons/Extensions/LimaCharlie_Extensions/ext-artifact.md), but for now we will focus
+D&R rules can also be applied to Artifact Collection, but for now we will focus
 on the simple case where it is applied to Sensor events.
 
-For a full list of all rule operators and detailed documentation see the [Detection and Response](../detection-and-response-examples.md) section.
+For a full list of all rule operators and detailed documentation see the Detection and Response section.
 
-### Life of a Rule
+## Life of a Rule
 
 D&R rules are generally applied on a per-event basis. When the rule is applied, the "detection"
 component of the rule is processed to determine if it matches. If there is a match, the "response"

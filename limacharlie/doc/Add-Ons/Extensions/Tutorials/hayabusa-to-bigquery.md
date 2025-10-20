@@ -22,7 +22,7 @@ BigQuery dataset containing Hayabusa results:
    3. Navigate to Service Accounts > Create Service Account
    4. Click on newly created Service Account and create a new key
 
-      1. ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28188%29.png)
+      1. ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(188).png)
       2. This will provide you with the JSON format secret key you will later setup in your LimaCharlie output.
    5. In BigQuery, create a Dataset, Table, & Schema similar to the screenshot below. Keep in mind, the name of your dataset and table are arbitrary but they need to match what you configure in your output in LimaCharlie.
 

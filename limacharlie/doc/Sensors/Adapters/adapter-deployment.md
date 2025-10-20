@@ -19,7 +19,7 @@ Software-based, or "on-prem" adapters are available in the following formats:
 
 * Binaries:
 
-  + *nix
+  + \*nix
 
     - [AIX ppc64](https://downloads.limacharlie.io/adapter/aix/ppc64)
     - [Linux (Generic) 64-bit](https://downloads.limacharlie.io/adapter/linux/64)
@@ -38,7 +38,7 @@ Software-based, or "on-prem" adapters are available in the following formats:
     - [Windows x64](https://downloads.limacharlie.io/adapter/windows/64)
 * Docker:
 
-  + https://hub.docker.com/r/refractionpoint/lc-adapter
+  + <https://hub.docker.com/r/refractionpoint/lc-adapter>
 
 Another platform?
 
@@ -54,7 +54,7 @@ To accomplish this, you need the `externaladapter.*` permissions.
 
 The first step of deploying this way is to create a new External Adapter record. These are found in the `external_adapter` Hive or under the Sensors section of the web app.
 
-The content of an external adapter is exactly the same as a traditional [adapter configuration](adapter-usage.md) in YAML. It describes what you want your external adapter to do, like collect from file, operate as a syslog server etc. For example:
+The content of an external adapter is exactly the same as a traditional adapter configuration in YAML. It describes what you want your external adapter to do, like collect from file, operate as a syslog server etc. For example:
 
 ```
 sensor_type: syslog
@@ -73,13 +73,13 @@ syslog:
 
 Once your external adapter record is created, take note of the `GUID` (Globally Unique ID) found under the `sys_mtd` section of the JSON record, or on the right-hand side of the record view in the web app
 
-.
+.![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(308).png)
 
 This `GUID` is a shared secret value you will use in the deployed adapter to reference it to the record it should update and operate from.
 
 ### Deploying
 
-Now that the configuration of the adapter is ready, you can deploy the adapter on-prem according to the [normal process](adapter-usage.md). The only difference is that instead of running it with the full configuration locally, you can run it with the `cloud` collection method like this:
+Now that the configuration of the adapter is ready, you can deploy the adapter on-prem according to the normal process. The only difference is that instead of running it with the full configuration locally, you can run it with the `cloud` collection method like this:
 
 ```
 ./lc_adapter cloud conf_guid=XXXXXXXXXXXXXXXXXXXXx oid=YYYYYYYYYYYYYYYYYYY
@@ -88,5 +88,3 @@ Now that the configuration of the adapter is ready, you can deploy the adapter o
 This will start the adapter telling it to fetch the configuration it requires from the cloud based on the Organization ID (your tenant in LC) and the `GUID` of the record it should use.
 
 From this point on, updating the record in LimaCharlie will automatically reconfigure the adapter on-prem, within about 1 minute of the change.
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

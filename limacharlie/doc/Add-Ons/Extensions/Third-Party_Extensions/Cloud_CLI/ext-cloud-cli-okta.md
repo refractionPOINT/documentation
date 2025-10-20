@@ -104,7 +104,7 @@ user get 00untroxqpl08VcNC5d7
 
 Lists users that do not have a status of "DEPROVISIONED" (by default), up to the maximum (200 for most orgs), with pagination in most cases. A subset of users can be returned that match a supported filter expression or search criteria.
 
-> This command takes an optional filter. If no filter is provided, all users are returned. For more information on Okta's query filters, visit <https://developer.okta.com/docs/reference/user-query/#filter-users>
+> This command takes an optional filter. If no filter is provided, all users are returned. For more information on Okta's query filters, visit https://developer.okta.com/docs/reference/user-query/#filter-users
 
 #### Command
 
@@ -207,7 +207,7 @@ None
 
 ### Expire User Password
 
-This operation transitions the user to the status of "PASSWORD\_EXPIRED" so that the user is required to change their password at their next login.
+This operation transitions the user to the status of "PASSWORD_EXPIRED" so that the user is required to change their password at their next login.
 
 #### Command
 
@@ -277,7 +277,7 @@ None
 
 ### Unlock User
 
-Unlocks a user with a "LOCKED\_OUT" status and returns them to "ACTIVE" status. Users will be able to login with their current password.
+Unlocks a user with a "LOCKED_OUT" status and returns them to "ACTIVE" status. Users will be able to login with their current password.
 
 #### Command
 

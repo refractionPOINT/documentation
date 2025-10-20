@@ -2,7 +2,7 @@
 
 ## API Keys
 
-The VirusTotal API key is added via the [integrations](https://docs.limacharlie.io/v2/docs/add-ons-api-integrations#configuration) menu within LimaCharlie.
+The VirusTotal API key is added via the integrations menu within LimaCharlie.
 
 ## Usage
 
@@ -25,7 +25,7 @@ Step-by-step, this rule will do the following:
 * Upon seeing a `CODE_IDENTITY` event, retrieve the `event/HASH` value and send it to VirusTotal via the `api/vt` resource.
 * Upon receiving a response from `api/vt`, evaluate it using `metadata_rules` to see if the length of the response is greater than 1 (in this case meaning that more than 1 vendor reporting a hash is bad).
 
-## Related Articles
+## Related
 
 * [VirusTotal Integration](../Add-Ons_Tutorials/tutorials-integratons-virustotal-integration.md)
 * [Extensions](../Extensions/using-extensions.md)

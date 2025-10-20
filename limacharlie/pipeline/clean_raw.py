@@ -120,6 +120,61 @@ For links pointing to `doc.limacharlie.io` or `docs.limacharlie.io`:
    - Example: `[See details](https://doc.limacharlie.io/docs/outputs#webhook-details)` → `[See details](../../Platform_Management/outputs.md#webhook-details)`
    - Bare URLs should also be converted to markdown links with appropriate link text
 
+**C. Convert Document360 Relative Links to Local Relative Links:**
+
+Document360 relative links are paths like `[text](/v2/docs/...)` or `[text](/docs/...)` that were part of the original documentation platform.
+
+1. **Detect Document360 Relative Links:**
+   - Look for markdown links matching patterns: `[text](/v2/docs/...)` or `[text](/docs/...)`
+   - These are NOT absolute URLs but relative paths from the Document360 platform
+   - Extract the slug from the path (e.g., from `/v2/docs/template-strings-and-transforms`, extract `template-strings-and-transforms`)
+   - Also extract the link text (e.g., "Transform") as it may provide context about the target
+
+2. **Multi-Stage Iterative Search to Find Target File:**
+   Use these strategies IN ORDER until a match is found:
+
+   **Stage 1 - Direct Filename Matching:**
+   - Use Glob with pattern `**/*{slug}*.md` to find files whose names contain the slug
+   - Try variations: exact match, with underscores, with hyphens
+   - Example: for slug `template-strings-and-transforms`, try `**/template-strings-and-transforms.md`, `**/template_strings_and_transforms.md`, etc.
+
+   **Stage 2 - Content-Based Search Using Link Text:**
+   - Use Grep to search for the link text (e.g., "Transform") in markdown files
+   - Combine with keywords from the slug (e.g., "template", "strings", "transforms")
+   - Look for title matches in the `# Header` or `title:` frontmatter
+
+   **Stage 3 - Access Original Document360 Page for Context:**
+   - Reconstruct the full Document360 URL: `https://docs.limacharlie.io` + the relative path
+   - Example: `/v2/docs/template-strings-and-transforms` → `https://docs.limacharlie.io/v2/docs/template-strings-and-transforms`
+   - Use WebFetch to access the page and extract its title, topic, or key content
+   - Use that context to Grep for matching content in local markdown files
+
+   **Stage 4 - Read Candidate Files to Verify Topic:**
+   - If multiple candidates found, Read the first 50-100 lines of each
+   - Compare content/topic with the link text and context from Document360
+   - Select the best match based on topic relevance
+
+   **Stage 5 - Fuzzy Directory Structure Matching:**
+   - Consider the directory structure in the URL path if present
+   - Example: `/docs/sensors/adapter-usage` likely maps to something in a `Sensors/` or `Adapters/` directory
+
+3. **Verify Target File Exists:**
+   - Before creating a relative link, MUST verify the target file exists
+   - Use Read tool to read first few lines of the target file
+   - If Read succeeds, proceed to create the relative link
+   - If Read fails, continue searching or use fallback
+
+4. **Create Relative Link:**
+   - Calculate the relative path from current file to verified target file
+   - Preserve any URL fragment/anchor (e.g., `#section-name`)
+   - Convert the link: `[Transform](/v2/docs/template-strings-and-transforms)` → `[Transform](../../Events/template-strings-and-transforms.md)`
+
+5. **Fallback - Keep Original Link and Log:**
+   - If after exhaustive search (all 5 stages) no match is found, keep the original link UNCHANGED
+   - Output a clear log message: "LINK_SKIPPED: Could not find local match for [link text](original path) in file: {current_file_path}"
+   - Do NOT create broken relative links to non-existent files
+   - Do NOT strip the link entirely - preservation is better than deletion
+
 IMPORTANT:
 - Be thorough but decisive - if in doubt whether to keep content, keep it.
 - OUTPUT FREQUENT STATUS UPDATES - before and after each batch

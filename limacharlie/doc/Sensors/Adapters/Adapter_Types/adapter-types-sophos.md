@@ -24,7 +24,7 @@ Adapter Type: `sophos`
 
 ### Creating Your Credentials and Getting Your Tenant ID
 
-Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
+Sophos documentation - https://developer.sophos.com/getting-started-tenant
 
 1. Add a new credential [here](https://cloud.sophos.com/manage/config/settings/credentials)
 2. Get your client ID and client secret from the credentials you just created
@@ -105,3 +105,7 @@ sophos:
 ## API Doc
 
 See the official [documentation](https://developer.sophos.com/docs/siem-v1/1/overview).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

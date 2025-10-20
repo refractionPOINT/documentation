@@ -4,7 +4,7 @@ Canarytokens are a free, quick, painless way to help defenders discover they've 
 
 Canarytokens can be ingested in LimaCharlie via a Webhook Adapter, and are recognized as the `canary_token` platform.
 
-## A Little More
+A Little More
 
 LimaCharlie published a blog post in April 2023 to discuss the Canarytoken integration. You can read more about that [here](https://limacharlie.io/blog/early-warnings-with-limacharlie-and-canarytokens).
 
@@ -27,7 +27,7 @@ Click **Complete Cloud Installation** to create the cloud-to-cloud Adapter. Proc
 
 ### 1b. Initial deployment via the LimaCharlie CLI
 
-A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation, found [here](../Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md).
+A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation, found in the [Tutorial: Creating a Webhook Adapter](../Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md).
 
 The following configuration can be modified to easily configure a Webhook Adapter for receiving Canarytokens events.
 
@@ -60,7 +60,7 @@ To create this webhook adapter, run the following command, replacing `<json_conf
 
 ### 2. Building the Webhook URL
 
-After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
+After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://docs.limacharlie.io/apidocs/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
 
 * Organization ID
 * Webhook name (from the config)

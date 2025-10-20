@@ -16,7 +16,7 @@ To ingest WEL real-time events in the timeline, use the `wel://[Log Name]` forma
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-wel-3.png)
 
-Difference between `.evtx` versus `wel://` ingestion
+## Difference between `.evtx` versus `wel://` ingestion
 
 If you specify the file on disk, via the `evtx` file extension (as seen in the image above), LimaCharlie will upload the entire Windows Event Log file from disk. This will be represented as a collected artifact, not as real-time events on the sensor's timeline. This method incurs regular artifact ingestion costs for "Telemetry Sources" as seen on our [pricing](https://limacharlie.io/pricing) page.
 

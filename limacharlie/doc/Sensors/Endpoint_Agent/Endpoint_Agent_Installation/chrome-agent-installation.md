@@ -8,8 +8,9 @@ It is delivered as the [LimaCharlie Sensor](https://chrome.google.com/webstore/d
 
 The Chrome sensor is available in the Chrome Web Store.
 
-1. In the LimaCharlie web app (app.limacharlie.io), go to the "Installation Keys" section, select your Installation Key and click the "Chrome Key" copy icon to copy the key to your clipboard.
-2. Install the sensor from: <https://downloads.limacharlie.io/sensor/chrome>
+1. In the LimaCharlie web app (app.limacharlie.io), go to the "Installation Keys" section, select your Installation Key and click the "Chrome Key" copy icon to
+    copy the key to your clipboard.
+2. Install the sensor from: https://downloads.limacharlie.io/sensor/chrome
 3. A new tab will open where you can add your installation key from before. If you close it by mistake, you can re-open it by:
 
    1. From the Extensions page at chrome://extensions/ click on the "Details" button of the LimaCharlie Sensor extension.
@@ -38,3 +39,9 @@ If the extension continues to fail to connect, please provide the LimaCharlie su
 5. In the window that opens, click Console and provide us with a screenshot of what appears for analysis.
 
 Please also include your Organization ID, which can be found within the LimaCharlie web interface in the REST API section under `OID`.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.

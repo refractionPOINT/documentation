@@ -13,3 +13,5 @@ Adapter Type: `stdin`
 ## API Doc
 
 None
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

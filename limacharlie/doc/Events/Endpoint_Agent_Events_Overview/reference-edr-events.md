@@ -12,108 +12,106 @@ These are the events emitted by the endpoint agent for each supported operating 
 
 | EDR Event Type | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- |
-| [AUTORUN\_CHANGE](/v2/docs/reference-edr-events#autorunchange) |  | ☑️ |  |  |  |
-| [CLOUD\_NOTIFICATION](/v2/docs/reference-edr-events#cloudnotification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [CODE\_IDENTITY](/v2/docs/reference-edr-events#codeidentity) | ☑️ | ☑️ | ☑️ |  |  |
-| [CONNECTED](/v2/docs/reference-edr-events#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [DATA\_DROPPED](/v2/docs/reference-edr-events#datadropped) | ☑️ | ☑️ | ☑️ |  |  |
-| [DEBUG\_DATA\_REP](/v2/docs/reference-edr-events#getdebugdata) |  | ☑️ |  |  |  |
-| [DELETED\_SENSOR](/v2/docs/reference-edr-events#deletedsensor) | ☑️ | ☑️ | ☑️ |  |  |
-| [DIR\_FINDHASH\_REP](/v2/docs/reference-edr-events#dirfindhash) | ☑️ | ☑️ | ☑️ |  |  |
-| [DIR\_LIST\_REP](/v2/docs/reference-edr-events#dirlist) | ☑️ | ☑️ | ☑️ |  |  |
-| [DISCONNECTED](/v2/docs/reference-edr-events#disconnected) |  | ☑️ |  |  |  |
-| [DNS\_REQUEST](/v2/docs/reference-edr-events#dnsrequest) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [DRIVER\_CHANGE](/v2/docs/reference-edr-events#driverchange) |  | ☑️ |  |  |  |
-| [EXEC\_OOB](/v2/docs/reference-edr-events#execoob) | ☑️ |  | ☑️ |  |  |
-| [EXISTING\_PROCESS](/v2/docs/reference-edr-events#existingprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [EXPORT\_COMPLETE](/v2/docs/reference-edr-events#exportcomplete) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM\_ADD](/v2/docs/reference-edr-events#fimadd) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM\_DEL](/v2/docs/reference-edr-events#fimdel) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM\_HIT](/v2/docs/reference-edr-events#fimhit) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_CREATE](/v2/docs/reference-edr-events#filecreate) | ☑️ | ☑️ |  |  |  |
-| [FILE\_DEL\_REP](/v2/docs/reference-edr-events#filedel) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_DELETE](/v2/docs/reference-edr-events#filedelete) | ☑️ | ☑️ |  |  |  |
-| [FILE\_GET\_REP](/v2/docs/reference-edr-events#fileget) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_HASH\_REP](/v2/docs/reference-edr-events#filehash) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_INFO\_REP](/v2/docs/reference-edr-events#fileinfo) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_MODIFIED](/v2/docs/reference-edr-events#filemodified) | ☑️ | ☑️ |  |  |  |
-| [FILE\_MOV\_REP](/v2/docs/reference-edr-events#filemov) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_TYPE\_ACCESSED](/v2/docs/reference-edr-events#filetypeaccessed) | ☑️ | ☑️ |  |  |  |
-| [GET\_DOCUMENT\_REP](/v2/docs/reference-edr-events#doccacheget) | ☑️ | ☑️ |  |  |  |
-| [GET\_EXFIL\_EVENT\_REP](/v2/docs/reference-edr-events#exfilget) | ☑️ | ☑️ | ☑️ |  |  |
-| [HIDDEN\_MODULE\_DETECTED](/v2/docs/reference-edr-events#hiddenmoduledetected) |  | ☑️ |  |  |  |
-| [HISTORY\_DUMP\_REP](/v2/docs/reference-edr-events#historydump) | ☑️ | ☑️ | ☑️ |  |  |
-| [HTTP\_REQUEST](/v2/docs/reference-edr-events#httprequest) |  |  |  | ☑️ | ☑️ |
-| [HTTP\_REQUEST\_HEADERS](/v2/docs/reference-edr-events#httprequestheaders) |  |  |  | ☑️ |  |
-| [HTTP\_RESPONSE\_HEADERS](/v2/docs/reference-edr-events#httpresponseheaders) |  |  |  | ☑️ |  |
-| [INGEST](/v2/docs/reference-edr-events#ingest) | ☑️ | ☑️ | ☑️ |  |  |
-| [LOG\_GET\_REP](/v2/docs/reference-edr-events#logget) |  |  |  |  |  |
-| [LOG\_LIST\_REP](/v2/docs/reference-edr-events#loglist) |  |  |  |  |  |
-| [MEM\_FIND\_HANDLES\_REP](/v2/docs/reference-edr-events#memfindhandle) |  | ☑️ |  |  |  |
-| [MEM\_FIND\_STRING\_REP](/v2/docs/reference-edr-events#memfindstring) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM\_HANDLES\_REP](/v2/docs/reference-edr-events#memhandles) |  | ☑️ |  |  |  |
-| [MEM\_MAP\_REP](/v2/docs/reference-edr-events#memmap) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM\_READ\_REP](/v2/docs/reference-edr-events#memread) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM\_STRINGS\_REP](/v2/docs/reference-edr-events#memstrings) | ☑️ | ☑️ | ☑️ |  |  |
-| [MODULE\_LOAD](/v2/docs/reference-edr-events#moduleload) |  | ☑️ | ☑️ |  |  |
-| [MODULE\_MEM\_DISK\_MISMATCH](/v2/docs/reference-edr-events#modulememdiskmismatch) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETSTAT\_REP](/v2/docs/reference-edr-events#netstat) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETWORK\_CONNECTIONS](/v2/docs/reference-edr-events#networkconnections) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETWORK\_SUMMARY](/v2/docs/reference-edr-events#networksummary) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_DOCUMENT](/v2/docs/reference-edr-events#newdocument) | ☑️ | ☑️ |  |  |  |
-| [NEW\_NAMED\_PIPE](/v2/docs/reference-edr-events#newnamedpipe) |  | ☑️ |  |  |  |
-| [NEW\_PROCESS](/v2/docs/reference-edr-events#newprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_REMOTE\_THREAD](/v2/docs/reference-edr-events#newremotethread) |  | ☑️ |  |  |  |
-| [NEW\_TCP4\_CONNECTION](/v2/docs/reference-edr-events#newtcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_TCP6\_CONNECTION](/v2/docs/reference-edr-events#newtcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_UDP4\_CONNECTION](/v2/docs/reference-edr-events#newudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_UDP6\_CONNECTION](/v2/docs/reference-edr-events#newudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [OPEN\_NAMED\_PIPE](/v2/docs/reference-edr-events#opennamedpipe) |  | ☑️ |  |  |  |
-| [OS\_AUTORUNS\_REP](/v2/docs/reference-edr-events#osautoruns) | ☑️ | ☑️ |  |  |  |
-| [OS\_DRIVERS\_REP](/v2/docs/reference-edr-events#osdrivers) |  | ☑️ |  |  |  |
-| [OS\_KILL\_PROCESS\_REP](/v2/docs/reference-edr-events#oskillprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_PACKAGES\_REP](/v2/docs/reference-edr-events#ospackages) |  | ☑️ |  |  |  |
-| [OS\_PROCESSES\_REP](/v2/docs/reference-edr-events#osprocesses) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_RESUME\_REP](/v2/docs/reference-edr-events#osresume) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_SERVICES\_REP](/v2/docs/reference-edr-events#osservices) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_SUSPEND\_REP](/v2/docs/reference-edr-events#ossuspend) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_USERS\_REP](/v2/docs/reference-edr-events#osusers) |  | ☑️ |  |  |  |
-| [OS\_VERSION\_REP](/v2/docs/reference-edr-events#osversion) | ☑️ | ☑️ | ☑️ |  |  |
-| [PCAP\_LIST\_INTERFACES\_REP](/v2/docs/reference-edr-events#pcapifaces) |  |  | ☑️ |  |  |
-| [PROCESS\_ENVIRONMENT](/v2/docs/reference-edr-events#processenvironment) |  | ☑️ | ☑️ |  |  |
-| [RECEIPT](/v2/docs/reference-edr-events#receipt) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [REGISTRY\_CREATE](/v2/docs/reference-edr-events#registrycreate) |  | ☑️ |  |  |  |
-| [REGISTRY\_DELETE](/v2/docs/reference-edr-events#registrydelete) |  | ☑️ |  |  |  |
-| [REGISTRY\_LIST\_REP](/v2/docs/reference-edr-events#reglist) |  | ☑️ |  |  |  |
-| [REGISTRY\_WRITE](/v2/docs/reference-edr-events#registrywrite) |  | ☑️ |  |  |  |
-| [REJOIN\_NETWORK](/v2/docs/reference-edr-events#rejoinnetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [REMOTE\_PROCESS\_HANDLE](/v2/docs/reference-edr-events#remoteprocesshandle) |  | ☑️ |  |  |  |
-| [SEGREGATE\_NETWORK](/v2/docs/reference-edr-events#segregatenetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [SENSITIVE\_PROCESS\_ACCESS](/v2/docs/reference-edr-events#sensitiveprocessaccess) |  | ☑️ |  |  |  |
-| [SERVICE\_CHANGE](/v2/docs/reference-edr-events#servicechange) | ☑️ | ☑️ | ☑️ |  |  |
-| [SHUTTING\_DOWN](/v2/docs/reference-edr-events#shuttingdown) | ☑️ | ☑️ | ☑️ |  |  |
-| [SSH\_LOGIN](/v2/docs/reference-edr-events#sshlogin) | ☑️ |  |  |  |  |
-| [SSH\_LOGOUT](/v2/docs/reference-edr-events#sshlogout) | ☑️ |  |  |  |  |
-| [STARTING\_UP](/v2/docs/reference-edr-events#startingup) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_PROCESS](/v2/docs/reference-edr-events#terminateprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_TCP4\_CONNECTION](/v2/docs/reference-edr-events#terminatetcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_TCP6\_CONNECTION](/v2/docs/reference-edr-events#terminatetcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_UDP4\_CONNECTION](/v2/docs/reference-edr-events#terminateudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_UDP6\_CONNECTION](/v2/docs/reference-edr-events#terminateudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [THREAD\_INJECTION](/v2/docs/reference-edr-events#threadinjection) |  | ☑️ |  |  |  |
-| [USER\_LOGIN](/v2/docs/reference-edr-events#userlogin) | ☑️ |  |  |  |  |
-| [USER\_LOGOUT](/v2/docs/reference-edr-events#userlogout) | ☑️ |  |  |  |  |
-| [USER\_OBSERVED](/v2/docs/reference-edr-events#userobserved) | ☑️ | ☑️ | ☑️ |  |  |
-| [VOLUME\_MOUNT](/v2/docs/reference-edr-events#volumemount) | ☑️ | ☑️ |  |  |  |
-| [VOLUME\_UNMOUNT](/v2/docs/reference-edr-events#volumeunmount) | ☑️ | ☑️ |  |  |  |
-| [WEL](/v2/docs/reference-edr-events#wel) |  | ☑️ |  |  |  |
-| [YARA\_DETECTION](/v2/docs/reference-edr-events#yaradetection) | ☑️ | ☑️ | ☑️ |  |  |
-
----
+| [AUTORUN_CHANGE](#autorunchange) |  | ☑️ |  |  |  |
+| [CLOUD_NOTIFICATION](#cloudnotification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [CODE_IDENTITY](#codeidentity) | ☑️ | ☑️ | ☑️ |  |  |
+| [CONNECTED](#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [DATA_DROPPED](#datadropped) | ☑️ | ☑️ | ☑️ |  |  |
+| [DEBUG_DATA_REP](#getdebugdata) |  | ☑️ |  |  |  |
+| [DELETED_SENSOR](#deletedsensor) | ☑️ | ☑️ | ☑️ |  |  |
+| [DIR_FINDHASH_REP](#dirfindhash) | ☑️ | ☑️ | ☑️ |  |  |
+| [DIR_LIST_REP](#dirlist) | ☑️ | ☑️ | ☑️ |  |  |
+| [DISCONNECTED](#disconnected) |  | ☑️ |  |  |  |
+| [DNS_REQUEST](#dnsrequest) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [DRIVER_CHANGE](#driverchange) |  | ☑️ |  |  |  |
+| [EXEC_OOB](#execoob) | ☑️ |  | ☑️ |  |  |
+| [EXISTING_PROCESS](#existingprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [EXPORT_COMPLETE](#exportcomplete) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM_ADD](#fimadd) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM_DEL](#fimdel) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM_HIT](#fimhit) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE_CREATE](#filecreate) | ☑️ | ☑️ |  |  |  |
+| [FILE_DEL_REP](#filedel) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE_DELETE](#filedelete) | ☑️ | ☑️ |  |  |  |
+| [FILE_GET_REP](#fileget) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE_HASH_REP](#filehash) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE_INFO_REP](#fileinfo) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE_MODIFIED](#filemodified) | ☑️ | ☑️ |  |  |  |
+| [FILE_MOV_REP](#filemov) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE_TYPE_ACCESSED](#filetypeaccessed) | ☑️ | ☑️ |  |  |  |
+| [GET_DOCUMENT_REP](#doccacheget) | ☑️ | ☑️ |  |  |  |
+| [GET_EXFIL_EVENT_REP](#exfilget) | ☑️ | ☑️ | ☑️ |  |  |
+| [HIDDEN_MODULE_DETECTED](#hiddenmoduledetected) |  | ☑️ |  |  |  |
+| [HISTORY_DUMP_REP](#historydump) | ☑️ | ☑️ | ☑️ |  |  |
+| [HTTP_REQUEST](#httprequest) |  |  |  | ☑️ | ☑️ |
+| [HTTP_REQUEST_HEADERS](#httprequestheaders) |  |  |  | ☑️ |  |
+| [HTTP_RESPONSE_HEADERS](#httpresponseheaders) |  |  |  | ☑️ |  |
+| [INGEST](#ingest) | ☑️ | ☑️ | ☑️ |  |  |
+| [LOG_GET_REP](#logget) |  |  |  |  |  |
+| [LOG_LIST_REP](#loglist) |  |  |  |  |  |
+| [MEM_FIND_HANDLES_REP](#memfindhandle) |  | ☑️ |  |  |  |
+| [MEM_FIND_STRING_REP](#memfindstring) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM_HANDLES_REP](#memhandles) |  | ☑️ |  |  |  |
+| [MEM_MAP_REP](#memmap) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM_READ_REP](#memread) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM_STRINGS_REP](#memstrings) | ☑️ | ☑️ | ☑️ |  |  |
+| [MODULE_LOAD](#moduleload) |  | ☑️ | ☑️ |  |  |
+| [MODULE_MEM_DISK_MISMATCH](#modulememdiskmismatch) | ☑️ | ☑️ | ☑️ |  |  |
+| [NETSTAT_REP](#netstat) | ☑️ | ☑️ | ☑️ |  |  |
+| [NETWORK_CONNECTIONS](#networkconnections) | ☑️ | ☑️ | ☑️ |  |  |
+| [NETWORK_SUMMARY](#networksummary) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW_DOCUMENT](#newdocument) | ☑️ | ☑️ |  |  |  |
+| [NEW_NAMED_PIPE](#newnamedpipe) |  | ☑️ |  |  |  |
+| [NEW_PROCESS](#newprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW_REMOTE_THREAD](#newremotethread) |  | ☑️ |  |  |  |
+| [NEW_TCP4_CONNECTION](#newtcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW_TCP6_CONNECTION](#newtcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW_UDP4_CONNECTION](#newudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW_UDP6_CONNECTION](#newudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [OPEN_NAMED_PIPE](#opennamedpipe) |  | ☑️ |  |  |  |
+| [OS_AUTORUNS_REP](#osautoruns) | ☑️ | ☑️ |  |  |  |
+| [OS_DRIVERS_REP](#osdrivers) |  | ☑️ |  |  |  |
+| [OS_KILL_PROCESS_REP](#oskillprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS_PACKAGES_REP](#ospackages) |  | ☑️ |  |  |  |
+| [OS_PROCESSES_REP](#osprocesses) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS_RESUME_REP](#osresume) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS_SERVICES_REP](#osservices) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS_SUSPEND_REP](#ossuspend) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS_USERS_REP](#osusers) |  | ☑️ |  |  |  |
+| [OS_VERSION_REP](#osversion) | ☑️ | ☑️ | ☑️ |  |  |
+| [PCAP_LIST_INTERFACES_REP](#pcapifaces) |  |  | ☑️ |  |  |
+| [PROCESS_ENVIRONMENT](#processenvironment) |  | ☑️ | ☑️ |  |  |
+| [RECEIPT](#receipt) | ☑️ | ☑️ | ☑️ | ☑️ |  |
+| [REGISTRY_CREATE](#registrycreate) |  | ☑️ |  |  |  |
+| [REGISTRY_DELETE](#registrydelete) |  | ☑️ |  |  |  |
+| [REGISTRY_LIST_REP](#reglist) |  | ☑️ |  |  |  |
+| [REGISTRY_WRITE](#registrywrite) |  | ☑️ |  |  |  |
+| [REJOIN_NETWORK](#rejoinnetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
+| [REMOTE_PROCESS_HANDLE](#remoteprocesshandle) |  | ☑️ |  |  |  |
+| [SEGREGATE_NETWORK](#segregatenetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
+| [SENSITIVE_PROCESS_ACCESS](#sensitiveprocessaccess) |  | ☑️ |  |  |  |
+| [SERVICE_CHANGE](#servicechange) | ☑️ | ☑️ | ☑️ |  |  |
+| [SHUTTING_DOWN](#shuttingdown) | ☑️ | ☑️ | ☑️ |  |  |
+| [SSH_LOGIN](#sshlogin) | ☑️ |  |  |  |  |
+| [SSH_LOGOUT](#sshlogout) | ☑️ |  |  |  |  |
+| [STARTING_UP](#startingup) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE_PROCESS](#terminateprocess) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE_TCP4_CONNECTION](#terminatetcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE_TCP6_CONNECTION](#terminatetcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE_UDP4_CONNECTION](#terminateudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE_UDP6_CONNECTION](#terminateudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [THREAD_INJECTION](#threadinjection) |  | ☑️ |  |  |  |
+| [USER_LOGIN](#userlogin) | ☑️ |  |  |  |  |
+| [USER_LOGOUT](#userlogout) | ☑️ |  |  |  |  |
+| [USER_OBSERVED](#userobserved) | ☑️ | ☑️ | ☑️ |  |  |
+| [VOLUME_MOUNT](#volumemount) | ☑️ | ☑️ |  |  |  |
+| [VOLUME_UNMOUNT](#volumeunmount) | ☑️ | ☑️ |  |  |  |
+| [WEL](#wel) |  | ☑️ |  |  |  |
+| [YARA_DETECTION](#yaradetection) | ☑️ | ☑️ | ☑️ |  |  |
 
 ## Event Descriptions
 
-### AUTORUN\_CHANGE
+### AUTORUN_CHANGE
 
 Generated when an Autorun is changed.
 
@@ -121,14 +119,12 @@ Generated when an Autorun is changed.
 
 ```
 {
-  "REGISTRY_KEY": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-  "TIMESTAMP": 1627497894000
+  "REGISTRY_KEY": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+  "TIMESTAMP": 1627497894000
 }
 ```
 
----
-
-### CLOUD\_NOTIFICATION
+### CLOUD_NOTIFICATION
 
 This event is a receipt from the agent that it has received the task sent to it, and includes high-level errors (if any).
 
@@ -136,28 +132,26 @@ This event is a receipt from the agent that it has received the task sent to it,
 
 ```
 {
-  "NOTIFICATION_ID": "ADD_EXFIL_EVENT_REQ",
-  "NOTIFICATION": {
-    "INVESTIGATION_ID": "digger-4afdeb2b-a0d8-4a37-83b5-48996117998e"
-  },
-  "HCP_IDENT": {
-    "HCP_ORG_ID": "c82e5c17d5194ef5a4acc454a95d31db",
-    "HCP_SENSOR_ID": "8fc370e6699a49858e75c1316b725570",
-    "HCP_INSTALLER_ID": "00000000000000000000000000000000",
-    "HCP_ARCHITECTURE": 0,
-    "HCP_PLATFORM": 0
-  },
-  "EXPIRY": 0
+  "NOTIFICATION_ID": "ADD_EXFIL_EVENT_REQ",
+  "NOTIFICATION": {
+    "INVESTIGATION_ID": "digger-4afdeb2b-a0d8-4a37-83b5-48996117998e"
+  },
+  "HCP_IDENT": {
+    "HCP_ORG_ID": "c82e5c17d5194ef5a4acc454a95d31db",
+    "HCP_SENSOR_ID": "8fc370e6699a49858e75c1316b725570",
+    "HCP_INSTALLER_ID": "00000000000000000000000000000000",
+    "HCP_ARCHITECTURE": 0,
+    "HCP_PLATFORM": 0
+  },
+  "EXPIRY": 0
 }
 ```
 
----
-
-### CODE\_IDENTITY
+### CODE_IDENTITY
 
 Unique combinations of file hash and file path. This event is emitted the first time the combination is seen, typically when the binary is executed or loaded. Therefore it's a great event to look for hashes without being overwhelmed by process execution or module loads.
 
-ONGOING\_IDENTITY
+ONGOING_IDENTITY
 
 The `ONGOING_IDENTITY` event emits code signature information even if not newly seen, however this data can become duplicative and verbose.
 
@@ -165,20 +159,18 @@ The `ONGOING_IDENTITY` event emits code signature information even if not newly 
 
 ```
 {
-  "MEMORY_SIZE": 0,
-  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\B1B207E5-300E-434F-B4FE-A4816E6551BE\\dismhost.exe",
-  "TIMESTAMP": 1456285265,
-  "SIGNATURE": {
-    "CERT_ISSUER": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Code Signing PCA",
-    "CERT_CHAIN_STATUS": 124,
-    "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\B1B207E5-300E-434F-B4FE-A4816E6551BE\\dismhost.exe",
-    "CERT_SUBJECT": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=MOPR, CN=Microsoft Corporation"
-  },
-  "HASH": "4ab4024eb555b2e4c54d378a846a847bd02f66ac54849bbce5a1c8b787f1d26c"
+  "MEMORY_SIZE": 0,
+  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\B1B207E5-300E-434F-B4FE-A4816E6551BE\\dismhost.exe",
+  "TIMESTAMP": 1456285265,
+  "SIGNATURE": {
+    "CERT_ISSUER": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Code Signing PCA",
+    "CERT_CHAIN_STATUS": 124,
+    "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\B1B207E5-300E-434F-B4FE-A4816E6551BE\\dismhost.exe",
+    "CERT_SUBJECT": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, OU=MOPR, CN=Microsoft Corporation"
+  },
+  "HASH": "4ab4024eb555b2e4c54d378a846a847bd02f66ac54849bbce5a1c8b787f1d26c"
 }
 ```
-
----
 
 ### CONNECTED
 
@@ -188,22 +180,20 @@ This event is generated when a Sensor connects to the cloud.
 
 ```
 {
-    "HOST_NAME" : "demo-win-2016",
-    "IS_SEGREGATED" : 0,
-    "KERNEL_ACQ_AVAILABLE" : 1,
-    "MAC_ADDRESS" : "42-01-0A-80-00-02"
+    "HOST_NAME" : "demo-win-2016",
+    "IS_SEGREGATED" : 0,
+    "KERNEL_ACQ_AVAILABLE" : 1,
+    "MAC_ADDRESS" : "42-01-0A-80-00-02"
 }
 ```
 
----
-
-### DEBUG\_DATA\_REP
+### DEBUG_DATA_REP
 
 Response from a `get_debug_data` request.
 
 **Platforms:**
 
-### DIR\_FINDHASH\_REP
+### DIR_FINDHASH_REP
 
 Response event for the `dir_find_hash` sensor command.
 
@@ -213,39 +203,39 @@ Response event for the `dir_find_hash` sensor command.
 
 ```
 {
-    "DIRECTORY_LIST": [
-        {
-            "HASH": "f11dda931637a1a1bc614fc2f320326b24336c5155679aa062acae7c79f33d67",
-            "ACCESS_TIME": 1535994794247,
-            "FILE_SIZE": 113664,
-            "CREATION_TIME": 1467173189067,
-            "MODIFICATION_TIME": 1467173190171,
-            "FILE_NAME": "MALWARE_DEMO_WINDOWS_1.exe",
-            "ATTRIBUTES": 32,
-            "FILE_PATH": "c:\\users\\dev\\desktop\\MALWARE_DEMO_WINDOWS_1.exe"
-        },
-        {
-            "HASH": "e37726feee8e72f3ab006e023cb9d6fa1a4087274b47217d2462325fa8008515",
-            "ACCESS_TIME": 1535989041078,
-            "FILE_SIZE": 1016320,
-            "CREATION_TIME": 1522507344821,
-            "MODIFICATION_TIME": 1522507355732,
-            "FILE_NAME": "lc_win_64.exe",
-            "ATTRIBUTES": 32,
-            "FILE_PATH": "c:\\users\\dev\\desktop\\lc_win_64.exe"
-        }
-    ],
-    "HASH": [
-        "f11dda931637a1a1bc614fc2f320326b24336c5155679aa062acae7c79f33d67",
-        "e37726feee8e72f3ab006e023cb9d6fa1a4087274b47217d2462325fa8008515"
-    ],
-    "FILE_PATH": "*.exe",
-    "DIRECTORY_LIST_DEPTH": 0,
-    "DIRECTORY_PATH": "c:\\users\\dev\\desktop\\"
+    "DIRECTORY_LIST": [
+        {
+            "HASH": "f11dda931637a1a1bc614fc2f320326b24336c5155679aa062acae7c79f33d67",
+            "ACCESS_TIME": 1535994794247,
+            "FILE_SIZE": 113664,
+            "CREATION_TIME": 1467173189067,
+            "MODIFICATION_TIME": 1467173190171,
+            "FILE_NAME": "MALWARE_DEMO_WINDOWS_1.exe",
+            "ATTRIBUTES": 32,
+            "FILE_PATH": "c:\\users\\dev\\desktop\\MALWARE_DEMO_WINDOWS_1.exe"
+        },
+        {
+            "HASH": "e37726feee8e72f3ab006e023cb9d6fa1a4087274b47217d2462325fa8008515",
+            "ACCESS_TIME": 1535989041078,
+            "FILE_SIZE": 1016320,
+            "CREATION_TIME": 1522507344821,
+            "MODIFICATION_TIME": 1522507355732,
+            "FILE_NAME": "lc_win_64.exe",
+            "ATTRIBUTES": 32,
+            "FILE_PATH": "c:\\users\\dev\\desktop\\lc_win_64.exe"
+        }
+    ],
+    "HASH": [
+        "f11dda931637a1a1bc614fc2f320326b24336c5155679aa062acae7c79f33d67",
+        "e37726feee8e72f3ab006e023cb9d6fa1a4087274b47217d2462325fa8008515"
+    ],
+    "FILE_PATH": "*.exe",
+    "DIRECTORY_LIST_DEPTH": 0,
+    "DIRECTORY_PATH": "c:\\users\\dev\\desktop\\"
 }
 ```
 
-### DIR\_LIST\_REP
+### DIR_LIST_REP
 
 Response event for the `dir_list` sensor command. Includes Alternate Data Streams on Windows.
 
@@ -255,46 +245,44 @@ Response event for the `dir_list` sensor command. Includes Alternate Data Stream
 
 ```
 {
-    "DIRECTORY_LIST": [
-        {
-            "FILE_NAME": "vssdk_full.exe",
-            "CREATION_TIME": 1553437930012,
-            "MODIFICATION_TIME": 1553437937000,
-            "STREAMS": [
-                {
-                    "FILE_NAME": "::$DATA",
-                    "SIZE": 13782032
-                }
-            ],
-            "ACCESS_TIME": 1567868284440,
-            "FILE_SIZE": 13782032,
-            "ATTRIBUTES": 32,
-            "FILE_PATH": "c:\\users\\dev\\desktop\\vssdk_full.exe"
-        },
-        {
-            "FILE_NAME": "UniversalLog.txt",
-            "CREATION_TIME": 1553028205525,
-            "MODIFICATION_TIME": 1553028206289,
-            "STREAMS": [
-                {
-                    "FILE_NAME": "::$DATA",
-                    "SIZE": 125
-                },
-                {
-                    "FILE_NAME": ":Zone.Identifier:$DATA",
-                    "SIZE": 377
-                }
-            ],
-            "ACCESS_TIME": 1567868284158,
-            "FILE_SIZE": 125,
-            "ATTRIBUTES": 32,
-            "FILE_PATH": "c:\\users\\dev\\desktop\\UniversalLog.txt"
-        }
-    ]
+    "DIRECTORY_LIST": [
+        {
+            "FILE_NAME": "vssdk_full.exe",
+            "CREATION_TIME": 1553437930012,
+            "MODIFICATION_TIME": 1553437937000,
+            "STREAMS": [
+                {
+                    "FILE_NAME": "::$DATA",
+                    "SIZE": 13782032
+                }
+            ],
+            "ACCESS_TIME": 1567868284440,
+            "FILE_SIZE": 13782032,
+            "ATTRIBUTES": 32,
+            "FILE_PATH": "c:\\users\\dev\\desktop\\vssdk_full.exe"
+        },
+        {
+            "FILE_NAME": "UniversalLog.txt",
+            "CREATION_TIME": 1553028205525,
+            "MODIFICATION_TIME": 1553028206289,
+            "STREAMS": [
+                {
+                    "FILE_NAME": "::$DATA",
+                    "SIZE": 125
+                },
+                {
+                    "FILE_NAME": ":Zone.Identifier:$DATA",
+                    "SIZE": 377
+                }
+            ],
+            "ACCESS_TIME": 1567868284158,
+            "FILE_SIZE": 125,
+            "ATTRIBUTES": 32,
+            "FILE_PATH": "c:\\users\\dev\\desktop\\UniversalLog.txt"
+        }
+    ]
 }
 ```
-
----
 
 ### DISCONNECTED
 
@@ -304,31 +292,27 @@ This event is generated when a Sensor disconnects from the cloud.
 
 ```
 {
-  "DISCONNECTED": {},
-  "ts": 1455674775
+  "DISCONNECTED": {},
+  "ts": 1455674775
 }
 ```
 
----
+### DNS_REQUEST
 
-### DNS\_REQUEST
-
-Generated from DNS responses and therefore includes both the requested domain and the response from the server. If the server responds with multiple responses (as allowed by the DNS protocol) the N answers will become N DNS\_REQUEST events, so you can always assume one DNS\_REQUEST event means one answer.
+Generated from DNS responses and therefore includes both the requested domain and the response from the server. If the server responds with multiple responses (as allowed by the DNS protocol) the N answers will become N DNS_REQUEST events, so you can always assume one DNS_REQUEST event means one answer.
 
 **Platforms:**
 
 ```
 {
-  "DNS_TYPE": 1,
-  "TIMESTAMP": 1456285240,
-  "DNS_FLAGS": 0,
-  "DOMAIN_NAME": "time.windows.com"
+  "DNS_TYPE": 1,
+  "TIMESTAMP": 1456285240,
+  "DNS_FLAGS": 0,
+  "DOMAIN_NAME": "time.windows.com"
 }
 ```
 
----
-
-### DRIVER\_CHANGE
+### DRIVER_CHANGE
 
 Generated when a driver is changed.
 
@@ -336,26 +320,22 @@ Generated when a driver is changed.
 
 ```
 {
-  "PROCESS_ID": 0,
-  "SVC_DISPLAY_NAME": "HbsAcq",
-  "SVC_NAME": "HbsAcq",
-  "SVC_STATE": 1,
-  "SVC_TYPE": 1,
-  "TIMESTAMP": 1517377895873
+  "PROCESS_ID": 0,
+  "SVC_DISPLAY_NAME": "HbsAcq",
+  "SVC_NAME": "HbsAcq",
+  "SVC_STATE": 1,
+  "SVC_TYPE": 1,
+  "TIMESTAMP": 1517377895873
 }
 ```
 
----
+### EXISTING_PROCESS
 
-### EXISTING\_PROCESS
-
-This event is similar to the NEW\_PROCESS event.  It gets emitted when a process existed prior to the LimaCharlie sensor loading.
+This event is similar to the NEW_PROCESS event.  It gets emitted when a process existed prior to the LimaCharlie sensor loading.
 
 **Platforms:**
 
----
-
-### FILE\_CREATE
+### FILE_CREATE
 
 Generated when a file is created.
 
@@ -363,14 +343,12 @@ Generated when a file is created.
 
 ```
 {
-  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01tmp.log",
-  "TIMESTAMP": 1468335271948
+  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01tmp.log",
+  "TIMESTAMP": 1468335271948
 }
 ```
 
----
-
-### FILE\_DEL\_REP
+### FILE_DEL_REP
 
 Response event for the `file_del` sensor command.
 
@@ -380,13 +358,11 @@ Response event for the `file_del` sensor command.
 
 ```
 {
-  "FILE_PATH": "C:\\test\\test.txt"
+  "FILE_PATH": "C:\\test\\test.txt"
 }
 ```
 
----
-
-### FILE\_DELETE
+### FILE_DELETE
 
 Generated when a file is deleted.
 
@@ -409,14 +385,12 @@ Generated when a file is deleted.
 
 ```
 {
-  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\EBA4E4F0-3020-459E-9E34-D5336E244F05\\api-ms-win-core-processthreads-l1-1-2.dll",
-  "TIMESTAMP": 1468335611906
+  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\EBA4E4F0-3020-459E-9E34-D5336E244F05\\api-ms-win-core-processthreads-l1-1-2.dll",
+  "TIMESTAMP": 1468335611906
 }
 ```
 
----
-
-### FILE\_GET\_REP
+### FILE_GET_REP
 
 Response event for the `file_get` sensor command.
 
@@ -426,13 +400,13 @@ Response event for the `file_get` sensor command.
 
 ```
 {
-  "FILE_CONTENT": "$BASE64_ENCODED_FILE_CONTENTS",
-  "FILE_PATH": "C:\\windows\\system32\\svchost.exe",
-  "FILE_SIZE": 78880
+  "FILE_CONTENT": "$BASE64_ENCODED_FILE_CONTENTS",
+  "FILE_PATH": "C:\\windows\\system32\\svchost.exe",
+  "FILE_SIZE": 78880
 }
 ```
 
-### FILE\_HASH\_REP
+### FILE_HASH_REP
 
 Response event for the `file_hash` sensor command.
 
@@ -442,20 +416,20 @@ Response event for the `file_hash` sensor command.
 
 ```
 {
-  "FILE_IS_SIGNED": 1,
-  "FILE_PATH": "C:\\Windows\\System32\\svchost.exe",
-  "HASH": "31780ff2aaf7bc71f755ba0e4fef1d61b060d1d2741eafb33cbab44d889595a0",
-  "SIGNATURE": {
-    "CERT_ISSUER": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Windows Production PCA 2011",
-    "CERT_SUBJECT": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Windows Publisher",
-    "FILE_CERT_IS_VERIFIED_LOCAL": 1,
-    "FILE_IS_SIGNED": 1,
-    "FILE_PATH": "C:\\Windows\\System32\\svchost.exe"
-  }
+  "FILE_IS_SIGNED": 1,
+  "FILE_PATH": "C:\\Windows\\System32\\svchost.exe",
+  "HASH": "31780ff2aaf7bc71f755ba0e4fef1d61b060d1d2741eafb33cbab44d889595a0",
+  "SIGNATURE": {
+    "CERT_ISSUER": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Windows Production PCA 2011",
+    "CERT_SUBJECT": "C=US, S=Washington, L=Redmond, O=Microsoft Corporation, CN=Microsoft Windows Publisher",
+    "FILE_CERT_IS_VERIFIED_LOCAL": 1,
+    "FILE_IS_SIGNED": 1,
+    "FILE_PATH": "C:\\Windows\\System32\\svchost.exe"
+  }
 }
 ```
 
-### FILE\_INFO\_REP
+### FILE_INFO_REP
 
 Response event for the `file_info` sensor command.
 
@@ -465,19 +439,17 @@ Response event for the `file_info` sensor command.
 
 ```
 {
-  "ACCESS_TIME": 1686685723546,
-  "ATTRIBUTES": 0,
-  "CREATION_TIME": 1686685723546,
-  "FILE_IS_SIGNED": 1,
-  "FILE_PATH": "C:\\Windows\\System32\\svchost.exe",
-  "FILE_SIZE": 78880,
-  "MODIFICATION_TIME": 1686685723546
+  "ACCESS_TIME": 1686685723546,
+  "ATTRIBUTES": 0,
+  "CREATION_TIME": 1686685723546,
+  "FILE_IS_SIGNED": 1,
+  "FILE_PATH": "C:\\Windows\\System32\\svchost.exe",
+  "FILE_SIZE": 78880,
+  "MODIFICATION_TIME": 1686685723546
 }
 ```
 
----
-
-### FILE\_MODIFIED
+### FILE_MODIFIED
 
 Generated when a file is modified.
 
@@ -500,14 +472,12 @@ Generated when a file is modified.
 
 ```
 {
-  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01.log",
-  "TIMESTAMP": 1468335272949
+  "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01.log",
+  "TIMESTAMP": 1468335272949
 }
 ```
 
----
-
-### FILE\_MOV\_REP
+### FILE_MOV_REP
 
 Response event for the `file_mov` sensor command.
 
@@ -517,14 +487,12 @@ Response event for the `file_mov` sensor command.
 
 ```
 {
-  "DESTINATION": "C:\\test\\test.txt.bak",
-  "SOURCE": "C:\\test\\test.txt"
+  "DESTINATION": "C:\\test\\test.txt.bak",
+  "SOURCE": "C:\\test\\test.txt"
 }
 ```
 
----
-
-### FILE\_TYPE\_ACCESSED
+### FILE_TYPE_ACCESSED
 
 Generated when a new process is observed interacting with certain file types.
 
@@ -543,15 +511,13 @@ The `RULE_NAME` component is the class of file extension involved:
 
 ```
 {
-  "PROCESS_ID": 2048,
-  "RULE_NAME": 50,
-  "FILE_PATH": "C:\\Program Files\\7-Zip\\7zG.exe"
+  "PROCESS_ID": 2048,
+  "RULE_NAME": 50,
+  "FILE_PATH": "C:\\Program Files\\7-Zip\\7zG.exe"
 }
 ```
 
----
-
-### FIM\_ADD
+### FIM_ADD
 
 Response event for the `fim_add` sensor command. An `ERROR: 0` implies the path was successfully added.
 
@@ -561,11 +527,11 @@ Response event for the `fim_add` sensor command. An `ERROR: 0` implies the path 
 
 ```
 "event": {
-  "ERROR":0
+  "ERROR":0
 }
 ```
 
-### FIM\_DEL
+### FIM_DEL
 
 Response event for the `fim_del` sensor command. An `ERROR: 0` implies the path was successfully removed.
 
@@ -577,13 +543,11 @@ An `ERROR: 3` response implies the provided path was not found in the list of FI
 
 ```
 "event": {
-  "ERROR":0
+  "ERROR":0
 }
 ```
 
----
-
-### FIM\_HIT
+### FIM_HIT
 
 A file, directory, or registry key being monitored by File & Registry Integrity Monitoring has been modified.
 
@@ -591,24 +555,22 @@ A file, directory, or registry key being monitored by File & Registry Integrity 
 
 ```
 {
-  "PROCESS": {
-    "MEMORY_USAGE": 25808896,
-    "TIMESTAMP": 1541348299886,
-    "COMMAND_LINE": "\"C:\\WINDOWS\\regedit.exe\" ",
-    "PROCESS_ID": 4340,
-    "THREADS": 3,
-    "USER_NAME": "BUILTIN\\Administrators",
-    "FILE_PATH": "C:\\WINDOWS\\regedit.exe",
-    "PARENT_PROCESS_ID": 6260
-  },
-  "REGISTRY_KEY": "\\REGISTRY\\MACHINE\\SOFTWARE\\ActiveState\\New Value #1",
-  "PROCESS_ID": 4340
+  "PROCESS": {
+    "MEMORY_USAGE": 25808896,
+    "TIMESTAMP": 1541348299886,
+    "COMMAND_LINE": "\"C:\\WINDOWS\\regedit.exe\" ",
+    "PROCESS_ID": 4340,
+    "THREADS": 3,
+    "USER_NAME": "BUILTIN\\Administrators",
+    "FILE_PATH": "C:\\WINDOWS\\regedit.exe",
+    "PARENT_PROCESS_ID": 6260
+  },
+  "REGISTRY_KEY": "\\REGISTRY\\MACHINE\\SOFTWARE\\ActiveState\\New Value #1",
+  "PROCESS_ID": 4340
 }
 ```
 
----
-
-### FIM\_LIST\_REP
+### FIM_LIST_REP
 
 Response event for the `fim_get` sensor command. The response will be a JSON list of FIM patterns.
 
@@ -618,29 +580,27 @@ Response event for the `fim_get` sensor command. The response will be a JSON lis
 
 ```
 {
-  "PATTERNS": [
-    0: "/home/*",
-    1: "/home/*/.ssh/*",
-    2: "/root/.ssh/authorized_keys"
-  ]
+  "PATTERNS": [
+    0: "/home/*",
+    1: "/home/*/.ssh/*",
+    2: "/root/.ssh/authorized_keys"
+  ]
 }
 ```
 
----
-
-### GET\_DOCUMENT\_REP
+### GET_DOCUMENT_REP
 
 Generated when a `doc_cache_get` task requests a cached document.
 
 **Platforms:**
 
-### GET\_EXFIL\_EVENT\_REP
+### GET_EXFIL_EVENT_REP
 
 Response from an `exfil_get` sensor command.
 
 **Platforms:**
 
-### HIDDEN\_MODULE\_DETECTED
+### HIDDEN_MODULE_DETECTED
 
 Generated when a `hidden_module_scan` command is issued.
 
@@ -654,20 +614,18 @@ confirm whether a hidden module was detected.
 
 ```
 {
-  "ERROR": 0,
-  "ERROR_MESSAGE": "done"
+  "ERROR": 0,
+  "ERROR_MESSAGE": "done"
 }
 ```
 
-### HISTORY\_DUMP\_REP
+### HISTORY_DUMP_REP
 
 Response from `history_dump` sensor command. Does not itself contain the historic events but will be generated along them.
 
 **Platforms:**
 
----
-
-### HTTP\_REQUEST
+### HTTP_REQUEST
 
 This event is emitted whenever an HTTP request is made.
 
@@ -677,18 +635,16 @@ This event is emitted whenever an HTTP request is made.
 
 ```
 {
-  "URL": "https://play.google.com/log?authuser=0",
-  "IP_ADDRESS": "172.217.2.142",
-  "RESULT": 200,
-  "PARENT": {
-    "URL": "https://console.cloud.google.com"
-  }
+  "URL": "https://play.google.com/log?authuser=0",
+  "IP_ADDRESS": "172.217.2.142",
+  "RESULT": 200,
+  "PARENT": {
+    "URL": "https://console.cloud.google.com"
+  }
 }
 ```
 
----
-
-### HTTP\_REQUEST\_HEADERS
+### HTTP_REQUEST_HEADERS
 
 Provides HTTP Request headers.
 
@@ -698,22 +654,20 @@ Provides HTTP Request headers.
 
 ```
 {
-  "HEADERS": [
-    {
-      "NAME": "User-Agent",
-      "VALUE": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-    },
-    {
-      "NAME": "Accept",
-      "VALUE": "*/*"
-    }
-  ]
+  "HEADERS": [
+    {
+      "NAME": "User-Agent",
+      "VALUE": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+    },
+    {
+      "NAME": "Accept",
+      "VALUE": "*/*"
+    }
+  ]
 }
 ```
 
----
-
-### HTTP\_RESPONSE\_HEADERS
+### HTTP_RESPONSE_HEADERS
 
 Provides HTTP Response headers.
 
@@ -723,106 +677,104 @@ Provides HTTP Response headers.
 
 ```
 {
-  "HEADERS": [
-    {
-      "NAME": "content-length",
-      "VALUE": "859"
-    },
-    {
-      "NAME": "cache-control",
-      "VALUE": "max-age=3600"
-    },
-    {
-      "NAME": "content-encoding",
-      "VALUE": "br"
-    },
-    {
-      "NAME": "content-type",
-      "VALUE": "text/html; charset=utf-8"
-    },
-    {
-      "NAME": "etag",
-      "VALUE": "\"1540d7725dd15680377d45886baba56f620f7692faa530bc3597226ffadd77d1-br\""
-    },
-    {
-      "NAME": "last-modified",
-      "VALUE": "Thu, 21 Dec 2023 23:59:32 GMT"
-    },
-    {
-      "NAME": "referrer-policy",
-      "VALUE": "sameorigin"
-    },
-    {
-      "NAME": "strict-transport-security",
-      "VALUE": "max-age=3600 ; includeSubDomains"
-    },
-    {
-      "NAME": "x-content-type-options",
-      "VALUE": "nosniff"
-    },
-    {
-      "NAME": "x-frame-options",
-      "VALUE": "sameorigin"
-    },
-    {
-      "NAME": "accept-ranges",
-      "VALUE": "bytes"
-    },
-    {
-      "NAME": "date",
-      "VALUE": "Fri, 22 Dec 2023 19:10:58 GMT"
-    },
-    {
-      "NAME": "x-served-by",
-      "VALUE": "cache-dub4332-DUB"
-    },
-    {
-      "NAME": "x-cache",
-      "VALUE": "HIT"
-    },
-    {
-      "NAME": "x-cache-hits",
-      "VALUE": "1"
-    },
-    {
-      "NAME": "x-timer",
-      "VALUE": "S1703272259.579745,VS0,VE1"
-    },
-    {
-      "NAME": "vary",
-      "VALUE": "x-fh-requested-host, accept-encoding"
-    },
-    {
-      "NAME": "alt-svc",
-      "VALUE": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400"
-    }
-  ]
+  "HEADERS": [
+    {
+      "NAME": "content-length",
+      "VALUE": "859"
+    },
+    {
+      "NAME": "cache-control",
+      "VALUE": "max-age=3600"
+    },
+    {
+      "NAME": "content-encoding",
+      "VALUE": "br"
+    },
+    {
+      "NAME": "content-type",
+      "VALUE": "text/html; charset=utf-8"
+    },
+    {
+      "NAME": "etag",
+      "VALUE": "\"1540d7725dd15680377d45886baba56f620f7692faa530bc3597226ffadd77d1-br\""
+    },
+    {
+      "NAME": "last-modified",
+      "VALUE": "Thu, 21 Dec 2023 23:59:32 GMT"
+    },
+    {
+      "NAME": "referrer-policy",
+      "VALUE": "sameorigin"
+    },
+    {
+      "NAME": "strict-transport-security",
+      "VALUE": "max-age=3600 ; includeSubDomains"
+    },
+    {
+      "NAME": "x-content-type-options",
+      "VALUE": "nosniff"
+    },
+    {
+      "NAME": "x-frame-options",
+      "VALUE": "sameorigin"
+    },
+    {
+      "NAME": "accept-ranges",
+      "VALUE": "bytes"
+    },
+    {
+      "NAME": "date",
+      "VALUE": "Fri, 22 Dec 2023 19:10:58 GMT"
+    },
+    {
+      "NAME": "x-served-by",
+      "VALUE": "cache-dub4332-DUB"
+    },
+    {
+      "NAME": "x-cache",
+      "VALUE": "HIT"
+    },
+    {
+      "NAME": "x-cache-hits",
+      "VALUE": "1"
+    },
+    {
+      "NAME": "x-timer",
+      "VALUE": "S1703272259.579745,VS0,VE1"
+    },
+    {
+      "NAME": "vary",
+      "VALUE": "x-fh-requested-host, accept-encoding"
+    },
+    {
+      "NAME": "alt-svc",
+      "VALUE": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400"
+    }
+  ]
 }
 ```
 
----
-
-### LOG\_GET\_REP
+### LOG_GET_REP
 
 Response from a `log_get` request.
 
-### LOG\_LIST\_REP
+### LOG_LIST_REP
 
 Response from a `log_list` request.
 
-### MEM\_FIND\_HANDLES\_REP
+### MEM_FIND_HANDLES_REP
 
 Response event for the `mem_find_handle` sensor command.
 
 **Platforms:**
 
-### MEM\_FIND\_STRING\_REP
+### MEM_FIND_STRING_REP
 
 Response event for the `mem_find_string` sensor command.
 
 **Platforms:**
 
-### MEM\_HANDLES\_REP
+### MEM_HANDLES_REP
 
 Response event for the `mem_handles` sensor command. This event will contain an array of handles identified in memory.
 
@@ -832,24 +784,24 @@ Response event for the `mem_handles` sensor command. This event will contain an 
 
 ```
 {
-    "HANDLES": [
-      {
-        "HANDLE_NAME": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options",
-        "HANDLE_TYPE": "Key",
-        "HANDLE_VALUE": 4,
-        "PROCESS_ID": 908
-      },
-      {
-        "HANDLE_NAME": "\\KnownDlls",
-        "HANDLE_TYPE": "Directory",
-        "HANDLE_VALUE": 48,
-        "PROCESS_ID": 908
-      },
-      "..."]
+    "HANDLES": [
+      {
+        "HANDLE_NAME": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options",
+        "HANDLE_TYPE": "Key",
+        "HANDLE_VALUE": 4,
+        "PROCESS_ID": 908
+      },
+      {
+        "HANDLE_NAME": "\\KnownDlls",
+        "HANDLE_TYPE": "Directory",
+        "HANDLE_VALUE": 48,
+        "PROCESS_ID": 908
+      },
+      "..."]
 }
 ```
 
-### MEM\_MAP\_REP
+### MEM_MAP_REP
 
 Response event for the `mem_map` sensor command. This event will contain an array of arrays, representing processes and their associated memory data.
 
@@ -859,18 +811,18 @@ Sample Event:
 
 ```
 {
-    "MEMORY_MAP": [
-      {
-        "BASE_ADDRESS": 94100802174976,
-        "MEMORY_ACCESS": 6,
-        "MEMORY_SIZE": 4096,
-        "MEMORY_TYPE": 3
-      }
-    ]
+    "MEMORY_MAP": [
+      {
+        "BASE_ADDRESS": 94100802174976,
+        "MEMORY_ACCESS": 6,
+        "MEMORY_SIZE": 4096,
+        "MEMORY_TYPE": 3
+      }
+    ]
 }
 ```
 
-### MEM\_READ\_REP
+### MEM_READ_REP
 
 Response event for the `mem_read` sensor command.
 
@@ -880,12 +832,12 @@ Response event for the `mem_read` sensor command.
 
 ```
 {
-  "MEMORY_DUMP": "TGltYU...",
-  "PROCESS_ID": 745
+  "MEMORY_DUMP": "TGltYU...",
+  "PROCESS_ID": 745
 }
 ```
 
-### MEM\_STRINGS\_REP
+### MEM_STRINGS_REP
 
 Response event for the `mem_strings` sensor command. The response will contain two arrays of arrays, `STRINGSA` and `STRINGSW`.
 
@@ -895,19 +847,17 @@ Response event for the `mem_strings` sensor command. The response will contain t
 
 ```
 {
-    "PROCESS_ID" : 745,
-    "STRINGSA" : [
-        [
-            0 : "/lib64/ld-linux-x86-64.so.2",
-            1 : "__gmon_start__"
-        ]
-    ]
+    "PROCESS_ID" : 745,
+    "STRINGSA" : [
+        [
+            0 : "/lib64/ld-linux-x86-64.so.2",
+            1 : "__gmon_start__"
+        ]
+    ]
 }
 ```
 
----
-
-### MODULE\_LOAD
+### MODULE_LOAD
 
 Generated when a module (like DLL on Windows) is loaded in a process.
 
@@ -915,20 +865,18 @@ Generated when a module (like DLL on Windows) is loaded in a process.
 
 ```
 {
-  "MEMORY_SIZE": 241664,
-  "PROCESS_ID": 2904,
-  "FILE_PATH": "C:\\Windows\\System32\\imm32.dll",
-  "MODULE_NAME": "imm32.dll",
-  "TIMESTAMP": 1468335264989,
-  "BASE_ADDRESS": 140715814092800
+  "MEMORY_SIZE": 241664,
+  "PROCESS_ID": 2904,
+  "FILE_PATH": "C:\\Windows\\System32\\imm32.dll",
+  "MODULE_NAME": "imm32.dll",
+  "TIMESTAMP": 1468335264989,
+  "BASE_ADDRESS": 140715814092800
 }
 ```
 
----
+### NETSTAT_REP
 
-### NETSTAT\_REP
-
-Response from a  `netstat` command to list active network sockets.
+Response from a  `netstat` command to list active network sockets.
 
 **Platforms:**
 
@@ -936,27 +884,25 @@ Response from a  `netstat` command to list active network sockets.
 
 ```
 {
-  "FRIENDLY": 0,
-  "NETWORK_ACTIVITY": [
-    {
-      "DESTINATION": {
-        "IP_ADDRESS": "0.0.0.0",
-        "PORT": 0
-      },
-      "PROCESS_ID": 856,
-      "PROTOCOL": "tcp4",
-      "SOURCE": {
-        "IP_ADDRESS": "0.0.0.0",
-        "PORT": 135
-      }
-    }
-  ]
+  "FRIENDLY": 0,
+  "NETWORK_ACTIVITY": [
+    {
+      "DESTINATION": {
+        "IP_ADDRESS": "0.0.0.0",
+        "PORT": 0
+      },
+      "PROCESS_ID": 856,
+      "PROTOCOL": "tcp4",
+      "SOURCE": {
+        "IP_ADDRESS": "0.0.0.0",
+        "PORT": 135
+      }
+    }
+  ]
 }
 ```
 
----
-
-### NETWORK\_CONNECTIONS
+### NETWORK_CONNECTIONS
 
 List of recent network connections performed by a process.
 
@@ -964,87 +910,85 @@ List of recent network connections performed by a process.
 
 ```
 {
-  "NETWORK_ACTIVITY": [
-    {
-      "SOURCE": {
-        "IP_ADDRESS": "172.16.223.138",
-        "PORT": 50396
-      },
-      "IS_OUTGOING": 1,
-      "DESTINATION": {
-        "IP_ADDRESS": "23.214.49.56",
-        "PORT": 80
-      }
-    },
-    {
-      "SOURCE": {
-        "IP_ADDRESS": "172.16.223.138",
-        "PORT": 50397
-      },
-      "IS_OUTGOING": 1,
-      "DESTINATION": {
-        "IP_ADDRESS": "189.247.166.18",
-        "PORT": 80
-      }
-    },
-    {
-      "SOURCE": {
-        "IP_ADDRESS": "172.16.223.138",
-        "PORT": 50398
-      },
-      "IS_OUTGOING": 1,
-      "DESTINATION": {
-        "IP_ADDRESS": "23.217.70.67",
-        "PORT": 80
-      }
-    },
-    {
-      "SOURCE": {
-        "IP_ADDRESS": "172.16.223.138",
-        "PORT": 50399
-      },
-      "IS_OUTGOING": 1,
-      "DESTINATION": {
-        "IP_ADDRESS": "104.110.238.53",
-        "PORT": 80
-      }
-    },
-    {
-      "SOURCE": {
-        "IP_ADDRESS": "172.16.223.138",
-        "PORT": 50400
-      },
-      "IS_OUTGOING": 1,
-      "DESTINATION": {
-        "IP_ADDRESS": "23.214.49.56",
-        "PORT": 80
-      }
-    },
-    {
-      "SOURCE": {
-        "IP_ADDRESS": "172.16.223.138",
-        "PORT": 50401
-      },
-      "IS_OUTGOING": 1,
-      "DESTINATION": {
-        "IP_ADDRESS": "204.79.197.203",
-        "PORT": 80
-      }
-    }
-  ],
-  "HASH": "2de228cad2e542b2af2554d61fab5463ecbba3ff8349ba88c3e48637ed8086e9",
-  "COMMAND_LINE": "C:\\WINDOWS\\system32\\msfeedssync.exe sync",
-  "PROCESS_ID": 6968,
-  "FILE_IS_SIGNED": 1,
-  "USER_NAME": "WIN-5KC7E0NG1OD\\dev",
-  "FILE_PATH": "C:\\WINDOWS\\system32\\msfeedssync.exe",
-  "PARENT_PROCESS_ID": 1892
+  "NETWORK_ACTIVITY": [
+    {
+      "SOURCE": {
+        "IP_ADDRESS": "172.16.223.138",
+        "PORT": 50396
+      },
+      "IS_OUTGOING": 1,
+      "DESTINATION": {
+        "IP_ADDRESS": "23.214.49.56",
+        "PORT": 80
+      }
+    },
+    {
+      "SOURCE": {
+        "IP_ADDRESS": "172.16.223.138",
+        "PORT": 50397
+      },
+      "IS_OUTGOING": 1,
+      "DESTINATION": {
+        "IP_ADDRESS": "189.247.166.18",
+        "PORT": 80
+      }
+    },
+    {
+      "SOURCE": {
+        "IP_ADDRESS": "172.16.223.138",
+        "PORT": 50398
+      },
+      "IS_OUTGOING": 1,
+      "DESTINATION": {
+        "IP_ADDRESS": "23.217.70.67",
+        "PORT": 80
+      }
+    },
+    {
+      "SOURCE": {
+        "IP_ADDRESS": "172.16.223.138",
+        "PORT": 50399
+      },
+      "IS_OUTGOING": 1,
+      "DESTINATION": {
+        "IP_ADDRESS": "104.110.238.53",
+        "PORT": 80
+      }
+    },
+    {
+      "SOURCE": {
+        "IP_ADDRESS": "172.16.223.138",
+        "PORT": 50400
+      },
+      "IS_OUTGOING": 1,
+      "DESTINATION": {
+        "IP_ADDRESS": "23.214.49.56",
+        "PORT": 80
+      }
+    },
+    {
+      "SOURCE": {
+        "IP_ADDRESS": "172.16.223.138",
+        "PORT": 50401
+      },
+      "IS_OUTGOING": 1,
+      "DESTINATION": {
+        "IP_ADDRESS": "204.79.197.203",
+        "PORT": 80
+      }
+    }
+  ],
+  "HASH": "2de228cad2e542b2af2554d61fab5463ecbba3ff8349ba88c3e48637ed8086e9",
+  "COMMAND_LINE": "C:\\WINDOWS\\system32\\msfeedssync.exe sync",
+  "PROCESS_ID": 6968,
+  "FILE_IS_SIGNED": 1,
+  "USER_NAME": "WIN-5KC7E0NG1OD\\dev",
+  "FILE_PATH": "C:\\WINDOWS\\system32\\msfeedssync.exe",
+  "PARENT_PROCESS_ID": 1892
 }
 ```
 
----
-
-### NEW\_DOCUMENT
+### NEW_DOCUMENT
 
 Generated when a file is created that matches a set list of locations and extensions. It indicates the file has been cached in memory and can be retrieved using the `doc_cache_get` task.
 
@@ -1084,15 +1028,13 @@ The following file patterns are considered "documents":
 
 ```
 {
-  "FILE_PATH": "C:\\Users\\dev\\Desktop\\evil.exe",
-  "TIMESTAMP": 1468335816308,
-  "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  "FILE_PATH": "C:\\Users\\dev\\Desktop\\evil.exe",
+  "TIMESTAMP": 1468335816308,
+  "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }
 ```
 
----
-
-### NEW\_NAMED\_PIPE
+### NEW_NAMED_PIPE
 
 This event is emitted when a new Named Pipe is created by a process.
 
@@ -1100,14 +1042,12 @@ This event is emitted when a new Named Pipe is created by a process.
 
 ```
 {
-  "FILE_PATH": "\\Device\\NamedPipe\\LOCAL\\mojo.6380.1072.2134013463507075011",
-  "PROCESS_ID": 6380
+  "FILE_PATH": "\\Device\\NamedPipe\\LOCAL\\mojo.6380.1072.2134013463507075011",
+  "PROCESS_ID": 6380
 }
 ```
 
----
-
-### NEW\_PROCESS
+### NEW_PROCESS
 
 Generated when a new process starts.
 
@@ -1115,29 +1055,27 @@ Generated when a new process starts.
 
 ```
 {
-  "PARENT": {
-    "PARENT_PROCESS_ID": 7076,
-    "COMMAND_LINE": "\"C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe\"  ",
-    "MEMORY_USAGE": 438730752,
-    "PROCESS_ID": 5820,
-    "THREADS": 39,
-    "FILE_PATH": "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe",
-    "BASE_ADDRESS": 798949376
-  },
-  "PARENT_PROCESS_ID": 5820,
-  "COMMAND_LINE": "-q  -s {0257E42D-7F05-42C4-B402-34C1CC2F2EAD} -p 5820",
-  "FILE_PATH": "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcpackages\\VCPkgSrv.exe",
-  "PROCESS_ID": 1080,
-  "THREADS": 9,
-  "MEMORY_USAGE": 8282112,
-  "TIMESTAMP": 1456285660,
-  "BASE_ADDRESS": 4194304
+  "PARENT": {
+    "PARENT_PROCESS_ID": 7076,
+    "COMMAND_LINE": "\"C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe\"  ",
+    "MEMORY_USAGE": 438730752,
+    "PROCESS_ID": 5820,
+    "THREADS": 39,
+    "FILE_PATH": "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\devenv.exe",
+    "BASE_ADDRESS": 798949376
+  },
+  "PARENT_PROCESS_ID": 5820,
+  "COMMAND_LINE": "-q  -s {0257E42D-7F05-42C4-B402-34C1CC2F2EAD} -p 5820",
+  "FILE_PATH": "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcpackages\\VCPkgSrv.exe",
+  "PROCESS_ID": 1080,
+  "THREADS": 9,
+  "MEMORY_USAGE": 8282112,
+  "TIMESTAMP": 1456285660,
+  "BASE_ADDRESS": 4194304
 }
 ```
 
----
-
-### NEW\_REMOTE\_THREAD
+### NEW_REMOTE_THREAD
 
 Generated when a thread is created by a process in another process. This is often used by malware during various forms of code injection.
 
@@ -1147,15 +1085,13 @@ In this case, the process id `492` created a thread (with id `9012`) in the proc
 
 ```
 {
-  "THREAD_ID": 9012,
-  "PROCESS_ID": 7944,
-  "PARENT_PROCESS_ID": 492
+  "THREAD_ID": 9012,
+  "PROCESS_ID": 7944,
+  "PARENT_PROCESS_ID": 492
 }
 ```
 
----
-
-### NEW\_TCP4\_CONNECTION
+### NEW_TCP4_CONNECTION
 
 Generated when a new TCPv4 connection is established, either inbound or outbound.
 
@@ -1163,31 +1099,27 @@ Generated when a new TCPv4 connection is established, either inbound or outbound
 
 ```
 {
-  "PROCESS_ID": 6788,
-  "DESTINATION": {
-    "IP_ADDRESS": "172.16.223.219",
-    "PORT": 80
-  },
-  "STATE": 5,
-  "TIMESTAMP": 1468335512047,
-  "SOURCE": {
-    "IP_ADDRESS": "172.16.223.163",
-    "PORT": 63581
-  }
+  "PROCESS_ID": 6788,
+  "DESTINATION": {
+    "IP_ADDRESS": "172.16.223.219",
+    "PORT": 80
+  },
+  "STATE": 5,
+  "TIMESTAMP": 1468335512047,
+  "SOURCE": {
+    "IP_ADDRESS": "172.16.223.163",
+    "PORT": 63581
+  }
 }
 ```
 
----
-
-### NEW\_TCP6\_CONNECTION
+### NEW_TCP6_CONNECTION
 
 Generated when a new TCPv6 connection is established, either inbound or outbound.
 
 **Platforms:**
 
----
-
-### NEW\_UDP4\_CONNECTION
+### NEW_UDP4_CONNECTION
 
 Generated when a new UDPv4 socket "connection" is established, either inbound or outbound.
 
@@ -1195,24 +1127,20 @@ Generated when a new UDPv4 socket "connection" is established, either inbound or
 
 ```
 {
-  "TIMESTAMP": 1468335452828,
-  "PROCESS_ID": 924,
-  "IP_ADDRESS": "172.16.223.163",
-  "PORT": 63057
+  "TIMESTAMP": 1468335452828,
+  "PROCESS_ID": 924,
+  "IP_ADDRESS": "172.16.223.163",
+  "PORT": 63057
 }
 ```
 
----
-
-### NEW\_UDP6\_CONNECTION
+### NEW_UDP6_CONNECTION
 
 Generated when a new UDPv6 socket "connection" is established, either inbound or outbound.
 
 **Platforms:**
 
----
-
-### OPEN\_NAMED\_PIPE
+### OPEN_NAMED_PIPE
 
 This event is emitted when an existing Named Pipe is opened by a process.
 
@@ -1220,14 +1148,12 @@ This event is emitted when an existing Named Pipe is opened by a process.
 
 ```
 {
-  "FILE_PATH": "\\Device\\NamedPipe\\lsass",
-  "PROCESS_ID": 2232
+  "FILE_PATH": "\\Device\\NamedPipe\\lsass",
+  "PROCESS_ID": 2232
 }
 ```
 
----
-
-### OS\_AUTORUNS\_REP
+### OS_AUTORUNS_REP
 
 Response from an `os_autoruns` request.
 
@@ -1237,18 +1163,18 @@ Response from an `os_autoruns` request.
 
 ```
 {
-  "TIMESTAMP": 1456194620,
-  "AUTORUNS": [
-    {
-      "REGISTRY_KEY": "Software\\Microsoft\\Windows\\CurrentVersion\\Run\\VMware User Process",
-      "FILE_PATH": "\"C:\\Program Files\\VMware\\VMware Tools\\vmtoolsd.exe\" -n vmusr",
-      "HASH": "036608644e3c282efaac49792a2bb2534df95e859e2ddc727cd5d2e764133d14"
-    }
-  ]
+  "TIMESTAMP": 1456194620,
+  "AUTORUNS": [
+    {
+      "REGISTRY_KEY": "Software\\Microsoft\\Windows\\CurrentVersion\\Run\\VMware User Process",
+      "FILE_PATH": "\"C:\\Program Files\\VMware\\VMware Tools\\vmtoolsd.exe\" -n vmusr",
+      "HASH": "036608644e3c282efaac49792a2bb2534df95e859e2ddc727cd5d2e764133d14"
+    }
+  ]
 }
 ```
 
-### OS\_DRIVERS\_REP
+### OS_DRIVERS_REP
 
 Response from an `os_drivers` request.
 
@@ -1258,21 +1184,21 @@ Response from an `os_drivers` request.
 
 ```
 {
-  "SVCS": [
-    {
-      "PROCESS_ID": 0,
-      "SVC_TYPE": 1,
-      "SVC_NAME": "1394ohci",
-      "SVC_STATE": 1,
-      "HASH": "9ecf6211ccd30273a23247e87c31b3a2acda623133cef6e9b3243463c0609c5f",
-      "SVC_DISPLAY_NAME": "1394 OHCI Compliant Host Controller",
-      "EXECUTABLE": "\\SystemRoot\\System32\\drivers\\1394ohci.sys"
-    }
-  ]
+  "SVCS": [
+    {
+      "PROCESS_ID": 0,
+      "SVC_TYPE": 1,
+      "SVC_NAME": "1394ohci",
+      "SVC_STATE": 1,
+      "HASH": "9ecf6211ccd30273a23247e87c31b3a2acda623133cef6e9b3243463c0609c5f",
+      "SVC_DISPLAY_NAME": "1394 OHCI Compliant Host Controller",
+      "EXECUTABLE": "\\SystemRoot\\System32\\drivers\\1394ohci.sys"
+    }
+  ]
 }
 ```
 
-### OS\_KILL\_PROCESS\_REP
+### OS_KILL_PROCESS_REP
 
 Response from an `os_kill_process` request.
 
@@ -1282,12 +1208,12 @@ Response from an `os_kill_process` request.
 
 ```
 {
-  "ERROR": 0,
-  "PROCESS_ID": 579
+  "ERROR": 0,
+  "PROCESS_ID": 579
 }
 ```
 
-### OS\_PACKAGES\_REP
+### OS_PACKAGES_REP
 
 List of packages installed on the system. This is currently Windows only but will be expanded to MacOS and Linux in the future.
 
@@ -1297,13 +1223,13 @@ List of packages installed on the system. This is currently Windows only but wil
 
 ```
 "PACKAGES": [
-  {
-    "PACKAGE_NAME": "Microsoft Windows Driver Development Kit Uninstall"
-  }
+  {
+    "PACKAGE_NAME": "Microsoft Windows Driver Development Kit Uninstall"
+  }
 ]
 ```
 
-### OS\_PROCESSES\_REP
+### OS_PROCESSES_REP
 
 Response from an `os_process` request.
 
@@ -1313,23 +1239,23 @@ Response from an `os_process` request.
 
 ```
 {
-  "PROCESSES": [
-    {
-      "COMMAND_LINE": "/sbin/init",
-      "FILE_PATH": "/usr/lib/systemd/systemd",
-      "HASH": "477209848fabcaf52c060d98287f880845cb07fc9696216dbcfe9b6ea8e72bcd"
-    }
-  ]
+  "PROCESSES": [
+    {
+      "COMMAND_LINE": "/sbin/init",
+      "FILE_PATH": "/usr/lib/systemd/systemd",
+      "HASH": "477209848fabcaf52c060d98287f880845cb07fc9696216dbcfe9b6ea8e72bcd"
+    }
+  ]
 }
 ```
 
-### OS\_RESUME\_REP
+### OS_RESUME_REP
 
 Response from an `os_resume` request.
 
 **Platforms:**
 
-### OS\_SERVICES\_REP
+### OS_SERVICES_REP
 
 Response from an `os_services` request.
 
@@ -1339,24 +1265,24 @@ Response from an `os_services` request.
 
 ```
 {
-  "SVCS": [
-    {
-      "PROCESS_ID": 0,
-      "SVC_TYPE": 32,
-      "DLL": "%SystemRoot%\\System32\\AJRouter.dll",
-      "SVC_NAME": "AJRouter"
-    }
-  ]
+  "SVCS": [
+    {
+      "PROCESS_ID": 0,
+      "SVC_TYPE": 32,
+      "DLL": "%SystemRoot%\\System32\\AJRouter.dll",
+      "SVC_NAME": "AJRouter"
+    }
+  ]
 }
 ```
 
-### OS\_SUSPEND\_REP
+### OS_SUSPEND_REP
 
 Response from an `os_suspend` request.
 
 **Platforms:**
 
-### OS\_USERS\_REP
+### OS_USERS_REP
 
 Response from an `os_users` request.
 
@@ -1366,15 +1292,15 @@ Response from an `os_users` request.
 
 ```
 {
-  "USERS": [
-    {
-      "USER_NAME": "Administrator"
-    }
-  ]
+  "USERS": [
+    {
+      "USER_NAME": "Administrator"
+    }
+  ]
 }
 ```
 
-### OS\_VERSION\_REP
+### OS_VERSION_REP
 
 Response from an `os_version` request.
 
@@ -1384,16 +1310,13 @@ Response from an `os_version` request.
 
 ```
 {
-  "BUILD_NUMBER": 20348
+  "BUILD_NUMBER": 20348
 }
 ```
 
----
+### PCAP_LIST_INTERFACES_REP
 
-### PCAP\_LIST
-
-\_INTERFACES\_REP  
- Response from a `pcap_ifaces` request.
+Response from a `pcap_ifaces` request.
 
 **Platforms:**
 
@@ -1401,18 +1324,16 @@ Response from an `os_version` request.
 
 ```
 {
-  "INTERFACE": [
-    {
-      "NAME": "ens4",
-      "IPV4": ["10.128.15.198"]
-    }
-  ]
+  "INTERFACE": [
+    {
+      "NAME": "ens4",
+      "IPV4": ["10.128.15.198"]
+    }
+  ]
 }
 ```
 
----
-
-### PROCESS\_ENVIRONMENT
+### PROCESS_ENVIRONMENT
 
 Generated when a process starts. It lists all environment variables associated with that new process.
 
@@ -1420,28 +1341,24 @@ Generated when a process starts. It lists all environment variables associated w
 
 ```
 {
-  "ENVIRONMENT_VARIABLES": [
-    "LANG=en_US.UTF-8",
-    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-    "NOTIFY_SOCKET=/run/systemd/notify",
-    "LISTEN_PID=18950",
-    "LISTEN_FDS=2"
-  ],
-  "PROCESS_ID": 13463
+  "ENVIRONMENT_VARIABLES": [
+    "LANG=en_US.UTF-8",
+    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "NOTIFY_SOCKET=/run/systemd/notify",
+    "LISTEN_PID=18950",
+    "LISTEN_FDS=2"
+  ],
+  "PROCESS_ID": 13463
 }
 ```
 
----
-
 ### RECEIPT
 
-This event is used as a generic response to some commands. The contents of a `RECEIPT` event usually contain an `ERROR` code that you can use to determine if the command was successful (`ERROR` codes can be explored [here](/v2/docs/reference-error-codes)). It's often a good idea to issue the original command with an `investigation_id` which will get echoed in the `RECEIPT` related to that command to make it easier to track.
+This event is used as a generic response to some commands. The contents of a `RECEIPT` event usually contain an `ERROR` code that you can use to determine if the command was successful (`ERROR` codes can be explored [here](./reference-error-codes.md)). It's often a good idea to issue the original command with an `investigation_id` which will get echoed in the `RECEIPT` related to that command to make it easier to track.
 
 **Platforms:**
 
----
-
-### REGISTRY\_CREATE
+### REGISTRY_CREATE
 
 This event is generated whenever a registry key / value is created on a Windows OS.
 
@@ -1449,14 +1366,12 @@ This event is generated whenever a registry key / value is created on a Windows 
 
 ```
 {
-  "PROCESS_ID":  764,
-  "REGISTRY_KEY":   "\\REGISTRY\\A\\{fddf4643-a007-4086-903e-be998801d0f7}\\Events\\{8fb5d848-23dc-498f-ac61-84b93aac1c33}"
+  "PROCESS_ID":  764,
+  "REGISTRY_KEY":   "\\REGISTRY\\A\\{fddf4643-a007-4086-903e-be998801d0f7}\\Events\\{8fb5d848-23dc-498f-ac61-84b93aac1c33}"
 }
 ```
 
----
-
-### REGISTRY\_DELETE
+### REGISTRY_DELETE
 
 This event is generated whenever a registry key / value is deleted on a Windows OS.
 
@@ -1464,14 +1379,12 @@ This event is generated whenever a registry key / value is deleted on a Windows 
 
 ```
 {
-  "PROCESS_ID":  764,
-  "REGISTRY_KEY":   "\\REGISTRY\\A\\{fddf4643-a007-4086-903e-be998801d0f7}\\Events\\{8fb5d848-23dc-498f-ac61-84b93aac1c33}"
+  "PROCESS_ID":  764,
+  "REGISTRY_KEY":   "\\REGISTRY\\A\\{fddf4643-a007-4086-903e-be998801d0f7}\\Events\\{8fb5d848-23dc-498f-ac61-84b93aac1c33}"
 }
 ```
 
----
-
-### REGISTRY\_LIST\_REP
+### REGISTRY_LIST_REP
 
 This event is generated in response to the `reg_list` command to list keys and values in a registry key.
 
@@ -1481,23 +1394,21 @@ This event is generated in response to the `reg_list` command to list keys and v
 
 ```
 {
-    "REGISTRY_KEY": [
-      "ActiveState"
-    ],
-    "ROOT": "hklm\\software",
-    "REGISTRY_VALUE": [
-      {
-        "TYPE": 4,
-        "NAME": "Order"
-      }
-    ],
-    "ERROR": 0
+    "REGISTRY_KEY": [
+      "ActiveState"
+    ],
+    "ROOT": "hklm\\software",
+    "REGISTRY_VALUE": [
+      {
+        "TYPE": 4,
+        "NAME": "Order"
+      }
+    ],
+    "ERROR": 0
 }
 ```
 
----
-
-### REGISTRY\_WRITE
+### REGISTRY_WRITE
 
 This event is generated whenever a registry value is written to on a Windows OS.
 
@@ -1511,11 +1422,11 @@ Valid string payload:
 
 ```
 {
-  "PROCESS_ID":1820,
-  "REGISTRY_KEY":"\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows Defender\\Diagnostics\\LastKnownGoodPlatformLocation",
-  "REGISTRY_VALUE":"C:\\Progr",
-  "SIZE":1,
-  "TYPE":1,
+  "PROCESS_ID":1820,
+  "REGISTRY_KEY":"\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows Defender\\Diagnostics\\LastKnownGoodPlatformLocation",
+  "REGISTRY_VALUE":"C:\\Progr",
+  "SIZE":1,
+  "TYPE":1,
 }
 ```
 
@@ -1523,16 +1434,14 @@ Binary payload:
 
 ```
 {
-  "PROCESS_ID": 1700,
-  "REGISTRY_KEY": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\HeartBeats\\Default\\LastHeartBeatTime",
-  "REGISTRY_VALUE": "bMPGjjDM1wE=","SIZE": 11,
-  "TYPE": 11
+  "PROCESS_ID": 1700,
+  "REGISTRY_KEY": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\HeartBeats\\Default\\LastHeartBeatTime",
+  "REGISTRY_VALUE": "bMPGjjDM1wE=","SIZE": 11,
+  "TYPE": 11
 }
 ```
 
----
-
-### REJOIN\_NETWORK
+### REJOIN_NETWORK
 
 Emitted after a sensor is allowed network connectivity again (after it was previously segregated). An error code of 0 indicates success.
 
@@ -1542,13 +1451,11 @@ Emitted after a sensor is allowed network connectivity again (after it was previ
 
 ```
 {
-  "ERROR": 0
+  "ERROR": 0
 }
 ```
 
----
-
-### REMOTE\_PROCESS\_HANDLE
+### REMOTE_PROCESS_HANDLE
 
 Generated whenever a process opens a handle to another process with access flags like `VM_READ`, `VM_WRITE`, or `PROCESS_CREATE_THREAD`.
 
@@ -1558,15 +1465,13 @@ The `ACCESS_FLAGS` is the access mask as defined [here](https://docs.microsoft.c
 
 ```
 {
-  "ACCESS_FLAGS": 136208,
-  "PARENT_PROCESS_ID": 6492,
-  "PROCESS_ID": 2516
+  "ACCESS_FLAGS": 136208,
+  "PARENT_PROCESS_ID": 6492,
+  "PROCESS_ID": 2516
 }
 ```
 
----
-
-### SEGREGATE\_NETWORK
+### SEGREGATE_NETWORK
 
 Emitted when a sensor is segregated (isolated) from the network using the `segregate_network` command. An error code of 0 indicates success.
 
@@ -1576,42 +1481,38 @@ Emitted when a sensor is segregated (isolated) from the network using the `segre
 
 ```
 {
-  "ERROR": 0
+  "ERROR": 0
 }
 ```
 
----
-
-### SENSITIVE\_PROCESS\_ACCESS
+### SENSITIVE_PROCESS_ACCESS
 
 Generated when a process gains sensitive access to operating system processes like `lsass.exe` on Windows.
 
 Note
 
-SENSITIVE\_PROCESS\_ACCESS currently is only emitted for processes accessing `lsass.exe` on Windows.
+SENSITIVE_PROCESS_ACCESS currently is only emitted for processes accessing `lsass.exe` on Windows.
 
 **Platforms:**
 
 ```
 {
-  "EVENTS": [
-    {
-      "event": {
-        "COMMAND_LINE": "C:\\WINDOWS\\system32\\lsass.exe",
-        "FILE_PATH": "C:\\WINDOWS\\system32\\lsass.exe",
-        "PARENT_PROCESS_ID": 484,
-        "PROCESS_ID": 636,
-        "THREADS": 12,
-        "USER_NAME": "BUILTIN\\Administrators"
-      }
-    }
-  ]
+  "EVENTS": [
+    {
+      "event": {
+        "COMMAND_LINE": "C:\\WINDOWS\\system32\\lsass.exe",
+        "FILE_PATH": "C:\\WINDOWS\\system32\\lsass.exe",
+        "PARENT_PROCESS_ID": 484,
+        "PROCESS_ID": 636,
+        "THREADS": 12,
+        "USER_NAME": "BUILTIN\\Administrators"
+      }
+    }
+  ]
 }
 ```
 
----
-
-### SERVICE\_CHANGE
+### SERVICE_CHANGE
 
 Generated when a Service is changed.
 
@@ -1619,29 +1520,19 @@ Generated when a Service is changed.
 
 ```
 {
-  "PROCESS_ID": 0,
-  "SVC_TYPE": 32,
-  "DLL": "%SystemRoot%\\system32\\wlidsvc.dll",
-  "SVC_NAME": "wlidsvc",
-  "SVC_STATE": 1,
-  "HASH": "b37199495115ed423ba99b7317377ce865bb482d4e847861e871480ac49d4a84",
-  "SVC_DISPLAY_NAME": "Microsoft Account Sign-in Assistant",
-  "TIMESTAMP": 1467942600540,
-  "EXECUTABLE": "%SystemRoot%\\system32\\svchost.exe -k netsvcs"
+  "PROCESS_ID": 0,
+  "SVC_TYPE": 32,
+  "DLL": "%SystemRoot%\\system32\\wlidsvc.dll",
+  "SVC_NAME": "wlidsvc",
+  "SVC_STATE": 1,
+  "HASH": "b37199495115ed423ba99b7317377ce865bb482d4e847861e871480ac49d4a84",
+  "SVC_DISPLAY_NAME": "Microsoft Account Sign-in Assistant",
+  "TIMESTAMP": 1467942600540,
+  "EXECUTABLE": "%SystemRoot%\\system32\\svchost.exe -k netsvcs"
 }
 ```
 
----
-
-### SEGREGATE\_NETWORK
-
-Emitted when a sensor is segregated (isolated) from the network using the `segregate_network` command.
-
-**Platforms:**
-
----
-
-### SSH\_LOGIN
+### SSH_LOGIN
 
 Generated when a user logs in via SSH.
 
@@ -1649,20 +1540,16 @@ Generated when a user logs in via SSH.
 
 ```
 {
-  "USER_NAME": "root",
-  "TIMESTAMP": 1468335816308
+  "USER_NAME": "root",
+  "TIMESTAMP": 1468335816308
 }
 ```
 
----
-
-### SELF\_TEST
+### SELF_TEST
 
 Internal event to manually request a power-on-self-test (POST) from the sensor.
 
----
-
-### SHUTTING\_DOWN
+### SHUTTING_DOWN
 
 Event generated when the sensor shuts down. Note: this event may not be observed if the host shuts down abruptly or too quickly.
 
@@ -1678,15 +1565,13 @@ Event generated when the sensor shuts down. Note: this event may not be observed
 
 ```
 {
-  "SHUTTING_DOWN": {
-    "ts": 1455674775
-  }
+  "SHUTTING_DOWN": {
+    "ts": 1455674775
+  }
 }
 ```
 
----
-
-### SSH\_LOGOUT
+### SSH_LOGOUT
 
 Generated when a user logs out via SSH.
 
@@ -1694,14 +1579,12 @@ Generated when a user logs out via SSH.
 
 ```
 {
-  "USER_NAME": "root",
-  "TIMESTAMP": 1468335916308
+  "USER_NAME": "root",
+  "TIMESTAMP": 1468335916308
 }
 ```
 
----
-
-### STARTING\_UP
+### STARTING_UP
 
 Event generated when the sensor starts.
 
@@ -1717,15 +1600,13 @@ Event generated when the sensor starts.
 
 ```
 {
-  "STARTING_UP": {
-    "ts": 1455674775
-  }
+  "STARTING_UP": {
+    "ts": 1455674775
+  }
 }
 ```
 
----
-
-### TERMINATE\_PROCESS
+### TERMINATE_PROCESS
 
 Generated when a process exits.
 
@@ -1733,53 +1614,43 @@ Generated when a process exits.
 
 ```
 {
-  "PARENT_PROCESS_ID": 5820,
-  "TIMESTAMP": 1456285661,
-  "PROCESS_ID": 6072
+  "PARENT_PROCESS_ID": 5820,
+  "TIMESTAMP": 1456285661,
+  "PROCESS_ID": 6072
 }
 ```
 
----
-
-### TERMINATE\_TCP4\_CONNECTION
+### TERMINATE_TCP4_CONNECTION
 
 Generated when a TCPv4 connection terminates.
 
 ```
 {
-  "DESTINATION": {
-    "IP_ADDRESS": "61.55.252.93",
-    "PORT": 443
-  },
-  "PROCESS_ID": 4784,
-  "SOURCE": {
-    "IP_ADDRESS": "172.16.223.138",
-    "PORT": 50145
-  }
+  "DESTINATION": {
+    "IP_ADDRESS": "61.55.252.93",
+    "PORT": 443
+  },
+  "PROCESS_ID": 4784,
+  "SOURCE": {
+    "IP_ADDRESS": "172.16.223.138",
+    "PORT": 50145
+  }
 }
 ```
 
----
-
-### TERMINATE\_TCP6\_CONNECTION
+### TERMINATE_TCP6_CONNECTION
 
 Generated when a TCPv6 connection terminates.
 
----
-
-### TERMINATE\_UDP4\_CONNECTION
+### TERMINATE_UDP4_CONNECTION
 
 Generated when a UDPv4 socket terminates.
 
----
-
-### TERMINATE\_UDP6\_CONNECTION
+### TERMINATE_UDP6_CONNECTION
 
 Generated when a UDPv6 socket terminates.
 
----
-
-### THREAD\_INJECTION
+### THREAD_INJECTION
 
 This event is generated when the sensor detects what looks like a thread injection into a remote process.
 
@@ -1787,147 +1658,141 @@ This event is generated when the sensor detects what looks like a thread injecti
 
 ```
 {
-  "event": {
-    "EVENTS": [
-      {
-        "event": {
-          "ACCESS_FLAGS": 2097151,
-          "PARENT_PROCESS_ID": 5380,
-          "PROCESS_ID": 4276,
-          "SOURCE": {
-            "BASE_ADDRESS": 140701160243200,
-            "COMMAND_LINE": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --continue-active-setup",
-            "FILE_IS_SIGNED": 1,
-            "FILE_PATH": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-            "HASH": "c47fc20231ffc1e3befef952478363bff96cf3af1f36da4bd1129c8ed0e17fdb",
-            "MEMORY_USAGE": 5881856,
-            "PARENT_ATOM": "df4e951a09e365cb46c36c11659ee556",
-            "PARENT_PROCESS_ID": 5972,
-            "PROCESS_ID": 5380,
-            "THIS_ATOM": "37b57d228af708b25d097f32659ee557",
-            "THREADS": 3,
-            "TIMESTAMP": 1704912214704,
-            "USER_NAME": "WINDOWS-SERVER-\\whitney"
-          },
-          "TARGET": {
-            "COMMAND_LINE": "C:\\Windows\\system32\\sppsvc.exe",
-            "FILE_IS_SIGNED": 1,
-            "FILE_PATH": "C:\\Windows\\system32\\sppsvc.exe",
-            "HASH": "1ca5b9745872748575c452e456966b8ed1c4153757e9f4faf6f86c78c53d4ae8",
-            "MEMORY_USAGE": 6156288,
-            "PARENT_ATOM": "74be005ef68f6edb8682d972659ee024",
-            "PARENT_PROCESS_ID": 628,
-            "PROCESS_ID": 4276,
-            "THIS_ATOM": "fe1dee93442392ea97becdad659ee516",
-            "THREADS": 3,
-            "TIMESTAMP": 1704912150174,
-            "USER_NAME": "NT AUTHORITY\\NETWORK SERVICE"
-          }
-        },
-        "routing": {
-          "arch": 2,
-          "did": "",
-          "event_id": "d61caa47-225a-4f6a-9f3a-6094cdb3c383",
-          "event_time": 1704912219717,
-          "event_type": "REMOTE_PROCESS_HANDLE",
-          "ext_ip": "104.198.223.172",
-          "hostname": "windows-server-2022-bc76d608-9d83-4c6c-bdd5-f86bbd385a94-0.c.lc-demo-infra.internal.",
-          "iid": "3c5c33e6-daaf-4029-be0b-94f50b86777e",
-          "int_ip": "10.128.15.197",
-          "moduleid": 2,
-          "oid": "bc76d608-9d83-4c6c-bdd5-f86bbd385a94",
-          "parent": "37b57d228af708b25d097f32659ee557",
-          "plat": 268435456,
-          "sid": "ccd0c386-88c1-4f8d-954c-581a95a1cc34",
-          "tags": [
-            "windows"
-          ],
-          "target": "fe1dee93442392ea97becdad659ee516",
-          "this": "87509849fc608bce8a236f49659ee55b"
-        }
-      },
-      {
-        "event": {
-          "PARENT_PROCESS_ID": 5380,
-          "PROCESS_ID": 4276,
-          "SOURCE": {
-            "BASE_ADDRESS": 140701160243200,
-            "COMMAND_LINE": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --continue-active-setup",
-            "FILE_IS_SIGNED": 1,
-            "FILE_PATH": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-            "HASH": "c47fc20231ffc1e3befef952478363bff96cf3af1f36da4bd1129c8ed0e17fdb",
-            "MEMORY_USAGE": 5881856,
-            "PARENT_ATOM": "df4e951a09e365cb46c36c11659ee556",
-            "PARENT_PROCESS_ID": 5972,
-            "PROCESS_ID": 5380,
-            "THIS_ATOM": "37b57d228af708b25d097f32659ee557",
-            "THREADS": 3,
-            "TIMESTAMP": 1704912214704,
-            "USER_NAME": "WINDOWS-SERVER-\\whitney"
-          },
-          "TARGET": {
-            "COMMAND_LINE": "C:\\Windows\\system32\\sppsvc.exe",
-            "FILE_IS_SIGNED": 1,
-            "FILE_PATH": "C:\\Windows\\system32\\sppsvc.exe",
-            "HASH": "1ca5b9745872748575c452e456966b8ed1c4153757e9f4faf6f86c78c53d4ae8",
-            "MEMORY_USAGE": 6156288,
-            "PARENT_ATOM": "74be005ef68f6edb8682d972659ee024",
-            "PARENT_PROCESS_ID": 628,
-            "PROCESS_ID": 4276,
-            "THIS_ATOM": "fe1dee93442392ea97becdad659ee516",
-            "THREADS": 3,
-            "TIMESTAMP": 1704912150174,
-            "USER_NAME": "NT AUTHORITY\\NETWORK SERVICE"
-          },
-          "THREAD_ID": 3672
-        },
-        "routing": {
-          "arch": 2,
-          "did": "",
-          "event_id": "ece7d85e-a43c-49d3-bc9a-28ace6dc1b02",
-          "event_time": 1704912219967,
-          "event_type": "NEW_REMOTE_THREAD",
-          "ext_ip": "104.198.223.172",
-          "hostname": "windows-server-2022-bc76d608-9d83-4c6c-bdd5-f86bbd385a94-0.c.lc-demo-infra.internal.",
-          "iid": "3c5c33e6-daaf-4029-be0b-94f50b86777e",
-          "int_ip": "10.128.15.197",
-          "moduleid": 2,
-          "oid": "bc76d608-9d83-4c6c-bdd5-f86bbd385a94",
-          "parent": "37b57d228af708b25d097f32659ee557",
-          "plat": 268435456,
-          "sid": "ccd0c386-88c1-4f8d-954c-581a95a1cc34",
-          "tags": [
-            "windows"
-          ],
-          "target": "fe1dee93442392ea97becdad659ee516",
-          "this": "b30a499edf9ec2e424b07d20659ee55b"
-        }
-      }
-    ]
-  }
-  "ts": "2024-01-10 18:43:39"
+  "event": {
+    "EVENTS": [
+      {
+        "event": {
+          "ACCESS_FLAGS": 2097151,
+          "PARENT_PROCESS_ID": 5380,
+          "PROCESS_ID": 4276,
+          "SOURCE": {
+            "BASE_ADDRESS": 140701160243200,
+            "COMMAND_LINE": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --continue-active-setup",
+            "FILE_IS_SIGNED": 1,
+            "FILE_PATH": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+            "HASH": "c47fc20231ffc1e3befef952478363bff96cf3af1f36da4bd1129c8ed0e17fdb",
+            "MEMORY_USAGE": 5881856,
+            "PARENT_ATOM": "df4e951a09e365cb46c36c11659ee556",
+            "PARENT_PROCESS_ID": 5972,
+            "PROCESS_ID": 5380,
+            "THIS_ATOM": "37b57d228af708b25d097f32659ee557",
+            "THREADS": 3,
+            "TIMESTAMP": 1704912214704,
+            "USER_NAME": "WINDOWS-SERVER-\\whitney"
+          },
+          "TARGET": {
+            "COMMAND_LINE": "C:\\Windows\\system32\\sppsvc.exe",
+            "FILE_IS_SIGNED": 1,
+            "FILE_PATH": "C:\\Windows\\system32\\sppsvc.exe",
+            "HASH": "1ca5b9745872748575c452e456966b8ed1c4153757e9f4faf6f86c78c53d4ae8",
+            "MEMORY_USAGE": 6156288,
+            "PARENT_ATOM": "74be005ef68f6edb8682d972659ee024",
+            "PARENT_PROCESS_ID": 628,
+            "PROCESS_ID": 4276,
+            "THIS_ATOM": "fe1dee93442392ea97becdad659ee516",
+            "THREADS": 3,
+            "TIMESTAMP": 1704912150174,
+            "USER_NAME": "NT AUTHORITY\\NETWORK SERVICE"
+          }
+        },
+        "routing": {
+          "arch": 2,
+          "did": "",
+          "event_id": "d61caa47-225a-4f6a-9f3a-6094cdb3c383",
+          "event_time": 1704912219717,
+          "event_type": "REMOTE_PROCESS_HANDLE",
+          "ext_ip": "104.198.223.172",
+          "hostname": "windows-server-2022-bc76d608-9d83-4c6c-bdd5-f86bbd385a94-0.c.lc-demo-infra.internal.",
+          "iid": "3c5c33e6-daaf-4029-be0b-94f50b86777e",
+          "int_ip": "10.128.15.197",
+          "moduleid": 2,
+          "oid": "bc76d608-9d83-4c6c-bdd5-f86bbd385a94",
+          "parent": "37b57d228af708b25d097f32659ee557",
+          "plat": 268435456,
+          "sid": "ccd0c386-88c1-4f8d-954c-581a95a1cc34",
+          "tags": [
+            "windows"
+          ],
+          "target": "fe1dee93442392ea97becdad659ee516",
+          "this": "87509849fc608bce8a236f49659ee55b"
+        }
+      },
+      {
+        "event": {
+          "PARENT_PROCESS_ID": 5380,
+          "PROCESS_ID": 4276,
+          "SOURCE": {
+            "BASE_ADDRESS": 140701160243200,
+            "COMMAND_LINE": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --continue-active-setup",
+            "FILE_IS_SIGNED": 1,
+            "FILE_PATH": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+            "HASH": "c47fc20231ffc1e3befef952478363bff96cf3af1f36da4bd1129c8ed0e17fdb",
+            "MEMORY_USAGE": 5881856,
+            "PARENT_ATOM": "df4e951a09e365cb46c36c11659ee556",
+            "PARENT_PROCESS_ID": 5972,
+            "PROCESS_ID": 5380,
+            "THIS_ATOM": "37b57d228af708b25d097f32659ee557",
+            "THREADS": 3,
+            "TIMESTAMP": 1704912214704,
+            "USER_NAME": "WINDOWS-SERVER-\\whitney"
+          },
+          "TARGET": {
+            "COMMAND_LINE": "C:\\Windows\\system32\\sppsvc.exe",
+            "FILE_IS_SIGNED": 1,
+            "FILE_PATH": "C:\\Windows\\system32\\sppsvc.exe",
+            "HASH": "1ca5b9745872748575c452e456966b8ed1c4153757e9f4faf6f86c78c53d4ae8",
+            "MEMORY_USAGE": 6156288,
+            "PARENT_ATOM": "74be005ef68f6edb8682d972659ee024",
+            "PARENT_PROCESS_ID": 628,
+            "PROCESS_ID": 4276,
+            "THIS_ATOM": "fe1dee93442392ea97becdad659ee516",
+            "THREADS": 3,
+            "TIMESTAMP": 1704912150174,
+            "USER_NAME": "NT AUTHORITY\\NETWORK SERVICE"
+          },
+          "THREAD_ID": 3672
+        },
+        "routing": {
+          "arch": 2,
+          "did": "",
+          "event_id": "ece7d85e-a43c-49d3-bc9a-28ace6dc1b02",
+          "event_time": 1704912219967,
+          "event_type": "NEW_REMOTE_THREAD",
+          "ext_ip": "104.198.223.172",
+          "hostname": "windows-server-2022-bc76d608-9d83-4c6c-bdd5-f86bbd385a94-0.c.lc-demo-infra.internal.",
+          "iid": "3c5c33e6-daaf-4029-be0b-94f50b86777e",
+          "int_ip": "10.128.15.197",
+          "moduleid": 2,
+          "oid": "bc76d608-9d83-4c6c-bdd5-f86bbd385a94",
+          "parent": "37b57d228af708b25d097f32659ee557",
+          "plat": 268435456,
+          "sid": "ccd0c386-88c1-4f8d-954c-581a95a1cc34",
+          "tags": [
+            "windows"
+          ],
+          "target": "fe1dee93442392ea97becdad659ee516",
+          "this": "b30a499edf9ec2e424b07d20659ee55b"
+        }
+      }
+    ]
+  }
+  "ts": "2024-01-10 18:43:39"
 }
 ```
 
----
-
-### USER\_LOGIN
+### USER_LOGIN
 
 Generated when a user logs in to the operating system.
 
 **Platforms:**
 
----
-
-### USER\_LOGOUT
+### USER_LOGOUT
 
 Generated when a user logs out of the operating system.
 
 **Platforms:**
 
----
-
-### USER\_OBSERVED
+### USER_OBSERVED
 
 Generated the first time a user is observed on a host.
 
@@ -1935,14 +1800,12 @@ Generated the first time a user is observed on a host.
 
 ```
 {
-  "TIMESTAMP": 1479241363009,
-  "USER_NAME": "root"
+  "TIMESTAMP": 1479241363009,
+  "USER_NAME": "root"
 }
 ```
 
----
-
-### VOLUME\_MOUNT
+### VOLUME_MOUNT
 
 This event is generated when a volume is mounted.
 
@@ -1950,14 +1813,12 @@ This event is generated when a volume is mounted.
 
 ```
 {
-  "VOLUME_PATH": "E:",
-  "DEVICE_NAME": "\\Device\\HarddiskVolume3"
+  "VOLUME_PATH": "E:",
+  "DEVICE_NAME": "\\Device\\HarddiskVolume3"
 }
 ```
 
----
-
-### VOLUME\_UNMOUNT
+### VOLUME_UNMOUNT
 
 This event is generated when a volume is unmounted.
 
@@ -1965,14 +1826,12 @@ This event is generated when a volume is unmounted.
 
 ```
 {
-  "VOLUME_PATH": "/Volumes/RECOVERY",
-  "VOLUME_NAME": "/dev/disk2s1"
+  "VOLUME_PATH": "/Volumes/RECOVERY",
+  "VOLUME_NAME": "/dev/disk2s1"
 }
 ```
 
----
-
-### YARA\_DETECTION
+### YARA_DETECTION
 
 Generated when a YARA scan finds a match.
 
@@ -1980,19 +1839,12 @@ Generated when a YARA scan finds a match.
 
 ```
 {
-  "RULE_NAME": "malware_detection_rule",
-  "FILE_PATH": "C:\\malicious.exe",
-  "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  "RULE_NAME": "malware_detection_rule",
+  "FILE_PATH": "C:\\malicious.exe",
+  "HASH": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }
 ```
-
----
 
 Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
 
 Endpoint Detection & Response
-
----
-
-Thank you for your feedback! Our team will get back to you
-

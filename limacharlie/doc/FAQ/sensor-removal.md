@@ -2,7 +2,7 @@
 
 ## How do I verify the LimaCharlie agent was uninstalled from macOS systems?
 
-After [performing an uninstallation](https://docs.limacharlie.io/docs/macos-agent-installation-latest-os-versions#uninstallation-flow) of the LimaCharlie Sensor for macOS, you can verify that the process was successful by manually checking several items on the endpoint, as described below.
+After [performing an uninstallation](../Sensors/Endpoint_Agent/Endpoint_Agent_Installation/macOS_Agent_Installation/macos-agent-installation-latest-os-versions.md#uninstallation-flow) of the LimaCharlie Sensor for macOS, you can verify that the process was successful by manually checking several items on the endpoint, as described below.
 
 ## Verify the LimaCharlie processes are not running
 
@@ -27,9 +27,9 @@ The following LimaCharlie sensor-related files should no longer exist on disk:
 
 /usr/local/hcp
 
-/usr/local/hcp_conf
+/usr/local/hcp\_conf
 
-/usr/local/hcp_hbs
+/usr/local/hcp\_hbs
 
 You may optionally remove the log file located at: /usr/local/hcp.log
 
@@ -69,3 +69,9 @@ Open the Terminal and run the following commands
 ❌ If instead you see something similar to the below, the extension was not properly removed and you may need to take some additional measures to do so (i.e. manual removal after booting into Recovery mode).
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+---
+
+**What's Next**
+
+* [FAQ - Sensor Troubleshooting](./faq-troubleshooting.md)

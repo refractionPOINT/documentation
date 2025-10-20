@@ -84,7 +84,3 @@ target: detection
     link: '{{ .link }}'
     metadata: '{{json .detect_mtd }}'
 ```
-
-## Related
-
-* [OTX](./ext-otx.md)

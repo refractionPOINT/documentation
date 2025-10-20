@@ -1,6 +1,6 @@
 # Tutorial: Creating a Webhook Adapter
 
-LimaCharlie supports webhooks as a telemetry ingestion method. Webhooks are technically cloud [Adapters](../adapters.md), as they cannot be deployed on-prem or through the downloadable Adapter binary.
+LimaCharlie supports webhooks as a telemetry ingestion method. Webhooks are technically cloud Adapters, as they cannot be deployed on-prem or through the downloadable Adapter binary.
 
 Webhook adapters are created by enabling a webhook through the `cloud_sensor` Hive feature. Webhook creation will enable a specific URL that can receive webhooks from any platform. Received data will be ingested in LimaCharlie as a Sensor, similar to an Office365 or Syslog Adapter.
 
@@ -47,7 +47,7 @@ echo '{"sensor_type": "webhook", "webhook": {"secret": "some-secret-value-hard-t
 
 After creating the webhook, you will be provided with a geo-dependent URL, respective to your LimaCharlie Organization location. You can also retrieve your webhook URLs with either of the following commands:
 
-* REST API: [getOrgURLs](https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls)
+* REST API: [getOrgURLs](https://docs.limacharlie.io/apidocs/get-org-urls)
 * Python SDK:
 
 ```

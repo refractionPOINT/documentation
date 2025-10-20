@@ -6,11 +6,11 @@ Syslog data can also be ingested via other data platforms, such as an S3 bucket.
 
 Syslog events are observed in LimaCharlie as the `text` platform.
 
-A more detailed guide to syslog collection can be found in the [Log Collection Guide](../../Reference/logcollectionguide.md).
+A more detailed guide to syslog collection can be found in the Log Collection Guide.
 
 ## Adapter Deployment
 
-Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/log and streaming formats. For non-streaming methods, please refer to the corresponding Adapter type (such as [S3](adapter-types-s3.md), [GCP](adapter-types-google-cloud-pubsub.md), etc.)
+Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/log and streaming formats. For non-streaming methods, please refer to the corresponding Adapter type (such as S3, GCP, etc.)
 
 ### Syslog-specific Configurations
 
@@ -132,3 +132,17 @@ DBG <date>: listening for connections on :1514
 ```
 
 Double-check the LimaCharlie Sensors list, and you should see the text adapter with the respective hostname sending `Syslog` events.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+
+In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
+
+Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.

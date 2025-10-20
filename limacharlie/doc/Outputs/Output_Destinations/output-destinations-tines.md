@@ -1,38 +1,4 @@
----
-
-Tines
-
-* 05 Oct 2024
-* 1 Minute to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Tines
-
-* Updated on 05 Oct 2024
-* 1 Minute to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 Output events and detections to [Tines](https://tines.io/).
 
@@ -48,46 +14,6 @@ Detections or events sent to Tines via an output can be used to subsequently cre
 
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28251%29.png)
 
----
+## What's Next
 
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### What's Next
-
-* [Webhook](/docs/outputs-destinations-webhook)
-
-Tags
-
-* [outputs](/docs/en/tags/outputs)
+* [Webhook](../Destinations/outputs-destinations-webhook.md)

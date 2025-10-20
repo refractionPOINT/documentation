@@ -10,7 +10,7 @@
 
 ## Set up your account on Jamf Now
 
-1. Create a Jamf Now account at [https://signup.jamfnow.com](https://signup.jamfnow.com/), and log in.
+1. Create a Jamf Now account at https://signup.jamfnow.com/, and log in.
 2. Choose the "APNs" tab in the sidebar, and click "Get Started".
 3. Click "Download Certificate Signing Request.plist" and save the plist.
 4. Click Next in the lower right.
@@ -149,3 +149,5 @@ The following recipe presumes the use of MacOS 13 (Ventura).
 ![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28139%29.png)
 
 4. The RPHCP.app appears in the Mac's Applications folder, and the rphcp daemon is running.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

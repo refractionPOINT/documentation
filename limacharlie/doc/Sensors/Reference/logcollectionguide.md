@@ -10,7 +10,7 @@ The file adapter monitors log files for changes and streams new entries to LimaC
 
 #### Key Features:
 
-* Glob pattern support (/var/log/*.log)
+* Glob pattern support (/var/log/\*.log)
 * Automatic log rotation handling
 * Backfill support for historical data
 * Multi-line JSON parsing
@@ -59,8 +59,8 @@ syslog:
 
 LimaCharlie supports two methods for parsing unstructured log data:
 
-* **parsing_grok**: Uses Grok patterns (recommended) - pre-built patterns for common log formats, easier to read and maintain
-* **parsing_re**: Uses regular expressions - for custom formats or when Grok patterns don't meet specific needs
+* **parsing\_grok**: Uses Grok patterns (recommended) - pre-built patterns for common log formats, easier to read and maintain
+* **parsing\_re**: Uses regular expressions - for custom formats or when Grok patterns don't meet specific needs
 
 Grok patterns are built on regular expressions but provide named patterns for common elements like timestamps, IP addresses, and log formats. Use Grok when possible for better maintainability.
 
@@ -123,7 +123,7 @@ file:
   file_path: "/var/log/apache2/access.log"  # or /var/log/httpd/access_log
 ```
 
-**Nginx Logs (/var/log/nginx/*):**
+**Nginx Logs (/var/log/nginx/\*):**
 
 ```
 file:
@@ -266,7 +266,7 @@ file:
 
 * **Use JSON format when possible** - Modern logs often support JSON output, which provides better structure and parsing.
 * **Configure appropriate Grok patterns** - Grok provides pre-built patterns for common log formats and is easier to maintain than regex. Use `parsing_grok` over `parsing_re` when possible.
-* **Set sensor_seed_key appropriately** - Use descriptive names that identify the log source for easier management.
+* **Set sensor\_seed\_key appropriately** - Use descriptive names that identify the log source for easier management.
 * **Monitor file permissions** - Ensure the adapter has read access to log files.
 * **Use backfill carefully** - Only enable for initial historical data collection to avoid duplicates.
 * **Implement proper field mapping** - Extract hostname, timestamps, and event types for better searchability.
@@ -280,5 +280,3 @@ Common issues:
 * **Parse failures**: Validate Grok patterns against actual log formats
 * **Missing logs**: Verify file paths and glob patterns
 * **Connection issues**: Check network connectivity and authentication credentials
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

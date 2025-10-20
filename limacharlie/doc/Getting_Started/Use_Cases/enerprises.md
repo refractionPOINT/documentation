@@ -10,7 +10,7 @@ For enterprises and other large organizations, the SecOps Cloud Platform is a po
 
 The SecOps Cloud Platform is a comprehensive platform for cybersecurity operations—but it doesn't have to be implemented all at once. The SCP's public cloud-like delivery model eliminates adoption hurdles for enterprises. Easily scaled and API-first, the SCP enables teams to integrate the platform into their security operations gradually, leveraging its capabilities progressively as they go. Here are three recommended first steps to help enterprises realize value from the SCP quickly.
 
-#### 1. Centralize telemetry data to improve visibility and streamline operations
+### 1. Centralize telemetry data to improve visibility and streamline operations
 
 The SecOps Cloud Platform allows enterprises to bring all of their telemetry data into one place—improving visibility, eliminating coverage gaps, and enabling streamlined SecOps workflows. Here is a general outline of what that looks like:
 
@@ -24,7 +24,7 @@ Log-type data can also be brought into the SCP using a system of adapters or via
 
 The SecOps Cloud Platform helps enterprises improve visibility, eliminate coverage gaps, solve integration challenges, and make their workflows more efficient—and this is just the first step in what teams can achieve with the platform.
 
-#### 2. Reduce spending on SIEMs and other high-cost solutions
+### 2. Reduce spending on SIEMs and other high-cost solutions
 
 Because the SCP lets security teams bring in data from any source and export it to any destination, the platform can also be used as a pass-through to observe, transform, enrich, and anonymize data in-flight and route it to different destinations in a fine-grained way. This strategy can significantly reduce the costs of security information and event management (SIEM) tools and other expensive third-party solutions.
 
@@ -42,7 +42,7 @@ Enterprise teams can thus route their data for optimal cost savings. For example
 
 The SCP's data routing capabilities put enterprise teams in full control of their telemetry data, allowing them to cut spending on high-cost solutions while ensuring access to critical data in order to meet compliance and operational needs.
 
-#### 3. Simplify tooling and control your infrastructure
+### 3. Simplify tooling and control your infrastructure
 
 The SecOps Cloud Platform delivers the core components required to secure and monitor any organization. Over time, enterprises can leverage the SCP's numerous capabilities to develop a custom security infrastructure that they control completely. And while that is clearly a long-term project, enterprises that adopt the SCP can begin using the platform to simplify their stack right away:
 

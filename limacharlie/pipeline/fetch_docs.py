@@ -21,6 +21,7 @@ import re
 import sys
 import json
 import time
+import random
 import requests
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -36,6 +37,8 @@ RATE_LIMIT_DELAY = 0.05  # seconds between requests (reduced for concurrent fetc
 MAX_WORKERS = 10  # number of concurrent download threads
 MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
+MAX_RETRIES_RATE_LIMIT = 7  # higher retry limit specifically for 429 rate limit errors
+MAX_BACKOFF_TIME = 60  # maximum backoff time in seconds (cap for exponential backoff)
 
 
 class LimaCharlieFetcher:
@@ -165,6 +168,27 @@ class LimaCharlieFetcher:
             if e.response.status_code == 404:
                 print(f"    Article not found (404), skipping")
                 return None
+
+            # Handle 429 (Too Many Requests) with exponential backoff and jitter
+            if e.response.status_code == 429:
+                if retry_count < MAX_RETRIES_RATE_LIMIT:
+                    # Exponential backoff: base_delay * (2 ^ retry_count)
+                    base_delay = RETRY_DELAY
+                    backoff_time = base_delay * (2 ** retry_count)
+
+                    # Add jitter (randomization) to prevent thundering herd
+                    # Jitter is up to 50% of the backoff time
+                    jitter = random.uniform(0, backoff_time * 0.5)
+
+                    # Calculate total wait time and cap at maximum
+                    wait_time = min(backoff_time + jitter, MAX_BACKOFF_TIME)
+
+                    print(f"    Rate limited (429), waiting {wait_time:.2f}s before retry {retry_count + 1}/{MAX_RETRIES_RATE_LIMIT}")
+                    time.sleep(wait_time)
+                    return self.fetch_article_html(slug, retry_count + 1)
+                else:
+                    print(f"    Failed after {MAX_RETRIES_RATE_LIMIT} retries (rate limited)")
+                    return None
 
             # For other HTTP errors, retry as usual
             if retry_count < MAX_RETRIES:

@@ -6,10 +6,10 @@ The methodology is the same as described above, but you need to be careful to st
 
 The most common mistake is to install the Sensor directly in the template, and then instantiate the rest of the infrastructure from this template. This will result in "cloned sensors", sensors running using the same Sensor ID on different hosts/VMs/Containers.
 
-If these occur, a [sensor\_clone](../../reference-platform-events.md#sensorclone) event will be generated as well as an error in your dashboard. If this happens you have two choices:
+If these occur, a [sensor_clone](../../Events/Platform_Events_Overview/reference-platform-events.md#sensorclone) event will be generated as well as an error in your dashboard. If this happens you have two choices:
 
 1. Fix the installation process and re-deploy.
-2. Run a de-duplication process with a Detection & Response rule [like this](../../detection-and-response-examples.md#deduplicate-cloned-sensors).
+2. Run a de-duplication process with a Detection & Response rule [like this](../../Detection_and_Response/detection-and-response-examples.md#deduplicate-cloned-sensors).
 
 Preparing sensors to run properly from templates can be done by creating a special `hcp_vdi` (macOS and Linux) or `hcp_vdi.dat` (Windows) file in the relevant configuration directory:
 
@@ -28,3 +28,11 @@ Example `hcp_vdi.dat` file content:
 ```
 
 Note that if a sensor is already enrolled, the presence of the `hcp_vdi` file will be completely ignored.
+
+Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
+
+Endpoint Detection & Response

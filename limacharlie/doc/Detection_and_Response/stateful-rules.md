@@ -2,7 +2,7 @@
 
 ## Overview
 
-> It's recommended to first read [Detection & Response rules](https://docs.limacharlie.io/docs/detection-and-response) before diving into stateful rules.
+> It's recommended to first read [Detection & Response rules](detection-and-response.md) before diving into stateful rules.
 
 In LimaCharlie, a Stateful Rule tracks and remembers the state of past events to make decisions based on historical context. Unlike stateless rules, which evaluate events in isolation, stateful rules can detect patterns over time, such as multiple failed logins within an hour. This enables more complex and accurate detection, allowing users to trigger actions only when specific conditions are met across multiple events or timeframes.
 
@@ -210,3 +210,10 @@ Consider the `excel.exe -> cmd.exe` example. The `cmd.exe` event will be referen
 - action: task
   command: deny_tree <<routing/parent>>
 ```
+
+## Related Articles
+
+* [Detection on Alternate Targets](detection-on-alternate-targets.md)
+* [Detection and Response Examples](detection-and-response-examples.md)
+* [Detection and Response](detection-and-response.md)
+* [Managed Rulesets](managed-rulesets.md)

@@ -2,11 +2,11 @@
 
 LimaCharlie users have multiple billing options available to them, depending on their unique needs. We'll walk through these two options, *Default Billing* and *Unified Billing*, below.
 
-## Default Billing
+### Default Billing
 
 By default, every Organization is billed using a credit card set at the individual organization level. The billing cycle for each organization starts at the time the organization goes from the free tier into a paid tier. The invoices go to the email address of the user who initially created the organization.
 
-## Unified Billing
+### Unified Billing
 
 For customers that require flexibility managing multiple organizations, LimaCharlie offers unified billing - the ability to customize billing to satisfy their needs.
 
@@ -19,7 +19,7 @@ The following are the options you can customize as a part of the Unified Billing
 * Override the email where each individual organization's invoice goes to. Instead of the email of the creator, a central email address (like billing@mycorp.com) is used. Billing domains with unified billing enabled will receive a monthly report summarizing all organizations under the domain and their respective billing.
 * Choose to be invoiced manually. Organizations in a billing domain can have their invoices sent manually by email without the use of a credit card. This will then allow the recipient to pay invoices using ACH or credit card, but this will have to be done manually each month.
 
-## Default Billing Setup vs Unified Billing
+### Default Billing Setup vs Unified Billing
 
 |  | Default Billing Setup | Unified Billing |
 | --- | --- | --- |
@@ -32,3 +32,9 @@ The following are the options you can customize as a part of the Unified Billing
 | **Email invoices go to** | Email address of the user who initially created the organization. | Instead of the email of the creator, a central email address (like `billing@mycorp.com`) is used. Billing domains with unified billing enabled will receive a monthly report summarizing all organizations under the domain and their respective billing. |
 
 To learn more or to get setup with Unified Billing, [contact us](https://limacharlie.io/contact).
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+Managed Security Services Provider
+
+Digital Forensics & Incident Response

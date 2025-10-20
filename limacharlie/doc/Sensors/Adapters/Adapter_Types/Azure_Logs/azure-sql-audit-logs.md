@@ -8,7 +8,7 @@ LimaCharlie can ingest and natively parse Azure SQL Server audit logs.
 
 Azure SQL Server audit logs can be ingested via:
 
-* [Azure Event Hub](../adapter-types-azure-event-hub.md)
-* LimaCharlie [Webhooks](../../Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md)
+* Azure Event Hub
+* LimaCharlie Webhooks
 
 Upon ingestion, the log `category` field is used to define the Event Type.

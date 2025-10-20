@@ -302,7 +302,7 @@ The following Output Transform would extract only the `IpAddress`, `TargetUserNa
 }
 ```
 
-The following example outputs text and specified fields using [Template Strings](template-strings-and-transforms.md).
+The following example outputs text and specified fields using Template Strings.
 
 ```
 {
@@ -345,6 +345,7 @@ Beyond the built-in modifiers for `gjson` (as seen in their [playground](https:/
 * `parsejson`: this modifier takes no arguments, it takes in as input a string that represents a JSON object and outputs the decoded JSON object.
 * `extract`: this modifier takes a single argument, `re` which is a regular expression that uses "named capture groups" (as defined in the [re2 documentation](https://github.com/google/re2/wiki/Syntax)). The group names become the keys of the output JSON object with the matching values.
 * `parsetime`: this modifier takes two arguments, `from` and `to`. It will convert an input string from a given time format (as defined in the Go `time` library format [here](https://pkg.go.dev/time#pkg-constants)) and outputs the resulting time in the `to` format. Beyond the time constants from the previous link, LimaCharlie also supports a `from` format of:
+
   + `epoch_s`: a second based epoch timestamp
   + `epoch_ms`: a millisecond based epoch timestamp
 
@@ -354,7 +355,7 @@ The transform:
 ```
 {
   "new_ts": "ts|@parsetime:{\"from\":\"2006-01-02 15:04:05\", \"to\":\"Mon, 02 Jan 2006 15:04:05 MST\"}",
-  "user": "origin|@extract:{\"re\":\".*@(?P<domain>.+)\"}",
+  "user": "origin|@extract:{\"re\":\".*@(?P<domain>.+)\"}"
   "ctx": "event.EVENT.exec_context|@parsejson"
 }
 ```
@@ -386,3 +387,5 @@ would result in:
   }
 }
 ```
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

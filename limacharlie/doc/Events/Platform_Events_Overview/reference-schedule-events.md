@@ -1,40 +1,6 @@
----
-
-Reference: Schedule Events
-
-* 05 Oct 2024
-* 1 Minute to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Reference: Schedule Events
 
-* Updated on 05 Oct 2024
-* 1 Minute to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
-
-Schedule events are triggered automatically at various intervals per Organization or per Sensor, observable in  rules via the `schedule` target.
+Schedule events are triggered automatically at various intervals per Organization or per Sensor, observable in rules via the `schedule` target.
 
 Scheduling events have a very similar structure whether they are per-sensor or per-org.
 
@@ -62,72 +28,16 @@ Scheduling events are not retained as part of the year retention in LimaCharlie.
 
 ```
 detect:
-  target: schedule
-  event: 168h_per_sensor
-  op: is platform
-  name: windows
+  target: schedule
+  event: 168h_per_sensor
+  op: is platform
+  name: windows
 respond:
-  - action: task
-    command: os_packages
-    investigation: weekly-package-list
+  - action: task
+    command: os_packages
+    investigation: weekly-package-list
 ```
 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [Detection on Alternate Targets](/docs/detection-on-alternate-targets)
-* [Detection and Response Examples](/docs/detection-and-response-examples)
-* [Detection and Response](/docs/detection-and-response)
-* [Platform Events Overview](/docs/platform-events-overview)
-* [Reference: Platform Events](/docs/reference-platform-events)
-
----
-
-###### What's Next
-
-* [Query Console](/docs/query-console)
-
-Tags
-
-* [detection and response](/docs/en/tags/detection%20and%20response)
-* [events](/docs/en/tags/events)
-* [platform](/docs/en/tags/platform)

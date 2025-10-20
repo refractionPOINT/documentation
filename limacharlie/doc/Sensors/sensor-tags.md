@@ -3,7 +3,7 @@
 Tags in LimaCharlie are simple strings that can be associated with any number of sensors. A Sensor can also have an arbitrary number of tags associated with it.
 
 Tags appear in every event coming from a sensor under the `routing` component of the event. This greatly simplifies the writing of detection and response rules based on the presence of specific tags, at the cost of including more non-unique data per event.
-Tags can be used for a variety of purposes, including:
+ Tags can be used for a variety of purposes, including:
 
 * to classify endpoints
 * automate detection and response
@@ -101,7 +101,7 @@ When you tag a sensor with `lc:stable`, the sensor version currently assigned to
 
 When you tag a sensor with `lc:experimental`, the sensor version currently assigned to the Organization will be ignored for that specific sensor. An experimental version of the sensor will be used instead. This tag is typically used when working with the LimaCharlie team to troubleshoot sensor-specific issues.
 
-### lc:no_kernel
+### lc:no\_kernel
 
 When you tag a sensor with `lc:no_kernel`, the kernel component will not be loaded on the host.
 
@@ -119,7 +119,7 @@ When you tag a sensor with *lc:sleeper*, the sensor will keep its connection to 
 
 ### lc:usage
 
-When you tag a sensor with *lc:usage*, the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](../../Getting_Started/Use_Cases/sleeper-mode.md).
+When you tag a sensor with *lc:usage*, the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](../Endpoint_Agent/sleeper.md).
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 

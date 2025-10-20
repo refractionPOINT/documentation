@@ -1,38 +1,4 @@
----
-
-LCQL Examples
-
-* 03 Oct 2025
-* 3 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # LCQL Examples
-
-* Updated on 03 Oct 2025
-* 3 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 LimaCharlie Query Language (LCQL) lets you write well-structured queries to search across telemetry within LimaCharlie. The following examples can help you perform targeted searches or hunts across your telemetry, as well as modify them to build your own. Example queries are sorted by *source*, however can be adjusted for your environment.
 
@@ -42,7 +8,7 @@ If you've written a unique query or have one you'd like to share with the commun
 
 ## General Queries
 
-Search *all* event types across *all* Windows sytems for a particular string showing up in *any* field.  
+Search *all* event types across *all* Windows sytems for a particular string showing up in *any* field.
 `-24h | plat == windows | * | event/* contains 'psexec'`
 
 ## GitHub Telemetry
@@ -58,11 +24,11 @@ Show me all the GitHub branch protection override (force pushing to repo without
 which could result in:
 
 ```
-| actor    |   count | repo                               |
+| actor    |   count | repo                               |
 |----------|---------|------------------------------------|
-| mXXXXXXa |      11 | acmeCorpCodeRep/customers          |
-| aXXXXXXb |      11 | acmeCorpCodeRep/analysis           |
-| cXXXXXXd |       3 | acmeCorpCodeRep/devops             |
+| mXXXXXXa |      11 | acmeCorpCodeRep/customers          |
+| aXXXXXXb |      11 | acmeCorpCodeRep/analysis           |
+| cXXXXXXd |       3 | acmeCorpCodeRep/devops             |
 ```
 
 ## Network Telemetry
@@ -78,10 +44,10 @@ Show me all domains resolved by Windows hosts that contain "google" in the last 
 which could result in:
 
 ```
-|   count | domain                     |
+|   count | domain                     |
 |---------|----------------------------|
-|      14 | logging.googleapis.com     |
-|      36 | logging-alv.googleapis.com |
+|      14 | logging.googleapis.com     |
+|      36 | logging-alv.googleapis.com |
 ```
 
 ### Domain Prevalence
@@ -93,17 +59,17 @@ Show me all domains resolved by Windows hosts that contain "google" in the last 
 which could result in:
 
 ```
-|   count | domain                     |
+|   count | domain                     |
 |---------|----------------------------|
-|       4 | logging.googleapis.com     |
-|       3 | logging-alv.googleapis.com |
+|       4 | logging.googleapis.com     |
+|       3 | logging-alv.googleapis.com |
 ```
 
 ## Process Activity
 
 ### Unsigned Binaries
 
-Grouped and counted.  
+Grouped and counted.
 `-24h | plat == windows | CODE_IDENTITY | event/SIGNATURE/FILE_IS_SIGNED != 1 | event/FILE_PATH as Path event/HASH as Hash event/ORIGINAL_FILE_NAME as OriginalFileName COUNT_UNIQUE(Hash) as Count GROUP BY(Path Hash OriginalFileName)`
 
 ### Process Command Line Args
@@ -143,70 +109,3 @@ When ingested with EDR telemetry, or as a separate Adapter, `WEL` type events ar
 ### Failed Logons
 
 `-1h | plat==windows | WEL | event/EVENT/System/EventID == "4625" | event/EVENT/EventData/IpAddress as SrcIP event/EVENT/EventData/LogonType as LogonType event/EVENT/EventData/TargetUserName as Username event/EVENT/EventData/WorkstationName as SrcHostname`
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Endpoint Detection & Response
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [LimaCharlie Query Language](/docs/lcql)
-* [Query Console](/docs/query-console)
-* [Detection and Response Examples](/docs/detection-and-response-examples)
-* [Reference: Sensor Selector Expressions](/docs/reference-sensor-selector-expressions)
-
----
-
-###### What's Next
-
-* [Detection and Response](/docs/detection-and-response)
-
-Table of contents
-
-+ [General Queries](#general-queries)
-+ [GitHub Telemetry](#github-telemetry)
-+ [Network Telemetry](#network-telemetry)
-+ [Process Activity](#process-activity)
-+ [Windows Event Log (WEL)](#windows-event-log-wel-)
-
-Tags
-
-* [lcql](/docs/en/tags/lcql)

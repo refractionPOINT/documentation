@@ -31,4 +31,4 @@ access_token
 
 ## What's Next
 
-* [Google Cloud](ext-cloud-cli-google-cloud.md)
+* [Google Cloud](./ext-cloud-cli-google-cloud.md)

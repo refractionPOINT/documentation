@@ -4,16 +4,16 @@
 
 The Playbook Extension allows you to execute Python playbooks within the context of your Organization in order to automate tasks and customize more complex detections.
 
-The playbooks themselves are managed in the playbook [Hive](https://docs.limacharlie.io/docs/config-hive) Configurations and can be managed across tenants using the Infrastructure as Code extension.
+The playbooks themselves are managed in the playbook Hive Configurations and can be managed across tenants using the Infrastructure as Code extension.
 
 The execution of a playbook can be triggered through the following means:
 
 1. Interactively in the web app by going to the Extensions section for the Playbook extension.
-2. By issuing an `extension request` action through a [D&R rule](../../../Detection_and_Response/detection-and-response-examples.md).
+2. By issuing an `extension request` action through a [D&R rule](../../Detection_and_Response/detection-and-response-examples.md).
 3. By issuing an extension request on the API directly: https://api.limacharlie.io/static/swagger/#/Extensions/createExtensionRequest
 4. By issuing an extension request through the Python CLI/SDK or Golang SDK.
 
-This means playbooks can be issued in a fully automated fashion based on events, detections, audit messages or any other [target](../../../Detection_and_Response/detection-on-alternate-targets.md) of D&R rules. But it can also be used in an ad-hoc fashion triggered manually.
+This means playbooks can be issued in a fully automated fashion based on events, detections, audit messages or any other [target](../../Detection_and_Response/detection-on-alternate-targets.md) of D&R rules. But it can also be used in an ad-hoc fashion triggered manually.
 
 ## Enabling Extension
 
@@ -189,3 +189,9 @@ hives:
 ## Billing
 
 Playbooks are billed per seconds of total execution time.
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

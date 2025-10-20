@@ -149,6 +149,10 @@ The following configurations allow you to customize the way data is ingested by 
 * `client_options.mapping.transform`: a Transform to apply to events.
 * `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
 
+Mapping Fields Deprecated
+
+The `client_options.mapping.rename_only` and `client_options.mapping.mappings` fields have been deprecated in favor of `client_options.mapping.transform`. Please see associated documentation for use of the `transform` config.
+
 ### Parsing
 
 #### Named Group Parsing
@@ -323,8 +327,8 @@ This is done by setting the `indexing` element in the `client_options`. This fie
 
 An index descriptor can have the following fields:
 
-* `events_included`: optionally, a list of event\_type that this descriptor applies to.
-* `events_excluded`: optionally, a list of event\_type this descriptor *does not* apply to.
+* `events_included`: optionally, a list of event_type that this descriptor applies to.
+* `events_excluded`: optionally, a list of event_type this descriptor *does not* apply to.
 * `path`: the element path this descriptor targets, like `user/metadata/user_id`.
 * `regexp`: optionally, a regular expression used on the `path` field to extract the item to index, like `email: (.+)`.
 * `index_type`: the category of index the value extracted belongs to, like `user` or `file_hash`.
@@ -375,3 +379,9 @@ This is the list of currently supported index types:
 USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SID) is generated based on the Organization ID (OID) and the Sensor Seed Key.
 
 This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same OID and Sensor Seed Key, the generated SIDs will be stable despite the IID change.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

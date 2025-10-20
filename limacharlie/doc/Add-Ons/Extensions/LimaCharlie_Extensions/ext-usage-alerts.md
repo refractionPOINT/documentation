@@ -2,7 +2,7 @@
 
 The usage alerts Extension allows you to create, maintain, & automatically refresh usage alert conditions for an Organization.
 
-For example, you can create a usage alert rule that will fire a detection when artifact downloads have reached a 1GB threshold in the last 30 days (43200 minutes). This alert will be saved as a managed rule. When the threshold is reached, a detection will be created with the following `cat`:
+For example, you can create a usage alert rule that will fire a detection when artifact downloads have reached a 1GB threshold in the last 30 days (43200 minutes). This alert will be saved as a managed  rule. When the threshold is reached, a detection will be created with the following `cat`:
 
 `Usage alert - Output data over threshold - 1024 MB in 30.00 days`
 

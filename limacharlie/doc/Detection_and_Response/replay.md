@@ -1,6 +1,7 @@
 # Replay
 
-Replay allows you to run [Detection & Response (D&R) rules](detection-and-response-examples.md) against historical traffic. This can be done in a few combinations of sources:
+Replay allows you to run [Detection & Response (D&R) rules](./detection-and-response-examples.md) against historical traffic.
+This can be done in a few combinations of sources:
 
 Rule Source:
 
@@ -42,7 +43,7 @@ The returned data from the API contains the following:
 
 ### Query Language
 
-To use Replay in [LCQL Mode](LimaCharlie_Query_Language/lcql-examples.md) (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie query --help`.
+To use Replay in [LCQL Mode](../Query_Console/lcql-examples.md) (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie query --help`.
 
 ### Python CLI
 
@@ -60,7 +61,8 @@ Sample command line to query an entire organization:
 limacharlie-replay --entire-org --start 1555359000 --end 1556568600 --rule-name my-rule-name
 ```
 
-If specifying a rule as content with the `--rule-content`, the format should be in `JSON` or `YAML` like:
+If specifying a rule as content with the `--rule-content`, the format should be
+in `JSON` or `YAML` like:
 
 ```
 detect:
@@ -79,7 +81,8 @@ We invite you to look at the command line usage itself, as the tool evolves.
 
 ### REST API
 
-The Replay API is available to all DataCenter locations using a per-location URL. To get the appropriate URL for your organization, use the REST endpoint to retrieve the URLs found [here](https://api.limacharlie.io/static/swagger/#/Organizations/getOrgURLs) named `replay`.
+The Replay API is available to all DataCenter locations using a per-location URL.
+To get the appropriate URL for your organization, use the REST endpoint to retrieve the URLs found [here](https://api.limacharlie.io/static/swagger/#/Organizations/getOrgURLs) named `replay`.
 
 Having per-location URLs will allow us to guarantee that processing occurs within the geographical area you chose. Currently, some locations are NOT guaranteed to be in the same area due to the fact we are using the Google Cloud Run product which is not available globally. For these cases, processing is currently done in the United States, but as soon as it becomes available in your area, the processing will be moved transparently.
 
@@ -124,7 +127,8 @@ To query Replay, do a `POST` with a `Content-Type` header of `application-json` 
 }
 ```
 
-Like the other endpoints you can also submit a `rule_name` in the URL query if you want to use an existing organization rule.
+Like the other endpoints you can also submit a `rule_name` in the URL query if you want
+to use an existing organization rule.
 
 You may also specify a `limit_event` and `limit_eval` parameter as integers. They will limit the number of events evaluated and the number of rule evaluations performed (approximately). If the limits are reached, the response will contain an item named `limit_eval_reached: true` and `limit_event_reached: true`.
 

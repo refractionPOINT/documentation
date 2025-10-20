@@ -34,7 +34,7 @@ Required IAM Permissions:
 
 Adapter Type: `s3`
 
-* `client_options`: common configuration for adapter as defined [here](../adapter-usage.md).
+* `client_options`: common configuration for adapter as defined [here](../adapter-deployment.md#usage).
 * `bucket_name`: the name of the bucket to ingest from.
 * `access_key`: an Access Key from S3 used to access the bucket.
 * `secret_key`: the secret key associated with the `access_key` used to access the bucket.
@@ -76,3 +76,9 @@ s3:
 ## API Doc
 
 See the [official documentation](https://aws.amazon.com/s3/).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Amazon Web Services
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

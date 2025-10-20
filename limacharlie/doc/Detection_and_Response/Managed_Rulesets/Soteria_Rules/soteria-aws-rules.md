@@ -5,14 +5,14 @@ Soteria's AWS ruleset provides coverage across multiple AWS telemetry streams, i
 * [AWS CloudTrail](https://aws.amazon.com/cloudtrail/)
 * [AWS GuardDuty](https://aws.amazon.com/guardduty/)
 
-Data access
+## Data access
 
 Please note that Soteria won't get access to your data, and you won't be able to see or edit their rules - LimaCharlie acts as a broker between the two parties.
 
 To leverage detection logic provided by the ruleset:
 
 1. Subscribe your tenant to the Soteria AWS [ruleset extension](https://app.limacharlie.io/add-ons/extension-detail/soteria-rules-aws).
-2. Subscribe your tenant to [tor](../../../Add-Ons/Extensions/LimaCharlie_Extensions/ext-lookup-manager.md) lookup (provided at no cost).
+2. Subscribe your tenant to tor lookup (provided at no cost).
 3. Configure [AWS CloudTrail](../../../Sensors/Adapters/Adapter_Types/adapter-types-aws-cloudtrail.md) and [AWS GuardDuty](../../../Sensors/Adapters/Adapter_Types/adapter-types-aws-guardduty.md) adapters to start collecting AWS audit logs.
 
 ## Enabling Soteria's AWS Rules

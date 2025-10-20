@@ -8,7 +8,7 @@ Note that usage of ext-strelka will incur usage of Artifact Exporting (applied t
 
 The Strelka extension receives files using Artifacts by specifying an `artifact_id` in the `run_on` request. The extension will then process the file and return the results to the caller as well as send the results to its related Sensor.
 
-## Configuration
+### Configuration
 
 Example  rule that processes all Artifacts ingested with the type `zeek-extract`:
 
@@ -32,9 +32,9 @@ value: zeek-extract
     artifact_id: '{{ .routing.log_id }}'
 ```
 
-## Usage
+### Usage
 
-If you use the LimaCharlie [Zeek](./ext-zeek.md) extension, a good use case would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example.
+If you use the LimaCharlie [Zeek](ext-zeek.md) extension, a good use case would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example.
 
 **Detect:**
 

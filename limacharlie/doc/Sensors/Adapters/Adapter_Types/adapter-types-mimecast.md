@@ -22,7 +22,7 @@ Adapter Type: `mimecast`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](../adapter-deployment.md).
+Adapter downloads can be found [here](../adapter-deployment.md#adapter-binaries).
 
 ```
 chmod +x /path/to/lc_adapter
@@ -66,3 +66,9 @@ mimecast:
 ## API Doc
 
 See the official [documentation](https://developer.services.mimecast.com/docs/auditevents/1/routes/api/audit/get-audit-events/post).
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Command-line Interface
+
+Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.

@@ -2,7 +2,7 @@
 
 With its multitude of data ingestion and output options, LimaCharlie users can end up with a myriad of credentials and secret keys to faciliate unique data operations. However, not all users should be privy to these secret keys. Within the Config Hive, the `secrets` hive component allows you to decouple secrets from their usage or configuration across LimaCharlie. Furthermore, you can also grant permissions to users that allows them to see the configuration of an output, but not have access to the associated credentials.
 
-The most common usage is for storing secret keys used by various [Adapters](../../Sensors/Adapters/adapters.md) or [Outputs](../../Outputs/outputs.md). By referencing `secrets` within the Config Hive, we can configure these services without needing to reveal secret keys to all users.
+The most common usage is for storing secret keys used by various [Adapters](../../Adapters/adapters.md) or [Outputs](../../Outputs/outputs.md). By referencing `secrets` within the Config Hive, we can configure these services without needing to reveal secret keys to all users.
 
 Watch the video below to learn more about hive secrets, or continue reading below.
 
@@ -85,3 +85,7 @@ Next, create an output in the web app, using the value `hive://secret/my-secret`
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/secret.png)
 
 And that's it! The output should start as expected, however when viewing the output's configuration, the secret should refer to the `hive` ARN, rather than the actual credentials.
+
+Command-line Interface
+
+In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.

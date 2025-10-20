@@ -4,7 +4,7 @@
 
 The LimaCharlie agent is designed to run within a Docker container, providing seamless integration with containerized environments. Running the agent in a container allows for efficient deployment and management while ensuring security monitoring and telemetry collection.
 
-Additionally, the agent can also be deployed on various container cluster technologies, such as Kubernetes. For Kubernetes deployment details, refer to [Container Clusters](container-clusters.md).
+Additionally, the agent can also be deployed on various container cluster technologies, such as Kubernetes. For Kubernetes deployment details, refer to [Container Clusters](../container-clusters.md).
 
 ## Host Visibility Requirements
 
@@ -14,7 +14,6 @@ For the LimaCharlie agent to have full visibility into activities on the host sy
 * The container must use **host networking** to observe network activity.
 * The container must use **host PID mode** to track running processes.
 * Various **host-level directories** must be mounted into the container, including:
-
   + The root filesystem (`rootfs`)
   + Docker network namespaces (`netns`)
   + The directory containing kernel modules and debug symbols

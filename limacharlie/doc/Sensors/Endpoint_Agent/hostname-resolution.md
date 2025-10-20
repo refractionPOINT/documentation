@@ -10,3 +10,5 @@ The resolution of that hostname is done in a few different ways:
 4. If the FQDN could not be resolved, the local hostname of the box is used.
 
 This method allows the endpoint agent to better resolve its hostname in large environments where different regions re-use the same hostname.
+
+Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.

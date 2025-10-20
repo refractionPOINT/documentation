@@ -55,7 +55,7 @@ The mapping above is based on the expected webhook event from Jira. Note that in
 
 ### 2. Building the Webhook URL
 
-After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
+After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://docs.limacharlie.io/apidocs/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
 
 * Organization ID
 * Webhook name (from the config)
@@ -71,7 +71,7 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Within the Atlassian Admin window, navigate to **Jira Administration** > **Jira settings** > **Advanced** > **WebHooks**. Select **+ Create a WebHook**.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28178%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(178).png)
 
 * Choose an appropriate name to differentiate that this is a LimaCharlie webhook
 * Provide the webhook URL (see step 2 above)
@@ -81,6 +81,7 @@ Within the Atlassian Admin window, navigate to **Jira Administration** > **Jira 
 Within the WebHook creation dialog, you can also select the granularity of events to send via the WebHook. High-level event categories include:
 
 * Issues
+
   + Issue events
   + Worklog
   + Comment(s)
@@ -299,3 +300,7 @@ If configured properly, you should see your Jira events in LimaCharlie. Here's a
 ```
 
 Note that the Jira "webhookEvent" becomes the event type, also represented in the LimaCharlie Adapter timeline.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

@@ -161,4 +161,4 @@ That's it, you're good to go!
 
 The next step towards production would be to run the Adapter as a service, or within tmux/screen on the Linux host. Alternatively you could also replicate the above setup using the [Docker container](https://hub.docker.com/r/refractionpoint/lc-adapter) and a serverless platform like Cloud Run.
 
-For more documentation on configuring Adapters, see [here](../adapters.md).
+For more documentation on configuring Adapters, see [Adapter Deployment](../adapter-deployment.md).

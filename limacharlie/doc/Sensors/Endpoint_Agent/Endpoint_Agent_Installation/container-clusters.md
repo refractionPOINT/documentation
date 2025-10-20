@@ -1,6 +1,9 @@
 # Container Clusters
 
-You can also run LimaCharlie at the host level in a container cluster system like Kubernetes in order to monitor all running containers on the host with a single Sensor. In fact, this is the preferred method as it reduces the overhead of running LC within every single container.
+You can also run LimaCharlie at the host level in a container cluster system
+ like Kubernetes in order to monitor all running containers on the host with
+ a single Sensor. In fact, this is the preferred method as it reduces the overhead
+ of running LC within every single container.
 
 This is accomplished by a combination of a few techniques:
 
@@ -13,11 +16,12 @@ The first step is straight forward. For example, set the environment like `ENV H
 
 The second step is to run the container like: `docker run --privileged --net=host -v /:/rootfs:ro --env HOST_FS=/rootfs -v /var/run/docker/netns:/netns:ro --env NET_NS=/netns --env LC_INSTALLATION_KEY=your_key your-lc-container-name`.
 
-Remember to pick the appropriate LC sensor architecture installer for the *container* that will be running LC (not the host). So if your privileged container runs Alpine Linux, use the `alpine64` version of LC.
+Remember to pick the appropriate LC sensor architecture installer for the *container* that will be running LC (not the host).
+ So if your privileged container runs Alpine Linux, use the `alpine64` version of LC.
 
 A public version of the container described below is available from dockerhub as: `refractionpoint/limacharlie_sensor:latest`.
 
-## Sample Configurations
+#### Sample Configurations
 
 This is a sample `Dockerfile` you may use to run LC within a privileged container as described above:
 
@@ -187,6 +191,10 @@ spec:
       hostNetwork: true
 ```
 
-## SELinux
+#### SELinux
 
-On some hardened versions of Linux, certain file paths are prevented from loading `.so` (Shared Object) files. LimaCharlie requires a location where it can write `.so` files and load them. To enable this on hardened versions of Linux, you can specify a `LC_MOD_LOAD_LOC` environment variable containing a path to a valid directory for loading, like `/lc` for example. This environment variable needs to be set for the sensor executable (`rphcp`) at runtime.
+On some hardened versions of Linux, certain file paths are prevented from loading `.so` (Shared Object) files. LimaCharlie requires a location where
+ it can write `.so` files and load them. To enable this on hardened versions of Linux, you can specify a `LC_MOD_LOAD_LOC` environment variable containing
+ a path to a valid directory for loading, like `/lc` for example. This environment variable needs to be set for the sensor executable (`rphcp`) at runtime.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

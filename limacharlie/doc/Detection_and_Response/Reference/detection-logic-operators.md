@@ -2,7 +2,7 @@
 
 Operators are used in the Detection part of a Detection & Response rule. Operators may also be accompanied by other available parameters, such as transforms, times, and others, referenced later in this page.
 
-> For more information on how to use operators, read [Detection & Response Rules](https://docs.limacharlie.io/docs/detection-and-response).
+> For more information on how to use operators, read Detection & Response Rules.
 
 ## Operators
 
@@ -238,7 +238,7 @@ The value is supplied via the `path` parameter and the lookup is defined in the 
 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
-> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](https://docs.limacharlie.io/docs/add-ons-api-integrations).
+> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see Using API-based lookups.
 
 > You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](../../Platform_Management/Config_Hive/config-hive-lookups.md) and [Lookup Manager](../../Add-Ons/Extensions/LimaCharlie_Extensions/ext-lookup-manager.md).
 
@@ -384,6 +384,16 @@ times:
     tz: America/Los_Angeles
 ```
 
-### Time Zone
+#### Time Zone
 
 The `tz` should match a TZ database name from the [Time Zones Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+
+## Related Articles
+
+* [Detection and Response Examples](../detection-and-response-examples.md)
+* [Detection on Alternate Targets](../detection-on-alternate-targets.md)
+* [Stateful Rules](../stateful-rules.md)
+
+## What's Next
+
+* [Response Actions](./response-actions.md)

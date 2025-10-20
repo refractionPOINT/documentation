@@ -36,8 +36,10 @@ On the Sensors page, Add Sensor, and choose SentinelOne sensor type. Fill out th
 
 ### On-prem deployment
 
-Follow docs [Adapter Deployment](../adapter-deployment.md), download the binaries for your platform, and run the adapter:
+Follow docs Adapter Deployment, download the binaries for your platform, and run the adapter:
 
 ```
 ./lc_adapter sentinel_one client_options.identity.installation_key=714e1fa5-aaaa-aaaa-aaaa-aaaaaaaaaaaa client_options.identity.oid=aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa client_options.platform=sentinel_one client_options.hostname=s1 client_options.sensor_seed_key=s1 'domain=https://datacenter.sentinelone.net' "api_key=$S1_API_KEY"
 ```
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

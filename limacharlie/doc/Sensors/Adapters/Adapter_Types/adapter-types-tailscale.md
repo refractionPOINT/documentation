@@ -45,7 +45,7 @@ The mapping above is based on the expected Webhook event from Tailscale ([exampl
 
 ### 2. Building the Webhook URL
 
-After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls) API call. You'll need the following information to complete the Webhook URL:
+After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://docs.limacharlie.io/apidocs/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
 
 * Organization ID
 * Webhook name (from the config)
@@ -61,11 +61,11 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Within the Tailscale Admin Console, navigate to **Settings** > **Webhooks**. Select **Add endpoint...**
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28168%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(168).png)
 
 Provide the completed Webhook URL from Step 2, above. You can also select the various events you want sent via Webhook. Options include:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28170%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(170).png)
 
 Select **Add endpoint**. Tailscale will provide you a webhook secret unique to this endpoint. You may want to keep this value, however it is not required within LimaCharlie.
 
@@ -74,3 +74,7 @@ Select **Add endpoint**. Tailscale will provide you a webhook secret unique to t
 Within the Tailscale Admin Console, you can test the webhook out and ensure that LimaCharlie is receiving events. Within the Webhook Endpoint options, select **Test endpoint...**.
 
 You should see the webhook event populate within the LimaCharlie Adapter a moment later. Note that the `event_type` will match the `message` field from the Tailscale webhook event.
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

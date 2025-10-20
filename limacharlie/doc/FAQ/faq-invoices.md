@@ -1,42 +1,8 @@
----
-
-FAQ - Invoices
-
-* 05 Oct 2024
-* 2 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # FAQ - Invoices
-
-* Updated on 05 Oct 2024
-* 2 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 This page contains frequently asked questions about invoices you receive for LimaCharlie service.
 
-Pricing Details
+## Pricing Details
 
 Please note that our pricing is transparent and is available via our [Pricing webpage](https://limacharlie.io/pricing).
 
@@ -79,12 +45,12 @@ Your browser does not support PDF. Click [here](https://cdn.document360.io/84ec2
 In addition to the Unified Billing invoice, customers are also provided with a LimaCharlie Global Billing email. This email contains:
 
 1. A table showing all organizations included in the period, along with a link to each individual organization's detailed invoice which shows breakdown of charges. Note that these individual invoices have a zero-dollar balance as the amounts are reflected on the Unified Invoice; this is reflected with a line item called "UNIFIED-BILLING" that shows the invoice total was moved to the unified invoice.
-2. A summary report (attachment) in CSV format that contains a list of the organizations included on the global billing invoice. The fields included in the CSV are as follows:  
-    A - Org Name  
-    B - Org ID  
-    C - Payment  
-    D - Sub-total  
-    E - Total Due  
+2. A summary report (attachment) in CSV format that contains a list of the organizations included on the global billing invoice. The fields included in the CSV are as follows:
+    A - Org Name
+    B - Org ID
+    C - Payment
+    D - Sub-total
+    E - Total Due
     F - Total Paid
 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
@@ -92,51 +58,3 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### What's Next
-
-* [Release Notes](/docs/release-notes)
-
-Table of contents
-
-+ [LimaCharlie Invoices](#limacharlie-invoices)
-
-Tags
-
-* [faq](/docs/en/tags/faq)

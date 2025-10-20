@@ -19,7 +19,7 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | --- | --- |
 | org.get | View organization information |
 | org.del | Delete organization |
-| org.set\_quota | Manage organization quotas |
+| org.set_quota | Manage organization quotas |
 | org.conf.get | View organization configuration |
 | org.conf.set | Modify organization configuration |
 
@@ -137,11 +137,11 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 
 | Permission | Description |
 | --- | --- |
-| ai\_agent.get | Access AI agent configurations |
-| ai\_agent.set | Create and modify AI agents |
-| ai\_agent.del | Delete AI agents |
-| ai\_agent.get.mtd | View AI agent metadata only |
-| ai\_agent.set.mtd | Modify AI agent metadata only |
+| ai_agent.get | Access AI agent configurations |
+| ai_agent.set | Create and modify AI agents |
+| ai_agent.del | Delete AI agents |
+| ai_agent.get.mtd | View AI agent metadata only |
+| ai_agent.set.mtd | Modify AI agent metadata only |
 
 ### Cloud Sensors
 
@@ -266,3 +266,8 @@ Permissions can be applied through:
 3. **Regular Auditing**: Periodically review and audit permission assignments
 4. **Separate Environments**: Use different permission sets for development, staging, and production
 5. **API Key Management**: Rotate API keys regularly and scope them appropriately
+
+## Related articles
+
+* [API Keys](api-keys.md)
+* [User Access](user-access.md)

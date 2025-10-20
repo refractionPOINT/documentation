@@ -1,14 +1,10 @@
 # Detection and Response Examples
 
-The following are sample detection and response rules can help you get started in crafting efficient rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](Managed_Rulesets/Sigma_Rules/sigma-converter.md) for more rules.
+The following are sample detection and response rules can help you get started in crafting efficient rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out Sigma Rules for more rules.
 
 ## Translating Existing Rules
 
 Before listing examples, it's worth mentioning [uncoder.io](https://uncoder.io/) by [SOC Prime](https://socprime.com/) is a great resource for learning by analogy. If you're already familiar with another platform for rules or search queries (Sigma, Splunk, Kibana, etc.) you can use uncoder to translate to LimaCharlie's D&R rules.
-
-Looking for more?
-
-Check out this video that shows you the power of leveraging community resources with LimaCharlie
 
 ## Examples
 
@@ -90,7 +86,7 @@ rules:
     SSH from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
 ```
 
-The `report` uses [Go Templates](../../Events/template-strings-and-transforms.md) to include the offending IP address in the detection name.
+The `report` uses [Go Templates](../Events/template-strings-and-transforms.md) to include the offending IP address in the detection name.
 
 ### RDP from External IP Address
 
@@ -119,7 +115,7 @@ rules:
     RDP from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
 ```
 
-The `report` uses [Go Templates](../../Events/template-strings-and-transforms.md) to include the offending IP address in the detection name.
+The `report` uses [Go Templates](../Events/template-strings-and-transforms.md) to include the offending IP address in the detection name.
 
 ### Suspicious Windows Executable Names
 

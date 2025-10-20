@@ -7,9 +7,9 @@ The following fields are available in this evaluation:
 * `sid`: the Sensor ID
 * `oid`: the Organization ID
 * `iid`: the Installation Key ID
-* `plat`: the Platform name (see [platforms](reference-id-schema.md#platforms))
-* `ext_plat`: the Extended Platform name (see [platforms](reference-id-schema.md#platforms))
-* `arch`: the Architecture name (see [architectures](reference-id-schema.md#architecture))
+* `plat`: the Platform name (see [platforms](./reference-id-schema.md#platform))
+* `ext_plat`: the Extended Platform name (see [platforms](./reference-id-schema.md#platform))
+* `arch`: the Architecture name (see [architectures](./reference-id-schema.md#architecture))
 * `enroll`: the Enrollment as a second epoch timestamp
 * `hostname`: the hostname
 * `mac_addr`: the latest MAC address
@@ -39,11 +39,3 @@ Here are some examples:
 * all 1password sensors, strings starting with a number need to be quoted with a backtick: `` plat == `1password` ``
 * all linux with network isolation or evil tag: `plat == linux or (isolated == true or evil in tags)`
 * all azure related platforms: `plat contains "azure"`
-
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
-
-In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
-
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

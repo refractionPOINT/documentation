@@ -20,9 +20,9 @@ Set up the installation script by following these steps:
 
 3. Enter the custom policy details as follows:
 
-   1. Name: LimaCharlie
+   1. Name:  LimaCharlie
 
-   2. Custom configuration profile name: LimaCharlie
+   2. Custom configuration profile name:  LimaCharlie
 
    3. Deployment channel: Device channel
 
@@ -46,16 +46,20 @@ Set up the installation script by following these steps:
 
 Name: Install LimaCharlie
 
-Shell script: [Download this template shell script](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/sample-install-limacharlie.sh); be sure to edit it to include your Installation Key before uploading it in MS Intune.
+Shell script:  [Download this template shell script](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/sample-install-limacharlie.sh); be sure to edit it to include your Installation Key before uploading it in MS Intune.
 
-Run script as signed-in user: No
+Run script as signed-in user:  No
 
-Hide script notifications on devices: Yes
+Hide script notifications on devices:  Yes
 
-Script frequency: Not configured
+Script frequency:  Not configured
 
-Max number of times to retry if script fails: 3
+Max number of times to retry if script fails:  3
 
-Assignments: Set the `Included groups` to be `All Users` if you wish all users to get the application to be installed, or simply select the correct group to whom you wish to have LimaCharlie be installed for.
+Assignments:  Set the `Included groups` to be `All Users` if you wish all users to get the application to be installed, or simply select the correct group to whom you wish to have LimaCharlie be installed for.
 
 ![Screenshot of MS Intune -> Devices | Scripts | Details](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Script-details.png)
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

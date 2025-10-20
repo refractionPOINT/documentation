@@ -57,3 +57,9 @@ If you wish to use these, you need to enable them first. You can also copy the c
 #### Results
 
 Results will show up in the live feed and timeline of the `ext-secureannex` Sensor.![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(283).png "image(283).png")
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+Many components in LimaCharlie require selecting a set of Sensors based on some characteristics. The selector expression is a text field that describes what matching characteristics the selector is looking for, like `plat==windows`, to select all Windows sensors.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

@@ -8,7 +8,7 @@ This Adapter allows you to connect to the Duo Admin API and fetch logs from it.
 
 Adapter Type: `duo`
 
-* `client_options`: common configuration for adapter as defined [here](../adapter-usage.md).
+* `client_options`: common configuration for adapter as defined in [Adapter Usage](../adapter-usage.md).
 * `integration_key`: an integration key created from within Duo that associated with your "app".
 * `secret_key`: the secret key for your "app".
 * `api_hostname`: the DNS for your "app", a value given to you by Duo.

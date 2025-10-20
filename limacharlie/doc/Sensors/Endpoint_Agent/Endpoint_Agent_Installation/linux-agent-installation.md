@@ -16,7 +16,7 @@ All versions of Debian and CentOS starting around Debian 5 should be supported. 
 
 ### Deb Package
 
-If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](endpoint-agent-installation.md#downloading-the-agents).
+If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](../endpoint-agent-installation.md#downloading-the-agents).
 
 The deb package will install the LimaCharlie sensor using a `systemd` service, or if unavailable a `system V` service.
 
@@ -60,8 +60,8 @@ echo "limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE" | s
 
 Debian packages are offered for the various architectures the Linux sensor supports, like:
 
-* **x64**: <https://downloads.limacharlie.io/sensor/linux/deb64>
-* **arm64**: <https://downloads.limacharlie.io/sensor/linux/debarm64>
+* **x64**: https://downloads.limacharlie.io/sensor/linux/deb64
+* **arm64**: https://downloads.limacharlie.io/sensor/linux/debarm64
 
 ### Custom Installation
 
@@ -109,7 +109,7 @@ Linux agent uninstallation depends on how the sensor was installed. For example,
 The `uninstall` command does not work for Linux systems. However, there is a chained command that can be run from the Sensor Console:
 
 ```
- run --shell-command "service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs"
+run --shell-command "service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs"
 ```
 
 The above command removes LimaCharlie and associated files from the system when run remotely. Note that the above command could also be coupled with a rule for automated sensor uninstallation, if necessary.
@@ -121,3 +121,9 @@ If the sensor was originally installed with the .deb file, this option is the cl
 ```
 apt remove limacharlie
 ```
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

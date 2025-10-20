@@ -1,6 +1,6 @@
 # Plaso
 
-Plaso Extension Pricing
+## Plaso Extension Pricing
 
 While it is free to enable the Plaso extension, pricing is applied to both the original downloaded artifact and the processed (Plaso) artifacts -- $0.02/GB for the original downloaded artifact, and $1.0/GB for the generation of the processed artifacts.
 
@@ -55,7 +55,7 @@ LimaCharlie can automatically kick off evidence processing with Plaso based off 
 
 ### Velociraptor Triage Acquisition Processing
 
-If you use the LimaCharlie [Velociraptor](../ext-velociraptor.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
+If you use the LimaCharlie [Velociraptor](ext-velociraptor.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
 
 1. Configure a D&R rule to watch for Velociraptor collection events upon ingestion, and then trigger the Plaso extension:
 
@@ -93,7 +93,7 @@ If you use the LimaCharlie [Velociraptor](../ext-velociraptor.md) extension, a g
 
 ### MFT Processing
 
-If you use the LimaCharlie [Dumper](../../LimaCharlie_Extensions/ext-dumper.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a MFT CSV artifact.
+If you use the LimaCharlie [Dumper](../LimaCharlie_Extensions/ext-dumper.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a MFT CSV artifact.
 
 1. Configure a D&R rule to watch for MFT collection events upon ingestion, and then trigger the Plaso extension:
 
@@ -186,3 +186,7 @@ Running the extension generates the following useful outputs:
    The downloadable `.plaso` file contains the raw output of `log2timeline.py` and can be [imported into Timesketch](https://timesketch.org/guides/user/upload-data/) as a timeline.
 * `csv` artifact
    The downloadable `.csv` file can be easily viewed in any CSV viewer, but a highly recommended tool for this is [Timeline Explorer](https://ericzimmerman.github.io/) from Eric Zimmerman.
+
+LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

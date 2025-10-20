@@ -121,12 +121,3 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-## Related Articles
-
-* [Reference: Endpoint Agent Commands](../../../Sensors/Endpoint_Agent/Endpoint_Agent_Commands/reference-endpoint-agent-commands.md)
-* [Detection and Response Examples](../../../Detection_and_Response/detection-and-response-examples.md)
-
-## What's Next
-
-* [Lookup Manager](./ext-lookup-manager.md)

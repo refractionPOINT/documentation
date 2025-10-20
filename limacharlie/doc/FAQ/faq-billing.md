@@ -1,42 +1,8 @@
----
-
-FAQ - Billing
-
-* 08 Oct 2025
-* 4 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # FAQ - Billing
-
-* Updated on 08 Oct 2025
-* 4 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 This page contains frequently asked questions about billing within LimaCharlie.
 
-Pricing Details
+## Pricing Details
 
 Please note that our pricing is transparent, and is available via our [Pricing webpage](https://limacharlie.io/pricing).
 
@@ -53,7 +19,7 @@ To upgrade to paid tier, simply navigate to the Setup section of the Organizatio
 
 ## What is the Cost of Deploying Payloads via LimaCharlie?
 
-Payload pricing is provided via our [pricing page](https://limacharlie.io/pricing). For example, assume deploying Payloads via LimaCharlie costs $0.19 per 1 GB of data sent. A 1GB payload sent to 10 endpoints will cost $1.9 (10GBs x  $0.19).
+Payload pricing is provided via our [pricing page](https://limacharlie.io/pricing). For example, assume deploying Payloads via LimaCharlie costs $0.19 per 1 GB of data sent. A 1GB payload sent to 10 endpoints will cost $1.9 (10GBs x  $0.19).
 
 This only impacts organizations that leverage Payloads functionality, as well as Atomic Red Team and Dumper services (they are running as Payloads in LC).
 
@@ -63,11 +29,11 @@ To understand the impact on your organization, check the **Metered Usage** secti
 
 ## What is Usage-Based Billing?
 
-Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. You can find more information about our billing options [here](/v2/docs/billing).
+Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. You can find more information about our billing options [here](../Platform_Management/Billing/billing-options.md).
 
 We acknowledge that some might not need the entirety of available components all the time, and might benefit from having access to an Endpoint Agent on an ad-hoc basis. This approach enables the following:
 
-1. Incident responders will now be able to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an organization's entire fleet and lay dormant in [sleeper mode](/v2/docs/sleeper). With agents deployed ahead of an incident, responders can offer competitive SLA’s.
+1. Incident responders will now be able to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an organization's entire fleet and lay dormant in [sleeper mode](../Sensors/Endpoint_Agent/sleeper.md). With agents deployed ahead of an incident, responders can offer competitive SLA's.
 2. Product developers can take advantage of usage-based billing to leverage narrow bands of functionality at a low cost. This means getting the functionality they need without building it from the ground up or paying for a full EDR deployment.
 
 ## For Lc Adapters Billed on Usage, What Does "Block of Data" Mean & How Will It Impact the Price I Pay?
@@ -80,8 +46,8 @@ For example, assume $0.15 per block of data of 1 GB (on the organizational level
 
 If the organization you are trying to assess has [1-year telemetry retention](https://app.limacharlie.io/add-ons/detail/insight) enabled, you could use the stats API to see the number of events retained:
 
-`https://api.limacharlie.io/v1/usage/OID`  
- or  
+`https://api.limacharlie.io/v1/usage/OID`
+ or
 `https://api.limacharlie.io/static/swagger/#/Organizations/getOrgUsageStats`
 
 You will want to check the `sensor_events` and `sensor_retained` values.
@@ -92,7 +58,7 @@ There are two categories of Sensors: sensors billed on Quota set by the user (vS
 
 ### vSensors
 
-LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of [Endpoint Agents](/v2/docs/endpoint-agent). vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
+LimaCharlie has the concept of a vSensor. A vSensor is a virtual sensor used for the purpose of setting up quota and billing of Endpoint Agents. vSensor pricing matches that listed on our pricing page, and includes a year of full telemetry storage.
 
 Our transparent pricing and quota-based approach allows you to easily mix and match deployments, while staying within a certain price point.
 
@@ -122,66 +88,3 @@ Endpoint Detection & Response
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [Sleeper Deployment](/docs/sleeper)
-* [Billing](/docs/billing)
-* [Billing Options](/docs/billing-options)
-
----
-
-###### What's Next
-
-* [FAQ - Invoices](/docs/faq-invoices)
-
-Table of contents
-
-+ [How Can I Change My Quota/Upgrade to the Paid Tier?](#how-can-i-change-my-quota-upgrade-to-the-paid-tier-)
-+ [What is the Cost of Deploying Payloads via LimaCharlie?](#what-is-the-cost-of-deploying-payloads-via-limacharlie-)
-+ [What is Usage-Based Billing?](#what-is-usage-based-billing-)
-+ [For Lc Adapters Billed on Usage, What Does "Block of Data" Mean &amp; How Will It Impact the Price I Pay?](#for-lc-adapters-billed-on-usage-what-does-block-of-data-mean-amp-how-will-it-impact-the-price-i-pay-)
-+ [How Do I Determine How Much I Need to Pay for an Org If It Was in Usage-Based Billing Mode?](#how-do-i-determine-how-much-i-need-to-pay-for-an-org-if-it-was-in-usage-based-billing-mode-)
-+ [How Is the Price of Sensors &amp; Add-Ons Calculated in LimaCharlie?](#how-is-the-price-of-sensors-amp-add-ons-calculated-in-limacharlie-)
-+ [When Will My Credit Card Be Charged?](#when-will-my-credit-card-be-charged-)
-+ [How Do I Change My Billing Credit Card?](#how-do-i-change-my-billing-credit-card-)
-
-Tags
-
-* [faq](/docs/en/tags/faq)

@@ -1,38 +1,4 @@
----
-
-Reference: Permissions
-
-* 28 Aug 2025
-* 2 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Reference: Permissions
-
-* Updated on 28 Aug 2025
-* 2 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 ## Overview
 
@@ -53,7 +19,7 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | --- | --- |
 | org.get | View organization information |
 | org.del | Delete organization |
-| org.set\_quota | Manage organization quotas |
+| org.set_quota | Manage organization quotas |
 | org.conf.get | View organization configuration |
 | org.conf.set | Modify organization configuration |
 
@@ -171,11 +137,11 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 
 | Permission | Description |
 | --- | --- |
-| ai\_agent.get | Access AI agent configurations |
-| ai\_agent.set | Create and modify AI agents |
-| ai\_agent.del | Delete AI agents |
-| ai\_agent.get.mtd | View AI agent metadata only |
-| ai\_agent.set.mtd | Modify AI agent metadata only |
+| ai_agent.get | Access AI agent configurations |
+| ai_agent.set | Create and modify AI agents |
+| ai_agent.del | Delete AI agents |
+| ai_agent.get.mtd | View AI agent metadata only |
+| ai_agent.set.mtd | Modify AI agent metadata only |
 
 ### Cloud Sensors
 
@@ -300,68 +266,3 @@ Permissions can be applied through:
 3. **Regular Auditing**: Periodically review and audit permission assignments
 4. **Separate Environments**: Use different permission sets for development, staging, and production
 5. **API Key Management**: Rotate API keys regularly and scope them appropriately
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [Access and Permissions](/docs/access-and-permissions)
-* [API Keys](/docs/api-keys)
-* [User Access](/docs/user-access)
-
----
-
-###### What's Next
-
-* [Billing](/docs/billing)
-
-Table of contents
-
-+ [Overview](#overview)
-+ [Permission Structure](#permission-structure)
-+ [Core Permissions](#core-permissions)
-+ [Configuration Management (Hive)](#configuration-management-hive-)
-+ [Extensions &amp; Services](#extensions-amp-services)
-+ [Data Access &amp; Analytics](#data-access-amp-analytics)
-+ [Operations Management](#operations-management)
-+ [Permission Application](#permission-application)
-+ [Best Practices](#best-practices)
-
-Tags
-
-* [platform](/docs/en/tags/platform)
-* [reference](/docs/en/tags/reference)

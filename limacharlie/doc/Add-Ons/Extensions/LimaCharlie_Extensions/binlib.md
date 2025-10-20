@@ -2,7 +2,7 @@
 
 Binary Library, or "BinLib", is a collection of executable binaries (such as EXE or ELF files) that have been observed within your environment. If enabled, this Extension helps you build your own private collection of observed executables for subsequent analysis and searching.
 
-When LimaCharlie observes a binary and path for the first time a `CODE_IDENTITY` event is generated. The metadata from this event is stored within `binlib`, and is available for searching, tagging, and downloading. Additionally, you can run [YARA](../../Third-Party_Extensions/ext-yara.md) scans against observed binaries.
+When LimaCharlie observes a binary and path for the first time a `CODE_IDENTITY` event is generated. The metadata from this event is stored within `binlib`, and is available for searching, tagging, and downloading. Additionally, you can run [YARA](../Third-Party_Extensions/ext-yara.md) scans against observed binaries.
 
 ## Enabling BinLib
 
@@ -13,7 +13,7 @@ BinLib can be a powerful additional to your detection and response capabilities.
 * Look for historical evidence of malicious binaries
 * Tag previously-observed files for data enrichment (i.e. [MITRE ATT&CK Techniques](https://attack.mitre.org/matrices/enterprise/))
 * Compare observed hashes to known good or known bad lists
-* [YARA scan](../../Third-Party_Extensions/ext-yara.md) and auto-tag for integration in detection & response rules
+* [YARA scan](../Third-Party_Extensions/ext-yara.md) and auto-tag for integration in detection & response rules
 
 ## Usage
 
@@ -27,7 +27,7 @@ The BinLib page in the web app offers an easy way to get started with some of th
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/binlib-2.png)
 
-### check_hash
+### check\_hash
 
 *Accepted Values: MD5, SHA1, SHA256*
 
@@ -46,7 +46,7 @@ Sample Output:
 }
 ```
 
-### get_hash_data
+### get\_hash\_data
 
 *Accepted Values: MD5, SHA1, SHA256*
 
@@ -70,7 +70,7 @@ Sample Output:
 }
 ```
 
-### get_hash_metadata
+### get\_hash\_metadata
 
 *Accepted Values: MD5, SHA1, SHA256*
 
@@ -107,15 +107,15 @@ The `search` operation searches the library for binary data points, including or
 
 Searchable fields include:
 
-* imp_hash
-* res_company_name
-* res_file_description
-* res_product_name
+* imp\_hash
+* res\_company\_name
+* res\_file\_description
+* res\_product\_name
 * sha256
-* sig_authentihash
-* sig_hash
-* sig_issuer
-* sig_subject
+* sig\_authentihash
+* sig\_hash
+* sig\_issuer
+* sig\_subject
 * size
 * type
 

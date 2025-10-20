@@ -50,7 +50,10 @@ LimaCharlie Extensions allow users to expand and customize their security enviro
 
 ## Related Articles
 
-* [BinLib](../LimaCharlie_Extensions/binlib.md)
-* [Artifacts](../LimaCharlie_Extensions/ext-artifact.md)
-* [Using Extensions](../using-extensions.md)
-* [Secure Annex](./ext-secureannex.md)
+- [BinLib](../LimaCharlie_Extensions/binlib.md)
+- [Artifacts](../LimaCharlie_Extensions/ext-artifact.md)
+- [Using Extensions](../using-extensions.md)
+
+## What's Next
+
+- [Secure Annex](./ext-secureannex.md)

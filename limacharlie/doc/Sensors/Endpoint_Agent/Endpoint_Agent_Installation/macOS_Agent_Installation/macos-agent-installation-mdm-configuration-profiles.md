@@ -115,3 +115,5 @@ anchor apple generic and identifier "com.refractionpoint.rphcp.client" and (cert
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-4-ContentFilter.png)
 
 7. Deploy the configuration profile to your devices.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

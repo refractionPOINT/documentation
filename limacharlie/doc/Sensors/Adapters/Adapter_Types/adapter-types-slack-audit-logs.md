@@ -29,3 +29,7 @@ slack:
     sensor_seed_key: super-special-seed-key
   token: <SLACK OAUTH TOKEN>
 ```
+
+Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.

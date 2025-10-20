@@ -1,6 +1,6 @@
 # Build CTI Capabilities
 
-Ready to ditch the data silos and blind spots? LimaCharlie empowers you with a centralized intelligence hub, seamless integrations, BinLib, your own private VirusTotal-like solution, and the unparalleled precision of YARA scanning. Gain a comprehensive understanding of the threat landscape, proactively hunt for hidden attackers, and build a resilient security posture that leaves no stone unturned in the fight against malware**.**
+Ready to ditch the data silos and blind spots? LimaCharlie empowers you with a centralized intelligence hub, seamless integrations, BinLib, your own private VirusTotal-like solution, and the unparalleled precision of YARA scanning. Gain a comprehensive understanding of the threat landscape, proactively hunt for hidden attackers, and build a resilient security posture that leaves no stone unturned in the fight against malware.
 
 #### Cyber threat intelligence (CTI) gathering problems
 

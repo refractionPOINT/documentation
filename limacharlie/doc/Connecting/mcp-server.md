@@ -1,3 +1,13 @@
+# MCP Server
+
+## Overview
+
+The Model Context Protocol (MCP) is a standardized protocol used by AI Agents to access and leverage external tools and resources.
+
+Note that MCP itself is still experimental and cutting edge.
+
+LimaCharlie offers an MCP server at https://mcp.limacharlie.io which enables AI agents to:
+
 * **Query and analyze** historical telemetry from any sensor
 * **Actively investigate** endpoints using the LimaCharlie Agent (EDR) in real-time
 * **Take remediation actions** like isolating endpoints, killing processes, and managing tags
@@ -5,23 +15,23 @@
 * **Manage platform configuration** including rules, outputs, adapters, secrets, and more
 * **Access threat intelligence** through IOC searches and MITRE ATT&CK mappings
 
- This opens up the entire LimaCharlie platform to AI agents, regardless of their implementation or location.
+This opens up the entire LimaCharlie platform to AI agents, regardless of their implementation or location.
 
 ## Transport Modes
 
- The server supports two transport modes based on the PUBLIC\_MODE environment variable:
+The server supports two transport modes based on the PUBLIC_MODE environment variable:
 
-### STDIO Mode (PUBLIC\_MODE=false, default)
+### STDIO Mode (PUBLIC_MODE=false, default)
 
- Used for local MCP clients like Claude Desktop or Claude Code:
+Used for local MCP clients like Claude Desktop or Claude Code:
 
 * Communication through stdin/stdout using JSON-RPC
 * Uses LimaCharlie SDK's default authentication
 * Reads credentials from environment variables or config files
 
-### HTTP Mode (PUBLIC\_MODE=true)
+### HTTP Mode (PUBLIC_MODE=true)
 
- Used when deploying as a public service:
+Used when deploying as a public service:
 
 * Server runs as a stateless HTTP API with JSON responses
 * Authentication via HTTP headers
@@ -32,21 +42,21 @@
 
 ### For HTTP Mode
 
- The server requires authentication headers:
+The server requires authentication headers:
 
- 1. **Authorization header** in one of these formats:
+1. **Authorization header** in one of these formats:
 
 * `Authorization: Bearer <jwt>` (OID must be in x-lc-oid header)
 * `Authorization: Bearer <jwt>:<oid>` (combined format)
 * `Authorization: Bearer <api_key>:<oid>` (API key with OID)
 
- 2. **x-lc-oid header** (if not included in Authorization):
+2. **x-lc-oid header** (if not included in Authorization):
 
 * `x-lc-oid: <organization_id>`
 
 ### For STDIO Mode
 
- Set environment variables:
+Set environment variables:
 
 * `LC_OID`: Your LimaCharlie Organization ID
 * `LC_API_KEY`: Your LimaCharlie API key
@@ -54,7 +64,7 @@
 
 ## Capabilities
 
- The LimaCharlie MCP server exposes over 100 tools organized by category:
+The LimaCharlie MCP server exposes over 100 tools organized by category:
 
 ### Investigation & Telemetry
 
@@ -71,7 +81,7 @@
 * **Sensor management**: `add_tag`, `remove_tag`, `delete_sensor`
 * **Reliable tasking**: `reliable_tasking`, `list_reliable_tasks`
 
-### AI-Powered Generation (requires GOOGLE\_API\_KEY)
+### AI-Powered Generation (requires GOOGLE_API_KEY)
 
 * **Query generation**: `generate_lcql_query` - Create LCQL queries from natural language
 * **Rule creation**: `generate_dr_rule_detection`, `generate_dr_rule_respond` - Generate D&R rules
@@ -114,7 +124,7 @@
 
 ### Large Result Handling
 
- The server automatically handles large responses by uploading them to Google Cloud Storage (if configured):
+The server automatically handles large responses by uploading them to Google Cloud Storage (if configured):
 
 * Set `GCS_BUCKET_NAME` for the storage bucket
 * Configure `GCS_TOKEN_THRESHOLD` (default: 1000 tokens)
@@ -122,7 +132,7 @@
 
 ### LCQL Query Execution
 
- The `run_lcql_query` tool supports:
+The `run_lcql_query` tool supports:
 
 * Streaming results for real-time monitoring
 * Flexible time windows and limits
@@ -133,19 +143,19 @@
 ### Claude Desktop/Code Configuration (STDIO)
 
 ```
-  {
-    "mcpServers": {
-      "limacharlie": {
-        "command": "python3",
-        "args": ["/path/to/server.py"],
-        "env": {
-          "LC_OID": "your-org-id",
-          "LC_API_KEY": "your-api-key",
-          "GOOGLE_API_KEY": "your-google-api-key"
-        }
-      }
-    }
-  }
+  {
+    "mcpServers": {
+      "limacharlie": {
+        "command": "python3",
+        "args": ["/path/to/server.py"],
+        "env": {
+          "LC_OID": "your-org-id",
+          "LC_API_KEY": "your-api-key",
+          "GOOGLE_API_KEY": "your-google-api-key"
+        }
+      }
+    }
+  }
 ```
 
 ### HTTP Service Usage
@@ -172,48 +182,4 @@ claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp \
 * The server is stateless when running in HTTP mode
 * HTTP mode uses JSON responses (not Server-Sent Events)
 * No OAuth flow is used - authentication is via bearer tokens only
-* If you encounter missing capabilities, contact <https://community.limacharlie.com> for quick additions
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
-Table of contents
-
-+ [Transport Modes](#-transport-modes)
-+ [Requirements &amp; Authentication](#-requirements-amp-authentication)
-+ [Capabilities](#-capabilities)
-+ [Advanced Features](#-advanced-features)
-+ [Examples](#-examples)
-+ [Environment Variables](#-environment-variables)
-+ [Notes](#-notes)
+* If you encounter missing capabilities, contact https://community.limacharlie.com for quick additions

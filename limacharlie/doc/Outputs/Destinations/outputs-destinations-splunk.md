@@ -6,11 +6,11 @@ Want to reduce Splunk spend?
 
 [Watch the webinar recording](https://www.youtube.com/watch?v=lqPqkDkd7I8) to learn about using LimaCharlie to reduce spending on Splunk and other high-cost security data solutions.
 
-## Splunk Setup
+### Splunk Setup
 
 Follow Splunk's guide to [set up an HEC](https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector), and as you do, set the source type to `_json`.
 
-## LimaCharlie Setup
+### LimaCharlie Setup
 
 From the **Outputs** view, click `Add Output`.
 
@@ -53,3 +53,7 @@ You can choose to only send a specific list of event types by configuring an all
 **Do not include routing** flag allows users to forward only the original logs to outputs, excluding the routing label. This can be helpful for users wanting to use LimaCharlie for storage optimization since the routing label can add significant overhead.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-5.png)
+
+## What's Next
+
+* [Syslog](outputs-destinations-syslog.md)

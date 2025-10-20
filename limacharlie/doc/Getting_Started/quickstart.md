@@ -4,10 +4,10 @@ LimaCharlie is infrastructure to connect sources of security data, automate acti
 
 That said, the majority of LimaCharlie users require basic endpoint detection and response (EDR) capabilities. This guide will cover:
 
-1. Creating a new [Organization](#creating-an-organization)
-2. Deploying a [Sensor](#deploying-a-sensor) to the Organization
-3. Adding [Sigma rules](#adding-sigma-rules) to detect suspicious activity
-4. Forwarding detections to an external destination as an [Output](#output)
+1. Creating a new [**Organization**](#creating-an-organization)
+2. Deploying a [**Sensor**](#deploying-a-sensor) to the Organization
+3. Adding [**Sigma rules**](#adding-sigma-rules) to detect suspicious activity
+4. Forwarding detections to an external destination as an [**Output**](#output)
 
 All of this can be done within our free tier, which offers full platform functionality for up to two (2) sensors. If you haven't already signed up for a free account, please do so at [app.limacharlie.io](https://app.limacharlie.io).
 
@@ -74,6 +74,7 @@ From the Outputs page in your organization, click `Add Output` to open the setup
 * Choose the Detections stream
 * Choose the Amazon S3 destination
 * Configure the Output and ensure it connects securely to the correct bucket:
+
   + Output Name
   + Bucket Name
   + Key ID
@@ -82,3 +83,11 @@ From the Outputs page in your organization, click `Add Output` to open the setup
 * Optionally, you can view samples of the detection stream's data (assuming recent detections have occurred)
 
 With this output in place you can extend the life of your detections beyond the 1 year LimaCharlie retains them, and stage them for any tool that can pull from S3.
+
+Endpoint Detection & Response
+
+In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+
+Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+
+Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
