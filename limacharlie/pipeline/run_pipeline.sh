@@ -13,6 +13,7 @@ set -o pipefail
 # Color codes for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
 # Get the directory where this script is located
@@ -39,8 +40,11 @@ echo ""
 
 # Step 1: Fetch documentation
 echo -e "${BLUE}Step 1/5: Fetching documentation from docs.limacharlie.io...${NC}"
-python3 limacharlie/pipeline/fetch_docs.py
-echo -e "${GREEN}✓ Documentation fetched successfully${NC}"
+if python3 limacharlie/pipeline/fetch_docs.py; then
+    echo -e "${GREEN}✓ Documentation fetched successfully${NC}"
+else
+    echo -e "${YELLOW}⚠ Warning: Fetch failed, but continuing with existing files...${NC}"
+fi
 echo ""
 
 # Step 2: Clean raw markdown
