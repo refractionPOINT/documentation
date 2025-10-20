@@ -7,13 +7,13 @@ This script:
 1. Extracts API credentials from the documentation page source
 2. Fetches all public articles via the Algolia API
 3. Downloads each article's HTML content
-4. Converts to markdown using html2text
+4. Converts to markdown using markdownify
 5. Saves in a directory structure based on breadcrumbs
 
 Dependencies:
 - requests
 - beautifulsoup4
-- html2text
+- markdownify
 """
 
 import os
@@ -22,7 +22,7 @@ import sys
 import json
 import time
 import requests
-import html2text
+from markdownify import markdownify
 from pathlib import Path
 from bs4 import BeautifulSoup
 
@@ -46,13 +46,7 @@ class LimaCharlieFetcher:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         })
-        # Configure html2text converter
-        self.md_converter = html2text.HTML2Text()
-        self.md_converter.ignore_links = False
-        self.md_converter.ignore_images = False
-        self.md_converter.ignore_emphasis = False
-        self.md_converter.body_width = 0  # Don't wrap lines
-        self.md_converter.unicode_snob = True  # Use unicode characters
+        # markdownify doesn't need configuration - it's just a function
 
     def extract_api_credentials(self):
         """Extract Algolia API credentials from the docs page source"""
@@ -200,8 +194,9 @@ class LimaCharlieFetcher:
                 print(f"    Error: Could not find article content")
                 return None
 
-            # Use html2text to convert
-            markdown = self.md_converter.handle(str(content_block))
+            # Use markdownify to convert HTML to Markdown
+            # heading_style='ATX' uses # style headers instead of underlines
+            markdown = markdownify(str(content_block), heading_style='ATX')
 
             # Add metadata header
             header = f"""---
