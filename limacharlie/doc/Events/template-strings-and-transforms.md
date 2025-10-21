@@ -355,7 +355,7 @@ The transform:
 ```
 {
   "new_ts": "ts|@parsetime:{\"from\":\"2006-01-02 15:04:05\", \"to\":\"Mon, 02 Jan 2006 15:04:05 MST\"}",
-  "user": "origin|@extract:{\"re\":\".*@(?P<domain>.+)\"}"
+  "user": "origin|@extract:{\"re\":\".*@(?P<domain>.+)\"}",
   "ctx": "event.EVENT.exec_context|@parsejson"
 }
 ```
