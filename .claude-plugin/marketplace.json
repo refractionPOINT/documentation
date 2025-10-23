@@ -1,0 +1,209 @@
+{
+  "name": "limacharlie-skills",
+  "displayName": "LimaCharlie Security Operations Skills",
+  "version": "1.0.0",
+  "description": "Comprehensive collection of specialized Skills for working with LimaCharlie's SecOps Cloud Platform, including endpoint detection and response, cloud security monitoring, threat hunting, and incident response.",
+  "author": "LimaCharlie",
+  "repository": "https://github.com/refractionPOINT/documentation",
+  "categories": [
+    "security",
+    "operations",
+    "detection",
+    "incident-response",
+    "forensics"
+  ],
+  "skills": [
+    {
+      "id": "dr-rule-builder",
+      "name": "D&R Rule Builder",
+      "path": "skills/dr-rule-builder",
+      "category": "Core Platform Operations",
+      "description": "Create, test, and validate Detection & Response (D&R) rules with proper YAML syntax, operators, unit tests, and stateful detection patterns",
+      "tags": ["detection", "rules", "automation", "d&r", "yaml"]
+    },
+    {
+      "id": "sensor-manager",
+      "name": "Sensor Manager",
+      "path": "skills/sensor-manager",
+      "category": "Core Platform Operations",
+      "description": "Deploy, configure, and manage LimaCharlie endpoint sensors across Windows, macOS, Linux, Chrome, and Edge platforms",
+      "tags": ["sensors", "deployment", "endpoints", "agents", "edr"]
+    },
+    {
+      "id": "adapter-configurator",
+      "name": "Adapter Configurator",
+      "path": "skills/adapter-configurator",
+      "category": "Core Platform Operations",
+      "description": "Set up and configure adapters to ingest telemetry from 40+ data sources including cloud platforms, SIEMs, and log sources",
+      "tags": ["adapters", "ingestion", "cloud", "logs", "data-sources"]
+    },
+    {
+      "id": "lcql-query-builder",
+      "name": "LCQL Query Builder",
+      "path": "skills/lcql-query-builder",
+      "category": "Data Operations",
+      "description": "Write and optimize LimaCharlie Query Language (LCQL) queries for searching historical event data and conducting investigations",
+      "tags": ["lcql", "queries", "search", "investigation", "analytics"]
+    },
+    {
+      "id": "output-configurator",
+      "name": "Output Configurator",
+      "path": "skills/output-configurator",
+      "category": "Data Operations",
+      "description": "Configure outputs to route telemetry to SIEMs, data lakes, and analytics platforms",
+      "tags": ["outputs", "siem", "data-lakes", "integration", "forwarding"]
+    },
+    {
+      "id": "artifact-collector",
+      "name": "Artifact Collector",
+      "path": "skills/artifact-collector",
+      "category": "Data Operations",
+      "description": "Collect and manage forensic artifacts including files, memory dumps, logs, and PCAP data",
+      "tags": ["artifacts", "forensics", "collection", "evidence", "memory"]
+    },
+    {
+      "id": "incident-responder",
+      "name": "Incident Responder",
+      "path": "skills/incident-responder",
+      "category": "Security Operations",
+      "description": "Execute incident response workflows using LimaCharlie's containment, investigation, and remediation capabilities",
+      "tags": ["incident-response", "ir", "containment", "remediation", "investigation"]
+    },
+    {
+      "id": "threat-hunter",
+      "name": "Threat Hunter",
+      "path": "skills/threat-hunter",
+      "category": "Security Operations",
+      "description": "Conduct proactive threat hunting using LCQL queries, event analysis, and behavioral detection patterns",
+      "tags": ["threat-hunting", "hunting", "mitre-attack", "behavioral-detection", "proactive"]
+    },
+    {
+      "id": "yara-manager",
+      "name": "YARA Manager",
+      "path": "skills/yara-manager",
+      "category": "Security Operations",
+      "description": "Create, test, and deploy YARA rules for malware detection across endpoints",
+      "tags": ["yara", "malware", "signatures", "scanning", "detection"]
+    },
+    {
+      "id": "extension-developer",
+      "name": "Extension Developer",
+      "path": "skills/extension-developer",
+      "category": "Development & Integration",
+      "description": "Build custom LimaCharlie extensions to integrate external tools and APIs",
+      "tags": ["extensions", "development", "api", "integration", "custom"]
+    },
+    {
+      "id": "api-integrator",
+      "name": "API Integrator",
+      "path": "skills/api-integrator",
+      "category": "Development & Integration",
+      "description": "Use LimaCharlie REST API and SDKs (Python/Go) for automation and integration",
+      "tags": ["api", "sdk", "python", "golang", "automation"]
+    },
+    {
+      "id": "playbook-automator",
+      "name": "Playbook Automator",
+      "path": "skills/playbook-automator",
+      "category": "Development & Integration",
+      "description": "Design and implement automated response playbooks and workflows",
+      "tags": ["playbooks", "automation", "workflows", "orchestration", "soar"]
+    },
+    {
+      "id": "stateful-rule-designer",
+      "name": "Stateful Rule Designer",
+      "path": "skills/stateful-rule-designer",
+      "category": "Advanced Features",
+      "description": "Create complex stateful D&R rules that correlate multiple events over time",
+      "tags": ["stateful", "correlation", "advanced", "event-tracking", "temporal"]
+    },
+    {
+      "id": "cloud-security-monitor",
+      "name": "Cloud Security Monitor",
+      "path": "skills/cloud-security-monitor",
+      "category": "Advanced Features",
+      "description": "Set up cloud security monitoring for AWS, Azure, and GCP using adapters and cloud-specific rules",
+      "tags": ["cloud", "aws", "azure", "gcp", "cloudtrail", "guarduty"]
+    },
+    {
+      "id": "threat-intel-integrator",
+      "name": "Threat Intelligence Integrator",
+      "path": "skills/threat-intel-integrator",
+      "category": "Advanced Features",
+      "description": "Integrate and leverage threat intelligence from VirusTotal, GreyNoise, and other feeds in D&R rules",
+      "tags": ["threat-intelligence", "ti", "virustotal", "greynoise", "enrichment"]
+    },
+    {
+      "id": "config-hive-manager",
+      "name": "Config Hive Manager",
+      "path": "skills/config-hive-manager",
+      "category": "Platform Management",
+      "description": "Manage configuration storage including secrets, rules, and lookups in the Config Hive",
+      "tags": ["config-hive", "secrets", "configuration", "management", "storage"]
+    },
+    {
+      "id": "sigma-rule-deployer",
+      "name": "Sigma Rule Deployer",
+      "path": "skills/sigma-rule-deployer",
+      "category": "Platform Management",
+      "description": "Deploy and manage Sigma rules and other managed rulesets (Soteria, SOC Prime, Community)",
+      "tags": ["sigma", "soteria", "soc-prime", "managed-rules", "community"]
+    },
+    {
+      "id": "infrastructure-as-code",
+      "name": "Infrastructure as Code",
+      "path": "skills/infrastructure-as-code",
+      "category": "Platform Management",
+      "description": "Manage LimaCharlie organization configuration as code for repeatable deployments",
+      "tags": ["iac", "infrastructure-as-code", "git-sync", "configuration", "devops"]
+    },
+    {
+      "id": "forensic-analyst",
+      "name": "Forensic Analyst",
+      "path": "skills/forensic-analyst",
+      "category": "Specialized Use Cases",
+      "description": "Conduct digital forensics analysis using memory dumps, process inspection, and timeline reconstruction",
+      "tags": ["forensics", "dfir", "memory-analysis", "timeline", "investigation"]
+    },
+    {
+      "id": "performance-optimizer",
+      "name": "Performance Optimizer",
+      "path": "skills/performance-optimizer",
+      "category": "Specialized Use Cases",
+      "description": "Optimize LimaCharlie performance, reduce costs, and manage resource usage",
+      "tags": ["performance", "optimization", "cost", "billing", "efficiency"]
+    }
+  ],
+  "installation": {
+    "instructions": "These skills are designed for use with Claude Code and Claude.ai. Each skill provides specialized guidance for working with different aspects of the LimaCharlie SecOps Cloud Platform.",
+    "requirements": [
+      "LimaCharlie account (free tier available)",
+      "Familiarity with security operations concepts",
+      "Access to LimaCharlie documentation for reference"
+    ]
+  },
+  "usage": {
+    "overview": "Skills will automatically activate when Claude detects you're working on related tasks. You can also manually invoke skills by mentioning the specific component or task.",
+    "examples": [
+      "\"Help me create a D&R rule to detect PowerShell execution\" - activates dr-rule-builder",
+      "\"How do I deploy sensors on Windows endpoints?\" - activates sensor-manager",
+      "\"I need to investigate this suspicious process\" - activates threat-hunter or incident-responder",
+      "\"Set up AWS CloudTrail monitoring\" - activates cloud-security-monitor and adapter-configurator"
+    ]
+  },
+  "categories_description": {
+    "Core Platform Operations": "Essential skills for deploying and managing sensors, adapters, and detection rules",
+    "Data Operations": "Skills for querying, collecting, and routing telemetry data",
+    "Security Operations": "Skills for threat hunting, incident response, and malware detection",
+    "Development & Integration": "Skills for building extensions, using APIs, and creating automation",
+    "Advanced Features": "Skills for complex stateful detection, cloud security, and threat intelligence",
+    "Platform Management": "Skills for configuration management, rulesets, and infrastructure as code",
+    "Specialized Use Cases": "Skills for digital forensics and performance optimization"
+  },
+  "support": {
+    "documentation": "https://docs.limacharlie.io",
+    "community": "https://slack.limacharlie.io",
+    "email": "support@limacharlie.io",
+    "github": "https://github.com/refractionPOINT"
+  }
+}
