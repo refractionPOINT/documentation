@@ -1,38 +1,4 @@
----
-
-FAQ - General
-
-* 07 Oct 2025
-* 7 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # FAQ - General
-
-* Updated on 07 Oct 2025
-* 7 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 ## Is my data secure with LimaCharlie?
 
@@ -126,7 +92,7 @@ While sending detections and events data from LimaCharlie into the SIEM is the m
 
 LimaCharlie stores management/audit logs for one year.
 
-We suggest you set up an [Output](/v2/docs/outputs) to send logs to an external destination if you are looking to have your logs stored for over one year.
+We suggest you set up an [Output](../outputs) to send logs to an external destination if you are looking to have your logs stored for over one year.
 
 ## Does LimaCharlie offer reporting capabilities?
 
@@ -139,62 +105,3 @@ In LimaCharlie web app, you can track information such as detections and events 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### What's Next
-
-* [FAQ - Sensor Installation](/docs/faq-sensor-installation)
-
-Table of contents
-
-+ [Is my data secure with LimaCharlie?](#is-my-data-secure-with-limacharlie-)
-+ [Where will my data be processed and stored?](#where-will-my-data-be-processed-and-stored-)
-+ [Can LimaCharlie staff access my data?](#can-limacharlie-staff-access-my-data-)
-+ [Will third parties get access to my data?](#will-third-parties-get-access-to-my-data-)
-+ [What control measures do you have in place to ensure that my data won't be accessed without proper authorizations?](#what-control-measures-do-you-have-in-place-to-ensure-that-my-data-won-t-be-accessed-without-proper-authorizations-)
-+ [What is detected by LimaCharlie after it's initially installed?](#what-is-detected-by-limacharlie-after-it-s-initially-installed-)
-+ [Can LimaCharlie be deployed on-premises?](#can-limacharlie-be-deployed-on-premises-)
-+ [Does LimaCharlie detect variants of the latest malware?](#does-limacharlie-detect-variants-of-the-latest-malware-)
-+ [What latency can I expect in LimaCharlie?](#what-latency-can-i-expect-in-limacharlie-)
-+ [How can I integrate LimaCharlie with my existing SIEM?](#how-can-i-integrate-limacharlie-with-my-existing-siem-)
-+ [What is the retention policy for management/audit logs?](#what-is-the-retention-policy-for-management-audit-logs-)
-+ [Does LimaCharlie offer reporting capabilities?](#does-limacharlie-offer-reporting-capabilities-)
-
-Tags
-
-* [faq](/docs/en/tags/faq)

@@ -2,11 +2,11 @@
 
 ## API Keys
 
-The VirusTotal API key is added via the [integrations](https://docs.limacharlie.io/v2/docs/add-ons-api-integrations#configuration) menu within LimaCharlie.
+The VirusTotal API key is added via the integrations menu within LimaCharlie.
 
 ## Usage
 
-With the `vt` [add-on](https://app.limacharlie.io/add-ons/detail/vt) subscribed and a VirusTotal API Key configured in the Integrations page, VirusTotal can be used as an API-based lookup.
+With the `vt` add-on subscribed and a VirusTotal API Key configured in the Integrations page, VirusTotal can be used as an API-based lookup.
 
 ```
 event: CODE_IDENTITY

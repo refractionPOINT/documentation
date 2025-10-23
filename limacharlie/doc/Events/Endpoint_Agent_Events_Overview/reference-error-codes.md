@@ -1,40 +1,6 @@
----
-
-Reference: Error Codes
-
-* 05 Oct 2024
-* 1 Minute to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Reference: Error Codes
 
-* Updated on 05 Oct 2024
-* 1 Minute to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
-
-The follow error codes are found within various Report (`*_REP`) events found within the [EDR Events](/v2/docs/reference-edr-events), often in response to an [endpoint agent command](/v2/docs/endpoint-agent-commands).
+The follow error codes are found within various Report (`*_REP`) events found within the [EDR Events](reference-edr-events.md), often in response to an [endpoint agent command](../../Sensors/Endpoint_Agent/Endpoint_Agent_Commands/reference-endpoint-agent-commands.md).
 
 | Error Code | Value |
 | --- | --- |
@@ -81,73 +47,12 @@ The follow error codes are found within various Report (`*_REP`) events found wi
 
 ## Payload Specific
 
-When dealing with Payloads or Artifact collection, you may receive HTTP specific error codes:  
+When dealing with Payloads or Artifact collection, you may receive HTTP specific error codes:
 <https://developer.mozilla.org/en-US/docs/Web/HTTP/Status>
 
 ## Yara Specific
 
 When doing Yara scanning operations, you may receive Yara specific error codes.
 
-These are documented here:  
+These are documented here:
 <https://github.com/VirusTotal/yara/blob/master/libyara/include/yara/error.h>
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [Endpoint Agent Commands](/docs/endpoint-agent-commands)
-* [Endpoint Agent Events Overview](/docs/endpoint-agent-events-overview)
-* [Reference: Endpoint Agent Commands](/docs/reference-endpoint-agent-commands)
-* [Reference: EDR Events](/docs/reference-edr-events)
-
----
-
-###### What's Next
-
-* [Template Strings and Transforms](/docs/template-strings-and-transforms)
-
-Table of contents
-
-+ [Payload Specific](#payload-specific)
-+ [Yara Specific](#yara-specific)
-
-Tags
-
-* [detection and response](/docs/en/tags/detection%20and%20response)
-* [endpoint agent](/docs/en/tags/endpoint%20agent)
-* [events](/docs/en/tags/events)
-* [reference](/docs/en/tags/reference)

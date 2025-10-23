@@ -72,5 +72,3 @@ So the ARL would be:  `[github,romainmarcoux/malicious-domains/sources/alienvaul
 ### Retrieve from public GitHub repo at a specific branch
 
 `[github,refractionPOINT/sigma/some-sub-dir?ref=my-branch]`
-
-This is here for testing [purposes](/v2/docs/i-dont-exist).

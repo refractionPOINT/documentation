@@ -1,42 +1,8 @@
----
-
-FAQ - Sensor Troubleshooting
-
-* 29 Apr 2025
-* 12 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # FAQ - Sensor Troubleshooting
-
-* Updated on 29 Apr 2025
-* 12 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 ## Why is there no output in the console?
 
-When running Sensor [console commands](/v2/docs/endpoint-agent-commands), you may encounter a "spinning wheel" or no output back from the Sensor. Oftentimes, this is due to the *response* event not enabled in [Event Collection](/v2/docs/ext-exfil). You will need to configure the response event in order to receive feedback in the console.
+When running Sensor [console commands](../Sensors/Endpoint_Agent/Endpoint_Agent_Commands/reference-endpoint-agent-commands.md), you may encounter a "spinning wheel" or no output back from the Sensor. Oftentimes, this is due to the *response* event not enabled in [Event Collection](../Add-Ons/Extensions/LimaCharlie_Extensions/ext-exfil.md). You will need to configure the response event in order to receive feedback in the console.
 
 For example, the `os_users` Sensor command has two components:
 
@@ -152,11 +118,11 @@ The log data is formatted similarly to the example below:
 
 ```
 {
-      "version": "4.33.0",
-      "sid": "be8bc53b-36b2-469d-a914-716d629cb2d8",
-      "oid": "d02c08e4-aedc-45eb-88aa-98b09b7d92df",
-      "last_update": 1738872790,
-      "uptime": 127
+      "version": "4.33.0",
+      "sid": "be8bc53b-36b2-469d-a914-716d629cb2d8",
+      "oid": "d02c08e4-aedc-45eb-88aa-98b09b7d92df",
+      "last_update": 1738872790,
+      "uptime": 127
 }
 ```
 
@@ -182,194 +148,194 @@ The log data is formatted similarly to the example below:
 
 ```
 {
-  "system": {
-    "memory_total": 25769803776,
-    "memory_used": 13423722496,
-    "name": "Darwin",
-    "kernel": "24.4.0",
-    "version": "15.4.1",
-    "hostname": "Mac",
-    "cpu_count": 8,
-    "process_list": [
+  "system": {
+    "memory_total": 25769803776,
+    "memory_used": 13423722496,
+    "name": "Darwin",
+    "kernel": "24.4.0",
+    "version": "15.4.1",
+    "hostname": "Mac",
+    "cpu_count": 8,
+    "process_list": [
 
-    ]
-  },
-  "agent": {
-    "agent_info": {
-      "MacOS": {
-        "process": {
-          "Ok": {
-            "pid": 2024,
-            "ppid": 2023,
-            "cpu_usage": 0.0,
-            "cwd": "/Users/username/Downloads",
-            "exe": "/usr/local/bin/rphcp",
-            "start_time": 1745890277,
-            "run_time": 1,
-            "memory": 10125312,
-            "virtual_memory": 420875878400,
-            "command_line": [
-              "/usr/local/bin/rphcp",
-              "-H"
-            ]
-          }
-        },
-        "agent_service": {
-          "Ok": {
-            "name": "com.refractionpoint.rphcp",
-            "pid": 1521,
-            "state": "running",
-            "service_type": null,
-            "launchd_config": "/Library/LaunchDaemons/com.refractionpoint.rphcp.plist",
-            "launchd_type": "LaunchDaemon",
-            "program": "/usr/local/bin/rphcp",
-            "restart_count": 1,
-            "last_signal": null
-          }
-        },
-        "system_extension_process": {
-          "Ok": {
-            "pid": 1638,
-            "ppid": 1,
-            "cpu_usage": 0.0,
-            "cwd": "/",
-            "exe": "/Library/SystemExtensions/3C420533-7D6B-409C-A2B4-BB9D526AB7E2/com.refractionpoint.rphcp.extension.systemextension/Contents/MacOS/com.refractionpoint.rphcp.extension",
-            "start_time": 1745889761,
-            "run_time": 517,
-            "memory": 15450112,
-            "virtual_memory": 423440154624,
-            "command_line": [
-              "/Library/SystemExtensions/3C420533-7D6B-409C-A2B4-BB9D526AB7E2/com.refractionpoint.rphcp.extension.systemextension/Contents/MacOS/com.refractionpoint.rphcp.extension"
-            ]
-          }
-        },
-        "system_extension": {
-          "Ok": {
-            "name": "N7N82884NH.com.refractionpoint.rphcp.extension",
-            "pid": 1638,
-            "state": "running",
-            "service_type": null,
-            "launchd_config": "(submitted by smd[323])",
-            "launchd_type": "Submitted",
-            "program": "/Library/SystemExtensions/3C420533-7D6B-409C-A2B4-BB9D526AB7E2/com.refractionpoint.rphcp.extension.systemextension/Contents/MacOS/com.refractionpoint.rphcp.extension",
-            "restart_count": 1,
-            "last_signal": null
-          }
-        },
-        "config": {
-          "Ok": {
-            "launchd_file_hash": {
-              "Ok": "01049276aaa1708885f24788230fe9a4c2316e43aadef42354e4061b0aac906c"
-            },
-            "launchd_file": "ABC+",
-            "mdm_silent_file_hash": {
-              "Err": "No such file or directory (os error 2)\n"
-            },
-            "mdm_silent_file": null,
-            "system_extensions": {
-              "Ok": [
-                {
-                  "enabled": true,
-                  "active": true,
-                  "team_id": "N7N82884NH",
-                  "bundle_id": "com.refractionpoint.rphcp.extension",
-                  "version": "(1.0.250416/1.0.250416)",
-                  "name": "RPHCP",
-                  "state": "[activated enabled]"
-                }
-              ]
-            },
-            "network_extension": {
-              "Ok": {
-                "name": "com.refractionpoint.rphcp.client",
-                "enabled": true
-              }
-            },
-            "profiles": {
-              "Ok": [
+    ]
+  },
+  "agent": {
+    "agent_info": {
+      "MacOS": {
+        "process": {
+          "Ok": {
+            "pid": 2024,
+            "ppid": 2023,
+            "cpu_usage": 0.0,
+            "cwd": "/Users/username/Downloads",
+            "exe": "/usr/local/bin/rphcp",
+            "start_time": 1745890277,
+            "run_time": 1,
+            "memory": 10125312,
+            "virtual_memory": 420875878400,
+            "command_line": [
+              "/usr/local/bin/rphcp",
+              "-H"
+            ]
+          }
+        },
+        "agent_service": {
+          "Ok": {
+            "name": "com.refractionpoint.rphcp",
+            "pid": 1521,
+            "state": "running",
+            "service_type": null,
+            "launchd_config": "/Library/LaunchDaemons/com.refractionpoint.rphcp.plist",
+            "launchd_type": "LaunchDaemon",
+            "program": "/usr/local/bin/rphcp",
+            "restart_count": 1,
+            "last_signal": null
+          }
+        },
+        "system_extension_process": {
+          "Ok": {
+            "pid": 1638,
+            "ppid": 1,
+            "cpu_usage": 0.0,
+            "cwd": "/",
+            "exe": "/Library/SystemExtensions/3C420533-7D6B-409C-A2B4-BB9D526AB7E2/com.refractionpoint.rphcp.extension.systemextension/Contents/MacOS/com.refractionpoint.rphcp.extension",
+            "start_time": 1745889761,
+            "run_time": 517,
+            "memory": 15450112,
+            "virtual_memory": 423440154624,
+            "command_line": [
+              "/Library/SystemExtensions/3C420533-7D6B-409C-A2B4-BB9D526AB7E2/com.refractionpoint.rphcp.extension.systemextension/Contents/MacOS/com.refractionpoint.rphcp.extension"
+            ]
+          }
+        },
+        "system_extension": {
+          "Ok": {
+            "name": "N7N82884NH.com.refractionpoint.rphcp.extension",
+            "pid": 1638,
+            "state": "running",
+            "service_type": null,
+            "launchd_config": "(submitted by smd[323])",
+            "launchd_type": "Submitted",
+            "program": "/Library/SystemExtensions/3C420533-7D6B-409C-A2B4-BB9D526AB7E2/com.refractionpoint.rphcp.extension.systemextension/Contents/MacOS/com.refractionpoint.rphcp.extension",
+            "restart_count": 1,
+            "last_signal": null
+          }
+        },
+        "config": {
+          "Ok": {
+            "launchd_file_hash": {
+              "Ok": "01049276aaa1708885f24788230fe9a4c2316e43aadef42354e4061b0aac906c"
+            },
+            "launchd_file": "ABC+",
+            "mdm_silent_file_hash": {
+              "Err": "No such file or directory (os error 2)\n"
+            },
+            "mdm_silent_file": null,
+            "system_extensions": {
+              "Ok": [
+                {
+                  "enabled": true,
+                  "active": true,
+                  "team_id": "N7N82884NH",
+                  "bundle_id": "com.refractionpoint.rphcp.extension",
+                  "version": "(1.0.250416/1.0.250416)",
+                  "name": "RPHCP",
+                  "state": "[activated enabled]"
+                }
+              ]
+            },
+            "network_extension": {
+              "Ok": {
+                "name": "com.refractionpoint.rphcp.client",
+                "enabled": true
+              }
+            },
+            "profiles": {
+              "Ok": [
 
-              ]
-            }
-          }
-        }
-      }
-    },
-    "hbs_status": {
-      "Ok": {
-        "version": "4.33.6",
-        "sid": "da1020f7-c247-4749-b7d7-d05f282e6ca2",
-        "oid": "0bb86406-b1f3-4d3b-af5c-118cc5291972",
-        "last_update": 1745890057,
-        "uptime": 300
-      }
-    },
-    "logs": {
-      "Ok": {
-        "file": "/usr/local/hcp.log",
-        "oid": null,
-        "sid": null,
-        "data": "MMGgMTq5NTg4OTczNzogaGNwIGxhdW5amGVkClRTIDE3NDU4ODk3Mzc6IGJvb3RzdHJhcCB1c2VkClRTIDE3NDU4ODk3Mzc6IGNvbm4gl3RhcnRlZApUUyAxNzQ1ODg5NzM3OiBjb25uZWN0bW5nClRTIDE3NMU8ODk3Mzg6IHNzbCBjb25uZWN0ZWQKVFMgMTc0UTg4OTczODogaGVhZGVycyBzZW50ClRTIDM3NDU4ODk3Mzg6IGNoYW5uZWwgdXAKVFMgMTc0NTg4OTczODogY29tbXMgd2l0aCBjbG91ZCBkb3duClRTIDE3NDU4ODk3NDM6IGNvbm5lY3RpbmcKVFMgMTc0NTg4OTc0NDogc3NsIGNvbm5lY3RlZApUUyAxNzQ1ODg5NzQ0OiBoZWFkZXJzIHNlbnQKVFMgMTc0NTg4OTc0NDogY2hhbm5lbCB1cApUUyAxNzQ1ODg5NzYyOiBkaXNjb25uZWN0aW5nIGZyb20gYmFkIHNlbmQKVFMgMTc0NTg4OTc2MzogZZJyb3IgcmVjZWl2aW5nIGZyYW1lOgpUUyAxNzQ1ODg5NzYzOiBTU0wgLSBCYWQgaW5wdXQgcGFyYW1ldGVycyB0byBmdW5jdGlvblRTIDE3NDU4ODk3NjM6IApUUyAxNzQ1ODg5NzYzOiBjb21tcyBqaXRoIGNsb3VkIGRvd24KVFMgMTc0NTg4OTc2ODogY29ubmVjdGluZwpUUyAxNzQ1ODg5NzY4OiBzc2wgY29ubmVjdGVkClRTIDE3NDU4ODk3Njg6IGhlYWRlcnMgc2VudApMUyAbNyQ1OEg4NzY58iBjaGGubmVbIHVwUd=="
-      }
-    }
-  },
-  "network": {
-    "Ok": {
-      "endpoint_server": "0651b4f82df0a29c.edr.limacharlie.io",
-      "addresses": [
-        "34.160.14.29:443"
-      ],
-      "tcp_connect": true,
-      "proxy": {
-        "Ok": {
-          "proxy_server": null,
-          "tcp_connect": false
-        }
-      },
-      "cert_chain": [
-        {
-          "common_name": "0651b4f82df0a29c.edr.limacharlie.io",
-          "issuer": "C = Google Trust Services, O = US, CN = WR3",
-          "serial": "00:b3:f6:29:5a:3e:78:03:10:18:38:fd:4c:df:54:c5",
-          "not_before": 1742383890,
-          "not_after": 1750163165,
-          "is_ca": false
-        },
-        {
-          "common_name": "WR3",
-          "issuer": "C = Google Trust Services LLC, O = US, CN = GTS Root R1",
-          "serial": "7f:f0:05:a9:15:68:d6:3a:bc:22:86:16:84:aa:4b:5a",
-          "not_before": 1702458000,
-          "not_after": 1866290400,
-          "is_ca": true
-        },
-        {
-          "common_name": "GTS Root R1",
-          "issuer": "C = GlobalSign nv-sa, O = BE, CN = GlobalSign Root CA",
-          "serial": "77:bd:0d:6c:db:36:f9:1a:ea:21:0f:c4:f0:58:d3:0d",
-          "not_before": 1592524842,
-          "not_after": 1832630442,
-          "is_ca": true
-        }
-      ]
-    }
-  },
-  "verifier": {
-    "Ok": {
-      "pid": 2024,
-      "ppid": 2023,
-      "cpu_usage": 0.0,
-      "cwd": "/Users/username/Downloads",
-      "exe": "/usr/local/bin/rphcp",
-      "start_time": 1745890277,
-      "run_time": 1,
-      "memory": 10125312,
-      "virtual_memory": 420875878400,
-      "command_line": [
-        "/usr/local/bin/rphcp",
-        "-H"
-      ]
-    }
-  }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "hbs_status": {
+      "Ok": {
+        "version": "4.33.6",
+        "sid": "da1020f7-c247-4749-b7d7-d05f282e6ca2",
+        "oid": "0bb86406-b1f3-4d3b-af5c-118cc5291972",
+        "last_update": 1745890057,
+        "uptime": 300
+      }
+    },
+    "logs": {
+      "Ok": {
+        "file": "/usr/local/hcp.log",
+        "oid": null,
+        "sid": null,
+        "data": "MMGgMTq5NTg4OTczNzogaGNwIGxhdW5amGVkClRTIDE3NDU4ODk3Mzc6IGJvb3RzdHJhcCB1c2VkClRTIDE3NDU4ODk3Mzc6IGNvbm4gl3RhcnRlZApUUyAxNzQ1ODg5NzM3OiBjb25uZWN0bW5nClRTIDE3NMU4ODk3Mzg6IHNzbCBjb25uZWN0ZWQKVFMgMTc0UTg4OTczODogaGVhZGVycyBzZW50ClRTIDM3NDU4ODk3Mzg6IGNoYW5uZWwgdXAKVFMgMTc0NTg4OTczODogY29tbXMgd2l0aCBjbG91ZCBkb3duClRTIDE3NDU4ODk3NDM6IGNvbm5lY3RpbmcKVFMgMTc0NTg4OTc0NDogc3NsIGNvbm5lY3RlZApUUyAxNzQ1ODg5NzQ0OiBoZWFkZXJzIHNlbnQKVFMgMTc0NTg4OTc0NDogY2hhbm5lbCB1cApUUyAxNzQ1ODg5NzYyOiBkaXNjb25uZWN0aW5nIGZyb20gYmFkIHNlbmQKVFMgMTc0NTg4OTc2MzogZZJyb3IgcmVjZWl2aW5nIGZyYW1lOgpUUyAxNzQ1ODg5NzYzOiBTU0wgLSBCYWQgaW5wdXQgcGFyYW1ldGVycyB0byBmdW5jdGlvblRTIDE3NDU4ODk3NjM6IApUUyAxNzQ1ODg5NzYzOiBjb21tcyBqaXRoIGNsb3VkIGRvd24KVFMgMTc0NTg4OTc2ODogY29ubmVjdGluZwpUUyAxNzQ1ODg5NzY4OiBzc2wgY29ubmVjdGVkClRTIDE3NDU4ODk3Njg6IGhlYWRlcnMgc2VudApMUyAbNyQ1OEg4NzY58iBjaGGubmVbIHVwUd=="
+      }
+    }
+  },
+  "network": {
+    "Ok": {
+      "endpoint_server": "0651b4f82df0a29c.edr.limacharlie.io",
+      "addresses": [
+        "34.160.14.29:443"
+      ],
+      "tcp_connect": true,
+      "proxy": {
+        "Ok": {
+          "proxy_server": null,
+          "tcp_connect": false
+        }
+      },
+      "cert_chain": [
+        {
+          "common_name": "0651b4f82df0a29c.edr.limacharlie.io",
+          "issuer": "C = Google Trust Services, O = US, CN = WR3",
+          "serial": "00:b3:f6:29:5a:3e:78:03:10:18:38:fd:4c:df:54:c5",
+          "not_before": 1742383890,
+          "not_after": 1750163165,
+          "is_ca": false
+        },
+        {
+          "common_name": "WR3",
+          "issuer": "C = Google Trust Services LLC, O = US, CN = GTS Root R1",
+          "serial": "7f:f0:05:a9:15:68:d6:3a:bc:22:86:16:84:aa:4b:5a",
+          "not_before": 1702458000,
+          "not_after": 1866290400,
+          "is_ca": true
+        },
+        {
+          "common_name": "GTS Root R1",
+          "issuer": "C = GlobalSign nv-sa, O = BE, CN = GlobalSign Root CA",
+          "serial": "77:bd:0d:6c:db:36:f9:1a:ea:21:0f:c4:f0:58:d3:0d",
+          "not_before": 1592524842,
+          "not_after": 1832630442,
+          "is_ca": true
+        }
+      ]
+    }
+  },
+  "verifier": {
+    "Ok": {
+      "pid": 2024,
+      "ppid": 2023,
+      "cpu_usage": 0.0,
+      "cwd": "/Users/username/Downloads",
+      "exe": "/usr/local/bin/rphcp",
+      "start_time": 1745890277,
+      "run_time": 1,
+      "memory": 10125312,
+      "virtual_memory": 420875878400,
+      "command_line": [
+        "/usr/local/bin/rphcp",
+        "-H"
+      ]
+    }
+  }
 }
 ```
 
@@ -384,59 +350,3 @@ Installation keys are Base64-encoded strings provided to Sensors and Adapters in
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### What's Next
-
-* [FAQ - Privacy](/docs/faq-privacy)
-
-Table of contents
-
-+ [Why is there no output in the console?](#why-is-there-no-output-in-the-console-)
-+ [Sensor Not Showing as Online](#sensor-not-showing-as-online)
-+ [Sensor Not Connecting](#sensor-not-connecting)
-+ [Sensor Not Responding](#sensor-not-responding)
-+ [Sensor Duplication](#sensor-duplication)
-+ [Upgrading Sensors](#upgrading-sensors)
-+ [How can I tell which version of the sensor is running locally?](#how-can-i-tell-which-version-of-the-sensor-is-running-locally-)
-+ [Sensor Troubleshooting Utility](#sensor-troubleshooting-utility)
-+ [Additional Help](#additional-help)
-
-Tags
-
-* [faq](/docs/en/tags/faq)

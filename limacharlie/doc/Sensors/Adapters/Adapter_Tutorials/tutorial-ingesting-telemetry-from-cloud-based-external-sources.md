@@ -4,7 +4,7 @@ LimaCharlie allows for ingestion of logs or telemetry from any external source i
 
 There are two ways to ingest logs or telemetry from external sources:
 
-* Run the [LimaCharlie Adapter](../adapters.md) on premises or on your cloud
+* Run the [LimaCharlie Adapter](../adapter-usage.md) on premises or on your cloud
 * Provide credentials for the destination and allow LimaCharlie cloud to connect directly (available for cloud-based Adapters)
 
 To connect with the cloud-based external source, first ensure you have the appropriate `cloudsensor.*` permissions.

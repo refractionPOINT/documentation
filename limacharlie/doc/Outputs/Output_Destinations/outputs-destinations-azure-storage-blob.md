@@ -1,38 +1,4 @@
----
-
-Azure Storage Blob
-
-* 05 Oct 2024
-* 1 Minute to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Azure Storage Blob
-
-* Updated on 05 Oct 2024
-* 1 Minute to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 Output events and detections to a Blob Container in Azure Storage Blobs.
 
@@ -48,59 +14,13 @@ account_name: lctestdata
 secret_key: dkndsgnlngfdlgfd
 ```
 
----
+## Related articles
 
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [Azure Kubernetes Service (AKS)](/docs/azure-kubernetes-service)
-* [Azure Monitor](/docs/azure-monitor)
-* [Azure Network Security Group](/docs/azure-network-security-group)
-* [Azure SQL Audit Logs](/docs/azure-sql-audit-logs)
-* [Azure Event Hub](/docs/adapter-types-azure-event-hub)
-* [Microsoft Entra ID](/docs/adapter-types-microsoft-entra-id)
-* [Azure](/docs/ext-cloud-cli-azure)
-
----
-
-###### What's Next
-
-* [Elastic](/docs/outputs-destinations-elastic)
-
-Tags
-
-* [azure](/docs/en/tags/azure)
-* [outputs](/docs/en/tags/outputs)
+* [Azure Kubernetes Service (AKS)](../../Sensors/Adapters/Adapter_Types/Azure_Logs/azure-kubernetes-service.md)
+* [Azure Monitor](../../Sensors/Adapters/Adapter_Types/Azure_Logs/azure-monitor.md)
+* [Azure Network Security Group](../../Sensors/Adapters/Adapter_Types/Azure_Logs/azure-network-security-group.md)
+* [Azure SQL Audit Logs](../../Sensors/Adapters/Adapter_Types/Azure_Logs/azure-sql-audit-logs.md)
+* [Azure Event Hub](../../Sensors/Adapters/Adapter_Types/adapter-types-azure-event-hub.md)
+* [Microsoft Entra ID](../../Sensors/Adapters/Adapter_Types/adapter-types-microsoft-entra-id.md)
+* [Azure](../../Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-azure.md)
+* [Elastic](outputs-destinations-elastic.md)

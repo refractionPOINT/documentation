@@ -1,38 +1,4 @@
----
-
-User Access
-
-* 09 Oct 2025
-* 2 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # User Access
-
-* Updated on 09 Oct 2025
-* 2 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 To control who has access to an Organization, and what they have access to, go to the "Users" section of the web application.
 
@@ -48,7 +14,7 @@ Permissions can be controlled individually, or you can apply pre-set permission 
 
 User Permissions
 
-We offer granular user permissions, allowing you to customize what roles and how much access users should have. For a full list of permissions, see [Reference: Permissions](/v2/docs/reference-permissions).
+We offer granular user permissions, allowing you to customize what roles and how much access users should have. For a full list of permissions, see [Reference: Permissions](reference-permissions.md).
 
 ## Access on a per-organization basis
 
@@ -103,61 +69,3 @@ To review activity that has occurred in this group, click on **Activity Logs** (
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(343).png)
 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [Access and Permissions](/docs/access-and-permissions)
-* [Single Sign-On](/docs/single-sign-on)
-* [Reference: Permissions](/docs/reference-permissions)
-* [API Keys](/docs/api-keys)
-
----
-
-###### What's Next
-
-* [Single Sign-On](/docs/single-sign-on)
-
-Table of contents
-
-+ [Access on a per-organization basis](#access-on-a-per-organization-basis)
-+ [Access via Organization Groups](#access-via-organization-groups)
-
-Tags
-
-* [platform](/docs/en/tags/platform)

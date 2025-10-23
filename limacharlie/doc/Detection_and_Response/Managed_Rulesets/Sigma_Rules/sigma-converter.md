@@ -2,7 +2,7 @@
 
 LimaCharlie is happy to contribute to the [Sigma Project](https://github.com/SigmaHQ/sigma) by maintaining the LimaCharlie Backend for Sigma, enabling most Sigma rules to be converted to the [Detection & Response rule](../../detection-and-response-examples.md) format.
 
-A LimaCharlie [Service](/v2/docs/sigma-rules) is available to apply [many of those converted rules](https://github.com/refractionPOINT/sigma-limacharlie/tree/rules) with a single click to an Organization.
+A LimaCharlie Service is available to apply [many of those converted rules](https://github.com/refractionPOINT/sigma-limacharlie/tree/rules) with a single click to an Organization.
 
 For cases where you either have your own Sigma rules, or you would like to convert/apply specific rules yourself, the Sigma Converter service described below can help streamline the process.
 
@@ -66,5 +66,3 @@ CURL Example:
 ```
 curl -X POST  https://sigma.limacharlie.io/convert/repo -d "repo=https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_ad_find_discovery.yml"
 ```
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

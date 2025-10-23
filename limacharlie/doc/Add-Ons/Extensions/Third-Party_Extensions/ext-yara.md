@@ -10,19 +10,19 @@ There are three main sections to the YARA job:
 * Rules
 * Scan
 
-Where Does My YARA Scan?
+## Where Does My YARA Scan?
 
 Automated YARA scanners in LimaCharlie will run on all files loaded in memory (e.g. exe, dll, etc), and on the memory itself.
 
-Files on disk can be scanned using a Sensor command.  You can trigger a Manual Scan that's run on-demand by:
+Files on disk can be scanned using a Sensor command. You can trigger a Manual Scan that's run on-demand by:
 
 * Clicking the Run YARA scan button on the sensor details page,
 * Clicking the Scan button on the YARA Scanners page
 * Using the console
-* Within the Response section of a  rule (sample below)
+* Within the Response section of a rule (sample below)
 * Using the LimaCharlie API
 
-### Rules
+## Rules
 
 This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](../LimaCharlie_Extensions/ext-yara-manager.md). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](../../Reference/reference-authentication-resource-locator.md) to a YARA rule.
 
@@ -30,7 +30,7 @@ This is where you define your YARA rule(s). You can copy and paste your YARA rul
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/yara-2.png)
 
-### Scanners
+## Scanners
 
 Scanners define which sets of sensors should be scanned with which sets of YARA rules.
 
@@ -40,8 +40,7 @@ To apply YARA rules to scan an endpoint (or set of endpoints), you must select t
 
 ## Using Yara in D&R Rules
 
-If you want to trigger a Yara scan as a response to one of your detections, you can configure an extension request in the respond block of a rule.
- A Yara scan request can be executed with a blank selector OR Sensor ID. However, one of them must be specified.
+If you want to trigger a Yara scan as a response to one of your detections, you can configure an extension request in the respond block of a rule. A Yara scan request can be executed with a blank selector OR Sensor ID. However, one of them must be specified.
 
 ```
 - action: extension request
@@ -54,7 +53,7 @@ If you want to trigger a Yara scan as a response to one of your detections, you 
 	yara_scan_ttl: 86400 # "Default: 1 day (86,400 seconds)"
 ```
 
-### Migrating D&R Rule from legacy Service to new Extension
+## Migrating D&R Rule from legacy Service to new Extension
 
 ***LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024.***
 
@@ -75,11 +74,3 @@ Command line to execute Yara rule conversion:
 ```
 limacharlie extension convert_rules --name ext-yara --no-dry-run
 ```
-
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection & response rules. System tags like `lc:latest`, `lc:stable`, and `lc:debug` offer special functionality. Tags can be checked, added, or removed through the API or web app, streamlining device management.
-
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.

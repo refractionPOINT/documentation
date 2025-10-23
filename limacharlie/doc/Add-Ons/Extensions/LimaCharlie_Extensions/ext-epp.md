@@ -20,15 +20,15 @@ The Endpoint Protection add-on requires agent version `4.33.5` or higher.
 
 ## Enabling and configuring Endpoint Protection
 
-To enable Endpoint Protection, first ensure LimaCharlie Endpoint Agent version is 4.33.5 and above, [update](../../Sensors/Endpoint_Agent/endpoint-agent-versioning-and-upgrades.md) if necessary.
+To enable Endpoint Protection, first ensure LimaCharlie Endpoint Agent version is 4.33.5 and above, [update](../../../Sensors/Endpoint_Agent/endpoint-agent-versioning-and-upgrades.md) if necessary.
 
 Navigate to the [Endpoint Protection extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-epp) in the Add-Ons marketplace. Choose the target Organization and select `Subscribe`.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(335).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28335%29.png)
 
 Once subscribed, you can see the Endpoint Protection in the list of Extensions.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(332).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28332%29.png)
 
 The Endpoint Protection extension does two things once both sync settings are enabled:
 
@@ -41,7 +41,7 @@ The Endpoint Protection extension does two things once both sync settings are en
      > If you already have Defender logs coming in via the Artifact extension, you can uncheck the `Sync Extension Config` box to avoid duplicating entries.
 2. Creates D&R rules
 
-   * Generates several D&R rules that alert on various detections and actions taken by Defender.![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(291).png)
+   * Generates several D&R rules that alert on various detections and actions taken by Defender.![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28291%29.png)
 3. To apply the Artifact extension configuration and D&R rules, click `Apply Configuration`.
 
 When the SYNC toggles are on, the collection rules and D&R rules are continuously synchronized with LimaCharlie library of best practices.
@@ -56,7 +56,7 @@ Endpoint Protection capabilities are used in three ways.
 
 Select a Windows Sensor in the organization. In the Sensor Overview, there is a new section, "Endpoint Protection" that shows the current protection status. Verify that Defender is listed as active on the sensor.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(333).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28333%29.png)
 
 **Perform Scan**
 
@@ -79,10 +79,10 @@ Select a Windows Sensor. Open the Sensor Console As you type "epp" you'll see th
 
 For reference, this is a list of Endpoint Protection commands:
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(323).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28323%29.png)
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(325).png)![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(327).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28325%29.png)![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28327%29.png)
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(329).png)![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(328).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28329%29.png)![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28328%29.png)
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(330).png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28330%29.png)

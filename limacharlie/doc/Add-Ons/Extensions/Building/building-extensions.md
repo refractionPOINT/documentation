@@ -35,8 +35,8 @@ That being said, don't worry, you don't need to know the underlying way the exte
 
 Want to get your hands on an example? We recommend using one of the following frameworks to get started.
 
-* Golang: <https://github.com/refractionPOINT/lc-extension>
-* Python: <https://github.com/refractionPOINT/lc-extension/tree/master/python>
+* Golang: https://github.com/refractionPOINT/lc-extension
+* Python: https://github.com/refractionPOINT/lc-extension/tree/master/python
 
 For a more step-by-step overview, let's dig into some of the core concepts of building an extension. We will reference Golang since it provides stricter typing, but conceptually it's the same across implementations.
 
@@ -121,7 +121,7 @@ The `requirements` field references the field keys to define whether or not cert
 
 When getting started, we recommend utilizing the simplest data type applicable. This will enable you to get a grasp of the whole extensions framework and allow you to quickly test our your service. Such as `string`, `boolean`, `json`, etc.
 
-Afterwards, we recommend you define the data\_type and other optional fields further, so that the UI may adapt to your defined data types. For more details, please see the [page on data types](./schema-data-types.md) or review the code definitions [here](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go).
+Afterwards, we recommend you define the data_type and other optional fields further, so that the UI may adapt to your defined data types. For more details, please see the [page on data types](schema-data-types.md) or review the code definitions [here](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go).
 
 #### Config Schema (optional)
 
@@ -135,14 +135,14 @@ At the core, the config schema is simply a list of fields.
 
 Every Request Schema exists as a key value pair of the request name, and a corresponding schema contents. The critical contents include the following fields:
 
-* **is\_impersonated**: Whether or not the request impersonates the user through it's authentication
-* **is\_user\_facing**: Whether or not this request should be visisble to the user in the UI. It does not prevent this request from bieng used through the API or as a `supported_action` (more on that later).
-* **parameters**: This contains the data\_type and other fields *(recall the same fields format as the config schema)*
+* **is_impersonated**: Whether or not the request impersonates the user through it's authentication
+* **is_user_facing**: Whether or not this request should be visisble to the user in the UI. It does not prevent this request from bieng used through the API or as a `supported_action` (more on that later).
+* **parameters**: This contains the data_type and other fields *(recall the same fields format as the config schema)*
 
 Other optional fields exist to facilitate the user experience, such as:
 
-* **short\_description**
-* **long\_description**
+* **short_description**
+* **long_description**
 * **messages**: Includes 3 nested fields, `in_progress`, `success`, `error` to provide additional context for each case.
 
 #### Response Schema (optional)
@@ -175,7 +175,7 @@ The requests are the core way users, D&R rules or other extensions can interact 
 
 ## Simplified Frameworks
 
-The Golang implementation of Extensions provides 3 different simplified frameworks to make the job of producing a new extension more straight forward in specific cases: <https://github.com/refractionPOINT/lc-extension/tree/master/simplified>
+The Golang implementation of Extensions provides 3 different simplified frameworks to make the job of producing a new extension more straight forward in specific cases: https://github.com/refractionPOINT/lc-extension/tree/master/simplified
 
 ### D&R
 
@@ -183,7 +183,7 @@ This simplified framework, found in `dr.go` allows you to package D&R rules as a
 
 ### Lookup
 
-Similarl to the D&R simplified framework, but is used to package Lookups. Example: <https://github.com/refractionPOINT/lc-extension/blob/master/examples/lookup/main.go>
+Similarl to the D&R simplified framework, but is used to package Lookups. Example: https://github.com/refractionPOINT/lc-extension/blob/master/examples/lookup/main.go
 
 ### CLI
 

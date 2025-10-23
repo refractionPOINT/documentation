@@ -2,7 +2,7 @@
 
 ## Overview
 
-> It's recommended to first read [Detection & Response rules](https://docs.limacharlie.io/docs/detection-and-response) before diving into stateful rules.
+> It's recommended to first read [Detection & Response rules](writing-and-testing-rules.md) before diving into stateful rules.
 
 In LimaCharlie, a Stateful Rule tracks and remembers the state of past events to make decisions based on historical context. Unlike stateless rules, which evaluate events in isolation, stateful rules can detect patterns over time, such as multiple failed logins within an hour. This enables more complex and accurate detection, allowing users to trigger actions only when specific conditions are met across multiple events or timeframes.
 

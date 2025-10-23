@@ -1,51 +1,17 @@
----
-
-Amazon S3
-
-* 07 Oct 2025
-* 2 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Amazon S3
-
-* Updated on 07 Oct 2025
-* 2 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 Output events and detections to an Amazon S3 bucket.
 
 If you have your own visualization stack, or you just need the data archived, you can output directly to Amazon S3. This way you don't need any infrastructure.
 
 * `bucket`: the path to the AWS S3 bucket.
-* `key_id`:  the id of the AWS auth key.
+* `key_id`:  the id of the AWS auth key.
 * `secret_key`: the AWS secret key to auth with.
 * `sec_per_file`: the number of seconds after which a file is cut and uploaded.
 * `is_compression`: if set to "true", data will be gzipped before upload.
 * `is_indexing`: *DEPRECATED* if set to "true", data is uploaded in a way that makes it searchable.
 * `region_name`: the region name of the bucket, it is recommended to set it, though not always required.
-* `endpoint_url`: optionally specify a custom endpoint URL, usually used with region\_name to output to S3-compatible 3rd party services.
+* `endpoint_url`: optionally specify a custom endpoint URL, usually used with region_name to output to S3-compatible 3rd party services.
 * `dir`: the directory prefix
 * `is_no_sharding`: do not add a shard directory at the root of the files generated.
 
@@ -63,7 +29,7 @@ is_compression: "true"
 
 If the `is_indexing` option is enabled, data uploaded to S3 will be in a specific format enabling some indexed queries.
 
-LC data files begin with a `d`, while special manifest files (indicating  
+LC data files begin with a `d`, while special manifest files (indicating
  which data files contain which sensors' data) begin with an `m`. Otherwise (not `is_indexing`), data is uploaded as flat files with a UUID name.
 
 The `is_compression` flag, if on, will compress each file as a GZIP when uploaded. It is recommended you enable `is_compression`.
@@ -94,18 +60,18 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 
 ```
 {
-   "Version": "2012-10-17",
-   "Statement": [
-      {
-         "Sid": "PermissionForObjectOperations",
-         "Effect": "Allow",
-         "Principal": {
-            "AWS": "<<USER_ARN>>"
-         },
-         "Action": "s3:PutObject",
-         "Resource": "arn:aws:s3:::<<BUCKET_NAME>>/*"
-      }
-   ]
+   "Version": "2012-10-17",
+   "Statement": [
+      {
+         "Sid": "PermissionForObjectOperations",
+         "Effect": "Allow",
+         "Principal": {
+            "AWS": "<<USER_ARN>>"
+         },
+         "Action": "s3:PutObject",
+         "Resource": "arn:aws:s3:::<<BUCKET_NAME>>/*"
+      }
+   ]
 }
 ```
 
@@ -114,62 +80,17 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 1. Back in the LimaCharlie GUI, in your organization view, click `Outputs` and `Add Output`
 2. Select the stream you would like to send (events, detections, etc)
 3. Select the `Amazon S3` destination
-4. Give it a name, enter the bucket name, key\_id, and secret\_key you noted from AWS, and any other parameters you wish to configure
+4. Give it a name, enter the bucket name, key_id, and secret_key you noted from AWS, and any other parameters you wish to configure
 5. Click `Save Output`
 6. After a minute, the data should start getting written to your bucket
 
----
+## Related articles
 
-Thank you for your feedback! Our team will get back to you
+* [AWS CloudTrail](../../Sensors/Adapters/Adapter_Types/adapter-types-aws-cloudtrail.md)
+* [S3](../../Sensors/Adapters/Adapter_Types/adapter-types-s3.md)
+* [AWS](../../Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-aws.md)
+* [AWS GuardDuty](../../Sensors/Adapters/Adapter_Types/adapter-types-aws-guardduty.md)
 
-Your feedback
+## What's Next
 
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [AWS CloudTrail](/docs/adapter-types-aws-cloudtrail)
-* [S3](/docs/adapter-types-s3)
-* [AWS](/docs/ext-cloud-cli-aws)
-* [AWS GuardDuty](/docs/adapter-types-aws-guardduty)
-
----
-
-###### What's Next
-
-* [Apache Kafka](/docs/outputs-destinations-apache-kafka)
-
-Table of contents
-
-Tags
-
-* [aws](/docs/en/tags/aws)
-* [outputs](/docs/en/tags/outputs)
+* [Apache Kafka](outputs-destinations-apache-kafka.md)

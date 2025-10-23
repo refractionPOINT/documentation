@@ -1,38 +1,4 @@
----
-
-Webhook (Bulk)
-
-* 05 Oct 2024
-* 1 Minute to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Webhook (Bulk)
-
-* Updated on 05 Oct 2024
-* 1 Minute to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 Output batches of events, detections, audits, deployments or artifacts through a POST webhook.
 
@@ -51,52 +17,10 @@ auth_header_name: x-my-special-auth
 auth_header_value: 4756345846583498
 ```
 
----
+## Related articles
 
-Thank you for your feedback! Our team will get back to you
+* [Tutorial: Creating a Webhook Adapter](../../Sensors/Adapters/Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md)
 
-Your feedback
+## What's Next
 
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [Tutorial: Creating a Webhook Adapter](/docs/tutorial-creating-a-webhook-adapter)
-
----
-
-###### What's Next
-
-* [Testing Outputs](/docs/testing-outputs)
-
-Tags
-
-* [outputs](/docs/en/tags/outputs)
+* [Testing Outputs](../testing-outputs.md)
