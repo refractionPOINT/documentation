@@ -29,9 +29,26 @@ Activate this skill when users ask about:
 - Managing output authentication and credentials
 - Creating tailored output streams
 
-## Understanding LimaCharlie Outputs
+## Quick Start: Most Common Setup
 
-### Output Streams
+For users who want to get started quickly, the most common configuration is sending detections to Splunk:
+
+```yaml
+# Output Configuration
+name: splunk-detections
+stream: detection
+destination: webhook
+
+# Webhook Settings
+dest_host: https://splunk.corp.com:8088/services/collector/raw
+auth_header_name: Authorization
+auth_header_value: Splunk <YOUR_HEC_TOKEN>
+secret_key: my-hmac-secret
+```
+
+**Testing tip**: Start with the "audit" stream to verify configuration, then switch to your desired stream.
+
+## Understanding Output Streams
 
 LimaCharlie provides several data streams that can be routed to external destinations:
 
@@ -53,245 +70,97 @@ Choose the appropriate stream based on your use case:
 - **Artifact Stream** - For collected files and memory dumps; useful for forensics storage
 - **Tailored Stream** - For highly specific event types; best for custom workflows requiring precise filtering
 
-## Supported Output Destinations
+## Common Output Destinations
 
-### SIEM & Security Platforms
+### Splunk (Most Popular)
 
-#### Splunk
-- **Type**: Webhook or Webhook Bulk
-- **Use Case**: Send detections and events to Splunk via HTTP Event Collector (HEC)
-- **Configuration**:
-  ```yaml
-  dest_host: https://splunk-host.com:8088/services/collector/raw
-  auth_header_name: Authorization
-  auth_header_value: Splunk <HEC_TOKEN>
-  ```
-- **Setup Notes**:
-  - Configure HEC in Splunk with source type `_json`
-  - Use `/services/collector/raw` endpoint for raw JSON
-  - For Splunk Cloud, use the full URL: `https://<host>.splunkcloud.com:8088/services/collector/raw`
+Send detections and events to Splunk via HTTP Event Collector (HEC).
 
-#### Elastic
-- **Type**: Elastic
-- **Use Case**: Index events and detections in Elasticsearch
-- **Configuration**:
-  ```yaml
-  addresses: elastic-host-1.com,elastic-host-2.com
-  index: limacharlie
-  username: elastic_user
-  password: elastic_password
-  ```
-- **Authentication Options**:
-  - Username/password authentication
-  - API key authentication (use `api_key` field instead of username/password)
-  - Cloud ID for Elastic Cloud deployments
-
-#### OpenSearch
-- **Type**: OpenSearch
-- **Use Case**: Send data to OpenSearch clusters
-- **Configuration**: Similar to Elastic output with OpenSearch-specific endpoints
-
-### Cloud Storage & Data Lakes
-
-#### Amazon S3
-- **Type**: Amazon S3
-- **Use Case**: Archive events for long-term storage and compliance
-- **Configuration**:
-  ```yaml
-  bucket: my-security-bucket
-  key_id: AKIAIOSFODNN7EXAMPLE
-  secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-  region_name: us-east-1
-  is_compression: "true"
-  is_indexing: "true"
-  sec_per_file: 300
-  ```
-- **IAM Configuration Required**:
-  1. Create IAM user with S3 PutObject permission
-  2. Create S3 bucket in desired region
-  3. Apply bucket policy allowing the IAM user to write
-
-  Sample bucket policy:
-  ```json
-  {
-    "Version": "2012-10-17",
-    "Statement": [{
-      "Effect": "Allow",
-      "Principal": {"AWS": "arn:aws:iam::ACCOUNT:user/USERNAME"},
-      "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::BUCKET_NAME/*"
-    }]
-  }
-  ```
-- **Compression**: Highly recommended (`is_compression: "true"`) to reduce costs
-- **Indexing**: When enabled, creates manifest files for searchability
-
-#### Google Cloud Storage
-- **Type**: Google Cloud Storage (GCS)
-- **Use Case**: Archive to GCS buckets; integrate with Google Chronicle SIEM
-- **Configuration**:
-  ```yaml
-  bucket: my-security-bucket
-  secret_key: |
-    {
-      "type": "service_account",
-      "project_id": "my-project",
-      "private_key_id": "key-id",
-      "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
-      "client_email": "service-account@my-project.iam.gserviceaccount.com",
-      "client_id": "123456789",
-      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-      "token_uri": "https://oauth2.googleapis.com/token",
-      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/..."
-    }
-  is_compression: "true"
-  is_indexing: "true"
-  sec_per_file: 300
-  ```
-- **Service Account**: Create GCS service account with Storage Object Creator role
-- **Chronicle Integration**: Configure GCS output, then point Chronicle to the bucket
-
-#### Google Cloud BigQuery
-- **Type**: Google Cloud BigQuery
-- **Use Case**: Real-time analytics and reporting on security data
-- **Configuration**:
-  ```yaml
-  project: my-gcp-project
-  dataset: security_data
-  table: detections
-  schema: event_type:STRING, oid:STRING, sid:STRING, hostname:STRING
-  secret_key: |
-    {
-      "type": "service_account",
-      "project_id": "my-project",
-      ...
-    }
-  custom_transform: |
-    {
-      "event_type": "routing.event_type",
-      "oid": "routing.oid",
-      "sid": "routing.sid",
-      "hostname": "routing.hostname"
-    }
-  sec_per_file: 300
-  ```
-- **Schema**: Must match BigQuery table schema exactly
-- **Transform**: Maps LimaCharlie event fields to BigQuery columns
-- **Use Case**: Ideal for building dashboards with Looker Studio
-
-#### Azure Storage Blob
-- **Type**: Azure Storage Blob
-- **Use Case**: Archive to Azure Blob Storage
-- **Configuration**: Requires Azure connection string with container path
-
-#### Azure Event Hub
-- **Type**: Azure Event Hub
-- **Use Case**: Stream events to Azure Event Hub for processing
-- **Configuration**:
-  ```yaml
-  connection_string: Endpoint=sb://namespace.servicebus.windows.net/;SharedAccessKeyName=key-name;SharedAccessKey=key-value;EntityPath=hub-name
-  ```
-- **Important**: Connection string MUST include `;EntityPath=hub-name` at the end
-
-### Real-Time Streaming
-
-#### Apache Kafka
-- **Type**: Apache Kafka
-- **Use Case**: Stream events to Kafka topics for real-time processing
-- **Configuration**:
-  ```yaml
-  dest_host: kafka-broker1:9092,kafka-broker2:9092
-  topic: limacharlie-events
-  username: kafka-user  # optional
-  password: kafka-pass  # optional
-  ```
-- **Authentication**: Username/password assumes SASL_SSL + SCRAM-SHA-512
-- **AWS MSK Compatible**: Works with AWS Managed Streaming for Kafka
-
-#### Google Cloud Pub/Sub
-- **Type**: Google Cloud Pub/Sub
-- **Use Case**: Stream events to Pub/Sub topics
-- **Configuration**: Requires service account JSON key and topic name
-
-### Webhooks & Notifications
-
-#### Webhook (Individual)
-- **Type**: Webhook
-- **Use Case**: Send each event individually via HTTP POST
-- **Configuration**:
-  ```yaml
-  dest_host: https://webhooks.corp.com/limacharlie
-  secret_key: shared-secret-for-hmac
-  auth_header_name: X-API-Key
-  auth_header_value: your-api-key
-  ```
-- **Security**: HMAC signature included in `lc-signature` header for verification
-- **Custom Transform**: Supports Go templates for payload customization
-
-Example custom transform for Google Chat:
+**Configuration**:
 ```yaml
-custom_transform: |
-  {
-    "text": "Detection {{ .cat }} on {{ .routing.hostname }}: {{ .link }}"
-  }
+dest_host: https://splunk-host.com:8088/services/collector/raw
+auth_header_name: Authorization
+auth_header_value: Splunk <HEC_TOKEN>
 ```
 
-#### Webhook (Bulk)
-- **Type**: Webhook Bulk
-- **Use Case**: Send batched events via HTTP POST
-- **Configuration**:
-  ```yaml
-  dest_host: https://webhooks.corp.com/limacharlie/bulk
-  secret_key: shared-secret-for-hmac
-  auth_header_name: X-API-Key
-  auth_header_value: your-api-key
-  sec_per_file: 300
-  ```
-- **Batching**: Events accumulated and sent every `sec_per_file` seconds
-- **Efficiency**: Better for high-volume streams
+**Setup Notes**:
+- Configure HEC in Splunk with source type `_json`
+- Use `/services/collector/raw` endpoint for raw JSON
+- For Splunk Cloud: `https://<host>.splunkcloud.com:8088/services/collector/raw`
 
-#### Slack
-- **Type**: Slack
-- **Use Case**: Send detections and audit events to Slack channels
-- **Configuration**:
-  ```yaml
-  slack_api_token: xoxb-your-bot-token
-  slack_channel: #security-alerts
-  ```
-- **Supported Streams**: Detection and Audit only
-- **Setup Steps**:
-  1. Create Slack App at https://api.slack.com/apps
-  2. Add `chat:write` OAuth scope
-  3. Install app to workspace
-  4. Copy Bot User OAuth Token
-  5. Invite bot to target channel: `/invite @bot-name`
+### Amazon S3
 
-#### Syslog
-- **Type**: Syslog (TCP)
-- **Use Case**: Forward events to syslog receivers
-- **Configuration**:
-  ```yaml
-  dest_host: syslog.corp.com:514
-  is_tls: "true"
-  is_strict_tls: "true"
-  is_no_header: "false"
-  structured_data: additional-metadata
-  ```
-- **TLS**: Supports TCP/TLS with optional cert validation
-- **No Header**: Set `is_no_header: "true"` to use as plain TCP output
+Archive events for long-term storage and compliance.
 
-#### SMTP (Email)
-- **Type**: SMTP
-- **Use Case**: Send detection alerts via email
-- **Configuration**: Requires SMTP server, credentials, and recipient addresses
+**Configuration**:
+```yaml
+bucket: my-security-bucket
+key_id: AKIAIOSFODNN7EXAMPLE
+secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+region_name: us-east-1
+is_compression: "true"
+is_indexing: "true"
+sec_per_file: 300
+```
 
-### Automation & Orchestration
+**IAM Requirements**:
+- Create IAM user with S3 PutObject permission
+- Create S3 bucket in desired region
+- Apply bucket policy allowing the IAM user to write
 
-#### Tines
-- **Type**: Tines
-- **Use Case**: Trigger Tines automation workflows from detections
-- **Configuration**: Requires Tines webhook URL and authentication
+**Cost Tip**: Enable compression (`is_compression: "true"`) to reduce costs by ~70%
+
+### Elastic
+
+Index events and detections in Elasticsearch.
+
+**Configuration**:
+```yaml
+addresses: elastic-host-1.com,elastic-host-2.com
+index: limacharlie
+username: elastic_user
+password: elastic_password
+```
+
+**Authentication Options**:
+- Username/password authentication
+- API key authentication (use `api_key` field instead of username/password)
+- Cloud ID for Elastic Cloud deployments
+
+### Slack
+
+Send detections and audit events to Slack channels.
+
+**Configuration**:
+```yaml
+slack_api_token: xoxb-your-bot-token
+slack_channel: #security-alerts
+```
+
+**Setup Steps**:
+1. Create Slack App at https://api.slack.com/apps
+2. Add `chat:write` OAuth scope
+3. Install app to workspace
+4. Copy Bot User OAuth Token
+5. Invite bot to target channel: `/invite @bot-name`
+
+**Supported Streams**: Detection and Audit only
+
+### Generic Webhook
+
+Send events to any HTTP endpoint.
+
+**Configuration**:
+```yaml
+dest_host: https://webhooks.corp.com/limacharlie
+secret_key: shared-secret-for-hmac
+auth_header_name: X-API-Key
+auth_header_value: your-api-key
+```
+
+**Security**: HMAC signature included in `lc-signature` header for verification
+
+**Bulk Option**: Use "Webhook Bulk" destination type for batched events (more efficient for high volume)
 
 ## Configuring Outputs: Step-by-Step
 
@@ -312,29 +181,29 @@ Help users choose the appropriate stream:
 - **Deployment** - Sensor status (low volume)
 - **Artifact** - Collected files (low volume)
 
-For initial testing, recommend using **Audit** stream to verify configuration.
+**For initial testing**, recommend using **Audit** stream to verify configuration.
 
 ### 3. Select Destination Type
 
-Based on user requirements, recommend the appropriate destination type from the supported list.
+Based on user requirements, recommend the appropriate destination type from the supported list. See REFERENCE.md for all 18+ destination types.
 
 ### 4. Configure Destination Parameters
 
 Provide destination-specific guidance:
 
-#### For Cloud Storage (S3, GCS, Azure):
+**For Cloud Storage (S3, GCS, Azure)**:
 - Verify IAM/service account permissions
 - Enable compression to reduce costs
 - Set appropriate `sec_per_file` (300-600 seconds typical)
 - Consider enabling indexing for searchability
 
-#### For SIEM Platforms (Splunk, Elastic):
+**For SIEM Platforms (Splunk, Elastic)**:
 - Verify authentication credentials
 - Test network connectivity from LimaCharlie
 - Configure appropriate index/destination
 - Consider using bulk webhook for high volume
 
-#### For Webhooks:
+**For Webhooks**:
 - Always set `secret_key` for HMAC verification
 - Use HTTPS endpoints
 - Implement exponential backoff on receiver
@@ -342,59 +211,35 @@ Provide destination-specific guidance:
 
 ### 5. Configure Advanced Settings
 
-#### Filtering Options:
-
-**By Tag**:
+**Filter by Tag**:
 ```yaml
 tag: production
 ```
 Only sends events from sensors with the specified tag.
 
-**By Sensor ID**:
-```yaml
-sensor: <sensor-id>
-```
-Only sends events from a specific sensor.
-
-**By Event Type (Allow List)**:
+**Filter by Event Type (Allow List)**:
 ```yaml
 detection_categories:
   - NEW_PROCESS
   - NETWORK_CONNECTIONS
 ```
-Only sends specific event types.
 
-**By Event Type (Deny List)**:
+**Filter by Event Type (Deny List)**:
 ```yaml
 disallowed_detection_categories:
   - DNS_REQUEST
   - FILE_GET_REP
 ```
-Excludes specific event types.
 
-**Flatten JSON**:
-```yaml
-flatten: true
-```
-Converts nested JSON to flat structure (useful for relational databases).
-
-**Wrap with Event Type**:
-```yaml
-wrap_with_event_type: true
-```
-Adds event type prefix to each record.
-
-**Exclude Routing Label**:
+**Exclude Routing Metadata** (reduces data volume):
 ```yaml
 is_no_routing: true
 ```
-Removes routing metadata to reduce data volume (useful for cost optimization).
 
-**Delete on Failure**:
+**Flatten JSON** (for relational databases):
 ```yaml
-delete_on_failure: true
+flatten: true
 ```
-Automatically removes output if it fails (useful for temporary outputs).
 
 ### 6. Save and Test
 
@@ -429,32 +274,7 @@ After configuration:
    - Once confirmed working, change to desired stream
    - Monitor for a few minutes to ensure continued operation
 
-### Troubleshooting Failed Outputs
-
-If an output fails:
-- **Automatic Disable**: Output temporarily disabled to prevent spam
-- **Auto Re-enable**: Will retry automatically after cooldown period
-- **Manual Re-enable**: Edit and save output configuration to force retry
-- **Platform Logs**: Check for detailed error messages in Platform Logs > Errors
-
-Common failure causes:
-- Invalid credentials or expired tokens
-- Network connectivity issues (firewall, DNS)
-- Incorrect destination format or endpoint
-- Insufficient permissions (IAM, service account)
-- Rate limiting or quota exceeded at destination
-
-## Stream Filtering and Data Allowlisting
-
-### Filtering via Output Configuration
-
-Use built-in filtering options to reduce data volume:
-
-1. **Tag Filtering** - Only send from tagged sensors
-2. **Event Type Filtering** - Use allow/deny lists for event types
-3. **Exclude Routing** - Remove metadata to reduce size
-
-### Advanced Filtering with Tailored Streams
+## Advanced Filtering with Tailored Streams
 
 For highly specific filtering, use Detection & Response rules with the `output` action:
 
@@ -472,34 +292,19 @@ respond:
 
 This forwards only matching events to an output named "suspicious-processes-output" via the "tailored" stream.
 
-Benefits:
+**Benefits**:
 - Precise control over what gets sent
 - Can apply complex detection logic
 - Reduces output volume and costs
 - Enables different destinations for different event types
 
-### Data Allowlisting and Security
-
-LimaCharlie does not have static IP addresses or CIDR ranges for allowlisting due to auto-scaling infrastructure.
-
-**For Webhook Security:**
-- Use the `secret_key` parameter as a shared secret
-- LimaCharlie includes `lc-signature` header with HMAC-SHA256 of payload
-- Verify signature on receiver side to authenticate LimaCharlie origin
-
-**For Network Security:**
-- Use TLS/HTTPS endpoints when possible
-- Implement authentication headers (`auth_header_name` / `auth_header_value`)
-- Use service account credentials with minimal permissions
-- Rotate credentials regularly
-
-## Cost Considerations and Billing
+## Cost Management
 
 ### Output Billing Model
 
 LimaCharlie aims to bill outputs at cost according to published pricing (https://limacharlie.io/pricing).
 
-**Exception - Free GCP Outputs:**
+**Exception - Free GCP Outputs**:
 When using GCP-based outputs (GCS, Pub/Sub, BigQuery) with destinations in the same region as the LimaCharlie datacenter, outputs are NOT billed.
 
 LimaCharlie datacenter regions:
@@ -510,7 +315,7 @@ LimaCharlie datacenter regions:
 - **India**: `asia-south1`
 - **Australia**: `australia-southeast1`
 
-**Cost Optimization Strategies:**
+### Cost Optimization Strategies
 
 1. **Use GCP Outputs When Possible**
    - Configure GCS, BigQuery, or Pub/Sub in matching region
@@ -554,192 +359,7 @@ Factors affecting volume:
 - Event type filters applied
 - Compression enabled/disabled
 
-## Common Configuration Examples
-
-### Example 1: Splunk Integration for Detections
-
-**Goal**: Send all detection alerts to Splunk HEC
-
-```yaml
-# Output Configuration
-name: splunk-detections
-stream: detection
-destination: webhook
-
-# Webhook Settings
-dest_host: https://splunk.corp.com:8088/services/collector/raw
-auth_header_name: Authorization
-auth_header_value: Splunk EA12XXXX-XXXX-XXXX-XXXX-XXXXXXXXXX34
-secret_key: my-hmac-secret
-
-# Advanced Settings
-flatten: false
-wrap_with_event_type: false
-delete_on_failure: false
-```
-
-**Setup Notes**:
-1. Configure Splunk HEC with sourcetype `_json`
-2. Use `/raw` endpoint for cleaner JSON parsing
-3. Set secret_key for authentication verification
-4. Start with audit stream to test, then switch to detection
-
-### Example 2: S3 Archive for Long-Term Storage
-
-**Goal**: Archive all events to S3 with compression
-
-```yaml
-# Output Configuration
-name: s3-event-archive
-stream: event
-destination: s3
-
-# S3 Settings
-bucket: my-security-archive
-key_id: AKIAIOSFODNN7EXAMPLE
-secret_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-region_name: us-east-1
-is_compression: "true"
-is_indexing: "false"
-sec_per_file: 600
-dir: limacharlie/events
-
-# Advanced Settings
-is_no_routing: true  # Exclude routing to save space
-```
-
-**Setup Notes**:
-1. Create S3 bucket in us-east-1
-2. Create IAM user with PutObject permission
-3. Apply bucket policy allowing IAM user
-4. Enable compression to reduce costs by ~70%
-5. Files uploaded every 10 minutes (600 seconds)
-
-### Example 3: BigQuery for Analytics
-
-**Goal**: Stream detections to BigQuery for dashboards
-
-```yaml
-# Output Configuration
-name: bigquery-detections
-stream: detection
-destination: bigquery
-
-# BigQuery Settings
-project: my-security-project
-dataset: limacharlie_data
-table: detections
-schema: timestamp:TIMESTAMP, event_type:STRING, hostname:STRING, detection_name:STRING, sid:STRING, oid:STRING
-secret_key: |
-  {
-    "type": "service_account",
-    "project_id": "my-security-project",
-    "private_key_id": "abc123...",
-    "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
-    "client_email": "lc-bigquery@my-security-project.iam.gserviceaccount.com",
-    "client_id": "123456789",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/..."
-  }
-custom_transform: |
-  {
-    "timestamp": "routing.this_ts",
-    "event_type": "routing.event_type",
-    "hostname": "routing.hostname",
-    "detection_name": "cat",
-    "sid": "routing.sid",
-    "oid": "routing.oid"
-  }
-sec_per_file: 300
-```
-
-**Setup Notes**:
-1. Create BigQuery dataset and table with matching schema
-2. Create service account with BigQuery Data Editor role
-3. Schema must match EXACTLY (names and types)
-4. Custom transform maps LimaCharlie fields to BigQuery columns
-5. Consider using GCP region matching LimaCharlie for free output
-
-### Example 4: Slack Notifications for Critical Detections
-
-**Goal**: Send critical detection alerts to Slack channel
-
-```yaml
-# Output Configuration
-name: slack-critical-alerts
-stream: detection
-destination: slack
-
-# Slack Settings
-slack_api_token: xoxb-123456789-abcdefghijklmnop
-slack_channel: #security-critical
-
-# Advanced Settings - Filter for critical only
-detection_categories:
-  - ransomware-detected
-  - lateral-movement
-  - privilege-escalation
-```
-
-**Setup Notes**:
-1. Create Slack App with `chat:write` scope
-2. Install to workspace and get Bot OAuth Token
-3. Invite bot to #security-critical channel
-4. Use detection_categories to filter for critical alerts only
-5. Consider separate outputs for different severity levels
-
-### Example 5: Tailored Stream for Specific Process Monitoring
-
-**Goal**: Send only specific process events to webhook
-
-**Step 1: Create Output**
-```yaml
-# Output Configuration
-name: suspicious-processes
-stream: tailored
-destination: webhook
-
-# Webhook Settings
-dest_host: https://webhooks.corp.com/suspicious-processes
-secret_key: shared-secret
-auth_header_name: X-API-Key
-auth_header_value: api-key-123
-```
-
-**Step 2: Create D&R Rule**
-```yaml
-# Detection & Response Rule
-detect:
-  event: NEW_PROCESS
-  op: or
-  rules:
-    - op: ends with
-      path: event/FILE_PATH
-      value: powershell.exe
-    - op: ends with
-      path: event/FILE_PATH
-      value: cmd.exe
-    - op: contains
-      path: event/COMMAND_LINE
-      value: "-enc"
-
-respond:
-  - action: output
-    name: suspicious-processes
-```
-
-**Setup Notes**:
-1. Create output with "tailored" stream
-2. Output remains idle until D&R rule forwards events
-3. D&R rule uses `output` action to forward matching events
-4. Highly efficient - only specific events sent
-5. Can have multiple D&R rules forwarding to same output
-
-## Best Practices
-
-### Security Best Practices
+## Security Best Practices
 
 1. **Use Secret Keys**: Always set `secret_key` for webhooks to enable HMAC verification
 2. **Minimal Permissions**: Grant service accounts/IAM users only necessary permissions
@@ -747,165 +367,58 @@ respond:
 4. **Rotate Credentials**: Regularly rotate API keys and service account keys
 5. **Monitor Platform Logs**: Regularly check for output failures and errors
 
-### Performance Best Practices
+## Navigation & Additional Resources
 
-1. **Test Before Production**: Always test with audit stream first
-2. **Use Bulk for High Volume**: Bulk webhooks better for event stream
-3. **Enable Compression**: Reduces bandwidth and storage costs
-4. **Filter at Source**: Use output filters rather than filtering at destination
-5. **Match GCP Regions**: Use same-region GCP outputs for free data transfer
+- **REFERENCE.md** - Complete configuration syntax for all 18+ output destinations
+- **EXAMPLES.md** - 5 complete configuration examples (Splunk, S3, BigQuery, Slack, Tailored)
+- **TROUBLESHOOTING.md** - Detailed troubleshooting by issue type
 
-### Operational Best Practices
+### Documentation References
 
-1. **Name Outputs Clearly**: Use descriptive names like "splunk-production-detections"
-2. **Document Configurations**: Keep records of output purposes and configurations
-3. **Monitor Output Health**: Set up alerts for output failures
-4. **Plan for Volume**: Estimate data volumes before enabling event streams
-5. **Use Multiple Outputs**: Different destinations for different purposes (archive vs. alerting)
+- Output Destinations: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/Output_Destinations/`
+- Testing Outputs: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/testing-outputs.md`
+- Output Billing: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/output-billing.md`
+- Output Allowlisting: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/output-allowlisting.md`
+- Response Actions (for tailored streams): `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Detection_and_Response/Reference/response-actions.md`
 
-### Cost Optimization Best Practices
+### LimaCharlie Resources
 
-1. **GCP Region Matching**: First choice for cost-free outputs
-2. **Compression Enabled**: Reduces transfer and storage costs by ~70%
-3. **Strip Routing Metadata**: Use `is_no_routing: true` when metadata not needed
-4. **Tailored Streams**: Most cost-effective for specific event filtering
-5. **Batch Operations**: Use `sec_per_file` to batch smaller uploads into fewer operations
+- Web Console: https://app.limacharlie.io
+- API Documentation: https://api.limacharlie.io
+- Pricing: https://limacharlie.io/pricing
+- Support: support@limacharlie.io
+- Community Slack: https://slack.limacharlie.io
 
-## Credential Management
+## Quick Reference: Common Parameters
 
-### Secure Credential Storage
+### Filtering Options
+- `tag: <tag-name>` - Filter by sensor tag
+- `sensor: <sensor-id>` - Filter by specific sensor
+- `detection_categories: [LIST]` - Allow specific event types
+- `disallowed_detection_categories: [LIST]` - Deny specific event types
 
-Guide users to store credentials securely:
+### Data Manipulation
+- `flatten: true` - Convert nested JSON to flat structure
+- `wrap_with_event_type: true` - Add event type prefix
+- `is_no_routing: true` - Remove routing metadata
+- `custom_transform: <template>` - Custom Go template transformation
 
-1. **LimaCharlie Storage**: Credentials stored encrypted in LimaCharlie
-2. **Service Accounts**: Prefer service accounts over user credentials
-3. **API Keys**: Use API keys with minimal scope when possible
-4. **Rotation Policy**: Establish regular credential rotation schedule
+### Storage Options
+- `is_compression: "true"` - Enable compression (S3, GCS)
+- `is_indexing: "true"` - Create manifest files (S3, GCS)
+- `sec_per_file: 300` - Seconds per batch/file
+- `dir: <path>` - Directory prefix for files
 
-### Common Credential Types
+### Security Options
+- `secret_key: <value>` - Shared secret for HMAC
+- `auth_header_name: <name>` - Custom auth header name
+- `auth_header_value: <value>` - Custom auth header value
+- `is_tls: "true"` - Enable TLS
+- `is_strict_tls: "true"` - Enforce certificate validation
 
-**AWS IAM**:
-- Access Key ID and Secret Access Key
-- Minimal permissions: `s3:PutObject` on specific bucket
-
-**GCP Service Account**:
-- JSON key file with private key
-- Minimal roles: Storage Object Creator, BigQuery Data Editor, Pub/Sub Publisher
-
-**Azure**:
-- Connection strings with SAS tokens
-- Storage account keys with minimal permissions
-
-**API Keys**:
-- Splunk HEC tokens
-- Elastic API keys
-- Custom webhook authentication keys
-
-## Troubleshooting Guide
-
-### Output Not Working
-
-**Checklist:**
-1. Verify authentication credentials are correct
-2. Check Platform Logs > Errors for detailed messages
-3. Confirm destination endpoint is accessible from internet
-4. Test with audit stream first (low volume, easy to verify)
-5. Check destination system for firewall rules
-6. Verify format of configuration (especially connection strings)
-
-### No Data Appearing
-
-**Checklist:**
-1. Verify correct stream selected (detection vs. event)
-2. Check if filters are too restrictive
-3. Confirm sensors have appropriate tags (if tag filter used)
-4. Verify events are being generated (check Timeline)
-5. Wait a few minutes - some outputs batch before sending
-
-### Authentication Failures
-
-**Checklist:**
-1. Verify credentials haven't expired
-2. Check service account has necessary permissions
-3. Confirm API keys are active and not revoked
-4. Test credentials directly against destination
-5. Check for typos in credential strings
-
-### High Costs
-
-**Solutions:**
-1. Switch to GCP outputs in matching regions (free)
-2. Enable compression for storage outputs
-3. Add event type filters to reduce volume
-4. Use tailored streams for precise filtering
-5. Review `is_no_routing` option to reduce metadata
-6. Consider separate outputs for archive vs. real-time
-
-### Intermittent Failures
-
-**Checklist:**
-1. Check destination system for rate limiting
-2. Verify destination has sufficient capacity
-3. Review network connectivity stability
-4. Check for quota limits at destination
-5. Consider using bulk webhooks to reduce request frequency
-
-## Advanced Topics
-
-### Custom Transforms
-
-Custom transforms allow reformatting output data using Go templates.
-
-**Example - Minimal Detection Format**:
-```yaml
-custom_transform: |
-  {
-    "detection": "{{ .cat }}",
-    "sensor": "{{ .routing.sid }}",
-    "host": "{{ .routing.hostname }}",
-    "time": "{{ .routing.this_ts }}"
-  }
-```
-
-**Example - Google Chat Integration**:
-```yaml
-custom_transform: |
-  {
-    "text": "Detection {{ .cat }} on {{ .routing.hostname }}: {{ .link }}"
-  }
-```
-
-**Available Template Fields**:
-- `.cat` - Detection category/name
-- `.routing.sid` - Sensor ID
-- `.routing.oid` - Organization ID
-- `.routing.hostname` - Host name
-- `.routing.event_type` - Event type
-- `.routing.this_ts` - Timestamp
-- `.link` - Detection link in web console
-- `.event.*` - All event fields
-
-### Multiple Outputs Strategy
-
-Consider using multiple outputs for different purposes:
-
-1. **Archive Output**: S3/GCS with full event stream, compressed
-2. **SIEM Output**: Detection stream to Splunk/Elastic for alerts
-3. **Analytics Output**: BigQuery with filtered events for dashboards
-4. **Notification Output**: Slack for critical detections only
-5. **Automation Output**: Webhook for orchestration tool integration
-
-This approach optimizes for different use cases while managing costs.
-
-### Output Performance Optimization
-
-For high-volume environments:
-
-1. **Use Bulk Outputs**: Webhook Bulk, not individual Webhook
-2. **Increase Batch Time**: Higher `sec_per_file` reduces request frequency
-3. **Parallel Outputs**: Multiple outputs work independently
-4. **Filter Aggressively**: Reduce volume at source
-5. **Consider Sharding**: Use `is_no_sharding: false` for S3/GCS to organize files
+### Management Options
+- `delete_on_failure: true` - Auto-delete if output fails
+- `is_no_header: true` - Omit syslog header (TCP mode)
 
 ## User Interaction Guidelines
 
@@ -933,40 +446,13 @@ When helping users configure outputs:
    - Guide through testing process
    - Help interpret errors from Platform Logs
    - Suggest verification steps at destination
-   - Assist with troubleshooting if issues arise
+   - Assist with troubleshooting if issues arise (see TROUBLESHOOTING.md)
 
 5. **Optimize and Refine**:
    - Suggest filters to reduce unnecessary data
    - Recommend compression and batching settings
    - Point out cost optimization opportunities
    - Help configure multiple outputs if needed
-
-## Additional Resources
-
-### Documentation References
-
-- Output Destinations: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/Output_Destinations/`
-- Testing Outputs: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/testing-outputs.md`
-- Output Billing: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/output-billing.md`
-- Output Allowlisting: `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Outputs/output-allowlisting.md`
-- Response Actions (for tailored streams): `/home/maxime/goProject/github.com/refractionPOINT/documentation/limacharlie/doc/Detection_and_Response/Reference/response-actions.md`
-
-### LimaCharlie Resources
-
-- Web Console: https://app.limacharlie.io
-- API Documentation: https://api.limacharlie.io
-- Pricing: https://limacharlie.io/pricing
-- Support: support@limacharlie.io
-- Community Slack: https://slack.limacharlie.io
-
-### Vendor Documentation
-
-- Splunk HEC: https://docs.splunk.com/Documentation/Splunk/latest/Data/UsetheHTTPEventCollector
-- AWS S3: https://docs.aws.amazon.com/s3/
-- GCP Storage: https://cloud.google.com/storage/docs
-- Azure Storage: https://docs.microsoft.com/azure/storage/
-- Elastic: https://www.elastic.co/guide/
-- Slack API: https://api.slack.com/
 
 ## Conclusion
 

@@ -28,20 +28,21 @@ Playbooks are Python scripts that execute within LimaCharlie's cloud infrastruct
 5. **Rich Execution Environment**: Pre-installed packages including ML libraries, AI CLI tools, and more
 6. **Organization Isolation**: Each organization's playbooks run in dedicated containers
 
-## Playbook Structure
+## Quick Start: Your First Playbook
 
-Every playbook is a Python script with a required top-level function:
+### Basic Playbook Structure
+
+Every playbook requires a single `playbook()` function:
 
 ```python
 import limacharlie
-import json
 
 def playbook(sdk, data):
     """
     Required entry point for all playbooks.
 
     Args:
-        sdk: Pre-authenticated limacharlie.Manager() instance (or None if no credentials provided)
+        sdk: Pre-authenticated limacharlie.Manager() instance (or None if no credentials)
         data: Dictionary of input parameters passed to the playbook
 
     Returns:
@@ -55,43 +56,95 @@ def playbook(sdk, data):
     # Your automation logic here
 
     return {
-        "data": {"result": "success"},
-        # "error": "error message if failed",
-        # "detection": {...},
-        # "cat": "detection-category"
+        "data": {"result": "success"}
     }
 ```
 
-### Return Values
+### Simple Example: Sensor Status Check
+
+```python
+import limacharlie
+
+def playbook(sdk, data):
+    """Check if sensor is online and return status."""
+
+    if not sdk:
+        return {"error": "API credentials required"}
+
+    sid = data.get("sid")
+    if not sid:
+        return {"error": "sid parameter required"}
+
+    try:
+        sensor = sdk.sensor(sid)
+        info = sensor.getInfo()
+
+        return {
+            "data": {
+                "hostname": info.get("hostname"),
+                "is_online": info.get("is_online"),
+                "platform": info.get("plat"),
+                "tags": info.get("tags", [])
+            }
+        }
+    except Exception as e:
+        return {"error": f"Failed to get sensor info: {str(e)}"}
+```
+
+### Storing and Running Your Playbook
+
+Upload to LimaCharlie Hive:
+
+```bash
+limacharlie hive set playbook --key my-first-playbook --data playbook.py --data-key python
+```
+
+Test interactively from the web interface:
+
+1. Navigate to **Extensions** > **Playbook**
+2. Select your playbook
+3. Provide test data as JSON: `{"sid": "your-sensor-id"}`
+4. Click **Run Playbook**
+
+## Playbook Return Values
 
 The `playbook()` function must return a dictionary with one or more of these optional keys:
 
-1. **data**: Return data to the caller or LimaCharlie
-   ```python
-   return {"data": {"sensors": [s.getInfo() for s in sdk.sensors()]}}
-   ```
+### 1. Return Data (`data`)
 
-2. **error**: Report an error condition
-   ```python
-   return {"error": "Failed to connect to external API"}
-   ```
+Return information to the caller:
 
-3. **detection**: Generate a detection report
-   ```python
-   return {
-       "detection": {
-           "title": "Suspicious Activity Detected",
-           "content": event_details
-       },
-       "cat": "suspicious-behavior"
-   }
-   ```
+```python
+return {"data": {"sensors": [s.getInfo() for s in sdk.sensors()]}}
+```
+
+### 2. Report Errors (`error`)
+
+Report an error condition:
+
+```python
+return {"error": "Failed to connect to external API"}
+```
+
+### 3. Generate Detection (`detection` + `cat`)
+
+Create a detection report:
+
+```python
+return {
+    "detection": {
+        "title": "Suspicious Activity Detected",
+        "content": event_details
+    },
+    "cat": "suspicious-behavior"
+}
+```
 
 ## Triggering Playbooks
 
 ### 1. Via D&R Rules (Automated)
 
-The most powerful way to use playbooks is triggering them automatically from D&R rules:
+Trigger playbooks automatically from detections:
 
 ```yaml
 detect:
@@ -114,7 +167,6 @@ respond:
         sid: "{{ .routing.sid }}"
         hostname: "{{ .routing.hostname }}"
         process_id: "{{ .event.PROCESS_ID }}"
-        file_path: "{{ .event.FILE_PATH }}"
         command_line: "{{ .event.COMMAND_LINE }}"
 ```
 
@@ -126,18 +178,14 @@ respond:
 
 ### 2. Via Python SDK
 
-Invoke playbooks programmatically from your own scripts:
+Invoke playbooks programmatically:
 
 ```python
 import limacharlie
 
-# Authenticate to your organization
 lc = limacharlie.Manager()
-
-# Get extension manager
 ext = limacharlie.Extension(lc)
 
-# Execute playbook
 response = ext.request("ext-playbook", "run_playbook", {
     "name": "my-playbook",
     "credentials": "hive://secret/my-api-key",
@@ -146,13 +194,11 @@ response = ext.request("ext-playbook", "run_playbook", {
         "incident_id": "INC-2024-001"
     }
 })
-
-print(response)
 ```
 
-### 3. Via API
+### 3. Via REST API
 
-Make direct REST API calls to execute playbooks:
+Make direct API calls:
 
 ```bash
 curl -X POST https://api.limacharlie.io/v1/orgs/YOUR_OID/extension \
@@ -164,28 +210,16 @@ curl -X POST https://api.limacharlie.io/v1/orgs/YOUR_OID/extension \
     "request": {
       "name": "my-playbook",
       "credentials": "hive://secret/my-api-key",
-      "data": {
-        "param1": "value1"
-      }
+      "data": {"param1": "value1"}
     }
   }'
 ```
 
-### 4. Interactive Execution
+See [REFERENCE.md](./REFERENCE.md) for complete triggering details and advanced options.
 
-Run playbooks manually from the LimaCharlie web interface:
-
-1. Navigate to **Extensions** > **Playbook**
-2. Select the playbook to execute
-3. Optionally provide input data as JSON
-4. Click **Run Playbook**
-5. View results in the interface
-
-## Common Playbook Patterns
+## Common Patterns
 
 ### Pattern 1: Webhook Notification
-
-Send security events to external systems:
 
 ```python
 import limacharlie
@@ -195,13 +229,11 @@ import urllib.request
 def playbook(sdk, data):
     """Send detection to external webhook."""
 
-    # Get webhook URL from LimaCharlie secrets
     if not sdk:
         return {"error": "API credentials required"}
 
-    webhook_secret = limacharlie.Hive(sdk, "secret").get("webhook-url").data["secret"]
+    webhook_url = limacharlie.Hive(sdk, "secret").get("webhook-url").data["secret"]
 
-    # Prepare payload
     payload = {
         "timestamp": data.get("timestamp"),
         "hostname": data.get("hostname"),
@@ -209,10 +241,9 @@ def playbook(sdk, data):
         "details": data
     }
 
-    # Send webhook
     try:
         request = urllib.request.Request(
-            webhook_secret,
+            webhook_url,
             data=json.dumps(payload).encode('utf-8'),
             headers={"Content-Type": "application/json"},
             method="POST"
@@ -221,19 +252,12 @@ def playbook(sdk, data):
         with urllib.request.urlopen(request) as response:
             response_body = response.read().decode('utf-8')
 
-        return {
-            "data": {
-                "status": "sent",
-                "response": response_body
-            }
-        }
+        return {"data": {"status": "sent", "response": response_body}}
     except Exception as e:
         return {"error": f"Webhook failed: {str(e)}"}
 ```
 
-### Pattern 2: Enrichment from External API
-
-Enhance detections with threat intelligence:
+### Pattern 2: Threat Intelligence Enrichment
 
 ```python
 import limacharlie
@@ -243,123 +267,27 @@ import urllib.request
 def playbook(sdk, data):
     """Enrich IP address with threat intel."""
 
-    ip_address = data.get("ip_address")
-    if not ip_address:
-        return {"error": "ip_address parameter required"}
-
-    # Get API key from secrets
-    if not sdk:
-        return {"error": "API credentials required"}
+    if not sdk or not data.get("ip_address"):
+        return {"error": "API credentials and ip_address required"}
 
     api_key = limacharlie.Hive(sdk, "secret").get("virustotal-api-key").data["secret"]
+    url = f"https://www.virustotal.com/api/v3/ip_addresses/{data['ip_address']}"
 
-    # Query VirusTotal
-    try:
-        url = f"https://www.virustotal.com/api/v3/ip_addresses/{ip_address}"
-        request = urllib.request.Request(url, headers={"x-apikey": api_key})
+    request = urllib.request.Request(url, headers={"x-apikey": api_key})
+    with urllib.request.urlopen(request) as response:
+        vt_data = json.loads(response.read().decode('utf-8'))
 
-        with urllib.request.urlopen(request) as response:
-            vt_data = json.loads(response.read().decode('utf-8'))
+    malicious_count = vt_data.get("data", {}).get("attributes", {}).get("last_analysis_stats", {}).get("malicious", 0)
 
-        # Extract relevant information
-        attributes = vt_data.get("data", {}).get("attributes", {})
-        last_analysis = attributes.get("last_analysis_stats", {})
-
-        malicious_count = last_analysis.get("malicious", 0)
-
-        # Generate detection if malicious
-        if malicious_count > 0:
-            return {
-                "detection": {
-                    "ip_address": ip_address,
-                    "malicious_votes": malicious_count,
-                    "country": attributes.get("country"),
-                    "as_owner": attributes.get("as_owner")
-                },
-                "cat": "malicious-ip-detected",
-                "data": {"enriched": True, "malicious": True}
-            }
-
+    if malicious_count > 0:
         return {
-            "data": {
-                "enriched": True,
-                "malicious": False,
-                "vt_stats": last_analysis
-            }
+            "detection": {"ip_address": data["ip_address"], "malicious_votes": malicious_count},
+            "cat": "malicious-ip-detected"
         }
-
-    except Exception as e:
-        return {"error": f"VT lookup failed: {str(e)}"}
+    return {"data": {"enriched": True, "malicious": False}}
 ```
 
-### Pattern 3: Multi-Sensor Investigation
-
-Perform coordinated investigation across multiple endpoints:
-
-```python
-import limacharlie
-import time
-
-def playbook(sdk, data):
-    """Search for indicator across all Windows sensors."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    ioc_hash = data.get("hash")
-    if not ioc_hash:
-        return {"error": "hash parameter required"}
-
-    results = []
-
-    # Iterate through all Windows sensors
-    for sensor in sdk.sensors():
-        info = sensor.getInfo()
-
-        # Skip non-Windows sensors
-        if info.get("plat") != "windows":
-            continue
-
-        # Check if sensor is online
-        if not info.get("is_online"):
-            continue
-
-        try:
-            # Search for hash on sensor
-            task_result = sensor.task(
-                f"dir_find_hash C:\\ --hash {ioc_hash}",
-                investigationId="playbook-hash-search"
-            )
-
-            # Wait for response (simplified - production should be more robust)
-            time.sleep(2)
-
-            # Check if hash was found (would need to query timeline in real implementation)
-            results.append({
-                "sensor_id": info.get("sid"),
-                "hostname": info.get("hostname"),
-                "searched": True
-            })
-
-        except Exception as e:
-            results.append({
-                "sensor_id": info.get("sid"),
-                "hostname": info.get("hostname"),
-                "error": str(e)
-            })
-
-    return {
-        "data": {
-            "ioc": ioc_hash,
-            "sensors_searched": len(results),
-            "results": results
-        }
-    }
-```
-
-### Pattern 4: Automated Triage and Response
-
-Implement automated decision-making based on context:
+### Pattern 3: Automated Response
 
 ```python
 import limacharlie
@@ -367,224 +295,43 @@ import limacharlie
 def playbook(sdk, data):
     """Automatically triage and respond to suspicious process."""
 
-    if not sdk:
-        return {"error": "API credentials required"}
+    if not sdk or not data.get("sid") or not data.get("process_id"):
+        return {"error": "API credentials, sid, and process_id required"}
 
-    sid = data.get("sid")
-    pid = data.get("process_id")
-    file_path = data.get("file_path", "").lower()
-
-    if not sid or not pid:
-        return {"error": "sid and process_id required"}
-
-    # Get sensor
-    sensor = sdk.sensor(sid)
+    sensor = sdk.sensor(data["sid"])
     info = sensor.getInfo()
-
-    # Decision logic
     actions_taken = []
-    severity = "low"
+    is_vip = "vip" in info.get("tags", [])
 
-    # Check if sensor is tagged as VIP
-    tags = info.get("tags", [])
-    is_vip = "vip" in tags
+    # Collect memory dump
+    sensor.task(f"mem_map --pid {data['process_id']}", investigationId=f"triage-{data['process_id']}")
+    actions_taken.append("memory_mapped")
 
-    # Check if process is in suspicious location
-    suspicious_paths = ["\\temp\\", "\\downloads\\", "\\appdata\\local\\temp\\"]
-    is_suspicious_location = any(path in file_path for path in suspicious_paths)
+    # Kill and isolate if VIP
+    if is_vip:
+        sensor.task(f"deny_tree {data['process_id']}")
+        sensor.task("segregate_network")
+        actions_taken.extend(["process_killed", "network_isolated"])
 
-    try:
-        if is_suspicious_location:
-            # Collect process memory dump
-            sensor.task(
-                f"mem_map --pid {pid}",
-                investigationId=f"triage-{pid}"
-            )
-            actions_taken.append("memory_map_collected")
-            severity = "medium"
-
-            # Kill process if on VIP system
-            if is_vip:
-                sensor.task(f"deny_tree {pid}")
-                actions_taken.append("process_killed")
-                severity = "high"
-
-                # Isolate VIP system
-                sensor.task("segregate_network")
-                actions_taken.append("network_isolated")
-
-        # Always collect history
-        sensor.task("history_dump", investigationId=f"triage-{pid}")
-        actions_taken.append("history_collected")
-
-    except Exception as e:
-        return {"error": f"Response actions failed: {str(e)}"}
-
-    # Generate detection
     return {
         "detection": {
-            "sensor_id": sid,
+            "sensor_id": data["sid"],
             "hostname": info.get("hostname"),
-            "process_id": pid,
-            "file_path": file_path,
-            "is_vip": is_vip,
             "actions_taken": actions_taken
         },
-        "cat": f"automated-triage-{severity}",
-        "data": {
-            "actions": actions_taken,
-            "severity": severity
-        }
+        "cat": "automated-triage"
     }
 ```
 
-### Pattern 5: Scheduled Maintenance
-
-Perform periodic security hygiene tasks:
-
-```python
-import limacharlie
-from datetime import datetime, timedelta
-
-def playbook(sdk, data):
-    """Clean up old detections and generate report."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    # Get retention period (days)
-    retention_days = data.get("retention_days", 90)
-    cutoff_timestamp = int((datetime.now() - timedelta(days=retention_days)).timestamp())
-
-    stats = {
-        "total_sensors": 0,
-        "offline_sensors": 0,
-        "sensors_needing_update": [],
-        "old_detections_found": 0
-    }
-
-    # Inventory sensors
-    for sensor in sdk.sensors():
-        info = sensor.getInfo()
-        stats["total_sensors"] += 1
-
-        # Check if offline
-        if not info.get("is_online"):
-            stats["offline_sensors"] += 1
-
-        # Check agent version (example)
-        # In production, compare with known latest version
-        agent_version = info.get("agent_version", "")
-        if agent_version < "5.0.0":  # Example version check
-            stats["sensors_needing_update"].append({
-                "sid": info.get("sid"),
-                "hostname": info.get("hostname"),
-                "version": agent_version
-            })
-
-    # Generate report
-    report = {
-        "report_date": datetime.now().isoformat(),
-        "fleet_summary": stats,
-        "recommendations": []
-    }
-
-    if stats["offline_sensors"] > 0:
-        report["recommendations"].append(
-            f"Investigate {stats['offline_sensors']} offline sensors"
-        )
-
-    if len(stats["sensors_needing_update"]) > 0:
-        report["recommendations"].append(
-            f"Update {len(stats['sensors_needing_update'])} sensors to latest version"
-        )
-
-    return {
-        "data": report
-    }
-```
-
-## Working with LimaCharlie SDK
-
-Playbooks receive a pre-authenticated `sdk` object providing full access to the LimaCharlie Python SDK.
-
-### Common SDK Operations
-
-#### Sensor Management
-
-```python
-# List all sensors
-for sensor in sdk.sensors():
-    info = sensor.getInfo()
-    print(f"{info['hostname']}: {info['sid']}")
-
-# Get specific sensor
-sensor = sdk.sensor("sensor-id-here")
-
-# Task a sensor
-sensor.task("history_dump", investigationId="my-investigation")
-
-# Tag a sensor
-sensor.tag("compromised", ttl=3600)
-
-# Isolate sensor
-sensor.task("segregate_network")
-```
-
-#### Hive Operations
-
-```python
-# Access secrets
-secret_value = limacharlie.Hive(sdk, "secret").get("my-secret").data["secret"]
-
-# Access lookups
-lookup = limacharlie.Hive(sdk, "lookup")
-domains = lookup.get("malicious-domains").data
-
-# Store data in Hive
-playbook_hive = limacharlie.Hive(sdk, "playbook")
-playbook_hive.set("my-data", {"results": [1, 2, 3]})
-
-# Access D&R rules
-dr_hive = limacharlie.Hive(sdk, "dr-general")
-rule = dr_hive.get("my-rule-name")
-```
-
-#### Detection Management
-
-```python
-# Query detections
-detections = sdk.getDetections(limit=100)
-
-for det in detections:
-    print(f"{det['detect']['cat']}: {det['routing']['hostname']}")
-```
-
-#### Organization Info
-
-```python
-# Get org info
-org_info = sdk.getOrgInfo()
-print(f"Organization: {org_info['name']}")
-
-# Get org outputs
-outputs = sdk.getOutputs()
-```
+See [EXAMPLES.md](./EXAMPLES.md) for 15+ complete playbook examples covering all major use cases.
 
 ## Secret Management
-
-Store sensitive credentials securely in Hive and reference them in playbooks.
 
 ### Creating Secrets
 
 Via CLI:
 ```bash
-# Create secret
 limacharlie hive set secret --key webhook-url --data "https://hooks.example.com/webhook" --data-key secret
-
-# Create secret from file
-echo "my-api-key-value" > api-key.txt
-limacharlie hive set secret --key external-api-key --data api-key.txt --data-key secret
 ```
 
 Via Python SDK:
@@ -593,10 +340,7 @@ import limacharlie
 
 lc = limacharlie.Manager()
 hive = limacharlie.Hive(lc, "secret")
-
-hive.set("my-secret-name", {
-    "secret": "secret-value-here"
-})
+hive.set("my-secret-name", {"secret": "secret-value-here"})
 ```
 
 ### Using Secrets in Playbooks
@@ -609,13 +353,10 @@ def playbook(sdk, data):
     # Retrieve secret
     api_key = limacharlie.Hive(sdk, "secret").get("external-api-key").data["secret"]
 
-    # Use in API calls
-    # ...
+    # Use in API calls...
 ```
 
 ### Passing Credentials to Playbooks
-
-When invoking playbooks, pass credentials that the playbook will use:
 
 ```yaml
 # In D&R rule
@@ -626,780 +367,99 @@ When invoking playbooks, pass credentials that the playbook will use:
     name: '{{ "my-playbook" }}'
     credentials: '{{ "hive://secret/lc-api-key" }}'  # API key for the sdk object
     data:
-      webhook_key: '{{ "hive://secret/webhook-url" }}'  # Additional secret for playbook
+      webhook_key: '{{ "hive://secret/webhook-url" }}'  # Additional secret
 ```
 
-## Error Handling
+## Quick SDK Reference
 
-Implement robust error handling in playbooks:
+### Sensor Operations
 
 ```python
-def playbook(sdk, data):
-    """Playbook with comprehensive error handling."""
+# List all sensors
+for sensor in sdk.sensors():
+    info = sensor.getInfo()
 
-    # Validate inputs
-    if not sdk:
-        return {"error": "API credentials required for this playbook"}
+# Get specific sensor
+sensor = sdk.sensor("sensor-id")
 
-    required_fields = ["sid", "process_id"]
-    for field in required_fields:
-        if field not in data:
-            return {"error": f"Missing required parameter: {field}"}
+# Task a sensor
+sensor.task("history_dump", investigationId="my-investigation")
 
-    try:
-        sensor = sdk.sensor(data["sid"])
+# Tag a sensor
+sensor.tag("compromised", ttl=3600)
 
-        # Verify sensor is online before tasking
-        info = sensor.getInfo()
-        if not info.get("is_online"):
-            return {
-                "error": f"Sensor {data['sid']} is offline",
-                "data": {"sensor_status": "offline"}
-            }
-
-        # Execute task with timeout consideration
-        sensor.task(f"history_dump", investigationId="error-handling-example")
-
-        return {
-            "data": {
-                "success": True,
-                "sensor": info.get("hostname")
-            }
-        }
-
-    except limacharlie.LcApiException as e:
-        # Handle LC API errors
-        return {
-            "error": f"LimaCharlie API error: {str(e)}",
-            "data": {"error_type": "api_error"}
-        }
-
-    except Exception as e:
-        # Handle unexpected errors
-        return {
-            "error": f"Unexpected error: {str(e)}",
-            "data": {"error_type": "unknown"}
-        }
+# Isolate sensor
+sensor.task("segregate_network")
 ```
 
-## Conditional Logic and Workflows
-
-Build complex decision trees and workflows:
+### Hive Operations
 
 ```python
-def playbook(sdk, data):
-    """Multi-stage investigation workflow."""
+# Access secrets
+secret = limacharlie.Hive(sdk, "secret").get("my-secret").data["secret"]
 
-    if not sdk:
-        return {"error": "API credentials required"}
+# Access lookups
+lookup = limacharlie.Hive(sdk, "lookup")
+domains = lookup.get("malicious-domains").data
 
-    sid = data.get("sid")
-    file_hash = data.get("hash")
-
-    workflow_state = {
-        "stage": "initial",
-        "actions": [],
-        "findings": []
-    }
-
-    # Stage 1: Verify sensor status
-    workflow_state["stage"] = "sensor_verification"
-    try:
-        sensor = sdk.sensor(sid)
-        info = sensor.getInfo()
-
-        if not info.get("is_online"):
-            workflow_state["findings"].append("sensor_offline")
-            return {
-                "data": workflow_state,
-                "error": "Cannot proceed - sensor offline"
-            }
-
-        workflow_state["actions"].append("sensor_verified")
-
-    except Exception as e:
-        return {"error": f"Sensor verification failed: {str(e)}"}
-
-    # Stage 2: Check if hash is known malicious
-    workflow_state["stage"] = "threat_intel_check"
-    try:
-        lookup_hive = limacharlie.Hive(sdk, "lookup")
-        malware_hashes = lookup_hive.get("known-malware-hashes").data
-
-        is_known_malware = file_hash in malware_hashes.get("hashes", [])
-        workflow_state["findings"].append(f"known_malware: {is_known_malware}")
-
-        if is_known_malware:
-            # Fast path: immediate containment
-            workflow_state["stage"] = "immediate_containment"
-            sensor.task("segregate_network")
-            workflow_state["actions"].append("network_isolated")
-
-            return {
-                "detection": {
-                    "hash": file_hash,
-                    "sensor": info.get("hostname"),
-                    "workflow": workflow_state
-                },
-                "cat": "known-malware-detected",
-                "data": workflow_state
-            }
-
-    except Exception as e:
-        workflow_state["findings"].append(f"threat_intel_error: {str(e)}")
-
-    # Stage 3: Deep investigation for unknown files
-    workflow_state["stage"] = "deep_investigation"
-
-    # Check sensor tags for special handling
-    tags = info.get("tags", [])
-
-    if "vip" in tags:
-        # Enhanced investigation for VIP systems
-        workflow_state["actions"].extend([
-            "memory_dump_collected",
-            "full_history_collected",
-            "network_connections_logged"
-        ])
-        severity = "high"
-    elif "dev" in tags:
-        # Relaxed handling for dev systems
-        workflow_state["actions"].append("basic_telemetry_collected")
-        severity = "low"
-    else:
-        # Standard investigation
-        workflow_state["actions"].append("standard_investigation")
-        severity = "medium"
-
-    workflow_state["stage"] = "complete"
-
-    return {
-        "detection": {
-            "hash": file_hash,
-            "sensor": info.get("hostname"),
-            "severity": severity,
-            "workflow": workflow_state
-        },
-        "cat": f"unknown-file-{severity}",
-        "data": workflow_state
-    }
+# Store data
+playbook_hive = limacharlie.Hive(sdk, "playbook")
+playbook_hive.set("my-data", {"results": [1, 2, 3]})
 ```
 
-## Looping and Iteration
-
-Process multiple items efficiently:
+### Detection Management
 
 ```python
-def playbook(sdk, data):
-    """Process multiple IoCs across sensors."""
+# Query detections
+detections = sdk.getDetections(limit=100)
 
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    iocs = data.get("iocs", [])
-    if not iocs:
-        return {"error": "No IoCs provided"}
-
-    results = {
-        "processed": 0,
-        "matches_found": 0,
-        "sensors_affected": [],
-        "errors": []
-    }
-
-    # Iterate through IoCs
-    for ioc in iocs:
-        ioc_type = ioc.get("type")
-        ioc_value = ioc.get("value")
-
-        results["processed"] += 1
-
-        try:
-            # Search across all sensors
-            for sensor in sdk.sensors():
-                info = sensor.getInfo()
-
-                # Skip offline sensors
-                if not info.get("is_online"):
-                    continue
-
-                # Type-specific search
-                if ioc_type == "hash":
-                    # Search for file hash
-                    sensor.task(
-                        f"dir_find_hash C:\\ --hash {ioc_value}",
-                        investigationId=f"ioc-sweep-{ioc_value[:8]}"
-                    )
-                elif ioc_type == "domain":
-                    # Search timeline for DNS requests (would need LCQL in production)
-                    pass
-                elif ioc_type == "ip":
-                    # Search timeline for network connections
-                    pass
-
-                results["sensors_affected"].append({
-                    "sid": info.get("sid"),
-                    "hostname": info.get("hostname"),
-                    "ioc": ioc_value
-                })
-                results["matches_found"] += 1
-
-        except Exception as e:
-            results["errors"].append({
-                "ioc": ioc_value,
-                "error": str(e)
-            })
-
-    return {"data": results}
+for det in detections:
+    print(f"{det['detect']['cat']}: {det['routing']['hostname']}")
 ```
 
-## Integration with External Systems
+See [REFERENCE.md](./REFERENCE.md) for complete SDK documentation and all available operations.
 
-### Ticketing System Integration
-
-```python
-import limacharlie
-import json
-import urllib.request
-
-def playbook(sdk, data):
-    """Create ticket in external ticketing system."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    # Get ticketing system credentials
-    ticket_api_key = limacharlie.Hive(sdk, "secret").get("ticketing-api-key").data["secret"]
-    ticket_url = limacharlie.Hive(sdk, "secret").get("ticketing-url").data["secret"]
-
-    # Prepare ticket data
-    ticket = {
-        "title": f"Security Incident: {data.get('detection_name')}",
-        "description": f"""
-        Detection: {data.get('detection_name')}
-        Hostname: {data.get('hostname')}
-        Sensor ID: {data.get('sid')}
-        Timestamp: {data.get('timestamp')}
-
-        Details:
-        {json.dumps(data.get('details', {}), indent=2)}
-        """,
-        "priority": data.get("priority", "medium"),
-        "category": "security_incident",
-        "tags": data.get("tags", [])
-    }
-
-    try:
-        request = urllib.request.Request(
-            f"{ticket_url}/api/tickets",
-            data=json.dumps(ticket).encode('utf-8'),
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {ticket_api_key}"
-            },
-            method="POST"
-        )
-
-        with urllib.request.urlopen(request) as response:
-            result = json.loads(response.read().decode('utf-8'))
-
-        return {
-            "data": {
-                "ticket_created": True,
-                "ticket_id": result.get("id"),
-                "ticket_url": result.get("url")
-            }
-        }
-
-    except Exception as e:
-        return {"error": f"Failed to create ticket: {str(e)}"}
-```
-
-### SOAR Integration
-
-```python
-def playbook(sdk, data):
-    """Trigger SOAR playbook for investigation."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    # Get SOAR credentials
-    soar_api_key = limacharlie.Hive(sdk, "secret").get("soar-api-key").data["secret"]
-    soar_url = limacharlie.Hive(sdk, "secret").get("soar-url").data["secret"]
-
-    # Map LimaCharlie detection to SOAR playbook
-    detection_type = data.get("detection_category")
-
-    playbook_mapping = {
-        "ransomware": "investigate-ransomware",
-        "lateral-movement": "investigate-lateral-movement",
-        "data-exfiltration": "investigate-exfiltration",
-        "malware": "investigate-malware"
-    }
-
-    soar_playbook = playbook_mapping.get(detection_type, "generic-investigation")
-
-    # Prepare SOAR request
-    soar_request = {
-        "playbook": soar_playbook,
-        "context": {
-            "source": "limacharlie",
-            "detection": data,
-            "artifacts": {
-                "hostname": data.get("hostname"),
-                "sensor_id": data.get("sid"),
-                "file_path": data.get("file_path"),
-                "hash": data.get("hash")
-            }
-        },
-        "priority": data.get("priority", "medium")
-    }
-
-    try:
-        request = urllib.request.Request(
-            f"{soar_url}/api/playbooks/execute",
-            data=json.dumps(soar_request).encode('utf-8'),
-            headers={
-                "Content-Type": "application/json",
-                "X-API-Key": soar_api_key
-            },
-            method="POST"
-        )
-
-        with urllib.request.urlopen(request) as response:
-            result = json.loads(response.read().decode('utf-8'))
-
-        return {
-            "data": {
-                "soar_playbook_triggered": True,
-                "playbook_name": soar_playbook,
-                "execution_id": result.get("execution_id")
-            }
-        }
-
-    except Exception as e:
-        return {"error": f"SOAR integration failed: {str(e)}"}
-```
-
-### Notification Services
-
-```python
-def playbook(sdk, data):
-    """Send notifications via multiple channels."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    severity = data.get("severity", "medium")
-    message = data.get("message", "Security alert")
-
-    notifications_sent = []
-
-    # Determine notification channels based on severity
-    if severity in ["high", "critical"]:
-        # Send to PagerDuty for high severity
-        try:
-            # Use PagerDuty extension
-            ext = limacharlie.Extension(sdk)
-            ext.request("pagerduty", "trigger", {
-                "severity": "critical",
-                "summary": message,
-                "source": "limacharlie-playbook"
-            })
-            notifications_sent.append("pagerduty")
-        except Exception as e:
-            pass
-
-    # Always send to Slack
-    try:
-        slack_webhook = limacharlie.Hive(sdk, "secret").get("slack-webhook").data["secret"]
-
-        slack_payload = {
-            "text": f"[{severity.upper()}] {message}",
-            "attachments": [{
-                "color": "danger" if severity in ["high", "critical"] else "warning",
-                "fields": [
-                    {"title": k, "value": str(v), "short": True}
-                    for k, v in data.items()
-                    if k not in ["message", "severity"]
-                ]
-            }]
-        }
-
-        request = urllib.request.Request(
-            slack_webhook,
-            data=json.dumps(slack_payload).encode('utf-8'),
-            headers={"Content-Type": "application/json"},
-            method="POST"
-        )
-
-        urllib.request.urlopen(request)
-        notifications_sent.append("slack")
-
-    except Exception as e:
-        pass
-
-    return {
-        "data": {
-            "notifications_sent": notifications_sent,
-            "severity": severity
-        }
-    }
-```
-
-## Testing Playbooks
-
-### Development and Testing Workflow
-
-1. **Write Playbook Locally**: Develop playbooks in your local Python environment
-
-2. **Store in Hive**: Upload playbook to LimaCharlie Hive
-   ```bash
-   limacharlie hive set playbook --key my-playbook --data playbook.py --data-key python
-   ```
-
-3. **Test Interactively**: Run playbook manually with test data from web interface
-
-4. **Test via API**: Use SDK to test with various inputs
-   ```python
-   import limacharlie
-
-   lc = limacharlie.Manager()
-   ext = limacharlie.Extension(lc)
-
-   # Test with different scenarios
-   test_cases = [
-       {"sid": "test-sensor-1", "process_id": 1234},
-       {"sid": "offline-sensor", "process_id": 5678},
-       {"sid": "vip-sensor", "process_id": 9999}
-   ]
-
-   for test_data in test_cases:
-       result = ext.request("ext-playbook", "run_playbook", {
-           "name": "my-playbook",
-           "credentials": "hive://secret/test-api-key",
-           "data": test_data
-       })
-       print(f"Test: {test_data} -> {result}")
-   ```
-
-5. **Enable in D&R Rules**: Once tested, integrate with D&R rules for automation
-
-### Debugging Techniques
-
-Use return data to log execution steps:
-
-```python
-def playbook(sdk, data):
-    """Playbook with debug logging."""
-
-    debug_log = []
-
-    debug_log.append(f"Started with data: {data}")
-
-    try:
-        if not sdk:
-            debug_log.append("No SDK provided")
-            return {
-                "error": "API credentials required",
-                "data": {"debug_log": debug_log}
-            }
-
-        debug_log.append("SDK authenticated")
-
-        sid = data.get("sid")
-        debug_log.append(f"Looking up sensor: {sid}")
-
-        sensor = sdk.sensor(sid)
-        info = sensor.getInfo()
-        debug_log.append(f"Sensor found: {info.get('hostname')}")
-
-        # ... rest of logic
-
-        return {
-            "data": {
-                "success": True,
-                "debug_log": debug_log
-            }
-        }
-
-    except Exception as e:
-        debug_log.append(f"Error: {str(e)}")
-        return {
-            "error": str(e),
-            "data": {"debug_log": debug_log}
-        }
-```
-
-## Execution Environment
-
-### Available Packages
-
-Playbooks run in a Python environment with these pre-installed packages:
-
-**Python Libraries:**
-- `limacharlie` - LimaCharlie SDK/CLI
-- `lcextension` - LimaCharlie Extension SDK
-- `flask`, `gunicorn` - Web framework
-- `scikit-learn` - Machine learning
-- `jinja2` - Templating
-- `markdown` - Markdown processing
-- `pillow` - Image processing
-- `weasyprint` - PDF generation
-
-**CLI Tools:**
-- NodeJS
-- `claude` - Claude Code CLI
-- `codex` - Codex CLI
-- `gemini` - Gemini CLI
-
-### Limitations
-
-- **Execution Time**: Maximum 10 minutes per playbook execution
-- **State**: Environment is ephemeral - don't assume persistent state between executions
-- **Packages**: Custom packages not available in self-serve mode (contact support)
-- **Background Tasks**: Only code in `playbook()` function executes - no persistent background tasks
-- **Container Reuse**: Instances may be reused but can be wiped at any time
-
-### Best Practices
+## Best Practices
 
 1. **Keep Playbooks Focused**: Each playbook should do one thing well
 2. **Validate Inputs**: Always check for required parameters
 3. **Handle Errors Gracefully**: Return meaningful error messages
 4. **Use Secrets**: Never hardcode credentials
 5. **Return Structured Data**: Use consistent return formats
-6. **Log Important Steps**: Return debug info in development
-7. **Test Thoroughly**: Test with edge cases before production
-8. **Document Parameters**: Comment expected inputs and outputs
-9. **Avoid Long Waits**: Design for async operations when possible
-10. **Use Investigation IDs**: Tag sensor tasks for correlation
+6. **Test Thoroughly**: Test with edge cases before production
+7. **Document Parameters**: Comment expected inputs and outputs
+8. **Use Investigation IDs**: Tag sensor tasks for correlation
+9. **Keep Executions Short**: Design for 10-minute maximum execution time
+10. **Don't Assume Persistence**: Environment is ephemeral between executions
 
-## Infrastructure as Code
+## Environment and Limitations
 
-Store playbooks in version control and deploy via Infrastructure as Code:
+### Available Packages
 
-```yaml
-# limacharlie-config.yaml
-hives:
-  playbook:
-    investigate-mimikatz:
-      data:
-        python: |-
-          import limacharlie
+**Python Libraries:**
+- `limacharlie` - LimaCharlie SDK/CLI
+- `lcextension` - LimaCharlie Extension SDK
+- `flask`, `gunicorn` - Web framework
+- `scikit-learn` - Machine learning
+- `jinja2`, `markdown`, `pillow`, `weasyprint`
 
-          def playbook(sdk, data):
-              """Investigate Mimikatz detection."""
+**CLI Tools:**
+- NodeJS, `claude`, `codex`, `gemini`
 
-              if not sdk:
-                  return {"error": "API credentials required"}
+### Execution Constraints
 
-              sid = data.get("sid")
-              pid = data.get("process_id")
+- **Execution Time**: Maximum 10 minutes per playbook
+- **State**: Environment is ephemeral - no persistent state between executions
+- **Packages**: Custom packages require support contact (not available in self-serve)
+- **Background Tasks**: Only code in `playbook()` function executes
 
-              if not sid or not pid:
-                  return {"error": "Missing required parameters"}
+## Documentation Navigation
 
-              # Get sensor
-              sensor = sdk.sensor(sid)
+This skill documentation is organized for progressive disclosure:
 
-              # Collect evidence
-              sensor.task("history_dump", investigationId=f"mimikatz-{pid}")
-              sensor.task(f"mem_map --pid {pid}", investigationId=f"mimikatz-{pid}")
-
-              # Tag sensor
-              sensor.tag("mimikatz-detected", ttl=86400)
-
-              # Network isolate
-              sensor.task("segregate_network")
-
-              return {
-                  "detection": {
-                      "investigation_id": f"mimikatz-{pid}",
-                      "actions_taken": [
-                          "history_collected",
-                          "memory_mapped",
-                          "sensor_tagged",
-                          "network_isolated"
-                      ]
-                  },
-                  "cat": "mimikatz-investigation-complete",
-                  "data": {
-                      "sensor": sid,
-                      "process": pid
-                  }
-              }
-      usr_mtd:
-        enabled: true
-        expiry: 0
-        tags: []
-        comment: "Automated Mimikatz investigation and containment"
-```
-
-Deploy using the LimaCharlie CLI:
-```bash
-limacharlie configs push limacharlie-config.yaml
-```
-
-## Advanced Patterns
-
-### Pattern: Incident Timeline Reconstruction
-
-```python
-def playbook(sdk, data):
-    """Reconstruct incident timeline from sensor telemetry."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    sid = data.get("sid")
-    start_time = data.get("start_time")  # Unix timestamp
-    end_time = data.get("end_time")
-
-    # In production, use LCQL or timeline API to query events
-    # This is a simplified example
-
-    timeline = {
-        "sensor": sid,
-        "start": start_time,
-        "end": end_time,
-        "events": []
-    }
-
-    # Collect relevant events
-    event_types = [
-        "NEW_PROCESS",
-        "NETWORK_CONNECTIONS",
-        "NEW_DOCUMENT",
-        "DNS_REQUEST"
-    ]
-
-    # Build timeline (simplified - production would use LCQL)
-    sensor = sdk.sensor(sid)
-
-    # Collect comprehensive history
-    sensor.task("history_dump", investigationId="timeline-reconstruction")
-
-    # In production, parse timeline and build structured output
-    timeline["events"] = [
-        {"type": "investigation_started", "timestamp": start_time}
-    ]
-
-    return {
-        "data": {
-            "timeline": timeline,
-            "investigation_id": "timeline-reconstruction"
-        }
-    }
-```
-
-### Pattern: Automated Threat Hunting
-
-```python
-def playbook(sdk, data):
-    """Hunt for threats based on new IoCs."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    # Get latest threat intel
-    threat_feed = data.get("threat_feed", [])
-
-    hunt_results = {
-        "iocs_hunted": len(threat_feed),
-        "matches": [],
-        "sensors_scanned": 0
-    }
-
-    # Hunt across fleet
-    for sensor in sdk.sensors():
-        info = sensor.getInfo()
-
-        if not info.get("is_online"):
-            continue
-
-        hunt_results["sensors_scanned"] += 1
-
-        for ioc in threat_feed:
-            # Search based on IoC type
-            if ioc.get("type") == "hash":
-                sensor.task(
-                    f"dir_find_hash C:\\ --hash {ioc['value']}",
-                    investigationId=f"hunt-{ioc['value'][:8]}"
-                )
-            elif ioc.get("type") == "registry":
-                sensor.task(
-                    f"reg_list {ioc['value']}",
-                    investigationId=f"hunt-registry"
-                )
-
-    return {
-        "data": hunt_results
-    }
-```
-
-### Pattern: Compliance Reporting
-
-```python
-def playbook(sdk, data):
-    """Generate compliance report for organization."""
-
-    if not sdk:
-        return {"error": "API credentials required"}
-
-    report = {
-        "report_date": data.get("date"),
-        "sensors": {
-            "total": 0,
-            "online": 0,
-            "with_fim": 0,
-            "isolated": 0
-        },
-        "detections": {
-            "total": 0,
-            "by_severity": {}
-        },
-        "compliance_status": "pass"
-    }
-
-    # Inventory sensors
-    for sensor in sdk.sensors():
-        info = sensor.getInfo()
-        report["sensors"]["total"] += 1
-
-        if info.get("is_online"):
-            report["sensors"]["online"] += 1
-
-        tags = info.get("tags", [])
-        if "fim_enabled" in tags:
-            report["sensors"]["with_fim"] += 1
-        if "isolated" in tags:
-            report["sensors"]["isolated"] += 1
-
-    # Check for compliance issues
-    if report["sensors"]["isolated"] > 0:
-        report["compliance_status"] = "review_required"
-        report["issues"] = [
-            f"{report['sensors']['isolated']} sensors remain isolated"
-        ]
-
-    return {
-        "data": report
-    }
-```
-
-## Key Reminders
-
-1. **Always validate inputs**: Check for required parameters and handle missing data
-2. **Use secrets for credentials**: Never hardcode sensitive information
-3. **Return structured data**: Use consistent return format with `data`, `error`, `detection`, `cat`
-4. **Handle offline sensors**: Check sensor status before tasking
-5. **Use investigation IDs**: Tag related sensor tasks for correlation
-6. **Test before deploying**: Validate playbooks with test data before automation
-7. **Keep executions short**: Design for 10-minute maximum execution time
-8. **Don't assume persistence**: Environment is ephemeral between executions
-9. **Use proper error handling**: Catch and report errors meaningfully
-10. **Document your playbooks**: Comment expected inputs, outputs, and behavior
+- **[REFERENCE.md](./REFERENCE.md)**: Complete SDK reference, all available operations, advanced patterns, conditional logic, looping, and Infrastructure as Code examples
+- **[EXAMPLES.md](./EXAMPLES.md)**: 15+ complete playbook examples including multi-sensor investigation, ticketing integration, SOAR integration, notification services, threat hunting, compliance reporting, and timeline reconstruction
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)**: Testing strategies, debugging techniques, common errors, development workflow, and best practices
 
 ## Common Use Cases
 
@@ -1411,5 +471,18 @@ def playbook(sdk, data):
 - **Scheduled Maintenance**: Periodic security hygiene tasks
 - **Investigation Orchestration**: Coordinate multi-step investigation workflows
 - **External System Integration**: Connect LimaCharlie with other security tools
+
+## Key Reminders
+
+1. **Always validate inputs**: Check for required parameters and handle missing data
+2. **Use secrets for credentials**: Never hardcode sensitive information
+3. **Return structured data**: Use consistent return format with `data`, `error`, `detection`, `cat`
+4. **Handle offline sensors**: Check sensor status before tasking
+5. **Use investigation IDs**: Tag related sensor tasks for correlation
+6. **Test before deploying**: Validate playbooks with test data before automation
+7. **Use proper error handling**: Catch and report errors meaningfully
+8. **Document your playbooks**: Comment expected inputs, outputs, and behavior
+
+---
 
 This skill provides comprehensive guidance for creating powerful automated response playbooks. When helping users, focus on understanding their automation goals and designing playbooks that are reliable, maintainable, and follow security best practices.
