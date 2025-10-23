@@ -37,7 +37,7 @@ detect:
     - op: is public address
       path: event/EVENT/EventData/IpAddress
   report latest event: true
-  with descendant:
+  with events:  # Correlate proximal events (not process tree)
     event: NEW_PROCESS
     op: and
     is stateless: true
@@ -49,7 +49,9 @@ detect:
         path: event/FILE_PATH
         value: \Users\
         case sensitive: false
-    with descendant:
+    count: 1
+    within: 300  # Within 5 minutes of RDP logon
+    with descendant:  # Now track process tree from the unsigned process
       event: FILE_MODIFIED
       op: exists
       path: event/FILE_PATH
@@ -63,14 +65,6 @@ respond:
       mitre: T1021.001, T1486
       description: External RDP followed by unsigned binary with rapid file changes
       recommended_action: Isolate immediately and investigate
-  - action: task
-    command: deny_tree <<routing/parent>>
-    suppression:
-      is_global: false
-      keys:
-        - '{{ .routing.sid }}'
-      max_count: 1
-      period: 5m
   - action: isolate network
   - action: task
     command: history_dump
@@ -86,17 +80,22 @@ respond:
 ### Detection Flow
 
 ```
-External RDP Logon (external IP)
-└── unsigned.exe (from \Users\)
-    └── 50+ file modifications in 60 seconds
+External RDP Logon (WEL Event ID 4624, Logon Type 10, external IP)
+  ⊕ (same sensor, within 5 minutes - temporal correlation via "with events")
+unsigned.exe appears (NEW_PROCESS from \Users\, unsigned)
+└── 50+ file modifications in 60 seconds (FILE_MODIFIED descendants in process tree)
 ```
 
 ### Why This Works
 
 - **Early Detection**: Catches ransomware before significant damage
 - **Three-Stage Validation**: Reduces false positives by requiring RDP + unsigned exe + file modifications
-- **Automated Response**: Kills process tree and isolates network immediately
+- **Correct Event Correlation**: Uses `with events` to correlate WEL logon event with process creation (not process tree relationships, but temporal correlation on same sensor)
+- **Process Tree Tracking**: Once the unsigned process appears, `with descendant` tracks its process tree for file modifications
+- **Automated Response**: Isolates network immediately to prevent spread
 - **Investigation**: Captures historical data for forensics
+
+**Important Note**: WEL (Windows Event Log) events are log entries, not process events, so they cannot have process tree descendants. This rule correctly uses `with events` to correlate the RDP logon with suspicious process activity that occurs on the same sensor within a time window. Once the NEW_PROCESS is detected, `with descendant` tracks its actual process tree for file modifications.
 
 ## Example 2: Living-off-the-Land Attack
 
@@ -339,7 +338,7 @@ detect:
       value: \ADMIN$
       case sensitive: false
   report latest event: true
-  with descendant:
+  with events:  # Correlate proximal events (not process tree)
     event: NEW_PROCESS
     op: and
     is stateless: true
@@ -351,6 +350,7 @@ detect:
         path: event/FILE_PATH
         value: \ADMIN$
         case sensitive: false
+    count: 1
     within: 30
 respond:
   - action: report
@@ -385,12 +385,10 @@ respond:
 ### Detection Flow
 
 ```
-Service Creation Event (7045)
+Service Creation Event (WEL Event ID 7045)
   ImagePath: \\ADMIN$\malicious.exe
-    |
-    | (within 30 seconds)
-    v
-NEW_PROCESS
+  ⊕ (same sensor, within 30 seconds - temporal correlation via "with events")
+NEW_PROCESS appears
   Parent: services.exe
   Path: \\ADMIN$\malicious.exe
 ```
@@ -399,8 +397,11 @@ NEW_PROCESS
 
 - **ADMIN$ Share Detection**: Strong indicator of remote execution
 - **Service-Based Execution**: Classic PsExec technique
+- **Correct Event Correlation**: Uses `with events` to correlate WEL service creation event with process execution (temporal correlation on same sensor, not process tree)
 - **Time Correlation**: 30 seconds is typical for service start
 - **Parent Validation**: services.exe parent confirms service execution
+
+**Important Note**: WEL events are log entries and cannot have process tree descendants. This rule correctly uses `with events` to detect when a service installation event is followed by a matching process execution within 30 seconds on the same sensor.
 
 ## Example 5: Data Staging and Exfiltration
 
@@ -588,12 +589,12 @@ respond:
       mitre: T1059.001, T1566.001
       description: Office app spawned PowerShell with encoded/download commands
   - action: task
-    command: deny_tree <<routing/parent>>
+    command: deny_tree <<routing/this>>
     suppression:
       is_global: false
       keys:
         - '{{ .routing.sid }}'
-        - '{{ .event.PARENT.PROCESS_ID }}'
+        - '{{ .event.PROCESS_ID }}'
       max_count: 1
       period: 5m
   - action: isolate network
@@ -623,7 +624,10 @@ excel.exe
 - **with_descendant**: Catches PowerShell even through intermediaries
 - **Multiple Indicators**: Detects various PowerShell abuse techniques
 - **is stateless: true**: Ensures both PowerShell AND suspicious args in same event
-- **Kills Entire Tree**: Terminates Office app to stop macro execution
+- **Kills PowerShell Process**: Terminates the malicious PowerShell process and its descendants
+- **Network Isolation**: Prevents further malicious activity even if Office app continues running
+
+**Important Note**: When using `with descendant` with potential intermediary processes, `<<routing/parent>>` references the immediate parent of PowerShell in the process tree, not the root Office application. This rule terminates the malicious PowerShell process. To terminate the entire Office process tree, you would need to use `with child` (limiting detection to direct children only) or accept that only the malicious descendant process will be killed. Network isolation provides additional protection regardless.
 
 ## Example 7: Web Shell Upload and Execution
 
