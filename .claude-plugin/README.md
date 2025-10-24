@@ -1,6 +1,25 @@
 # LimaCharlie Skills for Claude
 
-This directory contains the marketplace definition for the LimaCharlie Skills collection.
+This directory contains a Claude Code plugin marketplace. The marketplace currently includes one plugin with 20 specialized skills for LimaCharlie.
+
+## Marketplace Structure
+
+```
+.claude-plugin/
+├── marketplace.json              # Marketplace definition
+└── README.md                     # This file
+
+plugins/
+└── limacharlie-skills/           # LimaCharlie Skills plugin
+    ├── .claude-plugin/
+    │   └── plugin.json           # Plugin metadata
+    └── skills/                   # 20 specialized skills
+        ├── dr-rule-builder/
+        ├── sensor-manager/
+        └── [18 more...]
+```
+
+The marketplace structure supports multiple plugins. Future plugins can be added as subdirectories under `plugins/`.
 
 ## What are Skills?
 
@@ -48,12 +67,12 @@ This collection includes **20 specialized skills** organized into 6 categories:
 
 ### For Claude Code Users
 
-These skills are located in the `skills/` directory and will be automatically discovered by Claude Code when working in this repository.
+These skills are located in the `plugins/limacharlie-skills/skills/` directory and will be automatically discovered by Claude Code when the plugin is installed.
 
 ### For Claude.ai Users
 
 1. Navigate to Settings → Skills
-2. Upload individual skill folders from the `../skills/` directory
+2. Upload individual skill folders from the `../plugins/limacharlie-skills/skills/` directory
 3. Skills will activate automatically based on context
 
 ### For API Users
@@ -74,7 +93,7 @@ Skills activate automatically when Claude detects you're working on related task
 Each skill follows this structure:
 
 ```
-skills/
+plugins/limacharlie-skills/skills/
 └── skill-name/
     └── SKILL.md          # Main skill definition with YAML frontmatter
 ```
@@ -89,7 +108,7 @@ The `SKILL.md` file contains:
 
 ### Creating New Skills
 
-1. Create a new directory under `skills/`
+1. Create a new directory under `plugins/limacharlie-skills/skills/`
 2. Add a `SKILL.md` file with YAML frontmatter:
 
 ```yaml
@@ -103,13 +122,13 @@ description: Clear description of when to use this skill
 [Your comprehensive instructions here]
 ```
 
-3. Update `marketplace.json` to include the new skill
+3. Update the plugin version in `plugins/limacharlie-skills/.claude-plugin/plugin.json` if needed
 
 ### Updating Skills
 
 1. Edit the relevant `SKILL.md` file
 2. Test the skill with Claude Code
-3. Update version in `marketplace.json` if needed
+3. Update version in `plugins/limacharlie-skills/.claude-plugin/plugin.json` if needed
 
 ## Resources
 

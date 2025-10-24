@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "limacharlie-skills",
-      "source": ".",
+      "source": "./plugins/limacharlie-skills",
       "description": "Comprehensive collection of 20 specialized Skills for LimaCharlie's SecOps Cloud Platform covering detection rules, threat hunting, incident response, cloud security, and more"
     }
   ]
