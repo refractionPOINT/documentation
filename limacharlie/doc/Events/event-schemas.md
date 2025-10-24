@@ -124,3 +124,144 @@ The value is a path within the JSON. For example, the schema above would represe
   }
 }
 ```
+
+## Event Structure Reference
+
+All events in LimaCharlie follow a canonical structure with two top-level objects: `routing` and `event`. Understanding this structure is essential for writing D&R rules, LCQL queries, and configuring outputs.
+
+### Top-Level Structure
+
+```json
+{
+  "routing": { /* metadata about the event */ },
+  "event": { /* event-specific data */ }
+}
+```
+
+### The `routing` Object
+
+The `routing` object contains **metadata** about the event - information about where it came from, when it occurred, and how it relates to other events. This metadata is consistent across all event types, making it useful for correlation, filtering, and investigation.
+
+#### Core Routing Fields
+
+| Field | Type | Description | Use Cases |
+|-------|------|-------------|-----------|
+| `oid` | string (UUID) | Organization ID | Multi-tenant filtering, audit trails |
+| `sid` | string (UUID) | Sensor ID - uniquely identifies the endpoint | Host-based correlation, sensor management |
+| `event_type` | string | Type of event (e.g., `NEW_PROCESS`, `DNS_REQUEST`) | Event filtering in D&R rules, LCQL queries |
+| `event_time` | integer | Unix timestamp in milliseconds | Timeline analysis, temporal correlation |
+| `event_id` | string (UUID) | Unique identifier for this specific event | Deduplication, event tracking |
+| `hostname` | string | Hostname of the sensor | Host-based investigations |
+| `iid` | string (UUID) | Installation Key ID used to install the sensor | Deployment tracking, sensor grouping |
+| `did` | string (UUID) | Device ID - hardware identifier | Device tracking across reinstalls |
+
+#### Network Information
+
+| Field | Type | Description | Use Cases |
+|-------|------|-------------|-----------|
+| `ext_ip` | string | External IP address of the sensor | Geolocation, network-based correlation |
+| `int_ip` | string | Internal IP address of the sensor | Network segmentation analysis |
+
+#### Platform Information
+
+| Field | Type | Description | Use Cases |
+|-------|------|-------------|-----------|
+| `plat` | integer | Platform identifier (Windows, Linux, macOS, etc.) | Platform-specific rules |
+| `arch` | integer | Architecture (x86, x64, ARM, etc.) | Architecture-specific analysis |
+| `moduleid` | integer | Sensor module that generated the event | Module-specific filtering |
+
+#### Process Correlation Fields
+
+| Field | Type | Description | Use Cases |
+|-------|------|-------------|-----------|
+| `this` | string (hash) | Hash representing the current process or object | Process tracking across events |
+| `parent` | string (hash) | Hash of the parent process | Process tree reconstruction |
+| `target` | string (hash) | Hash of the target object (in actions on other objects) | Object tracking, lateral movement detection |
+
+#### Other Routing Fields
+
+| Field | Type | Description | Use Cases |
+|-------|------|-------------|-----------|
+| `tags` | array[string] | Sensor tags applied at event time | Tag-based filtering, dynamic grouping |
+
+### The `event` Object
+
+The `event` object contains **event-specific data** that varies by event type. For example:
+
+- **NEW_PROCESS** events contain: `FILE_PATH`, `COMMAND_LINE`, `PROCESS_ID`, `PARENT` (full parent process info)
+- **DNS_REQUEST** events contain: `DOMAIN_NAME`, `IP_ADDRESS`, `DNS_TYPE`, `DNS_FLAGS`
+- **NETWORK_CONNECTIONS** events contain: `NETWORK_ACTIVITY` array with connection details
+- **WEL** (Windows Event Log) events contain: `EVENT` object with nested Windows event structure
+
+### Event Structure in Practice
+
+#### Accessing Fields in D&R Rules
+
+In Detection & Response rules, you access fields using the `event/` and `routing/` path prefixes:
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: and
+  rules:
+    - op: is
+      path: routing/plat
+      value: 0x10000000  # Windows
+    - op: contains
+      path: event/COMMAND_LINE
+      value: powershell
+      case sensitive: false
+```
+
+#### Querying Events with LCQL
+
+In LCQL queries, you reference the same field paths:
+
+```sql
+SELECT event/FILE_PATH, event/COMMAND_LINE, routing/hostname
+FROM event
+WHERE routing/event_type = 'NEW_PROCESS'
+  AND event/FILE_PATH ENDS WITH '.exe'
+```
+
+#### Event Correlation Using Routing
+
+The `routing/this`, `routing/parent`, and `routing/target` hashes enable powerful event correlation:
+
+```yaml
+# Track all events from a specific process
+detect:
+  op: is
+  path: routing/this
+  value: "a443f9c48bef700740ef27e062c333c6"
+```
+
+### Relationship to Other Structures
+
+**Events → Detections**: When a D&R rule matches an event, a Detection is created. The Detection inherits the `routing` object from the triggering event and adds detection-specific metadata.
+
+**Events → Outputs**: Events can be routed to external systems via the "event" output stream. The full event structure (both `routing` and `event`) is sent.
+
+**Events → Audit**: Audit logs track platform actions and have a different structure. See the Output Stream Structures documentation for details.
+
+### Platform-Specific Considerations
+
+#### Windows Events
+- Often include nested structures like `event/EVENT/System/EventID` for Windows Event Logs
+- Process events include detailed parent information in `event/PARENT`
+
+#### Linux Events
+- File paths use forward slashes
+- Process events may include user/group information
+
+#### Cloud Adapter Events
+- May have custom `event` structures based on the source system
+- `routing/event_type` reflects the adapter and event type (e.g., `WEL`, `AdvancedHunting-DeviceEvents`)
+
+### Best Practices
+
+1. **Use routing fields for correlation**: `sid`, `hostname`, `this`, `parent` are consistent across all events
+2. **Filter by event_type early**: Most D&R rules should specify `event:` at the top level for performance
+3. **Leverage platform and architecture**: Use `routing/plat` and `routing/arch` for OS-specific logic
+4. **Understand timestamp format**: `routing/event_time` is Unix milliseconds (not seconds)
+5. **Hash consistency**: `routing/this` and `routing/parent` use the same hashing algorithm, enabling cross-event tracking

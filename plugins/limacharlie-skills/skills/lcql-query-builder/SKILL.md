@@ -362,6 +362,201 @@ In the web console:
 -24h | plat == windows | NETWORK_CONNECTIONS | event/NETWORK_ACTIVITY/DESTINATION/IP_ADDRESS as ip COUNT(event) as count GROUP BY(ip)
 ```
 
+## Data Structure Reference
+
+LCQL can query three primary data streams in LimaCharlie, each with a different structure. Understanding these structures is essential for writing effective queries.
+
+### Queryable Streams
+
+| Stream | Command | Purpose | Structure Type |
+|--------|---------|---------|----------------|
+| `event` | `FROM event` | Real-time telemetry | Event structure |
+| `detect` | `FROM detect` | D&R rule alerts | Detection structure |
+| `audit` | `FROM audit` | Platform actions | Audit structure |
+
+### Event Stream Structure
+
+Events are telemetry from sensors and adapters. They have two top-level objects:
+
+```json
+{
+  "routing": {
+    "sid": "bb4b30af-...",
+    "hostname": "workstation-01",
+    "event_type": "NEW_PROCESS",
+    "event_time": 1656959942437,
+    "event_id": "8cec565d-...",
+    "oid": "8cbe27f4-...",
+    "plat": 268435456,
+    "this": "a443f9c4...",
+    "parent": "42217cb0..."
+  },
+  "event": {
+    "FILE_PATH": "C:\\Windows\\System32\\cmd.exe",
+    "COMMAND_LINE": "cmd.exe /c whoami",
+    "PROCESS_ID": 4812
+  }
+}
+```
+
+**routing/** fields (consistent across all events):
+- `routing/sid` - Sensor ID (UUID)
+- `routing/hostname` - Hostname
+- `routing/event_type` - Event type (NEW_PROCESS, DNS_REQUEST, etc.)
+- `routing/event_time` - Unix timestamp in milliseconds
+- `routing/oid` - Organization ID
+- `routing/plat` - Platform (Windows=268435456, Linux, macOS)
+- `routing/this` - Current process/object hash
+- `routing/parent` - Parent process hash
+- `routing/tags` - Sensor tags (array)
+
+**event/** fields (varies by event_type):
+- Process events: `event/FILE_PATH`, `event/COMMAND_LINE`, `event/PROCESS_ID`
+- DNS events: `event/DOMAIN_NAME`, `event/IP_ADDRESS`
+- Network events: `event/NETWORK_ACTIVITY/?/IP_ADDRESS`
+
+**Query Example:**
+```
+-24h | event_type == NEW_PROCESS | event/COMMAND_LINE contains 'powershell'
+```
+
+### Detection Stream Structure
+
+Detections are alerts created when D&R rules match. They inherit event routing and add detection metadata:
+
+```json
+{
+  "cat": "Suspicious PowerShell",
+  "source": "dr-general",
+  "routing": { /* same as event routing */ },
+  "detect": { /* copy of event data */ },
+  "detect_id": "f1e2d3c4-...",
+  "priority": 7,
+  "detect_data": {
+    "suspicious_file": "C:\\Windows\\System32\\powershell.exe",
+    "encoded_command": "SGVsbG8="
+  }
+}
+```
+
+**Top-level detection fields:**
+- `cat` - Detection name/category
+- `source` - Rule source (dr-general, dr-managed, fp)
+- `detect_id` - Unique detection ID
+- `priority` - Priority 0-10 (higher = more critical)
+- `detect_data` - Structured IOCs extracted by rule
+- `source_rule` - Name of the rule that created this
+- `rule_tags` - Tags from the rule
+
+**routing/** fields - Same as event routing (sid, hostname, event_time, etc.)
+
+**detect/** fields - Access the original event data:
+- `detect/FILE_PATH` - File path from triggering event
+- `detect/COMMAND_LINE` - Command line from event
+- `detect/DOMAIN_NAME` - Domain from DNS event
+
+**Query Examples:**
+
+Query high-priority detections:
+```
+-7d | FROM detect | priority > 5
+```
+
+Access triggering event data:
+```
+-24h | FROM detect | cat == 'Suspicious PowerShell' | detect/COMMAND_LINE contains '-enc'
+```
+
+Query extracted IOCs from detect_data:
+```
+-24h | FROM detect | detect_data/suspicious_file ends with '.exe'
+```
+
+### Audit Stream Structure
+
+Audit logs track platform management actions. They have a flat structure:
+
+```json
+{
+  "oid": "8cbe27f4-...",
+  "ts": "2024-06-05T14:23:18Z",
+  "etype": "config_change",
+  "msg": "D&R rule created",
+  "ident": "user@company.com",
+  "entity": {
+    "type": "dr_rule",
+    "name": "detect-encoded-powershell"
+  },
+  "mtd": {
+    "action": "create",
+    "source_ip": "203.0.113.10"
+  }
+}
+```
+
+**Top-level audit fields:**
+- `oid` - Organization ID
+- `ts` - ISO 8601 timestamp string
+- `etype` - Event type (config_change, api_call, user_action)
+- `msg` - Human-readable message
+- `ident` - Identity performing action (email, API key)
+- `origin` - Origin of action (api, ui, cli)
+
+**entity/** fields - Object affected:
+- `entity/type` - Type of object (dr_rule, sensor, output)
+- `entity/name` - Object name
+- `entity/sid` - Sensor ID (for sensor actions)
+
+**mtd/** fields - Action characteristics:
+- `mtd/action` - Action type (create, update, delete)
+- `mtd/source_ip` - Source IP address
+
+**Query Examples:**
+
+Track configuration changes:
+```
+-7d | FROM audit | etype == 'config_change'
+```
+
+Find who modified D&R rules:
+```
+-30d | FROM audit | entity/type == 'dr_rule' | mtd/action == 'update'
+```
+
+Monitor specific user actions:
+```
+-7d | FROM audit | ident == 'admin@company.com'
+```
+
+### Cross-Stream Queries
+
+LCQL can't JOIN across streams, but you can correlate data by:
+
+1. Query detections, note the sensor ID:
+```
+-24h | FROM detect | cat == 'Malware Detected' | routing/sid
+```
+
+2. Query events from that sensor:
+```
+-24h | sid == 'bb4b30af-...' | event_type == NEW_PROCESS
+```
+
+### Field Access Patterns
+
+**Nested fields** use `/` separator:
+- `event/PARENT/FILE_PATH` - Parent process path
+- `detect_data/suspicious_file` - IOC from detection
+- `entity/name` - Entity name in audit log
+
+**Array access** uses `?` wildcard:
+- `event/NETWORK_ACTIVITY/?/IP_ADDRESS` - Any IP in array
+- `routing/tags/?` - Any tag value
+
+**Windows Event Logs** have deep nesting:
+- `event/EVENT/System/EventID` - Windows Event ID
+- `event/EVENT/EventData/Data/?/@Name` - Event data field names
+
 ## Field Path Reference
 
 ### Common Event Fields

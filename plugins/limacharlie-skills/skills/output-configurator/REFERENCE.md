@@ -28,6 +28,201 @@ Complete configuration reference for all LimaCharlie output destinations.
 
 ---
 
+## Output Stream Structures
+
+Before configuring output destinations, it's crucial to understand what data each stream type contains. LimaCharlie has four output streams, each with a different structure and purpose.
+
+### Stream Types Overview
+
+| Stream | Purpose | Volume | Structure |
+|--------|---------|--------|-----------|
+| `event` | Real-time telemetry from sensors/adapters | High | Event structure (routing + event) |
+| `detect` | D&R rule alerts | Low-Medium | Detection structure |
+| `audit` | Platform management actions | Low | Audit structure |
+| `deployment` | Sensor lifecycle events | Very Low | Deployment structure |
+
+### Event Stream (`event`)
+
+**What flows**: Real-time telemetry - process executions, DNS queries, network connections, file operations, etc.
+
+**Structure**:
+```json
+{
+  "routing": {
+    "sid": "sensor-uuid",
+    "hostname": "workstation-01",
+    "event_type": "NEW_PROCESS",
+    "event_time": 1656959942437,
+    "oid": "org-uuid",
+    "plat": 268435456,
+    "this": "process-hash",
+    "parent": "parent-hash"
+  },
+  "event": {
+    "FILE_PATH": "C:\\Windows\\System32\\cmd.exe",
+    "COMMAND_LINE": "cmd.exe /c whoami",
+    "PROCESS_ID": 4812
+  }
+}
+```
+
+**Common Use**: Send to SIEM for long-term storage, threat hunting, compliance, behavioral analytics.
+
+### Detection Stream (`detect`)
+
+**What flows**: Alerts when D&R rules match events.
+
+**Structure**:
+```json
+{
+  "cat": "Suspicious PowerShell",
+  "source": "dr-general",
+  "routing": { /* inherited from event */ },
+  "detect": { /* copy of event data */ },
+  "detect_id": "detection-uuid",
+  "priority": 7,
+  "detect_data": {
+    "suspicious_file": "powershell.exe",
+    "encoded_command": "base64..."
+  },
+  "source_rule": "detect-encoded-powershell"
+}
+```
+
+**Key Fields for Parsing**:
+- `cat` - Detection name
+- `priority` - Priority 0-10 (filter high-priority first)
+- `detect_data` - Extracted IOCs ready for enrichment
+- `routing/hostname`, `routing/sid` - Context from triggering event
+
+**Common Use**: Send to SOAR, ticketing systems, Slack for real-time alerting. Filter by `priority` to reduce noise.
+
+### Audit Stream (`audit`)
+
+**What flows**: Platform management events - configuration changes, user actions, API calls.
+
+**Structure**:
+```json
+{
+  "oid": "org-uuid",
+  "ts": "2024-06-05T14:23:18Z",
+  "etype": "config_change",
+  "msg": "D&R rule created",
+  "ident": "user@company.com",
+  "entity": {
+    "type": "dr_rule",
+    "name": "detect-lateral-movement"
+  },
+  "mtd": {
+    "action": "create",
+    "source_ip": "203.0.113.10"
+  }
+}
+```
+
+**Key Fields for Parsing**:
+- `ident` - Who performed the action
+- `entity/type` - What was modified (dr_rule, sensor, output, etc.)
+- `mtd/action` - Action type (create, update, delete)
+
+**Common Use**: Compliance logging, security monitoring, change tracking. Required for SOC 2, ISO 27001 audits.
+
+### Deployment Stream (`deployment`)
+
+**What flows**: Sensor installation, removal, upgrade events.
+
+**Structure**:
+```json
+{
+  "routing": {
+    "sid": "sensor-uuid",
+    "hostname": "new-workstation",
+    "event_type": "sensor_installed",
+    "oid": "org-uuid"
+  },
+  "event": {
+    "action": "install",
+    "sensor_version": "4.25.0",
+    "tags": ["production", "finance"]
+  }
+}
+```
+
+**Common Use**: Asset tracking, deployment monitoring, detecting unexpected sensor removals (potential evasion).
+
+### Choosing the Right Stream
+
+**For SIEM Integration**:
+- Use `event` stream for all telemetry (high volume)
+- Use `detect` stream for alerts only (lower volume)
+- Consider separate outputs for each to different indexes
+
+**For Real-Time Alerting** (Slack, PagerDuty):
+- Use `detect` stream only
+- Filter by `priority >= 7` for critical alerts
+
+**For Compliance**:
+- Use `audit` stream to tamper-proof storage
+- Use `event` stream for forensic retention
+
+**For Asset Management**:
+- Use `deployment` stream to track sensor inventory
+
+### Filtering Before Sending
+
+Reduce volume by filtering field values:
+
+**Event Stream - Only Windows Process Events**:
+```yaml
+stream: event
+filters:
+  - path: routing/event_type
+    op: is
+    value: NEW_PROCESS
+  - path: routing/plat
+    op: is
+    value: 268435456  # Windows
+```
+
+**Detection Stream - High Priority Only**:
+```yaml
+stream: detect
+filters:
+  - path: priority
+    op: is greater than
+    value: 6
+```
+
+**Audit Stream - Configuration Changes Only**:
+```yaml
+stream: audit
+filters:
+  - path: etype
+    op: is
+    value: config_change
+```
+
+### Parsing Recommendations
+
+**Event Stream Parsers**:
+1. Index by `routing/event_type` for efficient queries
+2. Extract `routing/hostname`, `routing/sid` for host correlation
+3. Parse `event/*` based on `routing/event_type`
+
+**Detection Stream Parsers**:
+1. Alert severity from `priority`
+2. Extract all fields in `detect_data` for IOC enrichment
+3. Link back to sensor using `routing/sid`, `routing/hostname`
+
+**Audit Stream Parsers**:
+1. Index by `etype` and `entity/type`
+2. Track changes by `ident` (user attribution)
+3. Monitor `mtd/action` for create/update/delete patterns
+
+For complete structure details, see the [Output Stream Structures documentation](../../../limacharlie/doc/Outputs/output-stream-structures.md).
+
+---
+
 ## SIEM & Security Platforms
 
 ### Splunk

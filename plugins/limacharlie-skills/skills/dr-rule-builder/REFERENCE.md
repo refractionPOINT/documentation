@@ -847,6 +847,243 @@ value: 5
 length of: true
 ```
 
+## LimaCharlie Structure Reference
+
+Understanding the core data structures in LimaCharlie is essential for writing effective D&R rules. This section explains what Events and Detections are, their structure, and how to work with them.
+
+### Events vs Detections
+
+**Events** are raw telemetry from sensors and adapters. **Detections** are alerts created when your D&R rules match events.
+
+```
+Sensor → Event → D&R Rule Matches → Detection
+```
+
+### Event Structure
+
+Every event has two top-level objects:
+
+```json
+{
+  "routing": { /* metadata about where/when/who */ },
+  "event": { /* event-specific data */ }
+}
+```
+
+#### The `routing` Object
+
+Contains **metadata** consistent across all event types:
+
+| Field | Type | Description | D&R Usage |
+|-------|------|-------------|-----------|
+| `sid` | string (UUID) | Sensor ID | Filter/correlate by endpoint |
+| `hostname` | string | Sensor hostname | Host-based detection rules |
+| `event_type` | string | Type of event | `event: NEW_PROCESS` filters |
+| `event_time` | integer | Unix timestamp (milliseconds) | Temporal correlation, time-based rules |
+| `event_id` | string (UUID) | Unique event ID | Deduplication, tracking |
+| `oid` | string (UUID) | Organization ID | Multi-tenant filtering |
+| `iid` | string (UUID) | Installation Key ID | Deployment group filtering |
+| `did` | string (UUID) | Device ID (hardware) | Track across reinstalls |
+| `plat` | integer | Platform (Windows, Linux, etc.) | OS-specific rules with `op: is windows` |
+| `arch` | integer | Architecture (x86, x64, ARM) | Architecture-specific detection |
+| `int_ip` | string | Internal IP address | Network segmentation rules |
+| `ext_ip` | string | External IP address | Geolocation-based rules |
+| `this` | string (hash) | Current process/object hash | Process tracking across events |
+| `parent` | string (hash) | Parent process hash | Process tree correlation |
+| `target` | string (hash) | Target object hash | Track objects in actions |
+| `tags` | array | Sensor tags at event time | Tag-based filtering |
+| `moduleid` | integer | Sensor module ID | Module-specific rules |
+
+#### The `event` Object
+
+Contains **event-specific data** that varies by event type:
+
+- **NEW_PROCESS**: `FILE_PATH`, `COMMAND_LINE`, `PROCESS_ID`, `USER_NAME`, `PARENT`, `HASH`
+- **DNS_REQUEST**: `DOMAIN_NAME`, `IP_ADDRESS`, `DNS_TYPE`, `DNS_FLAGS`
+- **NETWORK_CONNECTIONS**: `NETWORK_ACTIVITY` array with connection details
+- **FILE_MODIFIED**: `FILE_PATH`, `ACTION`, `HASH`, `SIZE`
+- **WEL** (Windows Event Logs): `EVENT` object with nested Windows event structure
+
+### Detection Structure
+
+When a D&R rule matches, LimaCharlie creates a Detection with this structure:
+
+```json
+{
+  "cat": "Detection Name",
+  "source": "dr-general",
+  "routing": { /* inherited from event */ },
+  "detect": { /* copy of event data */ },
+  "detect_id": "unique-uuid",
+  "priority": 5,
+  "detect_data": { /* extracted IOCs */ },
+  "link": "https://playbook-url",
+  "author": "security-team",
+  "source_rule": "rule-name",
+  "rule_tags": ["windows", "process"]
+}
+```
+
+#### Detection Fields
+
+| Field | Type | Description | How to Set |
+|-------|------|-------------|------------|
+| `cat` | string | Detection name | `name:` in `report` action |
+| `source` | string | Rule hive (dr-general, dr-managed) | Automatic |
+| `routing` | object | Same as event routing | Inherited automatically |
+| `detect` | object | Triggering event data | Inherited automatically |
+| `detect_id` | string | Unique detection ID | Automatic |
+| `priority` | integer | Priority 0-10 (higher = more critical) | `priority:` in response |
+| `detect_data` | object | **Structured IOCs** | Custom fields in `report` action |
+| `link` | string | URL to playbook/docs | `link:` in response |
+| `author` | string | Rule author | `author:` in response |
+| `source_rule` | string | Rule name | Automatic from rule name |
+| `rule_tags` | array | Tags from rule | `metadata: {tags: [...]}` |
+
+### Using Routing Fields in D&R Rules
+
+#### Filter by Platform
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: and
+  rules:
+    - op: is windows  # Same as: path: routing/plat, value: 268435456
+    - op: contains
+      path: event/COMMAND_LINE
+      value: powershell
+```
+
+#### Correlate by Process Hash
+
+```yaml
+# Track all events from a specific process
+detect:
+  op: is
+  path: routing/this
+  value: "a443f9c48bef700740ef27e062c333c6"
+```
+
+#### Filter by Sensor Tags
+
+```yaml
+detect:
+  event: NETWORK_CONNECTIONS
+  op: and
+  rules:
+    - op: exists
+      path: routing/tags
+    - op: contains
+      path: routing/tags
+      value: critical-servers
+```
+
+#### Host-Based Rules
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: is
+  path: routing/hostname
+  value: domain-controller-01
+```
+
+### Extracting Structured Data with detect_data
+
+The `detect_data` field is powerful for creating structured IOCs:
+
+```yaml
+respond:
+  - action: report
+    name: Suspicious Process Execution
+    priority: 7
+    # These create detect_data fields:
+    suspicious_file: << event/FILE_PATH >>
+    command_line: << event/COMMAND_LINE >>
+    process_hash: << routing/this >>
+    parent_hash: << routing/parent >>
+    hostname: << routing/hostname >>
+    timestamp: << routing/event_time >>
+```
+
+Creates a Detection with:
+
+```json
+{
+  "cat": "Suspicious Process Execution",
+  "priority": 7,
+  "detect_data": {
+    "suspicious_file": "C:\\Windows\\System32\\cmd.exe",
+    "command_line": "cmd.exe /c whoami",
+    "process_hash": "a443f9c48bef700740ef27e062c333c6",
+    "parent_hash": "42217cb0326ca254999554a862c333c6",
+    "hostname": "workstation-01",
+    "timestamp": 1656959942437
+  }
+}
+```
+
+### Event → Detection Example
+
+**Original Event:**
+```json
+{
+  "routing": {
+    "sid": "bb4b30af-...",
+    "hostname": "workstation-01",
+    "event_type": "DNS_REQUEST",
+    "this": "a443f9c4..."
+  },
+  "event": {
+    "DOMAIN_NAME": "malicious.example.com",
+    "IP_ADDRESS": "198.51.100.42"
+  }
+}
+```
+
+**D&R Rule:**
+```yaml
+detect:
+  event: DNS_REQUEST
+  op: ends with
+  path: event/DOMAIN_NAME
+  value: .example.com
+
+respond:
+  - action: report
+    name: Suspicious DNS Query
+    priority: 5
+    queried_domain: << event/DOMAIN_NAME >>
+    resolved_ip: << event/IP_ADDRESS >>
+    querying_process: << routing/this >>
+```
+
+**Resulting Detection:**
+```json
+{
+  "cat": "Suspicious DNS Query",
+  "source": "dr-general",
+  "routing": { /* same as event */ },
+  "detect": { /* same as event */ },
+  "priority": 5,
+  "detect_data": {
+    "queried_domain": "malicious.example.com",
+    "resolved_ip": "198.51.100.42",
+    "querying_process": "a443f9c4..."
+  }
+}
+```
+
+### Best Practices for D&R Rules
+
+1. **Use `event:` at top level**: Filter by event type early for performance
+2. **Leverage routing for context**: Use `routing/hostname`, `routing/tags`, `routing/this` for context
+3. **Extract meaningful IOCs**: Always populate `detect_data` with actionable indicators
+4. **Set priority correctly**: Use 0-3 for info, 4-6 for medium, 7-10 for critical
+5. **Correlate with hashes**: Use `routing/this` and `routing/parent` to track process relationships
+6. **Platform-specific rules**: Use `op: is windows` or check `routing/plat` explicitly
+
 ## Event Paths
 
 ### Complete Routing Paths
