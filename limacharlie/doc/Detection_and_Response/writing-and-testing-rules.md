@@ -41,7 +41,7 @@ as quickly as possible.
 When a D&R rule matches an event, LimaCharlie creates a **Detection** - a structured alert that includes both the original event data and detection-specific metadata. Understanding this structure is important for:
 
 - Configuring response actions that use detection data
-- Querying detections with LCQL
+- Building multi-stage D&R rules that process detections
 - Integrating detections with external systems via outputs
 - Extracting IOCs and structured data from alerts
 
@@ -99,7 +99,7 @@ A Detection has the following canonical structure:
 |-------|------|-------------|--------|
 | `mtd` | object | General metadata about the detection | `metadata: {...}` in response |
 | `detect_mtd` | object | Detection-specific metadata | Automatically populated from rule |
-| `detect_data` | object | **Structured IOCs extracted from the event** | `name: value` in response actions |
+| `detect_data` | object | **Structured IOCs extracted from the event** | `detect_data: {...}` in response |
 
 ### Using `detect_data` to Extract IOCs
 
@@ -109,10 +109,11 @@ The `detect_data` field is particularly powerful - it lets you extract structure
 respond:
   - action: report
     name: Suspicious Process
-    malicious_file: << routing/this >>
-    process_path: << event/FILE_PATH >>
-    command_line: << event/COMMAND_LINE >>
-    parent_process: << event/PARENT/FILE_PATH >>
+    detect_data:
+      malicious_file: << routing/this >>
+      process_path: << event/FILE_PATH >>
+      command_line: << event/COMMAND_LINE >>
+      parent_process: << event/PARENT/FILE_PATH >>
 ```
 
 This creates a Detection with:
@@ -164,8 +165,9 @@ respond:
   - action: report
     name: PowerShell Execution
     priority: 3
-    ps_path: << event/FILE_PATH >>
-    encoded_cmd: << event/COMMAND_LINE >>
+    detect_data:
+      ps_path: << event/FILE_PATH >>
+      encoded_cmd: << event/COMMAND_LINE >>
 ```
 
 **3. Resulting Detection**
@@ -185,21 +187,6 @@ respond:
 ```
 
 ### Accessing Detection Fields
-
-#### In LCQL Queries
-
-```sql
--- Query detections by category
-SELECT detect_id, cat, priority, detect_data
-FROM detect
-WHERE cat = 'PowerShell Execution'
-  AND priority >= 5
-
--- Access the original event data
-SELECT detect/FILE_PATH, routing/hostname
-FROM detect
-WHERE routing/event_type = 'NEW_PROCESS'
-```
 
 #### In Response Actions
 

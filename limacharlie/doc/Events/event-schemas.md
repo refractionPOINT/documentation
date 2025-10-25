@@ -213,17 +213,6 @@ detect:
       case sensitive: false
 ```
 
-#### Querying Events with LCQL
-
-In LCQL queries, you reference the same field paths:
-
-```sql
-SELECT event/FILE_PATH, event/COMMAND_LINE, routing/hostname
-FROM event
-WHERE routing/event_type = 'NEW_PROCESS'
-  AND event/FILE_PATH ENDS WITH '.exe'
-```
-
 #### Event Correlation Using Routing
 
 The `routing/this`, `routing/parent`, and `routing/target` hashes enable powerful event correlation:

@@ -998,13 +998,13 @@ respond:
   - action: report
     name: Suspicious Process Execution
     priority: 7
-    # These create detect_data fields:
-    suspicious_file: << event/FILE_PATH >>
-    command_line: << event/COMMAND_LINE >>
-    process_hash: << routing/this >>
-    parent_hash: << routing/parent >>
-    hostname: << routing/hostname >>
-    timestamp: << routing/event_time >>
+    detect_data:
+      suspicious_file: << event/FILE_PATH >>
+      command_line: << event/COMMAND_LINE >>
+      process_hash: << routing/this >>
+      parent_hash: << routing/parent >>
+      hostname: << routing/hostname >>
+      timestamp: << routing/event_time >>
 ```
 
 Creates a Detection with:
@@ -1054,9 +1054,10 @@ respond:
   - action: report
     name: Suspicious DNS Query
     priority: 5
-    queried_domain: << event/DOMAIN_NAME >>
-    resolved_ip: << event/IP_ADDRESS >>
-    querying_process: << routing/this >>
+    detect_data:
+      queried_domain: << event/DOMAIN_NAME >>
+      resolved_ip: << event/IP_ADDRESS >>
+      querying_process: << routing/this >>
 ```
 
 **Resulting Detection:**

@@ -368,11 +368,15 @@ LCQL can query three primary data streams in LimaCharlie, each with a different 
 
 ### Queryable Streams
 
-| Stream | Command | Purpose | Structure Type |
-|--------|---------|---------|----------------|
-| `event` | `FROM event` | Real-time telemetry | Event structure |
-| `detect` | `FROM detect` | D&R rule alerts | Detection structure |
-| `audit` | `FROM audit` | Platform actions | Audit structure |
+LCQL can query three different data streams by selecting the appropriate source in the Query Console interface:
+
+| Stream | Purpose | Structure Type |
+|--------|---------|----------------|
+| `event` | Real-time telemetry from sensors/adapters | Event structure |
+| `detect` | D&R rule alerts and detections | Detection structure |
+| `audit` | Platform management actions | Audit structure |
+
+**Note:** The stream is selected via the Query Console UI (Events/Detections/Audit dropdown), not via LCQL syntax.
 
 ### Event Stream Structure
 
@@ -417,7 +421,7 @@ Events are telemetry from sensors and adapters. They have two top-level objects:
 
 **Query Example:**
 ```
--24h | event_type == NEW_PROCESS | event/COMMAND_LINE contains 'powershell'
+-24h | * | NEW_PROCESS | event/COMMAND_LINE contains 'powershell'
 ```
 
 ### Detection Stream Structure
@@ -457,19 +461,21 @@ Detections are alerts created when D&R rules match. They inherit event routing a
 
 **Query Examples:**
 
-Query high-priority detections:
+*Note: Select "Detections" in the Query Console UI source dropdown, then use these queries:*
+
+Query high-priority detections from all sensors:
 ```
--7d | FROM detect | priority > 5
+-7d | * | * | priority > 5
 ```
 
-Access triggering event data:
+Query specific detection category with event data filter:
 ```
--24h | FROM detect | cat == 'Suspicious PowerShell' | detect/COMMAND_LINE contains '-enc'
+-24h | * | "Suspicious PowerShell" | detect/COMMAND_LINE contains '-enc'
 ```
 
-Query extracted IOCs from detect_data:
+Query extracted IOCs from detect_data across all detections:
 ```
--24h | FROM detect | detect_data/suspicious_file ends with '.exe'
+-24h | * | * | detect_data/suspicious_file ends with '.exe'
 ```
 
 ### Audit Stream Structure
@@ -513,33 +519,35 @@ Audit logs track platform management actions. They have a flat structure:
 
 **Query Examples:**
 
+*Note: Select "Audit" in the Query Console UI source dropdown, then use these queries:*
+
 Track configuration changes:
 ```
--7d | FROM audit | etype == 'config_change'
+-7d | * | config_change
 ```
 
 Find who modified D&R rules:
 ```
--30d | FROM audit | entity/type == 'dr_rule' | mtd/action == 'update'
+-30d | * | * | entity/type == 'dr_rule' and mtd/action == 'update'
 ```
 
 Monitor specific user actions:
 ```
--7d | FROM audit | ident == 'admin@company.com'
+-7d | * | * | ident == 'admin@company.com'
 ```
 
 ### Cross-Stream Queries
 
-LCQL can't JOIN across streams, but you can correlate data by:
+LCQL can't JOIN across streams, but you can correlate data by querying each stream separately:
 
-1. Query detections, note the sensor ID:
+1. Query detections (select "Detections" source), note the sensor ID:
 ```
--24h | FROM detect | cat == 'Malware Detected' | routing/sid
+-24h | * | "Malware Detected" | | routing/sid
 ```
 
-2. Query events from that sensor:
+2. Query events from that sensor (select "Events" source):
 ```
--24h | sid == 'bb4b30af-...' | event_type == NEW_PROCESS
+-24h | sid == 'bb4b30af-...' | NEW_PROCESS
 ```
 
 ### Field Access Patterns
