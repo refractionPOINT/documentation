@@ -79,6 +79,54 @@ Convert successful hunts to D&R rules:
 - Include suppression to prevent noise
 - Test with replay before deployment
 
+---
+
+## Working with Timestamps
+
+**IMPORTANT**: When users provide relative time offsets (e.g., "last hour", "past 24 hours", "last week"), you MUST dynamically compute the current epoch timestamp based on the actual current time. Never use hardcoded or placeholder timestamps.
+
+### Computing Current Epoch
+
+```python
+import time
+
+# Compute current time dynamically
+current_epoch_seconds = int(time.time())
+current_epoch_milliseconds = int(time.time() * 1000)
+```
+
+**The granularity (seconds vs milliseconds) depends on the specific API or MCP tool**. Always check the tool signature or API documentation to determine which unit to use.
+
+### Common Relative Time Calculations
+
+**Example: "Show me detections from the last hour"**
+```python
+end_time = int(time.time())  # Current time
+start_time = end_time - 3600  # 1 hour ago
+```
+
+**Common offsets (in seconds)**:
+- 1 hour = 3600
+- 24 hours = 86400
+- 7 days = 604800
+- 30 days = 2592000
+
+**For millisecond-based APIs, multiply by 1000**.
+
+### Critical Rules
+
+**NEVER**:
+- Use hardcoded timestamps
+- Use placeholder values like `1234567890`
+- Assume a specific current time
+
+**ALWAYS**:
+- Compute dynamically using `time.time()`
+- Check the API/tool signature for correct granularity
+- Verify the time range is valid (start < end)
+
+---
+
 ## Quick Hunt Examples
 
 ### Suspicious PowerShell Usage

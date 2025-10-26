@@ -65,6 +65,22 @@ Run the adapter binary on-prem but manage configuration from the LimaCharlie clo
 
 **Best for**: Service providers managing multiple customer deployments
 
+## Finding Existing Adapters
+
+**IMPORTANT**: When looking for existing adapter configurations, you must check BOTH hives:
+
+1. **`cloud_sensor` Hive**: Contains cloud-to-cloud adapter configurations
+   - Check using: `mcp__limacharlie__list_cloud_sensors` and `mcp__limacharlie__get_cloud_sensor`
+   - Used for: AWS, Azure, GCP, Okta, M365, Google Workspace, etc.
+   - These adapters run entirely in LimaCharlie's cloud infrastructure
+
+2. **`external_adapter` Hive**: Contains cloud-managed on-premises adapter configurations
+   - Check using: `mcp__limacharlie__list_external_adapters` and `mcp__limacharlie__get_external_adapter`
+   - Used for: On-prem binaries managed from the cloud
+   - These adapters run on user infrastructure but pull config from LimaCharlie
+
+**When troubleshooting or helping users with adapters**: Always check both hives before suggesting new adapter creation. An adapter configuration may already exist in either location.
+
 ## Core Configuration
 
 All adapters require these `client_options`:
@@ -430,17 +446,21 @@ Activate this skill when users:
 
 When helping users with adapters:
 
-1. **Identify the data source**: Ask what system they want to ingest from
-2. **Recommend deployment method**: Cloud-to-cloud vs. binary based on their needs
-3. **Provide complete configuration**: Include all required parameters
-4. **Use appropriate reference**:
+1. **Check for existing adapters FIRST**: Before creating new configurations, always check BOTH hives:
+   - Use `mcp__limacharlie__list_cloud_sensors` to check the `cloud_sensor` hive
+   - Use `mcp__limacharlie__list_external_adapters` to check the `external_adapter` hive
+   - This prevents duplicate configurations and helps troubleshoot existing setups
+2. **Identify the data source**: Ask what system they want to ingest from
+3. **Recommend deployment method**: Cloud-to-cloud vs. binary based on their needs
+4. **Provide complete configuration**: Include all required parameters
+5. **Use appropriate reference**:
    - SKILL.md for common/popular adapters
    - REFERENCE.md for specific adapter type details
    - EXAMPLES.md for complete setup walkthroughs
    - TROUBLESHOOTING.md for debugging issues
-5. **Explain mapping**: Help configure event type, hostname, timestamp extraction
-6. **Offer working examples**: Give complete CLI commands or YAML configs
-7. **Share best practices**: Security, reliability, and operational tips
+6. **Explain mapping**: Help configure event type, hostname, timestamp extraction
+7. **Offer working examples**: Give complete CLI commands or YAML configs
+8. **Share best practices**: Security, reliability, and operational tips
 
 Always provide complete, working configurations that users can directly use or adapt for their environment.
 
