@@ -18,5 +18,11 @@
     "cloud-security",
     "limacharlie"
   ],
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "mcpServers": {
+    "limacharlie": {
+      "type": "http",
+      "url": "https://mcp.limacharlie.io/mcp"
+    }
+  }
 }
