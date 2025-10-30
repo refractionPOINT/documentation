@@ -4,7 +4,7 @@ The 1Password CLI brings 1Password to the terminal, allowing you to interact wit
 
 This Extension makes use of 1Password's native CLI, which can be found [here](https://developer.1password.com/docs/cli).
 
-1Password Account Types
+## 1Password Account Types
 
 Please note that some 1Password functionality is limited to 1Password Business. Please validate you have the correct type of account(s) to ensure that commands run.
 
@@ -31,7 +31,3 @@ To utilize 1Password's automated CLI capabilities, you will need to create and u
 ```
 serviceAccountToken
 ```
-
-Command-line Interface
-
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.

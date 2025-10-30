@@ -135,7 +135,7 @@ If the SHA-1 and SHA-256 fingerprints you are seeing do not match what's listed 
 
 When the host is offline, the Sensor will keep collecting telemetry and store it locally in a "ring buffer" (which limits the total possible size). The buffer is ~60mb, so the amount of time it will cover will vary based on how much telemetry the individual endpoint generates. e.g. A domain controller will likely be generating many more events than a regular end user workstation.
 
-When the host is back online, the content of this buffer will be flushed to the cloud where [detection and response](../Detection_and_Response/dr.md) rules will apply as usual.
+When the host is back online, the content of this buffer will be flushed to the cloud where detection and response rules will apply as usual.
 
 The same ring buffer is used when the Sensor runs normally, even if data is not sent to the cloud in real-time. The cloud can then retroactively request the full or partial content of the ring buffer, bringing your telemetry current.
 

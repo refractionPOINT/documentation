@@ -1,38 +1,4 @@
----
-
-FAQ - Account Management
-
-* 10 Oct 2025
-* 2 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # FAQ - Account Management
-
-* Updated on 10 Oct 2025
-* 2 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 ## How Can I Create More Than Two Organizations?
 
@@ -48,7 +14,7 @@ Please navigate to the bottom of the Billing & Usage section of the organization
 
 You can wipe the data retention by disabling the `Insight` add on on the marketplace and re-enabling it again. Please note that unsubscribing from `Insight` will delete all telemetry stored for a selected organization, and this action cannot be undone.
 
-To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](/v2/docs/ext-infrastructure).
+To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](../Add-Ons/Extensions/LimaCharlie_Extensions/ext-infrastructure.md).
 
 ## Can I Transfer Ownership of an Organization?
 
@@ -59,9 +25,9 @@ You can transfer ownership of an organization to any other entity. The request n
 With LimaCharlie's granular role-based access control you can be granted access in one of two ways:
 
 * On a per-organization basis
-* To a set of organizations using [Organization Groups](/v2/docs/user-access)
+* To a set of organizations using [Organization Groups](../Platform_Management/Access_and_Permissions/user-access.md)
 
-You'll want to ask the person who granted access if they added you to the individual organizations, or if they'd set up an organization group.  Either method works, but they'll have to ensure that either you're added to each organization individually, or that they set up a group.
+You'll want to ask the person who granted access if they added you to the individual organizations, or if they'd set up an organization group.  Either method works, but they'll have to ensure that either you're added to each organization individually, or that they set up a group.
 
 ## How Can I Update My Time Zone?
 
@@ -90,58 +56,3 @@ Please reach out to our support team and we can verify if a successful delivery 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### What's Next
-
-* [FAQ - Billing](/docs/faq-billing)
-
-Table of contents
-
-+ [How Can I Create More Than Two Organizations?](#how-can-i-create-more-than-two-organizations-)
-+ [How Do I Delete an {{glossary.Organization}}?](#how-do-i-delete-an-{{glossary-organization}}-)
-+ [Is There a Way to Wipe an Organization?](#is-there-a-way-to-wipe-an-organization-)
-+ [Can I Transfer Ownership of an Organization?](#can-i-transfer-ownership-of-an-organization-)
-+ [I Created an Account and Have Been Given Access, but I Do Not Seem to Have Access to Other Organizations.](#i-created-an-account-and-have-been-given-access-but-i-do-not-seem-to-have-access-to-other-organizations-)
-+ [How Can I Update My Time Zone?](#how-can-i-update-my-time-zone-)
-+ [How Can I Unsubscribe/Cancel/Delete My Limacharlie Account?](#how-can-i-unsubscribe-cancel-delete-my-limacharlie-account-)
-+ [Why Didn't I Receive My Account Activation Email?](#why-didn-t-i-receive-my-account-activation-email-)
-
-Tags
-
-* [faq](/docs/en/tags/faq)

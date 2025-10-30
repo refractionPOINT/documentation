@@ -10,7 +10,7 @@ Hayabusa is a Windows event log fast forensics timeline generator and threat hun
 
 LimaCharlie will automatically kick off the analysis based off of the artifact ID provided in a  rule action, or you can run it manually via the extension.
 
-### Configuration
+## Configuration
 
 When enabled, you may configure the response of a D&R rule to run a Hayabusa analysis against an artifact event. Consider the following example D&R rule:
 
@@ -39,7 +39,7 @@ artifact type: wel
 
 Note that the only required field here is the `artifact_id`. The other values supplied in the example are the defaults.
 
-### Results
+## Results
 
 ```
 hayabusa update-rules
@@ -59,7 +59,7 @@ Several events will be pushed to the `ext-hayabusa` Sensor timeline:
 * `hayabusa_artifact`: contains the `artifact_id` of the CSV file that was uploaded to LimaCharlie
 * `hayabusa_event`: many of these will be sent to the timeline if you check the checkbox or parameter for `Send to timeline`, and it contains the raw contents of the Hayabusa CSV output in JSON format
 
-### Arguments
+## Arguments
 
 * `artifact_id`: ID of the LimaCharlie artifact to process
 * `profile`: either `minimal`, `standard`, `verbose`, `all-field-info`, `all-field-info-verbose`, `super-verbose`, `timesketch-minimal`, or `timesketch-verbose`
@@ -71,7 +71,7 @@ Several events will be pushed to the `ext-hayabusa` Sensor timeline:
   + Default: `informational`
 * `send_to_timeline`: whether or not to ingest the Hayabusa results into the sensor timeline as events, boolean, default `true`
 
-### Usage
+## Usage
 
 If you use the LimaCharlie Velociraptor extension, a good use case of this extension would be to trigger Hayabusa analysis upon ingestion of a Velociraptor KAPE files artifact.
 
@@ -115,7 +115,7 @@ rules:
       send_to_timeline: true    # `false` if you only want the CSV artifact
 ```
 
-### Generate LC Detections from Hayabusa Output
+## Generate LC Detections from Hayabusa Output
 
 Note
 
@@ -227,7 +227,3 @@ The resulting detection would look something like this:
   }
 }
 ```
-
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

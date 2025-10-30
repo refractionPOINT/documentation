@@ -23,7 +23,7 @@ CloudTrail logs can be collected via a cloud-to-cloud Adapter, or via the CLI Ad
 
 Within the LimaCharlie web application, you can create an AWS CloudTrail Cloud Connector using the `+ Add Sensor` option.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28160%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(160).png)
 
 After providing an Installation Key, you will be guided through connecting either an S3 bucket or SQS queue to ingest AWS CloudTrail events.
 

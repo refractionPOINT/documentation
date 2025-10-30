@@ -31,7 +31,7 @@ From the Sensors page in your new organization, click `Add Sensor` to open the s
 
 Sensors Overview
 
-For a full overview of types of sensors and their capabilities, check out [Sensors](../Sensors/sensors.md).
+For a full overview of types of sensors and their capabilities, check out Sensors.
 
 The setup flow should make this process straightforward. For example's sake, let's say we're installing a sensor on a Windows 10 (64 bit) machine we have in front of us.
 
@@ -63,7 +63,7 @@ Enabling the Sigma add-on will automatically apply rules to your organization to
 
 Writing Detection and Response rules
 
-Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](../Detection_and_Response/detection-and-response.md) when you're finished.
+Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](../Detection_and_Response/writing-and-testing-rules.md) when you're finished.
 
 ## Output
 

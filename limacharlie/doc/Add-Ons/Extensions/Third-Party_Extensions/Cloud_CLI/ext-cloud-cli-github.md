@@ -28,7 +28,3 @@ To utilize the GitHub CLI, you will need:
 ```
 access_token
 ```
-
-## What's Next
-
-* [Google Cloud](ext-cloud-cli-google-cloud.md)

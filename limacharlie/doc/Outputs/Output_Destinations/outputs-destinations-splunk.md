@@ -1,38 +1,4 @@
----
-
-Splunk
-
-* 08 Oct 2025
-* 1 Minute to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # Splunk
-
-* Updated on 08 Oct 2025
-* 1 Minute to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 To send data from LimaCharlie to Splunk, you will need to configure an output.
 
@@ -62,12 +28,12 @@ Enter the output name.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-4.png)
 
-Enter the [correct HEC URI](https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector#Send_data_to_HTTP_Event_Collector) for your Splunk implementation as Destination Host. Use the  /services/collector/event  endpoint. Note if you are using Spunk Cloud, this will be the string from the URL `https://<host>.splunkcloud.com/`.
+Enter the [correct HEC URI](https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector#Send_data_to_HTTP_Event_Collector) for your Splunk implementation as Destination Host. Use the  /services/collector/event  endpoint. Note if you are using Spunk Cloud, this will be the string from the URL `https://<host>.splunkcloud.com/`.
 
 Here is a sample Splunk HEC configuration:
 
-Destination Host = `https://host.domain.com:8088/services/collector/raw`  
- Auth Header Name = Authorization  
+Destination Host = `https://host.domain.com:8088/services/collector/raw`
+ Auth Header Name = Authorization
  Auth Header value = Splunk xxxxxx-xxxx-xxxx-xxxx-xxxxxx
 
 Before saving the output, you can configure any of the advanced Output settings.
@@ -87,49 +53,3 @@ You can choose to only send a specific list of event types by configuring an all
 **Do not include routing** flag allows users to forward only the original logs to outputs, excluding the routing label. This can be helpful for users wanting to use LimaCharlie for storage optimization since the routing label can add significant overhead.
 
 ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-5.png)
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### What's Next
-
-* [Syslog](/docs/outputs-destinations-syslog)
-
-Table of contents
-
-Tags
-
-* [outputs](/docs/en/tags/outputs)

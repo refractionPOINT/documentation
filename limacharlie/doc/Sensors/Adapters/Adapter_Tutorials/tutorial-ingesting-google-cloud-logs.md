@@ -15,7 +15,7 @@ Note: This tutorial is a synthesized version of this [official GCP article](http
 
 In your GCP Project, or Organization, go to the Logging product and the Logs Router section.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28145%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(145).png)
 
 Click the Create Sink button, give it a Name and Description.
 
@@ -23,7 +23,7 @@ In the Sink Destination choose Cloud Pub/Sub Topic as a sink service.
 
 Below, select Create a Topic.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28146%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(146).png)
 
 Give the Topic an ID and click Create Topic.
 
@@ -33,7 +33,7 @@ Click Next.
 
 Now you need to choose which logs you want included. Be careful selecting exactly what you want as GCP logs can get very verbose.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28147%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(147).png)
 
 Click the Preview Logs button in the top right to be taken to the main logging interface where you can experiment with selecting the right logs.
 
@@ -51,19 +51,19 @@ Click Next. You can optionally define an exclusion filter. Let's skip this step.
 
 Click Create Sink. You should get a confirmation the sink was created.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28148%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(148).png)
 
 ## Step 2: Create a Subscription
 
 Go to the Pubsub product.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28149%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(149).png)
 
 Click on your new Topic.
 
 Click on the Create Subscription button and select Create Subscription.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28150%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(150).png)
 
 Give this Subscription a name, you will need this name later when configuring the Adapter.
 
@@ -73,7 +73,7 @@ You can leave all other options to their default. Click Create.
 
 Head over to the IAM & Admin product. Then the Service Accounts section.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28151%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(151).png)
 
 Click Create Service Account.
 
@@ -81,7 +81,7 @@ Give the new Service Account a Name and Description. Click Create and Continue.
 
 Select a Role. You want to select Pub/Sub Subscriber.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28152%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(152).png)
 
 Click Continue. And finally click Done.
 
@@ -93,7 +93,7 @@ This step is optional. You may already have a machine you want to run the collec
 
 Head over to the Compute Engine product.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28153%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(153).png)
 
 Click the Create Instance button.
 
@@ -108,7 +108,7 @@ Click Create. This may take a minute.
 
 Once created, click the SSH button to log on the machine.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28154%29.png)
+![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(154).png)
 
 This will bring you to a console on the machine, ready to install the Adapter.
 
@@ -161,4 +161,4 @@ That's it, you're good to go!
 
 The next step towards production would be to run the Adapter as a service, or within tmux/screen on the Linux host. Alternatively you could also replicate the above setup using the [Docker container](https://hub.docker.com/r/refractionpoint/lc-adapter) and a serverless platform like Cloud Run.
 
-For more documentation on configuring Adapters, see [here](../adapters.md).
+For more documentation on configuring Adapters, see [here](../adapter-usage.md).

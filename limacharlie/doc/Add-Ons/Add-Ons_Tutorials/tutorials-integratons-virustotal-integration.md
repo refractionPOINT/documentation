@@ -23,10 +23,3 @@ metadata_rules:
   length of: true
   op: is greater than
 ```
-
-Related articles:
-* [VirusTotal](../API_Integrations/api-integrations-virustotal.md)
-* [Detection and Response Examples](../../Detection_and_Response/detection-and-response-examples.md)
-
-What's Next:
-* [Building Reports with BigQuery + Looker Studio](../../../Getting_Started/Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md)

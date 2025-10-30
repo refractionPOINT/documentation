@@ -109,9 +109,3 @@ When ingested with EDR telemetry, or as a separate Adapter, `WEL` type events ar
 ### Failed Logons
 
 `-1h | plat==windows | WEL | event/EVENT/System/EventID == "4625" | event/EVENT/EventData/IpAddress as SrcIP event/EVENT/EventData/LogonType as LogonType event/EVENT/EventData/TargetUserName as Username event/EVENT/EventData/WorkstationName as SrcHostname`
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
-Endpoint Detection & Response
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.

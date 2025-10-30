@@ -47,7 +47,64 @@ STEP 3: Each sub-agent must:
 - Remove all navigation elements, UI elements, and metadata cruft
 - Specifically remove:
   * The YAML frontmatter (the --- delimited section at the top with title, slug, breadcrumb, source, articleId, etc.)
-  * "Share this", "Print", "Dark", "Light" toggles
+
+  **IMPORTANT - Common Header Pattern to Remove:**
+  Many files have a specific header block that MUST be completely removed. This block typically spans lines 1-36 and follows this pattern:
+
+  ```
+  ---
+
+  [Title Text]
+
+  * [Date like "30 Sep 2025"]
+  * [Text like "1 Minute to read"]
+
+  Share this
+
+  * Print
+  * Share
+  * Dark
+
+    Light
+
+  Contents
+
+  # [Duplicate Title]
+
+  * Updated on [Date]
+  * [Time to read]
+
+  * Print
+  * Share
+  * Dark
+
+    Light
+
+  ---
+
+  Article summary
+
+  Did you find this summary helpful?
+
+  Thank you for your feedback!
+  ```
+
+  **How to identify this pattern:**
+  - File starts with a line containing only "---"
+  - Followed by blank lines and a title (NOT in heading format, just plain text)
+  - Contains bullet points with dates and "Minute to read"
+  - Contains "Share this", "Print", "Share", "Dark", "Light" (often with odd spacing)
+  - Contains "Contents"
+  - Has a duplicate title as a proper heading (# Title)
+  - Another "Updated on" timestamp
+  - Another set of "Print", "Share", "Dark", "Light"
+  - Ends with "---"
+  - Followed by "Article summary", "Did you find this summary helpful?", "Thank you for your feedback!"
+
+  **This entire block must be deleted** - it provides no documentation value. The actual content starts AFTER this block.
+
+  * Other elements to remove:
+  * "Share this", "Print", "Dark", "Light" toggles anywhere in the file
   * Duplicate titles and headers
   * "Contents" sections
   * "Article summary" and feedback widgets ("Did you find this summary helpful?")
@@ -56,6 +113,61 @@ STEP 3: Each sub-agent must:
   * "Related articles", "What's Next", "Tags", "Table of contents" sections at the end
   * Any "Updated on" timestamps that are in the body
   * Horizontal rules (---/***) that are just decorative
+
+  **IMPORTANT - Common Footer Pattern to Remove:**
+  Many files also have footer blocks that must be removed. Look for these patterns near the end of files:
+
+  **Pattern 1 - Feedback Form (between --- markers):**
+  ```
+  ---
+
+  Thank you for your feedback! Our team will get back to you
+
+  Your feedback
+
+  Need more information
+
+  Difficult to understand
+
+  Inaccurate or irrelevant content
+
+  Missing/broken link
+
+  Others
+
+  Comment
+
+  Comment (Optional)
+
+  Character limit : 500
+
+  Please enter your comment
+
+  Email (Optional)
+
+  Email
+
+  Notify me about change
+
+  Please enter a valid email
+
+  Cancel
+
+  ---
+  ```
+
+  **Pattern 2 - "What's Next" and Table of Contents:**
+  ```
+  ###### What's Next
+
+  * [Link 1]
+  * [Link 2]
+
+  Table of contents
+  ```
+
+  Remove these entire blocks - they're just navigation UI elements from the original website.
+
 - KEEP:
   * The actual documentation content (paragraphs, lists, code blocks)
   * Legitimate section headings (##, ###, etc.)

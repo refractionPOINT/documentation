@@ -5,7 +5,7 @@ Soteria's AWS ruleset provides coverage across multiple AWS telemetry streams, i
 * [AWS CloudTrail](https://aws.amazon.com/cloudtrail/)
 * [AWS GuardDuty](https://aws.amazon.com/guardduty/)
 
-Data access
+## Data Access
 
 Please note that Soteria won't get access to your data, and you won't be able to see or edit their rules - LimaCharlie acts as a broker between the two parties.
 
@@ -38,7 +38,5 @@ You can also manage add-ons from the **Subscriptions** menu under **Billing**.
 ### Infrastructure as Code
 
 Alternatively, to manage tenants and LimaCharlie functionality at scale, you can leverage our Infrastructure as Code functionality.
-
-Amazon Web Services
 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

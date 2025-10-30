@@ -36,6 +36,192 @@ The best general strategy for D&R rules is to put the parts of the rule most lik
 to eliminate the event at the beginning of the rule, so that LC may move on to the next event
 as quickly as possible.
 
+## Understanding Detection Structure
+
+When a D&R rule matches an event, LimaCharlie creates a **Detection** - a structured alert that includes both the original event data and detection-specific metadata. Understanding this structure is important for:
+
+- Configuring response actions that use detection data
+- Building multi-stage D&R rules that process detections
+- Integrating detections with external systems via outputs
+- Extracting IOCs and structured data from alerts
+
+### Detection Structure Overview
+
+A Detection has the following canonical structure:
+
+```json
+{
+  "cat": "Detection Name",
+  "source": "dr-general",
+  "routing": { /* inherited from the triggering event */ },
+  "detect": { /* copy of the event data that triggered this */ },
+  "detect_id": "unique-uuid",
+  "namespace": "optional-namespace",
+  "priority": 5,
+  "mtd": { /* general metadata */ },
+  "detect_mtd": { /* detection-specific metadata */ },
+  "detect_data": { /* structured IOCs extracted by the rule */ },
+  "link": "https://docs.example.com/playbook",
+  "author": "security-team",
+  "source_rule": "suspicious-process-execution",
+  "rule_tags": ["windows", "process"],
+  "gen_time": 1656959942437
+}
+```
+
+### Detection Fields Explained
+
+#### Required Fields
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `cat` | string | Detection name/category - identifies what was detected | `"Suspicious PowerShell"` |
+| `source` | string | Which rule set triggered this (`dr-general`, `dr-managed`, `fp`) | `"dr-general"` |
+| `routing` | object | Inherited from the triggering event - contains sensor metadata | See Event Structure Reference |
+| `detect` | object | Copy of the event data that triggered the detection | Full event content |
+| `detect_id` | string | Unique identifier for this detection (UUID) | `"8cec565d-..."` |
+
+#### Optional Detection Metadata Fields
+
+| Field | Type | Description | Set By |
+|-------|------|-------------|--------|
+| `priority` | integer | Detection priority (0-10, higher is more critical) | `priority: 5` in response |
+| `namespace` | string | Organizational namespace for the detection | `namespace: "production"` in response |
+| `link` | string | URL to documentation, playbook, or ticket | `link: "https://..."` in response |
+| `author` | string | Who created the detection rule | `author: "security-team"` in response |
+| `source_rule` | string | Name of the rule that generated this | Automatically set from rule name |
+| `rule_tags` | array | Tags from the rule metadata | `metadata: {tags: [...]}` in rule |
+| `gen_time` | integer | Unix timestamp (ms) when detection was generated | Automatically set |
+
+#### Structured Data Fields
+
+| Field | Type | Description | Set By |
+|-------|------|-------------|--------|
+| `mtd` | object | General metadata about the detection | `metadata: {...}` in response |
+| `detect_mtd` | object | Detection-specific metadata | Automatically populated from rule |
+| `detect_data` | object | **Structured IOCs extracted from the event** | `detect_data: {...}` in response |
+
+### Using `detect_data` to Extract IOCs
+
+The `detect_data` field is particularly powerful - it lets you extract structured indicators from the triggering event:
+
+```yaml
+respond:
+  - action: report
+    name: Suspicious Process
+    detect_data:
+      malicious_file: << routing/this >>
+      process_path: << event/FILE_PATH >>
+      command_line: << event/COMMAND_LINE >>
+      parent_process: << event/PARENT/FILE_PATH >>
+```
+
+This creates a Detection with:
+
+```json
+{
+  "cat": "Suspicious Process",
+  "detect_data": {
+    "malicious_file": "a443f9c48bef700740ef27e062c333c6",
+    "process_path": "C:\\Windows\\System32\\cmd.exe",
+    "command_line": "cmd.exe /c powershell.exe",
+    "parent_process": "C:\\Windows\\explorer.exe"
+  }
+}
+```
+
+### Event → Detection Transformation
+
+Here's how an Event becomes a Detection:
+
+**1. Original Event (from sensor)**
+```json
+{
+  "routing": {
+    "sid": "bb4b30af-...",
+    "event_type": "NEW_PROCESS",
+    "hostname": "workstation-01",
+    "this": "a443f9c48bef...",
+    ...
+  },
+  "event": {
+    "FILE_PATH": "C:\\Windows\\System32\\powershell.exe",
+    "COMMAND_LINE": "powershell -enc SGVsbG8=",
+    "PROCESS_ID": 4812
+  }
+}
+```
+
+**2. D&R Rule Matches**
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: contains
+  path: event/FILE_PATH
+  value: powershell
+  case sensitive: false
+
+respond:
+  - action: report
+    name: PowerShell Execution
+    priority: 3
+    detect_data:
+      ps_path: << event/FILE_PATH >>
+      encoded_cmd: << event/COMMAND_LINE >>
+```
+
+**3. Resulting Detection**
+```json
+{
+  "cat": "PowerShell Execution",
+  "source": "dr-general",
+  "routing": { /* same as event routing */ },
+  "detect": { /* same as event content */ },
+  "detect_id": "new-unique-uuid",
+  "priority": 3,
+  "detect_data": {
+    "ps_path": "C:\\Windows\\System32\\powershell.exe",
+    "encoded_cmd": "powershell -enc SGVsbG8="
+  }
+}
+```
+
+### Accessing Detection Fields
+
+#### In Response Actions
+
+Detection fields can be referenced in subsequent rules using the `detect/` prefix:
+
+```yaml
+# Second-stage rule that processes detections
+detect:
+  target: detect
+  op: is
+  path: cat
+  value: PowerShell Execution
+
+respond:
+  - action: task
+    command: mem_dump --pid << detect/PROCESS_ID >>
+```
+
+#### In Outputs
+
+When routing detections to external systems via the `detect` output stream, the full Detection structure is sent, allowing your SIEM or SOAR to parse:
+
+- `cat` and `priority` for alert classification
+- `detect_data` for extracted IOCs
+- `routing` for context (hostname, sensor ID, etc.)
+- `detect` for full event details
+
+### Best Practices
+
+1. **Always set priority**: Use `priority:` in your response to help triage detections
+2. **Extract useful IOCs**: Use `detect_data` to pull out file paths, IPs, domains, hashes
+3. **Provide context**: Set `link:` to point to playbooks or documentation
+4. **Tag your rules**: Use `metadata: {tags: [...]}` to categorize detections
+5. **Meaningful names**: Use descriptive `cat` names that explain what was detected
+
 ## Introduction
 
 ### Goal

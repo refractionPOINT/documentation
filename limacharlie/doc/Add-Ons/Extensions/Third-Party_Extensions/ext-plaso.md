@@ -55,7 +55,7 @@ LimaCharlie can automatically kick off evidence processing with Plaso based off 
 
 ### Velociraptor Triage Acquisition Processing
 
-If you use the LimaCharlie [Velociraptor](../ext-velociraptor.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
+If you use the LimaCharlie [Velociraptor](ext-velociraptor.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a Velociraptor KAPE files artifact collection.
 
 1. Configure a D&R rule to watch for Velociraptor collection events upon ingestion, and then trigger the Plaso extension:
 
@@ -93,7 +93,7 @@ If you use the LimaCharlie [Velociraptor](../ext-velociraptor.md) extension, a g
 
 ### MFT Processing
 
-If you use the LimaCharlie [Dumper](../../LimaCharlie_Extensions/ext-dumper.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a MFT CSV artifact.
+If you use the LimaCharlie [Dumper](../LimaCharlie_Extensions/ext-dumper.md) extension, a good use case of `ext-plaso` would be to trigger Plaso evidence processing upon ingestion of a MFT CSV artifact.
 
 1. Configure a D&R rule to watch for MFT collection events upon ingestion, and then trigger the Plaso extension:
 

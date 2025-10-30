@@ -1,38 +1,4 @@
----
-
-API Keys
-
-* 09 Jun 2025
-* 4 Minutes to read
-
-Share this
-
-* Print
-* Share
-* Dark
-
-  Light
-
-Contents
-
 # API Keys
-
-* Updated on 09 Jun 2025
-* 4 Minutes to read
-
-* Print
-* Share
-* Dark
-
-  Light
-
----
-
-Article summary
-
-Did you find this summary helpful?
-
-Thank you for your feedback!
 
 LimaCharlie Cloud has a concept of API keys. Those are secret keys that can be created and named, and then in turn be used to retrieve a JWT that can be associated with the LC REST API at https://api.limacharlie.io.
 
@@ -78,7 +44,7 @@ You may also use a User API Key to get the list of organizations available to it
 
 #### Ingestion Keys
 
-The [artifact collection](/v2/docs/artifacts) in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
+The [artifact collection](../../Add-Ons/Extensions/LimaCharlie_Extensions/ext-artifact.md) in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
 
 ## Python
 
@@ -107,7 +73,7 @@ When "going Live" through the web UI, the following is required by the user:
 
 API Keys may have "flair" as part of the key name. A flair is like a tag surrounded by `[]`. Although it is not required, we advise to put the flair at the end of the API key name for readability.
 
-For example:  
+For example:
 `orchestration-key[bulk]` is a key with a `bulk` flair.
 
 Flairs are used to modify the behavior of an API key or provide some usage hints to various systems in LimaCharlie.
@@ -126,64 +92,3 @@ In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Plat
 In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
-
----
-
-Thank you for your feedback! Our team will get back to you
-
-Your feedback
-
-Need more information
-
-Difficult to understand
-
-Inaccurate or irrelevant content
-
-Missing/broken link
-
-Others
-
-Comment
-
-Comment (Optional)
-
-Character limit : 500
-
-Please enter your comment
-
-Email (Optional)
-
-Email
-
-Notify me about change
-
-Please enter a valid email
-
-Cancel
-
----
-
-###### Related articles
-
-* [LimaCharlie SDK & CLI](/docs/limacharlie-sdk)
-
----
-
-###### What's Next
-
-* [User Access](/docs/user-access)
-
-Table of contents
-
-+ [Managing](#managing)
-+ [Getting a JWT](#getting-a-jwt)
-+ [Python](#python)
-+ [Privileges](#privileges)
-+ [Required Privileges](#required-privileges)
-+ [Flair](#flair)
-+ [Allowed IP Range](#allowed-ip-range)
-
-Tags
-
-* [api](/docs/en/tags/api)
-* [platform](/docs/en/tags/platform)

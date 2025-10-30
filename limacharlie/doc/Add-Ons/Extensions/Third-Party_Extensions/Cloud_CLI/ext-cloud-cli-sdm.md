@@ -28,7 +28,3 @@ To utilize StrongDM's CLI capabilities, you will need:
 ```
 token
 ```
-
-## What's Next
-
-* [Sublime](./ext-cloud-cli-sublime.md)

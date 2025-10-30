@@ -10,7 +10,7 @@ The Artifact Extension provides low-level collection capabilities which can be c
 
 To enable the Artifact extension, navigate to the [Artifact extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-artifact) in the marketplace. Select the Organization you wish to enable the extension for, and select **Subscribe.**
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/artifact-1.png "image(230).png")
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/artifact-1.png)
 
 After clicking **Subscribe**, the Artifact extension should be available almost immediately.
 
@@ -20,7 +20,7 @@ After clicking **Subscribe**, the Artifact extension should be available almost 
 
 When enabled, you will see an **Artifact Collection** option under **Sensors** menu for the respective organization.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/artifact-2.png "image(223).png")
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/artifact-2.png)
 
 Within the Artifact Collection page, you can configure:
 
@@ -33,4 +33,4 @@ The following screenshot provides examples of capturing Windows Security and Sys
 
 More information on Artifact collections can be found [here](https://docs.limacharlie.io/docs/artifacts).
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/artifact-3.png "image(224).png")
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/artifact-3.png)

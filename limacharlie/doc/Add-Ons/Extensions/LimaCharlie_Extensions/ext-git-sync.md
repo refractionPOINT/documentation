@@ -21,13 +21,13 @@ By using `ext-git-sync`, you can streamline your IaC workflows, improve consiste
 
 If you have a properly structured git repository containing org configurations, the extension can sync the running org configurations with the contents of the configs in git.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2 (1).png "pull_config(1).png")
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2%20(1).png "pull_config(1).png")
 
 ### Export TO Git
 
 Assuming you have an empty git repository, you can configure the extension to export the current org configuration to the repository. It will be placed in an `exports` subdirectory.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2 (2).png "push_config(1).png")
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/d2%20(2).png "push_config(1).png")
 
 ## Git Repo Structure
 
@@ -208,15 +208,5 @@ If you encounter synchronization issues:
 * Verify that the deploy key has proper write permissions
 * Ensure the correct SSH URL format is used (should begin with `git@github.com:`)
 * Check that the private key in Secret Manager matches the public key added to GitHub
-
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
-
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
-
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
-
-Managed Security Services Provider
-
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
 [Infrastructure](ext-infrastructure.md)

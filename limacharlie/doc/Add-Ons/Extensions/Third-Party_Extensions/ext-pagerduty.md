@@ -30,7 +30,7 @@ On the PagerDuty side, you need to configure your PagerDuty service to receive t
 5. Click "Add integration".
 6. Back in the "Integrations" page, you should see your new integration in the list. Copy the "Integration Key" to your clipboard and add it in the "Integrations" section of LimaCharlie for PagerDuty.
 
-From this point on, you may use a  rule to trigger a PagerDuty event. For example the following rule "response":
+From this point on, you may use a rule to trigger a PagerDuty event. For example the following rule "response":
 
 ```
 - action: extension request

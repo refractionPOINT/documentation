@@ -79,7 +79,7 @@ We invite you to look at the command line usage itself, as the tool evolves.
 
 ### REST API
 
-The Replay API is available to all DataCenter locations using a per-location URL. To get the appropriate URL for your organization, use the REST endpoint to retrieve the URLs found [here](https://api.limacharlie.io/static/swagger/#/Organizations/getOrgURLs) named `replay`.
+The Replay API is available to all DataCenter locations using a per-location URL. To get the appropriate URL for your organization, use the REST endpoint to retrieve the URLs found at https://api.limacharlie.io/static/swagger/#/Organizations/getOrgURLs named `replay`.
 
 Having per-location URLs will allow us to guarantee that processing occurs within the geographical area you chose. Currently, some locations are NOT guaranteed to be in the same area due to the fact we are using the Google Cloud Run product which is not available globally. For these cases, processing is currently done in the United States, but as soon as it becomes available in your area, the processing will be moved transparently.
 

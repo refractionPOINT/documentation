@@ -15,5 +15,3 @@ Use the SecOps Cloud Platform to gain comprehensive visibility, control, and pro
 * **Continuous Monitoring and Alerting:** LimaCharlie's FIM capability continuously monitors designated files and registry keys for any modifications, generating real-time alerts to security teams for immediate action.
 * **Granular Configuration and Rules:** Define specific files, directories, and registry paths to monitor based on your unique security needs, ensuring focused protection for critical assets.
 * **Historical Data Storage and Analysis:** LimaCharlie stores one year of historical FIM data, enabling in-depth investigations, threat hunting, and identification of potential attack patterns that might have been missed initially.
-
-Endpoint Detection & Response
