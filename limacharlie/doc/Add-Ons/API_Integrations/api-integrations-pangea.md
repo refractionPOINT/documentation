@@ -121,13 +121,23 @@ The URL Intel service allows you to retrieve intelligence about known URLs, givi
 ### D&R Rule
 
 ```
-event: DNS_REQUEST
+event: HTTP_REQUEST
 op: lookup
-path: author
-resource: hive://lookup/pangea-user-reputation
+path: event/URL
+resource: hive://lookup/pangea-url-reputation
 ```
 
 ### API Response Data
+
+```
+{
+  "api_pangea-url-reputation": {
+    "category": [],
+    "score": 0,
+    "verdict": "benign"
+  }
+}
+```
 
 ## User
 
@@ -136,8 +146,19 @@ The User Intel service allows you to check a large repository of breach data to 
 ### D&R Rule
 
 ```
-event: DNS_REQUEST
+event: USER_OBSERVED
 op: lookup
-path: author
+path: event/USER_NAME
 resource: hive://lookup/pangea-user-reputation
+```
+
+### API Response Data
+
+```
+{
+  "api_pangea-user-reputation": {
+    "breach_count": 0,
+    "found_in_breach": false
+  }
+}
 ```

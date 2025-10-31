@@ -31,7 +31,7 @@ After providing an [Installation Key](../../installation-keys.md), provide the r
 
 ### Infrastructure as Code Deployment
 
-LimaCharlie IaC Adapter can also be used to ingest Slack events.
+LimaCharlie IaC Adapter can also be used to ingest 1Password events.
 
 ```
 # 1Password Specific Docs: https://docs.limacharlie.io/docs/adapter-types-1password

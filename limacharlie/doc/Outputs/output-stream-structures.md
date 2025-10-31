@@ -356,8 +356,7 @@ Deployment events track sensor installations, removals, and updates:
 ```yaml
 name: splunk-events
 module: webhook_bulk
-stream: event  # Event stream
-for: event
+type: event  # Event stream
 dest_host: https://splunk.company.com:8088/services/collector/raw
 auth_header_name: Authorization
 auth_header_value: Splunk YOUR-HEC-TOKEN
@@ -368,14 +367,10 @@ auth_header_value: Splunk YOUR-HEC-TOKEN
 ```yaml
 name: slack-critical-alerts
 module: slack
-stream: detect  # Detection stream
-for: detect
-api_key: xoxb-your-slack-token
-channel: security-alerts
-filters:
-  - path: priority
-    op: is greater than
-    value: 7
+type: detect  # Detection stream
+slack_api_token: xoxb-your-slack-token
+slack_channel: security-alerts
+cat: high-priority  # Category filter for high-priority detections
 ```
 
 ### Audit Logs to S3
@@ -383,52 +378,75 @@ filters:
 ```yaml
 name: compliance-audit-logs
 module: s3
-stream: audit  # Audit stream
-for: audit
+type: audit  # Audit stream
 bucket: company-security-audit-logs
-prefix: limacharlie/audit/
-aws_access_key: YOUR-ACCESS-KEY
-aws_secret_key: YOUR-SECRET-KEY
+dir: limacharlie/audit/
+key_id: YOUR-ACCESS-KEY
+secret_key: YOUR-SECRET-KEY
 ```
 
 ---
 
 ## Filtering and Transforming Streams
 
-### Field-Based Filtering
+### Event Type Filtering
 
-Filter events before sending to reduce volume:
+Filter specific event types using whitelist/blacklist:
 
 ```yaml
-filters:
-  - path: routing/event_type
-    op: is
-    value: NEW_PROCESS
-  - path: routing/plat
-    op: is
-    value: 268435456  # Windows only
+# Only send NEW_PROCESS events
+event_white_list:
+  - NEW_PROCESS
+  - TERMINATE_PROCESS
+
+# Or exclude certain events
+event_black_list:
+  - DNS_REQUEST
+  - CONNECTED
 ```
 
-### Detection Priority Filtering
+### Category Filtering
 
-Only send high-priority detections:
+Filter detections by category:
 
 ```yaml
-filters:
-  - path: priority
-    op: is greater than
-    value: 5
+# Only send specific detection categories
+cat_white_list:
+  - high-priority
+  - critical
+
+# Or exclude certain categories
+cat_black_list:
+  - informational
 ```
 
-### Audit Event Type Filtering
+### Tag-Based Filtering
 
-Only send configuration changes:
+Filter events from sensors with specific tags:
 
 ```yaml
-filters:
-  - path: etype
-    op: is
-    value: config_change
+# Only send events from tagged sensors
+tag: production
+
+# Exclude events from specific tags
+tag_black_list:
+  - dev
+  - test
+```
+
+### Rule Tag Filtering
+
+Filter detections by D&R rule tags:
+
+```yaml
+# Only send detections from specific rule tags
+rule_tag_white_list:
+  - compliance
+  - ransomware
+
+# Or exclude certain rule tags
+rule_tag_black_list:
+  - low-confidence
 ```
 
 ---

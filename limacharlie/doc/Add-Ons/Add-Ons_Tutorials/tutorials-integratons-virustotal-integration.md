@@ -15,7 +15,7 @@ Once you have entered your API key, you can then create a  rule to perform a loo
 ```
 path: event/HASH
 op: lookup
-resource: hives://lookup/vt
+resource: hive://lookup/vt
 event: CODE_IDENTITY
 metadata_rules:
   path: /

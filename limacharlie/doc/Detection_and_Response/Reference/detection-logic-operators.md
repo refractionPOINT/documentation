@@ -192,22 +192,79 @@ Checks if the event under evaluation is from a sensor of the given platform.
 
 Takes a `name` parameter for the platform name. The current platforms are:
 
+**Endpoint Platforms:**
 * `windows`
 * `linux`
 * `macos`
 * `ios`
 * `android`
 * `chrome`
+
+**Cloud & Service Platforms:**
+* `gcp` (Google Cloud Platform)
+* `aws` (Amazon Web Services)
+* `azure_ad` (Azure Active Directory)
+* `azure_event_hub_namespace`
+* `azure_key_vault`
+* `azure_kubernetes_service`
+* `azure_monitor`
+* `azure_network_security_group`
+* `azure_sql_audit`
+* `guard_duty` (AWS GuardDuty)
+* `k8s_pods` (Kubernetes)
+
+**Identity & Access Management:**
+* `1password`
+* `duo`
+* `entraid` (Microsoft Entra ID)
+* `okta`
+* `sublime`
+
+**Security Products:**
+* `carbon_black`
+* `crowdstrike`
+* `cylance`
+* `falconcloud`
+* `msdefender` (Microsoft Defender)
+* `sentinel_one`
+* `sophos`
+* `trend_worryfree`
+* `wiz`
+
+**Communication & Collaboration:**
+* `box`
+* `github`
+* `office365`
+* `slack`
+* `email`
+
+**IT & Business Services:**
+* `hubspot`
+* `itglue`
+* `mimecast`
+* `pandadoc`
+* `proofpoint`
+* `zendesk`
+
+**Network & Infrastructure:**
+* `canary_token`
+* `fortigate`
+* `iis` (Internet Information Services)
+* `netscaler`
+* `paloalto_fw` (Palo Alto Firewall)
+* `zeek`
+
+**Data Formats:**
 * `vpn`
 * `text`
 * `json`
-* GCP
-* AWS
-* `carbon_black`
-* `crowdstrike`
-* `1password`
-* `office365`
-* `msdefender`
+* `xml`
+* `cef` (Common Event Format)
+* `wel` (Windows Event Log)
+* `mac_unified_logging`
+
+**Other:**
+* `lc_event` (LimaCharlie internal events)
 
 Example:
 
@@ -215,6 +272,8 @@ Example:
 op: is platform
 name: 1password
 ```
+
+Note: Platform names are case-sensitive and should be lowercase.
 
 ### is tagged
 
