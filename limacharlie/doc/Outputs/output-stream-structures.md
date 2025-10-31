@@ -389,21 +389,29 @@ secret_key: YOUR-SECRET-KEY
 
 ## Filtering and Transforming Streams
 
+**IMPORTANT**: Filter parameters use **newline-separated string format**, not YAML arrays. Each item must be on its own line within a multiline string.
+
 ### Event Type Filtering
 
 Filter specific event types using whitelist/blacklist:
 
 ```yaml
-# Only send NEW_PROCESS events
-event_white_list:
-  - NEW_PROCESS
-  - TERMINATE_PROCESS
+# Only send NEW_PROCESS and TERMINATE_PROCESS events
+event_white_list: |
+  NEW_PROCESS
+  TERMINATE_PROCESS
 
 # Or exclude certain events
-event_black_list:
-  - DNS_REQUEST
-  - CONNECTED
+event_black_list: |
+  DNS_REQUEST
+  CONNECTED
 ```
+
+**Format Notes**:
+- Use the pipe (`|`) operator for multiline strings in YAML
+- Each event type on its own line
+- No hyphens or list syntax
+- Empty lines and whitespace are automatically trimmed
 
 ### Category Filtering
 
@@ -411,13 +419,13 @@ Filter detections by category:
 
 ```yaml
 # Only send specific detection categories
-cat_white_list:
-  - high-priority
-  - critical
+cat_white_list: |
+  high-priority
+  critical
 
 # Or exclude certain categories
-cat_black_list:
-  - informational
+cat_black_list: |
+  informational
 ```
 
 ### Tag-Based Filtering
@@ -425,29 +433,36 @@ cat_black_list:
 Filter events from sensors with specific tags:
 
 ```yaml
-# Only send events from tagged sensors
+# Only send events from tagged sensors (single tag)
 tag: production
 
-# Exclude events from specific tags
-tag_black_list:
-  - dev
-  - test
+# Exclude events from multiple tags
+tag_black_list: |
+  dev
+  test
+  staging
 ```
+
+**Note**: The `tag` parameter accepts a single tag string. To filter multiple tags, use `tag_black_list` to exclude unwanted tags.
 
 ### Rule Tag Filtering
 
-Filter detections by D&R rule tags:
+Filter detections by D&R rule tags (detection stream only):
 
 ```yaml
 # Only send detections from specific rule tags
-rule_tag_white_list:
-  - compliance
-  - ransomware
+rule_tag_white_list: |
+  compliance
+  ransomware
+  lateral-movement
 
 # Or exclude certain rule tags
-rule_tag_black_list:
-  - low-confidence
+rule_tag_black_list: |
+  low-confidence
+  experimental
 ```
+
+**Use Case**: Rule tags help organize detections by threat type, compliance requirement, or confidence level.
 
 ---
 
