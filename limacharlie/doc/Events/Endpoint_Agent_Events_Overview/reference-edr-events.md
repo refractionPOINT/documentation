@@ -21,14 +21,13 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [DELETED\_SENSOR](#deletedsensor) | ☑️ | ☑️ | ☑️ |  |  |
 | [DIR\_FINDHASH\_REP](#dirfindhash) | ☑️ | ☑️ | ☑️ |  |  |
 | [DIR\_LIST\_REP](#dirlist) | ☑️ | ☑️ | ☑️ |  |  |
-| [DISCONNECTED](#disconnected) |  | ☑️ |  |  |  |
 | [DNS\_REQUEST](#dnsrequest) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [DRIVER\_CHANGE](#driverchange) |  | ☑️ |  |  |  |
 | [EXEC\_OOB](#execoob) | ☑️ |  | ☑️ |  |  |
 | [EXISTING\_PROCESS](#existingprocess) | ☑️ | ☑️ | ☑️ |  |  |
 | [EXPORT\_COMPLETE](#exportcomplete) | ☑️ | ☑️ | ☑️ |  |  |
 | [FIM\_ADD](#fimadd) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM\_DEL](#fimdel) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM\_REMOVE](#fimremove) | ☑️ | ☑️ | ☑️ |  |  |
 | [FIM\_HIT](#fimhit) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_CREATE](#filecreate) | ☑️ | ☑️ |  |  |  |
 | [FILE\_DEL\_REP](#filedel) | ☑️ | ☑️ | ☑️ |  |  |
@@ -284,19 +283,6 @@ Response event for the `dir_list` sensor command. Includes Alternate Data Stream
 }
 ```
 
-### DISCONNECTED
-
-This event is generated when a Sensor disconnects from the cloud.
-
-**Platforms:**
-
-```
-{
-  "DISCONNECTED": {},
-  "ts": 1455674775
-}
-```
-
 ### DNS\_REQUEST
 
 Generated from DNS responses and therefore includes both the requested domain and the response from the server. If the server responds with multiple responses (as allowed by the DNS protocol) the N answers will become N DNS\_REQUEST events, so you can always assume one DNS\_REQUEST event means one answer.
@@ -531,7 +517,7 @@ Response event for the `fim_add` sensor command. An `ERROR: 0` implies the path 
 }
 ```
 
-### FIM\_DEL
+### FIM\_REMOVE
 
 Response event for the `fim_del` sensor command. An `ERROR: 0` implies the path was successfully removed.
 

@@ -55,7 +55,7 @@ If you want to trigger a Yara scan as a response to one of your detections, you 
 
 ## Migrating D&R Rule from legacy Service to new Extension
 
-***LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024.***
+***Note: LimaCharlie has migrated from Services to Extensions. Legacy services are no longer supported.***
 
 The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference legacy Yara service, preview the change and execute the conversion required in the rule "response".
 

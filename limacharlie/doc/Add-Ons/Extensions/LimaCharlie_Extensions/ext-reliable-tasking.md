@@ -82,9 +82,9 @@ value: version
 
 ## Migrating Rule from legacy Service to new Extension
 
-***LimaCharlie is migrating away from Services to a new capability called Extensions. Support of legacy services will end on June 30, 2024.***
+***Note: LimaCharlie has migrated from Services to Extensions. Legacy services are no longer supported.***
 
-The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference legacy reliable tasking service, preview the change and execute the conversion required in the rule "response".
+The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference the legacy reliable tasking service and convert them to use the extension.
 
 Command line to preview Reliable Tasking rule conversion:
 
