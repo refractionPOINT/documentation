@@ -1,6 +1,9 @@
 ---
 name: querying-limacharlie
 description: Query and analyze LimaCharlie telemetry data using LCQL (LimaCharlie Query Language). Use when users ask about searching events, analyzing telemetry, hunting for threats, investigating incidents, or examining historical security data across endpoints and cloud sources.
+allowed_tools:
+  - Read
+  - mcp__limacharlie__*
 ---
 
 # Querying LimaCharlie Telemetry

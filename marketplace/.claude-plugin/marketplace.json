@@ -8,6 +8,13 @@
       "source": "./plugins/lc_query",
       "version": "1.0.0",
       "author": "LimaCharlie"
+    },
+    {
+      "name": "lc-external-datasources",
+      "description": "LimaCharlie External Data Sources Assistant for configuring Cloud Sensors, Adapters, and USP integrations with comprehensive telemetry ingestion guidance",
+      "source": "./plugins/lc_external_datasources",
+      "version": "1.0.0",
+      "author": "LimaCharlie"
     }
   ]
 }

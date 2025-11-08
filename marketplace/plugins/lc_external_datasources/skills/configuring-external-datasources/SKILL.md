@@ -1,6 +1,11 @@
 ---
 name: configuring-external-datasources
 description: Configure and deploy LimaCharlie external data sources (Cloud Sensors, Adapters, USP, External Adapters) for ingesting telemetry from cloud platforms, logs, webhooks, and third-party services. Use when users need to connect AWS, Azure, GCP, Syslog, webhooks, or any external telemetry source to LimaCharlie.
+allowed_tools:
+  - Read
+  - WebFetch
+  - WebSearch
+  - mcp__limacharlie__*
 ---
 
 # Configuring LimaCharlie External Data Sources
