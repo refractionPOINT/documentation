@@ -3,7 +3,27 @@ name: querying-limacharlie
 description: Query and analyze LimaCharlie telemetry data using LCQL (LimaCharlie Query Language). Use when users ask about searching events, analyzing telemetry, hunting for threats, investigating incidents, or examining historical security data across endpoints and cloud sources.
 allowed_tools:
   - Read
-  - mcp__limacharlie__*
+  - mcp__limacharlie__run_lcql_query
+  - mcp__limacharlie__get_historic_events
+  - mcp__limacharlie__get_historic_detections
+  - mcp__limacharlie__search_iocs
+  - mcp__limacharlie__batch_search_iocs
+  - mcp__limacharlie__get_time_when_sensor_has_data
+  - mcp__limacharlie__list_saved_queries
+  - mcp__limacharlie__get_saved_query
+  - mcp__limacharlie__run_saved_query
+  - mcp__limacharlie__set_saved_query
+  - mcp__limacharlie__delete_saved_query
+  - mcp__limacharlie__get_event_schema
+  - mcp__limacharlie__get_event_schemas_batch
+  - mcp__limacharlie__get_event_types_with_schemas
+  - mcp__limacharlie__get_event_types_with_schemas_for_platform
+  - mcp__limacharlie__get_platform_names
+  - mcp__limacharlie__list_with_platform
+  - mcp__limacharlie__generate_lcql_query
+  - mcp__limacharlie__generate_sensor_selector
+  - mcp__limacharlie__get_sensor_info
+  - mcp__limacharlie__list_sensors
 ---
 
 # Querying LimaCharlie Telemetry

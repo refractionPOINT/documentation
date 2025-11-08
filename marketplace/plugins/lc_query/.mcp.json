@@ -22,7 +22,11 @@
         "get_event_types_with_schemas",
         "get_event_types_with_schemas_for_platform",
         "get_platform_names",
-        "list_with_platform"
+        "list_with_platform",
+        "generate_lcql_query",
+        "generate_sensor_selector",
+        "get_sensor_info",
+        "list_sensors"
       ]
     }
   }

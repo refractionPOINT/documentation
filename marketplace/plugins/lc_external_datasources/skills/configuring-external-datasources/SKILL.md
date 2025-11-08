@@ -5,7 +5,22 @@ allowed_tools:
   - Read
   - WebFetch
   - WebSearch
-  - mcp__limacharlie__*
+  - mcp__limacharlie__list_cloud_sensors
+  - mcp__limacharlie__get_cloud_sensor
+  - mcp__limacharlie__set_cloud_sensor
+  - mcp__limacharlie__delete_cloud_sensor
+  - mcp__limacharlie__list_external_adapters
+  - mcp__limacharlie__get_external_adapter
+  - mcp__limacharlie__set_external_adapter
+  - mcp__limacharlie__delete_external_adapter
+  - mcp__limacharlie__get_platform_names
+  - mcp__limacharlie__get_event_types_with_schemas_for_platform
+  - mcp__limacharlie__get_event_schema
+  - mcp__limacharlie__list_installation_keys
+  - mcp__limacharlie__create_installation_key
+  - mcp__limacharlie__get_sensor_info
+  - mcp__limacharlie__list_sensors
+  - mcp__limacharlie__get_org_info
 ---
 
 # Configuring LimaCharlie External Data Sources
