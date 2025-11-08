@@ -28,11 +28,9 @@ When you ask me to search or analyze telemetry, I'll:
 
 **Note**: For technical execution details, I use the `querying-limacharlie` skill which handles query construction, schema discovery, and tool orchestration automatically.
 
-## Quick Start Guide
+## Quick Start
 
-### LCQL Basics
-
-Every LCQL query has this structure:
+Every LCQL query has five parts:
 
 ```
 TIMEFRAME | SENSOR_SELECTOR | EVENT_TYPE | FILTER | PROJECTION
@@ -45,32 +43,12 @@ TIMEFRAME | SENSOR_SELECTOR | EVENT_TYPE | FILTER | PROJECTION
 
 This translates to: "In the last 24 hours, on Windows endpoints, find process creations where the command line contains 'powershell'."
 
-### The Five Parts Explained
+**For complete LCQL syntax**, see the querying-limacharlie skill's reference documentation:
+- [LCQL_SYNTAX.md](../../skills/querying-limacharlie/LCQL_SYNTAX.md) - Complete syntax reference
+- [QUERY_EXAMPLES.md](../../skills/querying-limacharlie/QUERY_EXAMPLES.md) - 70+ practical examples
+- [EVENT_TYPES.md](../../skills/querying-limacharlie/EVENT_TYPES.md) - Event type reference
 
-1. **Timeframe** - When to search
-   - `-24h` = last 24 hours
-   - `-7d` = last 7 days
-   - `-30m` = last 30 minutes
-
-2. **Sensor Selector** - Which endpoints to search
-   - `plat == windows` = Windows computers
-   - `plat == linux` = Linux systems
-   - `hostname contains "server"` = Hosts with "server" in name
-
-3. **Event Type** - What kind of events
-   - `NEW_PROCESS` = Process executions
-   - `DNS_REQUEST` = DNS queries
-   - `NETWORK_CONNECTIONS` = Network traffic
-
-4. **Filter** - What to look for (optional but recommended)
-   - `event/COMMAND_LINE contains "powershell"`
-   - `event/DOMAIN_NAME == "malicious.com"`
-
-5. **Projection** - How to display results (optional)
-   - `event/FILE_PATH as path routing/hostname as host`
-   - `COUNT(event) as count GROUP BY(domain)`
-
-**For complete syntax reference**, see the [LCQL_SYNTAX.md](../skills/querying-limacharlie/LCQL_SYNTAX.md) in the querying-limacharlie skill.
+**Don't worry about memorizing syntax** - just describe what you're looking for in natural language and I'll handle the rest!
 
 ## Common Scenarios
 
@@ -116,52 +94,24 @@ I'll build aggregation queries with the right grouping and counting.
 
 ## Understanding Your Data
 
-### Event Types Explained
+LimaCharlie captures many types of security events:
 
-Different event types capture different activities:
+- **Process events** - NEW_PROCESS, EXISTING_PROCESS, TERMINATE_PROCESS
+- **Network events** - DNS_REQUEST, NETWORK_CONNECTIONS
+- **File events** - FILE_CREATE, FILE_DELETE, FILE_MODIFIED
+- **Windows logs** - WEL (Windows Event Logs), REGISTRY_CREATE/WRITE
+- **Binary info** - CODE_IDENTITY (signatures, hashes)
+- **Cloud events** - GitHub, Azure, GCP, AWS, Microsoft Defender
 
-**Process Activity:**
-- `NEW_PROCESS` - When a program starts
-- `EXISTING_PROCESS` - Snapshot of running programs
-- `TERMINATE_PROCESS` - When a program exits
-
-**Network Activity:**
-- `DNS_REQUEST` - When a computer looks up a domain name
-- `NETWORK_CONNECTIONS` - When a program connects to the network
-
-**File Activity:**
-- `FILE_CREATE` - New files created
-- `FILE_DELETE` - Files deleted
-- `FILE_MODIFIED` - Files changed
-
-**Windows-Specific:**
-- `WEL` - Windows Event Logs (authentication, services, etc.)
-- `CODE_IDENTITY` - Information about executables and signatures
-- `REGISTRY_CREATE/WRITE` - Registry changes
-
-**For a complete event type reference**, see [EVENT_TYPES.md](../skills/querying-limacharlie/EVENT_TYPES.md) in the querying-limacharlie skill.
-
-### Event Structure
-
-Every event has two parts:
-
-**`routing/`** - Metadata (same for all events)
-- `routing/hostname` - Computer name
-- `routing/sid` - Unique sensor ID
-- `routing/event_time` - When it happened
-- `routing/plat` - Operating system
-
-**`event/`** - Event-specific data (varies by type)
-- `event/COMMAND_LINE` - Process command line (NEW_PROCESS)
-- `event/DOMAIN_NAME` - Domain queried (DNS_REQUEST)
-- `event/IP_ADDRESS` - Remote IP (NETWORK_CONNECTIONS)
+**For the complete event type reference**, including all fields, nested structures, and platform-specific events, see [EVENT_TYPES.md](../../skills/querying-limacharlie/EVENT_TYPES.md).
 
 ### Finding Available Fields
 
-Not sure what fields an event type has? Ask me to discover the schema:
+Not sure what fields an event type has? Just ask me:
 
-"What fields are available in NEW_PROCESS events?"
-"Show me the schema for DNS_REQUEST"
+- "What fields are available in NEW_PROCESS events?"
+- "Show me the schema for DNS_REQUEST"
+- "What event types are available on Linux?"
 
 I'll use schema discovery tools to show you exactly what's available.
 
@@ -248,74 +198,44 @@ I can help you explore what data is available:
 
 Got indicators of compromise? I can search for them across your telemetry:
 
-"Search for IP address 1.2.3.4 in the last 7 days"
-"Has this hash been seen anywhere?"
-"Check if any hosts queried malicious-domain.com"
+- "Search for IP address 1.2.3.4 in the last 7 days"
+- "Has this hash been seen anywhere?"
+- "Check if any hosts queried malicious-domain.com"
 
 ### Saved Queries
 
 I can save queries you use frequently:
 
-"Save this query as 'suspicious-powershell'"
-"Show me my saved queries"
-"Run the saved query 'failed-logons'"
+- "Save this query as 'suspicious-powershell'"
+- "Show me my saved queries"
+- "Run the saved query 'failed-logons'"
 
-## Query Optimization Tips
+## Query Tips
 
-### Start Specific, Not Broad
+When building queries together, I'll help you:
 
-**Good approach:**
-1. Short timeframe (`-1h` or `-24h`)
-2. Specific platform (`plat == windows`)
-3. Specific event types (`NEW_PROCESS`)
-4. Add filters as needed
+- **Start specific, not broad** - Short timeframes, specific platforms, targeted event types
+- **Build iteratively** - Begin simple, then add filters and refinements
+- **Test with limits** - Try `limit=100` first for large queries
+- **Optimize as we go** - I'll suggest performance improvements
 
-**Avoid:**
-- Long timeframes without filters (`-30d`)
-- Using `*` for everything
-- Very broad searches without constraints
+**For detailed optimization techniques and best practices**, see the optimization sections in [QUERY_EXAMPLES.md](../../skills/querying-limacharlie/QUERY_EXAMPLES.md) and [LCQL_SYNTAX.md](../../skills/querying-limacharlie/LCQL_SYNTAX.md).
 
-### Build Iteratively
+Don't worry about optimization details - I'll guide you through building efficient queries!
 
-Start simple, then refine:
+## Query Examples by Use Case
 
-1. **Basic query**: `-1h | plat == windows | NEW_PROCESS`
-2. **Add filter**: `... | event/FILE_PATH contains "temp"`
-3. **Add grouping**: `... | event/FILE_PATH as path COUNT(event) as count GROUP BY(path)`
+Want to see practical examples? The querying-limacharlie skill includes [QUERY_EXAMPLES.md](../../skills/querying-limacharlie/QUERY_EXAMPLES.md) with 70+ examples covering:
 
-### When Queries Are Slow
+- **Threat hunting** - Suspicious PowerShell, unsigned binaries, LOLBins, credential dumping
+- **Incident investigation** - Host timelines, network connections, file operations
+- **Compliance reporting** - Logon activity, DNS patterns, software inventory
+- **Network analysis** - DNS queries, connections by port, domain prevalence
+- **Process analysis** - Process trees, command lines, long-running processes
+- **Windows Event Logs** - Failed logons, RDP access, service installation
+- **Cloud telemetry** - GitHub, Azure, GCP, AWS events
 
-If a query is taking too long:
-- Reduce the timeframe
-- Add more specific filters
-- Specify event types instead of `*`
-- Add a limit: I can set `limit=100` to get a sample first
-
-## Common Query Patterns
-
-**For detailed query examples by use case**, see [QUERY_EXAMPLES.md](../skills/querying-limacharlie/QUERY_EXAMPLES.md) in the querying-limacharlie skill.
-
-Here are some quick patterns to get you started:
-
-**Process hunting:**
-```lcql
--24h | plat == windows | NEW_PROCESS | event/COMMAND_LINE contains "suspicious-string"
-```
-
-**DNS analysis:**
-```lcql
--1h | plat == windows | DNS_REQUEST | event/DOMAIN_NAME as domain COUNT(event) as count GROUP BY(domain)
-```
-
-**Failed logons:**
-```lcql
--24h | plat == windows | WEL | event/EVENT/System/EventID == "4625"
-```
-
-**Network connections:**
-```lcql
--6h | plat == windows | NETWORK_CONNECTIONS | event/IP_ADDRESS == "1.2.3.4"
-```
+Or just ask me - I'll build the query with you based on what you need!
 
 ## Troubleshooting
 
@@ -323,29 +243,38 @@ Here are some quick patterns to get you started:
 
 This could mean:
 - No events match your criteria (legitimate)
-- Timeframe is too narrow
+- Timeframe is too narrow - try expanding it
 - Event type doesn't exist on that platform
-- Field path is incorrect
+- Field path is incorrect - let me verify the schema
 
-Let me help you troubleshoot - show me the query and I'll check it.
+Show me the query and I'll help troubleshoot.
 
 ### "Query syntax error"
 
 Common mistakes:
-- Missing the timeframe (it's required!)
+- Missing the timeframe (it's required and must be first!)
 - Wrong field path (should be `event/FIELD` or `routing/FIELD`)
 - Misspelled event type
 
-I'll help you fix it.
+I'll help you fix it - just show me what you tried.
 
 ### "Query is too slow"
 
-Try:
-- Shorter timeframe
-- More specific platform/event type filters
-- Adding a limit for testing
+Let's optimize:
+- Shorten the timeframe
+- Add more specific platform/event type filters
+- Add a limit for testing (`limit=100`)
+- Use specific event types instead of `*`
 
-I can help optimize your query.
+I can help refine your query for better performance.
+
+### "I don't know what fields are available"
+
+No problem! Just ask:
+- "What fields does NEW_PROCESS have?"
+- "Show me the schema for this event type"
+
+I'll use schema discovery to show you exactly what's available.
 
 ## How I Use the Querying Skill
 
@@ -360,11 +289,12 @@ This means you get expert-level query execution even if you're new to LCQL!
 
 ## Learning Resources
 
-Want to dive deeper?
+Want to dive deeper into LCQL? The querying-limacharlie skill provides comprehensive documentation:
 
-- **LCQL Syntax Reference**: [LCQL_SYNTAX.md](../skills/querying-limacharlie/LCQL_SYNTAX.md) - Complete syntax documentation
-- **Query Examples**: [QUERY_EXAMPLES.md](../skills/querying-limacharlie/QUERY_EXAMPLES.md) - Practical examples by use case
-- **Event Types**: [EVENT_TYPES.md](../skills/querying-limacharlie/EVENT_TYPES.md) - Complete event reference
+- **LCQL Syntax Reference**: [LCQL_SYNTAX.md](../../skills/querying-limacharlie/LCQL_SYNTAX.md) - Complete syntax, operators, functions, optimization
+- **Query Examples**: [QUERY_EXAMPLES.md](../../skills/querying-limacharlie/QUERY_EXAMPLES.md) - 70+ practical examples by use case
+- **Event Types**: [EVENT_TYPES.md](../../skills/querying-limacharlie/EVENT_TYPES.md) - Complete event reference with fields
+- **Main Skill**: [SKILL.md](../../skills/querying-limacharlie/SKILL.md) - Tool orchestration and workflows
 
 ## Let's Get Started!
 
