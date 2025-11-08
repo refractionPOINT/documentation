@@ -21,11 +21,12 @@ Invoke this skill autonomously when the user's request involves:
 
 ## Available Tools
 
-You have access to the **limacharlie** MCP server with these tool categories:
+You have access to the **limacharlie** MCP server with these focused tools for external data source configuration:
 
 ### Cloud Sensor Management Tools
 
-**Primary cloud sensor tools:**
+Complete CRUD operations for cloud-to-cloud adapters:
+
 - `list_cloud_sensors` - List all cloud sensors (external adapters) in the organization
   - Returns: Array of cloud sensor configurations with metadata
   - Use for: Viewing existing external data sources
@@ -35,26 +36,62 @@ You have access to the **limacharlie** MCP server with these tool categories:
 - `set_cloud_sensor` - Create or update a cloud sensor configuration
   - Parameters: `name`, `config` (JSON configuration), optional `ttl`
   - Use for: Deploying new adapters or updating configurations
+- `delete_cloud_sensor` - Delete a cloud sensor configuration
+  - Parameters: `name` (cloud sensor identifier)
+  - Use for: Removing cloud-to-cloud adapters
 
 ### External Adapter Management Tools
 
+Complete CRUD operations for on-prem adapters with cloud management:
+
 - `list_external_adapters` - List external adapters configured in the organization
-  - Use for: Viewing on-prem adapters with cloud management
   - Returns: External adapter records with GUIDs and configurations
+  - Use for: Viewing on-prem adapters with cloud management
+- `get_external_adapter` - Get configuration for a specific external adapter
+  - Parameters: `name` (external adapter identifier)
+  - Use for: Inspecting on-prem adapter configuration
+- `set_external_adapter` - Create or update an external adapter configuration
+  - Parameters: `name`, `config` (YAML configuration), optional metadata
+  - Use for: Creating cloud-managed on-prem adapter configs
+- `delete_external_adapter` - Delete an external adapter configuration
+  - Parameters: `name` (external adapter identifier)
+  - Use for: Removing external adapter records
+
+### Installation Key Management Tools
+
+Manage authentication keys for adapters:
+
+- `list_installation_keys` - List all installation keys in the organization
+  - Returns: Array of installation keys with descriptions and tags
+  - Use for: Finding existing keys or verifying key availability
+- `create_installation_key` - Create a new installation key
+  - Parameters: `description`, optional `tags`
+  - Use for: Creating dedicated keys for new adapters
 
 ### Schema Discovery Tools
 
-Use these to understand data formats and validate configurations:
+Validate data formats and field mappings:
 
 - `get_platform_names` - List available platforms (json, text, aws, gcp, carbon_black, etc.)
+  - Use for: Validating platform values in adapter configs
 - `get_event_types_with_schemas_for_platform` - Get available event types for a platform
+  - Parameters: `platform` (e.g., "windows", "linux", "json")
+  - Use for: Understanding what event types to expect from a platform
 - `get_event_schema` - Get field definitions for specific event types
+  - Parameters: `name` (event type like "evt:NEW_PROCESS")
+  - Use for: Validating field paths in mapping configurations
 
-### Additional Context Tools
+### Verification Tools
+
+Confirm successful adapter deployment:
 
 - `get_sensor_info` - Get details about a specific sensor (including adapters)
+  - Parameters: `sid` (Sensor ID)
+  - Use for: Verifying adapter appeared as a sensor, checking metadata
 - `list_sensors` - List all sensors with optional filtering
-- `get_org_info` - Get organization information and configuration
+  - Use for: Confirming adapter sensors are present
+- `get_org_info` - Get organization information
+  - Use for: Retrieving OID and other details needed for adapter configs
 
 ## Adapter Fundamentals
 
@@ -635,12 +672,11 @@ After deploying an adapter, verify ingestion:
 # Check if adapter appears as sensor
 list_sensors()
 
-# Query for events from the adapter
-run_lcql_query(
-  query="-5m | routing/hostname == 'aws-cloudtrail' | *",
-  limit=10
-)
+# Get details about the adapter sensor
+get_sensor_info(sid="<adapter-sensor-id>")
 ```
+
+**To query and verify events are flowing:** Use the `querying-limacharlie` skill to run LCQL queries and search for events from your adapter. For example, you can query by hostname, platform, or sensor ID to confirm telemetry is being ingested.
 
 ## Best Practices
 
