@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "limacharlie": {
+      "url": "https://mcp.limacharlie.io/historical_data_readonly",
+      "transport": {
+        "type": "http"
+      }
+    }
+  }
+}
