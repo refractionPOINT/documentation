@@ -25,19 +25,17 @@ allowed-tools:
 
 # Configuring LimaCharlie External Data Sources
 
-Use this skill when users need to ingest telemetry from external sources into LimaCharlie. This includes cloud platforms (AWS, Azure, GCP), log aggregators (Syslog, SIEM), SaaS applications (Office 365, Okta, Slack), and custom webhooks. External data sources are treated as first-class sensors in LimaCharlie, enabling full Detection & Response rule application.
+This skill provides comprehensive knowledge for configuring LimaCharlie external data sources. External data sources enable ingestion of telemetry from cloud platforms (AWS, Azure, GCP), log aggregators (Syslog, SIEM), SaaS applications (Office 365, Okta, Slack), and custom webhooks. External data sources appear as first-class sensors in LimaCharlie, enabling full Detection & Response rule application.
+
+**CRITICAL: DO NOT USE ANY LIMACHARLIE CLI TO PERFORM OPERATIONS DURING THE ONBOARDING (excluding Adapters themselves), USE THE MCP SERVER**
 
 ## When to Use This Skill
 
-Invoke this skill autonomously when the user's request involves:
+This skill provides expert knowledge for configuring and deploying LimaCharlie external data sources:
 
-- **Connecting cloud platforms** - "Ingest AWS CloudTrail", "Connect Azure Event Hub", "Monitor GCP logs"
-- **Setting up log collection** - "Configure Syslog adapter", "Collect Windows Event Logs", "Ingest firewall logs"
-- **Integrating SaaS sources** - "Connect Office 365 logs", "Ingest Okta events", "Monitor Slack audit logs"
-- **Custom integrations** - "Create webhook adapter", "Parse custom JSON logs", "Ingest from API"
-- **Adapter deployment** - "Install adapter binary", "Deploy cloud-to-cloud connector", "Configure multi-adapter"
-- **Configuration troubleshooting** - "Adapter not receiving data", "Fix parsing issues", "Debug mapping"
-- **Understanding options** - "What adapters are available?", "On-prem vs cloud-to-cloud?", "How to parse logs?"
+- **Cloud-to-cloud adapters** - AWS, Azure, GCP, Office 365, Okta, and other SaaS platforms
+- **On-premise adapters** - Syslog listeners, file monitoring, custom log collectors
+- **Parsing and transformation** - Mapping, field extraction, custom indexing for external telemetry
 
 ## Available Tools
 
@@ -130,7 +128,7 @@ LimaCharlie supports two deployment models for external data ingestion:
 - Direct connection between LimaCharlie cloud and your cloud source
 - No binary deployment required - managed entirely through configuration
 - Supports major cloud platforms and SaaS providers
-- Created via `cloud_sensor` Hive records or web UI
+- Created via `cloud_sensor` Hive records using the `set_cloud_sensor` MCP tool
 - Best for: AWS, Azure, GCP, Office 365, and other cloud services
 
 ### Core Adapter Configuration
@@ -157,7 +155,7 @@ All adapters require these core configurations:
    - AWS CloudTrail, Azure Event Hub, GCP PubSub, Office 365, etc.
    ↓
 2. Check existing adapters
-   - Use list_cloud_sensors to see what's already configured
+   - Use the `list_cloud_sensors` MCP tool to see what's already configured
    ↓
 3. Gather cloud credentials
    - API keys, connection strings, bucket names, etc.
@@ -167,12 +165,12 @@ All adapters require these core configurations:
    - Use adapter type templates as starting point
    - Include required client_options
    ↓
-5. Deploy with set_cloud_sensor
+5. Deploy with the `set_cloud_sensor` MCP tool
    - Name: Descriptive identifier
    - Config: Full adapter configuration in JSON/YAML format
    ↓
 6. Verify data flow
-   - Check sensor list (list_sensors)
+   - Check sensor list using the `list_sensors` MCP tool
    - View timeline for incoming events
    - Validate with LCQL query
 ```
@@ -190,7 +188,7 @@ All adapters require these core configurations:
    - Add type-specific parameters
    ↓
 3. Optional: Create external_adapter record for cloud management
-   - Use list_external_adapters to check existing
+   - Use the `list_external_adapters` MCP tool to check existing
    - Note the GUID for cloud-managed configuration
    ↓
 4. Deploy and start
@@ -211,7 +209,7 @@ All adapters require these core configurations:
    - Define secret value for URL authentication
    - Configure client_options
    ↓
-2. Deploy with set_cloud_sensor
+2. Deploy with the `set_cloud_sensor` MCP tool
    ↓
 3. Retrieve webhook URL
    - Format: https://[domain]/[OID]/[webhook_name]/[secret]
@@ -305,7 +303,7 @@ syslog:
 
 **Platform:** aws
 
-**Cloud-to-cloud setup:** Use `Add Sensor` in web UI or `set_cloud_sensor` API
+**Cloud-to-cloud setup:** Use the `set_cloud_sensor` MCP tool
 
 ### Azure Event Hub Adapter
 
@@ -380,7 +378,7 @@ file:
 
 **Platform:** json with built-in O365 parsing
 
-**Setup:** Use `Add Sensor` in web UI for guided configuration
+**Setup:** Use the `set_cloud_sensor` MCP tool for configuration
 
 ### Okta Adapter
 
@@ -622,7 +620,7 @@ Deploy on-prem adapters with cloud-based configuration management:
 
 **Setup:**
 
-1. Create `external_adapter` record (web UI or Hive API)
+1. Create `external_adapter` record using the `set_external_adapter` MCP tool
    - Contains full adapter YAML configuration
    - Note the GUID from the record
 
@@ -641,23 +639,41 @@ Deploy on-prem adapters with cloud-based configuration management:
 ### Listing Existing Adapters
 
 **Cloud-to-cloud adapters:**
-```python
-list_cloud_sensors()
-# Returns array of cloud sensor configs
-```
+
+**MCP Tool:** `mcp__limacharlie__list_cloud_sensors`
+
+**Parameters:** None
+
+**Returns:** Array of cloud sensor configurations with metadata
+
+**Usage:** Returns all cloud sensors configured in the organization, including names, types, and configuration details.
 
 **On-prem with cloud management:**
-```python
-list_external_adapters()
-# Returns external adapter records with GUIDs
-```
+
+**MCP Tool:** `mcp__limacharlie__list_external_adapters`
+
+**Parameters:** None
+
+**Returns:** External adapter records with GUIDs and configurations
+
+**Usage:** Returns all external adapter records that enable cloud-based configuration management for on-premise adapter deployments.
 
 ### Deploying a New Cloud Adapter
 
-```python
-set_cloud_sensor(
-  name="aws-cloudtrail-prod",
-  config={
+**MCP Tool:** `mcp__limacharlie__set_cloud_sensor`
+
+**Parameters:**
+- `name` (string): Unique identifier for the cloud sensor (e.g., "aws-cloudtrail-prod")
+- `config` (JSON object): Complete adapter configuration
+- `ttl` (integer, optional): Time-to-live for the configuration
+
+**Returns:** Success confirmation
+
+**Example configuration:**
+```json
+{
+  "name": "aws-cloudtrail-prod",
+  "config": {
     "sensor_type": "s3",
     "s3": {
       "bucket_name": "my-cloudtrail-logs",
@@ -674,29 +690,42 @@ set_cloud_sensor(
       }
     }
   }
-)
+}
 ```
 
 ### Inspecting Adapter Configuration
 
-```python
-get_cloud_sensor(name="aws-cloudtrail-prod")
-# Returns full configuration and metadata
-```
+**MCP Tool:** `mcp__limacharlie__get_cloud_sensor`
+
+**Parameters:**
+- `name` (string): Cloud sensor identifier
+
+**Returns:** Full configuration and metadata for the specified cloud sensor
+
+**Usage:** Retrieves complete configuration of a cloud sensor to review settings, credentials, or troubleshoot connectivity issues.
 
 ### Verifying Data Flow
 
-After deploying an adapter, verify ingestion:
+After deploying an adapter, verify ingestion using these MCP tools:
 
-```python
-# Check if adapter appears as sensor
-list_sensors()
+**Check if adapter appears as sensor:**
 
-# Get details about the adapter sensor
-get_sensor_info(sid="<adapter-sensor-id>")
-```
+**MCP Tool:** `mcp__limacharlie__list_sensors`
 
-**To query and verify events are flowing:** Use the `querying-limacharlie` skill to run LCQL queries and search for events from your adapter. For example, you can query by hostname, platform, or sensor ID to confirm telemetry is being ingested.
+**Parameters:** None (supports optional filtering)
+
+**Returns:** List of all sensors including adapter-based sensors
+
+**Get details about the adapter sensor:**
+
+**MCP Tool:** `mcp__limacharlie__get_sensor_info`
+
+**Parameters:**
+- `sid` (string): Sensor ID of the adapter
+
+**Returns:** Detailed sensor information including platform, hostname, and status
+
+**To query and verify events are flowing:** Use the `querying-limacharlie` skill to run LCQL queries and search for events from the adapter. Query by hostname, platform, or sensor ID to confirm telemetry ingestion.
 
 ## Best Practices
 
@@ -790,48 +819,6 @@ get_sensor_info(sid="<adapter-sensor-id>")
 - Increase adapter resources (CPU, memory)
 - Split high-volume sources across multiple adapters
 - Optimize Grok patterns (avoid greedy captures at start)
-
-## Response Format
-
-When helping users configure external data sources:
-
-1. **Understand the source** - Clarify what system they're connecting
-2. **Recommend deployment method** - Cloud-to-cloud vs on-prem based on source type
-3. **Gather requirements** - Credentials, endpoints, data format
-4. **Provide configuration** - Complete, tested YAML/JSON config
-5. **Explain deployment steps** - Clear instructions for their chosen method
-6. **Set up verification** - Show how to confirm data is flowing
-7. **Suggest next steps** - D&R rules, outputs, or additional adapters
-
-**Example response:**
-
-User: "I need to ingest AWS CloudTrail logs"
-
-Response:
-```
-I'll help you set up AWS CloudTrail ingestion. This can be done as a cloud-to-cloud adapter, which is the simplest approach.
-
-You'll need:
-- AWS Access Key and Secret Key with S3 read permissions
-- S3 bucket name where CloudTrail logs are stored
-- Your LimaCharlie Organization ID and Installation Key
-
-Here's the configuration:
-
-[Provide complete config]
-
-Deployment options:
-1. Web UI: Use "Add Sensor" → Select "AWS CloudTrail" → Follow wizard
-2. API: Use set_cloud_sensor with the config above
-3. CLI: Create cloud_sensor Hive record
-
-After deployment:
-- Verify sensor appears: list_sensors()
-- Check for events: Query "-10m | plat == aws | * | LIMIT 10"
-- Apply D&R rules for CloudTrail detections
-
-Would you like me to help with any D&R rules for CloudTrail monitoring?
-```
 
 ## Key Differences from Endpoint Agents
 
