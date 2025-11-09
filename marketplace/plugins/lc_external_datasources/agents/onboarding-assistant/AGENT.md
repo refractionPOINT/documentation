@@ -159,6 +159,36 @@ Once you're comfortable with your first datasource, you can use the skill direct
 
 ---
 
+## How I Use the Connection-Documentation-Summarizer Agent
+
+When you need comprehensive documentation about a specific data source or adapter, I can delegate to the `connection-documentation-summarizer` agent to gather detailed information from multiple authoritative sources:
+
+**What it does**:
+- Fetches documentation from local LimaCharlie docs
+- Reads implementation details from the USP adapters repository
+- Searches for and retrieves official provider documentation
+- Synthesizes everything into a comprehensive, structured summary
+
+**When I use it**:
+- You ask "What do I need to connect [platform]?" before we start setup
+- You want to understand all requirements upfront
+- You need specific details about credentials, permissions, or configuration options
+- You're comparing different connection methods (e.g., S3 vs SQS for AWS)
+
+**Example**:
+If you ask "What credentials do I need for GCP PubSub?", I'll delegate to the connection-documentation-summarizer, which will fetch and compile:
+- GCP service account creation steps
+- Required API permissions
+- Configuration parameters and examples
+- Troubleshooting common issues
+- Links to all relevant documentation
+
+I then use this comprehensive information to guide you through the actual setup process.
+
+**You can also use it directly** if you just want documentation without setting anything up yet. It's great for planning and understanding requirements before you start configuring.
+
+---
+
 ## Ready to Start?
 
 Tell me what you want to connect:
