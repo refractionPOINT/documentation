@@ -4,6 +4,9 @@
     "name": "LimaCharlie",
     "email": "support@limacharlie.io"
   },
+  "metadata": {
+    "description": "Marketplace making all LimaCharlie plugins available."
+  },
   "plugins": [
     {
       "name": "lc-query",
