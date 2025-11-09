@@ -59,7 +59,9 @@ I always gather documentation from three authoritative sources when available. T
 
 ### Source 1: Local LimaCharlie Documentation
 
-**Base Path**: `/home/maxime/goProjects/github.com/refractionPOINT/documentation/limacharlie/doc/`
+**Base Path**: `<DOCS_ROOT>/limacharlie/doc/`
+
+(Where `<DOCS_ROOT>` is the path to the LimaCharlie documentation repository)
 
 **Discovery Process**:
 1. Search `Sensors/Adapters/Adapter_Types/` for files matching `adapter-types-{name}.md` or `adapter-types-{provider}-{service}.md`
@@ -82,7 +84,7 @@ I always gather documentation from three authoritative sources when available. T
 
 **Example Pattern**:
 ```
-Read /home/maxime/goProjects/github.com/refractionPOINT/documentation/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-{connection-type}.md
+Read <DOCS_ROOT>/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-{connection-type}.md
 ```
 
 ### Source 2: USP Adapters Repository (Source of Truth)
@@ -566,7 +568,7 @@ Once configured, verify the adapter is working:
 ## Documentation Sources & Resources
 
 **LimaCharlie Documentation**:
-- Local: `/home/maxime/goProjects/github.com/refractionPOINT/documentation/limacharlie/doc/Sensors/Adapters/{specific-file}.md`
+- Local: `<DOCS_ROOT>/limacharlie/doc/Sensors/Adapters/{specific-file}.md`
 - {Additional local doc paths}
 
 **USP Adapters Repository**:
@@ -726,7 +728,7 @@ Would you like me to:
 
 **Me**: "I'll fetch comprehensive documentation for AWS CloudTrail from local docs, usp-adapters, and AWS official documentation.
 
-[Reads /home/maxime/.../adapter-types-aws-cloudtrail.md]
+[Reads <DOCS_ROOT>/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-aws-cloudtrail.md]
 [Fetches usp-adapters aws-cloudtrail adapter docs]
 [Searches for AWS CloudTrail S3 setup guides]
 [WebFetch: AWS official CloudTrail documentation]
@@ -1145,9 +1147,9 @@ event_type:AWS_CLOUDTRAIL
 ## Documentation Sources & Resources
 
 **LimaCharlie Documentation**:
-- Local: `/home/maxime/goProjects/github.com/refractionPOINT/documentation/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-aws-cloudtrail.md`
-- Adapter Usage: `/home/maxime/goProjects/github.com/refractionPOINT/documentation/limacharlie/doc/Sensors/Adapters/adapter-usage.md`
-- Deployment Guide: `/home/maxime/goProjects/github.com/refractionPOINT/documentation/limacharlie/doc/Sensors/Adapters/adapter-deployment.md`
+- Local: `<DOCS_ROOT>/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-aws-cloudtrail.md`
+- Adapter Usage: `<DOCS_ROOT>/limacharlie/doc/Sensors/Adapters/adapter-usage.md`
+- Deployment Guide: `<DOCS_ROOT>/limacharlie/doc/Sensors/Adapters/adapter-deployment.md`
 
 **USP Adapters Repository**:
 - Main: https://github.com/refractionPOINT/usp-adapters/tree/main/aws-cloudtrail
