@@ -126,6 +126,9 @@ Read <DOCS_ROOT>/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-{c
    ```
 
 **What to Extract**:
+- **Specific API endpoints and URLs used** (critical for finding exact provider documentation)
+- API names, versions, and service identifiers referenced in code
+- SDK or library imports that indicate which APIs are being called
 - Adapter implementation details and capabilities
 - Configuration parameter definitions and examples
 - Environment variable requirements
@@ -152,23 +155,44 @@ Since providers and their documentation structures vary widely, use this generic
 - From adapter name or user's request, determine the provider (Microsoft, GCP, AWS, Okta, Salesforce, etc.)
 - Identify the specific service (Office 365, PubSub, CloudTrail, etc.)
 
-**Step 2: Search for Official Setup Guides**
-Use WebSearch with targeted queries:
+**Step 2: Identify Specific APIs Used**
+
+**CRITICAL**: Do not search for generic provider documentation. First, examine the usp-adapters implementation to identify the **exact APIs and endpoints** being used.
+
+1. **Read the adapter's implementation code** (Python files, README, config examples)
+2. **Look for specific API references**:
+   - API endpoint URLs (e.g., `https://manage.office.com/api/v1.0/...`)
+   - API names mentioned in code or docs (e.g., "Management Activity API", "Pub/Sub API", "Systems Log API")
+   - Specific service names or API versions
+   - SDK imports or library names (e.g., `google.cloud.pubsub_v1`, `azure.eventhub`)
+
+3. **Extract the exact API being used**:
+   - NOT: "Microsoft 365 API" (too generic)
+   - YES: "Office 365 Management Activity API" (exact API found in adapter)
+   - NOT: "GCP API" (too generic)
+   - YES: "Google Cloud Pub/Sub API" (exact service found in adapter)
+   - NOT: "Okta API" (too generic)
+   - YES: "Okta System Log API" (exact endpoint found in adapter)
+
+**Step 3: Search for Specific API Documentation**
+
+Now use WebSearch with **targeted queries using the exact API names** you identified:
+
 ```
-"{provider} {service} API setup guide"
-"{provider} {service} authentication credentials"
-"{provider} {service} app registration"
-"{provider} developer {service} getting started"
-"{provider} {service} API permissions"
+"{exact-api-name} documentation"
+"{exact-api-name} authentication"
+"{exact-api-name} getting started"
+"{exact-api-name} setup guide"
+"{exact-api-name} permissions required"
 ```
 
-Examples:
-- "Microsoft Office 365 Management Activity API setup"
-- "GCP PubSub authentication service account"
-- "AWS CloudTrail S3 bucket configuration"
-- "Okta API token generation"
+**Examples of specific searches based on adapter analysis**:
+- If adapter uses `manage.office.com/api`: "Office 365 Management Activity API documentation"
+- If adapter uses `pubsub.googleapis.com`: "Google Cloud Pub/Sub API authentication"
+- If adapter uses CloudTrail S3 buckets: "AWS CloudTrail S3 bucket permissions"
+- If adapter uses Okta `/api/v1/logs`: "Okta System Log API authentication"
 
-**Step 3: Fetch Official Documentation**
+**Step 4: Fetch Official Documentation**
 Use WebFetch to read the official guides:
 ```
 Common documentation patterns:
@@ -179,7 +203,7 @@ Common documentation patterns:
 - Salesforce: developer.salesforce.com
 ```
 
-**Step 4: Extract Provider-Specific Requirements**
+**Step 5: Extract Provider-Specific Requirements**
 
 For **authentication setup**, look for:
 - How to create API credentials (app registrations, service accounts, API keys, tokens)
