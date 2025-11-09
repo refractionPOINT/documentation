@@ -1,28 +1,8 @@
 {
   "mcpServers": {
     "limacharlie": {
-      "url": "https://mcp.limacharlie.io/mcp",
-      "transport": {
-        "type": "http"
-      },
-      "allowed_tools": [
-        "list_cloud_sensors",
-        "get_cloud_sensor",
-        "set_cloud_sensor",
-        "delete_cloud_sensor",
-        "list_external_adapters",
-        "get_external_adapter",
-        "set_external_adapter",
-        "delete_external_adapter",
-        "get_platform_names",
-        "get_event_types_with_schemas_for_platform",
-        "get_event_schema",
-        "list_installation_keys",
-        "create_installation_key",
-        "get_sensor_info",
-        "list_sensors",
-        "get_org_info"
-      ]
+      "type": "http",
+      "url": "https://mcp.limacharlie.io/mcp"
     }
   }
 }

@@ -1,33 +1,8 @@
 {
   "mcpServers": {
     "limacharlie": {
-      "url": "https://mcp.limacharlie.io/mcp",
-      "transport": {
-        "type": "http"
-      },
-      "allowed_tools": [
-        "run_lcql_query",
-        "get_historic_events",
-        "get_historic_detections",
-        "search_iocs",
-        "batch_search_iocs",
-        "get_time_when_sensor_has_data",
-        "list_saved_queries",
-        "get_saved_query",
-        "run_saved_query",
-        "set_saved_query",
-        "delete_saved_query",
-        "get_event_schema",
-        "get_event_schemas_batch",
-        "get_event_types_with_schemas",
-        "get_event_types_with_schemas_for_platform",
-        "get_platform_names",
-        "list_with_platform",
-        "generate_lcql_query",
-        "generate_sensor_selector",
-        "get_sensor_info",
-        "list_sensors"
-      ]
+      "type": "http",
+      "url": "https://mcp.limacharlie.io/mcp"
     }
   }
 }
