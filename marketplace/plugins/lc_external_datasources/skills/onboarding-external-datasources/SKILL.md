@@ -168,7 +168,7 @@ Once you're comfortable with your first datasource, you can use the skill direct
 
 ## How I Use the Connection-Documentation-Summarizer Agent
 
-When you need comprehensive documentation about a specific data source or adapter, I call the `connection-documentation-summarizer` agent (using the Agent tool) to gather detailed information from multiple authoritative sources:
+When you need comprehensive documentation about a specific data source or adapter, I call the `lc-external-datasources:connection-documentation-summarizer:connection-documentation-summarizer` agent (using the Agent tool) to gather detailed information from multiple authoritative sources:
 
 **What it does**:
 - Fetches documentation from local LimaCharlie docs
@@ -183,7 +183,7 @@ When you need comprehensive documentation about a specific data source or adapte
 - You're comparing different connection methods (e.g., S3 vs SQS for AWS)
 
 **Example**:
-If you ask "What credentials do I need for GCP PubSub?", I'll call the connection-documentation-summarizer agent, which will fetch and compile:
+If you ask "What credentials do I need for GCP PubSub?", I'll call the `lc-external-datasources:connection-documentation-summarizer:connection-documentation-summarizer` agent, which will fetch and compile:
 - GCP service account creation steps
 - Required API permissions
 - Configuration parameters and examples
