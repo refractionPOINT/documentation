@@ -1,0 +1,202 @@
+site_name: LimaCharlie Documentation
+site_url: https://refractionpoint.github.io/documentation/
+site_description: Official documentation for LimaCharlie SecOps Cloud Platform
+site_author: refractionPOINT
+repo_url: https://github.com/refractionPOINT/documentation
+repo_name: refractionPOINT/documentation
+
+docs_dir: .
+
+theme:
+  name: material
+  custom_dir: overrides
+  logo: docs/assets/images/logo.svg
+  favicon: docs/assets/images/favicon.png
+
+  palette:
+    # Dark mode (default)
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+  font:
+    text: Rubik
+    code: IBM Plex Mono
+
+  features:
+    # Navigation
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+
+    # Table of contents
+    - toc.follow
+    - toc.integrate
+
+    # Search
+    - search.suggest
+    - search.highlight
+    - search.share
+
+    # Code
+    - content.code.copy
+    - content.code.annotate
+
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+      lang: en
+
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section
+      toc_depth: 3
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/refractionPOINT
+      name: refractionPOINT on GitHub
+    - icon: fontawesome/brands/slack
+      link: https://slack.limacharlie.io
+      name: LimaCharlie Community Slack
+    - icon: fontawesome/solid/globe
+      link: https://limacharlie.io
+      name: LimaCharlie Platform
+    - icon: fontawesome/solid/rocket
+      link: https://app.limacharlie.io
+      name: LimaCharlie Web Console
+
+  analytics:
+    provider: google
+    property: !ENV [GOOGLE_ANALYTICS_KEY, ""]
+
+extra_css:
+  - docs/assets/stylesheets/extra.css
+
+copyright: Copyright &copy; 2018-2025 refractionPOINT - Licensed under Apache 2.0
+
+nav:
+  - Home: index.md
+
+  - Getting Started:
+    - limacharlie/doc/Getting_Started/index.md
+    - What is LimaCharlie?: limacharlie/doc/Getting_Started/what-is-limacharlie.md
+    - Quickstart: limacharlie/doc/Getting_Started/quickstart.md
+    - Core Concepts: limacharlie/doc/Getting_Started/limacharlie-core-concepts.md
+
+  - Sensors:
+    - limacharlie/doc/Sensors/index.md
+    - Installation Keys: limacharlie/doc/Sensors/installation-keys.md
+    - Sensor Connectivity: limacharlie/doc/Sensors/sensor-connectivity.md
+    - Sensor Tags: limacharlie/doc/Sensors/sensor-tags.md
+
+  - Detection & Response:
+    - limacharlie/doc/Detection_and_Response/index.md
+    - Overview: limacharlie/doc/Detection_and_Response/detection-and-response-rules.md
+    - Examples: limacharlie/doc/Detection_and_Response/detection-and-response-examples.md
+    - Alternate Targets: limacharlie/doc/Detection_and_Response/detection-on-alternate-targets.md
+
+  - Events & Telemetry:
+    - limacharlie/doc/Events/index.md
+    - Telemetry: limacharlie/doc/Telemetry/index.md
+
+  - Outputs:
+    - limacharlie/doc/Outputs/index.md
+
+  - Add-Ons:
+    - limacharlie/doc/Add-Ons/index.md
+    - API Integrations: limacharlie/doc/Add-Ons/API_Integrations/index.md
+    - Extensions: limacharlie/doc/Add-Ons/Extensions/index.md
+
+  - Platform Management:
+    - limacharlie/doc/Platform_Management/index.md
+
+  - Query Console:
+    - limacharlie/doc/Query_Console/index.md
+
+  - SDK Documentation:
+    - sdk/index.md
+    - Go SDK: go-sdk/README.md
+    - Python SDK: python-sdk/README.md
+
+  - FAQ:
+    - limacharlie/doc/FAQ/index.md
+
+  - Tutorials:
+    - limacharlie/doc/Tutorials/index.md

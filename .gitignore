@@ -1,3 +1,33 @@
 .worktrees/
 __pycache__/
 .serena/
+
+# MkDocs
+site/
+.cache/
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.egg-info/
+dist/
+build/

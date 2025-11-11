@@ -1,0 +1,197 @@
+/* LimaCharlie Custom Branding */
+/* Brand Colors:
+   - Midnight: #00183c (Primary dark)
+   - Maroon Flush: #c32152 (Accent)
+   - White: #ffffff
+*/
+
+:root {
+  /* Light mode custom colors */
+  --md-primary-fg-color: #00183c;
+  --md-primary-fg-color--light: #002855;
+  --md-primary-fg-color--dark: #000d21;
+
+  --md-accent-fg-color: #c32152;
+  --md-accent-fg-color--transparent: #c321521a;
+
+  /* Custom typography scale */
+  --md-typeset-font-size: 0.9rem;
+}
+
+[data-md-color-scheme="slate"] {
+  /* Dark mode custom colors */
+  --md-primary-fg-color: #00183c;
+  --md-primary-fg-color--light: #002855;
+  --md-primary-fg-color--dark: #000d21;
+
+  --md-accent-fg-color: #c32152;
+  --md-accent-fg-color--transparent: #c321521a;
+
+  /* Enhanced dark mode backgrounds */
+  --md-default-bg-color: #0a0a0a;
+  --md-default-bg-color--light: #121212;
+  --md-default-bg-color--lighter: #1a1a1a;
+  --md-default-bg-color--lightest: #242424;
+
+  /* Code blocks - darker for better contrast */
+  --md-code-bg-color: #0d0d0d;
+  --md-code-fg-color: #e0e0e0;
+
+  /* Links with accent color */
+  --md-typeset-a-color: #c32152;
+}
+
+/* Custom heading styles with Syne font */
+h1, h2, h3, h4, h5, h6,
+.md-header__topic,
+.md-nav__title {
+  font-family: "Syne", -apple-system, BlinkMacSystemFont, "Segoe UI", Rubik, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Enhanced code block styling */
+.md-typeset pre > code {
+  border-radius: 0.4rem;
+}
+
+.md-typeset code {
+  background-color: var(--md-code-bg-color);
+  border-radius: 0.25rem;
+  padding: 0.15em 0.4em;
+  font-size: 0.85em;
+}
+
+/* Improved table styling */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.4rem;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Admonition enhancements */
+.md-typeset .admonition,
+.md-typeset details {
+  border-left: 0.2rem solid var(--md-accent-fg-color);
+  border-radius: 0.4rem;
+}
+
+/* Search highlighting */
+.md-search-result__article--document .md-search-result__title {
+  color: var(--md-accent-fg-color);
+}
+
+/* Navigation hover effects */
+.md-nav__link:hover {
+  color: var(--md-accent-fg-color);
+}
+
+.md-nav__link--active {
+  color: var(--md-accent-fg-color);
+  font-weight: 600;
+}
+
+/* Button styling */
+.md-button {
+  border-radius: 0.3rem;
+  transition: all 0.2s ease;
+}
+
+.md-button--primary {
+  background-color: var(--md-accent-fg-color);
+  border-color: var(--md-accent-fg-color);
+}
+
+.md-button--primary:hover {
+  background-color: #d63366;
+  border-color: #d63366;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(195, 33, 82, 0.3);
+}
+
+/* Enhanced hero section for index page */
+.md-typeset h1:first-of-type {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #c32152 0%, #00183c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glassmorphic card effect for better visual hierarchy */
+.md-typeset .card {
+  background: var(--md-default-bg-color--light);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.6rem;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  backdrop-filter: blur(10px);
+}
+
+/* Footer customization */
+.md-footer {
+  background-color: var(--md-primary-fg-color);
+}
+
+.md-footer-meta {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Top navigation tabs */
+.md-tabs {
+  background-color: var(--md-primary-fg-color);
+}
+
+/* Scrollbar styling for dark mode */
+[data-md-color-scheme="slate"] ::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb {
+  background-color: var(--md-default-fg-color--lightest);
+  border-radius: 0.25rem;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--md-accent-fg-color);
+}
+
+/* Responsive improvements */
+@media screen and (max-width: 76.25em) {
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    background-color: var(--md-primary-fg-color);
+  }
+}
+
+/* Code copy button enhancement */
+.md-clipboard {
+  color: var(--md-default-fg-color--light);
+}
+
+.md-clipboard:hover {
+  color: var(--md-accent-fg-color);
+}
+
+/* Version badge styling (if versioning is added later) */
+.md-version__current {
+  color: var(--md-accent-fg-color);
+}
+
+/* Search result highlighting */
+.md-search-result mark {
+  background-color: var(--md-accent-fg-color--transparent);
+  color: var(--md-accent-fg-color);
+  text-decoration: underline;
+}
