@@ -35,6 +35,37 @@ This repository serves multiple audiences:
 - Output configuration for SIEM/logging platforms
 - Incident response workflows
 
+### For Documentation Site
+- **Official documentation site**: This repository is the source for the official LimaCharlie documentation website
+- Built with **MkDocs Material** for a modern, searchable documentation experience
+- Automatically deployed to GitHub Pages with every commit
+- Custom branding matching LimaCharlie's visual identity
+
+## Documentation Website
+
+The documentation is published as a searchable website at: [https://refractionpoint.github.io/documentation/](https://refractionpoint.github.io/documentation/)
+
+### Local Development
+
+To preview the documentation website locally:
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Serve with live reload at http://127.0.0.1:8000
+mkdocs serve
+
+# Build static site
+mkdocs build
+```
+
+For detailed setup information, see [DOCS_SETUP.md](DOCS_SETUP.md).
+
+### Contributing to Documentation
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
 ## Repository Structure
 
 ```

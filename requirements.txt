@@ -1,0 +1,10 @@
+# MkDocs and Material Theme
+mkdocs>=1.5.3
+mkdocs-material>=9.5.0
+
+# Python Markdown Extensions
+pymdown-extensions>=10.7
+
+# Additional dependencies for Material theme features
+Pygments>=2.17.0
+markdown>=3.5.0
