@@ -2,7 +2,9 @@
 
 ## Overview
 
-The LimaCharlie Go SDK provides a comprehensive client library for interacting with the LimaCharlie security platform API. This SDK enables developers to programmatically manage sensors, detection rules, artifacts, and organizational configurations within the LimaCharlie ecosystem.
+The LimaCharlie Go SDK provides a comprehensive client library for interacting with the LimaCharlie security platform API. This SDK enables developers to programmatically manage sensors, detection rules, artifacts, organizational configurations, real-time event streaming, and more within the LimaCharlie ecosystem.
+
+**Repository**: [github.com/refractionPOINT/go-limacharlie](https://github.com/refractionPOINT/go-limacharlie)
 
 ## Table of Contents
 
@@ -11,83 +13,128 @@ The LimaCharlie Go SDK provides a comprehensive client library for interacting w
 - [Client Initialization](#client-initialization)
 - [Core Components](#core-components)
   - [Sensor Management](#sensor-management)
-  - [Detection Rules](#detection-rules)
+  - [Detection & Response Rules](#detection--response-rules)
   - [Artifacts](#artifacts)
   - [Events and Data Streaming](#events-and-data-streaming)
   - [Organization Management](#organization-management)
+  - [Installation Keys](#installation-keys)
+  - [Outputs](#outputs)
+  - [Billing](#billing)
+  - [LCQL Queries](#lcql-queries)
+  - [Hive Configuration Management](#hive-configuration-management)
 - [Data Structures](#data-structures)
 - [Error Handling](#error-handling)
 - [Advanced Features](#advanced-features)
 - [Examples](#examples)
+- [Best Practices](#best-practices)
+- [Troubleshooting](#troubleshooting)
+- [Firehose CLI Tool](#firehose-cli-tool)
 
 ## Installation
+
+### Main SDK Package
 
 ```bash
 go get github.com/refractionPOINT/go-limacharlie/limacharlie
 ```
 
-For the firehose streaming client:
+### Firehose CLI Tool
+
 ```bash
 go get github.com/refractionPOINT/go-limacharlie/firehose
 ```
 
+**Minimum Go Version**: 1.18 or higher
+
 ## Authentication
 
-The SDK supports multiple authentication methods:
+The SDK supports multiple authentication methods for flexible integration.
 
-### API Key Authentication
-The most common authentication method uses an Organization ID (OID) and API Key:
+### Environment Variables
+
+The SDK automatically loads credentials from environment variables:
+
+```bash
+export LC_OID="your-organization-id"
+export LC_API_KEY="your-api-key"
+export LC_ENVIRONMENT="production"  # Optional: environment name from config file
+```
 
 ```go
 import "github.com/refractionPOINT/go-limacharlie/limacharlie"
 
-// Using environment variables
-// Set LC_OID and LC_API_KEY environment variables
-client := limacharlie.NewClient()
+// Automatically loads from environment variables
+client, err := limacharlie.NewClient(limacharlie.ClientOptions{}, nil)
+if err != nil {
+    log.Fatal(err)
+}
+org, err := limacharlie.NewOrganization(client)
+```
 
-// Direct initialization
-client := limacharlie.NewClientFromLoader(
-    limacharlie.ClientOptions{
-        OID:    "your-organization-id",
-        APIKey: "your-api-key",
-    },
-)
+### Direct API Key Authentication
+
+```go
+client, err := limacharlie.NewClient(limacharlie.ClientOptions{
+    OID:    "your-organization-id",
+    APIKey: "your-api-key",
+}, nil)
+if err != nil {
+    log.Fatal(err)
+}
+
+org, err := limacharlie.NewOrganization(client)
 ```
 
 ### JWT Authentication
-For user-based authentication:
+
+For user-based authentication or limited-scope permissions:
 
 ```go
-client := limacharlie.NewClientFromLoader(
-    limacharlie.ClientOptions{
-        OID: "your-organization-id",
-        JWT: "your-jwt-token",
-    },
-)
+client, err := limacharlie.NewClient(limacharlie.ClientOptions{
+    OID:         "your-organization-id",
+    JWT:         "your-jwt-token",
+    Permissions: []string{"sensor.get", "sensor.task"}, // Optional: specific permissions
+}, nil)
 ```
 
 ### Configuration File
-Create a YAML configuration file:
+
+Create a YAML configuration file at `~/.limacharlie` or specify with `LC_CREDS_FILE`:
 
 ```yaml
 environments:
   production:
     oid: "your-production-oid"
     api_key: "your-production-api-key"
-  
+
   development:
     oid: "your-dev-oid"
     api_key: "your-dev-api-key"
+    uid: "your-user-id"  # Optional
 ```
 
 Load configuration:
-```go
-// Loads from default locations (~/.limacharlie, ./.limacharlie.yaml)
-client := limacharlie.NewClient()
 
-// Or specify environment
+```go
+// Set environment to use (defaults to first in file)
 os.Setenv("LC_ENVIRONMENT", "production")
-client := limacharlie.NewClient()
+
+client, err := limacharlie.NewClient(limacharlie.ClientOptions{}, nil)
+```
+
+### JWT Refresh
+
+The SDK automatically refreshes JWT tokens when they expire:
+
+```go
+// Manual JWT refresh
+newJWT, err := client.RefreshJWT(24 * time.Hour) // 24-hour expiry
+if err != nil {
+    log.Fatal(err)
+}
+
+// Get current JWT
+currentJWT := client.GetCurrentJWT()
 ```
 
 ## Client Initialization
@@ -98,40 +145,60 @@ client := limacharlie.NewClient()
 package main
 
 import (
+    "log"
     "github.com/refractionPOINT/go-limacharlie/limacharlie"
 )
 
 func main() {
-    // Initialize client with environment variables
-    client := limacharlie.NewClient()
-    
-    // Or with explicit options
-    client := limacharlie.NewClientFromLoader(
-        limacharlie.ClientOptions{
-            OID:    "your-oid",
-            APIKey: "your-api-key",
-        },
-    )
-    
+    // Initialize client (loads from environment or config file)
+    client, err := limacharlie.NewClient(limacharlie.ClientOptions{}, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+
     // Get organization handle
-    org := client.Organization(limacharlie.ClientOptions{
-        OID: "target-organization-id",
-    })
+    org, err := limacharlie.NewOrganization(client)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer org.Close()
+
+    // Verify authentication
+    whoami, err := org.WhoAmI()
+    if err != nil {
+        log.Fatal(err)
+    }
+    log.Printf("Authenticated as: %v", whoami.Identity)
 }
 ```
 
-### Advanced Client Options
+### With Custom Logger
 
 ```go
-options := limacharlie.ClientOptions{
-    OID:         "organization-id",
-    APIKey:      "api-key",
-    UID:         "user-id",        // Optional
-    JWT:         "jwt-token",       // Alternative to API key
-    Permissions: []string{"sensor.get", "sensor.task"}, // Specific permissions
-}
+import "github.com/rs/zerolog"
 
-client := limacharlie.NewClientFromLoader(options)
+logger := &limacharlie.LCLoggerZerolog{}
+
+client, err := limacharlie.NewClient(
+    limacharlie.ClientOptions{
+        OID:    "your-oid",
+        APIKey: "your-api-key",
+    },
+    logger,
+)
+```
+
+### Organization from Direct Options
+
+```go
+// Create organization directly
+org, err := limacharlie.NewOrganizationFromClientOptions(
+    limacharlie.ClientOptions{
+        OID:    "your-oid",
+        APIKey: "your-api-key",
+    },
+    nil, // logger
+)
 ```
 
 ## Core Components
@@ -147,28 +214,117 @@ if err != nil {
     log.Fatal(err)
 }
 
-for _, sensor := range sensors {
-    fmt.Printf("Sensor: %s - %s\n", sensor.SID, sensor.Hostname)
+for sid, sensor := range sensors {
+    fmt.Printf("Sensor: %s\n", sid)
+    fmt.Printf("  Hostname: %s\n", sensor.Hostname)
+    fmt.Printf("  Platform: %d\n", sensor.Platform)
+    fmt.Printf("  Internal IP: %s\n", sensor.InternalIP)
+    fmt.Printf("  Is Isolated: %v\n", sensor.IsIsolated)
+}
+```
+
+#### List Sensors with Selector
+
+```go
+// List sensors matching a selector
+sensors, err := org.ListSensorsFromSelector("platform: windows AND tag: production")
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+#### List Sensors with Options
+
+```go
+// List with limit and selector
+sensors, err := org.ListSensors(limacharlie.ListSensorsOptions{
+    Selector: "platform: linux",
+    Limit:    100,
+})
+```
+
+#### Iterative Listing (Pagination)
+
+```go
+// For very large organizations, use iterative listing
+continuationToken := ""
+allSensors := make(map[string]*limacharlie.Sensor)
+
+for {
+    sensors, nextToken, err := org.ListSensorsFromSelectorIteratively(
+        "tag: critical",
+        continuationToken,
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Merge results
+    for sid, sensor := range sensors {
+        allSensors[sid] = sensor
+    }
+
+    // Check if more results
+    if nextToken == "" {
+        break
+    }
+    continuationToken = nextToken
 }
 
-// Get sensors with specific tag
-taggedSensors, err := org.GetSensorsWithTag("production")
+fmt.Printf("Total sensors: %d\n", len(allSensors))
 ```
 
 #### Getting Specific Sensor
 
 ```go
-// Get sensor by SID (Sensor ID)
-sensor, err := org.GetSensor("sensor-id-here")
-if err != nil {
-    log.Fatal(err)
+// Get sensor by SID
+sensor := org.GetSensor("sensor-id-here")
+if sensor.LastError != nil {
+    log.Fatal(sensor.LastError)
 }
 
 fmt.Printf("Sensor %s:\n", sensor.SID)
 fmt.Printf("  Hostname: %s\n", sensor.Hostname)
-fmt.Printf("  Platform: %s\n", sensor.Platform)
-fmt.Printf("  Architecture: %s\n", sensor.Architecture)
-fmt.Printf("  Last Seen: %v\n", sensor.LastSeen)
+fmt.Printf("  Enrollment: %s\n", sensor.EnrollTS)
+fmt.Printf("  Last Alive: %s\n", sensor.AliveTS)
+fmt.Printf("  Kernel Available: %v\n", sensor.IsKernelAvailable)
+```
+
+#### Get Multiple Sensors
+
+```go
+sids := []string{"sid1", "sid2", "sid3"}
+sensors := org.GetSensors(sids)
+
+for sid, sensor := range sensors {
+    if sensor.LastError != nil {
+        log.Printf("Error getting %s: %v", sid, sensor.LastError)
+        continue
+    }
+    fmt.Printf("Sensor: %s - %s\n", sid, sensor.Hostname)
+}
+```
+
+#### Check Sensor Online Status
+
+```go
+// Check single sensor
+isOnline, err := sensor.IsOnline()
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Sensor is online: %v\n", isOnline)
+
+// Check multiple sensors
+sids := []string{"sid1", "sid2", "sid3"}
+statuses, err := org.ActiveSensors(sids)
+if err != nil {
+    log.Fatal(err)
+}
+
+for sid, isOnline := range statuses {
+    fmt.Printf("Sensor %s online: %v\n", sid, isOnline)
+}
 ```
 
 #### Sensor Actions
@@ -182,9 +338,15 @@ if err != nil {
 
 // Rejoin network
 err = sensor.RejoinNetwork()
+if err != nil {
+    log.Fatal(err)
+}
 
 // Delete sensor
 err = sensor.Delete()
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 #### Sensor Tagging
@@ -196,73 +358,265 @@ if err != nil {
     log.Fatal(err)
 }
 
-// Add a tag
-err = sensor.AddTag("critical-asset", 3600) // TTL in seconds (0 for permanent)
+for _, tag := range tags {
+    fmt.Printf("Tag: %s (by %s at %s)\n", tag.Tag, tag.By, tag.AddedTS)
+}
 
-// Remove a tag
-err = sensor.RemoveTag("old-tag")
-```
-
-#### Tasking Sensors
-
-```go
-// Execute a task on sensor
-investigation := "investigation-id" // Optional
-response, err := sensor.Task([]byte(`{
-    "action": "os_processes"
-}`), &investigation)
-
+// Add a tag (with 1-hour TTL)
+err = sensor.AddTag("incident-response", 1*time.Hour)
 if err != nil {
     log.Fatal(err)
 }
 
-// Process response
-fmt.Printf("Task response: %s\n", response)
+// Add permanent tag (0 TTL)
+err = sensor.AddTag("production", 0)
+
+// Remove a tag
+err = sensor.RemoveTag("old-tag")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Get all tags in organization
+allTags, err := org.GetAllTags()
+
+// Get sensors with specific tag
+sensorMap, err := org.GetSensorsWithTag("production")
+// Returns map[string][]string - map of SID to list of tags
 ```
 
-### Detection Rules
+#### Tasking Sensors
+
+##### Simple Task Execution
+
+```go
+// Basic task
+err := sensor.Task(`{"action": "os_processes"}`)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Task with investigation ID
+err = sensor.Task(
+    `{"action": "file_get", "path": "C:\\Windows\\System32\\calc.exe"}`,
+    limacharlie.TaskingOptions{
+        InvestigationID: "investigation-123",
+    },
+)
+```
+
+##### Task with Idempotent Key
+
+```go
+// Prevent duplicate task execution
+err := sensor.Task(
+    `{"action": "os_version"}`,
+    limacharlie.TaskingOptions{
+        InvestigationID: "inv-001",
+        IdempotentKey:   "unique-task-key-12345",
+    },
+)
+```
+
+##### SimpleRequest - Task with Synchronous Response
+
+```go
+// Enable interactive mode (creates Spout for receiving responses)
+org = org.WithInvestigationID("my-investigation-id")
+
+// Send task and wait for response
+response, err := sensor.SimpleRequest(
+    `{"action": "os_version"}`,
+    limacharlie.SimpleRequestOptions{
+        Timeout:         30 * time.Second,
+        UntilCompletion: false, // Return after first response
+    },
+)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Response is map[string]interface{}
+if respMap, ok := response.(map[string]interface{}); ok {
+    fmt.Printf("OS Version: %v\n", respMap)
+}
+```
+
+##### SimpleRequest - Multiple Tasks
+
+```go
+// Send multiple tasks
+tasks := []string{
+    `{"action": "os_version"}`,
+    `{"action": "os_processes"}`,
+}
+
+responses, err := sensor.SimpleRequest(
+    tasks,
+    limacharlie.SimpleRequestOptions{
+        Timeout:         60 * time.Second,
+        UntilCompletion: false,
+    },
+)
+
+// responses is []interface{} containing all responses
+if respList, ok := responses.([]interface{}); ok {
+    for i, resp := range respList {
+        fmt.Printf("Response %d: %v\n", i, resp)
+    }
+}
+```
+
+##### Request - Async Response Handling
+
+```go
+// For more control, use Request() to get FutureResults
+future, err := sensor.Request(`{"action": "os_processes"}`)
+if err != nil {
+    log.Fatal(err)
+}
+defer future.Close()
+
+// Wait for response with timeout
+response, err := future.GetWithTimeout(30 * time.Second)
+if err != nil {
+    log.Fatal(err)
+}
+
+fmt.Printf("Response: %v\n", response)
+
+// Or get multiple responses as they arrive
+for i := 0; i < 3; i++ {
+    resp, ok := future.Get()
+    if !ok {
+        break
+    }
+    fmt.Printf("Got response %d: %v\n", i, resp)
+}
+
+// Batch retrieval with timeout
+newResponses := future.GetNewResponses(5 * time.Second)
+for _, resp := range newResponses {
+    fmt.Printf("Response: %v\n", resp)
+}
+```
+
+#### Device Association
+
+Sensors may be associated with logical devices (when multiple sensors represent the same device):
+
+```go
+sensor := org.GetSensor("sensor-id")
+if sensor.Device != nil {
+    fmt.Printf("Device ID: %s\n", sensor.Device.DID)
+    // Device operations can be performed through sensor.Device
+}
+```
+
+### Detection & Response Rules
 
 #### Rule Structure
 
 ```go
 type CoreDRRule struct {
-    Name      string                 `json:"name"`
-    Namespace string                 `json:"namespace,omitempty"`
+    Name      string                 `json:"name,omitempty"`
+    Namespace string                 `json:"namespace,omitempty"` // Default: "general"
     Detect    map[string]interface{} `json:"detect"`
     Response  []map[string]interface{} `json:"respond"`
-    IsEnabled bool                   `json:"is_enabled"`
-    TTL       int                    `json:"ttl,omitempty"`
+    IsEnabled *bool                  `json:"is_enabled,omitempty"`
 }
 ```
 
 #### Adding Detection Rules
 
 ```go
-rule := limacharlie.CoreDRRule{
-    Name: "suspicious-process",
-    Namespace: "custom",
-    Detect: map[string]interface{}{
-        "event": "NEW_PROCESS",
-        "op": "and",
-        "rules": []map[string]interface{}{
-            {
-                "op": "is",
-                "path": "event/FILE_PATH",
-                "value": "C:\\Windows\\Temp\\*.exe",
-            },
-        },
-    },
-    Response: []map[string]interface{}{
+// Simple detection rule
+detection := map[string]interface{}{
+    "event": "NEW_PROCESS",
+    "op":    "and",
+    "rules": []map[string]interface{}{
         {
-            "action": "report",
-            "name": "suspicious-temp-execution",
+            "op":    "contains",
+            "path":  "event/FILE_PATH",
+            "value": "\\Windows\\Temp\\",
         },
     },
-    IsEnabled: true,
-    TTL: 86400, // 24 hours
 }
 
-err := org.DRRuleAdd(rule, false) // false = don't replace if exists
+response := []map[string]interface{}{
+    {
+        "action": "report",
+        "name":   "suspicious-temp-execution",
+    },
+}
+
+enabled := true
+err := org.DRRuleAdd(
+    "suspicious-temp-execution",
+    detection,
+    response,
+    limacharlie.NewDRRuleOptions{
+        IsEnabled: true,
+        Namespace: "custom",
+        IsReplace: true, // Replace if exists
+        TTL:       86400, // 24 hours in seconds
+    },
+)
+```
+
+#### Advanced Detection Rule with Response Actions
+
+```go
+// Ransomware detection with automated response
+detection := map[string]interface{}{
+    "event": "FILE_CREATE",
+    "op":    "and",
+    "rules": []map[string]interface{}{
+        {
+            "op":   "matches",
+            "path": "event/FILE_PATH",
+            "re":   ".*\\.(locked|encrypted|enc|cry)$",
+        },
+        {
+            "op":    "greater than",
+            "path":  "event/SIZE",
+            "value": 100,
+        },
+    },
+}
+
+response := []map[string]interface{}{
+    {
+        "action":   "report",
+        "name":     "potential-ransomware",
+        "priority": 10,
+    },
+    {
+        "action": "task",
+        "command": map[string]interface{}{
+            "action": "os_kill_process",
+            "pid":    "<<event/PROCESS_ID>>",
+        },
+    },
+    {
+        "action": "task",
+        "command": map[string]interface{}{
+            "action": "isolate_network",
+        },
+    },
+}
+
+enabled := true
+err := org.DRRuleAdd(
+    "ransomware-file-encryption",
+    detection,
+    response,
+    limacharlie.NewDRRuleOptions{
+        IsEnabled: true,
+        Namespace: "threats",
+        IsReplace: true,
+    },
+)
 ```
 
 #### Listing Detection Rules
@@ -275,114 +629,315 @@ if err != nil {
 }
 
 for name, rule := range rules {
-    fmt.Printf("Rule: %s (Enabled: %v)\n", name, rule.IsEnabled)
+    fmt.Printf("Rule: %s\n", name)
+    fmt.Printf("  Detect: %v\n", rule["detect"])
+    fmt.Printf("  Respond: %v\n", rule["respond"])
 }
 
 // Get rules in specific namespace
-rules, err = org.DRRulesInNamespace("custom")
+rules, err = org.DRRules(limacharlie.WithNamespace("custom"))
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 #### Deleting Detection Rules
 
 ```go
-// Delete a specific rule
-err := org.DRRuleDelete("suspicious-process", "custom")
+// Delete rule from default namespace
+err := org.DRRuleDelete("rule-name")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Delete rule from specific namespace
+err = org.DRRuleDelete("rule-name", limacharlie.WithNamespace("custom"))
 ```
 
 ### Artifacts
 
-#### Creating Artifacts
+Artifacts are files or data collected from sensors for analysis.
+
+#### Creating Artifacts from Bytes
 
 ```go
-// Upload from bytes
-artifactID, err := org.CreateArtifactFromBytes(
-    []byte("artifact content"),
-    "artifact-name.txt",
-    "description of artifact",
-    3600, // TTL in seconds
-    "text/plain", // Content type
-)
+artifactData := []byte("Suspicious file content...")
 
-// Upload from file
-artifactID, err = org.CreateArtifactFromFile(
-    "/path/to/file.txt",
-    "artifact-name.txt",
-    "file artifact",
-    7200,
-    "text/plain",
+err := org.CreateArtifactFromBytes(
+    "suspicious-file.txt",         // name
+    artifactData,                  // data
+    "text/plain",                  // content type
+    "artifact-12345",              // artifact ID (or "" for auto-generate)
+    7,                             // retention days
+    "your-ingestion-key",          // ingestion key
+)
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+#### Creating Artifacts from File
+
+```go
+err := org.CreateArtifactFromFile(
+    "collected-malware",           // artifact name
+    "/path/to/local/file.exe",     // local file path
+    "application/octet-stream",    // content type
+    "",                            // auto-generate artifact ID
+    30,                            // 30 days retention
+    "your-ingestion-key",
 )
 ```
 
 #### Uploading Large Artifacts
 
+For large files, the SDK automatically handles chunked uploads:
+
 ```go
-// For large files, use chunked upload
 file, err := os.Open("/path/to/large/file.bin")
 if err != nil {
     log.Fatal(err)
 }
 defer file.Close()
 
-artifactID, err := org.UploadArtifact(
-    file,
-    "large-file.bin",
-    "Large binary artifact",
-    0, // No TTL
-    "application/octet-stream",
+fileInfo, _ := file.Stat()
+
+err = org.UploadArtifact(
+    file,                          // io.Reader
+    fileInfo.Size(),               // size
+    "application/octet-stream",    // hint (content type)
+    "large-memory-dump",           // source name
+    "artifact-uuid",               // artifact ID
+    "/path/to/large/file.bin",     // original path
+    7,                             // retention days
+    "your-ingestion-key",
 )
 ```
 
 #### Exporting Artifacts
 
 ```go
-// Direct export
-data, err := org.ExportArtifact("artifact-id")
+deadline := time.Now().Add(5 * time.Minute)
+
+// Export artifact
+reader, err := org.ExportArtifact("artifact-id", deadline)
+if err != nil {
+    log.Fatal(err)
+}
+defer reader.Close()
+
+// Save to file
+outFile, _ := os.Create("exported-artifact.bin")
+defer outFile.Close()
+
+io.Copy(outFile, reader)
+```
+
+#### Exporting Through Google Cloud Storage
+
+```go
+import (
+    "context"
+    "cloud.google.com/go/storage"
+)
+
+ctx := context.Background()
+deadline := time.Now().Add(10 * time.Minute)
+
+// Setup GCS client
+gcsClient, err := storage.NewClient(ctx)
 if err != nil {
     log.Fatal(err)
 }
 
-// Export to Google Cloud Storage
-gcsURL, err := org.ExportArtifactToGCS(
+// Export artifact through GCS
+reader, err := org.ExportArtifactThroughGCS(
+    ctx,
     "artifact-id",
-    "gs://bucket/path/to/artifact",
+    deadline,
+    "your-gcs-bucket",
+    "gcs-service-account-credentials-json",
+    gcsClient,
 )
+if err != nil {
+    log.Fatal(err)
+}
+defer reader.Close()
 
-// Export through GCS (gets temporary URL)
-tempURL, err := org.ExportArtifactThroughGCS("artifact-id")
+// Process the data
+data, _ := io.ReadAll(reader)
+```
+
+#### Artifact Collection Rules
+
+Define rules for automatic artifact collection:
+
+```go
+// Add artifact collection rule
+rule := limacharlie.ArtifactRule{
+    Patterns: []string{
+        "C:\\Windows\\Temp\\*.exe",
+        "C:\\Users\\*\\AppData\\Local\\Temp\\*.dll",
+    },
+    Filters: limacharlie.ArtifactRuleFilter{
+        Tags:      []string{"production"},
+        Platforms: []string{"windows"},
+    },
+    DaysRetentions: 30,
+    IsDeleteAfter:  false,
+    IsIgnoreCert:   false,
+}
+
+err := org.ArtifactRuleAdd("collect-temp-executables", rule)
+if err != nil {
+    log.Fatal(err)
+}
+
+// List artifact rules
+rules, err := org.ArtifactsRules()
+if err != nil {
+    log.Fatal(err)
+}
+
+for name, rule := range rules {
+    fmt.Printf("Rule: %s\n", name)
+    fmt.Printf("  Patterns: %v\n", rule.Patterns)
+    fmt.Printf("  Retention: %d days\n", rule.DaysRetentions)
+}
+
+// Delete artifact rule
+err = org.ArtifactRuleDelete("collect-temp-executables")
 ```
 
 ### Events and Data Streaming
 
-#### Webhook Sender
+The SDK provides powerful real-time event streaming through the **Spout** system.
+
+#### Spout - Real-Time Event Streaming
+
+Spout provides WebSocket-based streaming of events, detections, audit logs, and more:
 
 ```go
-// Create webhook sender for real-time events
-webhookSender := limacharlie.WebhookSender{
-    URL: "https://your-endpoint.com/webhook",
-    Headers: map[string]string{
-        "Authorization": "Bearer token",
-    },
-    CompressData: true, // Enable gzip compression
+import "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+// Create a Spout for events
+spout, err := limacharlie.NewSpout(
+    org,
+    "event", // Type: "event", "detect", "audit", "deployment", "billing"
+    limacharlie.WithInvestigationID("my-investigation"),
+)
+if err != nil {
+    log.Fatal(err)
 }
 
-// Send event
-err := webhookSender.Send(eventData)
+// Start receiving data
+if err := spout.Start(); err != nil {
+    log.Fatal(err)
+}
+defer spout.Shutdown()
+
+// Process events
+for {
+    event, ok := <-spout.GetDataChannel()
+    if !ok {
+        break // Spout closed
+    }
+
+    if eventMap, ok := event.(map[string]interface{}); ok {
+        fmt.Printf("Event: %v\n", eventMap)
+    }
+}
 ```
 
-#### Historical Event Retrieval
+#### Spout Options
 
 ```go
-// Use the REST API through request method
-response, err := client.Request(
-    "GET",
-    fmt.Sprintf("/insight/%s/%s", org.GetOID(), sensorID),
-    map[string]string{
-        "start": "1609459200", // Unix timestamp
-        "end":   "1609545600",
-        "event_type": "NEW_PROCESS",
-    },
-    nil,
+// Filter by tag
+spout, err := limacharlie.NewSpout(
+    org,
+    "event",
+    limacharlie.WithTag("production"),
 )
+
+// Filter by category (for detections)
+spout, err := limacharlie.NewSpout(
+    org,
+    "detect",
+    limacharlie.WithCategory("malware"),
+)
+
+// Filter by sensor ID
+spout, err := limacharlie.NewSpout(
+    org,
+    "event",
+    limacharlie.WithSensorID("sensor-id"),
+)
+
+// Combine multiple options
+spout, err := limacharlie.NewSpout(
+    org,
+    "detect",
+    limacharlie.WithTag("critical"),
+    limacharlie.WithCategory("ransomware"),
+    limacharlie.WithInvestigationID("incident-2024-001"),
+)
+
+// Disable auto-reconnect
+spout, err := limacharlie.NewSpout(
+    org,
+    "event",
+    limacharlie.WithoutReconnect(),
+)
+```
+
+#### Using Spout with FutureResults
+
+The Spout system integrates with sensor tasking for request/response workflows:
+
+```go
+// Organization with investigation ID enables interactive mode
+org = org.WithInvestigationID("investigation-123")
+
+// The organization will create a shared Spout automatically
+sensor := org.GetSensor("sensor-id")
+
+// SimpleRequest uses the shared Spout internally
+response, err := sensor.SimpleRequest(`{"action": "os_version"}`)
+
+// Or use Request() for manual handling
+future, err := sensor.Request(`{"action": "os_processes"}`)
+if err != nil {
+    log.Fatal(err)
+}
+defer future.Close()
+
+response, err := future.GetWithTimeout(30 * time.Second)
+```
+
+#### Manual Spout Management for Interactive Mode
+
+```go
+org := org.WithInvestigationID("my-investigation")
+
+// Manually enable interactive mode (creates shared Spout)
+if err := org.MakeInteractive(); err != nil {
+    log.Fatal(err)
+}
+
+// Now you can use SimpleRequest/Request on sensors
+sensor := org.GetSensor("sensor-id")
+response, err := sensor.SimpleRequest(`{"action": "os_version"}`)
+```
+
+#### Monitoring Dropped Events
+
+```go
+spout, err := limacharlie.NewSpout(org, "event")
+spout.Start()
+
+// Check dropped count
+droppedCount := spout.GetDropped()
+fmt.Printf("Dropped events: %d\n", droppedCount)
 ```
 
 ### Organization Management
@@ -397,45 +952,616 @@ if err != nil {
 }
 
 fmt.Printf("Organization: %s\n", info.Name)
-fmt.Printf("Created: %v\n", info.CreatedAt)
+fmt.Printf("OID: %s\n", info.OID)
+fmt.Printf("Sensor Version: %s\n", info.SensorVersion)
+fmt.Printf("Number of Rules: %d\n", info.NumberRules)
+fmt.Printf("Number of Outputs: %d\n", info.NumberOutputs)
+fmt.Printf("Sensor Quota: %d\n", info.SensorQuota)
+```
 
-// Get online sensor count
+#### Online Sensor Count
+
+```go
 count, err := org.GetOnlineCount()
-fmt.Printf("Online sensors: %d\n", count)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Online sensors: %d\n", count.Count)
+```
+
+#### Site Connectivity Information
+
+```go
+// Get URLs for different services
+urls, err := org.GetURLs()
+if err != nil {
+    log.Fatal(err)
+}
+
+fmt.Printf("Artifacts URL: %s\n", urls["artifacts"])
+fmt.Printf("Replay URL: %s\n", urls["replay"])
+fmt.Printf("Ingestion URL: %s\n", urls["ingestion"])
+
+// Get full site connectivity info (URLs + certificates)
+info, err := org.GetSiteConnectivityInfo()
+if err != nil {
+    log.Fatal(err)
+}
+
+for service, url := range info.URLs {
+    fmt.Printf("%s: %s\n", service, url)
+}
+
+for service, cert := range info.Certs {
+    fmt.Printf("%s cert: %s...\n", service, cert[:50])
+}
 ```
 
 #### Quota Management
 
 ```go
 // Set organization quota
-err := org.SetQuota(map[string]interface{}{
-    "max_sensors": 1000,
-    "max_retention_days": 30,
-})
+success, err := org.SetQuota(1000) // Max 1000 sensors
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Quota set: %v\n", success)
 ```
 
-#### Authorization and JWT Management
+#### Creating Organizations
 
 ```go
-// Check current authorization
-authInfo, err := client.WhoAmI()
-fmt.Printf("Authorized as: %s\n", authInfo.UserID)
+// Create a new organization
+newOrg, err := org.CreateOrganization(
+    "us",                    // location
+    "New Organization Name", // name
+)
+if err != nil {
+    log.Fatal(err)
+}
 
-// Get current JWT
-jwt, err := client.GetCurrentJWT()
+fmt.Printf("Created organization: %s\n", newOrg.Data.Oid)
 
-// Refresh JWT
-newJWT, err := client.RefreshJWT()
+// Create with template
+templateYAML := `
+detection:
+  - name: "default-rule"
+    namespace: "general"
+    detect: ...
+    respond: ...
+`
+
+newOrg, err = org.CreateOrganization(
+    "us",
+    "Templated Org",
+    templateYAML,
+)
 ```
 
 #### Organization Deletion
 
 ```go
-// Get deletion confirmation token
+// Get confirmation token
 token, err := org.GetDeleteConfirmationToken()
+if err != nil {
+    log.Fatal(err)
+}
 
-// Delete organization (requires confirmation token)
-err = org.DeleteOrganization(token)
+fmt.Printf("Confirmation token: %s\n", token)
+
+// Delete organization (DANGEROUS!)
+success, err := org.DeleteOrganization(token)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Deletion successful: %v\n", success)
+```
+
+#### Group Management
+
+```go
+// Add organization to a group
+success, err := org.AddToGroup("group-id")
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+#### Authorization and Permissions
+
+```go
+// Check who you are
+whoami, err := org.WhoAmI()
+if err != nil {
+    log.Fatal(err)
+}
+
+if whoami.Identity != nil {
+    fmt.Printf("Identity: %s\n", *whoami.Identity)
+}
+if whoami.Organizations != nil {
+    fmt.Printf("Organizations: %v\n", *whoami.Organizations)
+}
+if whoami.Permissions != nil {
+    fmt.Printf("Permissions: %v\n", *whoami.Permissions)
+}
+
+// Check specific permission
+hasPermission := whoami.HasPermissionForOrg("org-id", "sensor.task")
+fmt.Printf("Has sensor.task permission: %v\n", hasPermission)
+
+// Check access to org
+hasAccess := whoami.HasAccessToOrg("org-id")
+fmt.Printf("Has access to org: %v\n", hasAccess)
+
+// Authorize with required permissions
+identity, perms, err := org.Authorize([]string{"sensor.get", "sensor.task"})
+if err != nil {
+    log.Fatal("Missing required permissions:", err)
+}
+fmt.Printf("Authorized as %s with %d permissions\n", identity, len(perms))
+```
+
+#### Service and Extension Requests
+
+```go
+// Generic service request
+var response map[string]interface{}
+err := org.ServiceRequest(
+    &response,
+    "logging", // service name
+    limacharlie.Dict{
+        "action": "list_rules",
+    },
+    false, // is_async
+)
+
+// Extension request
+var extResponse map[string]interface{}
+err = org.ExtensionRequest(
+    &extResponse,
+    "extension-name",
+    "action-name",
+    limacharlie.Dict{
+        "param1": "value1",
+    },
+    false, // is_impersonate
+)
+```
+
+### Installation Keys
+
+Installation keys are used for enrolling new sensors.
+
+#### List Installation Keys
+
+```go
+keys, err := org.InstallationKeys()
+if err != nil {
+    log.Fatal(err)
+}
+
+for _, key := range keys {
+    fmt.Printf("Key ID: %s\n", key.ID)
+    fmt.Printf("  Description: %s\n", key.Description)
+    fmt.Printf("  Tags: %v\n", key.Tags)
+    fmt.Printf("  Created: %d\n", key.CreatedAt)
+    fmt.Printf("  Use Public CA: %v\n", key.UsePublicCA)
+    fmt.Printf("  Key: %s\n", key.Key)
+}
+```
+
+#### Get Specific Installation Key
+
+```go
+key, err := org.InstallationKey("installation-key-id")
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Key: %s\n", key.Key)
+fmt.Printf("JSON Key: %s\n", key.JsonKey)
+```
+
+#### Add Installation Key
+
+```go
+key := limacharlie.InstallationKey{
+    Description: "Production Servers",
+    Tags:        []string{"production", "linux"},
+    UsePublicCA: false, // Use LimaCharlie's certificate
+}
+
+iid, err := org.AddInstallationKey(key)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Created installation key: %s\n", iid)
+
+// With custom ID
+key.ID = "custom-key-id"
+iid, err = org.AddInstallationKey(key)
+```
+
+#### Delete Installation Key
+
+```go
+err := org.DelInstallationKey("installation-key-id")
+if err != nil {
+    log.Fatal(err)
+}
+```
+
+### Outputs
+
+Outputs define where LimaCharlie sends events, detections, and other data. The SDK provides comprehensive output management through the `output.go` module.
+
+#### Supported Output Modules
+
+The SDK supports numerous output types via the `OutputTypes` struct:
+
+- **Cloud Storage**: `s3`, `gcs`, `azure_storage_blob`
+- **Messaging**: `pubsub`, `kafka`, `azure_event_hub`
+- **Databases**: `bigquery`, `elastic`, `opensearch`
+- **File Transfer**: `scp`, `sftp`
+- **Webhooks**: `webhook`, `webhook_bulk`, `websocket`
+- **Monitoring/SIEM**: `syslog`, `humio`, `datadog`
+- **Orchestration**: `slack`, `smtp`, `tines`, `torq`
+
+### Billing
+
+The SDK provides access to billing information and invoices through the billing service.
+
+#### Get Billing Status
+
+```go
+status, err := org.GetBillingOrgStatus()
+if err != nil {
+    log.Fatal(err)
+}
+
+fmt.Printf("Past due: %v\n", status.IsPastDue)
+```
+
+#### Get Billing Details
+
+```go
+details, err := org.GetBillingOrgDetails()
+if err != nil {
+    log.Fatal(err)
+}
+
+// Customer info (Stripe Customer object)
+if customer, ok := details.Customer["email"].(string); ok {
+    fmt.Printf("Customer email: %s\n", customer)
+}
+
+// Status
+if status, ok := details.Status["is_past_due"].(bool); ok {
+    fmt.Printf("Is past due: %v\n", status)
+}
+
+// Upcoming invoice
+if invoice := details.UpcomingInvoice; invoice != nil {
+    if amount, ok := invoice["amount_due"].(float64); ok {
+        fmt.Printf("Amount due: $%.2f\n", amount/100)
+    }
+}
+```
+
+#### Get Invoice
+
+```go
+// Get invoice URL for download
+invoice, err := org.GetBillingInvoiceURL(2024, 1, "") // January 2024
+if err != nil {
+    log.Fatal(err)
+}
+
+if url, ok := invoice["url"].(string); ok {
+    fmt.Printf("Invoice URL: %s\n", url)
+}
+
+// Get invoice as JSON
+invoice, err = org.GetBillingInvoiceURL(2024, 1, "json")
+if invoiceObj, ok := invoice["invoice"].(map[string]interface{}); ok {
+    fmt.Printf("Invoice: %v\n", invoiceObj)
+}
+
+// Get simple JSON format
+invoice, err = org.GetBillingInvoiceURL(2024, 1, "simple_json")
+if lines, ok := invoice["lines"].([]interface{}); ok {
+    fmt.Printf("Invoice has %d lines\n", len(lines))
+}
+
+// Get CSV format
+invoice, err = org.GetBillingInvoiceURL(2024, 1, "simple_csv")
+if csv, ok := invoice["csv"].(string); ok {
+    fmt.Printf("CSV: %s\n", csv)
+}
+```
+
+#### Get Available Plans
+
+```go
+plans, err := org.GetBillingAvailablePlans()
+if err != nil {
+    log.Fatal(err)
+}
+
+for _, plan := range plans {
+    fmt.Printf("Plan: %s\n", plan.Name)
+    fmt.Printf("  ID: %s\n", plan.ID)
+    fmt.Printf("  Price: $%.2f %s\n", plan.Price, plan.Currency)
+    fmt.Printf("  Description: %s\n", plan.Description)
+    fmt.Printf("  Features: %v\n", plan.Features)
+}
+```
+
+#### Get User Auth Requirements
+
+```go
+authReqs, err := org.GetBillingUserAuthRequirements()
+if err != nil {
+    log.Fatal(err)
+}
+
+if reqs, ok := authReqs.Requirements["methods"].([]interface{}); ok {
+    fmt.Printf("Auth methods: %v\n", reqs)
+}
+```
+
+### LCQL Queries
+
+LCQL (LimaCharlie Query Language) allows querying historical events and detections.
+
+#### Basic Query
+
+```go
+// Query last hour of process creation events
+response, err := org.Query(limacharlie.QueryRequest{
+    Query:      `-1h | * | * | event.FILE_PATH ends with ".exe"`,
+    Stream:     "event",    // "event", "detect", or "audit"
+    LimitEvent: 1000,
+})
+if err != nil {
+    log.Fatal(err)
+}
+
+fmt.Printf("Results: %d\n", len(response.Results))
+for i, result := range response.Results {
+    fmt.Printf("Result %d: %v\n", i, result)
+}
+
+// Print stats
+if response.Stats != nil {
+    fmt.Printf("Stats: %v\n", response.Stats)
+}
+```
+
+#### Query with Context
+
+```go
+import "context"
+
+ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+defer cancel()
+
+response, err := org.QueryWithContext(ctx, limacharlie.QueryRequest{
+    Query:  `-24h | platform: windows | event | event.COMMAND_LINE contains "powershell"`,
+    Stream: "event",
+})
+```
+
+#### Paginated Query
+
+```go
+// For large result sets, use pagination
+response, err := org.Query(limacharlie.QueryRequest{
+    Query:      `-7d | * | detect | *`,
+    Stream:     "detect",
+    Cursor:     "-",  // Start pagination
+    LimitEvent: 500,
+})
+
+for response.Cursor != "" {
+    // Process current page
+    for _, result := range response.Results {
+        fmt.Printf("Detection: %v\n", result)
+    }
+
+    // Get next page
+    response, err = org.Query(limacharlie.QueryRequest{
+        Query:  `-7d | * | detect | *`,
+        Stream: "detect",
+        Cursor: response.Cursor,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+}
+```
+
+#### Query Iterator
+
+```go
+// Use iterator for automatic pagination
+iter, err := org.QueryAll(limacharlie.QueryRequest{
+    Query:      `-30d | tag: production | event | event.EVENT_TYPE = "NEW_PROCESS"`,
+    Stream:     "event",
+    LimitEvent: 1000,
+})
+if err != nil {
+    log.Fatal(err)
+}
+
+totalResults := 0
+for iter.HasMore() {
+    response, err := iter.Next()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    if response == nil {
+        break
+    }
+
+    totalResults += len(response.Results)
+    fmt.Printf("Page results: %d\n", len(response.Results))
+
+    // Process results...
+}
+
+fmt.Printf("Total results: %d\n", totalResults)
+```
+
+#### Complex LCQL Queries
+
+```go
+// Multi-condition query
+response, err := org.Query(limacharlie.QueryRequest{
+    Query: `-1h | platform: windows AND tag: critical | event | ` +
+           `(event.FILE_PATH ends with ".exe" OR event.FILE_PATH ends with ".dll") ` +
+           `AND event.FILE_PATH contains "\\Temp\\"`,
+    Stream:     "event",
+    LimitEvent: 5000,
+    LimitEval:  10000,
+})
+
+// Detection query with category filter
+response, err = org.Query(limacharlie.QueryRequest{
+    Query:  `-24h | * | detect | detect.cat = "malware" OR detect.cat = "ransomware"`,
+    Stream: "detect",
+})
+
+// Audit log query
+response, err = org.Query(limacharlie.QueryRequest{
+    Query:  `-7d | * | audit | audit.action = "sensor.task"`,
+    Stream: "audit",
+})
+```
+
+### Hive Configuration Management
+
+Hive is LimaCharlie's configuration management system for storing structured data.
+
+#### Initialize Hive Client
+
+```go
+hive := limacharlie.NewHiveClient(org)
+```
+
+#### List Hive Records
+
+```go
+// List all records in a hive partition
+records, err := hive.List(limacharlie.HiveArgs{
+    HiveName:     "dr-general",
+    PartitionKey: org.GetOID(),
+})
+if err != nil {
+    log.Fatal(err)
+}
+
+for key, record := range records {
+    fmt.Printf("Record: %s\n", key)
+    fmt.Printf("  Data: %v\n", record.Data)
+    fmt.Printf("  Enabled: %v\n", record.UsrMtd.Enabled)
+    fmt.Printf("  Tags: %v\n", record.UsrMtd.Tags)
+    fmt.Printf("  Last Modified: %d\n", record.SysMtd.LastMod)
+    fmt.Printf("  Last Author: %s\n", record.SysMtd.LastAuthor)
+    fmt.Printf("  ETag: %s\n", record.SysMtd.Etag)
+}
+```
+
+#### Get Specific Hive Record
+
+```go
+record, err := hive.Get(limacharlie.HiveArgs{
+    HiveName:     "dr-general",
+    PartitionKey: org.GetOID(),
+    Key:          "my-config-key",
+})
+if err != nil {
+    log.Fatal(err)
+}
+
+fmt.Printf("Data: %v\n", record.Data)
+```
+
+#### Add/Update Hive Record
+
+```go
+enabled := true
+err := hive.Add(limacharlie.HiveArgs{
+    HiveName:     "dr-general",
+    PartitionKey: org.GetOID(),
+    Key:          "my-rule",
+    Data: limacharlie.Dict{
+        "detect": map[string]interface{}{
+            "event": "NEW_PROCESS",
+            "op":    "is",
+            "path":  "event/FILE_PATH",
+            "value": "C:\\malware.exe",
+        },
+        "respond": []map[string]interface{}{
+            {
+                "action": "report",
+                "name":   "malware-detected",
+            },
+        },
+    },
+    Enabled: &enabled,
+    Tags:    []string{"malware", "test"},
+})
+```
+
+#### Delete Hive Record
+
+```go
+err := hive.Remove(limacharlie.HiveArgs{
+    HiveName:     "dr-general",
+    PartitionKey: org.GetOID(),
+    Key:          "my-rule",
+})
+```
+
+#### Batch Hive Operations
+
+```go
+// Create a batch
+batch := hive.NewBatch()
+
+// Add multiple operations
+enabled := true
+batch.Add(limacharlie.HiveArgs{
+    HiveName:     "dr-general",
+    PartitionKey: org.GetOID(),
+    Key:          "rule-1",
+    Data:         limacharlie.Dict{/* ... */},
+    Enabled:      &enabled,
+})
+
+batch.Add(limacharlie.HiveArgs{
+    HiveName:     "dr-general",
+    PartitionKey: org.GetOID(),
+    Key:          "rule-2",
+    Data:         limacharlie.Dict{/* ... */},
+    Enabled:      &enabled,
+})
+
+// Execute batch
+responses, err := batch.Execute()
+if err != nil {
+    log.Fatal(err)
+}
+
+for i, resp := range responses {
+    if resp.Error != "" {
+        fmt.Printf("Operation %d failed: %s\n", i, resp.Error)
+    } else {
+        fmt.Printf("Operation %d succeeded: %v\n", i, resp.Data)
+    }
+}
 ```
 
 ## Data Structures
@@ -444,585 +1570,181 @@ err = org.DeleteOrganization(token)
 
 ```go
 type Sensor struct {
-    SID          string    `json:"sid"`           // Sensor ID
-    Hostname     string    `json:"hostname"`      // Sensor hostname
-    Platform     string    `json:"platform"`      // OS platform
-    Architecture string    `json:"architecture"`  // CPU architecture
-    LastSeen     time.Time `json:"last_seen"`     // Last activity time
-    EnrollmentTime time.Time `json:"enrollment"`  // First enrollment
-    Tags         []string  `json:"tags"`          // Applied tags
-    IsolationStatus string `json:"isolation"`    // Network isolation status
-    Organization string    `json:"oid"`           // Organization ID
+    OID          string // Organization ID
+    IID          string // Installation key ID
+    SID          string // Sensor ID
+    DID          string // Device ID (if associated with device)
+    Platform     uint32 // OS platform code
+    Architecture uint32 // CPU architecture code
+
+    EnrollTS string // Enrollment timestamp
+    AliveTS  string // Last alive timestamp
+
+    InternalIP string // Internal IP address
+    ExternalIP string // External IP address
+    Hostname   string // Sensor hostname
+
+    IsIsolated        bool // Currently isolated from network
+    ShouldIsolate     bool // Should be isolated
+    IsKernelAvailable bool // Kernel component available
+
+    Organization    *Organization // Parent organization
+    Device          *Device       // Associated device (if any)
+    InvestigationID string        // Investigation context
 }
 ```
 
-### Detection Rule Components
+### Detection Rule Structure
 
 ```go
-// Detection criteria structure
-detect := map[string]interface{}{
-    "event": "DNS_REQUEST",
-    "op": "and",
-    "rules": []map[string]interface{}{
-        {
-            "op": "contains",
-            "path": "event/DOMAIN_NAME",
-            "value": "malicious.com",
-        },
-    },
-}
-
-// Response action structure
-response := []map[string]interface{}{
-    {
-        "action": "report",
-        "name": "malicious-dns-query",
-        "priority": 5,
-    },
-    {
-        "action": "task",
-        "command": map[string]interface{}{
-            "action": "os_kill_process",
-            "pid": "<<event/PROCESS_ID>>",
-        },
-    },
+type CoreDRRule struct {
+    Name      string                   `json:"name,omitempty"`
+    Namespace string                   `json:"namespace,omitempty"`
+    Detect    map[string]interface{}   `json:"detect"`
+    Response  []map[string]interface{} `json:"respond"`
+    IsEnabled *bool                    `json:"is_enabled,omitempty"`
 }
 ```
 
-### Artifact Rule Structure
+### Installation Key Structure
 
 ```go
-type ArtifactRule struct {
-    Name        string   `json:"name"`
-    Patterns    []string `json:"patterns"`      // File patterns to match
-    Platforms   []string `json:"platforms"`     // Target platforms
-    Tags        []string `json:"tags"`          // Required sensor tags
-    RetentionDays int    `json:"retention"`    // Artifact retention period
+type InstallationKey struct {
+    CreatedAt   uint64   // Unix timestamp
+    Description string   // Human-readable description
+    ID          string   // Installation key ID (IID)
+    Key         string   // The actual installation key
+    JsonKey     string   // JSON-formatted key
+    Tags        []string // Tags to auto-apply to sensors
+    UsePublicCA bool     // Use public CA vs LimaCharlie CA
+}
+```
+
+### Query Structures
+
+```go
+type QueryRequest struct {
+    Query      string // LCQL query string
+    Stream     string // "event", "detect", or "audit"
+    LimitEvent int    // Max events to process
+    LimitEval  int    // Max rule evaluations
+    Cursor     string // Pagination cursor
+}
+
+type QueryResponse struct {
+    Results []map[string]interface{} // Query results
+    Cursor  string                   // Next page cursor
+    Stats   map[string]interface{}   // Query statistics
 }
 ```
 
 ## Error Handling
 
-### Error Types and Patterns
+### Error Types
 
 ```go
-// Check for specific error types
-response, err := org.GetSensor("invalid-id")
+// REST API errors
 if err != nil {
-    // Check if it's a 404 error
     if strings.Contains(err.Error(), "404") {
-        fmt.Println("Sensor not found")
+        fmt.Println("Resource not found")
     } else if strings.Contains(err.Error(), "401") {
-        fmt.Println("Authentication failed")
-    } else {
-        // General error handling
-        log.Fatal(err)
+        fmt.Println("Authentication failed - check credentials")
+    } else if strings.Contains(err.Error(), "403") {
+        fmt.Println("Permission denied")
+    } else if strings.Contains(err.Error(), "429") {
+        fmt.Println("Rate limited - too many requests")
+    } else if strings.Contains(err.Error(), "500") {
+        fmt.Println("Server error")
     }
+}
+
+// Sensor-specific errors
+sensor := org.GetSensor("invalid-sid")
+if sensor.LastError != nil {
+    log.Printf("Error getting sensor: %v", sensor.LastError)
 }
 ```
 
 ### Retry Logic
 
-```go
-// The SDK includes automatic retry for transient failures
-// You can implement additional retry logic:
-
-var sensor *limacharlie.Sensor
-maxRetries := 3
-
-for i := 0; i < maxRetries; i++ {
-    sensor, err = org.GetSensor(sensorID)
-    if err == nil {
-        break
-    }
-    
-    if i < maxRetries-1 {
-        time.Sleep(time.Second * time.Duration(i+1))
-    }
-}
-
-if err != nil {
-    log.Fatal("Failed after retries:", err)
-}
-```
-
-### Validation
-
-```go
-// Validate UUIDs before use
-import "github.com/google/uuid"
-
-func validateOID(oid string) error {
-    _, err := uuid.Parse(oid)
-    if err != nil {
-        return fmt.Errorf("invalid OID format: %v", err)
-    }
-    return nil
-}
-
-// Validate configuration
-if err := validateOID(options.OID); err != nil {
-    log.Fatal(err)
-}
-```
-
-## Advanced Features
-
-### Investigation Context
-
-When tasking sensors, you can maintain investigation context:
-
-```go
-investigationID := uuid.New().String()
-
-// Task multiple sensors with same investigation
-for _, sensor := range suspiciousSensors {
-    response, err := sensor.Task([]byte(`{
-        "action": "os_processes"
-    }`), &investigationID)
-    
-    if err != nil {
-        log.Printf("Failed to task sensor %s: %v", sensor.SID, err)
-        continue
-    }
-    
-    // Process responses within investigation context
-}
-```
-
-### Concurrent Operations
-
-```go
-// Process multiple sensors concurrently
-var wg sync.WaitGroup
-results := make(chan SensorResult, len(sensors))
-
-for _, sensor := range sensors {
-    wg.Add(1)
-    go func(s *limacharlie.Sensor) {
-        defer wg.Done()
-        
-        tags, err := s.GetTags()
-        results <- SensorResult{
-            SID: s.SID,
-            Tags: tags,
-            Error: err,
-        }
-    }(sensor)
-}
-
-wg.Wait()
-close(results)
-
-// Process results
-for result := range results {
-    if result.Error != nil {
-        log.Printf("Error for %s: %v", result.SID, result.Error)
-    } else {
-        fmt.Printf("Sensor %s has tags: %v\n", result.SID, result.Tags)
-    }
-}
-```
-
-### Custom HTTP Client
-
-```go
-// Use custom HTTP client for advanced networking needs
-httpClient := &http.Client{
-    Timeout: 30 * time.Second,
-    Transport: &http.Transport{
-        MaxIdleConns:       10,
-        IdleConnTimeout:    30 * time.Second,
-        DisableCompression: false,
-    },
-}
-
-// Set custom HTTP client in options
-options := limacharlie.ClientOptions{
-    OID:        "your-oid",
-    APIKey:     "your-api-key",
-    HTTPClient: httpClient,
-}
-```
-
-### Logging
-
-```go
-import "github.com/rs/zerolog"
-
-// Configure logging
-logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
-
-// The SDK uses zerolog internally
-// Set log level via environment
-os.Setenv("LOG_LEVEL", "debug")
-```
-
-## Examples
-
-### Complete Sensor Monitoring Example
-
-```go
-package main
-
-import (
-    "fmt"
-    "log"
-    "time"
-    
-    "github.com/refractionPOINT/go-limacharlie/limacharlie"
-)
-
-func main() {
-    // Initialize client
-    client := limacharlie.NewClient()
-    org := client.Organization(limacharlie.ClientOptions{})
-    
-    // Monitor sensors
-    for {
-        sensors, err := org.ListSensors()
-        if err != nil {
-            log.Printf("Error listing sensors: %v", err)
-            time.Sleep(30 * time.Second)
-            continue
-        }
-        
-        offlineSensors := []string{}
-        for _, sensor := range sensors {
-            if time.Since(sensor.LastSeen) > 5*time.Minute {
-                offlineSensors = append(offlineSensors, sensor.Hostname)
-            }
-        }
-        
-        if len(offlineSensors) > 0 {
-            fmt.Printf("Offline sensors detected: %v\n", offlineSensors)
-            // Send alert or take action
-        }
-        
-        time.Sleep(60 * time.Second)
-    }
-}
-```
-
-### Threat Detection Rule Example
-
-```go
-package main
-
-import (
-    "log"
-    
-    "github.com/refractionPOINT/go-limacharlie/limacharlie"
-)
-
-func main() {
-    client := limacharlie.NewClient()
-    org := client.Organization(limacharlie.ClientOptions{})
-    
-    // Create ransomware detection rule
-    rule := limacharlie.CoreDRRule{
-        Name:      "ransomware-file-encryption",
-        Namespace: "threats",
-        Detect: map[string]interface{}{
-            "event": "FILE_CREATE",
-            "op": "and",
-            "rules": []map[string]interface{}{
-                {
-                    "op": "matches",
-                    "path": "event/FILE_PATH",
-                    "re": ".*\\.(locked|encrypted|enc|cry)$",
-                },
-                {
-                    "op": "greater than",
-                    "path": "event/SIZE",
-                    "value": 100,
-                },
-            },
-        },
-        Response: []map[string]interface{}{
-            {
-                "action": "report",
-                "name": "potential-ransomware-activity",
-                "priority": 10,
-            },
-            {
-                "action": "task",
-                "command": map[string]interface{}{
-                    "action": "os_kill_process",
-                    "pid": "<<event/PROCESS_ID>>",
-                },
-            },
-            {
-                "action": "task",
-                "command": map[string]interface{}{
-                    "action": "isolate_network",
-                },
-            },
-        },
-        IsEnabled: true,
-    }
-    
-    err := org.DRRuleAdd(rule, true)
-    if err != nil {
-        log.Fatal("Failed to add rule:", err)
-    }
-    
-    fmt.Println("Ransomware detection rule added successfully")
-}
-```
-
-### Artifact Collection Example
-
-```go
-package main
-
-import (
-    "fmt"
-    "io/ioutil"
-    "log"
-    
-    "github.com/refractionPOINT/go-limacharlie/limacharlie"
-)
-
-func collectSuspiciousFile(org *limacharlie.Organization, sensor *limacharlie.Sensor, filePath string) {
-    // Task sensor to retrieve file
-    investigation := "suspicious-file-investigation"
-    response, err := sensor.Task([]byte(fmt.Sprintf(`{
-        "action": "file_get",
-        "path": "%s"
-    }`, filePath)), &investigation)
-    
-    if err != nil {
-        log.Printf("Failed to retrieve file: %v", err)
-        return
-    }
-    
-    // Save as artifact
-    artifactID, err := org.CreateArtifactFromBytes(
-        response,
-        fmt.Sprintf("suspicious_%s_%s", sensor.Hostname, filePath),
-        fmt.Sprintf("Suspicious file from %s", sensor.Hostname),
-        86400*7, // Keep for 7 days
-        "application/octet-stream",
-    )
-    
-    if err != nil {
-        log.Printf("Failed to create artifact: %v", err)
-        return
-    }
-    
-    fmt.Printf("Artifact created: %s\n", artifactID)
-}
-```
-
-### Batch Sensor Operations Example
-
-```go
-package main
-
-import (
-    "fmt"
-    "log"
-    "sync"
-    
-    "github.com/refractionPOINT/go-limacharlie/limacharlie"
-)
-
-func main() {
-    client := limacharlie.NewClient()
-    org := client.Organization(limacharlie.ClientOptions{})
-    
-    // Get all Windows sensors
-    sensors, _ := org.ListSensors()
-    windowsSensors := []*limacharlie.Sensor{}
-    
-    for _, sensor := range sensors {
-        if sensor.Platform == "windows" {
-            windowsSensors = append(windowsSensors, sensor)
-        }
-    }
-    
-    // Apply security patch check concurrently
-    var wg sync.WaitGroup
-    results := make(map[string]bool)
-    var mu sync.Mutex
-    
-    for _, sensor := range windowsSensors {
-        wg.Add(1)
-        go func(s *limacharlie.Sensor) {
-            defer wg.Done()
-            
-            // Check for specific security patch
-            response, err := s.Task([]byte(`{
-                "action": "os_packages",
-                "filter": "KB5005565"
-            }`), nil)
-            
-            mu.Lock()
-            if err == nil && len(response) > 0 {
-                results[s.Hostname] = true
-            } else {
-                results[s.Hostname] = false
-            }
-            mu.Unlock()
-        }(sensor)
-    }
-    
-    wg.Wait()
-    
-    // Report results
-    unpatched := []string{}
-    for hostname, patched := range results {
-        if !patched {
-            unpatched = append(unpatched, hostname)
-        }
-    }
-    
-    if len(unpatched) > 0 {
-        fmt.Printf("Unpatched systems: %v\n", unpatched)
-        
-        // Tag unpatched systems
-        for _, sensor := range windowsSensors {
-            for _, hostname := range unpatched {
-                if sensor.Hostname == hostname {
-                    sensor.AddTag("needs-patch-KB5005565", 0)
-                }
-            }
-        }
-    }
-}
-```
+The SDK includes automatic retry for transient failures (401, 429, 504).
 
 ## Best Practices
 
 ### 1. Authentication Security
-- Store API keys in environment variables or secure vaults
+
+- Store API keys in environment variables or secure vaults, never in code
 - Use JWT tokens with minimal required permissions
 - Rotate API keys regularly
 - Never commit credentials to version control
 
-### 2. Error Handling
-- Always check for errors from SDK methods
-- Implement retry logic for transient failures
-- Log errors appropriately for debugging
-- Handle specific error cases (404, 401, 403, 500)
+### 2. Resource Management
+
+- Always call `org.Close()` when done
+- Use `defer spout.Shutdown()` to ensure cleanup
+- Close FutureResults when done: `defer future.Close()`
 
 ### 3. Performance Optimization
+
 - Use concurrent operations for batch processing
-- Implement caching for frequently accessed data
 - Use pagination for large result sets
 - Set appropriate timeouts for long-running operations
+- Use selectors to filter sensors server-side
 
-### 4. Resource Management
-- Close connections properly
-- Use context for cancellation
-- Monitor memory usage with large datasets
-- Implement rate limiting for API calls
+## Firehose CLI Tool
 
-### 5. Detection Rules
-- Test rules in a non-production namespace first
-- Use TTL for experimental rules
-- Document rule logic and purpose
-- Version control rule definitions
+The `firehose` module provides a standalone CLI tool for streaming LimaCharlie data to local applications via TCP.
 
-### 6. Sensor Management
-- Tag sensors appropriately for organization
-- Monitor sensor health regularly
-- Implement automated response to offline sensors
-- Use investigation IDs for related tasks
+### Installation
 
-## Troubleshooting
-
-### Common Issues
-
-#### Authentication Failures
-```go
-// Check API key format
-if len(apiKey) != 36 {
-    log.Fatal("Invalid API key format")
-}
-
-// Verify organization ID
-if _, err := uuid.Parse(oid); err != nil {
-    log.Fatal("Invalid OID format:", err)
-}
-```
-
-#### Connection Issues
-```go
-// Set custom timeout
-client.SetTimeout(60 * time.Second)
-
-// Check connectivity
-_, err := client.WhoAmI()
-if err != nil {
-    log.Fatal("Cannot connect to LimaCharlie API:", err)
-}
-```
-
-#### Rate Limiting
-```go
-// Implement exponential backoff
-backoff := 1 * time.Second
-for attempts := 0; attempts < 5; attempts++ {
-    err := operation()
-    if err == nil {
-        break
-    }
-    
-    if strings.Contains(err.Error(), "429") {
-        time.Sleep(backoff)
-        backoff *= 2
-    } else {
-        return err
-    }
-}
-```
-
-## API Endpoints Reference
-
-The SDK interacts with the following main API endpoints:
-
-- **Base URL**: `https://api.limacharlie.io`
-- **Authentication**: Bearer token in Authorization header
-- **Content-Type**: `application/json`
-
-### Key Endpoints Used by SDK
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/sensors/{oid}` | GET | List all sensors |
-| `/sensor/{oid}/{sid}` | GET | Get specific sensor |
-| `/sensor/{oid}/{sid}/task` | POST | Task a sensor |
-| `/sensor/{oid}/{sid}/tag` | POST/DELETE | Manage sensor tags |
-| `/rules/{oid}` | GET/POST/DELETE | Manage detection rules |
-| `/artifacts/{oid}` | POST | Upload artifacts |
-| `/artifacts/{oid}/{aid}` | GET | Download artifacts |
-| `/orgs/{oid}` | GET/DELETE | Organization management |
-
-## SDK Versioning
-
-The SDK follows semantic versioning (MAJOR.MINOR.PATCH):
-- **MAJOR**: Breaking API changes
-- **MINOR**: New features, backward compatible
-- **PATCH**: Bug fixes, backward compatible
-
-Check the latest version:
 ```bash
-go list -m -versions github.com/refractionPOINT/go-limacharlie/limacharlie
+go install github.com/refractionPOINT/go-limacharlie/firehose@latest
 ```
 
-Update to latest:
+### Usage
+
 ```bash
-go get -u github.com/refractionPOINT/go-limacharlie/limacharlie
+# Basic usage (will prompt for API key)
+firehose --listen_interface 0.0.0.0:4444 --data_type event --oid your-org-id
+
+# Use environment variables for credentials
+export LC_OID=your-org-id
+export LC_API_KEY=your-api-key
+firehose --listen_interface 0.0.0.0:4444 --data_type event --use-env
+
+# Filter by investigation ID
+firehose --listen_interface 0.0.0.0:4444 --data_type event -i investigation-id --use-env
+
+# Filter by sensor tag
+firehose --listen_interface 0.0.0.0:4444 --data_type event -t production --use-env
+
+# Filter detections by category
+firehose --listen_interface 0.0.0.0:4444 --data_type detect -c malware --use-env
+
+# Named firehose (auto-creates Output configuration)
+firehose --listen_interface 0.0.0.0:4444 --data_type event -n my-firehose --use-env
 ```
+
+### Parameters
+
+- `--listen_interface`: IP:port to listen on (required, e.g., `0.0.0.0:4444`)
+- `--data_type`: Type of data to stream (required: `event`, `detect`, `audit`, `deployment`, `artifact`)
+- `--oid`: Organization ID (optional, uses environment if not specified)
+- `-n, --name`: Unique firehose name (optional, auto-creates Output if specified)
+- `-i, --investigation-id`: Filter by investigation ID
+- `-t, --tag`: Filter by sensor tag
+- `-c, --category`: Filter by detection category
+- `--use-env`: Use environment variables for API key instead of prompting
 
 ## Additional Resources
 
-- **GitHub Repository**: https://github.com/refractionPOINT/go-limacharlie
-- **API Documentation**: https://api.limacharlie.io/openapi
-- **LimaCharlie Documentation**: https://docs.limacharlie.io
-- **Support**: support@limacharlie.io
+- **GitHub Repository**: [github.com/refractionPOINT/go-limacharlie](https://github.com/refractionPOINT/go-limacharlie)
+- **API Documentation**: [api.limacharlie.io/openapi](https://api.limacharlie.io/openapi)
+- **LimaCharlie Documentation**: [docs.limacharlie.io](https://docs.limacharlie.io)
+- **LCQL Query Language**: [docs.limacharlie.io/docs/query-language](https://docs.limacharlie.io/docs/query-language)
+- **Detection & Response Rules**: [docs.limacharlie.io/docs/detection-and-response](https://docs.limacharlie.io/docs/detection-and-response)
+- **Community Support**: [community.limacharlie.io](https://community.limacharlie.io)
+- **Commercial Support**: support@limacharlie.io
 
 ## License
 
