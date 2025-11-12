@@ -1,0 +1,9 @@
+{
+  "name": "lc-essentials",
+  "version": "1.0.0",
+  "description": "Essential LimaCharlie utilities including documentation search and retrieval agent",
+  "author": {
+    "name": "LimaCharlie",
+    "email": "support@limacharlie.io"
+  }
+}
