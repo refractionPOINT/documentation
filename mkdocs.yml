@@ -7,7 +7,6 @@ repo_name: refractionPOINT/documentation
 
 theme:
   name: material
-  custom_dir: overrides
   logo: assets/images/logo.svg
   favicon: assets/images/favicon.png
 
