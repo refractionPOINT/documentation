@@ -1,0 +1,182 @@
+---
+name: get-fp-rule
+description: Get a specific false positive rule by name. Retrieve FP rule configuration and filter logic for a single rule. Use when users need to view, inspect, review, or analyze a specific false positive rule, understand filtering logic, or export FP rule configuration.
+allowed-tools: mcp__limacharlie__lc_api_call, Read
+---
+
+# Get False Positive Rule
+
+Retrieve a specific false positive rule by name, including its filter logic and configuration.
+
+## When to Use
+
+Use this skill when the user needs to:
+- View a specific false positive rule's configuration
+- Inspect FP rule filter logic
+- Review what detections a rule filters
+- Analyze FP rule structure
+- Export a specific FP rule configuration
+
+Common scenarios:
+- Rule inspection: "Show me the 'filter_safe_processes' FP rule"
+- Analysis: "What detections does my 'dev_filter' FP rule suppress?"
+- Review: "Display the configuration for FP rule 'noisy_alerts'"
+- Documentation: "Get the filter logic for 'known_false_positives'"
+
+## What This Skill Does
+
+This skill retrieves a specific false positive rule by name. It fetches the complete rule configuration including the detection filter logic. The rule is located by listing all FP rules and filtering for the requested name.
+
+## Required Information
+
+Before calling this skill, gather:
+- **oid**: Organization ID (required for all API calls)
+- **rule_name**: Name of the FP rule to retrieve (must be exact match)
+
+## How to Use
+
+### Step 1: Validate Parameters
+
+Ensure you have:
+1. Valid organization ID (oid)
+2. FP rule name (must be exact match, case-sensitive)
+
+### Step 2: Call the API
+
+Use the `lc_api_call` MCP tool from the `limacharlie` server:
+
+```
+mcp__limacharlie__lc_api_call(
+  oid="[organization-id]",
+  endpoint="api",
+  method="GET",
+  path="/fp/[organization-id]"
+)
+```
+
+**API Details:**
+- Endpoint: `api`
+- Method: `GET`
+- Path: `/fp/{oid}`
+- Query parameters: None
+- Body fields: None (GET request)
+
+Note: The API returns all FP rules, and you filter for the specific rule by name.
+
+### Step 3: Handle the Response
+
+The API returns a response with:
+```json
+{
+  "status_code": 200,
+  "status": "200 OK",
+  "body": {
+    "requested-rule-name": {
+      "name": "requested-rule-name",
+      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+      "data": {
+        "op": "and",
+        "rules": [...]
+      }
+    }
+  }
+}
+```
+
+**Success (200-299):**
+- Parse the response body to find the rule with matching name
+- Extract the complete rule configuration
+- Present filter logic and metadata
+- If rule name not found in results, return "Rule not found" error
+
+**Common Errors:**
+- **400 Bad Request**: Invalid organization ID format
+- **403 Forbidden**: Insufficient permissions to view FP rules
+- **404 Not Found**: Organization ID does not exist or rule name not found
+- **500 Server Error**: API service issue - retry or contact support
+
+### Step 4: Format the Response
+
+Present the result to the user:
+- Show rule name clearly
+- Display the filter logic (detection component)
+- Explain in plain language what the rule filters
+- Highlight the detection paths and values being matched
+- If rule not found, suggest checking the name or using get-fp-rules
+
+## Example Usage
+
+### Example 1: Get specific FP rule
+
+User request: "Show me the 'filter_safe_processes' FP rule"
+
+Steps:
+1. Get organization ID from context
+2. Extract rule name: "filter_safe_processes"
+3. Call API:
+```
+mcp__limacharlie__lc_api_call(
+  oid="c7e8f940-1234-5678-abcd-1234567890ab",
+  endpoint="api",
+  method="GET",
+  path="/fp/c7e8f940-1234-5678-abcd-1234567890ab"
+)
+```
+4. Find "filter_safe_processes" in response body
+
+Expected response:
+```json
+{
+  "status_code": 200,
+  "body": {
+    "filter_safe_processes": {
+      "name": "filter_safe_processes",
+      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+      "data": {
+        "op": "and",
+        "rules": [
+          {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
+          {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\TrustedApp\\"}
+        ]
+      }
+    }
+  }
+}
+```
+
+User message: "FP Rule: filter_safe_processes
+
+This rule filters SUSPICIOUS_EXECUTION detections where the file path contains 'C:\\Program Files\\TrustedApp\\'. It suppresses alerts for processes running from the trusted application directory."
+
+### Example 2: Rule not found
+
+User request: "Get FP rule 'nonexistent_rule'"
+
+Steps:
+1. Call API to list all FP rules
+2. Search for "nonexistent_rule" in response
+3. Rule not found
+4. Inform user: "FP rule 'nonexistent_rule' not found. Use get-fp-rules to see available rules."
+
+## Additional Notes
+
+- Rule names are case-sensitive and must match exactly
+- FP rules use the same detection logic syntax as D&R rules
+- The `data` field contains the filter logic (detection component)
+- Common filter patterns:
+  - Match detection category: `{"op": "is", "path": "detect/cat", "value": "CATEGORY_NAME"}`
+  - Match detection name: `{"op": "is", "path": "detect/name", "value": "rule_name"}`
+  - Match event fields: `{"op": "contains", "path": "detect/event/FIELD", "value": "pattern"}`
+  - Match sensor properties: `{"op": "is", "path": "routing/hostname", "value": "hostname"}`
+- FP rules can use complex logic with 'and'/'or' operators
+- The rule filters detections after D&R rules have fired
+- To modify this rule, use set-fp-rule
+- To delete this rule, use delete-fp-rule
+- Understanding FP rules helps tune detection systems and reduce alert noise
+
+## Reference
+
+For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+
+For the Go SDK implementation, check: `../go-limacharlie/limacharlie/fp_rule.go`
+For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/fp_rules.go`
