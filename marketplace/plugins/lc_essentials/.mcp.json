@@ -2,7 +2,7 @@
   "mcpServers": {
     "limacharlie": {
       "type": "http",
-      "url": "https://mcp.limacharlie.io/api_access"
+      "url": "https://mcp.limacharlie.io/mcp/api_access"
     }
   }
 }

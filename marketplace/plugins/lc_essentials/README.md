@@ -1,37 +1,128 @@
 # LimaCharlie Essentials Plugin
 
-A simple Claude Code plugin that helps you quickly find and access LimaCharlie documentation from the local `docs/` folder.
+Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 120 comprehensive skills covering core operations, historical data, forensics, detection rules, configuration management, and administration.
+
+## Important: Organization ID (OID) Requirements
+
+**⚠️ OID is a UUID, not an Organization Name**
+
+Most skills in this plugin require an **Organization ID (OID)**, which is a UUID like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`, **NOT** the human-readable organization name.
+
+**To get your OID:**
+```
+Use the `list-user-orgs` skill to see all organizations you have access to and their corresponding OIDs.
+```
+
+This skill returns a mapping of organization names to their UUIDs, which you'll need for most other operations.
 
 ## What It Does
 
-This plugin provides a single skill that searches the LimaCharlie documentation and retrieves relevant content to help answer your questions about:
+This plugin provides 120 comprehensive skills organized into the following categories:
 
-- LimaCharlie platform features (D&R rules, LCQL, sensors, events, outputs, extensions)
-- Python SDK and Go SDK
-- API usage and configuration
-- Getting started guides and tutorials
+### Core Operations & Documentation
+- **Documentation Search**: Intelligent search through LimaCharlie docs (platform, Python SDK, Go SDK)
+- **Organization Management**: List orgs, get org info, create orgs, manage API keys
+- **Sensor Management**: List/search/delete sensors, get sensor info, check online status
 
-## Usage
+### Event Schemas & Telemetry
+- **Event Schemas**: Get schemas for event types, list available events by platform
+- **Platform Support**: Get platform names and platform-specific event types
 
-Just ask questions about LimaCharlie - the skill will automatically activate and search the docs:
+### Live Sensor Interaction
+- **Process Investigation**: Get processes, modules, strings, YARA scan processes
+- **Network Analysis**: Get network connections, investigate C2 communications
+- **System Forensics**: Get OS version, users, services, drivers, autoruns, packages
+- **File System**: List directories, find files by hash, string search across processes
+- **Windows Registry**: Query registry keys and values (Windows sensors only)
+- **YARA Scanning**: Scan processes, files, directories, and memory with YARA rules
 
-- "How do I write D&R rules?"
-- "Show me LCQL query examples"
-- "How do I configure the Office 365 adapter?"
-- "What is the Python SDK syntax for getting sensor info?"
+### Detection & Response
+- **D&R Rules**: List, get, create, update, delete detection rules (general and managed)
+- **False Positive Rules**: Manage FP rules to suppress known-good detections
+- **YARA Rules**: Manage organization-wide YARA rules for threat hunting
+- **Rule Validation**: Validate D&R rule components and YARA syntax
+
+### Historical Data & Investigation
+- **Historic Events**: Query historical telemetry using LCQL
+- **Historic Detections**: Search past detection hits
+- **LCQL Queries**: Run LCQL queries, manage saved queries
+- **IOC Search**: Search for IoCs (IPs, domains, hashes) across historical data
+- **Host Search**: Search for hosts by hostname or other attributes
+
+### Configuration & Integrations
+- **Extensions**: List, get, create, update, delete extension configs
+- **Outputs**: Manage output destinations (SIEM, cloud storage, webhooks)
+- **External Adapters**: Configure cloud sensors and external data sources
+- **Secrets**: Securely store and manage credentials for integrations
+- **Lookups**: Manage lookup tables for enrichment
+
+### Response & Tasking
+- **Network Isolation**: Isolate/rejoin sensors from the network
+- **Reliable Tasking**: Execute commands on sensors with guaranteed delivery
+- **Playbooks**: Manage automated response playbooks
+
+### Advanced Features
+- **Installation Keys**: Create and manage sensor deployment keys
+- **Tags**: Add/remove tags from sensors
+- **Artifacts**: List and retrieve artifacts from investigations
+- **MITRE ATT&CK**: Get MITRE ATT&CK coverage reports
+- **Billing & Usage**: View usage stats, billing details, SKU definitions
+
+## Usage Examples
+
+### Getting Started
+```
+"List all my organizations" → Uses list-user-orgs
+"Show me all sensors in my org" → Uses list-sensors
+"Get event schema for DNS_REQUEST" → Uses get-event-schema
+```
+
+### Investigation
+```
+"Get running processes on sensor XYZ" → Uses get-processes
+"Show network connections for sensor ABC" → Uses get-network-connections
+"YARA scan process 1234 on sensor DEF" → Uses yara-scan-process
+"Search for IP 1.2.3.4 in historical data" → Uses search-iocs
+```
+
+### Detection Engineering
+```
+"List all D&R rules" → Uses list-rules
+"Create a new D&R rule for suspicious PowerShell" → Uses set-rule
+"Get all detections from the last 24 hours" → Uses get-historic-detections
+"Validate this YARA rule" → Uses validate-yara-rule
+```
+
+### Configuration
+```
+"Configure Slack output" → Uses add-output
+"Create installation key for production deployment" → Uses create-installation-key
+"Set up cloud sensor for AWS CloudTrail" → Uses set-cloud-sensor
+```
 
 ## How It Works
 
-The `lookup-lc-doc` skill:
+Skills in this plugin connect to the LimaCharlie API via MCP (Model Context Protocol) to:
 
-1. Searches the `docs/` folder using keywords from your question
-2. Finds relevant documentation files
-3. Returns the content to help answer your question
+1. **Authenticate** using your LimaCharlie API credentials
+2. **Execute operations** against your organization(s)
+3. **Return results** in a structured, readable format
+
+Most skills require:
+- **OID**: Organization ID (UUID) - get this via `list-user-orgs`
+- **Additional parameters**: Sensor IDs, rule names, query parameters, etc.
 
 ## Documentation Coverage
 
-- **Platform**: `docs/limacharlie/` - Complete LimaCharlie platform documentation
-- **Python SDK**: `docs/python-sdk/` - Python SDK reference and examples
-- **Go SDK**: `docs/go-sdk/` - Go SDK reference and examples
+- **Platform Documentation**: Complete LimaCharlie platform docs
+- **Python SDK**: Python SDK reference and examples
+- **Go SDK**: Go SDK reference and examples
+- **API Reference**: Direct API access documentation
 
-Simple, straightforward documentation lookup.
+## Skills Summary
+
+See [SKILLS_SUMMARY.md](./SKILLS_SUMMARY.md) for a complete list of all 120 skills with descriptions.
+
+## API Calling Guide
+
+See [CALLING_API.md](./CALLING_API.md) for comprehensive documentation on making direct API calls to LimaCharlie.
