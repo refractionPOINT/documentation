@@ -30,7 +30,10 @@ This skill retrieves the authoritative list of platform names from LimaCharlie's
 ## Required Information
 
 Before calling this skill, gather:
-- **oid**: Organization ID (required for API context)
+
+**⚠️ NOTE**: This is a **global operation** that queries the platform ontology and does not require a specific organization ID. When calling the API, **omit the `oid` parameter** entirely.
+
+No specific parameters required (global ontology query)
 
 Note: The ontology endpoint returns the global platform list, not organization-specific platforms.
 
@@ -38,8 +41,7 @@ Note: The ontology endpoint returns the global platform list, not organization-s
 
 ### Step 1: Validate Parameters
 
-Ensure you have:
-1. Valid organization ID (oid)
+This is a global query - no specific validation required.
 
 ### Step 2: Call the API
 
@@ -47,10 +49,10 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 
 ```
 mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
   endpoint="api",
   method="GET",
   path="/ontology"
+  # Note: oid parameter omitted - not required for global operations
 )
 ```
 
@@ -60,7 +62,7 @@ mcp__limacharlie__lc_api_call(
 - Path: `/ontology`
 - No query parameters
 - No request body
-- Does not require authentication but oid needed for context
+- Global endpoint - does not require organization context
 
 ### Step 3: Handle the Response
 
@@ -109,11 +111,9 @@ Present the result to the user:
 User request: "What platforms does LimaCharlie support?"
 
 Steps:
-1. Extract oid from context
-2. Call API:
+1. Call API:
 ```
 mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
   path="/ontology"
@@ -151,10 +151,12 @@ Steps:
 
 ## Additional Notes
 
+- **This is a global operation that does not require a specific organization ID**
+- When calling the API, omit the `oid` parameter entirely
+- This endpoint returns the global platform ontology, not org-specific data
 - Platform names are always lowercase in the API
 - Use exactly these names when filtering (e.g., "windows" not "Windows" or "win")
 - The numeric platform IDs are for internal use - use the string names in API calls
-- This endpoint returns the global platform ontology, not org-specific data
 - Just because a platform is listed doesn't mean the organization has sensors on it
 - Use `list-with-platform` to see which platforms have active sensors
 - Common platforms: windows, linux, macos, chrome

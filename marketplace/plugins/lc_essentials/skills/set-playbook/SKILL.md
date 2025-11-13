@@ -31,6 +31,8 @@ This skill creates or updates an automation playbook in the LimaCharlie Hive sys
 ## Required Information
 
 Before calling this skill, gather:
+
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **playbook_name**: The name for the playbook (required)
 - **playbook_data**: The workflow definition object (required, must be valid structure)

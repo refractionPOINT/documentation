@@ -33,7 +33,10 @@ This skill creates a new LimaCharlie organization with specified name and data r
 ## Required Information
 
 Before calling this skill, gather:
-- **name**: Organization name (required)
+
+**⚠️ NOTE**: This is a **user-level operation** that does not require a specific organization ID. When calling the API, **omit the `oid` parameter** entirely. This skill creates a new organization.
+
+**name**: Organization name (required)
   - Human-readable name for the organization
   - Used for identification in UI and billing
 - **location**: Data residency location (required)
@@ -62,7 +65,6 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 
 ```
 mcp__limacharlie__lc_api_call(
-  oid="[any-existing-org-id]",  # Required for auth, but not used
   endpoint="api",
   method="POST",
   path="/orgs",
@@ -71,6 +73,7 @@ mcp__limacharlie__lc_api_call(
     "location": "[location]",
     "template": "[yaml-template]"  # Optional
   }
+  # Note: oid parameter omitted - not required for user-level operations
 )
 ```
 
@@ -133,7 +136,6 @@ Steps:
 2. Call API to create organization:
 ```
 mcp__limacharlie__lc_api_call(
-  oid="existing-org-id",
   endpoint="api",
   method="POST",
   path="/orgs",
@@ -185,7 +187,6 @@ Steps:
 2. Create org with template:
 ```
 mcp__limacharlie__lc_api_call(
-  oid="existing-org-id",
   endpoint="api",
   method="POST",
   path="/orgs",
@@ -229,7 +230,6 @@ Steps:
 2. Create organization:
 ```
 mcp__limacharlie__lc_api_call(
-  oid="existing-org-id",
   endpoint="api",
   method="POST",
   path="/orgs",
@@ -265,6 +265,8 @@ Next steps:
 
 ## Additional Notes
 
+- **This is a user-level operation that does not require a specific organization ID**
+- When calling the API, omit the `oid` parameter entirely
 - Organization creation is a user-level operation (not org-scoped)
 - Newly created orgs inherit user's access level (owner)
 - Location determines data residency and cannot be changed later

@@ -11,7 +11,34 @@ The `lc_api_call` tool provides direct HTTP access to LimaCharlie's API and bill
 - **headers** (optional): Custom HTTP headers as key-value object
 - **body** (optional): Request body as object (will be JSON-serialized) - typically used with POST/PUT/PATCH
 - **timeout** (optional): Request timeout in seconds (default: 30)
-- **oid**: Organization ID - required for all calls
+- **oid**: Organization ID - required for most calls, but **omit this parameter** for user-level and global operations (see below)
+
+## User-Level and Global Operations
+
+Some API operations don't require a specific organization context and the **`oid` parameter should be omitted**:
+
+**User-level operations** (use `/user/*` paths):
+- `/user/orgs` (GET) - List organizations accessible to the user
+  - Used by: `list-user-orgs` skill
+  - Omit the `oid` parameter
+
+**Global operations** (don't include `{oid}` in path):
+- `/orgs` (POST) - Create new organization
+  - Used by: `create-org` skill
+  - Omit the `oid` parameter
+- `/ontology` (GET) - Get platform names from global ontology
+  - Used by: `get-platform-names` skill
+  - Omit the `oid` parameter
+- `/sku` (GET, billing endpoint) - Get pricing/SKU definitions
+  - Used by: `get-sku-definitions` skill
+  - Omit the `oid` parameter
+
+**All other operations require a valid, specific organization ID.**
+
+For organization-specific operations, the path typically includes `{oid}` as a variable:
+- `/rules/{oid}` - Requires specific organization ID
+- `/sensors/{oid}` - Requires specific organization ID
+- `/outputs/{oid}` - Requires specific organization ID
 
 ## Authentication
 

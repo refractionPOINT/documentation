@@ -35,6 +35,8 @@ This skill retrieves the complete configuration and metadata for a specific exte
 ## Required Information
 
 Before calling this skill, gather:
+
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **adapter_name**: Name of the external adapter to retrieve (required)
 

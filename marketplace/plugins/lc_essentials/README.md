@@ -15,6 +15,17 @@ Use the `list-user-orgs` skill to see all organizations you have access to and t
 
 This skill returns a mapping of organization names to their UUIDs, which you'll need for most other operations.
 
+**Exception - Skills that don't require a specific OID:**
+
+A small number of skills operate at the user-level or global level and **do not require a specific organization ID**. For these skills, **omit the `oid` parameter** when calling the API:
+
+- **`list-user-orgs`** - Lists all organizations you have access to (user-level operation)
+- **`create-org`** - Creates a new organization (user-level operation)
+- **`get-sku-definitions`** - Gets pricing/SKU information (global operation)
+- **`get-platform-names`** - Gets list of platform names from ontology (global operation)
+
+All other 116 skills require a valid, specific organization ID.
+
 ## What It Does
 
 This plugin provides 120 comprehensive skills organized into the following categories:

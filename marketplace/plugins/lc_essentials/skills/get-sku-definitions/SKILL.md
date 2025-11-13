@@ -33,8 +33,10 @@ This skill retrieves SKU definitions and pricing information for LimaCharlie ser
 ## Required Information
 
 Before calling this skill, gather:
-- No specific parameters required (global pricing query)
-- Organization ID may be provided for context but is not required
+
+**⚠️ NOTE**: This is a **global operation** that queries the pricing catalog and does not require a specific organization ID. When calling the API, **omit the `oid` parameter** entirely.
+
+No specific parameters required (global pricing query)
 
 ## How to Use
 
@@ -48,10 +50,10 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 
 ```
 mcp__limacharlie__lc_api_call(
-  oid="[any-org-id]",
   endpoint="billing",
   method="GET",
   path="/sku"
+  # Note: oid parameter omitted - not required for global operations
 )
 ```
 
@@ -129,7 +131,6 @@ Steps:
 1. Call API to get SKU definitions:
 ```
 mcp__limacharlie__lc_api_call(
-  oid="any-org-id",
   endpoint="billing",
   method="GET",
   path="/sku"
@@ -226,6 +227,9 @@ Total estimated monthly increase: $300-400
 
 ## Additional Notes
 
+- **This is a global operation that does not require a specific organization ID**
+- When calling the API, omit the `oid` parameter entirely
+- This endpoint doesn't require organization context
 - SKU prices are in cents (USD typically)
 - Pricing may vary by region or contract
 - Volume discounts may be available (contact sales)
@@ -233,7 +237,6 @@ Total estimated monthly increase: $300-400
 - Enterprise agreements may have custom pricing
 - Prices shown are list prices (before discounts)
 - Currency and intervals specified per SKU
-- This endpoint doesn't require organization context
 - Pricing subject to change - verify with LimaCharlie sales
 - Custom plans and features may not appear in standard SKU list
 

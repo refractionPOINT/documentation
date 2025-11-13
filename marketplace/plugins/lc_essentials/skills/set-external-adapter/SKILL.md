@@ -35,6 +35,8 @@ This skill creates or updates an external adapter configuration in the organizat
 ## Required Information
 
 Before calling this skill, gather:
+
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **adapter_name**: Name for the external adapter (required, alphanumeric with hyphens/underscores)
 - **adapter_config**: Complete configuration object (required, structure varies by adapter type)

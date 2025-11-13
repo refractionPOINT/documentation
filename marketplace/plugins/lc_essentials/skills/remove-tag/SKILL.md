@@ -31,6 +31,8 @@ This skill removes a specific tag from a sensor immediately. The tag is deleted 
 ## Required Information
 
 Before calling this skill, gather:
+
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format) - the sensor to remove the tag from
 - **tag**: Tag name/label to remove (must match exactly, case-sensitive)

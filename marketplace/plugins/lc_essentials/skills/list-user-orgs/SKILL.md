@@ -33,7 +33,10 @@ This skill lists all organizations accessible to the authenticated user. It call
 ## Required Information
 
 Before calling this skill, gather:
-- No required parameters (user-level query)
+
+**⚠️ NOTE**: This is a **user-level operation** that does not require a specific organization ID. When calling the API, **omit the `oid` parameter** entirely. This skill is used to discover organization IDs and names.
+
+No required parameters (user-level query)
 
 Optional parameters:
 - **filter**: Filter string to match organization names (optional)
@@ -54,7 +57,6 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 
 ```
 mcp__limacharlie__lc_api_call(
-  oid="[any-org-id]",  # Required for auth context
   endpoint="api",
   method="GET",
   path="/user/orgs",
@@ -65,6 +67,7 @@ mcp__limacharlie__lc_api_call(
     "offset": "[pagination-offset]",
     "limit": "[pagination-limit]"
   }
+  # Note: oid parameter omitted - not required for user-level operations
 )
 ```
 
@@ -137,7 +140,6 @@ Steps:
 1. Call API to list user orgs:
 ```
 mcp__limacharlie__lc_api_call(
-  oid="current-org-id",
   endpoint="api",
   method="GET",
   path="/user/orgs"
@@ -202,7 +204,6 @@ Steps:
 1. List orgs with filter:
 ```
 mcp__limacharlie__lc_api_call(
-  oid="current-org-id",
   endpoint="api",
   method="GET",
   path="/user/orgs",
@@ -273,7 +274,10 @@ Total: 17 organizations
 
 ## Additional Notes
 
-- This is a user-level operation, not organization-specific
+- **This is a user-level operation that does not require a specific organization ID**
+- When calling the API, omit the `oid` parameter entirely
+- This skill is the starting point for discovering organization IDs
+- This is not organization-specific
 - Results show only orgs the user has explicit access to
 - Role levels: owner, admin, user (permissions vary)
 - Large result sets support pagination via offset/limit
