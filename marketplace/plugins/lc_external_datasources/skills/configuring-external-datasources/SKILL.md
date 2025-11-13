@@ -1,10 +1,11 @@
 ---
 name: configuring-external-datasources
-description: Configure and deploy LimaCharlie external data sources (Cloud Sensors, Adapters, USP, External Adapters) for ingesting telemetry from cloud platforms, logs, webhooks, and third-party services. Use when users need to connect AWS, Azure, GCP, Syslog, webhooks, or any external telemetry source to LimaCharlie.
+description: Manage and configure existing LimaCharlie external data sources (Cloud Sensors, Adapters, External Adapters). Update parsing rules, modify field mappings, adjust adapter configurations, optimize indexing, and troubleshoot data ingestion. Use when users need to modify, update, fix, or optimize existing external datasource configurations.
 allowed-tools:
   - Read
   - WebFetch
   - WebSearch
+  - Skill
   - mcp__limacharlie__list_cloud_sensors
   - mcp__limacharlie__get_cloud_sensor
   - mcp__limacharlie__set_cloud_sensor
@@ -25,17 +26,21 @@ allowed-tools:
 
 # Configuring LimaCharlie External Data Sources
 
-This skill provides comprehensive knowledge for configuring LimaCharlie external data sources. External data sources enable ingestion of telemetry from cloud platforms (AWS, Azure, GCP), log aggregators (Syslog, SIEM), SaaS applications (Office 365, Okta, Slack), and custom webhooks. External data sources appear as first-class sensors in LimaCharlie, enabling full Detection & Response rule application.
+This skill provides comprehensive knowledge for managing and modifying LimaCharlie external data sources. External data sources enable ingestion of telemetry from cloud platforms (AWS, Azure, GCP), log aggregators (Syslog, SIEM), SaaS applications (Office 365, Okta, Slack), and custom webhooks. External data sources appear as first-class sensors in LimaCharlie, enabling full Detection & Response rule application.
 
-**CRITICAL: DO NOT USE ANY LIMACHARLIE CLI TO PERFORM OPERATIONS DURING THE ONBOARDING (excluding Adapters themselves), USE THE MCP SERVER**
+**CRITICAL: DO NOT USE ANY LIMACHARLIE CLI TO PERFORM CONFIGURATION OPERATIONS, USE THE MCP SERVER**
 
 ## When to Use This Skill
 
-This skill provides expert knowledge for configuring and deploying LimaCharlie external data sources:
+This skill provides expert knowledge for configuring and managing existing LimaCharlie external data sources:
 
-- **Cloud-to-cloud adapters** - AWS, Azure, GCP, Office 365, Okta, and other SaaS platforms
-- **On-premise adapters** - Syslog listeners, file monitoring, custom log collectors
-- **Parsing and transformation** - Mapping, field extraction, custom indexing for external telemetry
+- **Modifying adapter configurations** - Update credentials, change parameters, adjust collection settings
+- **Parsing and transformation** - Update mapping rules, modify field extraction, fix parsing issues
+- **Custom indexing** - Add, remove, or adjust IOC indexing configurations
+- **Performance optimization** - Fine-tune adapter settings for better throughput and efficiency
+- **Troubleshooting** - Diagnose and fix data flow issues, parsing errors, or connectivity problems
+
+**Note:** For initial setup and onboarding of new external data sources, use the `onboarding-external-datasources` skill instead.
 
 ## Available Tools
 
@@ -146,108 +151,110 @@ All adapters require these core configurations:
 - `client_options.mapping` - Parsing, field extraction, and transformation rules
 - `client_options.indexing` - Custom indexing for IOC search optimization
 
-## Common Adapter Workflows
+## Common Configuration Workflows
 
-### Workflow 1: Deploying a Cloud-to-Cloud Adapter
+### Workflow 1: Updating a Cloud Sensor Configuration
 
 ```
-1. Identify the data source type
-   - AWS CloudTrail, Azure Event Hub, GCP PubSub, Office 365, etc.
+1. Retrieve existing configuration
+   - Use `get_cloud_sensor` MCP tool to fetch current config
+   - Review current settings and identify what needs to change
    ↓
-2. Check existing adapters
-   - Use the `list_cloud_sensors` MCP tool to see what's already configured
+2. Modify configuration as needed
+   - Update credentials or connection parameters
+   - Adjust collection filters or scopes
+   - Change platform or parsing settings
    ↓
-3. Gather cloud credentials
-   - API keys, connection strings, bucket names, etc.
-   - Specific to each adapter type (see reference below)
+3. Update with the `set_cloud_sensor` MCP tool
+   - Name: Same identifier as existing sensor
+   - Config: Modified configuration
    ↓
-4. Build configuration
-   - Use adapter type templates as starting point
-   - Include required client_options
-   ↓
-5. Deploy with the `set_cloud_sensor` MCP tool
-   - Name: Descriptive identifier
-   - Config: Full adapter configuration in JSON/YAML format
-   ↓
-6. Verify data flow
-   - Check sensor list using the `list_sensors` MCP tool
-   - View timeline for incoming events
+4. Verify changes
+   - Check sensor list to confirm update
+   - Monitor data flow for expected changes
    - Validate with LCQL query
 ```
 
-### Workflow 2: Deploying an On-Prem Adapter
+### Workflow 2: Modifying Parsing and Mapping Rules
 
 ```
-1. Download adapter binary
-   - Select appropriate platform from downloads.limacharlie.io
-   - Or use Docker image: refractionpoint/lc-adapter
+1. Identify parsing issue
+   - Events not parsed correctly
+   - Missing or incorrectly mapped fields
+   - Wrong event types assigned
    ↓
-2. Create configuration file (YAML)
-   - Define adapter type (syslog, file, stdin, etc.)
-   - Include all client_options
-   - Add type-specific parameters
+2. Retrieve current adapter configuration
+   - Use `get_cloud_sensor` or `get_external_adapter` MCP tool
+   - Review existing mapping configuration
    ↓
-3. Optional: Create external_adapter record for cloud management
-   - Use the `list_external_adapters` MCP tool to check existing
-   - Note the GUID for cloud-managed configuration
+3. Update parsing rules
+   - Modify Grok patterns or regex
+   - Adjust field extractors (event_type_path, event_time_path, etc.)
+   - Update transformations (drop_fields, rename, etc.)
    ↓
-4. Deploy and start
-   - Run binary with config file or inline parameters
-   - For persistence: Install as service (Windows/Linux)
+4. Test with sample data
+   - Verify parsing logic matches data format
+   - Check field paths exist in parsed output
    ↓
-5. Monitor and verify
-   - Check adapter logs for connection status
-   - Verify sensor appears in LimaCharlie
-   - Validate data ingestion with queries
+5. Deploy updated configuration
+   - Use `set_cloud_sensor` or `set_external_adapter` MCP tool
+   - For on-prem adapters: Configuration syncs automatically if cloud-managed
+   ↓
+6. Verify improved parsing
+   - Check Timeline for correctly parsed events
+   - Validate field mappings with queries
 ```
 
-### Workflow 3: Creating a Webhook Adapter
+### Workflow 3: Troubleshooting Data Flow Issues
 
 ```
-1. Create webhook cloud sensor configuration
-   - sensor_type: "webhook"
-   - Define secret value for URL authentication
-   - Configure client_options
+1. Verify adapter status
+   - Check if sensor appears: Use `list_sensors` MCP tool
+   - Review sensor metadata: Use `get_sensor_info` MCP tool
    ↓
-2. Deploy with the `set_cloud_sensor` MCP tool
+2. Review adapter configuration
+   - Fetch config: `get_cloud_sensor` or `get_external_adapter`
+   - Verify credentials, endpoints, and connection parameters
+   - Check platform and mapping settings
    ↓
-3. Retrieve webhook URL
-   - Format: https://[domain]/[OID]/[webhook_name]/[secret]
-   - Or provide secret in lc-secret header
+3. Identify the issue
+   - No sensor: Connection/authentication problem
+   - Sensor but no events: Collection or parsing problem
+   - Events but wrong format: Mapping/parsing problem
    ↓
-4. Configure source to send webhooks
-   - Point third-party service to webhook URL
-   - Test with sample POST request
+4. Fix configuration
+   - Update credentials if expired
+   - Adjust parsing patterns if failing
+   - Modify field extractors if missing data
    ↓
-5. Verify data ingestion
-   - Check Timeline for incoming events
+5. Monitor recovery
+   - Watch for sensor reconnection
+   - Verify events flowing correctly
+   - Check adapter logs if on-prem
 ```
 
-### Workflow 4: Parsing and Mapping Custom Data
+### Workflow 4: Optimizing Adapter Performance
 
 ```
-1. Understand source data format
-   - JSON, text logs, CEF, custom format
+1. Assess current performance
+   - Review event ingestion rate
+   - Check for dropped events or delays
+   - Identify high-volume sources
    ↓
-2. Define parsing strategy
-   - JSON: Direct field extraction
-   - Text: Grok patterns or regex with named groups
-   - Key/Value: Regex for pair extraction
+2. Retrieve and analyze configuration
+   - Use `get_cloud_sensor` or `get_external_adapter`
+   - Review parsing complexity
+   - Check for unnecessary field processing
    ↓
-3. Configure extractors
-   - event_type_path: Define event type from data field
-   - event_time_path: Extract timestamp
-   - sensor_hostname_path: Extract hostname
-   - sensor_key_path: Define unique sensor identifier
+3. Apply optimizations
+   - Add drop_fields early in pipeline to remove unnecessary data
+   - Simplify Grok patterns (avoid greedy captures at start)
+   - Add source-side filtering if possible
+   - Configure custom indexing for frequently searched fields
    ↓
-4. Apply transformations (optional)
-   - Drop sensitive fields
-   - Rename fields
-   - Apply D&R-style transforms
-   ↓
-5. Configure custom indexing (optional)
-   - Define IOC extraction patterns
-   - Specify index types (file_hash, domain, ip, user)
+4. Update configuration
+   - Deploy optimized config via MCP tools
+   - Monitor impact on performance
 ```
 
 ## Adapter Type Reference
@@ -658,18 +665,23 @@ Deploy on-prem adapters with cloud-based configuration management:
 
 **Usage:** Returns all external adapter records that enable cloud-based configuration management for on-premise adapter deployments.
 
-### Deploying a New Cloud Adapter
+### Updating an Existing Cloud Adapter
 
 **MCP Tool:** `mcp__limacharlie__set_cloud_sensor`
 
 **Parameters:**
-- `name` (string): Unique identifier for the cloud sensor (e.g., "aws-cloudtrail-prod")
-- `config` (JSON object): Complete adapter configuration
+- `name` (string): Identifier of the existing cloud sensor (e.g., "aws-cloudtrail-prod")
+- `config` (JSON object): Updated adapter configuration
 - `ttl` (integer, optional): Time-to-live for the configuration
 
 **Returns:** Success confirmation
 
-**Example configuration:**
+**Workflow:**
+1. First retrieve the current configuration using `get_cloud_sensor`
+2. Modify the configuration as needed
+3. Use `set_cloud_sensor` with the same name to update
+
+**Example - Updating credentials:**
 ```json
 {
   "name": "aws-cloudtrail-prod",
@@ -677,8 +689,8 @@ Deploy on-prem adapters with cloud-based configuration management:
     "sensor_type": "s3",
     "s3": {
       "bucket_name": "my-cloudtrail-logs",
-      "access_key": "AKIAXXXXX",
-      "secret_key": "xxxxx",
+      "access_key": "AKIANEWKEY123",
+      "secret_key": "new-secret-key",
       "client_options": {
         "identity": {
           "oid": "your-oid",
@@ -686,7 +698,10 @@ Deploy on-prem adapters with cloud-based configuration management:
         },
         "platform": "aws",
         "sensor_seed_key": "cloudtrail-prod",
-        "hostname": "aws-cloudtrail"
+        "hostname": "aws-cloudtrail",
+        "mapping": {
+          "event_type_path": "eventName"
+        }
       }
     }
   }
@@ -704,11 +719,11 @@ Deploy on-prem adapters with cloud-based configuration management:
 
 **Usage:** Retrieves complete configuration of a cloud sensor to review settings, credentials, or troubleshoot connectivity issues.
 
-### Verifying Data Flow
+### Verifying Configuration Changes
 
-After deploying an adapter, verify ingestion using these MCP tools:
+After updating an adapter configuration, verify the changes took effect:
 
-**Check if adapter appears as sensor:**
+**Check adapter status:**
 
 **MCP Tool:** `mcp__limacharlie__list_sensors`
 
@@ -716,7 +731,9 @@ After deploying an adapter, verify ingestion using these MCP tools:
 
 **Returns:** List of all sensors including adapter-based sensors
 
-**Get details about the adapter sensor:**
+**Usage:** Verify the adapter sensor is still present and active after configuration changes.
+
+**Get adapter sensor details:**
 
 **MCP Tool:** `mcp__limacharlie__get_sensor_info`
 
@@ -725,15 +742,24 @@ After deploying an adapter, verify ingestion using these MCP tools:
 
 **Returns:** Detailed sensor information including platform, hostname, and status
 
-**To query and verify events are flowing:** Use the `querying-limacharlie` skill to run LCQL queries and search for events from the adapter. Query by hostname, platform, or sensor ID to confirm telemetry ingestion.
+**Usage:** Check sensor metadata to confirm configuration updates are reflected.
+
+**Verify events with updated configuration:** Use the `querying-limacharlie` skill to run LCQL queries and validate:
+- Events are flowing after configuration change
+- Parsing rules are working correctly
+- Field mappings are applied as expected
+- Custom indexing is functioning
+
+Query by hostname, platform, or sensor ID to confirm the updated configuration is working as intended.
 
 ## Best Practices
 
-### Adapter Naming and Organization
+### Configuration Management
 
 - Use descriptive `sensor_seed_key` values: `syslog-firewall`, `aws-prod-cloudtrail`, `o365-audit-logs`
 - Set meaningful `hostname` values for easy identification in UI
-- Apply tags during deployment for grouping and filtering
+- Apply tags when updating configurations for better grouping and filtering
+- Keep backup of working configurations before making changes
 
 ### Security Considerations
 
@@ -743,12 +769,13 @@ After deploying an adapter, verify ingestion using these MCP tools:
 - For webhooks, use strong unpredictable secret values
 - Enable TLS for Syslog adapters when possible
 
-### Parsing Strategy
+### Parsing Configuration
 
 - Start with built-in platform parsers when available
 - Use Grok patterns for common log formats (faster than regex)
-- Test parsing with sample data before full deployment
+- Test parsing changes with sample data before applying to production
 - Keep extractors minimal - extract only necessary fields
+- Make incremental changes to parsing rules rather than large rewrites
 
 ### Performance Optimization
 
@@ -831,7 +858,11 @@ This skill focuses on **external data ingestion**, not endpoint agents:
 
 ## Additional Resources
 
-For adapter-specific details, consult the documentation:
+For adapter-specific configuration details, consult the documentation:
 - Adapter Types: /limacharlie/doc/Sensors/Adapters/Adapter_Types/
-- Deployment Guides: /limacharlie/doc/Sensors/Adapters/Adapter_Tutorials/
 - Configuration Reference: /limacharlie/doc/Sensors/Adapters/adapter-usage.md
+- Deployment Guides (for initial setup): /limacharlie/doc/Sensors/Adapters/Adapter_Tutorials/
+
+For comprehensive documentation lookup, use the `lc-essentials:lookup-lc-doc` skill to search across all LimaCharlie documentation, including adapter configurations, examples, and best practices.
+
+For initial onboarding of new external data sources, use the `onboarding-external-datasources` skill which provides step-by-step guidance for first-time setup.

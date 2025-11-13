@@ -1,7 +1,7 @@
 {
   "name": "lc-external-datasources",
   "version": "1.2.0",
-  "description": "LimaCharlie External Data Sources Assistant for configuring Cloud Sensors, Adapters, and USP integrations. Includes headless documentation synthesis (agent), guided onboarding (skill), and comprehensive configuration (skill).",
+  "description": "LimaCharlie External Data Sources Assistant for configuring Cloud Sensors, Adapters, and USP integrations. Includes guided onboarding and comprehensive configuration skills.",
   "author": {
     "name": "LimaCharlie",
     "email": "support@limacharlie.io"

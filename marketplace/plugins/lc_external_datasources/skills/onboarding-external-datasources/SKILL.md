@@ -1,12 +1,11 @@
 ---
 name: onboarding-external-datasources
-description: Friendly guide for first-time users connecting external data sources to LimaCharlie. Helps onboard cloud platforms (AWS, Azure, GCP), SaaS apps (Office 365, Okta), syslog, and webhooks through step-by-step guidance, delegating to connection-documentation-summarizer agent for docs and configuring-external-datasources skill for technical operations.
+description: Friendly guide for first-time users connecting external data sources to LimaCharlie. Helps onboard cloud platforms (AWS, Azure, GCP), SaaS apps (Office 365, Okta), syslog, and webhooks through step-by-step guidance, using lc-essentials:lookup-lc-doc skill for documentation and configuring-external-datasources skill for technical operations.
 allowed-tools:
   - Read
   - Glob
   - WebFetch
   - WebSearch
-  - Agent
   - Skill
 ---
 
@@ -166,33 +165,33 @@ Once you're comfortable with your first datasource, you can use the skill direct
 
 ---
 
-## How I Use the Connection-Documentation-Summarizer Agent
+## How I Use the LimaCharlie Documentation
 
-When you need comprehensive documentation about a specific data source or adapter, I call the `lc-external-datasources:connection-documentation-summarizer:connection-documentation-summarizer` agent (using the Agent tool) to gather detailed information from multiple authoritative sources:
+When you need information about LimaCharlie features, adapters, or configuration details, I use the `lc-essentials:lookup-lc-doc` skill to search and retrieve relevant documentation:
 
 **What it does**:
-- Fetches documentation from local LimaCharlie docs
-- Reads implementation details from the USP adapters repository
-- Searches for and retrieves official provider documentation
-- Synthesizes everything into a comprehensive, structured summary
+- Searches comprehensively across the local LimaCharlie documentation
+- Finds all relevant documentation files (platform docs, SDKs, examples)
+- Reads multiple files to gather complete information
+- Provides thorough answers from authoritative sources
 
 **When I use it**:
 - You ask "What do I need to connect [platform]?" before we start setup
-- You want to understand all requirements upfront
-- You need specific details about credentials, permissions, or configuration options
-- You're comparing different connection methods (e.g., S3 vs SQS for AWS)
+- You want to understand adapter configuration options
+- You need specific details about LimaCharlie features, D&R rules, LCQL, or sensors
+- You're looking for examples or tutorials for external data sources
 
 **Example**:
-If you ask "What credentials do I need for GCP PubSub?", I'll call the `lc-external-datasources:connection-documentation-summarizer:connection-documentation-summarizer` agent, which will fetch and compile:
-- GCP service account creation steps
-- Required API permissions
-- Configuration parameters and examples
-- Troubleshooting common issues
-- Links to all relevant documentation
+If you ask "How do I configure a syslog adapter?", I'll use the `lc-essentials:lookup-lc-doc` skill to find and compile:
+- Syslog adapter configuration documentation
+- Required parameters and examples
+- Deployment methods and best practices
+- Parsing and mapping options
+- Troubleshooting guidance
 
-I then use this comprehensive information to guide you through the actual setup process.
+For provider-specific instructions (like AWS console navigation or Office 365 app registration), I'll supplement documentation lookups with web searches for the most current platform-specific guides.
 
-**You can also use it directly** if you just want documentation without setting anything up yet. It's great for planning and understanding requirements before you start configuring.
+**You can also use the skill directly** if you just want to look up LimaCharlie documentation without setting anything up yet.
 
 ---
 
