@@ -1,7 +1,7 @@
 {
   "name": "lc-essentials",
   "version": "1.0.0",
-  "description": "Essential LimaCharlie utilities including documentation search and retrieval agent",
+  "description": "Simple LimaCharlie documentation lookup tool that searches and retrieves relevant docs from the local docs/ folder",
   "author": {
     "name": "LimaCharlie",
     "email": "support@limacharlie.io"
