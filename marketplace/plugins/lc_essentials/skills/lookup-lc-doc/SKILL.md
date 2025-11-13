@@ -20,40 +20,92 @@ Invoke this skill when users ask about:
 
 ## What This Skill Does
 
-This is a simple documentation lookup tool that:
+This is a thorough documentation lookup tool that:
 
-1. Uses Grep to search for relevant keywords in the `docs/` folder
-2. Identifies the most relevant documentation files
-3. Reads and returns the content to help answer the user's question
+1. Searches comprehensively for relevant keywords across the `docs/` folder
+2. Identifies ALL relevant documentation files (not just one)
+3. Reads multiple files to gather complete information
+4. Returns comprehensive content to fully answer the user's question
 
-## How to Use
+## How to Use - BE THOROUGH
 
-When a user asks about LimaCharlie:
+When a user asks about LimaCharlie, gather information from MULTIPLE sources:
 
-1. **Search**: Use Grep to search the `docs/` folder for relevant keywords from the user's question
-   - Search in `docs/limacharlie/` for platform documentation
-   - Search in `docs/python-sdk/` for Python SDK docs
-   - Search in `docs/go-sdk/` for Go SDK docs
+### 1. Search Comprehensively
 
-2. **Read**: Use Read tool to retrieve the most relevant files found
+Use Grep with multiple searches to find ALL relevant files:
 
-3. **Respond**: Provide the user with the relevant documentation content to answer their question
+- **Try multiple keywords**: Search for variations and related terms
+  - Example: For D&R rules, search for "D&R", "detection", "response", "rules"
+- **Search multiple locations**:
+  - `docs/limacharlie/` for platform documentation
+  - `docs/python-sdk/` for Python SDK docs
+  - `docs/go-sdk/` for Go SDK docs
+- **Use different patterns**: Try both specific terms and broader searches
+- **Check file paths**: Look at Grep results to identify promising files from their paths
 
-## Search Tips
+### 2. Read Multiple Files
 
-- Use multiple keywords from the user's query for better results
-- Try variations (e.g., "D&R", "detection", "response")
-- Check multiple documentation folders if needed
-- Read the most promising files based on filenames and paths
+**IMPORTANT**: Don't stop at the first file. Read ALL relevant files found:
 
-## Example Workflow
+- Read the top 3-5 most relevant files (or more if needed)
+- Read files with different perspectives (overview, examples, API reference, tutorials)
+- If files reference related topics, read those too
+- Combine information from multiple sources for a complete answer
+
+### 3. Provide Comprehensive Response
+
+- Include information from all files read
+- Organize content logically (overview → details → examples)
+- Mention which files the information came from
+- If the answer spans multiple topics, include all relevant documentation
+
+## Search Strategy
+
+For thorough results, follow this pattern:
+
+**Step 1**: Initial broad search
+```
+Grep for main keyword in docs/limacharlie/
+Grep for main keyword in docs/python-sdk/ (if SDK-related)
+```
+
+**Step 2**: Review results and search for related terms
+```
+Look at file paths to identify relevant sections
+Search for synonyms or related concepts
+```
+
+**Step 3**: Read multiple files in parallel
+```
+Read top 3-5 relevant files using multiple Read calls
+Don't just read one file - gather comprehensive information
+```
+
+## Example Workflow (Thorough)
 
 ```
 User: "How do I write LCQL queries?"
 
-1. Grep for "LCQL" in docs/limacharlie/
-2. Read relevant files found (e.g., docs on LCQL syntax, examples)
-3. Share the documentation content with the user
+1. Search:
+   - Grep for "LCQL" in docs/limacharlie/
+   - Grep for "query" in docs/limacharlie/
+   - Review results: find syntax docs, examples, reference guides
+
+2. Read multiple files:
+   - Read LCQL syntax documentation
+   - Read LCQL examples file
+   - Read getting started with LCQL
+   - Read any query-related tutorials
+
+3. Respond with comprehensive answer combining all sources
 ```
 
-Keep it simple - just search, read, and share the relevant docs.
+## Key Principle: COMPLETENESS
+
+- **Don't stop at one file**: Read multiple relevant files
+- **Don't skip examples**: If there are example files, read them
+- **Don't ignore SDK docs**: If question involves SDKs, check SDK folders too
+- **Don't assume**: If unsure, search for related terms and read more files
+
+Be thorough - it's better to provide complete information from multiple files than incomplete information from just one.
