@@ -1,6 +1,6 @@
 # LimaCharlie Essentials Plugin
 
-Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 116 comprehensive skills covering core operations, historical data, forensics, detection rules, configuration management, and administration.
+Essential LimaCharlie skills and agents for API access, sensor management, detection engineering, and security operations. Includes 116 comprehensive skills covering core operations, historical data, forensics, detection rules, configuration management, and administration. Also includes a specialized agent for efficiently exploring large API result sets.
 
 ## Important: Organization ID (OID) Requirements
 
@@ -27,7 +27,13 @@ All other 113 skills require a valid, specific organization ID.
 
 ## What It Does
 
-This plugin provides 116 comprehensive skills organized into the following categories:
+This plugin provides 116 comprehensive skills plus 1 specialized agent:
+
+### Specialized Agent
+
+- **lc-result-explorer**: Automatically handles large API results (>100KB) returned via `resource_link`. When you ask for specific information from large datasets (e.g., "find sensors with hostname X", "count enabled rules", "get OID for lc_demo"), this agent efficiently processes the data in 2-3 tool calls using a save-explore-extract workflow, returning only the requested information—keeping your conversation context clean and focused.
+
+### Skills Organized by Category
 
 ### Core Operations & Documentation
 - **Documentation Search**: Intelligent search through LimaCharlie docs (platform, Python SDK, Go SDK)
@@ -120,6 +126,17 @@ Skills in this plugin connect to the LimaCharlie API via MCP (Model Context Prot
 Most skills require:
 - **OID**: Organization ID (UUID) - get this via `list-user-orgs`
 - **Additional parameters**: Sensor IDs, rule names, query parameters, etc.
+
+### Automatic Large Result Handling
+
+When API calls return large datasets (>100KB), the **lc-result-explorer agent** automatically activates if you're looking for specific information rather than the complete dataset. The agent:
+- Completes most queries in 2-3 efficient tool calls (save → explore → extract)
+- Always explores data structure first (you typically don't know the JSON format)
+- Uses temp files for reliable multi-step queries
+- Extracts only the information you requested
+- Keeps your conversation context clean and focused
+
+See [CALLING_API.md](./CALLING_API.md) for details on how large result handling works.
 
 ## Documentation Coverage
 

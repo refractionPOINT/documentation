@@ -182,3 +182,13 @@ Perform any LimaCharlie operation by dynamically loading function references.
 ## Additional Resources
 
 For detailed information on using the MCP tool, see [CALLING_API.md](../CALLING_API.md).
+
+### Handling Large Results
+
+When API calls return large result sets (>100KB), the `lc_api_call` tool returns a `resource_link` instead of inline data. If you need **specific information** from these large results, the **lc-result-explorer agent** will automatically:
+- Download and decompress the data from the signed URL
+- Use `jq` and other tools to efficiently filter and explore the JSON
+- Extract only the specific data you requested
+- Keep the conversation context clean
+
+See the "Handling Large Results" section in [CALLING_API.md](../CALLING_API.md) for details on when and how this works.

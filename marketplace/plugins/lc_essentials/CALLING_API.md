@@ -183,6 +183,103 @@ Use lc_api_call with:
 PATCH updates only specified fields (less common in LC API).
 ```
 
+## Handling Large Results
+
+When API responses exceed approximately 100KB, the `lc_api_call` tool returns a special response format instead of the full data:
+
+```json
+{
+  "is_temp_file": false,
+  "reason": "results too large, see resource_link for content",
+  "resource_link": "https://storage.googleapis.com/lc-tmp-mcp-export/lc_api_call_20251114_142154_73e57517.json.gz?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=...",
+  "resource_size": 34329,
+  "success": true
+}
+```
+
+### Understanding the Response
+
+- **is_temp_file**: `false` indicates data is at a remote URL
+- **reason**: Explains why the full data wasn't returned inline
+- **resource_link**: Signed Google Cloud Storage URL containing the data
+- **resource_size**: Size of the compressed file in bytes
+- **success**: `true` indicates the API call succeeded
+
+### Resource Link Details
+
+The `resource_link` URL:
+- Contains gzip-compressed JSON data (`.json.gz` extension)
+- Is time-limited (typically expires in 24 hours)
+- Includes GCP authentication tokens in the URL parameters
+- Can be downloaded directly with tools like `curl` or `WebFetch`
+
+### Automatic Handling with lc-result-explorer Agent
+
+When you need **specific information** from large result sets (not the entire dataset), the **lc-result-explorer agent** will automatically:
+
+1. Analyze your query to determine if exploration is needed
+2. Download, decompress, and filter data in 1-2 efficient commands using `curl | gunzip | jq`
+3. Extract only the specific information you requested
+4. Return targeted results without overwhelming the conversation context
+
+**The agent is invoked when:**
+- `lc_api_call` returns a `resource_link` response
+- You're asking for specific information (e.g., "find sensors with hostname X", "count enabled rules", "get OID for lc_demo")
+- You don't need the complete result set
+
+**The agent is NOT used when:**
+- You explicitly want the full/complete dataset
+- Results are small enough to fit in context (no `resource_link`)
+- You only need summary metadata (count, structure overview)
+
+**Agent efficiency:**
+- Completes most queries in 2-3 tool calls
+- Save → Explore → Extract → Cleanup workflow
+- Uses temp files for reliable multi-step queries
+
+### Manual Handling
+
+If you need to manually download and process the data:
+
+```bash
+# curl auto-decompresses .gz files, so no gunzip needed!
+
+# Save and explore
+curl -sL "https://storage.googleapis.com/lc-tmp-mcp-export/..." > /tmp/result.json
+jq 'keys' /tmp/result.json  # See structure
+jq '.[] | select(.hostname == "web-01")' /tmp/result.json  # Filter data
+
+# Or use the helper script (handles everything)
+scripts/lc-fetch-result.sh "https://storage.googleapis.com/..." '.[] | select(.hostname == "prod")'
+```
+
+**Note:** Modern curl (7.21.0+) automatically decompresses gzip files, so you don't need `| gunzip` in your pipelines.
+
+### Common Scenarios
+
+**Scenario 1: Large Sensor Lists**
+- API: `GET /sensors/{oid}` for organizations with 1000+ sensors
+- Returns: `resource_link` with full sensor inventory
+- Use agent to: Find specific sensors, filter by platform, check online status
+
+**Scenario 2: Bulk Historical Events**
+- API: `POST /insight/{oid}/lcql` with broad time range
+- Returns: `resource_link` with thousands of events
+- Use agent to: Extract specific event types, count occurrences, find patterns
+
+**Scenario 3: Extensive Rule Lists**
+- API: `GET /rules/{oid}` for organizations with many D&R rules
+- Returns: `resource_link` with complete rule set
+- Use agent to: Find rules by name, check which are enabled, analyze detection logic
+
+### Best Practices
+
+1. **Request specific data**: Be clear about what information you need from large results
+2. **Let the agent work**: The lc-result-explorer handles downloads and filtering automatically
+3. **Be patient**: Large files may take time to download and process
+4. **Re-run if expired**: If the signed URL expires (403/404), re-run the original API call for a fresh link
+5. **Avoid full dumps**: Don't request the complete dataset unless truly necessary
+
 ## Common API Paths
 
 ### Detection & Response
