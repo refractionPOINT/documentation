@@ -93,7 +93,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/fp/{oid}`
+- Path: `/v1/fp/{oid}`
 - Body fields:
   - `name`: FP rule name (string)
   - `is_replace`: "true" (string) to update if exists, "false" to fail if exists

@@ -49,24 +49,24 @@ Ensure valid IOC type and value format.
 mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
-  method="POST",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/search",
-  body={
-    "type": "file_hash",
+  method="GET",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/objects/file_hash",
+  query_params={
     "value": "abc123def456...",
-    "case_sensitive": false
+    "case_sensitive": "false",
+    "info": "summary"
   }
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
-- Method: `POST`
-- Path: `/insight/{oid}/search` (summary) or `/insight/{oid}/search/locations` (locations)
-- Body:
-  - `type`: IOC type
+- Method: `GET`
+- Path: `/v1/insight/{oid}/objects/{ioc_type}`
+- Query parameters:
   - `value`: IOC value (% for wildcard)
-  - `case_sensitive`: Boolean
+  - `case_sensitive`: Boolean (as string "true"/"false")
+  - `info`: "summary" for counts or "locations" for sensor details
 
 **IOC Types:**
 - file_hash: SHA256 file hashes

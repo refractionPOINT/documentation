@@ -23,7 +23,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves all cloud sensor configurations from the organization's Hive storage. Cloud sensors are virtual sensors that collect telemetry from cloud platforms and SaaS services without requiring agent installation on endpoints. Examples include AWS CloudTrail, Azure Activity Logs, GCP Audit Logs, Office 365 logs, Okta events, and other cloud-native data sources. The skill calls the LimaCharlie Hive API to list all entries in the "cloud_sensor" hive with the "global" partition key, returning each sensor's configuration, enablement status, tags, and metadata.
+This skill retrieves all cloud sensor configurations from the organization's Hive storage. Cloud sensors are virtual sensors that collect telemetry from cloud platforms and SaaS services without requiring agent installation on endpoints. Examples include AWS CloudTrail, Azure Activity Logs, GCP Audit Logs, Office 365 logs, Okta events, and other cloud-native data sources. The skill calls the LimaCharlie Hive API to list all entries in the "cloud_sensor" hive with the organization ID as the partition key, returning each sensor's configuration, enablement status, tags, and metadata.
 
 ## Required Information
 
@@ -50,7 +50,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/cloud_sensor/global"
+  path="/v1/hive/cloud_sensor/{oid}"
 )
 ```
 
@@ -63,7 +63,7 @@ mcp__limacharlie__lc_api_call(
 
 The path uses the Hive structure:
 - `cloud_sensor`: The hive name for cloud sensor configurations
-- `global`: The partition key (cloud sensors use the global partition)
+- `{oid}`: The partition key (organization ID)
 
 ### Step 3: Handle the Response
 
@@ -142,7 +142,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/cloud_sensor/global"
+  path="/v1/hive/cloud_sensor/{oid}"
 )
 ```
 
@@ -252,7 +252,7 @@ Use the set-cloud-sensor skill to create cloud sensor configurations.
 
 ## Additional Notes
 
-- Cloud sensors are stored in the Hive under the `cloud_sensor` hive name with `global` partition
+- Cloud sensors are stored in the Hive under the `cloud_sensor` hive name with `{oid}` partition
 - Each cloud sensor has a unique name within the organization
 - The `enabled` field controls whether the sensor is actively collecting data
 - Tags can be used to organize and filter cloud sensors

@@ -61,7 +61,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/{sid}/tags` where `{sid}` is the sensor UUID
+- Path: `/v1/{sid}/tags` where `{sid}` is the sensor UUID
 - No query parameters needed
 - Body fields:
   - `tags`: String - the tag name to remove (case-sensitive)

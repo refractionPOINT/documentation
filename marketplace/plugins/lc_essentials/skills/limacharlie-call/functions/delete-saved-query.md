@@ -53,18 +53,15 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/query/global",
-  body={
-    "key": "old-query"
-  }
+  path="/v1/hive/query/global/old-query"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/hive/query/global`
-- Body: `{"key": "query-name"}`
+- Path: `/v1/hive/query/global/{query_name}`
+- Body: None (query name is in the path)
 
 ### Step 3: Handle Response
 

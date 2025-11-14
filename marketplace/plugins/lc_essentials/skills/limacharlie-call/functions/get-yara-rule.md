@@ -159,7 +159,6 @@ Steps:
   - Wildcards and jumps: `{ 4D 5A [0-10] 90 }`
 - To modify this rule, use set-yara-rule with updated content
 - To delete this rule, use delete-yara-rule
-- To validate YARA syntax before uploading, use validate-yara-rule
 - YARA rules are powerful for malware detection and threat hunting
 
 ## Reference

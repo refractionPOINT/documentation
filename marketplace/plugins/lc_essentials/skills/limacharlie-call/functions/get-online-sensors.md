@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/online/c7e8f940-1234-5678-abcd-1234567890ab",
   body={"sids": ["sensor-id-1", "sensor-id-2", "sensor-id-3"]}
 )
 ```
@@ -66,7 +66,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: First GET (list sensors), then POST (check active status)
-- Path: `/sensors/{oid}` then `/sensors/{oid}/active`
+- Path: `/v1/sensors/{oid}` then `/v1/online/{oid}`
 - Body for active check: `{"sids": [array of sensor IDs]}`
 
 **Note:** The SDK method `org.ActiveSensors(sids)` checks the online status of multiple sensors in a single API call.
@@ -143,7 +143,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/online/c7e8f940-1234-5678-abcd-1234567890ab",
   body={"sids": ["sensor-1", "sensor-2", "sensor-3", ...]}
 )
 ```

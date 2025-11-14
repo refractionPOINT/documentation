@@ -57,7 +57,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/orgs/{oid}/schema/{name}` where `{name}` is URL-encoded
+- Path: `/v1/orgs/{oid}/schema/{name}` where `{name}` is URL-encoded
 - No query parameters needed
 - No request body
 

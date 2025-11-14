@@ -74,7 +74,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/insight/{oid}/detections`
+- Path: `/v1/insight/{oid}/detections`
 - Query parameters:
   - `start`: Unix epoch timestamp in seconds (required)
   - `end`: Unix epoch timestamp in seconds (required)

@@ -55,20 +55,20 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/cloud_sensor/global/[sensor-name]/data"
+  path="/v1/hive/cloud_sensor/{oid}/[sensor-name]/data"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/cloud_sensor/global/{sensor-name}/data`
+- Path: `/v1/hive/cloud_sensor/{oid}/{sensor-name}/data`
 - Query parameters: None
 - Body: None
 
 The path uses the Hive structure:
 - `cloud_sensor`: The hive name for cloud sensor configurations
-- `global`: The partition key (cloud sensors use the global partition)
+- `{oid}`: The partition key (organization ID)
 - `{sensor-name}`: The name of the specific sensor (URL-encoded if needed)
 - `data`: Fetch both data and metadata (use `mtd` for metadata only)
 
@@ -160,7 +160,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/cloud_sensor/global/prod-aws-cloudtrail/data"
+  path="/v1/hive/cloud_sensor/{oid}/prod-aws-cloudtrail/data"
 )
 ```
 
@@ -285,7 +285,7 @@ Use the list-cloud-sensors skill to see all available cloud sensors.
 
 ## Additional Notes
 
-- Cloud sensors are stored in the Hive under `cloud_sensor` hive name with `global` partition
+- Cloud sensors are stored in the Hive under `cloud_sensor` hive name with `{oid}` partition
 - Sensor names are case-sensitive - use exact names from list-cloud-sensors
 - The `data` field structure varies by sensor type:
   - AWS sensors contain region, bucket, role ARN, etc.

@@ -77,7 +77,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST` (direct download) or `GET` (metadata/URL)
-- Path: `/insight/{oid}/artifacts/originals/{artifact_id}` or `/insight/{oid}/artifacts/{artifact_id}`
+- Path: `/v1/insight/{oid}/artifacts/originals/{artifact_id}` or `/v1/insight/{oid}/artifacts/{artifact_id}`
 - Query parameters: None
 - Body fields: None
 

@@ -68,7 +68,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/insight/{oid}/search/batch`
+- Path: `/v1/insight/{oid}/search/batch`
 - Body: Groups IOCs by type for efficient batch processing
 
 ### Step 3: Handle Response

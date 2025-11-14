@@ -62,7 +62,7 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="POST",
-  path="/v1/orgs",
+  path="/v1/orgs/new",
   body={
     "name": "[org-name]",
     "location": "[location]",
@@ -75,7 +75,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/orgs`
+- Path: `/v1/orgs/new`
 - Query parameters: None
 - Body fields:
   - `name` (string, required): Organization name
@@ -133,7 +133,7 @@ Steps:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="POST",
-  path="/v1/orgs",
+  path="/v1/orgs/new",
   body={
     "name": "Acme Production",
     "location": "usa"
@@ -184,7 +184,7 @@ Steps:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="POST",
-  path="/v1/orgs",
+  path="/v1/orgs/new",
   body={
     "name": "Customer XYZ Security",
     "location": "usa",
@@ -227,7 +227,7 @@ Steps:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="POST",
-  path="/v1/orgs",
+  path="/v1/orgs/new",
   body={
     "name": "Acme Europe GDPR",
     "location": "europe"

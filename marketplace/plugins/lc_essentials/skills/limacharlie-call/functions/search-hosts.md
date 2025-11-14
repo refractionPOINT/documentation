@@ -56,7 +56,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/sensors/{oid}`
+- Path: `/v1/sensors/{oid}`
 - No query parameters
 - Pattern matching is performed client-side using `filepath.Match`
 

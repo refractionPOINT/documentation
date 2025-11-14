@@ -85,7 +85,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/external_adapter/global/{adapter-name}/data`
+- Path: `/v1/hive/external_adapter/global/{adapter-name}/data`
 - Body fields:
   - `gzdata`: Compressed and encoded adapter configuration
   - `usr_mtd`: User metadata (enabled, tags, comment, expiry)

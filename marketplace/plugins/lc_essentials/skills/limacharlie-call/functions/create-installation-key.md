@@ -67,7 +67,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/installationkeys/{oid}`
+- Path: `/v1/installationkeys/{oid}`
 - Query parameters: None
 - Body fields:
   - `tags`: Array of tag strings (required) - can also be comma-separated string

@@ -59,7 +59,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/rules/{oid}`
+- Path: `/v1/rules/{oid}`
 - Body fields:
   - `name`: Rule name to delete (string)
   - `namespace`: Must be "managed"

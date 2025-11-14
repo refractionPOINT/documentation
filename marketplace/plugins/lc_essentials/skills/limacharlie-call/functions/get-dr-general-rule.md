@@ -61,7 +61,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/rules/{oid}` where `{oid}` is the organization ID
+- Path: `/v1/rules/{oid}` where `{oid}` is the organization ID
 - Query parameters:
   - `namespace`: "general" (searches in general namespace)
   - `name`: The exact rule name to retrieve

@@ -57,20 +57,20 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/external_adapter/global/[adapter-name]/data"
+  path="/v1/hive/external_adapter/{oid}/[adapter-name]/data"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/external_adapter/global/{adapter-name}/data`
+- Path: `/v1/hive/external_adapter/{oid}/{adapter-name}/data`
 - Query parameters: None
 - Body: None
 
 The path uses the Hive structure:
 - `external_adapter`: The hive name for external adapter configurations
-- `global`: The partition key (external adapters use the global partition)
+- `{oid}`: The partition key (organization ID)
 - `{adapter-name}`: The name of the specific adapter (URL-encoded if needed)
 - `data`: Fetch both data and metadata (use `mtd` for metadata only)
 
@@ -163,7 +163,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/external_adapter/global/firewall-syslog/data"
+  path="/v1/hive/external_adapter/{oid}/firewall-syslog/data"
 )
 ```
 
@@ -305,7 +305,7 @@ Use the list-external-adapters skill to see all available adapters.
 
 ## Additional Notes
 
-- External adapters are stored in the Hive under `external_adapter` hive name with `global` partition
+- External adapters are stored in the Hive under `external_adapter` hive name with `{oid}` partition
 - Adapter names are case-sensitive - use exact names from list-external-adapters
 - The `data` field structure varies by adapter type:
   - **Syslog**: listen_port, protocol, parsing_rules

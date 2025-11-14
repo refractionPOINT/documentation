@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/mitre/{oid}`
+- Path: `/v1/mitre/{oid}`
 - Query parameters: None
 - Body fields: None (GET request)
 

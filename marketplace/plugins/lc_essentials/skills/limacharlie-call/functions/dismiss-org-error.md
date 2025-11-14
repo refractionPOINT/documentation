@@ -62,7 +62,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/errors/{oid}/{component}` (component should be URL-encoded)
+- Path: `/v1/errors/{oid}/{component}` (component should be URL-encoded)
 - Query parameters: None
 - Body fields: None
 

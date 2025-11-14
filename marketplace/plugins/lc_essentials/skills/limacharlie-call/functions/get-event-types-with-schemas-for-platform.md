@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/orgs/{oid}/schema`
+- Path: `/v1/orgs/{oid}/schema`
 - Query parameters: `platform` (e.g., "windows", "linux", "macos")
 - No request body
 

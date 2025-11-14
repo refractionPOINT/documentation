@@ -73,9 +73,9 @@ mcp__limacharlie__lc_api_call(
 ```
 
 **API Details:**
-- Endpoint: `api` (but uses replay URL from org.GetURLs())
+- Endpoint: `api`
 - Method: `POST`
-- Path: Replay service URL (e.g., `https://replay.limacharlie.io/`)
+- Path: `/v1/insight/{oid}/lcql` (or use replay service URL directly)
 - Body fields:
   - `oid`: Organization ID
   - `query`: LCQL query string

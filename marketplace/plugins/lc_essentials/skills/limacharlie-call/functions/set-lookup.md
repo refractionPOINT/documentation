@@ -59,24 +59,10 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/v1/hive/lookup/[oid]",
+  path="/v1/hive/lookup/[oid]/lookup-name/data",
   body={
-    "hive": {
-      "name": "lookup",
-      "partition": "[oid]"
-    },
-    "name": "lookup-name",
-    "record": {
-      "data": {
-        "key1": "value1",
-        "key2": {"nested": "data"}
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["threat-intel"],
-        "comment": "Description here"
-      }
-    }
+    "key1": "value1",
+    "key2": {"nested": "data"}
   }
 )
 ```
@@ -84,16 +70,11 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/lookup/{oid}` (replace `{oid}` with actual organization ID)
+- Path: `/v1/hive/lookup/{oid}/{lookup_name}/data` (replace `{oid}` with actual organization ID and `{lookup_name}` with the table name)
 - Query parameters: None
-- Body structure (Hive record format):
-  - `hive`: Identifies the hive type and partition
-    - `name`: "lookup" (hive type)
-    - `partition`: Organization ID
-  - `name`: Lookup table name
-  - `record`: The lookup data and metadata
-    - `data`: Dictionary of key-value pairs
-    - `usr_mtd`: User metadata (enabled, tags, comment)
+- Body structure:
+  - Dictionary of key-value pairs (the lookup data directly)
+  - Metadata (tags, comment, enabled) should be passed via query parameters or separate metadata endpoints
 
 ### Step 3: Handle the Response
 
@@ -148,29 +129,15 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips/data",
   body={
-    "hive": {
-      "name": "lookup",
-      "partition": "c7e8f940-1234-5678-abcd-1234567890ab"
+    "192.0.2.1": {
+      "severity": "critical",
+      "category": "c2"
     },
-    "name": "malicious-ips",
-    "record": {
-      "data": {
-        "192.0.2.1": {
-          "severity": "critical",
-          "category": "c2"
-        },
-        "198.51.100.5": {
-          "severity": "high",
-          "category": "phishing"
-        }
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["threat-intel", "ips"],
-        "comment": "Known malicious IP addresses"
-      }
+    "198.51.100.5": {
+      "severity": "high",
+      "category": "phishing"
     }
   }
 )
@@ -228,25 +195,11 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/allowed-domains/data",
   body={
-    "hive": {
-      "name": "lookup",
-      "partition": "c7e8f940-1234-5678-abcd-1234567890ab"
-    },
-    "name": "allowed-domains",
-    "record": {
-      "data": {
-        "example.com": true,
-        "trusted.org": true,
-        "corporate.net": true
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["allowlist"],
-        "comment": "Trusted domains for suppressing false positives"
-      }
-    }
+    "example.com": true,
+    "trusted.org": true,
+    "corporate.net": true
   }
 )
 ```

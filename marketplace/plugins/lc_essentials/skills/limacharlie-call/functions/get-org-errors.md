@@ -57,7 +57,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/errors/{oid}`
+- Path: `/v1/errors/{oid}`
 - Query parameters: None
 - Body fields: None
 

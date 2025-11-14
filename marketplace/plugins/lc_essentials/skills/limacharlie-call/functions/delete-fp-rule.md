@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/fp/{oid}`
+- Path: `/v1/fp/{oid}`
 - Body fields:
   - `name`: FP rule name to delete (string)
 

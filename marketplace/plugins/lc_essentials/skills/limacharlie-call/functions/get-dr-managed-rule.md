@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/rules/{oid}`
+- Path: `/v1/rules/{oid}`
 - Query parameters: `namespace=managed` (filters to managed namespace)
 - Body fields: None (GET request)
 

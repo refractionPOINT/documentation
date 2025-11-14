@@ -80,12 +80,10 @@ Successfully created **119 new SKILL.md files** for the lc_essentials plugin, br
 - get-dr-managed-rule
 - set-dr-managed-rule
 - delete-dr-managed-rule
-- validate-dr-rule-components
 - list-yara-rules
 - get-yara-rule
 - set-yara-rule
 - delete-yara-rule
-- validate-yara-rule
 - get-fp-rules
 - get-fp-rule
 - set-fp-rule
@@ -159,7 +157,6 @@ Successfully created **119 new SKILL.md files** for the lc_essentials plugin, br
 - get-org-errors
 - dismiss-org-error
 - get-org-invoice-url
-- get-sku-definitions
 - create-org
 - list-user-orgs
 
@@ -213,18 +210,13 @@ Some investigation skills use dedicated MCP tools that send sensor commands:
 - dir-list, dir-find-hash
 - These use mcp__limacharlie__[tool-name]
 
-### Skills Using Validation Tools
-Two skills perform client-side validation:
-- validate-yara-rule (only uses Read tool)
-- validate-dr-rule-components (uses lc_api_call for validation endpoint)
-
 ## Quality Assurance
 
-All 120 skills have been verified:
+All 116 skills have been verified:
 - ✅ All have proper YAML frontmatter
 - ✅ All have exactly one name field
 - ✅ All have exactly one description field
-- ✅ 119 skills have allowed-tools specified (lookup-lc-doc has its own format)
+- ✅ 115 skills have allowed-tools specified (lookup-lc-doc has its own format)
 - ✅ Spot-checked 10 random skills - all follow template structure
 - ✅ Descriptions are keyword-rich for discoverability
 - ✅ API details match Go SDK implementations

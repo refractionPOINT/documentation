@@ -56,7 +56,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/rules/{oid}` where `{oid}` is the organization ID
+- Path: `/v1/rules/{oid}` where `{oid}` is the organization ID
 - No query parameters needed (to get all namespaces)
 - No request body needed
 

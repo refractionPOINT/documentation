@@ -65,7 +65,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/hive/external_adapter/global/{adapter-name}`
+- Path: `/v1/hive/external_adapter/global/{adapter-name}`
 - Query parameters: None
 - Body: None
 

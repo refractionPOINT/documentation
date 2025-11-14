@@ -21,7 +21,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves a single rule record from a specified Hive in the LimaCharlie Hive system by its name. It's a generic operation that works with any Hive name and rule name. The skill calls the Hive API with the specified Hive name, "global" partition, and rule name as the key. The response includes the complete rule definition, user metadata (enabled, tags, comments), and system metadata (audit trail).
+This skill retrieves a single rule record from a specified Hive in the LimaCharlie Hive system by its name. It's a generic operation that works with any Hive name and rule name. The skill calls the Hive API with the specified Hive name, organization ID as the partition, and rule name as the key. The response includes the complete rule definition, user metadata (enabled, tags, comments), and system metadata (audit trail).
 
 ## Required Information
 
@@ -51,15 +51,16 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/[hive-name]/global/[rule-name]/data"
+  path="/v1/hive/[hive-name]/{oid}/[rule-name]/data"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/{hive_name}/global/{rule_name}/data`
+- Path: `/hive/{hive_name}/{oid}/{rule_name}/data`
   - Replace `{hive_name}` with the Hive name
+  - Replace `{oid}` with the organization ID
   - Replace `{rule_name}` with the URL-encoded rule name
   - The `/data` suffix retrieves both data and metadata
 - Query parameters: None

@@ -93,7 +93,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/outputs/{oid}` (replace `{oid}` with actual organization ID)
+- Path: `/v1/outputs/{oid}` (replace `{oid}` with actual organization ID)
 - Query parameters: None
 - Body fields:
   - `name` (required): Output identifier

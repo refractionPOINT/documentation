@@ -68,7 +68,7 @@ mcp__limacharlie__lc_api_call(
 ```
 
 **API Details:**
-- First GET from `/hive/query/global/{query_name}/data`
+- First GET from `/v1/hive/query/global/{query_name}/data`
 - Then POST to replay service with query string
 - Combines hive storage retrieval with LCQL execution
 

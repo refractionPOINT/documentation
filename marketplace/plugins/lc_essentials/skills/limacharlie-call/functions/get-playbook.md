@@ -21,7 +21,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves a single playbook record from the LimaCharlie Hive system by its name. It calls the Hive API using the "playbook" hive name with the "global" partition and the specific playbook name as the key. The response includes the complete workflow definition (steps, triggers, conditions, actions), user metadata (enabled, tags, comments), and system metadata (audit trail).
+This skill retrieves a single playbook record from the LimaCharlie Hive system by its name. It calls the Hive API using the "playbook" hive name with the organization ID as the partition and the specific playbook name as the key. The response includes the complete workflow definition (steps, triggers, conditions, actions), user metadata (enabled, tags, comments), and system metadata (audit trail).
 
 ## Required Information
 
@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/playbook/global/[playbook-name]/data"
+  path="/v1/hive/playbook/{oid}/[playbook-name]/data"
 )
 ```
 
@@ -140,7 +140,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/playbook/global/critical-isolation/data"
+  path="/v1/hive/playbook/{oid}/critical-isolation/data"
 )
 ```
 

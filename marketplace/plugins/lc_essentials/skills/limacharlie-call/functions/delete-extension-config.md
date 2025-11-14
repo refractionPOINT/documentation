@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/hive/extension_config/global/{extension_name}`
+- Path: `/v1/hive/extension_config/global/{extension_name}`
   - Replace `{extension_name}` with the URL-encoded extension name
   - No `/data` or `/mtd` suffix - delete operates on the entire record
 - Query parameters: None

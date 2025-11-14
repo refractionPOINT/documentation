@@ -20,7 +20,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves a single extension configuration record from the LimaCharlie Hive system by its name. It calls the Hive API using the "extension_config" hive name with the "global" partition and the specific extension name as the key. The response includes the complete configuration data, user metadata (enabled, tags, comments), and system metadata (audit trail).
+This skill retrieves a single extension configuration record from the LimaCharlie Hive system by its name. It calls the Hive API using the "extension_config" hive name with the organization ID as the partition and the specific extension name as the key. The response includes the complete configuration data, user metadata (enabled, tags, comments), and system metadata (audit trail).
 
 ## Required Information
 
@@ -47,14 +47,14 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/extension_config/global/[extension-name]/data"
+  path="/v1/hive/extension_config/{oid}/[extension-name]/data"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/extension_config/global/{extension_name}/data`
+- Path: `/v1/hive/extension_config/{oid}/{extension_name}/data`
   - Replace `{extension_name}` with the URL-encoded extension name
   - The `/data` suffix retrieves both data and metadata
 - Query parameters: None
@@ -132,7 +132,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/extension_config/global/artifact-collection/data"
+  path="/v1/hive/extension_config/{oid}/artifact-collection/data"
 )
 ```
 

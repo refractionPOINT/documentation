@@ -59,7 +59,7 @@ For each event_name in event_names:
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/orgs/{oid}/schema/{name}` for each event type
+- Path: `/v1/orgs/{oid}/schema/{name}` for each event type
 - Calls are made in parallel for performance
 - Individual failures don't stop other requests
 

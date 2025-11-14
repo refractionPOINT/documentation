@@ -75,7 +75,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/secret/{oid}` (replace `{oid}` with actual organization ID)
+- Path: `/v1/hive/secret/{oid}` (replace `{oid}` with actual organization ID)
 - Query parameters: None
 - Body structure (Hive record format):
   - `hive`: Identifies the hive type and partition

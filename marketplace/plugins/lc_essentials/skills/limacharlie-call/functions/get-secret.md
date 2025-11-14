@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/secret/{oid}/{secret_name}` (replace placeholders with actual values)
+- Path: `/v1/hive/secret/{oid}/{secret_name}` (replace placeholders with actual values)
 - Query parameters: None
 - Body: None (GET request)
 

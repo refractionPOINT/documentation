@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/orgs/{oid}/subscription/extension/{extension_name}`
+- Path: `/v1/orgs/{oid}/subscription/extension/{extension_name}`
   - Replace `{oid}` with the organization ID
   - Replace `{extension_name}` with the URL-encoded extension name
 - Query parameters: None

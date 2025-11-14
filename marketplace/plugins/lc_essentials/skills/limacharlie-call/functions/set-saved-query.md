@@ -55,13 +55,10 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/hive/query/global",
+  path="/v1/hive/query/global/suspicious-dns/data",
   body={
-    "key": "suspicious-dns",
-    "data": {
-      "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
-      "description": "Find DNS requests to Russian domains"
-    },
+    "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
+    "description": "Find DNS requests to Russian domains",
     "enabled": true,
     "tags": ["threat-hunting", "dns"],
     "comment": "Monitor for suspicious domains"
@@ -72,10 +69,10 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/query/global`
+- Path: `/v1/hive/query/global/{query_name}/data`
 - Body:
-  - `key`: Query name (unique identifier)
-  - `data`: Query object with LCQL and description
+  - `query`: The LCQL query string
+  - `description`: Optional description of the query
   - `enabled`: Boolean (default true)
   - `tags`: Array of tags for organization
   - `comment`: Optional comment

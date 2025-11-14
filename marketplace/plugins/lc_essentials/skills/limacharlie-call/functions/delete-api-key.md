@@ -65,7 +65,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/orgs/{oid}/keys`
+- Path: `/v1/orgs/{oid}/keys`
 - Query parameters: None
 - Body fields:
   - `key_hash` (string, required): Hash of the API key to delete

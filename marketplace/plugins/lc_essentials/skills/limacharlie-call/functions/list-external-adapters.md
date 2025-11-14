@@ -23,7 +23,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves all external adapter configurations from the organization's Hive storage. External adapters are integrations that receive and process data from external sources such as syslog servers, webhooks, custom APIs, third-party security tools (firewalls, EDR, SIEM), and other log sources. Each adapter typically includes parsing rules to normalize the external data into LimaCharlie's event format. The skill calls the LimaCharlie Hive API to list all entries in the "external_adapter" hive with the "global" partition key, returning each adapter's configuration, enablement status, tags, and metadata.
+This skill retrieves all external adapter configurations from the organization's Hive storage. External adapters are integrations that receive and process data from external sources such as syslog servers, webhooks, custom APIs, third-party security tools (firewalls, EDR, SIEM), and other log sources. Each adapter typically includes parsing rules to normalize the external data into LimaCharlie's event format. The skill calls the LimaCharlie Hive API to list all entries in the "external_adapter" hive with the organization ID as the partition key, returning each adapter's configuration, enablement status, tags, and metadata.
 
 ## Required Information
 
@@ -50,7 +50,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/external_adapter/global"
+  path="/v1/hive/external_adapter/{oid}"
 )
 ```
 
@@ -63,7 +63,7 @@ mcp__limacharlie__lc_api_call(
 
 The path uses the Hive structure:
 - `external_adapter`: The hive name for external adapter configurations
-- `global`: The partition key (external adapters use the global partition)
+- `{oid}`: The partition key (organization ID)
 
 ### Step 3: Handle the Response
 
@@ -143,7 +143,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/external_adapter/global"
+  path="/v1/hive/external_adapter/{oid}"
 )
 ```
 
@@ -265,7 +265,7 @@ Use the set-external-adapter skill to create external adapter configurations.
 
 ## Additional Notes
 
-- External adapters are stored in the Hive under the `external_adapter` hive name with `global` partition
+- External adapters are stored in the Hive under the `external_adapter` hive name with `{oid}` partition
 - Each adapter has a unique name within the organization
 - The `enabled` field controls whether the adapter is actively receiving data
 - Tags can be used to organize and filter external adapters

@@ -47,24 +47,16 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
-  method="POST",
-  path="/v1/service/yara",
-  body={
-    "oid": "[organization-id]",
-    "action": "remove_source",
-    "name": "[rule-name]"
-  }
+  method="DELETE",
+  path="/v1/hive/yara_source/global/[rule-name]"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
-- Method: `POST`
-- Path: `/service/yara` (YARA service endpoint)
-- Body fields:
-  - `oid`: Organization ID
-  - `action`: Must be "remove_source"
-  - `name`: Rule source name to delete
+- Method: `DELETE`
+- Path: `/v1/hive/yara_source/global/{rule_name}`
+- Body: None (rule name is in the path)
 
 ### Step 3: Handle the Response
 
@@ -111,13 +103,8 @@ Steps:
 mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
-  method="POST",
-  path="/v1/service/yara",
-  body={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "action": "remove_source",
-    "name": "old_malware_signatures"
-  }
+  method="DELETE",
+  path="/v1/hive/yara_source/global/old_malware_signatures"
 )
 ```
 

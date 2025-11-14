@@ -20,7 +20,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves all extension configuration records from the LimaCharlie Hive system. It calls the Hive API using the "extension_config" hive name with the "global" partition to list all configurations. Each configuration includes the extension's data, enabled status, tags, comments, and system metadata (creation time, last modification, author, etc.).
+This skill retrieves all extension configuration records from the LimaCharlie Hive system. It calls the Hive API using the "extension_config" hive name with the organization ID as the partition to list all configurations. Each configuration includes the extension's data, enabled status, tags, comments, and system metadata (creation time, last modification, author, etc.).
 
 ## Required Information
 
@@ -47,7 +47,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/extension_config/global"
+  path="/v1/hive/extension_config/{oid}"
 )
 ```
 
@@ -129,7 +129,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/extension_config/global"
+  path="/v1/hive/extension_config/{oid}"
 )
 ```
 

@@ -61,7 +61,7 @@ Then search the returned data for the specified key.
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/lookup/{oid}/{lookup_name}` (replace placeholders)
+- Path: `/v1/hive/lookup/{oid}/{lookup_name}` (replace placeholders)
 - Query parameters: None
 - Body: None (GET request)
 - Post-processing: Extract key from `body.data[key]`

@@ -64,7 +64,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/hive/cloud_sensor/global/{sensor-name}`
+- Path: `/v1/hive/cloud_sensor/global/{sensor-name}`
 - Query parameters: None
 - Body: None
 

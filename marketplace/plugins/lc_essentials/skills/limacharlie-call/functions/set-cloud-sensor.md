@@ -89,7 +89,7 @@ The actual implementation uses the Hive Add method which:
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/cloud_sensor/global/{sensor-name}/data`
+- Path: `/v1/hive/cloud_sensor/global/{sensor-name}/data`
 - Body fields:
   - `gzdata`: Compressed and encoded sensor configuration
   - `usr_mtd`: User metadata (enabled, tags, comment, expiry)

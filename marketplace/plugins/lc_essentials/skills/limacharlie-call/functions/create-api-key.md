@@ -73,7 +73,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/orgs/{oid}/keys`
+- Path: `/v1/orgs/{oid}/keys`
 - Query parameters: None
 - Body fields:
   - `key_name` (string, required): Description/name for the key

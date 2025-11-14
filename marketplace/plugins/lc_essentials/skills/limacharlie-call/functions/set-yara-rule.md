@@ -45,11 +45,7 @@ Ensure you have:
 3. Valid YARA rule content (proper syntax)
 4. Optional: tag and platform filters
 
-### Step 2: Validate YARA Syntax
-
-Before uploading, validate the YARA rule syntax using validate-yara-rule skill to ensure it's correct.
-
-### Step 3: Call the API
+### Step 2: Call the API
 
 Use the `lc_api_call` MCP tool from the `limacharlie` server:
 
@@ -72,7 +68,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/service/yara` (YARA service endpoint)
+- Path: `/v1/service/yara` (YARA service endpoint)
 - Body fields:
   - `oid`: Organization ID
   - `action`: Must be "add_source"
@@ -80,7 +76,7 @@ mcp__limacharlie__lc_api_call(
   - `source`: Empty string (for literal rules) or URL (for remote sources)
   - `content`: YARA rule source code (complete YARA syntax)
 
-### Step 4: Handle the Response
+### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
@@ -176,7 +172,6 @@ Steps:
 - Rule names must be unique within the organization
 - Uploading a rule with an existing name replaces the old rule completely
 - YARA rule syntax must be valid or the API will reject it
-- Use validate-yara-rule before uploading to catch syntax errors
 - YARA rules can contain multiple rule definitions in a single source
 - Common YARA rule structure:
   ```yara

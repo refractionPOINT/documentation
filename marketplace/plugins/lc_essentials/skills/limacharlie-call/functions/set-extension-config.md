@@ -70,7 +70,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/extension_config/global/{extension_name}/data`
+- Path: `/v1/hive/extension_config/global/{extension_name}/data`
   - Replace `{extension_name}` with the URL-encoded extension name
   - The `/data` suffix indicates we're setting the configuration data
 - Query parameters: None

@@ -78,7 +78,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/playbook/global/{playbook_name}/data`
+- Path: `/v1/hive/playbook/global/{playbook_name}/data`
 - Body fields:
   - `gzdata`: Playbook workflow encoded as base64(gzip(json))
   - `usr_mtd`: User metadata object

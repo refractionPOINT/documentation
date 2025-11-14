@@ -100,7 +100,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/rules/{oid}`
+- Path: `/v1/rules/{oid}`
 - Body fields:
   - `name`: Rule name (string)
   - `namespace`: Must be "managed"
@@ -194,7 +194,6 @@ Steps:
 - Detection component must be valid D&R syntax or the API will reject it
 - The detection and response fields must be JSON-encoded strings in the API body
 - Empty respond array is valid (detection-only rule)
-- Use the validate-dr-rule-components skill to test rule syntax before creating
 - Managed rules are separate from general namespace rules
 - To view the created rule, use get-dr-managed-rule
 - To delete the rule, use delete-dr-managed-rule

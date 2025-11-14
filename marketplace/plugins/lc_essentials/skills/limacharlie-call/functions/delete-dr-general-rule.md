@@ -70,7 +70,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/rules/{oid}` where `{oid}` is the organization ID
+- Path: `/v1/rules/{oid}` where `{oid}` is the organization ID
 - No query parameters needed
 - Body fields:
   - `name`: String - exact rule name to delete (required)

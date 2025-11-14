@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/online/c7e8f940-1234-5678-abcd-1234567890ab",
   body={"sids": ["xyz-sensor-id"]}
 )
 ```
@@ -56,10 +56,10 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/sensors/{oid}/active`
+- Path: `/v1/online/{oid}`
 - Body: `{"sids": ["sensor-id"]}` (array with single sensor ID)
 
-**Note:** The SDK method `sensor.IsOnline()` internally calls the `/active` endpoint with the sensor's ID.
+**Note:** The SDK method `sensor.IsOnline()` internally calls the `/online/{oid}` endpoint with the sensor's ID.
 
 ### Step 3: Handle the Response
 
@@ -125,7 +125,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/online/c7e8f940-1234-5678-abcd-1234567890ab",
   body={"sids": ["xyz-123"]}
 )
 ```

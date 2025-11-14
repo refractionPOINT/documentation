@@ -72,7 +72,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/insight/{oid}/events`
+- Path: `/v1/insight/{oid}/events`
 - Query parameters:
   - `sid`: Sensor ID (required)
   - `start`: Unix epoch timestamp in seconds (required)

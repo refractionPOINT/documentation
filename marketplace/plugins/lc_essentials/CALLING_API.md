@@ -29,9 +29,6 @@ Some API operations don't require a specific organization context and the **`oid
 - `/ontology` (GET) - Get platform names from global ontology
   - Used by: `get-platform-names` skill
   - Omit the `oid` parameter
-- `/sku` (GET, billing endpoint) - Get pricing/SKU definitions
-  - Used by: `get-sku-definitions` skill
-  - Omit the `oid` parameter
 
 **All other operations require a valid, specific organization ID.**
 

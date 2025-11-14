@@ -21,7 +21,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves all playbook records from the LimaCharlie Hive system. It calls the Hive API using the "playbook" hive name with the "global" partition to list all playbooks. Each playbook includes its workflow definition (steps, conditions, actions), enabled status, tags, comments, and system metadata (creation time, last modification, author, etc.).
+This skill retrieves all playbook records from the LimaCharlie Hive system. It calls the Hive API using the "playbook" hive name with the organization ID as the partition to list all playbooks. Each playbook includes its workflow definition (steps, conditions, actions), enabled status, tags, comments, and system metadata (creation time, last modification, author, etc.).
 
 ## Required Information
 
@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/playbook/global"
+  path="/v1/hive/playbook/{oid}"
 )
 ```
 
@@ -136,7 +136,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/playbook/global"
+  path="/v1/hive/playbook/{oid}"
 )
 ```
 

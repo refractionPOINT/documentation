@@ -1,6 +1,6 @@
 ---
 name: limacharlie-call
-description: Perform LimaCharlie API operations using MCP tool. Access 119 functions for sensors, rules, outputs, cloud integrations, artifacts, and more. Load function references on-demand from ./functions/ directory.
+description: Perform LimaCharlie API operations using MCP tool. Access 116 functions for sensors, rules, outputs, cloud integrations, artifacts, and more. Load function references on-demand from ./functions/ directory.
 allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_api_call, Read
 ---
 
@@ -21,9 +21,9 @@ Perform any LimaCharlie operation by dynamically loading function references.
 3. Follow the instructions in that file to make the API call
 4. If an OID is needed, get it first with `list-user-orgs`
 
-## Available Functions (119)
+## Available Functions (116)
 
-### Organization Management (9)
+### Organization Management (8)
 - `list-user-orgs` - List organizations available to user → `./functions/list-user-orgs.md`
 - `get-org-info` - Get organization details → `./functions/get-org-info.md`
 - `create-org` - Create new organization → `./functions/create-org.md`
@@ -32,7 +32,6 @@ Perform any LimaCharlie operation by dynamically loading function references.
 - `get-org-invoice-url` - Get invoice URL → `./functions/get-org-invoice-url.md`
 - `get-billing-details` - Get billing details → `./functions/get-billing-details.md`
 - `get-usage-stats` - Get usage statistics → `./functions/get-usage-stats.md`
-- `get-sku-definitions` - Get SKU definitions → `./functions/get-sku-definitions.md`
 
 ### API Keys (3)
 - `list-api-keys` - List API keys → `./functions/list-api-keys.md`
@@ -92,7 +91,7 @@ Perform any LimaCharlie operation by dynamically loading function references.
 - `reliable-tasking` - Execute reliable task → `./functions/reliable-tasking.md`
 - `list-reliable-tasks` - List reliable tasks → `./functions/list-reliable-tasks.md`
 
-### Detection & Response Rules (11)
+### Detection & Response Rules (10)
 - `get-detection-rules` - Get all detection rules → `./functions/get-detection-rules.md`
 - `list-dr-general-rules` - List D&R general rules → `./functions/list-dr-general-rules.md`
 - `get-dr-general-rule` - Get D&R general rule → `./functions/get-dr-general-rule.md`
@@ -102,7 +101,6 @@ Perform any LimaCharlie operation by dynamically loading function references.
 - `get-dr-managed-rule` - Get D&R managed rule → `./functions/get-dr-managed-rule.md`
 - `set-dr-managed-rule` - Create/update D&R managed rule → `./functions/set-dr-managed-rule.md`
 - `delete-dr-managed-rule` - Delete D&R managed rule → `./functions/delete-dr-managed-rule.md`
-- `validate-dr-rule-components` - Validate D&R rule components → `./functions/validate-dr-rule-components.md`
 - `get-mitre-report` - Get MITRE ATT&CK report → `./functions/get-mitre-report.md`
 
 ### False Positive Rules (4)
@@ -149,12 +147,11 @@ Perform any LimaCharlie operation by dynamically loading function references.
 - `subscribe-to-extension` - Subscribe to extension → `./functions/subscribe-to-extension.md`
 - `unsubscribe-from-extension` - Unsubscribe from extension → `./functions/unsubscribe-from-extension.md`
 
-### YARA Rules (5)
+### YARA Rules (4)
 - `list-yara-rules` - List YARA rules → `./functions/list-yara-rules.md`
 - `get-yara-rule` - Get YARA rule → `./functions/get-yara-rule.md`
 - `set-yara-rule` - Create/update YARA rule → `./functions/set-yara-rule.md`
 - `delete-yara-rule` - Delete YARA rule → `./functions/delete-yara-rule.md`
-- `validate-yara-rule` - Validate YARA rule → `./functions/validate-yara-rule.md`
 
 ### Artifacts (2)
 - `list-artifacts` - List artifacts → `./functions/list-artifacts.md`

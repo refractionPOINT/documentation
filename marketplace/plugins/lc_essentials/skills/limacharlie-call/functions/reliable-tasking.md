@@ -68,7 +68,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/reliable_tasking` (organization-level endpoint, no OID in path)
+- Path: `/v1/reliable_tasking` (organization-level endpoint, no OID in path)
 - No query parameters needed
 - Body fields:
   - `command`: String - the LC sensor command to execute (required)

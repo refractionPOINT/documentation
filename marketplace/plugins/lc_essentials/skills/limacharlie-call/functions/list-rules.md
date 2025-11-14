@@ -27,7 +27,7 @@ This skill retrieves all rule records from a specified Hive in the LimaCharlie H
 - `fp`: False Positive rules
 - Other custom Hive types
 
-The skill calls the Hive API with the specified Hive name and "global" partition to list all rules. Each rule includes its definition, enabled status, tags, comments, and system metadata.
+The skill calls the Hive API with the specified Hive name and organization ID as the partition to list all rules. Each rule includes its definition, enabled status, tags, comments, and system metadata.
 
 ## Required Information
 
@@ -56,16 +56,16 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/[hive-name]/global"
+  path="/v1/hive/[hive-name]/{oid}"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/{hive_name}/global`
+- Path: `/hive/{hive_name}/{oid}`
   - Replace `{hive_name}` with the Hive name (e.g., `dr-general`, `fp`)
-  - The `global` partition is standard for most rule types
+  - Replace `{oid}` with the organization ID
 - Query parameters: None
 - Body: None
 

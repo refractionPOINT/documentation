@@ -83,7 +83,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/hive/{hive_name}/global/{rule_name}/data`
+- Path: `/v1/hive/{hive_name}/global/{rule_name}/data`
   - Replace `{hive_name}` with the Hive name
   - Replace `{rule_name}` with the URL-encoded rule name
   - The `/data` suffix indicates we're setting the rule data
