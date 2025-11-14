@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/installationkeys/[oid]",
+  path="/v1/installationkeys/[oid]",
   body={
     "tags": ["tag1", "tag2", "tag3"],
     "desc": "Description of the installation key",
@@ -131,7 +131,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "tags": ["production", "windows", "server"],
     "desc": "Production Windows Servers",
@@ -180,7 +180,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "tags": ["development", "linux", "workstation"],
     "desc": "Development Linux Workstations"

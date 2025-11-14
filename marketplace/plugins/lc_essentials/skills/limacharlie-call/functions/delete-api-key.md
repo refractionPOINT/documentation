@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/orgs/[oid]/keys",
+  path="/v1/orgs/[oid]/keys",
   body={
     "key_hash": "[key-hash]"
   }
@@ -121,7 +121,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
   body={
     "key_hash": "a1b2c3d4e5f6"
   }
@@ -169,7 +169,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
   body={
     "key_hash": "f1e2d3c4b5a6"
   }
@@ -208,7 +208,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
   body={
     "key_hash": "9a8b7c6d5e4f"
   }

@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/reliable_tasking",
+  path="/v1/reliable_tasking",
   body={
     "command": "[sensor-command]",
     "sensor_selector": "[optional-selector]",
@@ -132,7 +132,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/reliable_tasking",
+  path="/v1/reliable_tasking",
   body={
     "command": "mem_map --pid 4",
     "sensor_selector": "platform=windows and tag=production",
@@ -173,7 +173,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/reliable_tasking",
+  path="/v1/reliable_tasking",
   body={
     "command": "deny_tree -p malware.exe",
     "sensor_selector": "tag=compromised",

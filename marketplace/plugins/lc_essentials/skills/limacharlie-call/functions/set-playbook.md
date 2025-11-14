@@ -63,7 +63,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/hive/playbook/global/[playbook-name]/data",
+  path="/v1/hive/playbook/global/[playbook-name]/data",
   body={
     "gzdata": "[base64-gzipped-json-data]",
     "usr_mtd": {

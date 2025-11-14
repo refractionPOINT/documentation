@@ -62,7 +62,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/hive/cloud_sensor/global/[sensor-name]/data",
+  path="/v1/hive/cloud_sensor/global/[sensor-name]/data",
   body={
     "gzdata": "[base64-gzip-encoded-json]",
     "usr_mtd": {
@@ -153,7 +153,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/hive/cloud_sensor/global/prod-aws-cloudtrail/data",
+  path="/v1/hive/cloud_sensor/global/prod-aws-cloudtrail/data",
   body={
     "gzdata": "[base64-encoded-gzipped-json-of-config]",
     "usr_mtd": {

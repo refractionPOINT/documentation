@@ -60,7 +60,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/insight/[oid]/artifacts/originals/[artifact-id]"
+  path="/v1/insight/[oid]/artifacts/originals/[artifact-id]"
 )
 ```
 
@@ -70,7 +70,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/insight/[oid]/artifacts/[artifact-id]"
+  path="/v1/insight/[oid]/artifacts/[artifact-id]"
 )
 ```
 
@@ -147,7 +147,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts/art-mem-123"
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts/art-mem-123"
 )
 ```
 
@@ -199,7 +199,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts/originals/artifact-file-456"
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts/originals/artifact-file-456"
 )
 ```
 
@@ -253,7 +253,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts/art-pcap-789"
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts/art-pcap-789"
 )
 ```
 

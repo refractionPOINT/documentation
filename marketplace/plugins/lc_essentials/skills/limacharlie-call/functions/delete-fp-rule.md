@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/fp/[organization-id]",
+  path="/v1/fp/[organization-id]",
   body={
     "name": "[rule-name]"
   }
@@ -108,7 +108,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/fp/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/fp/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "name": "filter_dev_activity"
   }

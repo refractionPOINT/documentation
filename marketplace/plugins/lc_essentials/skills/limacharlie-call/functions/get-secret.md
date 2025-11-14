@@ -51,7 +51,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/hive/secret/[oid]/[secret-name]"
+  path="/v1/hive/secret/[oid]/[secret-name]"
 )
 ```
 
@@ -125,7 +125,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/webhook-api-key"
+  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/webhook-api-key"
 )
 ```
 
@@ -175,7 +175,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/prod-database-password"
+  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/prod-database-password"
 )
 ```
 

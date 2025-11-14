@@ -46,7 +46,7 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="GET",
-  path="/ontology"
+  path="/v1/ontology"
   # Note: oid parameter omitted - not required for global operations
 )
 ```
@@ -111,7 +111,7 @@ Steps:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="GET",
-  path="/ontology"
+  path="/v1/ontology"
 )
 ```
 

@@ -51,7 +51,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/hive/secret/[oid]/[secret-name]"
+  path="/v1/hive/secret/[oid]/[secret-name]"
 )
 ```
 
@@ -112,7 +112,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/old-webhook-key"
+  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/old-webhook-key"
 )
 ```
 
@@ -147,7 +147,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/api-key-v1"
+  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/api-key-v1"
 )
 ```
 
@@ -175,7 +175,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/test-secret"
+  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/test-secret"
 )
 ```
 

@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/events",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/events",
   query_params={
     "sid": "xyz-sensor-id",
     "start": 1705761234,
@@ -176,7 +176,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/events",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/events",
   query_params={
     "sid": "xyz-123",
     "start": 1705676400,

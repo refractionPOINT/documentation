@@ -56,7 +56,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/hive/[hive-name]/global"
+  path="/v1/hive/[hive-name]/global"
 )
 ```
 
@@ -149,7 +149,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/dr-general/global"
+  path="/v1/hive/dr-general/global"
 )
 ```
 

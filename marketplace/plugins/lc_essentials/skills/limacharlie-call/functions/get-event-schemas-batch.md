@@ -52,7 +52,7 @@ For each event_name in event_names:
     oid="[organization-id]",
     endpoint="api",
     method="GET",
-    path="/orgs/[organization-id]/schema/[event-name]"
+    path="/v1/orgs/[organization-id]/schema/[event-name]"
   )
 ```
 
@@ -123,7 +123,7 @@ For 'DNS_REQUEST':
     oid="c7e8f940-1234-5678-abcd-1234567890ab",
     endpoint="api",
     method="GET",
-    path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/DNS_REQUEST"
+    path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/DNS_REQUEST"
   )
 
 For 'HTTP_REQUEST':
@@ -131,7 +131,7 @@ For 'HTTP_REQUEST':
     oid="c7e8f940-1234-5678-abcd-1234567890ab",
     endpoint="api",
     method="GET",
-    path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/HTTP_REQUEST"
+    path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/HTTP_REQUEST"
   )
 
 For 'NETWORK_CONNECTIONS':
@@ -139,7 +139,7 @@ For 'NETWORK_CONNECTIONS':
     oid="c7e8f940-1234-5678-abcd-1234567890ab",
     endpoint="api",
     method="GET",
-    path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/NETWORK_CONNECTIONS"
+    path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/NETWORK_CONNECTIONS"
   )
 ```
 

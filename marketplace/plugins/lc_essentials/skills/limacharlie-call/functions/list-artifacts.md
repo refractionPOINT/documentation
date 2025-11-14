@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/insight/[oid]/artifacts",
+  path="/v1/insight/[oid]/artifacts",
   query_params={
     "sid": "[sensor-id]",        # Optional
     "type": "[artifact-type]",   # Optional
@@ -148,7 +148,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts",
   query_params={
     "start": 1672444800,
     "end": 1672531200
@@ -215,7 +215,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts",
   query_params={
     "sid": "sensor-abc123",
     "type": "memory_dump"

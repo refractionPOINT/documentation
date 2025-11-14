@@ -62,7 +62,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/orgs/[oid]/keys",
+  path="/v1/orgs/[oid]/keys",
   body={
     "key_name": "[description]",
     "perms": "[permission1,permission2,...]"  # Optional, comma-separated
@@ -131,7 +131,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
   body={
     "key_name": "SIEM Integration Key"
   }
@@ -179,7 +179,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
   body={
     "key_name": "Contractor Read-Only Access",
     "perms": "sensor.get,sensor.list,insight.evt.get"

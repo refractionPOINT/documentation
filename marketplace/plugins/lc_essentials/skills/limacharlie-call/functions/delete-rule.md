@@ -54,7 +54,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/hive/[hive-name]/global/[rule-name]"
+  path="/v1/hive/[hive-name]/global/[rule-name]"
 )
 ```
 
@@ -115,7 +115,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/dr-general/global/suspicious-dns"
+  path="/v1/hive/dr-general/global/suspicious-dns"
 )
 ```
 

@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/sensors/[organization-id]/[sensor-id]"
+  path="/v1/sensors/[organization-id]/[sensor-id]"
 )
 ```
 
@@ -112,7 +112,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab/abc12345-6789-0123-4567-890abcdef012"
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/abc12345-6789-0123-4567-890abcdef012"
 )
 ```
 
@@ -145,7 +145,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab/def45678-90ab-cdef-0123-456789abcdef"
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/def45678-90ab-cdef-0123-456789abcdef"
 )
 ```
 

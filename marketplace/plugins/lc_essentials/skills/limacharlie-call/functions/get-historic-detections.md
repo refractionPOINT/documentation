@@ -59,7 +59,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/detections",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/detections",
   query_params={
     "start": 1705761234,
     "end": 1705847634,
@@ -170,7 +170,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/detections",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/detections",
   query_params={
     "start": 1705761234,
     "end": 1705847634

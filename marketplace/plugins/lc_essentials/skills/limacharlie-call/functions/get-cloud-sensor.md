@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/hive/cloud_sensor/global/[sensor-name]/data"
+  path="/v1/hive/cloud_sensor/global/[sensor-name]/data"
 )
 ```
 
@@ -160,7 +160,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/cloud_sensor/global/prod-aws-cloudtrail/data"
+  path="/v1/hive/cloud_sensor/global/prod-aws-cloudtrail/data"
 )
 ```
 

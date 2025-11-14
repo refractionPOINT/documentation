@@ -67,7 +67,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/hive/external_adapter/global/[adapter-name]/data",
+  path="/v1/hive/external_adapter/global/[adapter-name]/data",
   body={
     "gzdata": "[base64-gzip-encoded-json]",
     "usr_mtd": {

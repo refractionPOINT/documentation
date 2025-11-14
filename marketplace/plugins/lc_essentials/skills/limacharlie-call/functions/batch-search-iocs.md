@@ -53,7 +53,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/insight/c7e8f940-1234-5678-abcd-1234567890ab/search/batch",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/search/batch",
   body={
     "objects": {
       "file_hash": ["abc123...", "def456..."],

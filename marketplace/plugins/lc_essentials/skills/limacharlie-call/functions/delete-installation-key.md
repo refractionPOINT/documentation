@@ -54,7 +54,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/installationkeys/[oid]",
+  path="/v1/installationkeys/[oid]",
   body={
     "iid": "installation-key-id-to-delete"
   }
@@ -117,7 +117,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "iid": "prod-old-key"
   }
@@ -153,7 +153,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "iid": "dev-test-123"
   }

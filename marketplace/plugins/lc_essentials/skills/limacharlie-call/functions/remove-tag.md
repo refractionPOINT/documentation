@@ -51,7 +51,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/[sensor-id]/tags",
+  path="/v1/[sensor-id]/tags",
   body={
     "tags": "[tag-name]"
   }
@@ -113,7 +113,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/abc12345-6789-0123-4567-890abcdef012/tags",
+  path="/v1/abc12345-6789-0123-4567-890abcdef012/tags",
   body={
     "tags": "compromised"
   }
@@ -145,7 +145,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/def45678-90ab-cdef-0123-456789abcdef/tags",
+  path="/v1/def45678-90ab-cdef-0123-456789abcdef/tags",
   body={
     "tags": "production"
   }

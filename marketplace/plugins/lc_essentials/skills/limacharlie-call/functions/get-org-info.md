@@ -50,7 +50,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/orgs/[oid]"
+  path="/v1/orgs/[oid]"
 )
 ```
 
@@ -119,7 +119,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab"
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 

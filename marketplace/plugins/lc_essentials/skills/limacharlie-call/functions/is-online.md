@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
   body={"sids": ["xyz-sensor-id"]}
 )
 ```
@@ -125,7 +125,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
   body={"sids": ["xyz-123"]}
 )
 ```

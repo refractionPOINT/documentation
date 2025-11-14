@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/service/yara",
+  path="/v1/service/yara",
   body={
     "oid": "[organization-id]",
     "action": "remove_source",
@@ -112,7 +112,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/service/yara",
+  path="/v1/service/yara",
   body={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "action": "remove_source",

@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/hive/external_adapter/global/[adapter-name]"
+  path="/v1/hive/external_adapter/global/[adapter-name]"
 )
 ```
 
@@ -124,7 +124,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/external_adapter/global/old-firewall-syslog"
+  path="/v1/hive/external_adapter/global/old-firewall-syslog"
 )
 ```
 
@@ -159,7 +159,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/external_adapter/global/test-webhook"
+  path="/v1/hive/external_adapter/global/test-webhook"
 )
 ```
 

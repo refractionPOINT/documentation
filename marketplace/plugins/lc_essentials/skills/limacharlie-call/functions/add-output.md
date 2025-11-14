@@ -77,7 +77,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/outputs/[oid]",
+  path="/v1/outputs/[oid]",
   body={
     "name": "output-name",
     "module": "syslog",
@@ -172,7 +172,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "name": "prod-syslog",
     "module": "syslog",
@@ -232,7 +232,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "name": "prod-detections-archive",
     "module": "s3",
@@ -300,7 +300,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "name": "critical-webhook",
     "module": "webhook",

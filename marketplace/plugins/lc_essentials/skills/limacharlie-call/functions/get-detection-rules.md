@@ -49,7 +49,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/rules/[organization-id]"
+  path="/v1/rules/[organization-id]"
 )
 ```
 
@@ -142,7 +142,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/rules/c7e8f940-1234-5678-abcd-1234567890ab"
+  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 
@@ -201,7 +201,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/rules/c7e8f940-1234-5678-abcd-1234567890ab"
+  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 

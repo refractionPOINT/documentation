@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/hive/query/global",
+  path="/v1/hive/query/global",
   body={
     "key": "suspicious-dns",
     "data": {

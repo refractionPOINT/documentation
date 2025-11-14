@@ -81,7 +81,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/fp/[organization-id]",
+  path="/v1/fp/[organization-id]",
   body={
     "name": "[rule-name]",
     "is_replace": "true",
@@ -144,7 +144,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/fp/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/fp/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "name": "filter_monitoring_tool",
     "is_replace": "true",

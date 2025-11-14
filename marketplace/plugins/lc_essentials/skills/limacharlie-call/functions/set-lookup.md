@@ -59,7 +59,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/hive/lookup/[oid]",
+  path="/v1/hive/lookup/[oid]",
   body={
     "hive": {
       "name": "lookup",
@@ -148,7 +148,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "hive": {
       "name": "lookup",
@@ -228,7 +228,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab",
   body={
     "hive": {
       "name": "lookup",

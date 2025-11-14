@@ -50,7 +50,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/orgs/[organization-id]/schema",
+  path="/v1/orgs/[organization-id]/schema",
   query_params={"platform": "[platform-name]"}
 )
 ```
@@ -118,7 +118,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema",
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema",
   query_params={"platform": "windows"}
 )
 ```

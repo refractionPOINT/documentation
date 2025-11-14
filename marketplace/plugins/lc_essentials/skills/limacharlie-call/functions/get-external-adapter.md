@@ -57,7 +57,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/hive/external_adapter/global/[adapter-name]/data"
+  path="/v1/hive/external_adapter/global/[adapter-name]/data"
 )
 ```
 
@@ -163,7 +163,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/external_adapter/global/firewall-syslog/data"
+  path="/v1/hive/external_adapter/global/firewall-syslog/data"
 )
 ```
 

@@ -51,7 +51,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/orgs/[organization-id]/subscription/extension/[extension-name]"
+  path="/v1/orgs/[organization-id]/subscription/extension/[extension-name]"
 )
 ```
 
@@ -119,7 +119,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/subscription/extension/threat-intel"
+  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/subscription/extension/threat-intel"
 )
 ```
 

@@ -47,7 +47,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/fp/[organization-id]"
+  path="/v1/fp/[organization-id]"
 )
 ```
 
@@ -116,7 +116,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/fp/c7e8f940-1234-5678-abcd-1234567890ab"
+  path="/v1/fp/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 4. Find "filter_safe_processes" in response body

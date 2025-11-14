@@ -50,7 +50,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/hive/lookup/[oid]/[lookup-name]"
+  path="/v1/hive/lookup/[oid]/[lookup-name]"
 )
 ```
 
@@ -129,7 +129,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips"
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips"
 )
 ```
 
@@ -222,7 +222,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/allowed-domains"
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/allowed-domains"
 )
 ```
 
@@ -274,7 +274,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/test-lookup"
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/test-lookup"
 )
 ```
 

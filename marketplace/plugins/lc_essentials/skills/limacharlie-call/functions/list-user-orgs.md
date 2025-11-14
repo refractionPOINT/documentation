@@ -54,7 +54,7 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="GET",
-  path="/user/orgs",
+  path="/v1/user/orgs",
   query_params={
     "filter": "[optional-filter]",
     "sort_by": "[optional-field]",
@@ -137,7 +137,7 @@ Steps:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="GET",
-  path="/user/orgs"
+  path="/v1/user/orgs"
 )
 ```
 
@@ -201,7 +201,7 @@ Steps:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="GET",
-  path="/user/orgs",
+  path="/v1/user/orgs",
   query_params={
     "filter": "Customer XYZ"
   }

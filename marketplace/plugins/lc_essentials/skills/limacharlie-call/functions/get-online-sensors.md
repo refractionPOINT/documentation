@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 
@@ -58,7 +58,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
   body={"sids": ["sensor-id-1", "sensor-id-2", "sensor-id-3"]}
 )
 ```
@@ -133,7 +133,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 3. Extract all sensor IDs from response
@@ -143,7 +143,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
+  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/active",
   body={"sids": ["sensor-1", "sensor-2", "sensor-3", ...]}
 )
 ```

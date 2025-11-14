@@ -50,7 +50,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/rules/[organization-id]",
+  path="/v1/rules/[organization-id]",
   query_params={
     "namespace": "general",
     "name": "[rule-name]"
@@ -150,7 +150,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/rules/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
   query_params={
     "namespace": "general",
     "name": "detect-suspicious-powershell"
@@ -223,7 +223,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/rules/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
   query_params={
     "namespace": "general",
     "name": "malware-detection"

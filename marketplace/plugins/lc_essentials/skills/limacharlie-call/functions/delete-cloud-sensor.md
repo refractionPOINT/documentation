@@ -57,7 +57,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/hive/cloud_sensor/global/[sensor-name]"
+  path="/v1/hive/cloud_sensor/global/[sensor-name]"
 )
 ```
 
@@ -123,7 +123,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/cloud_sensor/global/old-aws-cloudtrail"
+  path="/v1/hive/cloud_sensor/global/old-aws-cloudtrail"
 )
 ```
 
@@ -157,7 +157,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/hive/cloud_sensor/global/test-o365"
+  path="/v1/hive/cloud_sensor/global/test-o365"
 )
 ```
 
