@@ -31,7 +31,7 @@ This plugin provides 116 comprehensive skills plus 1 specialized agent:
 
 ### Specialized Agent
 
-- **lc-result-explorer**: Automatically handles large API results (>100KB) returned via `resource_link`. When you ask for specific information from large datasets (e.g., "find sensors with hostname X", "count enabled rules", "get OID for lc_demo"), this agent efficiently processes the data in 2-3 tool calls using a save-explore-extract workflow, returning only the requested information—keeping your conversation context clean and focused.
+- **lc-result-explorer**: Automatically handles large API results (>100KB) returned via `resource_link`. When you ask for specific information from large datasets (e.g., "find sensors with hostname X", "count enabled rules", "get OID for lc_demo"), this agent efficiently processes the data in 2-3 tool calls using inline shell commands with `&&` chaining: download+explore → extract+cleanup. Returns only the requested information—keeping your conversation context clean and focused.
 
 ### Skills Organized by Category
 

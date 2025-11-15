@@ -185,10 +185,56 @@ For detailed information on using the MCP tool, see [CALLING_API.md](../CALLING_
 
 ### Handling Large Results
 
-When API calls return large result sets (>100KB), the `lc_api_call` tool returns a `resource_link` instead of inline data. If you need **specific information** from these large results, the **lc-result-explorer agent** will automatically:
-- Download and decompress the data from the signed URL
-- Use `jq` and other tools to efficiently filter and explore the JSON
-- Extract only the specific data you requested
-- Keep the conversation context clean
+When API calls return large result sets (>100KB), the `lc_api_call` tool returns a `resource_link` instead of inline data:
 
-See the "Handling Large Results" section in [CALLING_API.md](../CALLING_API.md) for details on when and how this works.
+```json
+{
+  "is_temp_file": false,
+  "reason": "results too large, see resource_link for content",
+  "resource_link": "https://storage.googleapis.com/...",
+  "resource_size": 34329,
+  "success": true
+}
+```
+
+**IMPORTANT**: When you see `resource_link` in the response AND the user is asking for specific information (not the full dataset), follow this workflow:
+
+### Step 1: Download the resource_link file
+
+**CRITICAL: Run these as TWO SEPARATE bash commands. Do NOT chain with `&&`.**
+
+First, generate a unique timestamp:
+
+```bash
+date +%s%N
+```
+
+This outputs a timestamp like `1731633216789456123`. Use this value in the next command.
+
+Second, download to temp file using that timestamp:
+
+```bash
+curl -sL "<resource_link_url>" -o /tmp/lc-result-1731633216789456123.json
+```
+
+Replace `1731633216789456123` with the actual timestamp from the first command. Curl auto-decompresses .gz files.
+
+### Step 2: Invoke the lc-result-explorer agent
+
+Use the Task tool with the downloaded file path:
+
+```
+Use the Task tool with:
+- subagent_type: "lc-result-explorer"
+- prompt: "Explore /tmp/lc-result-{TIMESTAMP}.json and extract [specific information the user requested]"
+```
+
+The agent will:
+- Read and explore the data structure efficiently
+- Extract only the specific information requested
+- Clean up the temp file when done
+- Return targeted results without polluting context
+
+**Why this workflow?** Agents don't inherit permission patterns, so the main thread (which has curl permissions) downloads the file first, then passes the file path to the agent for exploration.
+
+See the "Handling Large Results" section in [CALLING_API.md](../CALLING_API.md) for more details.

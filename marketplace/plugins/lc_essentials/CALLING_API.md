@@ -215,12 +215,38 @@ The `resource_link` URL:
 
 ### Automatic Handling with lc-result-explorer Agent
 
-When you need **specific information** from large result sets (not the entire dataset), the **lc-result-explorer agent** will automatically:
+When you need **specific information** from large result sets (not the entire dataset), follow this two-step workflow:
 
-1. Analyze your query to determine if exploration is needed
-2. Download, decompress, and filter data in 1-2 efficient commands using `curl | gunzip | jq`
-3. Extract only the specific information you requested
-4. Return targeted results without overwhelming the conversation context
+**Step 1: Download in Main Thread**
+
+Run these as TWO SEPARATE bash commands (do NOT chain with `&&`):
+
+```bash
+# First: Generate unique timestamp
+date +%s%N
+```
+
+Output example: `1731633216789456123`
+
+```bash
+# Second: Download using that timestamp
+curl -sL "<resource_link_url>" -o /tmp/lc-result-1731633216789456123.json
+```
+
+Curl auto-decompresses .gz files. Replace `1731633216789456123` with actual timestamp from first command.
+
+**Step 2: Invoke lc-result-explorer Agent**
+```
+Use Task tool with:
+- subagent_type: "lc-result-explorer"
+- prompt: "Explore /tmp/lc-result-{TIMESTAMP}.json and extract [specific information]"
+```
+
+**Why this workflow?**
+- Agents don't inherit permission patterns from settings
+- Main thread has curl permissions whitelisted
+- Agent focuses on exploration without needing download permissions
+- Keeps large data out of context
 
 **The agent is invoked when:**
 - `lc_api_call` returns a `resource_link` response
@@ -233,27 +259,35 @@ When you need **specific information** from large result sets (not the entire da
 - You only need summary metadata (count, structure overview)
 
 **Agent efficiency:**
-- Completes most queries in 2-3 tool calls
-- Save → Explore → Extract → Cleanup workflow
-- Uses temp files for reliable multi-step queries
+- Completes most queries in 3-4 tool calls
+- Read → Explore → Extract → Cleanup workflow
+- Returns targeted results without overwhelming context
 
 ### Manual Handling
 
-If you need to manually download and process the data:
+If you need to manually download and process the data without the agent, run each command separately:
 
 ```bash
-# curl auto-decompresses .gz files, so no gunzip needed!
+# Step 1: Generate timestamp
+date +%s%N
+# Output: 1731633216789456123
 
-# Save and explore
-curl -sL "https://storage.googleapis.com/lc-tmp-mcp-export/..." > /tmp/result.json
-jq 'keys' /tmp/result.json  # See structure
-jq '.[] | select(.hostname == "web-01")' /tmp/result.json  # Filter data
+# Step 2: Download to temp file (use timestamp from step 1)
+curl -sL "https://storage.googleapis.com/lc-tmp-mcp-export/..." -o /tmp/lc-result-1731633216789456123.json
 
-# Or use the helper script (handles everything)
-scripts/lc-fetch-result.sh "https://storage.googleapis.com/..." '.[] | select(.hostname == "prod")'
+# Step 3: Explore structure
+jq 'type' /tmp/lc-result-1731633216789456123.json
+jq 'keys | .[0:10]' /tmp/lc-result-1731633216789456123.json
+
+# Step 4: Extract data based on structure
+jq '.lc_demo.oid' /tmp/lc-result-1731633216789456123.json
+jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-1731633216789456123.json
+
+# Step 5: Clean up
+rm /tmp/lc-result-1731633216789456123.json
 ```
 
-**Note:** Modern curl (7.21.0+) automatically decompresses gzip files, so you don't need `| gunzip` in your pipelines.
+**Note:** Modern curl (7.21.0+) automatically decompresses .gz files when using `-o` flag.
 
 ### Common Scenarios
 

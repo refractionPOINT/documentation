@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:storage.googleapis.com)",
+      "WebFetch(domain:code.claude.com)",
+      "WebSearch",
+      "Bash(date +%s%N)",
+      "Bash(curl:*)",
+      "Bash(jq:*)",
+      "Bash(rm /tmp/lc-result-*.json)",
+      "Read(/tmp/**)",
+      "Write(/tmp/**)",
+      "Edit(/tmp/**)",
+      "Skill(lc-essentials:limacharlie-call)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": []
+  },
+  "sandbox": {
+    "autoAllowBashIfSandboxed": true,
+    "enabled": true
+  }
+}
