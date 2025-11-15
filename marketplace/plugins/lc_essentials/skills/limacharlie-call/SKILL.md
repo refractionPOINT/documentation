@@ -1,7 +1,7 @@
 ---
 name: limacharlie-call
 description: Perform LimaCharlie API operations using MCP tool. Access 116 functions for sensors, rules, outputs, cloud integrations, artifacts, and more. Load function references on-demand from ./functions/ directory.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_api_call, Read
+allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_api_call, Read, Bash
 ---
 
 # LimaCharlie API Operations
@@ -197,44 +197,64 @@ When API calls return large result sets (>100KB), the `lc_api_call` tool returns
 }
 ```
 
-**IMPORTANT**: When you see `resource_link` in the response AND the user is asking for specific information (not the full dataset), follow this workflow:
+**CRITICAL REQUIREMENT**: When you see `resource_link` in the response, you **MUST** follow this exact workflow. DO NOT attempt to guess the JSON structure or write jq queries before analyzing the schema.
 
-### Step 1: Download the resource_link file
+**Why this is mandatory**: Skipping the analysis step results in incorrect queries, wasted tokens, and frustration. The schema reveals the actual structure, which may differ from what you expect.
 
-**CRITICAL: Run these as TWO SEPARATE bash commands. Do NOT chain with `&&`.**
+### Step 1: Download and Analyze (REQUIRED)
 
-First, generate a unique timestamp:
+**You MUST run the analyze script first. DO NOT skip this step.**
 
-```bash
-date +%s%N
-```
-
-This outputs a timestamp like `1731633216789456123`. Use this value in the next command.
-
-Second, download to temp file using that timestamp:
+Run the analyze script with the `resource_link` URL:
 
 ```bash
-curl -sL "<resource_link_url>" -o /tmp/lc-result-1731633216789456123.json
+bash ./marketplace/plugins/lc_essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/..."
 ```
 
-Replace `1731633216789456123` with the actual timestamp from the first command. Curl auto-decompresses .gz files.
+Replace the URL with the actual `resource_link` value from the API response.
 
-### Step 2: Invoke the lc-result-explorer agent
+**What this script does:**
+1. Downloads the file to `/tmp/lc-result-{timestamp}.json`
+2. Outputs the JSON schema to stdout showing object keys, array patterns, and data types
+3. Prints the file path to stderr (after `---FILE_PATH---`)
 
-Use the Task tool with the downloaded file path:
-
+**Example output:**
 ```
-Use the Task tool with:
-- subagent_type: "lc-result-explorer"
-- prompt: "Explore /tmp/lc-result-{TIMESTAMP}.json and extract [specific information the user requested]"
+(stdout) {"sensors": [{"sid": "string", "hostname": "string", "platform": "string"}]}
+(stderr) ---FILE_PATH---
+(stderr) /tmp/lc-result-1731633216789456123.json
 ```
 
-The agent will:
-- Read and explore the data structure efficiently
-- Extract only the specific information requested
-- Clean up the temp file when done
-- Return targeted results without polluting context
+**Before proceeding to Step 2**, you MUST review the schema output to understand:
+- Is the top-level structure an object or array?
+- What are the available keys/fields?
+- How is the data nested?
 
-**Why this workflow?** Agents don't inherit permission patterns, so the main thread (which has curl permissions) downloads the file first, then passes the file path to the agent for exploration.
+### Step 2: Extract Specific Data with jq
+
+**Only after reviewing the schema**, use jq to extract the specific information requested. Use the file path shown in the script output.
+
+Common patterns based on schema:
+
+```bash
+# If schema shows top-level array
+jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
+
+# If schema shows top-level object with named keys
+jq '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
+
+# Count items
+jq '. | length' /tmp/lc-result-{timestamp}.json
+```
+
+### Step 3: Clean Up
+
+Remove the temporary file when done:
+
+```bash
+rm /tmp/lc-result-{timestamp}.json
+```
+
+Replace `{timestamp}` with the actual timestamp from Step 1's output.
 
 See the "Handling Large Results" section in [CALLING_API.md](../CALLING_API.md) for more details.

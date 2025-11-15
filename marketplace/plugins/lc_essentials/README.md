@@ -1,6 +1,6 @@
 # LimaCharlie Essentials Plugin
 
-Essential LimaCharlie skills and agents for API access, sensor management, detection engineering, and security operations. Includes 116 comprehensive skills covering core operations, historical data, forensics, detection rules, configuration management, and administration. Also includes a specialized agent for efficiently exploring large API result sets.
+Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 116 comprehensive skills covering core operations, historical data, forensics, detection rules, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
 
 ## Important: Organization ID (OID) Requirements
 
@@ -27,11 +27,7 @@ All other 113 skills require a valid, specific organization ID.
 
 ## What It Does
 
-This plugin provides 116 comprehensive skills plus 1 specialized agent:
-
-### Specialized Agent
-
-- **lc-result-explorer**: Automatically handles large API results (>100KB) returned via `resource_link`. When you ask for specific information from large datasets (e.g., "find sensors with hostname X", "count enabled rules", "get OID for lc_demo"), this agent efficiently processes the data in 2-3 tool calls using inline shell commands with `&&` chaining: download+explore → extract+cleanup. Returns only the requested information—keeping your conversation context clean and focused.
+This plugin provides 116 comprehensive skills:
 
 ### Skills Organized by Category
 
@@ -127,14 +123,16 @@ Most skills require:
 - **OID**: Organization ID (UUID) - get this via `list-user-orgs`
 - **Additional parameters**: Sensor IDs, rule names, query parameters, etc.
 
-### Automatic Large Result Handling
+### Large Result Handling
 
-When API calls return large datasets (>100KB), the **lc-result-explorer agent** automatically activates if you're looking for specific information rather than the complete dataset. The agent:
-- Completes most queries in 2-3 efficient tool calls (save → explore → extract)
-- Always explores data structure first (you typically don't know the JSON format)
-- Uses temp files for reliable multi-step queries
-- Extracts only the information you requested
-- Keeps your conversation context clean and focused
+When API calls return large datasets (>100KB), the response includes a `resource_link` URL. To work with these large result sets:
+
+1. **Download**: Use curl to download the resource_link to a temp file
+2. **Analyze**: Run the `analyze-lc-result.sh` script to understand the JSON structure
+3. **Extract**: Use jq queries to extract the specific information you need
+4. **Cleanup**: Remove the temp file when done
+
+The analyze script outputs a JSON schema showing object keys, array patterns, and data types, allowing you to craft precise jq queries to extract only the information you need—keeping your conversation context clean and focused.
 
 See [CALLING_API.md](./CALLING_API.md) for details on how large result handling works.
 

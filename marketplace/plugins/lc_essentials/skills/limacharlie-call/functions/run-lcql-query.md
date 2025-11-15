@@ -55,10 +55,11 @@ Use the `lc_api_call` MCP tool to POST to the replay service:
 ```
 mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
+  endpoint="replay",
   method="POST",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/lcql",
+  path="/",
   body={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "query": "-1h | * | * | event.FILE_PATH ends with '.exe'",
     "limit_event": 1000,
     "limit_eval": 10000,
@@ -73,11 +74,11 @@ mcp__limacharlie__lc_api_call(
 ```
 
 **API Details:**
-- Endpoint: `api`
+- Endpoint: `replay` (automatically resolves to the per-org replay instance URL)
 - Method: `POST`
-- Path: `/v1/insight/{oid}/lcql` (or use replay service URL directly)
+- Path: `/` (root path on the replay instance)
 - Body fields:
-  - `oid`: Organization ID
+  - `oid`: Organization ID (required)
   - `query`: LCQL query string
   - `limit_event`: Approx max events to process
   - `limit_eval`: Approx max rule evaluations
@@ -190,9 +191,9 @@ Steps:
 ```
 mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
+  endpoint="replay",
   method="POST",
-  path="https://replay.limacharlie.io/",
+  path="/",
   body={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME = 'suspicious-domain.com'",

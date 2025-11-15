@@ -4,12 +4,17 @@ The `lc_api_call` tool provides direct HTTP access to LimaCharlie's API and bill
 
 ## Basic Parameters
 
-- **endpoint**: Either "api" (for api.limacharlie.io) or "billing" (for billing.limacharlie.io)
+- **endpoint**: Target endpoint type:
+  - `"api"` - Standard API endpoint (api.limacharlie.io)
+  - `"billing"` - Billing endpoint (billing.limacharlie.io)
+  - `"replay"` - Replay/LCQL endpoint (automatically resolves per-org replay instance URL)
 - **method**: HTTP method - GET, POST, PUT, DELETE, or PATCH
 - **path**: API path starting with "/" (e.g., "/rules/{oid}" or "/outputs/{oid}")
+  - For `"replay"` endpoint, use "/" as the path (root path on replay instance)
 - **query_params** (optional): URL query parameters as key-value object
 - **headers** (optional): Custom HTTP headers as key-value object
 - **body** (optional): Request body as object (will be JSON-serialized) - typically used with POST/PUT/PATCH
+  - For `"replay"` endpoint, body must include `"oid"` field
 - **timeout** (optional): Request timeout in seconds (default: 30)
 - **oid**: Organization ID - required for most calls, but **omit this parameter** for user-level and global operations (see below)
 
@@ -213,103 +218,99 @@ The `resource_link` URL:
 - Includes GCP authentication tokens in the URL parameters
 - Can be downloaded directly with tools like `curl` or `WebFetch`
 
-### Automatic Handling with lc-result-explorer Agent
+### Handling Large Results with analyze-lc-result.sh Script
 
-When you need **specific information** from large result sets (not the entire dataset), follow this two-step workflow:
+**CRITICAL REQUIREMENT**: When `lc_api_call` returns a `resource_link`, you **MUST** follow this exact workflow. DO NOT attempt to guess the JSON structure or write jq queries before analyzing the schema.
 
-**Step 1: Download in Main Thread**
+**Why this is mandatory**: Skipping the analysis step results in incorrect queries, wasted tokens, and frustration. The schema reveals the actual structure, which may differ from what you expect.
 
-Run these as TWO SEPARATE bash commands (do NOT chain with `&&`):
+**Step 1: Download and Analyze (REQUIRED)**
 
-```bash
-# First: Generate unique timestamp
-date +%s%N
-```
+**You MUST run the analyze script first. DO NOT skip this step.**
 
-Output example: `1731633216789456123`
+Run the analyze script with the `resource_link` URL directly:
 
 ```bash
-# Second: Download using that timestamp
-curl -sL "<resource_link_url>" -o /tmp/lc-result-1731633216789456123.json
+bash ./marketplace/plugins/lc_essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/lc-tmp-mcp-export/..."
 ```
 
-Curl auto-decompresses .gz files. Replace `1731633216789456123` with actual timestamp from first command.
+Replace the URL with the actual `resource_link` value from the API response.
 
-**Step 2: Invoke lc-result-explorer Agent**
+**What this script does:**
+1. Downloads the file to `/tmp/lc-result-{timestamp}.json`
+2. Outputs the JSON schema to stdout showing object keys, array patterns, and data types
+3. Prints the file path to stderr (after `---FILE_PATH---`)
+
+**Example output:**
 ```
-Use Task tool with:
-- subagent_type: "lc-result-explorer"
-- prompt: "Explore /tmp/lc-result-{TIMESTAMP}.json and extract [specific information]"
+(stdout) {"sensors": [{"sid": "string", "hostname": "string", "platform": "string"}]}
+(stderr) ---FILE_PATH---
+(stderr) /tmp/lc-result-1731633216789456123.json
 ```
 
-**Why this workflow?**
-- Agents don't inherit permission patterns from settings
-- Main thread has curl permissions whitelisted
-- Agent focuses on exploration without needing download permissions
-- Keeps large data out of context
+**Before proceeding to Step 2**, you MUST review the schema output to understand:
+- Is the top-level structure an object or array?
+- What are the available keys/fields?
+- How is the data nested?
 
-**The agent is invoked when:**
+**Step 2: Extract Specific Data with jq**
+
+**Only after reviewing the schema**, use jq to extract the specific information requested. Use the file path shown in the script output.
+
+Common patterns based on schema:
+
+```bash
+# If schema shows top-level array
+jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
+
+# If schema shows top-level object with named keys
+jq '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
+
+# Count items
+jq '. | length' /tmp/lc-result-{timestamp}.json
+```
+
+**Step 3: Clean Up**
+
+Remove the temporary file when done:
+
+```bash
+rm /tmp/lc-result-{timestamp}.json
+```
+
+Replace `{timestamp}` with the actual timestamp from Step 1's output.
+
+**When to use this workflow:**
 - `lc_api_call` returns a `resource_link` response
 - You're asking for specific information (e.g., "find sensors with hostname X", "count enabled rules", "get OID for lc_demo")
 - You don't need the complete result set
 
-**The agent is NOT used when:**
+**When NOT to use this workflow:**
 - You explicitly want the full/complete dataset
 - Results are small enough to fit in context (no `resource_link`)
 - You only need summary metadata (count, structure overview)
-
-**Agent efficiency:**
-- Completes most queries in 3-4 tool calls
-- Read → Explore → Extract → Cleanup workflow
-- Returns targeted results without overwhelming context
-
-### Manual Handling
-
-If you need to manually download and process the data without the agent, run each command separately:
-
-```bash
-# Step 1: Generate timestamp
-date +%s%N
-# Output: 1731633216789456123
-
-# Step 2: Download to temp file (use timestamp from step 1)
-curl -sL "https://storage.googleapis.com/lc-tmp-mcp-export/..." -o /tmp/lc-result-1731633216789456123.json
-
-# Step 3: Explore structure
-jq 'type' /tmp/lc-result-1731633216789456123.json
-jq 'keys | .[0:10]' /tmp/lc-result-1731633216789456123.json
-
-# Step 4: Extract data based on structure
-jq '.lc_demo.oid' /tmp/lc-result-1731633216789456123.json
-jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-1731633216789456123.json
-
-# Step 5: Clean up
-rm /tmp/lc-result-1731633216789456123.json
-```
-
-**Note:** Modern curl (7.21.0+) automatically decompresses .gz files when using `-o` flag.
 
 ### Common Scenarios
 
 **Scenario 1: Large Sensor Lists**
 - API: `GET /sensors/{oid}` for organizations with 1000+ sensors
 - Returns: `resource_link` with full sensor inventory
-- Use agent to: Find specific sensors, filter by platform, check online status
+- Use jq to: Find specific sensors, filter by platform, check online status
 
 **Scenario 2: Bulk Historical Events**
 - API: `POST /insight/{oid}/lcql` with broad time range
 - Returns: `resource_link` with thousands of events
-- Use agent to: Extract specific event types, count occurrences, find patterns
+- Use jq to: Extract specific event types, count occurrences, find patterns
 
 **Scenario 3: Extensive Rule Lists**
 - API: `GET /rules/{oid}` for organizations with many D&R rules
 - Returns: `resource_link` with complete rule set
-- Use agent to: Find rules by name, check which are enabled, analyze detection logic
+- Use jq to: Find rules by name, check which are enabled, analyze detection logic
 
 ### Best Practices
 
 1. **Request specific data**: Be clear about what information you need from large results
-2. **Let the agent work**: The lc-result-explorer handles downloads and filtering automatically
+2. **Use the analyze script**: The analyze-lc-result.sh script helps you understand the data structure before querying
 3. **Be patient**: Large files may take time to download and process
 4. **Re-run if expired**: If the signed URL expires (403/404), re-run the original API call for a fresh link
 5. **Avoid full dumps**: Don't request the complete dataset unless truly necessary
@@ -349,9 +350,11 @@ rm /tmp/lc-result-1731633216789456123.json
 - DELETE `/yara/{oid}` - Delete YARA rule (name in body)
 
 ### Historical Data
-- POST `/insight/{oid}/lcql` - Run LCQL query (query in body)
+- POST `/` with `endpoint="replay"` - Run LCQL query (requires oid in body, auto-resolves replay URL)
 - GET `/insight/{oid}/events` - Get historical events (time range in query params)
 - GET `/insight/{oid}/detections` - Get historical detections
+
+**Note:** LCQL queries use the `"replay"` endpoint which automatically resolves the per-organization replay instance URL. The path is always `/` (root) when using this endpoint.
 
 ## Error Handling
 
@@ -421,17 +424,25 @@ lc_api_call(
 ```
 lc_api_call(
   oid="abc123...",
-  endpoint="api",
+  endpoint="replay",
   method="POST",
-  path="/insight/abc123.../lcql",
+  path="/",
   body={
-    "query": "event_type:DNS_REQUEST",
-    "start": 1234567890,
-    "end": 1234567999,
-    "limit": 100
+    "oid": "abc123...",
+    "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME contains 'example.com'",
+    "limit_event": 1000,
+    "limit_eval": 10000,
+    "event_source": {
+      "stream": "event",
+      "sensor_events": {
+        "cursor": "-"
+      }
+    }
   }
 )
 ```
+
+**Note:** The `"replay"` endpoint automatically resolves the per-organization replay instance URL. Always include the `oid` field in the body when using this endpoint.
 
 ## When to Use This Tool
 
