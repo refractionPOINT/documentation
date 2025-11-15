@@ -1,0 +1,9 @@
+{
+  "name": "lc-reporting",
+  "version": "1.0.0",
+  "description": "LimaCharlie Reporting Assistant for generating comprehensive security and operational reports",
+  "author": {
+    "name": "LimaCharlie",
+    "email": "support@limacharlie.io"
+  }
+}

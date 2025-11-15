@@ -1,0 +1,212 @@
+# 🛡️ LimaCharlie Comprehensive Organization Report
+
+**Organization:** {{ org_info.name|default('N/A') }}
+**Generated:** {{ report_metadata.generated_at }}
+**Time Range:** {{ report_metadata.start_date }} to {{ report_metadata.end_date }} ({{ report_metadata.time_range_days }} days)
+**Organization ID:** {{ org_info.oid|default('N/A') }}
+
+---
+
+## 📊 Key Metrics Dashboard
+
+| Metric | Value |
+|--------|-------|
+| **Total Sensors** | {{ sensor_stats.total }} |
+| **Online Sensors** | {{ sensor_stats.online }} ({{ sensor_stats.online_percentage }}%) |
+| **Offline Sensors** | {{ sensor_stats.offline }} |
+| **Total Detections** | {{ "{:,}".format(detection_summary.total|default(0)) }} |
+| **Avg Detections/Day** | {{ detection_summary.avg_per_day|default(0) }} |
+| **Sensor Quota** | {{ org_info.sensor_quota|default('N/A') }} |
+| **Current Sensor Version** | {{ org_info.sensor_version|default('N/A') }} |
+
+{% if sensor_stats.online_percentage < 80 %}
+> ⚠️ **Critical:** Only {{ sensor_stats.online_percentage }}% of sensors are online. Immediate investigation required.
+{% elif sensor_stats.online_percentage < 95 %}
+> ⚠️ **Warning:** {{ sensor_stats.online_percentage }}% sensor availability is below optimal (95%).
+{% endif %}
+
+---
+
+## 💻 Sensor Health by Platform
+
+| Platform | Total | Online | Offline | Availability |
+|----------|-------|--------|---------|--------------|
+{% for platform in sensor_stats.by_platform.keys()|sort %}
+{% set total = sensor_stats.by_platform[platform] %}
+{% set online = sensor_stats.online_by_platform.get(platform, 0) %}
+{% set offline = total - online %}
+{% set avail = ((online / total * 100)|round(1)) if total > 0 else 0 %}
+| **{{ platform }}** | {{ total }} | {{ online }} | {{ offline }} | {% if avail >= 95 %}✅{% elif avail >= 80 %}⚠️{% else %}🔴{% endif %} {{ avail }}% |
+{% endfor %}
+
+{% if sensor_stats.numeric_platform_info %}
+### Extension/Adapter Sensors
+
+*Note: Numeric platform codes represent cloud integrations and extension sensors*
+
+{% for platform_code, hostnames in sensor_stats.numeric_platform_info.items()|sort(attribute='1', reverse=True) %}
+- **Platform {{ platform_code }}**: {{ hostnames[:5]|join(', ') }}
+{% endfor %}
+{% endif %}
+
+{% if sensor_stats.by_platform %}
+### Platform Distribution
+
+```mermaid
+pie title "Sensors by Platform"
+{% for platform, total in sensor_stats.by_platform.items()|sort(attribute='1', reverse=True) %}
+    "{{ platform }}" : {{ total }}
+{% endfor %}
+```
+{% endif %}
+
+---
+
+## 🔒 Detection Summary
+
+### Overview
+
+| Metric | Value |
+|--------|-------|
+| **Total Detections** | {{ "{:,}".format(detection_summary.total|default(0)) }} |
+| **Average per Day** | {{ detection_summary.avg_per_day|default(0) }} |
+| **Unique Categories** | {{ detection_summary.by_category.keys()|length if detection_summary.by_category else 0 }} |
+| **Unique Rules Triggered** | {{ detection_summary.top_rules|length if detection_summary.top_rules else 0 }} |
+
+{% if detection_summary.by_day %}
+### 📈 Detection Timeline
+
+```mermaid
+xychart-beta
+    title "Detections Over Time"
+    x-axis [{% for date, count in detection_summary.by_day.items()|sort %}"{{ date }}"{{ ", " if not loop.last }}{% endfor %}]
+    y-axis "Detections" 0 --> {{ (detection_summary.by_day.values()|max * 1.1)|int if detection_summary.by_day else 100 }}
+    line [{% for date, count in detection_summary.by_day.items()|sort %}{{ count }}{{ ", " if not loop.last }}{% endfor %}]
+```
+
+<details>
+<summary>Detection Timeline Data</summary>
+
+| Date | Detections |
+|------|------------|
+{% for date, count in detection_summary.by_day.items()|sort %}
+| {{ date }} | {{ count }} |
+{% endfor %}
+
+</details>
+{% endif %}
+
+{% if detection_summary.top_rules %}
+### 🎯 Top Detection Rules
+
+| # | Rule Name | Detections |
+|---|-----------|------------|
+{% for rule, count in detection_summary.top_rules[:15] %}
+| {{ loop.index }} | `{{ rule[:80] + '...' if rule|length > 80 else rule }}` | **{{ count }}** |
+{% endfor %}
+{% endif %}
+
+{% if detection_summary.by_category %}
+### 📋 Detection Categories
+
+```mermaid
+pie title "Detection Categories Distribution"
+{% for cat, count in (detection_summary.by_category.items()|sort(attribute='1', reverse=True)|list)[:10] %}
+    "{{ cat }}" : {{ count }}
+{% endfor %}
+```
+
+| Category | Count | Percentage |
+|----------|-------|------------|
+{% for cat, count in detection_summary.by_category.items()|sort(attribute='1', reverse=True) %}
+{% set pct = ((count / detection_summary.total * 100)|round(1)) if detection_summary.total else 0 %}
+| {{ cat }} | {{ count }} | {{ pct }}% |
+{% endfor %}
+{% endif %}
+
+---
+
+{% if usage_summary and 'error' not in usage_summary %}
+## 📈 Usage Statistics Summary
+
+### Totals
+
+| Metric | Value |
+|--------|-------|
+| **Total Events** | {{ "{:,}".format(usage_summary.totals.total_events|default(0)) }} |
+| **Total Evaluations** | {{ "{:,}".format(usage_summary.totals.total_evaluations|default(0)) }} |
+| **Total Output** | {{ usage_summary.totals.total_output_gb|default(0) }} GB |
+| **Avg Events/Day** | {{ "{:,}".format((usage_summary.totals.total_events|default(0) / report_metadata.time_range_days)|int) }} |
+
+{% if usage_summary.timeline and usage_summary.timeline.events %}
+### Event Volume Timeline
+
+```mermaid
+xychart-beta
+    title "Sensor Events Over Time"
+    x-axis [{% for item in usage_summary.timeline.events %}"{{ item.date }}"{{ ", " if not loop.last }}{% endfor %}]
+    y-axis "Events" 0 --> {{ (usage_summary.timeline.events|map(attribute='events')|max * 1.1)|int if usage_summary.timeline.events else 100 }}
+    bar [{% for item in usage_summary.timeline.events %}{{ item.events }}{{ ", " if not loop.last }}{% endfor %}]
+```
+
+<details>
+<summary>Daily Event Volume Data</summary>
+
+| Date | Events | Evaluations | Output (GB) |
+|------|--------|-------------|-------------|
+{% for item in usage_summary.timeline.events %}
+| {{ item.date }} | {{ "{:,}".format(item.events) }} | {{ "{:,}".format(item.evaluations) }} | {{ "%.2f"|format(item.output_gb) }} |
+{% endfor %}
+
+</details>
+{% endif %}
+{% endif %}
+
+---
+
+## ⚙️ Configuration Overview
+
+| Component | Count |
+|-----------|-------|
+| **D&R Rules** | {{ dr_rules.total|default(0) }} |
+| **Outputs** | {{ outputs.total|default(0) }} |
+| **Tags** | {{ tags.total|default(0) }} |
+| **Users** | {{ config_summary.users|default(0) }} |
+| **API Keys** | {{ config_summary.api_keys|default(0) }} |
+{% if false_positives and 'error' not in false_positives %}
+| **FP Rules** | {{ false_positives.total|default(0) }} |
+{% endif %}
+
+{% if dr_rules and dr_rules.by_namespace %}
+### D&R Rules by Namespace
+
+| Namespace | Count |
+|-----------|-------|
+{% for namespace, count in dr_rules.by_namespace.items()|sort(attribute='1', reverse=True) %}
+| `{{ namespace }}` | {{ count }} |
+{% endfor %}
+{% endif %}
+
+{% if outputs and outputs.by_type %}
+### Outputs by Type
+
+| Type | Count |
+|------|-------|
+{% for output_type, count in outputs.by_type.items()|sort(attribute='1', reverse=True) %}
+| {{ output_type }} | {{ count }} |
+{% endfor %}
+{% endif %}
+
+{% if tags and tags.top_tags %}
+### Top Tags
+
+| Tag | Sensor Count |
+|-----|--------------|
+{% for tag, count in tags.top_tags[:15] %}
+| `{{ tag }}` | {{ count }} |
+{% endfor %}
+{% endif %}
+
+---
+
+*Generated by LimaCharlie MSSP Comprehensive Reporting Skill*

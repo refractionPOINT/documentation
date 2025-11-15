@@ -1,0 +1,188 @@
+# 🏥 Sensor Health Report
+
+**Organization:** {{ summary.org_name }}
+**Generated:** {{ summary.report_generated }}
+**Organization ID:** {{ summary.org_id }}
+
+---
+
+## 📊 Executive Summary
+
+| Metric | Value |
+|--------|-------|
+| **Total Sensors** | {{ "{:,}".format(summary.total_sensors) }} |
+| **Online** | {{ "{:,}".format(summary.online_sensors) }} ({{ summary.availability_percentage|round(1) }}%) |
+| **Offline** | {{ "{:,}".format(summary.offline_sensors) }} |
+| **Platforms** | {{ summary.platform_count }} |
+| **Tags** | {{ summary.tag_count }} |
+| **Untagged Sensors** | {{ summary.untagged_count }} |
+
+### Stale Sensor Summary
+
+| Category | Count |
+|----------|-------|
+| Offline 1-7 days | {{ summary.stale_24h_count }} |
+| Offline 7-30 days | {{ summary.stale_7d_count }} |
+| Offline >30 days | {{ summary.stale_30d_count }} |
+
+{% if summary.stale_30d_count > 0 %}
+> ⚠️ **Critical:** {{ summary.stale_30d_count }} sensors offline for more than 30 days
+{% endif %}
+
+{% if summary.stale_7d_count > 0 %}
+> ⚠️ **Warning:** {{ summary.stale_7d_count }} sensors offline for 7-30 days
+{% endif %}
+
+---
+
+## 🖥️ Platform Distribution
+
+```mermaid
+pie title "Sensor Distribution by Platform"
+{% for platform, stats in platform_stats.items() %}
+    "{{ platform }}" : {{ stats.total }}
+{% endfor %}
+```
+
+| Platform | Total | Online | Offline | Availability |
+|----------|-------|--------|---------|--------------|
+{% for platform, stats in platform_stats.items() %}
+| **{{ platform }}** | {{ stats.total }} | ✅ {{ stats.online }} | ❌ {{ stats.offline }} | {% if stats.availability >= 95 %}✅{% elif stats.availability >= 80 %}⚠️{% else %}🔴{% endif %} {{ stats.availability|round(1) }}% |
+{% endfor %}
+
+---
+
+{% if tag_stats %}
+## 🏷️ Tag Distribution
+
+```mermaid
+pie title "Top 10 Tags by Sensor Count"
+{% for tag, stats in (tag_stats.items()|list)[:10] %}
+    "{{ tag }}" : {{ stats.total }}
+{% endfor %}
+```
+
+| Tag | Total Sensors | Online | Offline |
+|-----|---------------|--------|---------|
+{% for tag, stats in tag_stats.items() %}
+| `{{ tag }}` | {{ stats.total }} | ✅ {{ stats.online }} | ❌ {{ stats.offline }} |
+{% endfor %}
+
+{% if summary.untagged_count > 0 %}
+> 📝 **Note:** {{ summary.untagged_count }} sensors have no tags assigned
+{% endif %}
+
+---
+
+{% endif %}
+
+{% if stale_sensors.offline_30d or stale_sensors.offline_7d or stale_sensors.offline_24h %}
+## ⏰ Stale Sensors
+
+```mermaid
+pie title "Offline Sensor Age Distribution"
+    "1-7 days" : {{ summary.stale_24h_count }}
+    "7-30 days" : {{ summary.stale_7d_count }}
+    ">30 days" : {{ summary.stale_30d_count }}
+```
+
+{% if stale_sensors.offline_30d %}
+### 🔴 Offline > 30 Days ({{ stale_sensors.offline_30d|length }})
+
+| Hostname | Days Offline | Last Seen | Tags |
+|----------|--------------|-----------|------|
+{% for sensor in stale_sensors.offline_30d[:20] %}
+| `{{ sensor.hostname }}` | {{ sensor.offline_days|round(1) }} | {{ sensor.last_seen }} | {{ sensor.tags }} |
+{% endfor %}
+
+{% if stale_sensors.offline_30d|length > 20 %}
+*Showing 20 of {{ stale_sensors.offline_30d|length }} sensors*
+{% endif %}
+
+{% endif %}
+
+{% if stale_sensors.offline_7d %}
+### 🟡 Offline 7-30 Days ({{ stale_sensors.offline_7d|length }})
+
+| Hostname | Days Offline | Last Seen | Tags |
+|----------|--------------|-----------|------|
+{% for sensor in stale_sensors.offline_7d[:20] %}
+| `{{ sensor.hostname }}` | {{ sensor.offline_days|round(1) }} | {{ sensor.last_seen }} | {{ sensor.tags }} |
+{% endfor %}
+
+{% if stale_sensors.offline_7d|length > 20 %}
+*Showing 20 of {{ stale_sensors.offline_7d|length }} sensors*
+{% endif %}
+
+{% endif %}
+
+{% if stale_sensors.offline_24h %}
+### 🟢 Offline 1-7 Days ({{ stale_sensors.offline_24h|length }})
+
+| Hostname | Days Offline | Last Seen | Tags |
+|----------|--------------|-----------|------|
+{% for sensor in stale_sensors.offline_24h[:20] %}
+| `{{ sensor.hostname }}` | {{ sensor.offline_days|round(1) }} | {{ sensor.last_seen }} | {{ sensor.tags }} |
+{% endfor %}
+
+{% if stale_sensors.offline_24h|length > 20 %}
+*Showing 20 of {{ stale_sensors.offline_24h|length }} sensors*
+{% endif %}
+
+{% endif %}
+
+---
+
+{% endif %}
+
+{% if version_distribution %}
+## 📦 Agent Version Distribution
+
+```mermaid
+pie title "Top 10 Agent Versions"
+{% for version, count in version_distribution.items() %}
+    "{{ version[:15] }}" : {{ count }}
+{% endfor %}
+```
+
+| Version | Sensor Count |
+|---------|--------------|
+{% for version, count in version_distribution.items() %}
+| `{{ version }}` | {{ count }} |
+{% endfor %}
+
+---
+
+{% endif %}
+
+## 📋 Recommendations
+
+Based on this health report, consider the following actions:
+
+{% if summary.stale_30d_count > 0 %}
+1. **🔴 Critical:** Investigate and clean up {{ summary.stale_30d_count }} sensors offline for >30 days
+   - These may be decommissioned systems that should be removed
+   - Check if licenses are being consumed unnecessarily
+{% endif %}
+
+{% if summary.stale_7d_count > 0 %}
+2. **🟡 Warning:** Review {{ summary.stale_7d_count }} sensors offline for 7-30 days
+   - Determine if these are temporary outages or permanent
+   - Consider adding monitoring alerts for extended offline periods
+{% endif %}
+
+{% if summary.untagged_count > 0 %}
+3. **📝 Tagging:** {{ summary.untagged_count }} sensors have no tags
+   - Implement consistent tagging strategy for better organization
+   - Tags help with filtering, reporting, and policy management
+{% endif %}
+
+{% if summary.availability_percentage < 90 %}
+4. **📈 Availability:** Overall availability is {{ summary.availability_percentage|round(1) }}%
+   - Target should be >95% for production environments
+   - Review offline sensors and address connectivity issues
+{% endif %}
+
+---
+
+*Report generated by LimaCharlie Reporting System*

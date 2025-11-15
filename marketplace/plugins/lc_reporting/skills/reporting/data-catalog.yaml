@@ -1,0 +1,481 @@
+# LimaCharlie Data Catalog
+# This file documents all available data types and how to access them
+# Last updated: 2025-11-12
+
+version: "1.0"
+organization: "lc_demo"
+oid: "8cbe27f4-bfa1-4afb-ba19-138cd51389cd"
+
+data_categories:
+
+  organization_metadata:
+    description: "Basic organization information and configuration"
+    access_method: "Manager.getOrgInfo()"
+    mcp_tool: "mcp__limacharlie__get_org_info"
+    permissions_required: ["org.get"]
+    available_fields:
+      - name
+      - oid
+      - site_name
+      - sensor_quota
+      - sensor_version
+      - n_installation_keys
+      - n_outputs
+      - n_rules
+      - latest_versions
+    example_code: |
+      from limacharlie import Manager
+      m = Manager(oid='YOUR_OID')
+      info = m.getOrgInfo()
+
+  sensors:
+    description: "Endpoint sensors deployed in the organization"
+    total_count: 646
+    access_method: "Manager.sensors()"
+    mcp_tool: "mcp__limacharlie__list_sensors"
+    permissions_required: ["sensor.list", "sensor.get"]
+    available_operations:
+      - list_all: "m.sensors()"
+      - by_hostname: "m.getSensorsWithHostname('hostname')"
+      - by_ip: "m.getSensorsWithIp('ip_address')"
+      - by_tag: "m.sensorsWithTag('tag_name')"
+      - online_only: "m.getAllOnlineSensors()"
+    sensor_data_points:
+      - sid (sensor ID/UUID)
+      - hostname
+      - platform (windows, linux, macos, chrome)
+      - online_status
+      - tags
+      - ip_addresses
+      - last_seen
+      - installation_key
+      - external_ip
+      - internal_ip
+      - organization_id
+    per_sensor_queries:
+      processes:
+        method: "sensor.processes()"
+        mcp_tool: "mcp__limacharlie__get_processes"
+        description: "Running processes on sensor"
+      network:
+        method: "sensor.network()"
+        mcp_tool: "mcp__limacharlie__get_network_connections"
+        description: "Active network connections"
+      services:
+        method: "sensor.services()"
+        mcp_tool: "mcp__limacharlie__get_services"
+        description: "Installed services"
+      users:
+        method: "sensor.users()"
+        mcp_tool: "mcp__limacharlie__get_users"
+        description: "System user accounts"
+      drivers:
+        method: "sensor.drivers()"
+        mcp_tool: "mcp__limacharlie__get_drivers"
+        description: "Installed drivers (Windows)"
+      packages:
+        method: "sensor.packages()"
+        mcp_tool: "mcp__limacharlie__get_packages"
+        description: "Installed software packages"
+      autoruns:
+        method: "sensor.autoruns()"
+        mcp_tool: "mcp__limacharlie__get_autoruns"
+        description: "Autorun entries"
+      os_version:
+        method: "sensor.osVersion()"
+        mcp_tool: "mcp__limacharlie__get_os_version"
+        description: "Operating system version details"
+
+  detection_and_response_rules:
+    description: "D&R rules for threat detection and automated response"
+    total_count: 606
+    namespaces: 150
+    access_method: "Manager.rules()"
+    mcp_tools:
+      list_all: "mcp__limacharlie__get_detection_rules"
+      list_general: "mcp__limacharlie__list_dr_general_rules"
+      list_managed: "mcp__limacharlie__list_dr_managed_rules"
+      get_specific: "mcp__limacharlie__get_dr_general_rule"
+      create_update: "mcp__limacharlie__set_dr_general_rule"
+      delete: "mcp__limacharlie__delete_dr_general_rule"
+    permissions_required: ["dr.list", "dr.set", "dr.del"]
+    available_fields:
+      - rule_name
+      - namespace
+      - detect_section
+      - respond_section
+      - metadata
+    ai_generation:
+      detect: "mcp__limacharlie__generate_dr_rule_detection"
+      respond: "mcp__limacharlie__generate_dr_rule_respond"
+      description: "AI-assisted rule generation from natural language"
+
+  events:
+    description: "Historical sensor telemetry events (requires Insight)"
+    insight_enabled: true
+    access_method: "Manager.getHistoricEvents() or Sensor.events()"
+    mcp_tool: "mcp__limacharlie__get_historic_events"
+    permissions_required: ["insight.evt.get"]
+    query_parameters:
+      - sid (sensor ID)
+      - start (Unix timestamp)
+      - end (Unix timestamp)
+      - event_type (optional filter)
+      - limit (max results)
+    available_event_types:
+      method: "Manager.getSchemas()"
+      mcp_tool: "mcp__limacharlie__get_event_types_with_schemas"
+      common_types:
+        - STARTING_UP
+        - SHUTTING_DOWN
+        - NEW_PROCESS
+        - TERMINATE_PROCESS
+        - DNS_REQUEST
+        - NETWORK_CONNECTIONS
+        - FILE_CREATE
+        - FILE_DELETE
+        - FILE_MODIFIED
+        - REGISTRY_KEY_CREATE
+        - USER_LOGON
+        - USER_LOGOFF
+    example_code: |
+      import time
+      end = int(time.time())
+      start = end - (24 * 3600)  # Last 24 hours
+      events = m.getHistoricEvents(sid='SENSOR_ID', start=start, end=end, limit=1000)
+
+  detections:
+    description: "Security detections and alerts (requires Insight)"
+    insight_enabled: true
+    access_method: "Manager.getHistoricDetections()"
+    mcp_tool: "mcp__limacharlie__get_historic_detections"
+    permissions_required: ["insight.det.get"]
+    query_parameters:
+      - start (Unix timestamp)
+      - end (Unix timestamp)
+      - cat (detection category - optional)
+      - sid (sensor ID - optional)
+      - limit (max results)
+    available_fields:
+      - detection_id
+      - rule_name
+      - category
+      - severity
+      - sensor_id
+      - timestamp
+      - detection_data
+    ai_summary:
+      mcp_tool: "mcp__limacharlie__generate_detection_summary"
+      description: "AI-generated summaries of detection data"
+
+  usage_statistics:
+    description: "Daily organizational usage metrics and billing data"
+    access_method: "Manager.getUsageStats()"
+    mcp_tool: "mcp__limacharlie__get_usage_stats"
+    permissions_required: ["insight.stat"]
+    available_metrics:
+      sensor_metrics:
+        - sensor_events: "Total sensor events"
+        - sensor_retained: "Events retained in storage"
+        - sensor_times: "Sensor execution time (seconds)"
+        - sensor_watermark: "Peak concurrent sensors"
+      event_ingestion:
+        - event_wel: "Windows Event Log events"
+        - event_mul: "Multi-line log events"
+        - usp_json: "JSON ingestion events"
+        - usp_msdefender: "Microsoft Defender events"
+        - usp_office365: "Office 365 log events"
+        - usp_telemetry_bytes: "USP telemetry bytes processed"
+        - usp_text: "Text log events"
+      output_metrics:
+        - output_bytes_tx: "Total bytes transmitted to outputs"
+        - output_regional_bytes_tx: "Regional output bytes"
+      replay_metrics:
+        - replay_num_evals: "D&R rule evaluations"
+        - replay_num_events: "Events replayed through D&R"
+        - replay_num_events_free: "Free tier replay events"
+      storage_metrics:
+        - log_bytes: "Log bytes stored"
+        - log_bytes_exported: "Log bytes exported"
+        - log_csv_bytes: "CSV log bytes"
+        - payload_bytes: "Payload artifact bytes"
+      model_operations:
+        - model_read: "Model read operations"
+        - model_read_bytes: "Bytes read from models"
+        - model_write: "Model write operations"
+        - model_write_bytes: "Bytes written to models"
+        - model_delete: "Model delete operations"
+        - model_delete_bytes: "Bytes deleted from models"
+    date_range: "Daily breakdown from 2025-10-13 to present"
+
+  outputs:
+    description: "Data output configurations (SIEM, storage, etc.)"
+    total_count: 68
+    access_method: "Manager.outputs()"
+    mcp_tool: "mcp__limacharlie__list_outputs"
+    permissions_required: ["output.list", "output.set", "output.del"]
+    common_output_types:
+      - syslog
+      - s3
+      - gcs
+      - azure_blob
+      - bigquery
+      - splunk
+      - elastic
+      - webhook
+    available_operations:
+      list: "mcp__limacharlie__list_outputs"
+      create: "mcp__limacharlie__add_output"
+      delete: "mcp__limacharlie__delete_output"
+
+  tags:
+    description: "Tags applied to sensors for organization and targeting"
+    total_count: 53
+    access_method: "Manager.getAllTags()"
+    permissions_required: ["sensor.list"]
+    sample_tags:
+      - bender
+      - debug_local
+      - build
+      - demo
+      - ext:ext-strelka
+      - release_test
+      - lc:system
+      - ext:ext-ai-agent-engine
+      - cloud2
+      - lc:latest
+    operations:
+      add_tag: "mcp__limacharlie__add_tag"
+      remove_tag: "mcp__limacharlie__remove_tag"
+      list_sensors_by_tag: "Manager.sensorsWithTag('tag_name')"
+
+  extensions:
+    description: "Active extensions/subscriptions in the organization"
+    total_count: 4
+    access_method: "Manager.getSubscriptions()"
+    active_extensions:
+      - api
+      - detection
+      - lookup
+      - replicant
+    operations:
+      subscribe: "mcp__limacharlie__subscribe_to_extension"
+      unsubscribe: "mcp__limacharlie__unsubscribe_from_extension"
+
+  api_keys:
+    description: "API keys for programmatic access"
+    total_count: 89
+    access_method: "Manager.getApiKeys()"
+    mcp_tools:
+      list: "mcp__limacharlie__list_api_keys"
+      create: "mcp__limacharlie__create_api_key"
+      delete: "mcp__limacharlie__delete_api_key"
+    permissions_required: ["apikey.ctrl"]
+
+  users:
+    description: "Users with access to the organization"
+    total_count: 26
+    access_method: "Manager.getUsers()"
+    permissions_required: ["user.ctrl"]
+    available_fields:
+      - user_id
+      - email
+      - permissions
+      - roles
+
+  yara_rules:
+    description: "YARA rules for malware detection"
+    access_method: "Custom API calls or MCP tools"
+    mcp_tools:
+      list: "mcp__limacharlie__list_yara_rules"
+      get: "mcp__limacharlie__get_yara_rule"
+      create_update: "mcp__limacharlie__set_yara_rule"
+      delete: "mcp__limacharlie__delete_yara_rule"
+      validate: "mcp__limacharlie__validate_yara_rule"
+    scanning_operations:
+      scan_file: "mcp__limacharlie__yara_scan_file"
+      scan_directory: "mcp__limacharlie__yara_scan_directory"
+      scan_process: "mcp__limacharlie__yara_scan_process"
+      scan_memory: "mcp__limacharlie__yara_scan_memory"
+
+  false_positive_rules:
+    description: "Rules to suppress false positive detections"
+    access_method: "Manager.fps()"
+    mcp_tools:
+      list: "mcp__limacharlie__get_fp_rules"
+      get: "mcp__limacharlie__get_fp_rule"
+      create_update: "mcp__limacharlie__set_fp_rule"
+      delete: "mcp__limacharlie__delete_fp_rule"
+    permissions_required: ["fp.ctrl"]
+    note: "Not accessible with current permissions"
+
+  installation_keys:
+    description: "Keys for sensor deployment"
+    total_count: 45
+    access_method: "Manager.getIngestionKeys()"
+    mcp_tools:
+      list: "mcp__limacharlie__list_installation_keys"
+      get: "mcp__limacharlie__get_installation_key"
+      create: "mcp__limacharlie__create_installation_key"
+      delete: "mcp__limacharlie__delete_installation_key"
+    permissions_required: ["ingestkey.ctrl"]
+    note: "Not accessible with current permissions"
+
+  audit_logs:
+    description: "Organizational audit trail"
+    access_method: "Manager.getAuditLogs(start, end)"
+    permissions_required: ["audit.get"]
+    query_parameters:
+      - start (Unix timestamp)
+      - end (Unix timestamp)
+
+  mitre_attack:
+    description: "MITRE ATT&CK coverage report"
+    access_method: "Manager.getMITREReport()"
+    mcp_tool: "mcp__limacharlie__get_mitre_report"
+    available_data:
+      - tactics_covered
+      - techniques_covered
+      - coverage_percentage
+      - gaps
+
+  lookup_tables:
+    description: "Key-value lookup tables for enrichment"
+    access_method: "Custom API or MCP tools"
+    mcp_tools:
+      list: "mcp__limacharlie__list_lookups"
+      get: "mcp__limacharlie__get_lookup"
+      query: "mcp__limacharlie__query_lookup"
+      create_update: "mcp__limacharlie__set_lookup"
+      delete: "mcp__limacharlie__delete_lookup"
+
+  ioc_search:
+    description: "Search for Indicators of Compromise across sensors"
+    access_method: "MCP tools or custom API"
+    mcp_tools:
+      single_search: "mcp__limacharlie__search_iocs"
+      batch_search: "mcp__limacharlie__batch_search_iocs"
+    supported_ioc_types:
+      - file_hash: "SHA256 file hashes"
+      - domain: "Domain names"
+      - ip: "IP addresses"
+      - file_path: "File paths (supports wildcards)"
+      - file_name: "File names (supports wildcards)"
+      - user: "User accounts"
+      - service_name: "Windows services"
+      - package_name: "Installed packages"
+      - hostname: "Hostnames"
+    search_modes:
+      - summary: "Occurrence counts across organization"
+      - locations: "Specific sensor locations where IOC was found"
+    wildcard_support: true
+    wildcard_character: "%"
+
+  artifacts:
+    description: "Collected files and forensic artifacts"
+    access_method: "Manager methods or MCP tools"
+    mcp_tools:
+      list: "mcp__limacharlie__list_artifacts"
+      get: "mcp__limacharlie__get_artifact"
+    query_parameters:
+      - artifact_type (optional)
+      - sid (sensor ID - optional)
+      - start (timestamp - optional)
+      - end (timestamp - optional)
+
+  event_schemas:
+    description: "Schema definitions for all event types"
+    access_method: "Manager.getSchemas() or Manager.getSchema(name)"
+    mcp_tools:
+      all_schemas: "mcp__limacharlie__get_event_types_with_schemas"
+      by_platform: "mcp__limacharlie__get_event_types_with_schemas_for_platform"
+      single_schema: "mcp__limacharlie__get_event_schema"
+      batch_schemas: "mcp__limacharlie__get_event_schemas_batch"
+    available_platforms:
+      tool: "mcp__limacharlie__get_platform_names"
+
+  jobs:
+    description: "Background jobs and tasks"
+    access_method: "Manager.getJobs(startTime, endTime)"
+    query_parameters:
+      - startTime (Unix timestamp)
+      - endTime (Unix timestamp)
+
+  secrets:
+    description: "Securely stored secrets and credentials"
+    mcp_tools:
+      list: "mcp__limacharlie__list_secrets"
+      get: "mcp__limacharlie__get_secret"
+      set: "mcp__limacharlie__set_secret"
+      delete: "mcp__limacharlie__delete_secret"
+    security_note: "Use with caution - secrets are sensitive"
+
+  sensor_isolation:
+    description: "Network isolation status of sensors"
+    mcp_tools:
+      check_status: "mcp__limacharlie__is_isolated"
+      isolate: "mcp__limacharlie__isolate_network"
+      restore: "mcp__limacharlie__rejoin_network"
+
+  billing:
+    description: "Billing and invoice information"
+    mcp_tools:
+      details: "mcp__limacharlie__get_billing_details"
+      invoice_url: "mcp__limacharlie__get_org_invoice_url"
+    permissions_required: ["billing.ctrl"]
+
+  lcql_queries:
+    description: "LimaCharlie Query Language for advanced data queries"
+    access_method: "MCP tool"
+    mcp_tool: "mcp__limacharlie__run_lcql_query"
+    ai_generation: "mcp__limacharlie__generate_lcql_query"
+    query_streams:
+      - event: "Query event stream"
+      - detect: "Query detection stream"
+      - audit: "Query audit stream"
+    example: |
+      SELECT * FROM event WHERE event_type = 'DNS_REQUEST' AND domain LIKE '%.evil.com'
+
+  reliable_tasking:
+    description: "Persistent task execution on sensors"
+    mcp_tools:
+      create_task: "mcp__limacharlie__reliable_tasking"
+      list_tasks: "mcp__limacharlie__list_reliable_tasks"
+    use_cases:
+      - Execute commands on sensors when they come online
+      - Bulk sensor operations
+      - Investigation automation
+
+common_time_ranges:
+  last_hour:
+    python: "end = int(time.time()); start = end - 3600"
+  last_24_hours:
+    python: "end = int(time.time()); start = end - (24 * 3600)"
+  last_7_days:
+    python: "end = int(time.time()); start = end - (7 * 24 * 3600)"
+  last_30_days:
+    python: "end = int(time.time()); start = end - (30 * 24 * 3600)"
+  current_month:
+    python: |
+      from datetime import datetime, timezone
+      now = datetime.now(timezone.utc)
+      start = int(datetime(now.year, now.month, 1, tzinfo=timezone.utc).timestamp())
+      end = int(now.timestamp())
+
+report_best_practices:
+  - name: "Always specify time ranges"
+    reason: "Prevents overwhelming data returns and improves performance"
+  - name: "Use limits on large queries"
+    reason: "Protects against memory issues and improves response time"
+  - name: "Cache org info"
+    reason: "Org metadata doesn't change frequently"
+  - name: "Check permissions first"
+    reason: "Avoid auth errors by verifying required permissions"
+  - name: "Handle pagination"
+    reason: "Large datasets may require multiple queries"
+  - name: "Use MCP tools when available"
+    reason: "MCP tools provide better error handling and validation"
+  - name: "Aggregate usage stats by day/week/month"
+    reason: "Daily stats can be overwhelming - summarize for readability"
+  - name: "Include metadata in reports"
+    reason: "Report generation time, date range, and org info for context"
