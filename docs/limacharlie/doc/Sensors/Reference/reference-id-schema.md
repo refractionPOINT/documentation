@@ -111,7 +111,7 @@ The platform is a 32-bit integer (in its hex format) which identifies the exact 
   | 0xF0000000 | 4026531840 | sophos                       | Sophos                       |
 ```
 
-Tip: If you're writing a  rule to target a specific platform, consider using the `is_platform` operator instead of the decimal value for easier readability.
+Tip: If you're writing a  rule to target a specific platform, consider using the `is platform` operator instead of the decimal value for easier readability.
 
 ## Sensor ID
 

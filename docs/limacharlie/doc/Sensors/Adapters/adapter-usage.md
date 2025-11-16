@@ -171,6 +171,8 @@ The grok pattern line must start with **message:** , followed by the patterns, a
 
 Custom patterns can be defined using the pattern name as a key
 
+This means that the patterns should not include extracted field names called message as it will conflict with the assumed root of the grok pattern called message.
+
 ##### Built-in Patterns
 
 LimaCharlie includes standard Grok patterns for common data types:

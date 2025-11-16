@@ -27,6 +27,26 @@
         "name": "LimaCharlie",
         "email": "support@limacharlie.io"
       }
+    },
+    {
+      "name": "lc-org-summary",
+      "description": "LimaCharlie Organization Summary Assistant that generates comprehensive summaries of organizations including sensor counts, platform coverage, and configuration details",
+      "source": "./plugins/lc_org_summary",
+      "version": "1.0.0",
+      "author": {
+        "name": "LimaCharlie",
+        "email": "support@limacharlie.io"
+      }
+    },
+    {
+      "name": "lc-essentials",
+      "description": "Essential LimaCharlie utilities including the lc-doc agent for intelligent documentation search and retrieval from local or remote sources",
+      "source": "./plugins/lc_essentials",
+      "version": "1.0.0",
+      "author": {
+        "name": "LimaCharlie",
+        "email": "support@limacharlie.io"
+      }
     }
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "name": "lc-org-summary",
+  "version": "1.0.0",
+  "description": "LimaCharlie Organization Summary Assistant that generates comprehensive summaries of organizations including sensor counts, platform coverage, and configuration details",
+  "author": {
+    "name": "LimaCharlie",
+    "email": "support@limacharlie.io"
+  }
+}
