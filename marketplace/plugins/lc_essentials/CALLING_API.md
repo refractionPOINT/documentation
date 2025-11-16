@@ -257,17 +257,24 @@ Replace the URL with the actual `resource_link` value from the API response.
 
 **Only after reviewing the schema**, use jq to extract the specific information requested. Use the file path shown in the script output.
 
+**IMPORTANT: Always use the jq wrapper script instead of calling jq directly:**
+```bash
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '<jq-expression>' <file>
+```
+
+This wrapper enables easier permission management in Claude Code settings.
+
 Common patterns based on schema:
 
 ```bash
 # If schema shows top-level array
-jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
 
 # If schema shows top-level object with named keys
-jq '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
 
 # Count items
-jq '. | length' /tmp/lc-result-{timestamp}.json
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '. | length' /tmp/lc-result-{timestamp}.json
 ```
 
 **Step 3: Clean Up**

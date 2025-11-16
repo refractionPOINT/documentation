@@ -9,143 +9,135 @@ Use this skill when the user needs to:
 - Run a pre-built saved query
 - Execute validated hunting queries
 - Perform repeated investigations
-- Run scheduled or routine searches
 - Use organization-standard queries
-- Execute queries by name without knowing LCQL
 
 Common scenarios:
 - "Run the suspicious-dns query"
 - "Execute the threat-hunting query"
 - "Run saved query 'malware-detection'"
-- "Search using the powershell-encoded query"
-- "Run our standard compliance query"
 
 ## What This Skill Does
 
-This skill retrieves a saved query by name from hive storage and executes it, returning the query results.
+Retrieves a saved query by name from hive storage and executes it, returning the query results.
+
+## When to Create vs Run Queries
+
+**Use this function** for running existing saved queries.
+
+**Use `generate-lcql-query`** to create new queries from natural language:
+```
+mcp__plugin_lc-essentials_limacharlie__generate_lcql_query(
+  oid="[your-oid]",
+  query="find suspicious PowerShell executions"
+)
+```
+Then save it with `set-saved-query` for reuse.
 
 ## Required Information
 
-Before calling this skill, gather:
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID
+- **oid**: Organization ID (UUID)
 - **query_name**: Name of the saved query to execute
 
 Optional:
-- **limit**: Maximum number of results to return
+- **limit**: Maximum results to return
 
 ## How to Use
 
 ### Step 1: Retrieve Query
 
-First, get the saved query:
+Get the saved query definition:
 ```
-mcp__limacharlie__lc_api_call(
+mcp__plugin_lc-essentials_limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/query/global/suspicious-dns/data"
+  path="/v1/hive/query/global/[query-name]/data"
 )
 ```
 
 ### Step 2: Execute Query
 
-Then execute the LCQL query string from the saved query:
+Execute the LCQL query string:
 ```
-mcp__limacharlie__lc_api_call(
+mcp__plugin_lc-essentials_limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
+  endpoint="replay",
   method="POST",
-  path="https://replay.limacharlie.io/",
+  path="/",
   body={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
+    "query": "[lcql-from-saved-query]",
     "limit_event": 1000,
     "event_source": {"stream": "event", "sensor_events": {"cursor": "-"}}
   }
 )
 ```
 
-**API Details:**
-- First GET from `/v1/hive/query/global/{query_name}/data`
-- Then POST to replay service with query string
-- Combines hive storage retrieval with LCQL execution
-
 ### Step 3: Handle Response
 
-Query results follow standard LCQL response format:
+**Success (200):**
 ```json
 {
   "status_code": 200,
   "body": {
-    "results": [
-      {
-        "event": {...},
-        "routing": {...}
-      }
-    ],
+    "results": [...],
     "cursor": "",
     "stats": {...}
   }
 }
 ```
 
-### Step 4: Format Response
-
-```
-Executed Query: suspicious-dns
-Description: Find DNS requests to Russian domains
-
-Results: 12 events found
-
-1. [2024-01-20 14:22:15] DNS_REQUEST on SERVER01
-   Domain: malware.ru
-   Response: 203.0.113.50
-
-2. [2024-01-20 14:45:30] DNS_REQUEST on WORKSTATION-05
-   Domain: phishing.ru
-   Response: 203.0.113.51
-
-...
-
-Query Stats:
-- Events searched: 50,000
-- Results returned: 12
-- Execution time: 1.5s
-```
+**Common Errors:**
+- **404 Not Found**: Query doesn't exist
+- **400 Bad Request**: Invalid LCQL syntax in saved query
+- **403 Forbidden**: Insufficient permissions
 
 ## Example Usage
 
-### Example 1: Run threat hunting query
-
 User: "Run the suspicious-dns query"
 
-Steps:
-1. Get query definition from hive
-2. Execute LCQL query
-3. Format and display results
+**Step 1: Get query**
+```
+mcp__plugin_lc-essentials_limacharlie__lc_api_call(
+  oid="...",
+  endpoint="api",
+  method="GET",
+  path="/v1/hive/query/global/suspicious-dns/data"
+)
+// Returns: {"query": "-24h | * | DNS_REQUEST | ..."}
+```
 
-### Example 2: Run with limit
+**Step 2: Execute**
+```
+mcp__plugin_lc-essentials_limacharlie__lc_api_call(
+  oid="...",
+  endpoint="replay",
+  method="POST",
+  path="/",
+  body={...}
+)
+```
 
-User: "Run the malware-detection query, show top 20 results"
+**Step 3: Present results**
+```
+Executed Query: suspicious-dns
+Results: 12 events found
+...
+```
 
-Add limit parameter when executing query.
+## Related Functions
 
-## Additional Notes
-
-- Query must exist in hive storage
-- Uses query's LCQL string directly
-- Respects query metadata (tags, description)
-- Can apply additional limits at runtime
-- Returns standard LCQL results
-- Query definition is not modified
-- Use set-saved-query to create new queries
-- Use delete-saved-query to remove queries
+- `generate-lcql-query` - AI-assisted query generation for new queries
+- `list-saved-queries` - List available saved queries
+- `get-saved-query` - Get query definition without executing
+- `set-saved-query` - Save a new query for reuse
+- `delete-saved-query` - Remove a saved query
+- `run-lcql-query` - Execute ad-hoc LCQL queries
 
 ## Reference
 
-See [CALLING_API.md](../../CALLING_API.md).
+For the API implementation, see [CALLING_API.md](../../CALLING_API.md).
 
-SDK: `../go-limacharlie/limacharlie/hive.go` and `query.go`
-MCP: `../lc-mcp-server/internal/tools/hive/saved_queries.go`
+For LCQL syntax, use the `lookup-lc-doc` skill to search LimaCharlie documentation.

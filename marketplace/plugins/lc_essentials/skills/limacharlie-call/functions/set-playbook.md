@@ -8,58 +8,61 @@ Creates or updates an automation playbook in the LimaCharlie Hive.
 Use this skill when the user needs to:
 - Create a new automation playbook
 - Update an existing playbook workflow
-- Modify playbook steps or conditions
 - Configure automated incident response
 - Set up threat hunting automation
 - Define multi-step workflows
 
 Common scenarios:
 - "Create a playbook to auto-isolate critical threats"
-- "Update the incident-response playbook to also create a case"
+- "Update the incident-response playbook"
 - "Set up a playbook that scans suspicious files with YARA"
-- "Configure automated threat hunting on network connections"
 
 ## What This Skill Does
 
-This skill creates or updates an automation playbook in the LimaCharlie Hive system. It POSTs playbook workflow data to the Hive API using the "playbook" hive name with the "global" partition. The playbook is automatically enabled and includes the provided workflow definition (steps, triggers, conditions, actions). If a playbook with the same name already exists, it will be updated.
+Creates or updates an automation playbook in the LimaCharlie Hive system. The playbook is automatically enabled and executes when triggered.
+
+## Recommended Workflow: AI-Assisted Generation
+
+**For Python playbook scripts, use this workflow:**
+
+1. **Gather Documentation** (if needed)
+   Use `lookup-lc-doc` skill to search for playbook syntax and available actions.
+
+2. **Generate Python Playbook Code** (optional)
+   ```
+   mcp__plugin_lc-essentials_limacharlie__generate_python_playbook(
+     query="create a playbook that isolates sensors with critical detections and creates cases"
+   )
+   ```
+   Returns Python script using LimaCharlie SDK.
+
+3. **Deploy Playbook** (this API call)
 
 ## Required Information
 
-Before calling this skill, gather:
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-- **playbook_name**: The name for the playbook (required)
-- **playbook_data**: The workflow definition object (required, must be valid structure)
+- **oid**: Organization ID (UUID)
+- **playbook_name**: Name for the playbook
+- **playbook_data**: Workflow definition object containing:
   - `steps`: Array of actions to execute
   - `trigger`: What triggers the playbook
   - `filter`: Optional conditional logic
-  - `description`: Optional human-readable explanation
+  - `description`: Optional explanation
 
-Optional parameters:
-- **tags**: Array of tags to categorize the playbook
-- **comment**: Description or notes about this playbook
-- **enabled**: Whether the playbook is enabled (defaults to true)
+Optional:
+- **tags**: Categorization tags
+- **comment**: Description or notes
+- **enabled**: Whether playbook is enabled (default: true)
 
 ## How to Use
 
-### Step 1: Validate Parameters
+### Step 1: Call the API
 
-Ensure you have:
-1. Valid organization ID (oid)
-2. Playbook name (string, will become the playbook key)
-3. Playbook data (object with workflow definition)
-4. Validate that playbook structure is correct:
-   - steps array is valid
-   - trigger is specified
-   - actions are supported
-
-### Step 2: Call the API
-
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_api_call` MCP tool:
 
 ```
-mcp__limacharlie__lc_api_call(
+mcp__plugin_lc-essentials_limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
@@ -75,17 +78,11 @@ mcp__limacharlie__lc_api_call(
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/playbook/global/{playbook_name}/data`
-- Body fields:
-  - `gzdata`: Playbook workflow encoded as base64(gzip(json))
-  - `usr_mtd`: User metadata object
+**Important**: The `gzdata` field must be base64(gzip(json)) encoded.
 
-### Step 3: Handle the Response
+### Step 2: Handle the Response
 
-The API returns:
+**Success (200):**
 ```json
 {
   "status_code": 200,
@@ -95,64 +92,65 @@ The API returns:
   }
 }
 ```
-
-**Success (200-299):**
-- Playbook has been created or updated successfully
-- Inform the user that the playbook is now active
+Playbook is immediately active.
 
 **Common Errors:**
-- **400 Bad Request**: Invalid playbook structure - check the workflow definition
+- **400 Bad Request**: Invalid playbook structure
 - **403 Forbidden**: Insufficient permissions
-- **500 Server Error**: Backend issue - advise retry
-
-### Step 4: Format the Response
-
-Present the result to the user:
-- Confirm the playbook was created/updated
-- Show the playbook name
-- Summarize what the playbook does
-- Note that it's enabled and ready to execute
-- Suggest testing the playbook carefully before production use
+- **500 Server Error**: Backend issue
 
 ## Example Usage
 
-### Example 1: Create auto-isolation playbook
+### Create Playbook with AI Assistance
 
 User request: "Create a playbook to automatically isolate sensors on critical detections"
 
-Steps:
-1. Get the organization ID
-2. Prepare playbook data:
-```json
-{
-  "steps": [
-    {"action": "isolate_sensor"},
-    {"action": "create_case", "params": {"priority": "high"}}
-  ],
-  "trigger": "detection",
-  "filter": "cat == 'CRITICAL'",
-  "description": "Auto-isolate critical threats and create case"
-}
+**Step 1: Generate Python playbook** (optional - for complex automation)
 ```
-3. Call API with playbook name "critical-auto-isolation"
+mcp__plugin_lc-essentials_limacharlie__generate_python_playbook(
+  query="isolate sensors on critical detections and create cases"
+)
+// Returns Python script with LimaCharlie SDK code
+```
 
-Expected response confirms creation.
+**Step 2: Deploy playbook workflow**
+```
+mcp__plugin_lc-essentials_limacharlie__lc_api_call(
+  oid="c7e8f940-1234-5678-abcd-1234567890ab",
+  endpoint="api",
+  method="POST",
+  path="/v1/hive/playbook/global/critical-auto-isolation/data",
+  body={
+    "gzdata": "[encoded-playbook-json]",
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["incident-response"],
+      "comment": "Auto-isolate critical threats"
+    }
+  }
+)
+```
 
-Inform user: "Successfully created the critical-auto-isolation playbook. It will automatically isolate sensors and create cases when critical detections occur. The playbook is enabled and active."
+Result: Playbook is active and will automatically isolate sensors on critical detections.
+
+## Related Functions
+
+- `generate-python-playbook` - AI-assisted Python playbook generation
+- `list-playbooks` - List all playbooks
+- `get-playbook` - Get specific playbook
+- `delete-playbook` - Remove a playbook
+- Use `lookup-lc-doc` skill for playbook syntax reference
 
 ## Additional Notes
 
-- **Creating vs Updating**: This operation performs an "upsert" - creates if doesn't exist, updates if it does
-- **Playbook Structure**: Include required fields (steps, trigger) and optional fields (filter, description)
-- **Enabled by Default**: New playbooks are enabled by default - be careful with potentially disruptive actions
-- **Test First**: Consider testing playbooks in a non-production environment before enabling
-- **Destructive Actions**: Some playbook actions (isolate, delete) are irreversible - review carefully
-- Use `get-playbook` to verify the playbook was set correctly
-- Playbooks execute automatically when triggered - ensure conditions are correct
+- Creates if doesn't exist, updates if it does (upsert)
+- Playbooks are enabled by default - be careful with disruptive actions
+- Some actions (isolate, delete) are irreversible
+- Test in non-production environment first
+- Playbooks execute automatically when triggered
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For the API implementation, see [CALLING_API.md](../../CALLING_API.md).
 
-For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Add method)
-For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/playbooks.go`
+For playbook syntax and actions, use the `lookup-lc-doc` skill to search LimaCharlie documentation.

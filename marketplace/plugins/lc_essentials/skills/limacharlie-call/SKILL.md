@@ -1,7 +1,7 @@
 ---
 name: limacharlie-call
-description: Perform LimaCharlie API operations using MCP tool. Access 116 functions for sensors, rules, outputs, cloud integrations, artifacts, and more. Load function references on-demand from ./functions/ directory.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_api_call, Read, Bash
+description: Perform LimaCharlie API operations using MCP tool. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
+allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_api_call, mcp__plugin_lc-essentials_limacharlie__generate_lcql_query, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond, mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector, mcp__plugin_lc-essentials_limacharlie__generate_python_playbook, mcp__plugin_lc-essentials_limacharlie__generate_detection_summary, mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components, mcp__plugin_lc-essentials_limacharlie__validate_yara_rule, Read, Bash
 ---
 
 # LimaCharlie API Operations
@@ -14,6 +14,13 @@ Perform any LimaCharlie operation by dynamically loading function references.
 - If you don't have the OID, use `list-user-orgs` function first to get the UUID from the org name
 - All API calls use the MCP tool: `mcp__plugin_lc-essentials_limacharlie__lc_api_call`
 
+**⚠️ CRITICAL: JSON Processing with jq**
+When using jq to process JSON files, **ALWAYS** use the wrapper script instead of calling jq directly:
+```bash
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '<expression>' <file>
+```
+**NEVER** call `jq` directly. This wrapper enables proper permission management in Claude Code.
+
 ## How to Use
 
 1. Find the function you need in the index below
@@ -21,7 +28,7 @@ Perform any LimaCharlie operation by dynamically loading function references.
 3. Follow the instructions in that file to make the API call
 4. If an OID is needed, get it first with `list-user-orgs`
 
-## Available Functions (116)
+## Available Functions (124)
 
 ### Organization Management (8)
 - `list-user-orgs` - List organizations available to user → `./functions/list-user-orgs.md`
@@ -179,6 +186,18 @@ Perform any LimaCharlie operation by dynamically loading function references.
 - `get-historic-events` - Get historic events → `./functions/get-historic-events.md`
 - `get-historic-detections` - Get historic detections → `./functions/get-historic-detections.md`
 
+### AI-Powered Generation (6)
+- `generate-lcql-query` - Generate LCQL query from natural language → `./functions/generate-lcql-query.md`
+- `generate-dr-rule-detection` - Generate D&R detection component → `./functions/generate-dr-rule-detection.md`
+- `generate-dr-rule-respond` - Generate D&R respond component → `./functions/generate-dr-rule-respond.md`
+- `generate-sensor-selector` - Generate sensor selector expression → `./functions/generate-sensor-selector.md`
+- `generate-python-playbook` - Generate Python playbook script → `./functions/generate-python-playbook.md`
+- `generate-detection-summary` - Generate detection summary → `./functions/generate-detection-summary.md`
+
+### Validation Tools (2)
+- `validate-dr-rule-components` - Validate D&R rule components → `./functions/validate-dr-rule-components.md`
+- `validate-yara-rule` - Validate YARA rule syntax → `./functions/validate-yara-rule.md`
+
 ## Additional Resources
 
 For detailed information on using the MCP tool, see [CALLING_API.md](../CALLING_API.md).
@@ -232,19 +251,24 @@ Replace the URL with the actual `resource_link` value from the API response.
 
 ### Step 2: Extract Specific Data with jq
 
-**Only after reviewing the schema**, use jq to extract the specific information requested. Use the file path shown in the script output.
+**Only after reviewing the schema**, use the jq wrapper script to extract the specific information requested. Use the file path shown in the script output.
+
+**IMPORTANT: Always use the wrapper script, NEVER call jq directly:**
+```bash
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '<expression>' <file>
+```
 
 Common patterns based on schema:
 
 ```bash
 # If schema shows top-level array
-jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
 
 # If schema shows top-level object with named keys
-jq '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
 
 # Count items
-jq '. | length' /tmp/lc-result-{timestamp}.json
+bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '. | length' /tmp/lc-result-{timestamp}.json
 ```
 
 ### Step 3: Clean Up
