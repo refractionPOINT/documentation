@@ -15,11 +15,10 @@ Perform any LimaCharlie operation by dynamically loading function references.
 - All API calls use the MCP tool: `mcp__plugin_lc-essentials_limacharlie__lc_api_call`
 
 **⚠️ CRITICAL: JSON Processing with jq**
-When using jq to process JSON files, **ALWAYS** use the wrapper script instead of calling jq directly:
+When using jq to process JSON files, call jq directly:
 ```bash
-bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '<expression>' <file>
+jq '<expression>' <file>
 ```
-**NEVER** call `jq` directly. This wrapper enables proper permission management in Claude Code.
 
 ## How to Use
 
@@ -251,24 +250,19 @@ Replace the URL with the actual `resource_link` value from the API response.
 
 ### Step 2: Extract Specific Data with jq
 
-**Only after reviewing the schema**, use the jq wrapper script to extract the specific information requested. Use the file path shown in the script output.
-
-**IMPORTANT: Always use the wrapper script, NEVER call jq directly:**
-```bash
-bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '<expression>' <file>
-```
+**Only after reviewing the schema**, use jq to extract the specific information requested. Use the file path shown in the script output.
 
 Common patterns based on schema:
 
 ```bash
 # If schema shows top-level array
-bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
+jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
 
 # If schema shows top-level object with named keys
-bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
+jq '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
 
 # Count items
-bash ./marketplace/plugins/lc_essentials/scripts/jq-wrapper.sh '. | length' /tmp/lc-result-{timestamp}.json
+jq '. | length' /tmp/lc-result-{timestamp}.json
 ```
 
 ### Step 3: Clean Up

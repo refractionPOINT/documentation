@@ -129,10 +129,10 @@ When API calls return large datasets (>100KB), the response includes a `resource
 
 1. **Download**: Use curl to download the resource_link to a temp file
 2. **Analyze**: Run the `analyze-lc-result.sh` script to understand the JSON structure
-3. **Extract**: Use `jq-wrapper.sh` to extract the specific information you need (always use the wrapper script instead of calling jq directly)
+3. **Extract**: Use `jq` to extract the specific information you need
 4. **Cleanup**: Remove the temp file when done
 
-The analyze script outputs a JSON schema showing object keys, array patterns, and data types, allowing you to craft precise jq queries via the wrapper to extract only the information you need—keeping your conversation context clean and focused.
+The analyze script outputs a JSON schema showing object keys, array patterns, and data types, allowing you to craft precise jq queries to extract only the information you need—keeping your conversation context clean and focused.
 
 See [CALLING_API.md](./CALLING_API.md) for details on how large result handling works.
 
