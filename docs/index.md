@@ -73,7 +73,7 @@ LimaCharlie is the **SecOps Cloud Platform** delivering security operations for 
 
 <div class="grid" markdown>
 
-- [:fontawesome-brands-slack: Join our Community Slack](https://slack.limacharlie.io)
+- [:fontawesome-solid-users: Join our Community](https://community.limacharlie.io/)
 - [:fontawesome-brands-github: GitHub Repository](https://github.com/refractionPOINT)
 - [:fontawesome-solid-globe: LimaCharlie Platform](https://limacharlie.io)
 - [:fontawesome-solid-rocket: Web Console](https://app.limacharlie.io)
