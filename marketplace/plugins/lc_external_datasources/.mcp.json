@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "limacharlie": {
-      "type": "http",
-      "url": "https://mcp.limacharlie.io/mcp"
-    }
-  }
-}
