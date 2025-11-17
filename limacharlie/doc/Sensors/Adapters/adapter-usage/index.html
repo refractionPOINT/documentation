@@ -2035,6 +2035,7 @@
 <li><code>%{PATTERN_NAME}</code> - Match a pattern without extraction</li>
 </ul>
 <p>Custom patterns can be defined using the pattern name as a key</p>
+<p>This means that the patterns should not include extracted field names called message as it will conflict with the assumed root of the grok pattern called message.</p>
 <h5 id="built-in-patterns">Built-in Patterns<a class="headerlink" href="#built-in-patterns" title="Anchor link to this section">&para;</a></h5>
 <p>LimaCharlie includes standard Grok patterns for common data types:</p>
 <ul>
