@@ -69,7 +69,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/user/orgs`
+- Path: `/v1/user/orgs`
 - Query parameters (all optional):
   - `filter`: String to filter organization names
   - `sort_by`: Field name to sort by
