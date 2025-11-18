@@ -80,8 +80,8 @@ if ! jq empty "$FILE_PATH" 2>/dev/null; then
     exit 1
 fi
 
-# Generate and output the JSON schema to stdout
-if ! jq -n '
+# Generate and output the JSON schema to stdout (compact format for LLM consumption)
+if ! jq -c -n '
   def schema:
     if type == "object" then
       with_entries(.value |= schema)
