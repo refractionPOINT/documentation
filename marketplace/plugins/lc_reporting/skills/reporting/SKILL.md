@@ -22,7 +22,6 @@ This skill enables AI agents to generate comprehensive security and operational 
 
 **Quick Links**:
 - 📊 **[data-catalog.yaml](data-catalog.yaml)** - Full catalog of available data sources
-- 🎨 **[utils/branding.py](utils/branding.py)** - Dynamic branding utility
 
 ## Purpose
 - Generate standardized reports for LimaCharlie SecOps data
@@ -701,7 +700,6 @@ with open('exec_summary.html', 'w') as f:
 │   ├── security_detections.py ✅ (fully functional)
 │   └── sensor_health_report.py ✅ (fully functional)
 └── utils/
-    ├── branding.py ✅ (dynamic brand extraction)
     ├── report_helpers.py (planned)
     ├── data_collectors.py (planned)
     ├── formatters.py (planned)
@@ -1001,33 +999,6 @@ total_gb = sum(day.get('output_bytes_tx', 0)
 9. **Filter date ranges properly** - Usage stats contain ~90 days, filter to your desired period
 10. **Handle missing data gracefully** - Use `.get()` with defaults for all dict access
 
-### Dynamic Branding Support
-
-The skill includes a branding utility (`utils/branding.py`) that automatically styles reports:
-
-**Features**:
-- **Default**: LimaCharlie branding (purple gradient, Syne/Rubik fonts)
-- **Auto-detect business domains**: Extracts colors/fonts from company websites
-- **Generic email fallback**: Uses LC branding for gmail.com, hotmail.com, etc.
-
-**Usage**:
-```python
-from utils.branding import get_brand_for_user, generate_css_from_brand
-
-# Auto-detect branding from user email
-brand = get_brand_for_user('user@company.com')
-
-# Generate CSS variables
-css = generate_css_from_brand(brand)
-```
-
-**Example Output**:
-- `user@gmail.com` → LimaCharlie branding (purple gradient)
-- `user@anthropic.com` → Anthropic colors (#d97757 primary)
-- `user@microsoft.com` → Microsoft colors (extracted from microsoft.com)
-
-**Integration**: Can be added to report templates to automatically match company branding
-
 ## Updates and Maintenance
 
 This skill should be updated when:
@@ -1035,35 +1006,6 @@ This skill should be updated when:
 - API changes affect access methods
 - New report templates are requested
 - Organization configuration changes significantly
-
-**Recent Updates**:
-- 2025-11-17: **Security Detections Report** - Fixed detection limit (50k) and added warning banner when limit reached
-- 2025-11-17: **Critical Bug Fix** - Removed severity-based filtering (detections don't have severity field!)
-- 2025-11-17: **Data Accuracy** - Changed from "High Severity" to "Critical Categories" based on category names
-- 2025-11-17: **Sensor Health Report** - Applied collapsible pattern to all large tables (tags, stale sensors)
-- 2025-11-17: **Consistency Fix** - All reports now use collapsible pattern for lists >10 items
-- 2025-11-17: **Best Practice** - Always apply collapsible pattern to any table that can grow beyond 10 rows
-- 2025-11-17: Added collapsible tables pattern for HTML reports (>10 items auto-collapse)
-- 2025-11-17: Created reusable Jinja2 macros library (`macros.j2`) for consistent UI patterns
-- 2025-11-17: Implemented collapsible sections in Incident Investigation and Security Detections reports
-- 2025-11-17: Added comprehensive collapsible pattern documentation (`COLLAPSIBLE_PATTERN.md`)
-- 2025-11-12: Fixed sensor health report - use `alive` field instead of `last_seen` for offline duration
-- 2025-11-12: Sensor health report template completed and tested (532 stale sensors detected!)
-- 2025-11-12: Added stale sensor detection with three severity levels (>24h, >7d, >30d)
-- 2025-11-12: Implemented tag-based sensor grouping and analysis
-- 2025-11-12: Added version distribution tracking for compliance
-- 2025-11-17: Removed billing report - actual billing data not accessible via API
-- 2025-11-17: Implemented collapsible UI patterns for large tables (>10 rows)
-- 2025-11-17: Fixed detection limit (increased to 50k with warning tracking)
-- 2025-11-17: Removed severity field - changed to critical categories matching
-- 2025-11-17: Added hourly timeline for 24-hour detection reports
-- 2025-11-17: Completed all 6 core report templates
-- 2025-11-12: Added two-pass platform naming for human-readable sensor categories
-- 2025-11-12: Fixed detection rule name extraction (use `source_rule` field)
-- 2025-11-12: Added dynamic branding utility for company-specific styling
-- 2025-11-12: Comprehensive MSSP report template completed and tested
-
-Last updated: 2025-11-18
 
 ## Support
 
