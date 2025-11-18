@@ -21,7 +21,6 @@ allowed-tools:
 This skill enables AI agents to generate comprehensive security and operational reports from LimaCharlie organization data. It provides structured access to telemetry, detections, sensors, usage statistics, and more.
 
 **Quick Links**:
-- 📋 **[ROADMAP.md](ROADMAP.md)** - Complete list of planned templates with development status
 - 📊 **[data-catalog.yaml](data-catalog.yaml)** - Full catalog of available data sources
 - 🎨 **[utils/branding.py](utils/branding.py)** - Dynamic branding utility
 
@@ -694,9 +693,7 @@ with open('exec_summary.html', 'w') as f:
 ## File Structure
 ```
 .claude/skills/limacharlie-reporting/
-├── skill.md (this file - comprehensive documentation)
-├── ROADMAP.md (development roadmap and template progress)
-├── README.md (quick reference)
+├── SKILL.md (this file - comprehensive documentation)
 ├── data-catalog.yaml (23 data categories documented)
 ├── templates/
 │   ├── config_audit.py ✅ (fully functional)
