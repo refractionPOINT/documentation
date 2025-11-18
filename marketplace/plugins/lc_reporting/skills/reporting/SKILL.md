@@ -30,8 +30,6 @@ This skill enables AI agents to generate comprehensive security and operational 
 - Ensure consistency across multiple report generation sessions
 - Document available data sources and access methods
 
-**Current Status**: 6 of 6 core templates completed (100% complete)
-
 ## When to Use This Skill
 Use this skill when you need to:
 - Create reports on sensor health and status
@@ -709,18 +707,6 @@ with open('exec_summary.html', 'w') as f:
     ├── formatters.py (planned)
     └── visualizations.py (planned)
 ```
-
-**Current Status**:
-- ✅ **config_audit.py**: Production-ready, comprehensive configuration audit
-- ✅ **executive_summary.py**: Production-ready, high-level executive overview
-- ✅ **incident_investigation.py**: Production-ready, time-bound incident analysis
-- ✅ **mitre_coverage.py**: Production-ready, ATT&CK framework coverage analysis
-- ✅ **security_detections.py**: Production-ready, threat detection analysis with 50k limit tracking
-- ✅ **sensor_health_report.py**: Production-ready, comprehensive sensor fleet health monitoring
-- ✅ **branding.py**: Extracts company branding from domains
-- 📝 Data catalog fully documented with all access methods
-- 📝 Known issues and solutions documented
-- 📝 Best practices and gotchas section complete
 
 ## Known Issues and Gotchas
 
