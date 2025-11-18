@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITRE ATT&CK Coverage - {{ org_info.name }}</title>
+
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+        Chart.defaults.color = '#333';
+        Chart.defaults.borderColor = '#e0e0e0';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+
+        const brandColors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            accent: '#4F9EEE',
+            success: '#28a745',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#17a2b8'
+        };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin: 5px 0;
+            font-size: 1.05em;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .kpi-card.status-good { border-left: 5px solid #28a745; }
+        .kpi-card.status-warning { border-left: 5px solid #ffc107; }
+        .kpi-card.status-danger { border-left: 5px solid #dc3545; }
+
+        .kpi-label {
+            color: #666;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+
+        .kpi-subtext {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .chart-container canvas {
+            max-height: 400px;
+        }
+
+        .tactics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .tactic-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .tactic-card h3 {
+            font-size: 1.1em;
+            margin: 0 0 5px 0;
+            color: #667eea;
+        }
+
+        .tactic-card p {
+            font-size: 0.85em;
+            color: #666;
+            margin: 0;
+        }
+
+        .technique-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .technique-badge {
+            background: #667eea;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .technique-badge.disabled {
+            background: #ccc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .badge-critical { background: #dc3545; color: white; }
+        .badge-high { background: #fd7e14; color: white; }
+        .badge-medium { background: #ffc107; color: #333; }
+        .badge-low { background: #28a745; color: white; }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        /* Collapsible sections */
+        details {
+            margin: 15px 0;
+        }
+
+        details summary {
+            cursor: pointer;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-weight: 600;
+            color: #333;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        details summary:hover {
+            background: #e9ecef;
+        }
+
+        details[open] summary {
+            background: #667eea;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        details summary::marker {
+            color: #667eea;
+        }
+
+        details[open] summary::marker {
+            color: white;
+        }
+
+        details .collapsible-content {
+            padding: 0;
+            margin-top: 0;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        details .collapsible-content table {
+            margin: 0;
+        }
+
+        .expand-hint {
+            font-size: 0.85em;
+            color: #667eea;
+            font-weight: normal;
+            margin-left: 10px;
+        }
+
+        details[open] .expand-hint {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .kpi-value {
+                font-size: 2em;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 MITRE ATT&CK Coverage Report</h1>
+            <p><strong>{{ org_info.name }}</strong></p>
+            <p>Generated: {{ report_metadata.generated_at }}</p>
+        </div>
+
+        <!-- Coverage Summary KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-card {% if coverage_summary.coverage_percentage >= 50 %}status-good{% elif coverage_summary.coverage_percentage >= 30 %}status-warning{% else %}status-danger{% endif %}">
+                <div class="kpi-label">Coverage</div>
+                <div class="kpi-value">{{ coverage_summary.coverage_percentage }}%</div>
+                <div class="kpi-subtext">{{ coverage_summary.total_covered }}/{{ coverage_summary.total_possible }} techniques</div>
+            </div>
+
+            <div class="kpi-card status-good">
+                <div class="kpi-label">Covered Techniques</div>
+                <div class="kpi-value">{{ coverage_summary.total_covered }}</div>
+                <div class="kpi-subtext">MITRE ATT&CK Enterprise</div>
+            </div>
+
+            <div class="kpi-card status-good">
+                <div class="kpi-label">Rules with MITRE Tags</div>
+                <div class="kpi-value">{{ coverage_summary.rules_with_mitre }}</div>
+                <div class="kpi-subtext">{{ coverage_summary.total_rules }} total rules</div>
+            </div>
+        </div>
+
+        <!-- Covered Techniques -->
+        <div class="card">
+            <h2>✓ Covered Techniques</h2>
+            <p style="color: #666; margin-bottom: 20px;">
+                {{ techniques.total }} covered techniques across MITRE ATT&CK Enterprise framework
+            </p>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #667eea;">
+                        <th style="padding: 12px; text-align: left; width: 150px;">Technique ID</th>
+                        <th style="padding: 12px; text-align: left;">Description</th>
+                        <th style="padding: 12px; text-align: center; width: 100px;">Sub-Techniques</th>
+                        <th style="padding: 12px; text-align: center; width: 80px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for base in techniques.hierarchy %}
+                    <tr class="base-technique-row" style="border-bottom: 1px solid #e0e0e0;">
+                        <td style="padding: 12px;">
+                            <span style="font-family: monospace; font-weight: 600; color: #667eea; font-size: 0.95em;">{{ base.id }}</span>
+                        </td>
+                        <td style="padding: 12px; color: #666;">
+                            {% if base.get('base_not_covered') %}
+                                <em style="color: #999;">{{ base.name }} <span style="font-size: 0.85em;">(base not covered)</span></em>
+                            {% else %}
+                                <span style="color: #333;">{{ base.name }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 12px; text-align: center;">
+                            {% if base.has_subtechniques %}
+                                <button class="expand-btn" onclick="toggleSubtechniques('{{ base.id }}')" style="background: #667eea; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                                    <span id="btn-{{ base.id }}">▶ {{ base.subtechniques|length }}</span>
+                                </button>
+                            {% else %}
+                                <span style="color: #999;">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 12px; text-align: center;">
+                            {% if base.enabled %}
+                                <span style="color: #28a745; font-weight: 600;">✓</span>
+                            {% else %}
+                                <span style="color: #999;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if base.has_subtechniques %}
+                    <tr id="sub-{{ base.id }}" class="subtechniques-row" style="display: none; background: #f8f9fa;">
+                        <td colspan="4" style="padding: 0;">
+                            <table style="width: 100%; border-collapse: collapse; margin: 0;">
+                                {% for sub in base.subtechniques %}
+                                <tr style="border-bottom: 1px solid #e9ecef;">
+                                    <td style="padding: 8px 12px 8px 40px; width: 150px;">
+                                        <span style="font-family: monospace; color: #764ba2; font-size: 0.9em;">{{ sub.id }}</span>
+                                    </td>
+                                    <td style="padding: 8px 12px; color: #666;">
+                                        {{ sub.name }}
+                                    </td>
+                                    <td style="padding: 8px 12px; text-align: center; width: 100px;">
+                                        —
+                                    </td>
+                                    <td style="padding: 8px 12px; text-align: center; width: 80px;">
+                                        {% if sub.enabled %}
+                                            <span style="color: #28a745; font-weight: 600;">✓</span>
+                                        {% else %}
+                                            <span style="color: #999;">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            function toggleSubtechniques(baseId) {
+                const row = document.getElementById('sub-' + baseId);
+                const btn = document.getElementById('btn-' + baseId);
+                const isHidden = row.style.display === 'none';
+
+                row.style.display = isHidden ? 'table-row' : 'none';
+                btn.innerHTML = isHidden
+                    ? '▼ ' + btn.innerHTML.split(' ')[1]
+                    : '▶ ' + btn.innerHTML.split(' ')[1];
+            }
+        </script>
+
+        <!-- Recommendations -->
+        {% if recommendations %}
+        <div class="card">
+            <h2>💡 Recommendations</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="padding: 12px; text-align: left;">Priority</th>
+                        <th style="padding: 12px; text-align: left;">Category</th>
+                        <th style="padding: 12px; text-align: left;">Recommendation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in recommendations %}
+                    <tr style="border-bottom: 1px solid #e0e0e0;">
+                        <td style="padding: 12px;">
+                            <span class="badge badge-{{ rec.priority }}">{{ rec.priority.upper() }}</span>
+                        </td>
+                        <td style="padding: 12px;">{{ rec.category }}</td>
+                        <td style="padding: 12px;">{{ rec.recommendation }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>Generated by LimaCharlie Reporting Framework</p>
+            <p style="font-size: 0.85em; color: #999; margin-top: 5px;">
+                Organization ID: {{ org_info.oid }}
+            </p>
+        </div>
+    </div>
+</body>
+</html>

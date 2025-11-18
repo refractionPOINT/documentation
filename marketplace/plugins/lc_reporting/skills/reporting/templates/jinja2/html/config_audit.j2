@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Audit - {{ org_info.get('name', 'LimaCharlie') }}</title>
+
+    <!-- Chart.js for interactive visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Chart.js default configuration
+        Chart.defaults.color = '#333';
+        Chart.defaults.borderColor = '#e0e0e0';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+
+        // Brand colors for consistent styling across all charts
+        const brandColors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            accent: '#4F9EEE',
+            success: '#28a745',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#17a2b8'
+        };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        /* KPI Dashboard Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #667eea;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .kpi-label {
+            color: #666;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+
+        .kpi-icon {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .chart-container canvas {
+            max-height: 400px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9em;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .badge-enabled {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-active {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        @media (max-width: 1024px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .kpi-value {
+                font-size: 2em;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Configuration Audit Report</h1>
+            <p><strong>{{ org_info.get('name', 'Organization') }}</strong></p>
+            <p>Generated: {{ report_metadata.generated_at }}</p>
+            <p>Organization ID: {{ org_info.get('oid', 'N/A') }}</p>
+        </div>
+
+        <!-- KPI Dashboard -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon">📋</div>
+                <div class="kpi-label">D&R Rules</div>
+                <div class="kpi-value">{{ dr_rules.total|default(0) }}</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">📤</div>
+                <div class="kpi-label">Outputs</div>
+                <div class="kpi-value">{{ outputs.total|default(0) }}</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">🏷️</div>
+                <div class="kpi-label">Tags</div>
+                <div class="kpi-value">{{ tags.total|default(0) }}</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">🔑</div>
+                <div class="kpi-label">API Keys</div>
+                <div class="kpi-value">{{ api_keys.total|default(0) }}</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-label">Users</div>
+                <div class="kpi-value">{{ users.total|default(0) }}</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">💾</div>
+                <div class="kpi-label">Install Keys</div>
+                <div class="kpi-value">{{ installation_keys.total|default(0) }}</div>
+            </div>
+        </div>
+
+        <!-- Rules by Namespace Chart -->
+        {% if dr_rules.by_namespace %}
+        <div class="card">
+            <h2>📊 Rules by Namespace</h2>
+            <div class="chart-container">
+                <canvas id="rulesNamespaceChart"></canvas>
+            </div>
+
+            <script>
+                // Chart: Rules by Namespace - Horizontal Bar Chart
+                // Shows distribution of D&R rules across namespaces
+                {% set namespaces = (dr_rules.by_namespace.items()|sort(attribute='1', reverse=True)|list)[:10] %}
+                new Chart(document.getElementById('rulesNamespaceChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: {{ namespaces|map(attribute='0')|list|tojson }},
+                        datasets: [{
+                            label: 'Rules',
+                            data: {{ namespaces|map(attribute='1')|list|tojson }},
+                            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                            borderColor: brandColors.primary,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Rules',
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+        {% endif %}
+
+        {% if dr_rules.sample_rules %}
+        <!-- Sample Rules List -->
+        <div class="card">
+            <h2>📋 Sample D&R Rules</h2>
+            <p style="margin-bottom: 15px; color: #666;">First 20 rules in the organization</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>Rule Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rule in dr_rules.sample_rules %}
+                    <tr>
+                        <td style="text-align: center;">{{ loop.index }}</td>
+                        <td>{{ rule }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if outputs.list %}
+        <!-- Outputs List -->
+        <div class="card">
+            <h2>📤 Output Configurations</h2>
+            <p style="margin-bottom: 15px; color: #666;">Configured outputs ({{ outputs.total }} total)</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>Output Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for output in outputs.list %}
+                    <tr>
+                        <td style="text-align: center;">{{ loop.index }}</td>
+                        <td>{{ output }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if tags.list %}
+        <!-- Top Tags -->
+        <div class="card">
+            <h2>🏷️ Top Tags by Usage</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tag Name</th>
+                        <th style="text-align: right;">Sensors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags.list %}
+                    <tr>
+                        <td>{{ tag.name }}</td>
+                        <td style="text-align: right;">{{ tag.sensor_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if api_keys.list %}
+        <!-- API Keys -->
+        <div class="card">
+            <h2>🔑 API Keys</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key ID</th>
+                        <th>Name</th>
+                        <th>Permissions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in api_keys.list %}
+                    <tr>
+                        <td style="font-family: monospace; font-size: 0.85em;">{{ key.id }}</td>
+                        <td>{{ key.name }}</td>
+                        <td style="font-size: 0.8em;">
+                            {% if key.permissions %}
+                                {{ key.permissions[:3]|join(', ') }}{% if key.permissions|length > 3 %} +{{ key.permissions|length - 3 }} more{% endif %}
+                            {% else %}
+                                <em>No permissions</em>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if users.list %}
+        <!-- Users -->
+        <div class="card">
+            <h2>👥 Users</h2>
+            <p style="margin-bottom: 15px; color: #666;">{{ users.total }} users with access to this organization</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">#</th>
+                        <th>Email Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users.list %}
+                    <tr>
+                        <td style="text-align: center;">{{ loop.index }}</td>
+                        <td>{{ user }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>Generated by LimaCharlie Reporting Framework</p>
+            <p style="font-size: 0.85em; color: #999; margin-top: 5px;">Organization ID: {{ org_info.get('oid', 'N/A') }}</p>
+        </div>
+    </div>
+</body>
+</html>

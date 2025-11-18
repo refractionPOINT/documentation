@@ -1,95 +1,45 @@
-# Report Templates
+# LimaCharlie Reporting Framework
 
-This directory contains pre-built report templates for common LimaCharlie reporting scenarios.
+A comprehensive, reusable framework for creating custom LimaCharlie security reports.
 
-## Available Templates
+## Quick Links
 
-### executive_summary.py ✅
-**Status**: Complete
-**Purpose**: High-level organizational overview for management
-**Usage**:
-```bash
-python executive_summary.py <OID> [days] [format]
-# Example:
-python executive_summary.py 8cbe27f4-bfa1-4afb-ba19-138cd51389cd 7 html
-```
-**Outputs**: HTML, Markdown, or JSON report
+- **[Quick Start Guide](QUICK_START.md)** - Get started in 30 seconds
+- **[Custom Reports Guide](CUSTOM_REPORTS_GUIDE.md)** - Complete guide with examples
+- **[Framework Summary](FRAMEWORK_SUMMARY.md)** - Architecture and metrics
 
-### Coming Soon
+## What's Included
 
-The following templates will be added as needed:
+### ✅ Core Utilities (`utils/`)
 
-- **sensor_health.py** - Detailed sensor status and health metrics
-- **security_detections.py** - Security alerts and detection analysis
-- **usage_billing.py** - Usage statistics and billing breakdown
-- **config_audit.py** - Configuration audit and documentation
-- **incident_investigation.py** - Incident investigation workflow
-- **mitre_coverage.py** - MITRE ATT&CK coverage analysis
+- **`data_collectors.py`** - LimaCharlie SDK data collection (detections, sensors, rules)
+- **`report_helpers.py`** - Time parsing, aggregation, filtering utilities
+- **`formatters.py`** - Multi-format rendering (HTML, Markdown, JSON)
+- **`base_report.py`** - Base classes for standardized reports
 
-## Creating Custom Templates
+**Total: 1,065 lines of reusable code**
 
-To create a new template:
+### ✅ Example Reports
 
-1. Copy `executive_summary.py` as a starting point
-2. Modify the data collection section for your needs
-3. Reference `../data-catalog.yaml` for available data sources
-4. Implement your formatting functions
-5. Test with your organization
-6. Document usage in this README
+- **`incident_investigation_v2.py`** - Production example using framework (228 lines)
+- **`examples/simple_threat_report.py`** - Minimal custom report example
 
-## Template Structure
+### ✅ Documentation
 
-All templates should follow this structure:
+- **`README.md`** - This file
+- **`QUICK_START.md`** - 30-second quick start
+- **`CUSTOM_REPORTS_GUIDE.md`** - Complete usage guide
+- **`FRAMEWORK_SUMMARY.md`** - Framework overview and metrics
 
-```python
-#!/usr/bin/env python3
-"""
-Template Name
-Brief description
-"""
+## Installation
 
-from limacharlie import Manager
-import time
+No installation needed! Just use the utilities.
 
-def generate_report(oid, **kwargs):
-    """
-    Generate the report
+## Framework Benefits
 
-    Args:
-        oid: Organization ID
-        **kwargs: Template-specific parameters
+- **44% less code** per report
+- **Reusable utilities** for common tasks  
+- **Standard patterns** to follow
+- **Multiple output formats** (HTML, Markdown, JSON)
 
-    Returns:
-        Formatted report string
-    """
-    # 1. Initialize Manager
-    m = Manager(oid=oid)
-
-    # 2. Collect data
-    data = {}
-
-    # 3. Process data
-    # ... processing logic ...
-
-    # 4. Format output
-    return format_output(data)
-
-def format_output(data):
-    """Format data as report"""
-    # Formatting logic
-    pass
-
-if __name__ == '__main__':
-    # CLI interface
-    pass
-```
-
-## Best Practices
-
-1. **Error Handling**: Wrap data collection in try/except blocks
-2. **Progress Indicators**: Print progress for long-running operations
-3. **Flexible Output**: Support multiple output formats (HTML, MD, JSON)
-4. **CLI Interface**: Make templates runnable from command line
-5. **Documentation**: Include docstrings and usage examples
-6. **Validation**: Check authentication before starting
-7. **Metadata**: Include generation time and parameters in reports
+See **[FRAMEWORK_SUMMARY.md](FRAMEWORK_SUMMARY.md)** for complete details.

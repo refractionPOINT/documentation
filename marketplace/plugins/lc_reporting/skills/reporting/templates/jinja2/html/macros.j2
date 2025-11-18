@@ -1,0 +1,262 @@
+{#
+  Reusable Jinja2 Macros for LimaCharlie Reports
+
+  These macros provide common UI patterns that can be used across all report templates.
+#}
+
+{#
+  Collapsible Table Macro
+
+  Creates a table that automatically becomes collapsible when it has more than
+  the specified threshold of rows.
+
+  Usage:
+    {% from 'macros.j2' import collapsible_table %}
+    {{ collapsible_table(
+        title="Detection List",
+        headers=["Timestamp", "Category", "Rule", "Sensor", "Summary"],
+        rows=detections.list,
+        row_template="detection_row.j2",
+        threshold=10,
+        default_open=True
+    ) }}
+
+  Parameters:
+    - title: Section title (default: "Table")
+    - headers: List of column headers
+    - rows: List of data rows
+    - threshold: Number of rows before table becomes collapsible (default: 10)
+    - default_open: Whether the details element starts open (default: False)
+#}
+
+{%- macro collapsible_table(title="Table", headers=[], rows=[], threshold=10, default_open=False) -%}
+{% if rows|length > threshold %}
+<details {% if default_open %}open{% endif %}>
+    <summary>
+        {{ title }}
+        <span class="expand-hint">(Click to collapse/expand)</span>
+    </summary>
+    <div class="collapsible-content">
+        <table>
+            <thead>
+                <tr>
+                    {% for header in headers %}
+                    <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {{ caller(rows) }}
+            </tbody>
+        </table>
+    </div>
+</details>
+{% else %}
+<table>
+    <thead>
+        <tr>
+            {% for header in headers %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {{ caller(rows) }}
+    </tbody>
+</table>
+{% endif %}
+{%- endmacro -%}
+
+
+{#
+  Collapsible Section Macro
+
+  Creates a collapsible section for any content block (not just tables).
+
+  Usage:
+    {% from 'macros.j2' import collapsible_section %}
+    {% call collapsible_section(
+        title="Advanced Options",
+        item_count=50,
+        threshold=20,
+        default_open=False
+    ) %}
+        <div>Your content here...</div>
+    {% endcall %}
+
+  Parameters:
+    - title: Section title
+    - item_count: Number of items in this section
+    - threshold: Number of items before section becomes collapsible (default: 10)
+    - default_open: Whether the details element starts open (default: False)
+#}
+
+{%- macro collapsible_section(title, item_count, threshold=10, default_open=False) -%}
+{% if item_count > threshold %}
+<details {% if default_open %}open{% endif %}>
+    <summary>
+        {{ title }}
+        <span class="expand-hint">({{ item_count }} items - Click to collapse/expand)</span>
+    </summary>
+    <div class="collapsible-content" style="padding: 20px;">
+        {{ caller() }}
+    </div>
+</details>
+{% else %}
+{{ caller() }}
+{% endif %}
+{%- endmacro -%}
+
+
+{#
+  Severity Badge Macro
+
+  Renders a colored badge based on severity/priority level.
+
+  Usage:
+    {% from 'macros.j2' import severity_badge %}
+    {{ severity_badge('critical') }}
+    {{ severity_badge('high') }}
+    {{ severity_badge('medium') }}
+    {{ severity_badge('low') }}
+
+  Parameters:
+    - level: critical, high, medium, or low
+    - text: Custom text to display (default: level in uppercase)
+#}
+
+{%- macro severity_badge(level, text=None) -%}
+<span class="badge badge-{{ level }}">{{ text or level.upper() }}</span>
+{%- endmacro -%}
+
+
+{#
+  Status Badge Macro
+
+  Renders a status badge (online/offline, enabled/disabled, etc).
+
+  Usage:
+    {% from 'macros.j2' import status_badge %}
+    {{ status_badge(is_online, 'Online', 'Offline') }}
+
+  Parameters:
+    - condition: Boolean condition
+    - true_text: Text to show when true
+    - false_text: Text to show when false
+    - true_class: CSS class when true (default: 'badge-low')
+    - false_class: CSS class when false (default: 'badge-critical')
+#}
+
+{%- macro status_badge(condition, true_text, false_text, true_class='badge-low', false_class='badge-critical') -%}
+{% if condition %}
+<span class="badge {{ true_class }}">{{ true_text }}</span>
+{% else %}
+<span class="badge {{ false_class }}">{{ false_text }}</span>
+{% endif %}
+{%- endmacro -%}
+
+
+{#
+  KPI Card Macro
+
+  Renders a KPI card with icon, label, value, and subtext.
+
+  Usage:
+    {% from 'macros.j2' import kpi_card %}
+    {{ kpi_card(
+        icon="🚨",
+        label="Total Detections",
+        value=1234,
+        subtext="Last 24 hours",
+        status="critical"
+    ) }}
+
+  Parameters:
+    - icon: Emoji or icon to display
+    - label: KPI label text
+    - value: Main value to display
+    - subtext: Additional context text
+    - status: critical, warning, info, or good (default: info)
+#}
+
+{%- macro kpi_card(icon, label, value, subtext, status='info') -%}
+<div class="kpi-card status-{{ status }}">
+    <div class="kpi-icon">{{ icon }}</div>
+    <div class="kpi-label">{{ label }}</div>
+    <div class="kpi-value">{{ value }}</div>
+    <div class="kpi-subtext">{{ subtext }}</div>
+</div>
+{%- endmacro -%}
+
+
+{#
+  Collapsible CSS Styles
+
+  Include this once per template to enable collapsible sections.
+
+  Usage:
+    {% from 'macros.j2' import collapsible_styles %}
+    <style>
+        {{ collapsible_styles() }}
+    </style>
+#}
+
+{%- macro collapsible_styles() -%}
+/* Collapsible sections */
+details {
+    margin: 15px 0;
+}
+
+details summary {
+    cursor: pointer;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    font-weight: 600;
+    color: #333;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+details summary:hover {
+    background: #e9ecef;
+}
+
+details[open] summary {
+    background: #667eea;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+details summary::marker {
+    color: #667eea;
+}
+
+details[open] summary::marker {
+    color: white;
+}
+
+details .collapsible-content {
+    padding: 0;
+    margin-top: 0;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
+
+details .collapsible-content table {
+    margin: 0;
+}
+
+.expand-hint {
+    font-size: 0.85em;
+    color: #667eea;
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+details[open] .expand-hint {
+    color: white;
+}
+{%- endmacro -%}

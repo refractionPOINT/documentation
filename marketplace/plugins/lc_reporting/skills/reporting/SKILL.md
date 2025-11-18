@@ -1,6 +1,6 @@
 ---
 name: reporting
-description: Generate comprehensive security and operational reports from LimaCharlie data including sensor health, detections, usage statistics, billing, and configuration audits. Use when users need MSSP reports, executive summaries, compliance reports, or multi-tenant billing analysis.
+description: Generate comprehensive security and operational reports from LimaCharlie data including sensor health, detections, usage statistics, and configuration audits. Use when users need MSSP reports, executive summaries, compliance reports, or operational analysis.
 allowed-tools:
   - Read
   - Write
@@ -31,18 +31,20 @@ This skill enables AI agents to generate comprehensive security and operational 
 - Ensure consistency across multiple report generation sessions
 - Document available data sources and access methods
 
-**Current Status**: 3 of 9 templates completed (33% complete)
+**Current Status**: 6 of 6 core templates completed (100% complete)
 
 ## When to Use This Skill
 Use this skill when you need to:
 - Create reports on sensor health and status
 - Analyze security detections over time periods
-- Generate usage and billing reports
+- Generate usage statistics reports
 - Audit organizational configuration (rules, outputs, users)
 - Investigate security incidents
 - Monitor operational metrics
 - Create executive summaries
 - Export data for compliance purposes
+
+**Note**: Billing/invoice data is not accessible via API and is excluded from this framework. Use the LimaCharlie web dashboard for actual billing information.
 
 ## Prerequisites
 
@@ -195,48 +197,7 @@ python3 templates/sensor_health_report.py 8cbe27f4-... html
 
 **Template**: `templates/security_detections.py`
 
-### 5. Multi-Tenant Billing Report ✅ IMPLEMENTED
-**Purpose**: Comprehensive billing overview across all accessible organizations
-
-**Includes**:
-- Cross-tenant summary dashboard
-  - Total sensors across all orgs
-  - Total events, data output, rule evaluations
-  - Aggregated estimated monthly costs
-- Organization overview table
-  - Sensor count vs quota per org
-  - Activity metrics per org
-  - Cost comparison across tenants
-- Detailed per-organization breakdown
-  - Key metrics (events, output GB, evaluations)
-  - Sensor utilization (active vs quota)
-  - Last 7 days daily activity
-  - Cost estimation with transparent formulas
-- Interactive HTML with Chart.js cost visualization
-- Multi-format output (HTML, Markdown, JSON)
-
-**Template**: `templates/multi_tenant_billing_report.py`
-**Status**: Fully functional and tested
-**Output formats**: HTML (with charts), Markdown, JSON
-
-**Usage**:
-```bash
-python3 templates/multi_tenant_billing_report.py [days]
-# Example: 30-day billing report across all accessible orgs
-python3 templates/multi_tenant_billing_report.py 30
-```
-
-**Cost Estimation Formula**:
-```
-Estimated Monthly Cost =
-  (Sensor Count × $5) +           # Base sensor cost
-  (Output GB × $0.20) +            # Data egress
-  (Evaluations ÷ 1000 × $0.001)   # Rule evaluations
-```
-
-**Note**: Uses `Manager.userAccessibleOrgs()` to automatically discover all organizations the authenticated user can access.
-
-### 6. Configuration Audit Report
+### 5. Configuration Audit Report
 **Purpose**: Document current organizational configuration
 
 **Includes**:
@@ -363,6 +324,8 @@ from utils.report_helpers import (
 3. **Highlight insights** - What do the numbers mean?
 4. **Show trends** - Compare to previous periods when possible
 5. **Make it actionable** - Include recommendations
+6. **Use collapsible tables** - For lists with >10 items, implement collapsible sections (see Output Formats section)
+7. **Keep reports scannable** - Use collapsed sections by default to avoid overwhelming users
 
 ### Performance
 1. **Query efficiently** - Use filters to reduce data volume
@@ -395,10 +358,226 @@ from utils.report_helpers import (
 
 ### HTML Report
 - Professional styling
-- Interactive tables
+- Interactive tables (with collapsible sections for long lists)
 - Charts and graphs
 - Exportable
 - **Template**: `templates/html_template.html`
+
+#### Collapsible Tables Pattern
+
+For better UX, tables with more than 10 rows should automatically become collapsible:
+
+**Key Features**:
+- Threshold-based: Only applies to lists with >10 items
+- Default collapsed: Starts collapsed to keep reports clean and scannable
+- Visual feedback: Summary bar changes color when expanded
+- No JavaScript: Uses native HTML5 `<details>` element
+
+**Implementation**:
+```jinja2
+{% if items|length > 10 %}
+<details>
+    <summary>
+        Detection List
+        <span class="expand-hint">(Click to expand/collapse)</span>
+    </summary>
+    <div class="collapsible-content">
+        <table>
+            <!-- table content -->
+        </table>
+    </div>
+</details>
+{% else %}
+<table>
+    <!-- table content -->
+</table>
+{% endif %}
+```
+
+**Reusable Macros**:
+
+For consistency, use macros from `templates/jinja2/html/macros.j2`:
+
+```jinja2
+{% from 'macros.j2' import collapsible_table %}
+
+{% call collapsible_table(
+    title="Detection List",
+    headers=["Timestamp", "Category", "Rule", "Sensor", "Summary"],
+    rows=detections.list,
+    threshold=10,
+    default_open=False
+) %}
+    {% for det in rows %}
+    <tr>
+        <td>{{ det.timestamp }}</td>
+        <td>{{ det.category }}</td>
+    </tr>
+    {% endfor %}
+{% endcall %}
+```
+
+**When to Use**:
+- Table has >10 rows
+- List contains >10 items
+- Section contains verbose content
+- User needs overview first, details second
+
+**When NOT to Use**:
+- List has ≤10 items (keep it simple)
+- All data must be immediately visible (critical alerts)
+- Table is the primary content
+
+**Reports Using This Pattern**:
+- ✅ Incident Investigation: Detection details table
+- ✅ Security Detections: High severity detections table
+
+See `templates/COLLAPSIBLE_PATTERN.md` for complete documentation.
+
+#### Hierarchical Expandable Rows
+
+For data with parent-child relationships (e.g., MITRE techniques and sub-techniques), use expandable table rows:
+
+**Pattern:**
+- Base items as primary rows
+- Sub-items nested in expandable sections
+- Click button to toggle visibility
+- Visual hierarchy with indentation and color coding
+
+**Implementation:**
+```html
+<tr class="base-row">
+    <td>Parent Item</td>
+    <td>Description</td>
+    <td><button onclick="toggle('id')">▶ 5</button></td>
+</tr>
+<tr id="sub-id" style="display: none;">
+    <td colspan="3">
+        <table>
+            <tr><td>  Child 1</td></tr>
+            <tr><td>  Child 2</td></tr>
+        </table>
+    </td>
+</tr>
+
+<script>
+function toggle(id) {
+    const row = document.getElementById('sub-' + id);
+    const btn = document.getElementById('btn-' + id);
+    const isHidden = row.style.display === 'none';
+    row.style.display = isHidden ? 'table-row' : 'none';
+    btn.innerHTML = isHidden ? '▼ ...' : '▶ ...';
+}
+</script>
+```
+
+**Python Data Structure:**
+```python
+from collections import defaultdict
+
+base_items = {}
+sub_items = defaultdict(list)
+
+for item_id, data in all_items.items():
+    if '.' in item_id:  # Sub-item indicator
+        base_id = item_id.split('.')[0]
+        sub_items[base_id].append({
+            'id': item_id,
+            'name': data['name'],
+            'enabled': data['enabled']
+        })
+    else:  # Base item
+        base_items[item_id] = {
+            'id': item_id,
+            'name': data['name'],
+            'has_children': False,
+            'children': []
+        }
+
+# Attach children to parents
+for base_id, children in sub_items.items():
+    if base_id in base_items:
+        base_items[base_id]['has_children'] = True
+        base_items[base_id]['children'] = sorted(children, key=lambda x: x['id'])
+
+hierarchy = sorted(base_items.values(), key=lambda x: x['id'])
+```
+
+**Benefits:**
+- Clean, organized display of complex hierarchies
+- User controls detail level
+- Reduces visual clutter
+- Professional appearance
+
+**Reports Using This Pattern**:
+- ✅ MITRE ATT&CK Coverage: Base techniques with expandable sub-techniques
+
+#### Enriching Data from External Sources
+
+When local data lacks descriptions, fetch from authoritative external sources:
+
+**Example: MITRE ATT&CK Technique Names**
+
+```python
+import requests
+
+def get_external_descriptions():
+    """Fetch descriptions from external API"""
+    try:
+        url = 'https://api.example.com/data.json'
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+
+        # Parse and map to your data structure
+        descriptions = {}
+        for item in data['items']:
+            descriptions[item['id']] = item['name']
+
+        return descriptions
+    except Exception as e:
+        print(f"Warning: Could not fetch external data: {e}")
+        return {}  # Graceful fallback
+
+# Usage in report
+external_data = get_external_descriptions()
+
+for item_id, item_data in local_data.items():
+    item_data['name'] = external_data.get(
+        item_id,
+        'Generic Description'  # Fallback
+    )
+```
+
+**Best Practices:**
+- **Cache results**: Fetch once per report generation
+- **Graceful fallback**: Always have default values
+- **Timeout handling**: Set reasonable timeouts (10s)
+- **Error messaging**: Inform user if external fetch fails
+- **Validate data**: Check response structure before parsing
+
+**Real-World Example:**
+```python
+# MITRE ATT&CK technique names from official CTI
+url = 'https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json'
+response = requests.get(url, timeout=10)
+mitre_data = response.json()
+
+technique_names = {}
+for obj in mitre_data['objects']:
+    if obj['type'] == 'attack-pattern':
+        for ref in obj.get('external_references', []):
+            if ref.get('source_name') == 'mitre-attack':
+                tech_id = ref.get('external_id')
+                name = obj.get('name')
+                technique_names[tech_id] = name
+```
+
+**Benefits:**
+- Professional, accurate descriptions
+- Reduced maintenance (external source updates automatically)
+- Better user experience
+- Authoritative information
 
 ### Markdown Report
 - Clean, readable format
@@ -473,8 +652,8 @@ with open('exec_summary.html', 'w') as f:
 4. Identify gaps
 5. Recommend rule additions
 
-### Scenario 4: "Monthly billing report"
-1. Use **Usage & Billing Report** template
+### Scenario 4: "Monthly usage report"
+1. Use **Usage Statistics Report** template (when implemented)
 2. Time range: Current month
 3. Aggregate daily stats by week
 4. Highlight cost drivers
@@ -520,14 +699,12 @@ with open('exec_summary.html', 'w') as f:
 ├── README.md (quick reference)
 ├── data-catalog.yaml (23 data categories documented)
 ├── templates/
-│   ├── mssp_comprehensive_report.py ✅ (fully functional)
-│   ├── multi_tenant_billing_report.py ✅ (fully functional)
-│   ├── sensor_health_report.py ✅ (fully functional)
-│   ├── executive_summary.py (basic implementation)
-│   ├── security_detections.py (planned)
-│   ├── config_audit.py (planned)
-│   ├── incident_investigation.py (planned)
-│   └── mitre_coverage.py (planned)
+│   ├── config_audit.py ✅ (fully functional)
+│   ├── executive_summary.py ✅ (fully functional)
+│   ├── incident_investigation.py ✅ (fully functional)
+│   ├── mitre_coverage.py ✅ (fully functional)
+│   ├── security_detections.py ✅ (fully functional)
+│   └── sensor_health_report.py ✅ (fully functional)
 └── utils/
     ├── branding.py ✅ (dynamic brand extraction)
     ├── report_helpers.py (planned)
@@ -537,8 +714,11 @@ with open('exec_summary.html', 'w') as f:
 ```
 
 **Current Status**:
-- ✅ **mssp_comprehensive_report.py**: Production-ready, handles 7-30+ day reports
-- ✅ **multi_tenant_billing_report.py**: Production-ready, cross-tenant billing overview
+- ✅ **config_audit.py**: Production-ready, comprehensive configuration audit
+- ✅ **executive_summary.py**: Production-ready, high-level executive overview
+- ✅ **incident_investigation.py**: Production-ready, time-bound incident analysis
+- ✅ **mitre_coverage.py**: Production-ready, ATT&CK framework coverage analysis
+- ✅ **security_detections.py**: Production-ready, threat detection analysis with 50k limit tracking
 - ✅ **sensor_health_report.py**: Production-ready, comprehensive sensor fleet health monitoring
 - ✅ **branding.py**: Extracts company branding from domains
 - 📝 Data catalog fully documented with all access methods
@@ -571,14 +751,22 @@ rule = det.get('source_rule', det.get('cat', 'unknown'))
     'detect_id': '...',                       # Unique detection ID
     'ts': 1234567890,                         # Timestamp (may be ms or seconds)
     'sid': '...',                             # Sensor ID (may be 'N/A')
+    # NOTE: No 'severity' field - severity is configured in D&R rules, not detection records
 }
 ```
 
 **Important Notes**:
+- **Detections don't have a `severity` field** - severity is defined in D&R rule configuration, not in detection records
 - Multiple rules can trigger on the same event (e.g., production + testing rules)
 - Rules with identical counts are usually related but serve different purposes
 - `source_rule` format is typically "namespace.rule-name"
 - Timestamps can be in seconds OR milliseconds - normalize before processing
+
+**Detection Limits**:
+- `getHistoricDetections()` has a practical limit of ~50,000 detections per query
+- Always track if the limit was reached: `if detection_count >= limit: limit_reached = True`
+- Display a warning to users if the limit is hit - actual totals may be higher
+- For large orgs, recommend narrowing time ranges to get complete data
 
 ### Sensor Last Seen Timestamps
 
@@ -866,20 +1054,33 @@ This skill should be updated when:
 - Organization configuration changes significantly
 
 **Recent Updates**:
+- 2025-11-17: **Security Detections Report** - Fixed detection limit (50k) and added warning banner when limit reached
+- 2025-11-17: **Critical Bug Fix** - Removed severity-based filtering (detections don't have severity field!)
+- 2025-11-17: **Data Accuracy** - Changed from "High Severity" to "Critical Categories" based on category names
+- 2025-11-17: **Sensor Health Report** - Applied collapsible pattern to all large tables (tags, stale sensors)
+- 2025-11-17: **Consistency Fix** - All reports now use collapsible pattern for lists >10 items
+- 2025-11-17: **Best Practice** - Always apply collapsible pattern to any table that can grow beyond 10 rows
+- 2025-11-17: Added collapsible tables pattern for HTML reports (>10 items auto-collapse)
+- 2025-11-17: Created reusable Jinja2 macros library (`macros.j2`) for consistent UI patterns
+- 2025-11-17: Implemented collapsible sections in Incident Investigation and Security Detections reports
+- 2025-11-17: Added comprehensive collapsible pattern documentation (`COLLAPSIBLE_PATTERN.md`)
 - 2025-11-12: Fixed sensor health report - use `alive` field instead of `last_seen` for offline duration
 - 2025-11-12: Sensor health report template completed and tested (532 stale sensors detected!)
 - 2025-11-12: Added stale sensor detection with three severity levels (>24h, >7d, >30d)
 - 2025-11-12: Implemented tag-based sensor grouping and analysis
 - 2025-11-12: Added version distribution tracking for compliance
-- 2025-11-12: Multi-tenant billing report template completed and tested
-- 2025-11-12: Added `Manager.userAccessibleOrgs()` support for cross-tenant reporting
-- 2025-11-12: Implemented cost estimation formulas with transparent breakdown
+- 2025-11-17: Removed billing report - actual billing data not accessible via API
+- 2025-11-17: Implemented collapsible UI patterns for large tables (>10 rows)
+- 2025-11-17: Fixed detection limit (increased to 50k with warning tracking)
+- 2025-11-17: Removed severity field - changed to critical categories matching
+- 2025-11-17: Added hourly timeline for 24-hour detection reports
+- 2025-11-17: Completed all 6 core report templates
 - 2025-11-12: Added two-pass platform naming for human-readable sensor categories
 - 2025-11-12: Fixed detection rule name extraction (use `source_rule` field)
 - 2025-11-12: Added dynamic branding utility for company-specific styling
 - 2025-11-12: Comprehensive MSSP report template completed and tested
 
-Last updated: 2025-11-12
+Last updated: 2025-11-18
 
 ## Support
 

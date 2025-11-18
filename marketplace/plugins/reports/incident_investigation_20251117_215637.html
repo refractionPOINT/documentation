@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Investigation - lc_demo</title>
+
+    <!-- Chart.js for interactive visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Chart.js default configuration
+        Chart.defaults.color = '#333';
+        Chart.defaults.borderColor = '#e0e0e0';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+
+        // Brand colors for consistent styling across all charts
+        const brandColors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            accent: '#4F9EEE',
+            success: '#28a745',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#17a2b8'
+        };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #721c24 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin: 5px 0;
+            font-size: 1.05em;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+
+        /* KPI Dashboard Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .kpi-card.status-critical { border-left: 5px solid #dc3545; }
+        .kpi-card.status-warning { border-left: 5px solid #ffc107; }
+        .kpi-card.status-info { border-left: 5px solid #17a2b8; }
+
+        .kpi-label {
+            color: #666;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+
+        .kpi-subtext {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .kpi-icon {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            border-bottom: 3px solid #dc3545;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .chart-container canvas {
+            max-height: 400px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9em;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .badge-critical {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-high {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .badge-medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .badge-low {
+            background: #28a745;
+            color: white;
+        }
+
+        .timeline-entry {
+            border-left: 3px solid #667eea;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-entry::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            border-radius: 50%;
+            position: absolute;
+            left: -7.5px;
+            top: 5px;
+        }
+
+        .timeline-time {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        /* Collapsible sections */
+        details {
+            margin: 15px 0;
+        }
+
+        details summary {
+            cursor: pointer;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-weight: 600;
+            color: #333;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        details summary:hover {
+            background: #e9ecef;
+        }
+
+        details[open] summary {
+            background: #667eea;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        details summary::marker {
+            color: #667eea;
+        }
+
+        details[open] summary::marker {
+            color: white;
+        }
+
+        details .collapsible-content {
+            padding: 0;
+            margin-top: 0;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        details .collapsible-content table {
+            margin: 0;
+        }
+
+        .expand-hint {
+            font-size: 0.85em;
+            color: #667eea;
+            font-weight: normal;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .kpi-value {
+                font-size: 2em;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Incident Investigation Report</h1>
+            <p><strong>lc_demo</strong></p>
+            <p>Generated: 2025-11-18T05:56:37.305961+00:00</p>
+            <p>Investigation Period: 2025-11-17T05:56:24+00:00 to 2025-11-18T05:56:24+00:00</p>
+        </div>
+
+
+
+        <!-- Investigation Summary KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-card status-critical">
+                <div class="kpi-icon">🚨</div>
+                <div class="kpi-label">Total Detections</div>
+                <div class="kpi-value">2320</div>
+                <div class="kpi-subtext">24.0 hour window</div>
+            </div>
+
+            <div class="kpi-card status-warning">
+                <div class="kpi-icon">💻</div>
+                <div class="kpi-label">Affected Sensors</div>
+                <div class="kpi-value">2</div>
+                <div class="kpi-subtext">Potential lateral movement</div>
+            </div>
+
+            <div class="kpi-card status-info">
+                <div class="kpi-icon">📊</div>
+                <div class="kpi-label">Detection Types</div>
+                <div class="kpi-value">5</div>
+                <div class="kpi-subtext">Unique categories</div>
+            </div>
+
+        </div>
+
+
+        <!-- Detection Timeline -->
+        <div class="card">
+            <h2>📈 Detection Timeline</h2>
+            <div class="chart-container">
+                <canvas id="detectionTimelineChart"></canvas>
+            </div>
+
+            <script>
+                // Chart: Detection Timeline - Line Chart
+                // Shows detection activity over time to identify bursts or patterns
+                new Chart(document.getElementById('detectionTimelineChart'), {
+                    type: 'line',
+                    data: {
+                        labels: ["2025-11-17 05:00", "2025-11-17 06:00", "2025-11-17 12:00", "2025-11-17 13:00", "2025-11-17 14:00", "2025-11-17 15:00", "2025-11-17 16:00", "2025-11-17 18:00", "2025-11-17 19:00", "2025-11-17 20:00", "2025-11-17 21:00", "2025-11-17 23:00"],
+                        datasets: [{
+                            label: 'Detections per Hour',
+                            data: [11, 41, 372, 532, 488, 512, 98, 45, 47, 156, 11, 7],
+                            borderColor: brandColors.danger,
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: brandColors.danger
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Detections',
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Time',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+
+        <!-- Detection Categories -->
+        <div class="card">
+            <h2>📊 Detections by Category</h2>
+            <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+            </div>
+
+            <script>
+                // Chart: Detections by Category - Horizontal Bar Chart
+                // Shows breakdown of detection types for threat classification
+                new Chart(document.getElementById('categoryChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ["AlphaMountain Category Alert on demo-win-2016.c.lc-demo-infra.internal.", "alphamountain-category", "proc-older-than-10s", "Windows Defender Settings Changed", "Sysmon Configuration Change"],
+                        datasets: [{
+                            label: 'Detections',
+                            data: [1000, 1000, 313, 6, 1],
+                            backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                            borderColor: brandColors.danger,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Detections',
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+
+        <!-- Detection Details -->
+        <div class="card">
+            <h2>🔍 Detection Details</h2>
+            <p style="margin-bottom: 15px; color: #666;">Showing 100 most recent detections (of 2320 total)</p>
+
+            <details>
+                <summary>
+                    Detection List
+                    <span class="expand-hint">(Click to expand/collapse)</span>
+                </summary>
+                <div class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Category</th>
+                                <th>Rule</th>
+                                <th>Sensor</th>
+                                <th>Summary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T23:15:39</td>
+                                <td style="font-size: 0.9em;">Windows Defender Settings Changed</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.Windows Defender Settings Changed</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">bb4b30af-ff11-4f...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T23:15:39</td>
+                                <td style="font-size: 0.9em;">Windows Defender Settings Changed</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.ext-epp Windows Defender Settings Changed</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">bb4b30af-ff11-4f...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T23:15:39</td>
+                                <td style="font-size: 0.9em;">Windows Defender Settings Changed</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.ext-epp Windows Defender Settings Changed</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">bb4b30af-ff11-4f...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T23:15:39</td>
+                                <td style="font-size: 0.9em;">Windows Defender Settings Changed</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.Windows Defender Settings Changed</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">bb4b30af-ff11-4f...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T23:15:39</td>
+                                <td style="font-size: 0.9em;">Windows Defender Settings Changed</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.ext-epp Windows Defender Settings Changed</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">bb4b30af-ff11-4f...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T23:15:39</td>
+                                <td style="font-size: 0.9em;">Windows Defender Settings Changed</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.Windows Defender Settings Changed</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">bb4b30af-ff11-4f...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T23:11:40</td>
+                                <td style="font-size: 0.9em;">Sysmon Configuration Change</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">service.windows_sysmon/sysmon_config_modification-edr</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">bb4b30af-ff11-4f...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:08:22</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:08:21</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:07:43</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:19</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:15</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:15</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:15</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:14</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:13</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:13</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T21:06:13</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:48:21</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:47:42</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:43</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:23</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:18</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:17</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:17</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:17</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:13</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:13</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:13</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:13</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:12</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:12</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:12</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:11</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:11</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:11</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:11</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:46:11</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:56</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:51</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:49</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:48</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:47</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:29:28</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:38</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:32</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:31</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:31</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:31</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:31</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:31</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:31</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:30</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:30</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:30</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:29</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:29</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:28</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:28</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:27</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:27</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:27</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:27</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:27</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:27</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:27</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:26</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:26</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:26</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:26</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:26</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:26</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:22</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:21</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:21</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:21</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:20</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:20</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:17</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:17</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:16</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:14</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:10</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:10</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:04</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:28:00</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:27:56</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:27:52</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:27:52</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:27:51</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 0.85em; white-space: nowrap;">2025-11-17T20:27:51</td>
+                                <td style="font-size: 0.9em;">proc-older-than-10s</td>
+                                <td style="font-size: 0.85em; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">general.older-than</td>
+                                <td style="font-family: monospace; font-size: 0.8em;">522eaece-c8f6-49...</td>
+                                <td style="font-size: 0.85em; max-width: 300px;">No summary available</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </div>
+
+
+        <!-- Recommendations -->
+        <div class="card">
+            <h2>💡 Recommendations</h2>
+            <div class="timeline-entry" style="border-left-color: #fd7e14;">
+                <div class="timeline-time">
+                    <span class="badge badge-high">
+                        HIGH
+                    </span>
+                    Volume
+                </div>
+                <div>High detection volume (2320 detections). Review for potential compromise or misconfiguration.</div>
+            </div>
+            <div class="timeline-entry" style="border-left-color: #ffc107;">
+                <div class="timeline-time">
+                    <span class="badge badge-medium">
+                        MEDIUM
+                    </span>
+                    Investigation
+                </div>
+                <div>Review detection timeline for patterns and correlation with known security events.</div>
+            </div>
+            <div class="timeline-entry" style="border-left-color: #ffc107;">
+                <div class="timeline-time">
+                    <span class="badge badge-medium">
+                        MEDIUM
+                    </span>
+                    Containment
+                </div>
+                <div>Consider isolating affected sensors if malicious activity is confirmed.</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated by LimaCharlie Reporting Framework</p>
+            <p style="font-size: 0.85em; color: #999; margin-top: 5px;">Organization ID: 8cbe27f4-bfa1-4afb-ba19-138cd51389cd</p>
+        </div>
+    </div>
+</body>
+</html>

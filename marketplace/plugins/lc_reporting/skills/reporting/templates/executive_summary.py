@@ -7,8 +7,10 @@ Generates a high-level organizational overview for management
 from limacharlie import Manager
 import time
 import json
+import os
 from datetime import datetime, timezone
 from collections import defaultdict
+from jinja2 import Environment, FileSystemLoader
 
 
 def generate_executive_summary(oid, time_range_days=7, output_format='html'):
@@ -50,14 +52,18 @@ def generate_executive_summary(oid, time_range_days=7, output_format='html'):
         'online_percentage': round((len(online_sensors) / len(all_sensors) * 100) if all_sensors else 0, 1)
     }
 
-    # Platform breakdown
+    # Platform breakdown - properly get platform from sensor info
+    print(f"  Analyzing {len(all_sensors)} sensors...")
     platforms = defaultdict(int)
-    for sensor in all_sensors:
+    for i, sensor in enumerate(all_sensors):
+        if i % 100 == 0 and i > 0:
+            print(f"  Processed {i}/{len(all_sensors)} sensors...")
         try:
-            # Get platform from sensor object
-            platform = sensor._platform if hasattr(sensor, '_platform') else 'unknown'
-            platforms[platform] += 1
-        except:
+            info = sensor.getInfo()
+            # Get platform - try 'plat' first, then 'ext_plat', default to 'unknown'
+            platform = info.get('plat', info.get('ext_plat', 'unknown'))
+            platforms[str(platform)] += 1
+        except Exception as e:
             platforms['unknown'] += 1
     data['sensor_stats']['by_platform'] = dict(platforms)
 
@@ -68,26 +74,37 @@ def generate_executive_summary(oid, time_range_days=7, output_format='html'):
 
         detection_categories = defaultdict(int)
         detection_by_day = defaultdict(int)
+        detection_count = 0  # Count detections as we iterate (can't use len() on generator)
 
         for det in detections:
+            detection_count += 1
+
             # Count by category
             cat = det.get('cat', 'unknown')
             detection_categories[cat] += 1
 
-            # Count by day
+            # Count by day - handle timestamp safely
             ts = det.get('timestamp', det.get('ts', 0))
             if ts:
-                day = datetime.fromtimestamp(ts, tz=timezone.utc).strftime('%Y-%m-%d')
-                detection_by_day[day] += 1
+                try:
+                    # Convert milliseconds to seconds if needed
+                    if ts > 10000000000:  # Likely milliseconds
+                        ts = ts / 1000
+                    day = datetime.fromtimestamp(ts, tz=timezone.utc).strftime('%Y-%m-%d')
+                    detection_by_day[day] += 1
+                except (ValueError, OSError) as e:
+                    # Skip invalid timestamps
+                    pass
 
         data['detection_summary'] = {
-            'total': len(detections),
+            'total': detection_count,
             'by_category': dict(detection_categories),
             'by_day': dict(sorted(detection_by_day.items())),
-            'avg_per_day': round(len(detections) / time_range_days, 1) if time_range_days > 0 else 0
+            'avg_per_day': round(detection_count / time_range_days, 1) if time_range_days > 0 else 0
         }
     except Exception as e:
-        data['detection_summary'] = {'error': str(e), 'total': 0}
+        print(f"  Error collecting detections: {e}")
+        data['detection_summary'] = {'error': str(e), 'total': 0, 'by_category': {}, 'by_day': {}, 'avg_per_day': 0}
 
     # 4. Usage summary (last full day)
     print("Collecting usage statistics...")
@@ -132,7 +149,7 @@ def generate_executive_summary(oid, time_range_days=7, output_format='html'):
     elif output_format == 'markdown':
         return format_markdown(data)
     else:  # html
-        return format_html(data)
+        return render_report(data)
 
 
 def format_markdown(data):
@@ -204,260 +221,23 @@ def format_markdown(data):
     return '\n'.join(md)
 
 
-def format_html(data):
-    """Format data as HTML report"""
+def render_report(data):
+    """Render report using Jinja2 template with Chart.js"""
 
-    meta = data['report_metadata']
-    org = data['org_info']
-    sensors = data['sensor_stats']
-    det = data['detection_summary']
-    config = data['config_summary']
+    # Get template directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    template_dir = os.path.join(script_dir, 'jinja2', 'html')
 
-    html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>LimaCharlie Executive Summary - {org.get('name', 'N/A')}</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }}
-        .header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }}
-        .header h1 {{
-            margin: 0 0 10px 0;
-        }}
-        .metadata {{
-            opacity: 0.9;
-            font-size: 0.9em;
-        }}
-        .card {{
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }}
-        .card h2 {{
-            margin-top: 0;
-            color: #333;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
-        }}
-        .stats-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 15px 0;
-        }}
-        .stat-box {{
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #667eea;
-        }}
-        .stat-label {{
-            color: #666;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }}
-        .stat-value {{
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #333;
-            margin-top: 5px;
-        }}
-        .status-good {{ border-left-color: #28a745; }}
-        .status-warning {{ border-left-color: #ffc107; }}
-        .status-danger {{ border-left-color: #dc3545; }}
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }}
-        th, td {{
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }}
-        th {{
-            background: #f8f9fa;
-            font-weight: 600;
-        }}
-        .footer {{
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }}
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🛡️ Executive Summary Report</h1>
-        <div class="metadata">
-            <strong>{org.get('name', 'N/A')}</strong> |
-            Generated: {meta['generated_at']} |
-            Time Range: {meta['start_date']} to {meta['end_date']} ({meta['time_range_days']} days)
-        </div>
-    </div>
+    # Setup Jinja2 environment
+    env = Environment(
+        loader=FileSystemLoader(template_dir),
+        trim_blocks=True,
+        lstrip_blocks=True
+    )
 
-    <div class="card">
-        <h2>📊 Key Metrics</h2>
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-label">Total Sensors</div>
-                <div class="stat-value">{sensors['total']}</div>
-            </div>
-            <div class="stat-box status-good">
-                <div class="stat-label">Online Sensors</div>
-                <div class="stat-value">{sensors['online']} <span style="font-size:0.5em">({sensors['online_percentage']}%)</span></div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Total Detections</div>
-                <div class="stat-value">{det.get('total', 0)}</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Avg Detections/Day</div>
-                <div class="stat-value">{det.get('avg_per_day', 0)}</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>💻 Sensor Health</h2>
-        <table>
-            <tr>
-                <th>Metric</th>
-                <th>Value</th>
-            </tr>
-            <tr>
-                <td>Total Sensors</td>
-                <td>{sensors['total']}</td>
-            </tr>
-            <tr>
-                <td>Online</td>
-                <td>{sensors['online']} ({sensors['online_percentage']}%)</td>
-            </tr>
-            <tr>
-                <td>Offline</td>
-                <td>{sensors['offline']}</td>
-            </tr>
-        </table>
-
-        <h3>Platform Distribution</h3>
-        <table>
-            <tr>
-                <th>Platform</th>
-                <th>Count</th>
-            </tr>
-"""
-
-    for platform, count in sorted(sensors.get('by_platform', {}).items()):
-        html += f"            <tr><td>{platform}</td><td>{count}</td></tr>\n"
-
-    html += """        </table>
-    </div>
-
-    <div class="card">
-        <h2>🔒 Security Detections</h2>
-        <p>Detection activity over the reporting period.</p>
-"""
-
-    if det.get('by_category'):
-        html += """        <h3>Top Detection Categories</h3>
-        <table>
-            <tr>
-                <th>Category</th>
-                <th>Count</th>
-            </tr>
-"""
-        sorted_cats = sorted(det['by_category'].items(), key=lambda x: x[1], reverse=True)[:10]
-        for cat, count in sorted_cats:
-            html += f"            <tr><td>{cat}</td><td>{count}</td></tr>\n"
-        html += "        </table>\n"
-
-    html += "    </div>\n"
-
-    # Usage stats
-    if 'usage_summary' in data and 'error' not in data['usage_summary']:
-        usage = data['usage_summary']
-        html += f"""    <div class="card">
-        <h2>📈 Usage Statistics</h2>
-        <p>Most recent day's activity: <strong>{usage.get('date', 'N/A')}</strong></p>
-        <table>
-            <tr>
-                <th>Metric</th>
-                <th>Value</th>
-            </tr>
-            <tr>
-                <td>Sensor Events</td>
-                <td>{usage.get('sensor_events', 0):,}</td>
-            </tr>
-            <tr>
-                <td>D&R Evaluations</td>
-                <td>{usage.get('detections_generated', 0):,}</td>
-            </tr>
-            <tr>
-                <td>Output Data</td>
-                <td>{usage.get('output_bytes_gb', 0)} GB</td>
-            </tr>
-            <tr>
-                <td>Peak Concurrent Sensors</td>
-                <td>{usage.get('peak_sensors', 0)}</td>
-            </tr>
-        </table>
-    </div>
-"""
-
-    # Configuration
-    html += f"""    <div class="card">
-        <h2>⚙️ Configuration Summary</h2>
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-label">D&R Rules</div>
-                <div class="stat-value">{config.get('dr_rules', 0)}</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Outputs</div>
-                <div class="stat-value">{config.get('outputs', 0)}</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Tags</div>
-                <div class="stat-value">{config.get('tags', 0)}</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Users</div>
-                <div class="stat-value">{config.get('users', 0)}</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">API Keys</div>
-                <div class="stat-value">{config.get('api_keys', 0)}</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer">
-        Generated by LimaCharlie Reporting Skill
-    </div>
-</body>
-</html>
-"""
-
-    return html
+    # Load and render template
+    template = env.get_template('executive_summary.j2')
+    return template.render(**data)
 
 
 if __name__ == '__main__':
@@ -474,11 +254,20 @@ if __name__ == '__main__':
 
     report = generate_executive_summary(oid, days, fmt)
 
+    # Determine project root and reports directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.abspath(os.path.join(script_dir, '../../../..'))
+    reports_dir = os.path.join(project_root, 'reports')
+
+    # Create reports directory if it doesn't exist
+    os.makedirs(reports_dir, exist_ok=True)
+
     # Save to file
     ext = 'html' if fmt == 'html' else 'md' if fmt == 'markdown' else 'json'
     filename = f'executive_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.{ext}'
+    filepath = os.path.join(reports_dir, filename)
 
-    with open(filename, 'w') as f:
+    with open(filepath, 'w') as f:
         f.write(report)
 
-    print(f"\nReport saved to: {filename}")
+    print(f"\n✓ Report saved to: {filepath}")

@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LimaCharlie Organization Report - {{ org_info.name|default('N/A') }}</title>
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'base',
-            themeVariables: {
-                primaryColor: '#667eea',
-                primaryTextColor: '#fff',
-                primaryBorderColor: '#764ba2',
-                lineColor: '#667eea',
-                secondaryColor: '#764ba2',
-                tertiaryColor: '#f5f5f5'
-            }
-        });
+
+    <!-- Chart.js for interactive visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Chart.js default configuration
+        // Using LimaCharlie brand colors
+        Chart.defaults.color = '#333';
+        Chart.defaults.borderColor = '#e0e0e0';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+
+        // Brand colors for consistent styling across all charts
+        const brandColors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            accent: '#4F9EEE',
+            success: '#28a745',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#17a2b8'
+        };
     </script>
     <style>
         * {
@@ -167,20 +174,23 @@
             margin-bottom: 30px;
         }
 
-        .mermaid-container {
-            background: #fafafa;
+        .chart-container {
+            background: white;
             padding: 30px;
             border-radius: 12px;
             margin: 20px 0;
-            overflow-x: auto;
-            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .mermaid-container .mermaid {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 250px;
+        .chart-container canvas {
+            max-height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
         }
 
         details {
@@ -330,46 +340,188 @@
         {% if sensor_stats.by_platform %}
         <div class="card">
             <h2>📊 Platform Distribution</h2>
-            <div class="mermaid-container">
-                <pre class="mermaid">
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#667eea'}}}%%
-pie title "Sensors by Platform (Top 6)"
-{% for platform, total in (sensor_stats.by_platform.items()|sort(attribute='1', reverse=True)|list)[:6] %}
-    "{{ platform[:25] + '...' if platform|length > 25 else platform }}" : {{ total }}
-{% endfor %}
-{% set top_6_total = (sensor_stats.by_platform.items()|sort(attribute='1', reverse=True)|list)[:6]|sum(attribute='1') %}
-{% if sensor_stats.total - top_6_total > 0 %}
-    "Other Platforms" : {{ sensor_stats.total - top_6_total }}
-{% endif %}
-                </pre>
+            <div class="chart-container">
+                <canvas id="platformChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Platform Distribution - Doughnut Chart
+                // Shows sensor distribution across different platforms
+                // Data source: sensor_stats.by_platform from Python
+                {% set top_platforms = (sensor_stats.by_platform.items()|sort(attribute='1', reverse=True)|list)[:6] %}
+                {% set top_6_total = top_platforms|sum(attribute='1') %}
+                {% set other_total = sensor_stats.total - top_6_total %}
+
+                new Chart(document.getElementById('platformChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            {% for platform, total in top_platforms %}
+                            '{{ platform[:25] + "..." if platform|length > 25 else platform }}'{{ "," if not loop.last or other_total > 0 }}
+                            {% endfor %}
+                            {% if other_total > 0 %}
+                            'Other Platforms'
+                            {% endif %}
+                        ],
+                        datasets: [{
+                            label: 'Sensors',
+                            data: [
+                                {% for platform, total in top_platforms %}
+                                {{ total }}{{ "," if not loop.last or other_total > 0 }}
+                                {% endfor %}
+                                {% if other_total > 0 %}
+                                {{ other_total }}
+                                {% endif %}
+                            ],
+                            backgroundColor: [
+                                '#667eea',
+                                '#764ba2',
+                                '#4F9EEE',
+                                '#28a745',
+                                '#17a2b8',
+                                '#ffc107',
+                                '#dc3545'
+                            ],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Sensors by Platform (Top 6)',
+                                font: { size: 16, weight: 'bold' },
+                                padding: { bottom: 20 }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed.toLocaleString() + ' sensors';
+
+                                        // Add percentage
+                                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        let percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        label += ' (' + percentage + '%)';
+
+                                        return label;
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'right',
+                                labels: {
+                                    padding: 15,
+                                    font: { size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
         </div>
         {% endif %}
 
         {% if detection_summary.by_day %}
         <div class="card">
             <h2>📈 Detection Timeline</h2>
-            <div class="mermaid-container">
-                <pre class="mermaid">
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#667eea'}}}%%
-graph TB
-    subgraph "Detection Timeline (Last {{ report_metadata.time_range_days }} Days)"
-    {% set sorted_dates = detection_summary.by_day.items()|sort %}
-    {% set total_dets = detection_summary.by_day.values()|sum %}
-    {% set max_det = detection_summary.by_day.values()|max %}
-    {% set min_det = detection_summary.by_day.values()|min %}
-    A["📊 Total Detections: {{ "{:,}".format(total_dets) }}"]
-    B["📈 Peak Day: {{ "{:,}".format(max_det) }} detections"]
-    C["📉 Lowest Day: {{ "{:,}".format(min_det) }} detections"]
-    D["📅 Avg/Day: {{ "{:,}".format((total_dets / detection_summary.by_day.keys()|length)|int) }}"]
-    end
-
-    style A fill:#667eea,stroke:#764ba2,stroke-width:2px,color:#fff
-    style B fill:#28a745,stroke:#218838,stroke-width:2px,color:#fff
-    style C fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#333
-    style D fill:#17a2b8,stroke:#138496,stroke-width:2px,color:#fff
-                </pre>
+            <div class="chart-container">
+                <canvas id="detectionsTimelineChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Detection Timeline - Line Chart
+                // Shows daily detection counts over time with trend visualization
+                // Data source: detection_summary.by_day from Python
+                {% set sorted_dates = detection_summary.by_day.items()|sort %}
+                new Chart(document.getElementById('detectionsTimelineChart'), {
+                    type: 'line',
+                    data: {
+                        // X-axis: Dates from the time range
+                        labels: {{ sorted_dates|map(attribute='0')|list|tojson }},
+                        datasets: [{
+                            label: 'Daily Detections',
+                            // Y-axis: Detection counts per day
+                            data: {{ sorted_dates|map(attribute='1')|list|tojson }},
+                            borderColor: brandColors.primary,
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            fill: true,
+                            tension: 0.4,  // Smooth curved line
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: brandColors.primary,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Detection Volume - Last {{ report_metadata.time_range_days }} Days',
+                                font: { size: 16, weight: 'bold' },
+                                padding: { bottom: 20 }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                titleFont: { size: 14 },
+                                bodyFont: { size: 13 },
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Detections: ' + context.parsed.y.toLocaleString();
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Detections',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Date',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
 
             <details>
                 <summary style="cursor: pointer; padding: 10px; background: #f8f9fa; border-radius: 6px; margin-top: 15px;">
@@ -397,24 +549,135 @@ graph TB
 
         {% if usage_summary and 'error' not in usage_summary and usage_summary.timeline and usage_summary.timeline.events %}
         <div class="card">
-            <h2>📊 Event Volume Summary</h2>
-            <div class="mermaid-container">
-                <pre class="mermaid">
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#667eea'}}}%%
-graph LR
-    subgraph "Usage Statistics ({{ report_metadata.time_range_days }} Days)"
-    A["📊 Total Events<br/>{{ "{:,}".format(usage_summary.totals.total_events) }}"]
-    B["📈 Peak Day<br/>{{ "{:,}".format(usage_summary.timeline.events|map(attribute='events')|max) }} events"]
-    C["📉 Avg/Day<br/>{{ "{:,}".format((usage_summary.totals.total_events / report_metadata.time_range_days)|int) }}"]
-    D["💾 Total Output<br/>{{ usage_summary.totals.total_output_gb }} GB"]
-    end
-
-    style A fill:#667eea,stroke:#764ba2,stroke-width:2px,color:#fff
-    style B fill:#28a745,stroke:#218838,stroke-width:2px,color:#fff
-    style C fill:#17a2b8,stroke:#138496,stroke-width:2px,color:#fff
-    style D fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#333
-                </pre>
+            <h2>📊 Event Volume & Usage Trends</h2>
+            <div class="chart-container">
+                <canvas id="eventVolumeChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Event Volume Over Time - Multi-line Area Chart
+                // Shows event volume, output, and evaluations trends
+                // Data source: usage_summary.timeline.events from Python
+                new Chart(document.getElementById('eventVolumeChart'), {
+                    type: 'line',
+                    data: {
+                        // X-axis: Dates
+                        labels: {{ usage_summary.timeline.events|map(attribute='date')|list|tojson }},
+                        datasets: [
+                            {
+                                label: 'Events (thousands)',
+                                // Y-axis: Event counts (scaled down to thousands for readability)
+                                data: {{ usage_summary.timeline.events|map(attribute='events')|map('float')|list|tojson }},
+                                borderColor: brandColors.primary,
+                                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                                fill: true,
+                                tension: 0.4,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'D&R Evaluations (thousands)',
+                                data: {{ usage_summary.timeline.events|map(attribute='evaluations')|map('float')|list|tojson }},
+                                borderColor: brandColors.info,
+                                backgroundColor: 'rgba(23, 162, 184, 0.2)',
+                                fill: true,
+                                tension: 0.4,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Data Output (GB)',
+                                data: {{ usage_summary.timeline.events|map(attribute='output_gb')|map('float')|list|tojson }},
+                                borderColor: brandColors.warning,
+                                backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                                fill: true,
+                                tension: 0.4,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Usage Statistics - Last {{ report_metadata.time_range_days }} Days',
+                                font: { size: 16, weight: 'bold' },
+                                padding: { bottom: 20 }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed.y.toLocaleString();
+                                        return label;
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Events / Evaluations',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Output (GB)',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                grid: {
+                                    drawOnChartArea: false  // Don't draw grid lines for secondary axis
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toFixed(2) + ' GB';
+                                    }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Date',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
 
             <details>
                 <summary style="cursor: pointer; padding: 10px; background: #f8f9fa; border-radius: 6px; margin-top: 15px;">
@@ -447,7 +710,113 @@ graph LR
         {% if detection_summary.top_rules %}
         <div class="card">
             <h2>🎯 Top Detection Rules</h2>
-            <table>
+            <div class="chart-container">
+                <canvas id="topRulesChart"></canvas>
+            </div>
+
+            <script>
+                // Chart: Top Detection Rules - Horizontal Bar Chart
+                // Shows the most triggered detection rules
+                // Data source: detection_summary.top_rules from Python
+                new Chart(document.getElementById('topRulesChart'), {
+                    type: 'bar',
+                    data: {
+                        // Y-axis: Rule names (show top 10 for readability)
+                        labels: [
+                            {% for rule, count in detection_summary.top_rules[:10] %}
+                            '{{ rule[:40] + "..." if rule|length > 40 else rule }}'{{ "," if not loop.last }}
+                            {% endfor %}
+                        ],
+                        datasets: [{
+                            label: 'Detection Count',
+                            // X-axis: Number of detections
+                            data: [
+                                {% for rule, count in detection_summary.top_rules[:10] %}
+                                {{ count }}{{ "," if not loop.last }}
+                                {% endfor %}
+                            ],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(118, 75, 162, 0.8)',
+                                'rgba(79, 158, 238, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(23, 162, 184, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(220, 53, 69, 0.8)',
+                                'rgba(102, 126, 234, 0.6)',
+                                'rgba(118, 75, 162, 0.6)',
+                                'rgba(79, 158, 238, 0.6)'
+                            ],
+                            borderColor: [
+                                '#667eea',
+                                '#764ba2',
+                                '#4F9EEE',
+                                '#28a745',
+                                '#17a2b8',
+                                '#ffc107',
+                                '#dc3545',
+                                '#667eea',
+                                '#764ba2',
+                                '#4F9EEE'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',  // Horizontal bars
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Top 10 Most Triggered Detection Rules',
+                                font: { size: 16, weight: 'bold' },
+                                padding: { bottom: 20 }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Detections: ' + context.parsed.x.toLocaleString();
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Detections',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Detection Rule',
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+
+            <details style="margin-top: 20px;">
+                <summary style="cursor: pointer; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                    <strong>📋 View Full List (Top 15)</strong>
+                </summary>
+            <table style="margin-top: 15px;">
                 <thead>
                     <tr>
                         <th style="width: 50px;">#</th>
@@ -465,25 +834,100 @@ graph LR
                     {% endfor %}
                 </tbody>
             </table>
+            </details>
         </div>
         {% endif %}
 
         {% if detection_summary.by_category %}
         <div class="card">
             <h2>📋 Detection Categories</h2>
-            <div class="mermaid-container">
-                <pre class="mermaid">
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#667eea'}}}%%
-pie title "Top 5 Detection Categories"
-{% for cat, count in (detection_summary.by_category.items()|sort(attribute='1', reverse=True)|list)[:5] %}
-    "{{ cat[:30] + '...' if cat|length > 30 else cat }}" : {{ count }}
-{% endfor %}
-{% set top_5_total = (detection_summary.by_category.items()|sort(attribute='1', reverse=True)|list)[:5]|sum(attribute='1') %}
-{% if detection_summary.total - top_5_total > 0 %}
-    "Other Categories" : {{ detection_summary.total - top_5_total }}
-{% endif %}
-                </pre>
+            <div class="chart-container">
+                <canvas id="categoriesChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Detection Categories - Doughnut Chart
+                // Shows distribution of detections across categories
+                // Data source: detection_summary.by_category from Python
+                {% set top_categories = (detection_summary.by_category.items()|sort(attribute='1', reverse=True)|list)[:5] %}
+                {% set top_5_total = top_categories|sum(attribute='1') %}
+                {% set other_total = detection_summary.total - top_5_total %}
+
+                new Chart(document.getElementById('categoriesChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            {% for cat, count in top_categories %}
+                            '{{ cat[:30] + "..." if cat|length > 30 else cat }}'{{ "," if not loop.last or other_total > 0 }}
+                            {% endfor %}
+                            {% if other_total > 0 %}
+                            'Other Categories'
+                            {% endif %}
+                        ],
+                        datasets: [{
+                            label: 'Detections',
+                            data: [
+                                {% for cat, count in top_categories %}
+                                {{ count }}{{ "," if not loop.last or other_total > 0 }}
+                                {% endfor %}
+                                {% if other_total > 0 %}
+                                {{ other_total }}
+                                {% endif %}
+                            ],
+                            backgroundColor: [
+                                '#667eea',
+                                '#764ba2',
+                                '#4F9EEE',
+                                '#28a745',
+                                '#17a2b8',
+                                '#ffc107'
+                            ],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Top 5 Detection Categories',
+                                font: { size: 16, weight: 'bold' },
+                                padding: { bottom: 20 }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed.toLocaleString() + ' detections';
+
+                                        // Add percentage
+                                        let total = {{ detection_summary.total }};
+                                        let percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        label += ' (' + percentage + '%)';
+
+                                        return label;
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'right',
+                                labels: {
+                                    padding: 15,
+                                    font: { size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
             <table>
                 <thead>
                     <tr>

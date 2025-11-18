@@ -4,20 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sensor Health Report - {{ summary.org_name }}</title>
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'base',
-            themeVariables: {
-                primaryColor: '#667eea',
-                primaryTextColor: '#fff',
-                primaryBorderColor: '#764ba2',
-                lineColor: '#667eea',
-                secondaryColor: '#764ba2',
-                tertiaryColor: '#f5f5f5'
-            }
-        });
+
+    <!-- Chart.js for interactive visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Chart.js default configuration
+        // Using LimaCharlie brand colors
+        Chart.defaults.color = '#333';
+        Chart.defaults.borderColor = '#e0e0e0';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+
+        // Brand colors for consistent styling across all charts
+        const brandColors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            accent: '#4F9EEE',
+            success: '#28a745',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#17a2b8'
+        };
     </script>
     <style>
         * {
@@ -116,13 +123,16 @@
             padding-bottom: 10px;
         }
 
-        .mermaid-container {
-            margin: 30px 0;
-            padding: 20px;
-            background: #fafafa;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-container canvas {
+            max-height: 400px;
         }
 
         table {
@@ -224,6 +234,64 @@
             color: #383d41;
         }
 
+        /* Collapsible sections */
+        details {
+            margin: 15px 0;
+        }
+
+        details summary {
+            cursor: pointer;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-weight: 600;
+            color: #333;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        details summary:hover {
+            background: #e9ecef;
+        }
+
+        details[open] summary {
+            background: #667eea;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        details summary::marker {
+            color: #667eea;
+        }
+
+        details[open] summary::marker {
+            color: white;
+        }
+
+        details .collapsible-content {
+            padding: 0;
+            margin-top: 0;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
+        details .collapsible-content table {
+            margin: 0;
+        }
+
+        .expand-hint {
+            font-size: 0.85em;
+            color: #667eea;
+            font-weight: normal;
+            margin-left: 10px;
+        }
+
+        details[open] .expand-hint {
+            color: white;
+        }
+
         @media print {
             body {
                 background: white;
@@ -247,7 +315,7 @@
                 word-wrap: break-word;
                 overflow-wrap: break-word;
             }
-            .mermaid-container {
+            .chart-container {
                 page-break-inside: avoid;
             }
             .summary-grid {
@@ -321,14 +389,53 @@
                 <img src="{{ static_charts['platform_distribution'] }}" style="max-width: 100%; height: auto;" alt="Platform Distribution Chart">
             </div>
             {% else %}
-            <div class="mermaid-container">
-                <pre class="mermaid">
-pie title "Sensor Distribution by Platform"
-{% for platform, stats in platform_stats.items() %}
-    "{{ platform }}" : {{ stats.total }}
-{% endfor %}
-                </pre>
+            <div class="chart-container">
+                <canvas id="platformDistChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Platform Distribution - Doughnut Chart
+                // Shows sensor distribution across platforms
+                new Chart(document.getElementById('platformDistChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: {{ platform_stats.keys()|list|tojson }},
+                        datasets: [{
+                            label: 'Sensors',
+                            data: {{ platform_stats.values()|map(attribute='total')|list|tojson }},
+                            backgroundColor: [
+                                '#667eea', '#764ba2', '#4F9EEE', '#28a745',
+                                '#17a2b8', '#ffc107', '#dc3545', '#6c757d'
+                            ],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Sensor Distribution by Platform',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label + ': ';
+                                        label += context.parsed.toLocaleString() + ' sensors';
+                                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        let pct = ((context.parsed / total) * 100).toFixed(1);
+                                        label += ' (' + pct + '%)';
+                                        return label;
+                                    }
+                                }
+                            },
+                            legend: { position: 'right' }
+                        }
+                    }
+                });
+            </script>
             {% endif %}
 
             <table>
@@ -367,16 +474,82 @@ pie title "Sensor Distribution by Platform"
                 <img src="{{ static_charts['tag_distribution'] }}" style="max-width: 100%; height: auto;" alt="Tag Distribution Chart">
             </div>
             {% else %}
-            <div class="mermaid-container">
-                <pre class="mermaid">
-pie title "Top 10 Tags by Sensor Count"
-{% for tag, stats in (tag_stats.items()|list)[:10] %}
-    "{{ tag }}" : {{ stats.total }}
-{% endfor %}
-                </pre>
+            <div class="chart-container">
+                <canvas id="tagDistChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Tag Distribution - Doughnut Chart
+                // Shows top 10 tags by sensor count
+                {% set top_tags = (tag_stats.items()|list)[:10] %}
+                new Chart(document.getElementById('tagDistChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: {{ top_tags|map(attribute='0')|list|tojson }},
+                        datasets: [{
+                            label: 'Sensors',
+                            data: {{ top_tags|map(attribute='1')|map(attribute='total')|list|tojson }},
+                            backgroundColor: [
+                                '#667eea', '#764ba2', '#4F9EEE', '#28a745',
+                                '#17a2b8', '#ffc107', '#dc3545', '#6c757d',
+                                '#e83e8c', '#fd7e14'
+                            ],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Top 10 Tags by Sensor Count',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed.toLocaleString() + ' sensors';
+                                    }
+                                }
+                            },
+                            legend: { position: 'right' }
+                        }
+                    }
+                });
+            </script>
             {% endif %}
 
+            {% if tag_stats|length > 10 %}
+            <details>
+                <summary>
+                    Tag Distribution Table ({{ tag_stats|length }} tags)
+                    <span class="expand-hint">(Click to expand/collapse)</span>
+                </summary>
+                <div class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tag</th>
+                                <th>Total Sensors</th>
+                                <th>Online</th>
+                                <th>Offline</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for tag, stats in tag_stats.items() %}
+                            <tr>
+                                <td><span class="badge badge-secondary">{{ tag }}</span></td>
+                                <td>{{ stats.total }}</td>
+                                <td class="status-online">{{ stats.online }}</td>
+                                <td class="status-offline">{{ stats.offline }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+            {% else %}
             <table>
                 <thead>
                     <tr>
@@ -397,6 +570,7 @@ pie title "Top 10 Tags by Sensor Count"
                 {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         </div>
         {% endif %}
 
@@ -410,18 +584,94 @@ pie title "Top 10 Tags by Sensor Count"
                 <img src="{{ static_charts['stale_sensors'] }}" style="max-width: 100%; height: auto;" alt="Stale Sensors Chart">
             </div>
             {% else %}
-            <div class="mermaid-container">
-                <pre class="mermaid">
-pie title "Offline Sensor Age Distribution"
-    "1-7 days" : {{ summary.stale_24h_count }}
-    "7-30 days" : {{ summary.stale_7d_count }}
-    ">30 days" : {{ summary.stale_30d_count }}
-                </pre>
+            <div class="chart-container">
+                <canvas id="staleSensorsChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Stale Sensors - Doughnut Chart
+                // Shows offline sensor age distribution
+                new Chart(document.getElementById('staleSensorsChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['1-7 days', '7-30 days', '>30 days'],
+                        datasets: [{
+                            label: 'Offline Sensors',
+                            data: [
+                                {{ summary.stale_24h_count }},
+                                {{ summary.stale_7d_count }},
+                                {{ summary.stale_30d_count }}
+                            ],
+                            backgroundColor: [
+                                '#ffc107',  // Warning - 1-7 days
+                                '#fd7e14',  // Orange - 7-30 days
+                                '#dc3545'   // Danger - >30 days
+                            ],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Offline Sensor Age Distribution',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label + ': ';
+                                        label += context.parsed.toLocaleString() + ' sensors';
+                                        let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        if (total > 0) {
+                                            let pct = ((context.parsed / total) * 100).toFixed(1);
+                                            label += ' (' + pct + '%)';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            },
+                            legend: { position: 'right' }
+                        }
+                    }
+                });
+            </script>
             {% endif %}
 
             {% if stale_sensors.offline_30d %}
             <h3 style="color: #dc3545; margin-top: 30px;">🔴 Offline > 30 Days ({{ stale_sensors.offline_30d|length }})</h3>
+            {% if stale_sensors.offline_30d|length > 10 %}
+            <details>
+                <summary>
+                    Critical Offline Sensors ({{ stale_sensors.offline_30d|length }} sensors)
+                    <span class="expand-hint">(Click to expand/collapse)</span>
+                </summary>
+                <div class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hostname</th>
+                                <th>Days Offline</th>
+                                <th>Last Seen</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for sensor in stale_sensors.offline_30d %}
+                            <tr>
+                                <td>{{ sensor.hostname }}</td>
+                                <td>{{ sensor.offline_days|round(1) }}</td>
+                                <td>{{ sensor.last_seen }}</td>
+                                <td>{{ sensor.tags }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+            {% else %}
             <table>
                 <thead>
                     <tr>
@@ -432,7 +682,7 @@ pie title "Offline Sensor Age Distribution"
                     </tr>
                 </thead>
                 <tbody>
-                {% for sensor in stale_sensors.offline_30d[:20] %}
+                {% for sensor in stale_sensors.offline_30d %}
                     <tr>
                         <td>{{ sensor.hostname }}</td>
                         <td>{{ sensor.offline_days|round(1) }}</td>
@@ -442,13 +692,41 @@ pie title "Offline Sensor Age Distribution"
                 {% endfor %}
                 </tbody>
             </table>
-            {% if stale_sensors.offline_30d|length > 20 %}
-            <p style="color: #999; margin-top: 10px;">Showing 20 of {{ stale_sensors.offline_30d|length }} sensors</p>
             {% endif %}
             {% endif %}
 
             {% if stale_sensors.offline_7d %}
             <h3 style="color: #ffc107; margin-top: 30px;">🟡 Offline 7-30 Days ({{ stale_sensors.offline_7d|length }})</h3>
+            {% if stale_sensors.offline_7d|length > 10 %}
+            <details>
+                <summary>
+                    Warning Offline Sensors ({{ stale_sensors.offline_7d|length }} sensors)
+                    <span class="expand-hint">(Click to expand/collapse)</span>
+                </summary>
+                <div class="collapsible-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hostname</th>
+                                <th>Days Offline</th>
+                                <th>Last Seen</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for sensor in stale_sensors.offline_7d %}
+                            <tr>
+                                <td>{{ sensor.hostname }}</td>
+                                <td>{{ sensor.offline_days|round(1) }}</td>
+                                <td>{{ sensor.last_seen }}</td>
+                                <td>{{ sensor.tags }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+            {% else %}
             <table>
                 <thead>
                     <tr>
@@ -459,7 +737,7 @@ pie title "Offline Sensor Age Distribution"
                     </tr>
                 </thead>
                 <tbody>
-                {% for sensor in stale_sensors.offline_7d[:20] %}
+                {% for sensor in stale_sensors.offline_7d %}
                     <tr>
                         <td>{{ sensor.hostname }}</td>
                         <td>{{ sensor.offline_days|round(1) }}</td>
@@ -469,8 +747,6 @@ pie title "Offline Sensor Age Distribution"
                 {% endfor %}
                 </tbody>
             </table>
-            {% if stale_sensors.offline_7d|length > 20 %}
-            <p style="color: #999; margin-top: 10px;">Showing 20 of {{ stale_sensors.offline_7d|length }} sensors</p>
             {% endif %}
             {% endif %}
         </div>
@@ -486,14 +762,64 @@ pie title "Offline Sensor Age Distribution"
                 <img src="{{ static_charts['version_distribution'] }}" style="max-width: 100%; height: auto;" alt="Version Distribution Chart">
             </div>
             {% else %}
-            <div class="mermaid-container">
-                <pre class="mermaid">
-pie title "Top 10 Agent Versions"
-{% for version, count in version_distribution.items() %}
-    "{{ version[:15] }}" : {{ count }}
-{% endfor %}
-                </pre>
+            <div class="chart-container">
+                <canvas id="versionDistChart"></canvas>
             </div>
+
+            <script>
+                // Chart: Agent Version Distribution - Horizontal Bar Chart
+                // Shows top 10 agent versions by sensor count
+                {% set top_versions = (version_distribution.items()|list)[:10] %}
+                new Chart(document.getElementById('versionDistChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: {{ top_versions|map(attribute='0')|list|tojson }},
+                        datasets: [{
+                            label: 'Sensors',
+                            data: {{ top_versions|map(attribute='1')|list|tojson }},
+                            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                            borderColor: '#667eea',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',  // Horizontal bars
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Top 10 Agent Versions',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Sensors: ' + context.parsed.x.toLocaleString();
+                                    }
+                                }
+                            },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Sensors',
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Agent Version',
+                                    font: { size: 12, weight: 'bold' }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
             {% endif %}
 
             <table>

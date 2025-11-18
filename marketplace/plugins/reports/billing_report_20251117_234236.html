@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Multi-Tenant Billing Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+        }
+        .metadata {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+        .cost-highlight {
+            border-left-color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .org-section {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 Multi-Tenant Billing Report</h1>
+        <div class="metadata">
+            Generated: 2025-11-18T07:42:36.139795+00:00<br>
+            Period: 2025-10-19 to 2025-11-18 (30 days)<br>
+            Organizations: 3
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📊 Cross-Tenant Summary</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Total Sensors</div>
+                <div class="stat-value">798</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Total Events</div>
+                <div class="stat-value">11,072,221</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Total Output</div>
+                <div class="stat-value">36.19 GB</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Total Evaluations</div>
+                <div class="stat-value">14,466,162</div>
+            </div>
+            <div class="stat-box cost-highlight">
+                <div class="stat-label">Estimated Monthly Cost</div>
+                <div class="stat-value">$36.70</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📈 Cost Distribution by Organization</h2>
+        <div class="chart-container">
+            <canvas id="costChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🏢 Organization Overview</h2>
+        <table>
+            <tr>
+                <th>Organization</th>
+                <th>Sensors</th>
+                <th>Events</th>
+                <th>Output (GB)</th>
+                <th>Estimated Cost</th>
+            </tr>
+            <tr>
+                <td><strong>lc_demo</strong></td>
+                <td>653/42</td>
+                <td>11,072,221</td>
+                <td>36.19</td>
+                <td><strong>$36.70</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Development Instance</strong></td>
+                <td>144/10</td>
+                <td>0</td>
+                <td>0.00</td>
+                <td><strong>$0.00</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Dream Machine</strong></td>
+                <td>1/2</td>
+                <td>0</td>
+                <td>0.00</td>
+                <td><strong>$0.00</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>📋 Detailed Organization Breakdown</h2>
+        <div class="org-section">
+            <h3>Development Instance</h3>
+            <p><strong>Organization ID:</strong> <code>c1de541c-a810-45dd-a22e-3e10f4d2e076</code></p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Sensors</div>
+                    <div class="stat-value" style="font-size: 1.4em;">144/10</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Peak Sensors</div>
+                    <div class="stat-value" style="font-size: 1.4em;">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Events</div>
+                    <div class="stat-value" style="font-size: 1.4em;">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Data Output</div>
+                    <div class="stat-value" style="font-size: 1.4em;">0.00 GB</div>
+                </div>
+                <div class="stat-box cost-highlight">
+                    <div class="stat-label">Estimated Cost</div>
+                    <div class="stat-value" style="font-size: 1.4em;">$0.00</div>
+                </div>
+            </div>
+            <h4>Last 7 Days Activity</h4>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Events</th>
+                    <th>Output (GB)</th>
+                    <th>Evaluations</th>
+                </tr>
+                <tr>
+                    <td>2025-11-12</td>
+                    <td>0</td>
+                    <td>0.000</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>2025-11-13</td>
+                    <td>0</td>
+                    <td>0.000</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>2025-11-14</td>
+                    <td>0</td>
+                    <td>0.000</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>2025-11-15</td>
+                    <td>0</td>
+                    <td>0.000</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>2025-11-16</td>
+                    <td>0</td>
+                    <td>0.000</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>2025-11-17</td>
+                    <td>0</td>
+                    <td>0.000</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>2025-11-18</td>
+                    <td>0</td>
+                    <td>0.000</td>
+                    <td>0</td>
+                </tr>
+            </table>
+        </div>
+        <div class="org-section">
+            <h3>Dream Machine</h3>
+            <p><strong>Organization ID:</strong> <code>b435603f-c8c0-4803-97d2-c7161a39fe76</code></p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Sensors</div>
+                    <div class="stat-value" style="font-size: 1.4em;">1/2</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Peak Sensors</div>
+                    <div class="stat-value" style="font-size: 1.4em;">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Events</div>
+                    <div class="stat-value" style="font-size: 1.4em;">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Data Output</div>
+                    <div class="stat-value" style="font-size: 1.4em;">0.00 GB</div>
+                </div>
+                <div class="stat-box cost-highlight">
+                    <div class="stat-label">Estimated Cost</div>
+                    <div class="stat-value" style="font-size: 1.4em;">$0.00</div>
+                </div>
+            </div>
+        </div>
+        <div class="org-section">
+            <h3>lc_demo</h3>
+            <p><strong>Organization ID:</strong> <code>8cbe27f4-bfa1-4afb-ba19-138cd51389cd</code></p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Sensors</div>
+                    <div class="stat-value" style="font-size: 1.4em;">653/42</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Peak Sensors</div>
+                    <div class="stat-value" style="font-size: 1.4em;">3</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Events</div>
+                    <div class="stat-value" style="font-size: 1.4em;">11,072,221</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Data Output</div>
+                    <div class="stat-value" style="font-size: 1.4em;">36.19 GB</div>
+                </div>
+                <div class="stat-box cost-highlight">
+                    <div class="stat-label">Estimated Cost</div>
+                    <div class="stat-value" style="font-size: 1.4em;">$36.70</div>
+                </div>
+            </div>
+            <h4>Last 7 Days Activity</h4>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Events</th>
+                    <th>Output (GB)</th>
+                    <th>Evaluations</th>
+                </tr>
+                <tr>
+                    <td>2025-11-12</td>
+                    <td>641,433</td>
+                    <td>1.836</td>
+                    <td>435,504</td>
+                </tr>
+                <tr>
+                    <td>2025-11-13</td>
+                    <td>670,891</td>
+                    <td>1.768</td>
+                    <td>451,860</td>
+                </tr>
+                <tr>
+                    <td>2025-11-14</td>
+                    <td>629,984</td>
+                    <td>1.744</td>
+                    <td>435,504</td>
+                </tr>
+                <tr>
+                    <td>2025-11-15</td>
+                    <td>641,412</td>
+                    <td>1.917</td>
+                    <td>436,110</td>
+                </tr>
+                <tr>
+                    <td>2025-11-16</td>
+                    <td>355,600</td>
+                    <td>1.211</td>
+                    <td>433,955</td>
+                </tr>
+                <tr>
+                    <td>2025-11-17</td>
+                    <td>185,753</td>
+                    <td>0.500</td>
+                    <td>435,504</td>
+                </tr>
+                <tr>
+                    <td>2025-11-18</td>
+                    <td>74,431</td>
+                    <td>0.210</td>
+                    <td>156,072</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="note">
+        <strong>Note:</strong> Estimated costs are approximate and based on standard LimaCharlie pricing ($5/sensor/month + $0.20/GB + $0.001 per 1k evaluations).
+        Actual costs may vary based on your specific plan, commitments, and current pricing. Please refer to your LimaCharlie billing dashboard for actual charges.
+    </div>
+
+    <div class="footer">
+        Generated by LimaCharlie Multi-Tenant Billing Report
+    </div>
+
+    <script>
+        // Cost Distribution Chart
+        const costCtx = document.getElementById('costChart');
+        if (costCtx) {
+            new Chart(costCtx, {
+                type: 'bar',
+                data: {
+                    labels: ["Development Instance", "Dream Machine", "lc_demo"],
+                    datasets: [{
+                        label: 'Estimated Cost ($)',
+                        data: [0.0, 0.0, 36.7],
+                        backgroundColor: '#667eea',
+                        borderColor: '#764ba2',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Summary - lc_demo</title>
+
+    <!-- Chart.js for interactive visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+        // Chart.js default configuration
+        // Using LimaCharlie brand colors
+        Chart.defaults.color = '#333';
+        Chart.defaults.borderColor = '#e0e0e0';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+
+        // Brand colors for consistent styling across all charts
+        const brandColors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            accent: '#4F9EEE',
+            success: '#28a745',
+            warning: '#ffc107',
+            danger: '#dc3545',
+            info: '#17a2b8'
+        };
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        /* KPI Dashboard Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .kpi-card.status-good { border-left: 5px solid #28a745; }
+        .kpi-card.status-warning { border-left: 5px solid #ffc107; }
+        .kpi-card.status-danger { border-left: 5px solid #dc3545; }
+        .kpi-card.status-info { border-left: 5px solid #667eea; }
+
+        .kpi-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+
+        .kpi-subtext {
+            font-size: 0.95em;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .kpi-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .chart-container canvas {
+            max-height: 350px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .kpi-value {
+                font-size: 2em;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .card {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ Executive Summary</h1>
+            <p><strong>lc_demo</strong></p>
+            <p>Generated: 2025-11-18T05:56:14.654951+00:00</p>
+            <p>Period: 2025-11-11 to 2025-11-18 (7 days)</p>
+        </div>
+
+        <!-- KPI Dashboard -->
+        <div class="kpi-grid">
+            <div class="kpi-card status-info">
+                <div class="kpi-icon">💻</div>
+                <div class="kpi-label">Total Sensors</div>
+                <div class="kpi-value">653</div>
+                <div class="kpi-subtext">Quota: 42</div>
+            </div>
+
+            <div class="kpi-card status-danger">
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-label">Availability</div>
+                <div class="kpi-value">4.7%</div>
+                <div class="kpi-subtext">31 of 653 online</div>
+            </div>
+
+            <div class="kpi-card status-info">
+                <div class="kpi-icon">🔒</div>
+                <div class="kpi-label">Total Detections</div>
+                <div class="kpi-value">10,000</div>
+                <div class="kpi-subtext">1428.6 per day average</div>
+            </div>
+
+            <div class="kpi-card status-info">
+                <div class="kpi-icon">⚙️</div>
+                <div class="kpi-label">Active Rules</div>
+                <div class="kpi-value">150</div>
+                <div class="kpi-subtext">Detection & Response</div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="two-column">
+            <!-- Sensor Status Chart -->
+            <div class="card">
+                <h2>💻 Sensor Status</h2>
+                <div class="chart-container">
+                    <canvas id="sensorStatusChart"></canvas>
+                </div>
+
+                <script>
+                    // Chart: Sensor Status - Doughnut Chart
+                    // Shows online vs offline sensor distribution
+                    new Chart(document.getElementById('sensorStatusChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Online', 'Offline'],
+                            datasets: [{
+                                data: [31, 622],
+                                backgroundColor: [
+                                    brandColors.success,  // Green for online
+                                    brandColors.danger    // Red for offline
+                                ],
+                                borderColor: '#fff',
+                                borderWidth: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        font: { size: 14 }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: 12,
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.label + ': ';
+                                            label += context.parsed.toLocaleString() + ' sensors';
+                                            let pct = ((context.parsed / 653) * 100).toFixed(1);
+                                            label += ' (' + pct + '%)';
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+
+            <!-- Platform Distribution -->
+            <div class="card">
+                <h2>📊 Platform Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="platformChart"></canvas>
+                </div>
+
+                <script>
+                    // Chart: Platform Distribution - Horizontal Bar Chart
+                    // Shows sensor distribution across platforms
+                    new Chart(document.getElementById('platformChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ["linux", "macos", "windows", "2415919104", "2147483648", "67108864", "50331648", "150994944", "3758096384"],
+                            datasets: [{
+                                label: 'Sensors',
+                                data: [269, 192, 150, 30, 6, 3, 1, 1, 1],
+                                backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                                borderColor: brandColors.primary,
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',  // Horizontal bars
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    padding: 12,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'Sensors: ' + context.parsed.x.toLocaleString();
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Number of Sensors',
+                                        font: { size: 12, weight: 'bold' }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+
+        <!-- Detection Trend -->
+        <div class="card">
+            <h2>📈 Detection Activity Trend</h2>
+            <div class="chart-container">
+                <canvas id="detectionTrendChart"></canvas>
+            </div>
+
+            <script>
+                // Chart: Detection Trend - Line Chart
+                // Shows detection volume over time
+                new Chart(document.getElementById('detectionTrendChart'), {
+                    type: 'line',
+                    data: {
+                        labels: ["2025-11-13", "2025-11-14", "2025-11-15", "2025-11-16", "2025-11-17"],
+                        datasets: [{
+                            label: 'Daily Detections',
+                            data: [553, 142, 6734, 223, 2348],
+                            borderColor: brandColors.primary,
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: brandColors.primary,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Detections: ' + context.parsed.y.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Detections',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Date',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+
+        <!-- Top Detection Categories -->
+        <div class="card">
+            <h2>🎯 Top Detection Categories</h2>
+            <div class="chart-container">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+
+            <script>
+                // Chart: Top Detection Categories - Horizontal Bar Chart
+                // Shows most common detection types
+                new Chart(document.getElementById('categoriesChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ["spam", "alphamountain-category", "AlphaMountain Category Alert on demo-win-2016.c.lc-demo-infra.internal.", "proc-older-than-10s", "Windows Defender Settings Changed", "AlphaMountain Category Alert on desktop-14dh692.lan", "unique-google-domain", "Windows Defender History Deleted"],
+                        datasets: [{
+                            label: 'Detections',
+                            data: [6396, 1225, 1042, 730, 240, 182, 168, 6],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(118, 75, 162, 0.8)',
+                                'rgba(79, 158, 238, 0.8)',
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(23, 162, 184, 0.8)',
+                                'rgba(255, 193, 7, 0.8)',
+                                'rgba(220, 53, 69, 0.8)',
+                                'rgba(108, 117, 125, 0.8)'
+                            ],
+                            borderColor: [
+                                '#667eea', '#764ba2', '#4F9EEE', '#28a745',
+                                '#17a2b8', '#ffc107', '#dc3545', '#6c757d'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',  // Horizontal bars
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = 'Detections: ' + context.parsed.x.toLocaleString();
+                                        let pct = ((context.parsed.x / 10000) * 100).toFixed(1);
+                                        label += ' (' + pct + '%)';
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Detections',
+                                    font: { size: 12, weight: 'bold' }
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </div>
+
+        <!-- Configuration Summary -->
+        <div class="card">
+            <h2>⚙️ Configuration Overview</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th style="text-align: right;">Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>D&R Rules</strong></td>
+                        <td style="text-align: right;">150</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outputs</strong></td>
+                        <td style="text-align: right;">67</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tags</strong></td>
+                        <td style="text-align: right;">53</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Users</strong></td>
+                        <td style="text-align: right;">26</td>
+                    </tr>
+                    <tr>
+                        <td><strong>API Keys</strong></td>
+                        <td style="text-align: right;">89</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Usage Statistics -->
+        <div class="card">
+            <h2>📊 Latest Usage Statistics</h2>
+            <p style="margin-bottom: 15px;"><strong>Date:</strong> 2025-11-18</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th style="text-align: right;">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sensor Events</strong></td>
+                        <td style="text-align: right;">59,582</td>
+                    </tr>
+                    <tr>
+                        <td><strong>D&R Evaluations</strong></td>
+                        <td style="text-align: right;">108,876</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Output Data</strong></td>
+                        <td style="text-align: right;">0.17 GB</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Peak Concurrent Sensors</strong></td>
+                        <td style="text-align: right;">1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Generated by LimaCharlie Reporting Framework</p>
+            <p style="font-size: 0.85em; color: #999; margin-top: 5px;">Organization ID: 8cbe27f4-bfa1-4afb-ba19-138cd51389cd</p>
+        </div>
+    </div>
+</body>
+</html>
