@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully created **119 new SKILL.md files** for the lc_essentials plugin, bringing the total to **120 skills** (including the existing lookup-lc-doc skill).
+Successfully created **120 new SKILL.md files** for the lc_essentials plugin, bringing the total to **121 skills** (including the existing lookup-lc-doc skill).
 
 ## What Was Created
 
@@ -31,6 +31,9 @@ Successfully created **119 new SKILL.md files** for the lc_essentials plugin, br
 - run-saved-query
 - set-saved-query
 - delete-saved-query
+
+#### Threat Intelligence & Analysis (1 skill)
+- threat-report-evaluation
 
 #### Event Schemas & Platform Info (6 skills)
 - get-event-schema

@@ -18,6 +18,8 @@ Common scenarios:
 - "Show me all network connections to IP 203.0.113.50"
 - "Query detections from the last week"
 
+**If a query covers time outside of the last 30 days, you are _REQUIRED_ to ask the user for confirmation as it may incur costs.**
+
 ## What This Skill Does
 
 Executes LCQL queries against LimaCharlie's replay service, supporting complex filtering, timeframes, and pagination for events, detections, or audit logs.
