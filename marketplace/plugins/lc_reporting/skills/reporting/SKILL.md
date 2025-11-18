@@ -62,19 +62,19 @@ limacharlie set-oid <OID>  # Set active organization
 Refer to `data-catalog.yaml` for the complete list of 23 data categories including:
 
 1. **Organization Metadata** - Basic org info, quotas, versions
-2. **Sensors** (646 total) - Endpoints, status, capabilities
-3. **D&R Rules** (606 total) - Detection and response logic
+2. **Sensors** - Endpoints, status, capabilities
+3. **D&R Rules** - Detection and response logic
 4. **Events** - Historical telemetry (Insight enabled)
 5. **Detections** - Security alerts and findings
 6. **Usage Statistics** - Daily operational metrics
-7. **Outputs** (68 total) - Data export configurations
-8. **Tags** (53 total) - Sensor organization
-9. **Extensions** (4 active) - Subscribed services
-10. **API Keys** (89 total) - Programmatic access
-11. **Users** (26 total) - Access control
+7. **Outputs** - Data export configurations
+8. **Tags** - Sensor organization
+9. **Extensions** - Subscribed services
+10. **API Keys** - Programmatic access
+11. **Users** - Access control
 12. **YARA Rules** - Malware detection
 13. **False Positive Rules** - Alert suppression
-14. **Installation Keys** (45 total) - Sensor deployment
+14. **Installation Keys** - Sensor deployment
 15. **Audit Logs** - Change history
 16. **MITRE ATT&CK** - Coverage mapping
 17. **Lookup Tables** - Data enrichment
