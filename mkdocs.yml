@@ -7,7 +7,6 @@ repo_name: refractionPOINT/documentation
 
 theme:
   name: material
-  custom_dir: overrides
   logo: assets/images/logo.svg
   favicon: assets/images/favicon.png
 
@@ -130,9 +129,9 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/refractionPOINT
       name: refractionPOINT on GitHub
-    - icon: fontawesome/brands/slack
-      link: https://slack.limacharlie.io
-      name: LimaCharlie Community Slack
+    - icon: fontawesome/solid/users
+      link: https://community.limacharlie.io/
+      name: Join our Community
     - icon: fontawesome/solid/globe
       link: https://limacharlie.io
       name: LimaCharlie Platform
