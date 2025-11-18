@@ -30,7 +30,6 @@ data_categories:
 
   sensors:
     description: "Endpoint sensors deployed in the organization"
-    total_count: 646
     access_method: "Manager.sensors()"
     mcp_tool: "mcp__limacharlie__list_sensors"
     permissions_required: ["sensor.list", "sensor.get"]
@@ -88,7 +87,6 @@ data_categories:
 
   detection_and_response_rules:
     description: "D&R rules for threat detection and automated response"
-    total_count: 606
     namespaces: 150
     access_method: "Manager.rules()"
     mcp_tools:
@@ -210,7 +208,6 @@ data_categories:
 
   outputs:
     description: "Data output configurations (SIEM, storage, etc.)"
-    total_count: 68
     access_method: "Manager.outputs()"
     mcp_tool: "mcp__limacharlie__list_outputs"
     permissions_required: ["output.list", "output.set", "output.del"]
@@ -230,7 +227,6 @@ data_categories:
 
   tags:
     description: "Tags applied to sensors for organization and targeting"
-    total_count: 53
     access_method: "Manager.getAllTags()"
     permissions_required: ["sensor.list"]
     sample_tags:
@@ -251,7 +247,6 @@ data_categories:
 
   extensions:
     description: "Active extensions/subscriptions in the organization"
-    total_count: 4
     access_method: "Manager.getSubscriptions()"
     active_extensions:
       - api
@@ -264,7 +259,6 @@ data_categories:
 
   api_keys:
     description: "API keys for programmatic access"
-    total_count: 89
     access_method: "Manager.getApiKeys()"
     mcp_tools:
       list: "mcp__limacharlie__list_api_keys"
@@ -274,7 +268,6 @@ data_categories:
 
   users:
     description: "Users with access to the organization"
-    total_count: 26
     access_method: "Manager.getUsers()"
     permissions_required: ["user.ctrl"]
     available_fields:
@@ -311,7 +304,6 @@ data_categories:
 
   installation_keys:
     description: "Keys for sensor deployment"
-    total_count: 45
     access_method: "Manager.getIngestionKeys()"
     mcp_tools:
       list: "mcp__limacharlie__list_installation_keys"
