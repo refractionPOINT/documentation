@@ -50,7 +50,7 @@ Ensure you have:
 Use the dedicated MCP tool:
 
 ```
-mcp__limacharlie__yara_scan_process(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
   oid="[organization-id]",
   sid="[sensor-id]",
   pid=[process-id],
@@ -131,7 +131,7 @@ Steps:
 1. Obtain or create YARA rule for Cobalt Strike
 2. Call the tool:
 ```
-mcp__limacharlie__yara_scan_process(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   sid="abc-123-def-456-ghi-789",
   pid=1234,
@@ -149,7 +149,7 @@ Steps:
 1. Find PowerShell process PID
 2. Reference existing rule by name:
 ```
-mcp__limacharlie__yara_scan_process(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   sid="abc-123-def-456-ghi-789",
   pid=5678,

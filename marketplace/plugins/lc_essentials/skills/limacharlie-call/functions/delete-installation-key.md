@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="DELETE",
   path="/v1/installationkeys/[oid]",
-  body={
+  query_params={
     "iid": "installation-key-id-to-delete"
   }
 )
@@ -65,9 +65,9 @@ mcp__limacharlie__lc_api_call(
 - Endpoint: `api`
 - Method: `DELETE`
 - Path: `/installationkeys/{oid}`
-- Query parameters: None
-- Body fields:
+- Query parameters:
   - `iid`: Installation key ID to delete (required)
+- Body: None
 
 ### Step 3: Handle the Response
 
@@ -118,7 +118,7 @@ mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="DELETE",
   path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
+  query_params={
     "iid": "prod-old-key"
   }
 )
@@ -154,7 +154,7 @@ mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="DELETE",
   path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
+  query_params={
     "iid": "dev-test-123"
   }
 )

@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/hive/query/global/suspicious-dns/data",
+  path="/v1/hive/query/{oid}/suspicious-dns/data",
   body={
     "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
     "description": "Find DNS requests to Russian domains",
@@ -69,7 +69,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/v1/hive/query/global/{query_name}/data`
+- Path: `/v1/hive/query/{oid}/{query_name}/data`
 - Body:
   - `query`: The LCQL query string
   - `description`: Optional description of the query

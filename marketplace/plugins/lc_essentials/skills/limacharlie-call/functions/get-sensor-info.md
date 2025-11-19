@@ -49,18 +49,18 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/xyz-sensor-id"
+  path="/v1/xyz-sensor-id"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/sensors/{oid}/{sid}` (replace both placeholders with actual IDs)
+- Path: `/{sid}` (replace `{sid}` with the sensor ID)
 - No query parameters needed
 - No request body needed
 
-**Note:** The SDK method `org.GetSensor(sid)` followed by `sensor.Update()` is used internally, which makes a GET request to `/sensors/{oid}/{sid}` and also fetches tags via GET `/sensors/{oid}/{sid}/tags`.
+**Note:** The SDK method `org.GetSensor(sid)` followed by `sensor.Update()` is used internally, which makes a GET request to `/{sid}` and also fetches tags via GET `/{sid}/tags`.
 
 ### Step 3: Handle the Response
 
@@ -143,7 +143,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab/xyz-123"
+  path="/v1/xyz-123"
 )
 ```
 

@@ -45,14 +45,21 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/timeline/xyz-sensor-id"
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/xyz-sensor-id/overview",
+  query_params={
+    "start": 1705000000,
+    "end": 1705847634
+  }
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/insight/{oid}/timeline/{sid}`
+- Path: `/insight/{oid}/{sid}/overview`
+- Query parameters:
+  - `start`: Unix epoch timestamp in seconds (required)
+  - `end`: Unix epoch timestamp in seconds (required)
 
 ### Step 3: Handle Response
 
@@ -60,30 +67,27 @@ mcp__limacharlie__lc_api_call(
 {
   "status_code": 200,
   "body": {
-    "sid": "xyz-sensor-id",
-    "earliest": 1705000000,
-    "latest": 1705847634,
-    "has_data": true
+    "overview": [1705000000, 1705003600, 1705007200, ...]
   }
 }
 ```
 
 **Success (200):**
-- `earliest`: Unix timestamp of oldest data
-- `latest`: Unix timestamp of newest data
-- `has_data`: Boolean indicating data availability
+- `overview`: Array of Unix timestamps representing time batches where sensor data is available
+- Empty array means no data in the requested timeframe
 
 ### Step 4: Format Response
 
 ```
 Sensor Data Availability: xyz-sensor-id
 
-Data Range:
-- Earliest: 2024-01-11 12:00:00 UTC
-- Latest: 2024-01-21 14:30:34 UTC
-- Duration: 10 days
+Query Range: 2024-01-11 12:00:00 to 2024-01-21 14:30:34 UTC
 
-Status: Data available for historical queries
+Data Batches Found: 45 timestamps
+- First batch: 2024-01-11 12:00:00 UTC
+- Last batch: 2024-01-21 14:00:00 UTC
+
+Status: Data available for historical queries in this timeframe
 ```
 
 ## Example Usage

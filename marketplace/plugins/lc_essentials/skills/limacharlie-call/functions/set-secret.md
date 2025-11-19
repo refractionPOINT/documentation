@@ -53,21 +53,10 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/v1/hive/secret/[oid]",
+  path="/v1/hive/secret/[oid]/[secret-name]/data",
   body={
-    "hive": {
-      "name": "secret",
-      "partition": "[oid]"
-    },
-    "name": "secret-name",
-    "record": {
-      "data": {
-        "value": "secret-value-here"
-      },
-      "usr_mtd": {
-        "enabled": true
-      }
-    }
+    "data": "{\"value\": \"secret-value-here\"}",
+    "usr_mtd": "{\"enabled\": true}"
   }
 )
 ```
@@ -75,16 +64,11 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/v1/hive/secret/{oid}` (replace `{oid}` with actual organization ID)
+- Path: `/v1/hive/secret/{oid}/{secret_name}/data` (replace `{oid}` with organization ID and `{secret_name}` with the secret name)
 - Query parameters: None
 - Body structure (Hive record format):
-  - `hive`: Identifies the hive type and partition
-    - `name`: "secret" (hive type)
-    - `partition`: Organization ID
-  - `name`: Secret name
-  - `record`: The secret data
-    - `data.value`: The actual secret value
-    - `usr_mtd.enabled`: true (enable the secret)
+  - `data`: JSON-encoded string containing the secret data (e.g., `{"value": "secret-value"}`)
+  - `usr_mtd`: JSON-encoded string containing user metadata (e.g., `{"enabled": true}`)
 
 ### Step 3: Handle the Response
 
@@ -139,21 +123,10 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/webhook-api-key/data",
   body={
-    "hive": {
-      "name": "secret",
-      "partition": "c7e8f940-1234-5678-abcd-1234567890ab"
-    },
-    "name": "webhook-api-key",
-    "record": {
-      "data": {
-        "value": "sk_live_abc123def456"
-      },
-      "usr_mtd": {
-        "enabled": true
-      }
-    }
+    "data": "{\"value\": \"sk_live_abc123def456\"}",
+    "usr_mtd": "{\"enabled\": true}"
   }
 )
 ```
@@ -163,12 +136,7 @@ Expected response:
 {
   "status_code": 200,
   "body": {
-    "guid": "abc123-def456-ghi789",
-    "hive": {
-      "name": "secret",
-      "partition": "c7e8f940-1234-5678-abcd-1234567890ab"
-    },
-    "name": "webhook-api-key"
+    "guid": "abc123-def456-ghi789"
   }
 }
 ```
@@ -200,21 +168,10 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/slack-api-token/data",
   body={
-    "hive": {
-      "name": "secret",
-      "partition": "c7e8f940-1234-5678-abcd-1234567890ab"
-    },
-    "name": "slack-api-token",
-    "record": {
-      "data": {
-        "value": "xoxb-1234567890-abcdefghijk"
-      },
-      "usr_mtd": {
-        "enabled": true
-      }
-    }
+    "data": "{\"value\": \"xoxb-1234567890-abcdefghijk\"}",
+    "usr_mtd": "{\"enabled\": true}"
   }
 )
 ```

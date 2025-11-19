@@ -58,9 +58,8 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/events",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/xyz-sensor-id",
   query_params={
-    "sid": "xyz-sensor-id",
     "start": 1705761234,
     "end": 1705764834,
     "limit": 1000,
@@ -72,9 +71,8 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/v1/insight/{oid}/events`
+- Path: `/v1/insight/{oid}/{sid}` (replace `{oid}` with organization ID and `{sid}` with sensor ID)
 - Query parameters:
-  - `sid`: Sensor ID (required)
   - `start`: Unix epoch timestamp in seconds (required)
   - `end`: Unix epoch timestamp in seconds (required)
   - `limit`: Max events to return (optional, default 1000)
@@ -176,9 +174,8 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/events",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/xyz-123",
   query_params={
-    "sid": "xyz-123",
     "start": 1705676400,
     "end": 1705680000,
     "limit": 1000

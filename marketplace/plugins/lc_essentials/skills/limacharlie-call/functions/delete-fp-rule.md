@@ -48,19 +48,15 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/v1/fp/[organization-id]",
-  body={
-    "name": "[rule-name]"
-  }
+  path="/v1/hive/fp/[organization-id]/[rule-name]"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/v1/fp/{oid}`
-- Body fields:
-  - `name`: FP rule name to delete (string)
+- Path: `/v1/hive/fp/{oid}/{rule_name}`
+- Body fields: None
 
 ### Step 3: Handle the Response
 
@@ -108,10 +104,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/v1/fp/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
-    "name": "filter_dev_activity"
-  }
+  path="/v1/hive/fp/c7e8f940-1234-5678-abcd-1234567890ab/filter_dev_activity"
 )
 ```
 

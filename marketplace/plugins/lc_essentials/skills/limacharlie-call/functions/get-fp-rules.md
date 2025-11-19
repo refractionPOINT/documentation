@@ -47,14 +47,14 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/fp/[organization-id]"
+  path="/v1/hive/fp/[organization-id]"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/v1/fp/{oid}`
+- Path: `/v1/hive/fp/{oid}`
 - Query parameters: None
 - Body fields: None (GET request)
 
@@ -128,7 +128,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/fp/c7e8f940-1234-5678-abcd-1234567890ab"
+  path="/v1/hive/fp/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 

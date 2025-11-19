@@ -46,24 +46,17 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
-  method="POST",
-  path="/v1/service/yara",
-  body={
-    "oid": "[organization-id]",
-    "action": "get_source",
-    "source": "[rule-name]"
-  }
+  method="GET",
+  path="/v1/hive/yara/[organization-id]/[rule-name]/data"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
-- Method: `POST`
-- Path: `/service/yara` (YARA service endpoint)
-- Body fields:
-  - `oid`: Organization ID
-  - `action`: Must be "get_source"
-  - `source`: Rule source name to retrieve
+- Method: `GET`
+- Path: `/hive/yara/{oid}/{rule_name}/data` (YARA hive endpoint)
+- Query parameters: None
+- Body fields: None
 
 ### Step 3: Handle the Response
 
@@ -73,13 +66,13 @@ The API returns a response with:
   "status_code": 200,
   "status": "200 OK",
   "body": {
-    "content": "rule malware_detection {\n  meta:\n    author = \"security\"\n    description = \"Detects malware\"\n  strings:\n    $hex1 = { 4D 5A 90 }\n    $str1 = \"malicious\"\n  condition:\n    $hex1 or $str1\n}\n"
+    "rules": "rule malware_detection {\n  meta:\n    author = \"security\"\n    description = \"Detects malware\"\n  strings:\n    $hex1 = { 4D 5A 90 }\n    $str1 = \"malicious\"\n  condition:\n    $hex1 or $str1\n}\n"
   }
 }
 ```
 
 **Success (200-299):**
-- The response body contains a "content" field with the YARA rule source code
+- The response body contains a "rules" field with the YARA rule source code
 - Present the complete YARA rule text to the user
 - Format the rule content with proper syntax highlighting if possible
 
@@ -112,13 +105,8 @@ Steps:
 mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
-  method="POST",
-  path="/v1/service/yara",
-  body={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "action": "get_source",
-    "source": "malware_detection"
-  }
+  method="GET",
+  path="/v1/hive/yara/c7e8f940-1234-5678-abcd-1234567890ab/malware_detection/data"
 )
 ```
 

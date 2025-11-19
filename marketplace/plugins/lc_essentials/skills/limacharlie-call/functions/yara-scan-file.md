@@ -50,7 +50,7 @@ Ensure you have:
 Use the dedicated MCP tool:
 
 ```
-mcp__limacharlie__yara_scan_file(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_file(
   oid="[organization-id]",
   sid="[sensor-id]",
   file_path="[full-file-path]",
@@ -136,7 +136,7 @@ Steps:
 1. Obtain or create comprehensive malware YARA rule
 2. Call the tool:
 ```
-mcp__limacharlie__yara_scan_file(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_file(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   sid="abc-123-def-456-ghi-789",
   file_path="C:\\Temp\\suspicious.exe",
