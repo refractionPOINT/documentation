@@ -1,6 +1,6 @@
 # LimaCharlie Essentials Plugin
 
-Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 116 comprehensive skills covering core operations, historical data, forensics, detection rules, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
+Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 121 comprehensive skills covering core operations, historical data, forensics, detection rules, threat intelligence analysis, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
 
 ## Important: Organization ID (OID) Requirements
 
@@ -23,11 +23,11 @@ A small number of skills operate at the user-level or global level and **do not 
 - **`create-org`** - Creates a new organization (user-level operation)
 - **`get-platform-names`** - Gets list of platform names from ontology (global operation)
 
-All other 113 skills require a valid, specific organization ID.
+All other 118 skills require a valid, specific organization ID.
 
 ## What It Does
 
-This plugin provides 116 comprehensive skills:
+This plugin provides 121 comprehensive skills:
 
 ### Skills Organized by Category
 
@@ -60,6 +60,9 @@ This plugin provides 116 comprehensive skills:
 - **LCQL Queries**: Run LCQL queries, manage saved queries
 - **IOC Search**: Search for IoCs (IPs, domains, hashes) across historical data
 - **Host Search**: Search for hosts by hostname or other attributes
+
+### Threat Intelligence & Analysis
+- **Threat Report Evaluation**: Systematically evaluate threat reports, breach analyses, and IOC reports to search for compromise indicators, extract IOCs, perform searches, identify malicious behaviors, generate LCQL queries, and create D&R rules and lookups
 
 ### Configuration & Integrations
 - **Extensions**: List, get, create, update, delete extension configs

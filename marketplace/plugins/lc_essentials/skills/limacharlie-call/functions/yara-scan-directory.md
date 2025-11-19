@@ -53,7 +53,7 @@ Ensure you have:
 Use the dedicated MCP tool:
 
 ```
-mcp__limacharlie__yara_scan_directory(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
   oid="[organization-id]",
   sid="[sensor-id]",
   directory="[directory-path]",
@@ -142,7 +142,7 @@ Steps:
 1. Prepare generic malware YARA rule
 2. Call the tool:
 ```
-mcp__limacharlie__yara_scan_directory(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   sid="abc-123-def-456-ghi-789",
   directory="C:\\Users\\John\\Downloads",
@@ -162,7 +162,7 @@ Steps:
 1. Use PowerShell-specific YARA rules
 2. Filter for .ps1 files:
 ```
-mcp__limacharlie__yara_scan_directory(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   sid="abc-123-def-456-ghi-789",
   directory="C:\\Scripts",

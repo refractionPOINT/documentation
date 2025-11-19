@@ -53,7 +53,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/query/global/[query-name]/data"
+  path="/v1/hive/query/[oid]/[query-name]/data"
 )
 ```
 
@@ -104,7 +104,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_api_call(
   oid="...",
   endpoint="api",
   method="GET",
-  path="/v1/hive/query/global/suspicious-dns/data"
+  path="/v1/hive/query/{oid}/suspicious-dns/data"
 )
 // Returns: {"query": "-24h | * | DNS_REQUEST | ..."}
 ```

@@ -61,18 +61,15 @@ mcp__plugin_lc-essentials_limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/v1/service/yara",
+  path="/v1/hive/yara/{oid}/[rule-name]/data",
   body={
-    "oid": "[organization-id]",
-    "action": "add_source",
-    "name": "[rule-name]",
-    "source": "",
-    "content": "[yara-rule-content]"
+    "data": "{\"rules\": \"[yara-rule-content]\"}",
+    "usr_mtd": "{\"enabled\": true}"
   }
 )
 ```
 
-**Important**: The `source` field should be empty string for literal rules.
+**Important**: The rule content should be JSON-encoded as a string in the `data` field.
 
 ### Step 2: Handle the Response
 
@@ -124,13 +121,10 @@ mcp__plugin_lc-essentials_limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/service/yara",
+  path="/v1/hive/yara/c7e8f940-1234-5678-abcd-1234567890ab/ransomware_detection/data",
   body={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "action": "add_source",
-    "name": "ransomware_detection",
-    "source": "",
-    "content": "rule ransomware_behavior {\n  meta:\n    author = \"security-team\"\n    description = \"Detects common ransomware patterns\"\n  strings:\n    $encrypt1 = \"CryptEncrypt\" nocase\n    $ransom = \"YOUR FILES HAVE BEEN ENCRYPTED\" nocase\n  condition:\n    $encrypt1 and $ransom\n}\n"
+    "data": "{\"rules\": \"rule ransomware_behavior {\\n  meta:\\n    author = \\\"security-team\\\"\\n    description = \\\"Detects common ransomware patterns\\\"\\n  strings:\\n    $encrypt1 = \\\"CryptEncrypt\\\" nocase\\n    $ransom = \\\"YOUR FILES HAVE BEEN ENCRYPTED\\\" nocase\\n  condition:\\n    $encrypt1 and $ransom\\n}\\n\"}",
+    "usr_mtd": "{\"enabled\": true}"
   }
 )
 ```

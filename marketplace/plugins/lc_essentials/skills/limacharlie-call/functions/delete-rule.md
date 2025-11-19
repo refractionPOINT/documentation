@@ -54,14 +54,14 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/[hive-name]/global/[rule-name]"
+  path="/v1/hive/[hive-name]/[oid]/[rule-name]"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/hive/{hive_name}/global/{rule_name}`
+- Path: `/hive/{hive_name}/{oid}/{rule_name}`
   - Replace `{hive_name}` with the Hive name
   - Replace `{rule_name}` with the URL-encoded rule name
   - No `/data` or `/mtd` suffix - delete operates on the entire record
@@ -115,7 +115,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/dr-general/global/suspicious-dns"
+  path="/v1/hive/dr-general/c7e8f940-1234-5678-abcd-1234567890ab/suspicious-dns"
 )
 ```
 
@@ -130,7 +130,7 @@ User request: "Remove the 'chrome-fp' false positive rule"
 Steps:
 1. Get organization ID
 2. Use hive_name "fp" and rule_name "chrome-fp"
-3. Call API with path "/hive/fp/global/chrome-fp"
+3. Call API with path "/hive/fp/{oid}/chrome-fp"
 
 Expected response confirms the FP rule was deleted.
 

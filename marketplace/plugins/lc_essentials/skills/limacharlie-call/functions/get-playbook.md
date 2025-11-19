@@ -55,7 +55,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/playbook/global/{playbook_name}/data`
+- Path: `/hive/playbook/{oid}/{playbook_name}/data`
   - Replace `{playbook_name}` with the URL-encoded playbook name
   - The `/data` suffix retrieves both data and metadata
 - Query parameters: None

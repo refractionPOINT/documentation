@@ -46,22 +46,17 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server to call the YARA se
 mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
-  method="POST",
-  path="/v1/service/yara",
-  body={
-    "oid": "[organization-id]",
-    "action": "list_rules"
-  }
+  method="GET",
+  path="/v1/hive/yara/[organization-id]"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
-- Method: `POST`
-- Path: `/service/yara` (YARA service endpoint)
-- Body fields:
-  - `oid`: Organization ID
-  - `action`: Must be "list_rules"
+- Method: `GET`
+- Path: `/hive/yara/{oid}` (YARA hive, replace `{oid}` with organization ID)
+- Query parameters: None
+- Body fields: None
 
 ### Step 3: Handle the Response
 
@@ -132,12 +127,8 @@ Steps:
 mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
-  method="POST",
-  path="/v1/service/yara",
-  body={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "action": "list_rules"
-  }
+  method="GET",
+  path="/v1/hive/yara/c7e8f940-1234-5678-abcd-1234567890ab"
 )
 ```
 

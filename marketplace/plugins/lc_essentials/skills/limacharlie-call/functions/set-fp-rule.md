@@ -81,11 +81,10 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="POST",
-  path="/v1/fp/[organization-id]",
+  path="/v1/hive/fp/[organization-id]/[rule-name]/data",
   body={
-    "name": "[rule-name]",
-    "is_replace": "true",
-    "rule": "[JSON-encoded-filter-logic]"
+    "data": "[JSON-encoded-filter-logic]",
+    "usr_mtd": "{\"enabled\": true}"
   }
 )
 ```
@@ -93,11 +92,10 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/v1/fp/{oid}`
+- Path: `/v1/hive/fp/{oid}/{rule_name}/data`
 - Body fields:
-  - `name`: FP rule name (string)
-  - `is_replace`: "true" (string) to update if exists, "false" to fail if exists
-  - `rule`: JSON-encoded string of filter logic
+  - `data`: JSON-encoded string of filter logic
+  - `usr_mtd`: JSON-encoded string with metadata (e.g., `{"enabled": true}`)
 
 ### Step 4: Handle the Response
 
@@ -144,11 +142,10 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/fp/c7e8f940-1234-5678-abcd-1234567890ab",
+  path="/v1/hive/fp/c7e8f940-1234-5678-abcd-1234567890ab/filter_monitoring_tool/data",
   body={
-    "name": "filter_monitoring_tool",
-    "is_replace": "true",
-    "rule": "{\"op\":\"and\",\"rules\":[{\"op\":\"is\",\"path\":\"detect/cat\",\"value\":\"SUSPICIOUS_EXECUTION\"},{\"op\":\"contains\",\"path\":\"detect/event/FILE_PATH\",\"value\":\"C:\\\\Program Files\\\\MonitoringTool\\\\\"}]}"
+    "data": "{\"op\":\"and\",\"rules\":[{\"op\":\"is\",\"path\":\"detect/cat\",\"value\":\"SUSPICIOUS_EXECUTION\"},{\"op\":\"contains\",\"path\":\"detect/event/FILE_PATH\",\"value\":\"C:\\\\Program Files\\\\MonitoringTool\\\\\"}]}",
+    "usr_mtd": "{\"enabled\": true}"
   }
 )
 ```

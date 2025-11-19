@@ -58,7 +58,7 @@ Ensure you have:
 Use the dedicated MCP tool:
 
 ```
-mcp__limacharlie__yara_scan_memory(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_memory(
   oid="[organization-id]",
   sid="[sensor-id]",
   process_expression="[process-expression]",
@@ -147,7 +147,7 @@ Steps:
 1. Create or use PowerShell-specific YARA rule
 2. Call the tool:
 ```
-mcp__limacharlie__yara_scan_memory(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_memory(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   sid="abc-123-def-456-ghi-789",
   process_expression="name:powershell.exe",
@@ -165,7 +165,7 @@ Steps:
 1. Use Cobalt Strike YARA signatures
 2. Target all svchost instances:
 ```
-mcp__limacharlie__yara_scan_memory(
+mcp__plugin_lc-essentials_limacharlie__yara_scan_memory(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   sid="abc-123-def-456-ghi-789",
   process_expression="name:svchost.exe",

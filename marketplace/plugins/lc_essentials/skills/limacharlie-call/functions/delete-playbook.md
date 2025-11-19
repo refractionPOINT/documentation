@@ -51,14 +51,14 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/playbook/global/[playbook-name]"
+  path="/v1/hive/playbook/[oid]/[playbook-name]"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/hive/playbook/global/{playbook_name}`
+- Path: `/hive/playbook/{oid}/{playbook_name}`
 - Query parameters: None
 - Body: None
 
@@ -109,7 +109,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/playbook/global/critical-isolation"
+  path="/v1/hive/playbook/c7e8f940-1234-5678-abcd-1234567890ab/critical-isolation"
 )
 ```
 

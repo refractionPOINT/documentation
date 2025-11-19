@@ -48,7 +48,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/hive/query/global/{query_name}/data`
+- Path: `/hive/query/{oid}/{query_name}/data`
 
 ### Step 2: Handle Response
 

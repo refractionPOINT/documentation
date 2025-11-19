@@ -52,7 +52,7 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="GET",
-  path="/v1/hive/lookup/[oid]/[lookup-name]"
+  path="/v1/hive/lookup/[oid]/[lookup-name]/data"
 )
 ```
 
@@ -61,7 +61,7 @@ Then search the returned data for the specified key.
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/v1/hive/lookup/{oid}/{lookup_name}` (replace placeholders)
+- Path: `/v1/hive/lookup/{oid}/{lookup_name}/data` (replace placeholders)
 - Query parameters: None
 - Body: None (GET request)
 - Post-processing: Extract key from `body.data[key]`
@@ -124,7 +124,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips"
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips/data"
 )
 ```
 
@@ -289,7 +289,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/nonexistent-lookup"
+  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/nonexistent-lookup/data"
 )
 ```
 

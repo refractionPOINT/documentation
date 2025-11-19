@@ -52,8 +52,8 @@ mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="DELETE",
   path="/v1/[sensor-id]/tags",
-  body={
-    "tags": "[tag-name]"
+  query_params={
+    "tag": "[tag-name]"
   }
 )
 ```
@@ -62,9 +62,10 @@ mcp__limacharlie__lc_api_call(
 - Endpoint: `api`
 - Method: `DELETE`
 - Path: `/v1/{sid}/tags` where `{sid}` is the sensor UUID
-- No query parameters needed
-- Body fields:
-  - `tags`: String - the tag name to remove (case-sensitive)
+- Query parameters:
+  - `tag`: Single tag name to remove (case-sensitive)
+  - OR `tags`: Comma-separated list of tags to remove
+- Body: None
 
 ### Step 3: Handle the Response
 
@@ -114,8 +115,8 @@ mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="DELETE",
   path="/v1/abc12345-6789-0123-4567-890abcdef012/tags",
-  body={
-    "tags": "compromised"
+  query_params={
+    "tag": "compromised"
   }
 )
 ```
@@ -146,8 +147,8 @@ mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="DELETE",
   path="/v1/def45678-90ab-cdef-0123-456789abcdef/tags",
-  body={
-    "tags": "production"
+  query_params={
+    "tag": "production"
   }
 )
 ```

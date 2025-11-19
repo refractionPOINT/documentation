@@ -42,7 +42,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="GET",
-  path="/v1/hive/query/global/old-query/data"
+  path="/v1/hive/query/c7e8f940-1234-5678-abcd-1234567890ab/old-query/data"
 )
 ```
 
@@ -53,14 +53,14 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/query/global/old-query"
+  path="/v1/hive/query/c7e8f940-1234-5678-abcd-1234567890ab/old-query"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/v1/hive/query/global/{query_name}`
+- Path: `/v1/hive/query/{oid}/{query_name}`
 - Body: None (query name is in the path)
 
 ### Step 3: Handle Response

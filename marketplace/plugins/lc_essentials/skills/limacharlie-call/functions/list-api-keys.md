@@ -70,12 +70,12 @@ The API returns a response with:
     "api_keys": {
       "key_hash_1": {
         "created": 1234567890,
-        "perms": ["sensor.get", "sensor.task"],
+        "priv": ["sensor.get", "sensor.task"],
         "key_name": "Production API Key"
       },
       "key_hash_2": {
         "created": 1234567899,
-        "perms": [],
+        "priv": [],
         "key_name": "Development Key"
       }
     }
@@ -85,8 +85,8 @@ The API returns a response with:
 
 **Success (200-299):**
 - Response contains a map of key hashes to API key metadata
-- Each key entry includes creation timestamp, permissions list, and description
-- Empty permissions array means the key has full organization access
+- Each key entry includes creation timestamp, privileges list (`priv`), and description
+- Empty `priv` array means the key has full organization access
 - Key hashes can be used to delete specific keys
 
 **Common Errors:**
@@ -131,12 +131,12 @@ Expected response:
     "api_keys": {
       "a1b2c3d4e5f6": {
         "created": 1609459200,
-        "perms": [],
+        "priv": [],
         "key_name": "Main API Key"
       },
       "f6e5d4c3b2a1": {
         "created": 1640995200,
-        "perms": ["sensor.get", "sensor.list"],
+        "priv": ["sensor.get", "sensor.list"],
         "key_name": "Read-only Key"
       }
     }

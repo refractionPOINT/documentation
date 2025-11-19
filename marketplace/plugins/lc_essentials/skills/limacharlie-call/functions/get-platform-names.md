@@ -46,7 +46,7 @@ Use the `lc_api_call` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="GET",
-  path="/v1/ontology"
+  path="/ontology"
   # Note: oid parameter omitted - not required for global operations
 )
 ```
@@ -54,7 +54,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `GET`
-- Path: `/ontology`
+- Path: `/ontology` (no /v1 prefix for this endpoint)
 - No query parameters
 - No request body
 - Global endpoint - does not require organization context
@@ -111,7 +111,7 @@ Steps:
 mcp__limacharlie__lc_api_call(
   endpoint="api",
   method="GET",
-  path="/v1/ontology"
+  path="/ontology"
 )
 ```
 

@@ -48,14 +48,14 @@ mcp__limacharlie__lc_api_call(
   oid="[organization-id]",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/yara_source/global/[rule-name]"
+  path="/v1/hive/yara_source/[oid]/[rule-name]"
 )
 ```
 
 **API Details:**
 - Endpoint: `api`
 - Method: `DELETE`
-- Path: `/v1/hive/yara_source/global/{rule_name}`
+- Path: `/v1/hive/yara_source/{oid}/{rule_name}`
 - Body: None (rule name is in the path)
 
 ### Step 3: Handle the Response
@@ -104,7 +104,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="DELETE",
-  path="/v1/hive/yara_source/global/old_malware_signatures"
+  path="/v1/hive/yara_source/c7e8f940-1234-5678-abcd-1234567890ab/old_malware_signatures"
 )
 ```
 
