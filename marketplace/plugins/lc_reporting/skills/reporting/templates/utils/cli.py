@@ -131,9 +131,9 @@ def execute_report(
         }
 
         # Add time range
-        if hasattr(args, 'hours') and args.hours:
+        if hasattr(args, 'hours') and args.hours is not None:
             init_params['hours_back'] = args.hours
-        elif hasattr(args, 'days') and args.days:
+        elif hasattr(args, 'days') and args.days is not None:
             init_params['time_range_days'] = args.days
 
         # Add custom output path

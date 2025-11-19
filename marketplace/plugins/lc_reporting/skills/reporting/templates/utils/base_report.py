@@ -19,17 +19,23 @@ class BaseReport(ABC):
     - get_report_type(): Return descriptive report type name
     """
 
-    def __init__(self, oid, output_format='html', **kwargs):
+    def __init__(self, oid, output_format='html', hours_back=None, time_range_days=None, output_path=None, **kwargs):
         """
         Initialize report
 
         Args:
             oid: Organization ID
             output_format: Output format ('html', 'markdown', 'json')
+            hours_back: Number of hours to look back (optional)
+            time_range_days: Number of days to look back (optional)
+            output_path: Custom output file path (optional)
             **kwargs: Additional parameters specific to report type
         """
         self.oid = oid
         self.output_format = output_format
+        self.hours_back = hours_back
+        self.time_range_days = time_range_days
+        self.output_path = output_path
         self.params = kwargs
         self.data = {}
 
@@ -109,6 +115,20 @@ class BaseReport(ABC):
 
         print(f"\\n✓ Report saved to: {filepath}")
         return filepath
+
+    def _format_timestamp(self, ts, fmt='datetime'):
+        """
+        Helper method to format timestamps.
+
+        Args:
+            ts: Unix timestamp (seconds or milliseconds)
+            fmt: Output format ('iso', 'datetime', 'date', 'time')
+
+        Returns:
+            Formatted timestamp string
+        """
+        from .report_helpers import format_timestamp
+        return format_timestamp(ts, fmt)
 
 
 class SimpleReport(BaseReport):
