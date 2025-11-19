@@ -55,12 +55,8 @@ mcp__limacharlie__lc_api_call(
   method="POST",
   path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/objects",
   body={
-    "objects": {
-      "file_hash": ["abc123...", "def456..."],
-      "domain": ["evil.com", "malware.net"],
-      "ip": ["203.0.113.50"]
-    },
-    "case_sensitive": false
+    "objects": "{\"file_hash\": [\"abc123...\", \"def456...\"], \"domain\": [\"evil.com\", \"malware.net\"], \"ip\": [\"203.0.113.50\"]}",
+    "case_sensitive": "false"
   }
 )
 ```
@@ -69,7 +65,7 @@ mcp__limacharlie__lc_api_call(
 - Endpoint: `api`
 - Method: `POST`
 - Path: `/v1/insight/{oid}/objects`
-- Body: Groups IOCs by type for efficient batch processing
+- Body: `objects` must be a JSON-encoded string (not an object), `case_sensitive` is string "true"/"false"
 
 ### Step 3: Handle Response
 
