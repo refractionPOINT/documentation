@@ -41,57 +41,52 @@ Ensure you have:
 2. Valid platform name from the ontology
 3. Platform name is lowercase and exact
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/sensors/[organization-id]",
-  query_params={"selector": "plat == `[platform]`"}
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/sensors/{oid}`
-- Query parameters: `selector` with platform filter expression
-- Selector format: `plat == \`platform-name\`` (note the backticks)
-- No request body
+Then filter the results client-side by platform.
+
+**Tool Details:**
+- Tool name: `list_sensors`
+- Required parameters:
+  - `oid`: Organization ID
+- Filtering: Apply platform filter (`plat == \`platform-name\``) client-side after retrieval
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "sensors": {
-      "sensor-id-1": {
-        "oid": "org-id",
-        "iid": "installation-key-id",
-        "plat": 1,
-        "arch": 2,
-        "hostname": "DESKTOP-ABC123",
-        "int_ip": "192.168.1.100",
-        "ext_ip": "203.0.113.50",
-        "enroll": "1234567890",
-        "alive": "1234567999",
-        "isolated": false
-      },
-      ...
-    }
+  "sensors": {
+    "sensor-id-1": {
+      "oid": "org-id",
+      "iid": "installation-key-id",
+      "plat": 1,
+      "arch": 2,
+      "hostname": "DESKTOP-ABC123",
+      "int_ip": "192.168.1.100",
+      "ext_ip": "203.0.113.50",
+      "enroll": "1234567890",
+      "alive": "1234567999",
+      "isolated": false
+    },
+    ...
   }
 }
 ```
 
-**Success (200-299):**
-- Body contains `sensors` object with sensor IDs as keys
+**Success:**
+- Response contains `sensors` object with sensor IDs as keys
 - Each sensor includes:
   - `oid`: Organization ID
   - `iid`: Installation key ID
@@ -129,18 +124,18 @@ User request: "Show me all Windows sensors"
 Steps:
 1. Extract oid from context
 2. Platform is 'windows'
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={"selector": "plat == `windows`"}
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
+4. Filter results client-side where platform matches Windows (plat code 268435456)
 
-Expected response contains all Windows sensors with their details.
+Expected response contains all sensors, then filter for Windows systems.
 
 Present to user: "Found 25 Windows sensors in the organization. Notable systems include: DESKTOP-ABC123 (192.168.1.100), SERVER-XYZ789 (192.168.1.10)..."
 
@@ -149,15 +144,15 @@ Present to user: "Found 25 Windows sensors in the organization. Notable systems 
 User request: "How many Linux systems do we have?"
 
 Steps:
-1. List sensors with platform='linux'
-2. Count the returned sensors
-3. Present count and summary
+1. List sensors with tool call
+2. Filter by platform='linux' (plat code 67108864)
+3. Count the filtered sensors
+4. Present count and summary
 
 Result: "You have 18 Linux systems enrolled. They include 12 Ubuntu servers, 4 CentOS systems, and 2 Debian workstations."
 
 ## Additional Notes
 
-- The selector uses LimaCharlie's query language with backtick-quoted values
 - Platform numeric IDs in response correspond to the ontology mapping
 - Not all sensors may be currently online
 - Check `alive` timestamp to determine recent activity
@@ -170,7 +165,7 @@ Result: "You have 18 Linux systems enrolled. They include 12 Ubuntu servers, 4 C
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/schemas.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/schemas/schemas.go`

@@ -29,9 +29,8 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Name for the FP rule (unique identifier)
-- **rule_content**: Rule configuration object containing:
-  - **detect** or **detection**: Filter logic (required) - defines what detections to suppress
+- **name**: Name for the FP rule (unique identifier)
+- **pattern**: Rule configuration object containing the filter logic
 
 ### Filter Logic Structure
 
@@ -57,55 +56,39 @@ Ensure you have:
 2. FP rule name (alphanumeric with underscores recommended)
 3. Valid filter logic with required fields
 
-### Step 2: Prepare Rule Content
+### Step 2: Call the API
 
-Structure the rule_content as:
-```json
-{
-  "detect": {
-    "op": "and",
-    "rules": [
-      {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
-      {"op": "contains", "path": "detect/event/FILE_PATH", "value": "/opt/safe_app/"}
-    ]
-  }
-}
-```
-
-### Step 3: Call the API
-
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/fp/[organization-id]/[rule-name]/data",
-  body={
-    "data": "[JSON-encoded-filter-logic]",
-    "usr_mtd": "{\"enabled\": true}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_fp_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]",
+    "pattern": {
+      "op": "and",
+      "rules": [
+        {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
+        {"op": "contains", "path": "detect/event/FILE_PATH", "value": "/opt/safe_app/"}
+      ]
+    }
   }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/fp/{oid}/{rule_name}/data`
-- Body fields:
-  - `data`: JSON-encoded string of filter logic
-  - `usr_mtd`: JSON-encoded string with metadata (e.g., `{"enabled": true}`)
+- Tool: `set_fp_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Rule name
+  - `pattern`: Filter logic object
 
-### Step 4: Handle the Response
+### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 **Success (200-299):**
@@ -119,7 +102,7 @@ The API returns a response with:
 - **409 Conflict**: Rule already exists and is_replace is false
 - **500 Server Error**: API service issue - retry or contact support
 
-### Step 5: Format the Response
+### Step 4: Format the Response
 
 Present the result to the user:
 - Confirm rule was created or updated successfully
@@ -138,24 +121,25 @@ Steps:
 1. Design filter logic to match the specific detections
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/fp/c7e8f940-1234-5678-abcd-1234567890ab/filter_monitoring_tool/data",
-  body={
-    "data": "{\"op\":\"and\",\"rules\":[{\"op\":\"is\",\"path\":\"detect/cat\",\"value\":\"SUSPICIOUS_EXECUTION\"},{\"op\":\"contains\",\"path\":\"detect/event/FILE_PATH\",\"value\":\"C:\\\\Program Files\\\\MonitoringTool\\\\\"}]}",
-    "usr_mtd": "{\"enabled\": true}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_fp_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "filter_monitoring_tool",
+    "pattern": {
+      "op": "and",
+      "rules": [
+        {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
+        {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\MonitoringTool\\"}
+      ]
+    }
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 User message: "Successfully created FP rule 'filter_monitoring_tool'. SUSPICIOUS_EXECUTION detections from the MonitoringTool directory will now be suppressed."
@@ -169,17 +153,21 @@ Steps:
 2. Call API with filter logic
 3. Confirm rule created
 
-Filter logic:
-```json
-{
-  "detect": {
-    "op": "and",
-    "rules": [
-      {"op": "is", "path": "detect/cat", "value": "TOOL_USAGE"},
-      {"op": "contains", "path": "routing/hostname", "value": "dev-"}
-    ]
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_fp_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "filter_dev_activity",
+    "pattern": {
+      "op": "and",
+      "rules": [
+        {"op": "is", "path": "detect/cat", "value": "TOOL_USAGE"},
+        {"op": "contains", "path": "routing/hostname", "value": "dev-"}
+      ]
+    }
   }
-}
+)
 ```
 
 ## Additional Notes
@@ -187,7 +175,6 @@ Filter logic:
 - Rule names must be unique within the organization
 - Setting is_replace="true" will overwrite existing rules with the same name
 - FP rules use the same syntax as D&R detect components
-- Filter logic must be JSON-encoded as a string in the API body
 - Empty or invalid filter logic will be rejected
 - FP rules are evaluated after D&R rules generate detections
 - Suppressed detections are not shown in the timeline
@@ -206,7 +193,7 @@ Filter logic:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/fp_rule.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/fp_rules.go`

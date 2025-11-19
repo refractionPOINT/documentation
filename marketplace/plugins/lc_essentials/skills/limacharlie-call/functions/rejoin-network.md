@@ -41,39 +41,35 @@ Ensure you have:
 4. Verify the threat has been remediated or investigation is complete
 5. Confirm it's safe to restore network access
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/[sensor-id]/isolation"
+mcp__limacharlie__lc_call_tool(
+  tool_name="rejoin_network",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/{sid}/isolation` where `{sid}` is the sensor UUID
-- No query parameters needed
-- No request body needed
+**Tool Details:**
+- Tool name: `rejoin_network`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
-- Status code 200 indicates network isolation was successfully removed
+**Success:**
+- Empty response indicates network isolation was successfully removed
 - The sensor will immediately restore normal network connectivity
 - All network applications and services can communicate normally
 - The endpoint can now access other systems and the internet
@@ -103,23 +99,20 @@ Steps:
 1. Validate the sensor ID format (UUID)
 2. Verify the sensor is currently isolated
 3. Confirm remediation is complete
-4. Call API:
+4. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/abc12345-6789-0123-4567-890abcdef012/isolation"
+mcp__limacharlie__lc_call_tool(
+  tool_name="rejoin_network",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -133,23 +126,20 @@ Steps:
 1. Identify the sensor ID
 2. Verify the sensor is isolated
 3. Confirm this is a false positive
-4. Call API to rejoin:
+4. Call tool to rejoin:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/def45678-90ab-cdef-0123-456789abcdef/isolation"
+mcp__limacharlie__lc_call_tool(
+  tool_name="rejoin_network",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "def45678-90ab-cdef-0123-456789abcdef"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -157,9 +147,9 @@ Response to user:
 
 ## Additional Notes
 
-- Network restoration is immediate once the API call completes
+- Network restoration is immediate once the tool call completes
 - The sensor maintains all its configuration, tags, and management state
-- If the sensor was not isolated, the DELETE operation will return a 404 or similar error
+- If the sensor was not isolated, the operation will return a 404 or similar error
 - Always verify remediation is complete before rejoining to prevent re-infection
 - Consider using the `is-isolated` skill first to confirm current isolation status
 - You may want to add a tag (use `add-tag` skill) to track when and why isolation was removed
@@ -169,7 +159,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go` (RejoinNetwork method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/response/response.go` (rejoin_network)

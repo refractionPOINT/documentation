@@ -29,9 +29,9 @@ This skill calls the LimaCharlie API to retrieve a specific lookup table with it
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **lookup_name**: Name of the lookup table to retrieve
+- **name**: Name of the lookup table to retrieve
 
 ## How to Use
 
@@ -43,59 +43,55 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/[oid]/[lookup-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_lookup",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[lookup-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/lookup/{oid}/{lookup_name}` (replace placeholders with actual values)
-- Query parameters: None
-- Body: None (GET request)
+- Tool: `get_lookup`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the lookup table to retrieve
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "data": {
-      "key1": "value1",
-      "key2": {"nested": "data"},
-      "key3": ["list", "of", "values"]
-    },
-    "sys_mtd": {
-      "created_at": 1234567890,
-      "created_by": "user@example.com",
-      "last_mod": 1234567890,
-      "last_author": "user@example.com",
-      "etag": "abc123",
-      "guid": "def456"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["threat-intel"],
-      "comment": "Known malicious IPs",
-      "expiry": 0
-    }
+  "data": {
+    "key1": "value1",
+    "key2": {"nested": "data"},
+    "key3": ["list", "of", "values"]
+  },
+  "sys_mtd": {
+    "created_at": 1234567890,
+    "created_by": "user@example.com",
+    "last_mod": 1234567890,
+    "last_author": "user@example.com",
+    "etag": "abc123",
+    "guid": "def456"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["threat-intel"],
+    "comment": "Known malicious IPs",
+    "expiry": 0
   }
 }
 ```
 
-**Success (200-299):**
-- Lookup data is in `body.data` as key-value pairs
-- System metadata in `body.sys_mtd` (creation, modification times)
-- User metadata in `body.usr_mtd` (enabled status, tags, comments)
+**Success:**
+- Lookup data is in `data` as key-value pairs
+- System metadata in `sys_mtd` (creation, modification times)
+- User metadata in `usr_mtd` (enabled status, tags, comments)
 - Present data in readable format
 - Show metadata for context
 
@@ -125,51 +121,49 @@ Steps:
 1. Confirm lookup name: "malicious-ips"
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "malicious-ips"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "192.0.2.1": {
-        "severity": "critical",
-        "category": "c2",
-        "source": "threat-feed-1",
-        "first_seen": 1640000000
-      },
-      "198.51.100.5": {
-        "severity": "high",
-        "category": "phishing",
-        "source": "threat-feed-2",
-        "first_seen": 1641000000
-      },
-      "203.0.113.10": {
-        "severity": "medium",
-        "category": "spam",
-        "source": "manual",
-        "first_seen": 1642000000
-      }
+  "data": {
+    "192.0.2.1": {
+      "severity": "critical",
+      "category": "c2",
+      "source": "threat-feed-1",
+      "first_seen": 1640000000
     },
-    "sys_mtd": {
-      "created_at": 1640000000,
-      "created_by": "admin@example.com",
-      "last_mod": 1642000000,
-      "last_author": "admin@example.com",
-      "guid": "abc-123-def"
+    "198.51.100.5": {
+      "severity": "high",
+      "category": "phishing",
+      "source": "threat-feed-2",
+      "first_seen": 1641000000
     },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["threat-intel", "ips"],
-      "comment": "Known malicious IP addresses from threat feeds"
+    "203.0.113.10": {
+      "severity": "medium",
+      "category": "spam",
+      "source": "manual",
+      "first_seen": 1642000000
     }
+  },
+  "sys_mtd": {
+    "created_at": 1640000000,
+    "created_by": "admin@example.com",
+    "last_mod": 1642000000,
+    "last_author": "admin@example.com",
+    "guid": "abc-123-def"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["threat-intel", "ips"],
+    "comment": "Known malicious IP addresses from threat feeds"
   }
 }
 ```
@@ -218,29 +212,27 @@ User request: "What's in the allowed-domains lookup?"
 Steps:
 1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/allowed-domains"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "allowed-domains"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "example.com": true,
-      "trusted.org": true,
-      "corporate.net": true
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["allowlist"],
-      "comment": "Trusted domains for our organization"
-    }
+  "data": {
+    "example.com": true,
+    "trusted.org": true,
+    "corporate.net": true
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["allowlist"],
+    "comment": "Trusted domains for our organization"
   }
 }
 ```
@@ -270,18 +262,18 @@ User request: "Get the test-lookup table"
 Steps:
 1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/test-lookup"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "test-lookup"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 404,
   "error": "Lookup not found"
 }
 ```
@@ -318,7 +310,7 @@ Would you like me to list all lookup tables to see what's available?
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/lookups.go`

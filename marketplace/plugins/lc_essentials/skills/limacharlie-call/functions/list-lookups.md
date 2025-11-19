@@ -30,7 +30,7 @@ This skill calls the LimaCharlie API to retrieve all lookup tables with their co
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are needed for listing lookup tables.
@@ -44,23 +44,21 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/[oid]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_lookups",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/lookup/{oid}` (replace `{oid}` with actual organization ID)
-- Query parameters: None
-- Body: None (GET request)
+- Tool: `list_lookups`
+- Required parameters:
+  - `oid`: Organization ID
 
 Note: Lookup tables are stored in the LimaCharlie Hive system.
 
@@ -69,44 +67,40 @@ Note: Lookup tables are stored in the LimaCharlie Hive system.
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "threat-ips": {
-      "data": {
-        "1.2.3.4": {"severity": "high", "category": "c2"},
-        "5.6.7.8": {"severity": "medium", "category": "spam"}
-      },
-      "sys_mtd": {
-        "created_at": 1234567890,
-        "created_by": "user@example.com",
-        "last_mod": 1234567890,
-        "last_author": "user@example.com",
-        "guid": "abc123"
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["threat-intel"],
-        "comment": "Known malicious IPs"
-      }
+  "threat-ips": {
+    "data": {
+      "1.2.3.4": {"severity": "high", "category": "c2"},
+      "5.6.7.8": {"severity": "medium", "category": "spam"}
     },
-    "allowed-domains": {
-      "data": {
-        "example.com": true,
-        "trusted.org": true
-      },
-      "sys_mtd": {...},
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["allowlist"],
-        "comment": "Trusted domains"
-      }
+    "sys_mtd": {
+      "created_at": 1234567890,
+      "created_by": "user@example.com",
+      "last_mod": 1234567890,
+      "last_author": "user@example.com",
+      "guid": "abc123"
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["threat-intel"],
+      "comment": "Known malicious IPs"
+    }
+  },
+  "allowed-domains": {
+    "data": {
+      "example.com": true,
+      "trusted.org": true
+    },
+    "sys_mtd": {...},
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["allowlist"],
+      "comment": "Trusted domains"
     }
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response body contains a dictionary where keys are lookup table names
 - Each lookup table includes:
   - `data`: The actual key-value pairs (lookup data)
@@ -142,49 +136,46 @@ Steps:
 1. Obtain organization ID
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_lookups",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "malicious-ips": {
-      "data": {
-        "192.0.2.1": {"severity": "critical", "source": "threat-feed-1"},
-        "198.51.100.5": {"severity": "high", "source": "threat-feed-2"},
-        "203.0.113.10": {"severity": "medium", "source": "manual"}
-      },
-      "sys_mtd": {
-        "created_at": 1640000000,
-        "last_mod": 1641000000
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["threat-intel", "ips"],
-        "comment": "Known malicious IP addresses"
-      }
+  "malicious-ips": {
+    "data": {
+      "192.0.2.1": {"severity": "critical", "source": "threat-feed-1"},
+      "198.51.100.5": {"severity": "high", "source": "threat-feed-2"},
+      "203.0.113.10": {"severity": "medium", "source": "manual"}
     },
-    "allowed-hashes": {
-      "data": {
-        "abc123...": true,
-        "def456...": true
-      },
-      "sys_mtd": {
-        "created_at": 1640000000,
-        "last_mod": 1640000000
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["allowlist", "hashes"],
-        "comment": "Trusted file hashes"
-      }
+    "sys_mtd": {
+      "created_at": 1640000000,
+      "last_mod": 1641000000
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["threat-intel", "ips"],
+      "comment": "Known malicious IP addresses"
+    }
+  },
+  "allowed-hashes": {
+    "data": {
+      "abc123...": true,
+      "def456...": true
+    },
+    "sys_mtd": {
+      "created_at": 1640000000,
+      "last_mod": 1640000000
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["allowlist", "hashes"],
+      "comment": "Trusted file hashes"
     }
   }
 }
@@ -223,10 +214,7 @@ Steps:
 1. Call API as above
 2. Receive empty response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Format output:
@@ -293,7 +281,7 @@ These tables can be used to enrich detections and block known threats.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/lookups.go`

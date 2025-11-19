@@ -30,48 +30,47 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID
-- **query_name**: Name of the saved query
+- **name**: Name of the saved query
 
 ## How to Use
 
-### Step 1: Call API
+### Step 1: Call the Tool
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/query/{oid}/suspicious-dns/data"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_saved_query",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "suspicious-dns"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/query/{oid}/{query_name}/data`
+**Tool Details:**
+- Tool name: `get_saved_query`
+- Parameters:
+  - `oid`: Organization ID (required)
+  - `name`: Name of the saved query (required)
 
 ### Step 2: Handle Response
 
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
-      "description": "Find DNS requests to Russian domains"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["threat-hunting", "dns"],
-      "comment": "Monitor for suspicious domains"
-    },
-    "sys_mtd": {
-      "created_at": 1705000000,
-      "created_by": "user@example.com",
-      "last_mod": 1705100000,
-      "last_author": "admin@example.com",
-      "guid": "query-guid-123"
-    }
+  "data": {
+    "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
+    "description": "Find DNS requests to Russian domains"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["threat-hunting", "dns"],
+    "comment": "Monitor for suspicious domains"
+  },
+  "sys_mtd": {
+    "created_at": 1705000000,
+    "created_by": "user@example.com",
+    "last_mod": 1705100000,
+    "last_author": "admin@example.com",
+    "guid": "query-guid-123"
   }
 }
 ```

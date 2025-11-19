@@ -27,7 +27,7 @@ This skill retrieves a comprehensive MITRE ATT&CK coverage report from the organ
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No additional parameters are required.
@@ -39,83 +39,77 @@ No additional parameters are required.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/mitre/[organization-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_mitre_report",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/mitre/{oid}`
-- Query parameters: None
-- Body fields: None (GET request)
+**Tool Details:**
+- Tool name: `get_mitre_report`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "coverage_percentage": 45.5,
-    "techniques": [
-      {
-        "technique_id": "T1003",
-        "technique_name": "OS Credential Dumping",
-        "tactic": "Credential Access",
-        "covered": true,
-        "rules": ["credential_access_detection", "lsass_access"]
-      },
-      {
-        "technique_id": "T1059",
-        "technique_name": "Command and Scripting Interpreter",
-        "tactic": "Execution",
-        "covered": true,
-        "rules": ["suspicious_powershell", "cmd_execution"]
-      },
-      {
-        "technique_id": "T1055",
-        "technique_name": "Process Injection",
-        "tactic": "Defense Evasion",
-        "covered": false,
-        "rules": []
-      }
-    ],
-    "tactics": {
-      "Credential Access": {
-        "covered_techniques": 5,
-        "total_techniques": 10,
-        "coverage_percentage": 50.0
-      },
-      "Execution": {
-        "covered_techniques": 8,
-        "total_techniques": 12,
-        "coverage_percentage": 66.7
-      },
-      "Defense Evasion": {
-        "covered_techniques": 3,
-        "total_techniques": 20,
-        "coverage_percentage": 15.0
-      }
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "coverage_percentage": 45.5,
+  "techniques": [
+    {
+      "technique_id": "T1003",
+      "technique_name": "OS Credential Dumping",
+      "tactic": "Credential Access",
+      "covered": true,
+      "rules": ["credential_access_detection", "lsass_access"]
     },
-    "last_updated": 1705000000
-  }
+    {
+      "technique_id": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "tactic": "Execution",
+      "covered": true,
+      "rules": ["suspicious_powershell", "cmd_execution"]
+    },
+    {
+      "technique_id": "T1055",
+      "technique_name": "Process Injection",
+      "tactic": "Defense Evasion",
+      "covered": false,
+      "rules": []
+    }
+  ],
+  "tactics": {
+    "Credential Access": {
+      "covered_techniques": 5,
+      "total_techniques": 10,
+      "coverage_percentage": 50.0
+    },
+    "Execution": {
+      "covered_techniques": 8,
+      "total_techniques": 12,
+      "coverage_percentage": 66.7
+    },
+    "Defense Evasion": {
+      "covered_techniques": 3,
+      "total_techniques": 20,
+      "coverage_percentage": 15.0
+    }
+  },
+  "last_updated": 1705000000
 }
 ```
 
-**Success (200-299):**
-- The response body contains comprehensive coverage data:
+**Success:**
+- The response contains comprehensive coverage data:
   - `oid`: Organization ID
   - `coverage_percentage`: Overall coverage percentage
   - `techniques`: Array of MITRE techniques with coverage status
@@ -151,30 +145,27 @@ User request: "Show me my MITRE ATT&CK coverage"
 
 Steps:
 1. Get organization ID from context
-2. Call API:
+2. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/mitre/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_mitre_report",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "coverage_percentage": 48.2,
-    "techniques": [...],
-    "tactics": {
-      "Initial Access": {"covered_techniques": 4, "total_techniques": 9, "coverage_percentage": 44.4},
-      "Execution": {"covered_techniques": 7, "total_techniques": 12, "coverage_percentage": 58.3},
-      "Persistence": {"covered_techniques": 3, "total_techniques": 19, "coverage_percentage": 15.8},
-      "Credential Access": {"covered_techniques": 6, "total_techniques": 10, "coverage_percentage": 60.0}
-    }
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "coverage_percentage": 48.2,
+  "techniques": [...],
+  "tactics": {
+    "Initial Access": {"covered_techniques": 4, "total_techniques": 9, "coverage_percentage": 44.4},
+    "Execution": {"covered_techniques": 7, "total_techniques": 12, "coverage_percentage": 58.3},
+    "Persistence": {"covered_techniques": 3, "total_techniques": 19, "coverage_percentage": 15.8},
+    "Credential Access": {"covered_techniques": 6, "total_techniques": 10, "coverage_percentage": 60.0}
   }
 }
 ```
@@ -185,7 +176,7 @@ Coverage by Tactic:
 - Credential Access: 60.0% (6/10 techniques)
 - Execution: 58.3% (7/12 techniques)
 - Initial Access: 44.4% (4/9 techniques)
-- Persistence: 15.8% (3/19 techniques) ⚠️ LOW
+- Persistence: 15.8% (3/19 techniques) - LOW
 
 Priority gaps to address:
 - Persistence tactic needs more detection rules
@@ -196,7 +187,7 @@ Priority gaps to address:
 User request: "What MITRE techniques am I not detecting?"
 
 Steps:
-1. Call API to get MITRE report
+1. Call tool to get MITRE report
 2. Filter techniques where covered=false
 3. List uncovered techniques with their tactics
 4. Prioritize by common attack techniques
@@ -234,7 +225,7 @@ Consider creating detection rules for these high-priority techniques."
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/organization_ext.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/admin/admin.go`

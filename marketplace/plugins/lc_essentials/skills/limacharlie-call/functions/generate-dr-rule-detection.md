@@ -47,14 +47,14 @@ Ensure you have:
 Use the `generate_dr_rule_detection` MCP tool from the `limacharlie` server:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection(
+mcp__limacharlie__generate_dr_rule_detection(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="detect encoded PowerShell commands"
 )
 ```
 
 **Tool Details:**
-- Tool: `mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection`
+- Tool: `mcp__limacharlie__generate_dr_rule_detection`
 - Parameters:
   - `oid` (string, required): Organization ID for validation
   - `query` (string, required): Natural language description of what to detect
@@ -94,26 +94,6 @@ Present the result to the user:
 - Suggest testing the detection before deploying to production
 - Remind them to pair with appropriate response actions
 
-**Example formatted output:**
-```
-Generated Detection Component:
-```yaml
-event: NEW_PROCESS
-op: contains
-path: event/COMMAND_LINE
-value: ' -enc'
-case sensitive: false
-```
-
-This detection monitors NEW_PROCESS events and triggers when the command line contains ' -enc' (case-insensitive), which is commonly used for encoded PowerShell commands.
-
-Next steps:
-1. Review the detection logic
-2. Pair with appropriate response actions (report, isolate, etc.)
-3. Test using historical data or in a test environment
-4. Deploy using the `set-dr-general-rule` function
-```
-
 ## Example Usage
 
 ### Example 1: Detect Encoded PowerShell
@@ -124,7 +104,7 @@ Steps:
 1. Get organization ID from context
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection(
+mcp__limacharlie__generate_dr_rule_detection(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="detect encoded PowerShell commands"
 )
@@ -146,7 +126,7 @@ Steps:
 1. Get organization ID
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection(
+mcp__limacharlie__generate_dr_rule_detection(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="lateral movement using PsExec"
 )
@@ -167,7 +147,7 @@ Steps:
 1. Get organization ID
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection(
+mcp__limacharlie__generate_dr_rule_detection(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="DNS requests to domains ending in .xyz or .top which are often used for malware C2"
 )

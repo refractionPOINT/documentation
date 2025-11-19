@@ -20,13 +20,13 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves a single extension configuration record from the LimaCharlie Hive system by its name. It calls the Hive API using the "extension_config" hive name with the organization ID as the partition and the specific extension name as the key. The response includes the complete configuration data, user metadata (enabled, tags, comments), and system metadata (audit trail).
+This skill retrieves a single extension configuration record from the LimaCharlie Hive system by its name. It calls the MCP tool using the "extension_config" hive name with the organization ID as the partition and the specific extension name as the key. The response includes the complete configuration data, user metadata (enabled, tags, comments), and system metadata (audit trail).
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name of the extension configuration to retrieve (required)
 
@@ -38,74 +38,65 @@ Ensure you have:
 1. Valid organization ID (oid)
 2. Extension name (string, must be exact match)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/extension_config/{oid}/[extension-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_extension_config",
+  parameters={
+    "oid": "[organization-id]",
+    "extension_name": "[extension-name]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/extension_config/{oid}/{extension_name}/data`
-  - Replace `{extension_name}` with the URL-encoded extension name
-  - The `/data` suffix retrieves both data and metadata
-- Query parameters: None
-- Body: None
-
-**Important:** The extension name must be URL-encoded if it contains special characters (spaces, slashes, etc.).
+**Tool Details:**
+- Tool Name: `get_extension_config`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `extension_name`: The name of the extension configuration to retrieve
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "data": {
-      // Extension-specific configuration data
-      "setting1": "value1",
-      "setting2": 123
-    },
-    "sys_mtd": {
-      "etag": "abc123...",
-      "created_by": "user@example.com",
-      "created_at": 1234567890,
-      "last_author": "user@example.com",
-      "last_mod": 1234567899,
-      "guid": "unique-id-123",
-      "last_error": "",
-      "last_error_ts": 0
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "expiry": 0,
-      "tags": ["production", "critical"],
-      "comment": "Extension configuration description"
-    }
+  "data": {
+    // Extension-specific configuration data
+    "setting1": "value1",
+    "setting2": 123
+  },
+  "sys_mtd": {
+    "etag": "abc123...",
+    "created_by": "user@example.com",
+    "created_at": 1234567890,
+    "last_author": "user@example.com",
+    "last_mod": 1234567899,
+    "guid": "unique-id-123",
+    "last_error": "",
+    "last_error_ts": 0
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "expiry": 0,
+    "tags": ["production", "critical"],
+    "comment": "Extension configuration description"
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The `data` field contains the extension-specific configuration (structure varies by extension)
 - The `usr_mtd` field shows user-controlled metadata (enabled status, tags, comments)
 - The `sys_mtd` field shows system metadata including creation and modification history
 - Present the configuration details to the user in a readable format
 
 **Common Errors:**
-- **400 Bad Request**: Invalid extension name format
-- **403 Forbidden**: Insufficient permissions - user needs platform_admin or similar role
-- **404 Not Found**: The extension configuration doesn't exist - inform user and suggest creating it
-- **500 Server Error**: Rare backend issue - advise user to retry or contact support
+- **Invalid extension name**: Extension name format is invalid
+- **Forbidden**: Insufficient permissions - user needs platform_admin or similar role
+- **Not Found**: The extension configuration doesn't exist - inform user and suggest creating it
 
 ### Step 4: Format the Response
 
@@ -126,37 +117,35 @@ User request: "Show me the artifact-collection extension configuration"
 Steps:
 1. Get the organization ID from context
 2. Use extension name "artifact-collection"
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/extension_config/{oid}/artifact-collection/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_extension_config",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "extension_name": "artifact-collection"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "retention_days": 90,
-      "max_size_mb": 100,
-      "auto_collect": true
-    },
-    "sys_mtd": {
-      "created_at": 1700000000,
-      "last_mod": 1700001000,
-      "last_author": "admin@example.com",
-      "guid": "ext-config-123"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["production"],
-      "comment": "Artifact collection with 90-day retention"
-    }
+  "data": {
+    "retention_days": 90,
+    "max_size_mb": 100,
+    "auto_collect": true
+  },
+  "sys_mtd": {
+    "created_at": 1700000000,
+    "last_mod": 1700001000,
+    "last_author": "admin@example.com",
+    "guid": "ext-config-123"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["production"],
+    "comment": "Artifact collection with 90-day retention"
   }
 }
 ```
@@ -174,8 +163,8 @@ User request: "Does the threat-intel extension have a configuration?"
 
 Steps:
 1. Attempt to get the extension config
-2. If 404 error: inform user the configuration doesn't exist
-3. If 200 success: confirm it exists and show summary
+2. If not found error: inform user the configuration doesn't exist
+3. If success: confirm it exists and show summary
 
 ## Additional Notes
 
@@ -185,12 +174,11 @@ Steps:
 - ETag in sys_mtd is used for optimistic locking in updates
 - A configuration can exist even if the extension isn't subscribed (though it won't be used)
 - Use `list-extension-configs` first if you don't know the exact extension name
-- The `/data` endpoint returns both data and metadata; there's also a `/mtd` endpoint for metadata only
 - Extensions with the same name across different partition keys are separate configurations
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Get method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/extension_configs.go`

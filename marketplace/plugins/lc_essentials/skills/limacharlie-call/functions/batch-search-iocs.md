@@ -46,50 +46,52 @@ Format IOCs as JSON array:
 ]
 ```
 
-### Step 2: Call API
+### Step 2: Call the Tool
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/objects",
-  body={
-    "objects": "{\"file_hash\": [\"abc123...\", \"def456...\"], \"domain\": [\"evil.com\", \"malware.net\"], \"ip\": [\"203.0.113.50\"]}",
-    "case_sensitive": "false"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="batch_search_iocs",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "iocs": [
+      {"type": "file_hash", "value": "abc123..."},
+      {"type": "file_hash", "value": "def456..."},
+      {"type": "domain", "value": "evil.com"},
+      {"type": "domain", "value": "malware.net"},
+      {"type": "ip", "value": "203.0.113.50"}
+    ],
+    "info_type": "summary"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/insight/{oid}/objects`
-- Body: `objects` must be a JSON-encoded string (not an object), `case_sensitive` is string "true"/"false"
+**Tool Details:**
+- Tool name: `batch_search_iocs`
+- Parameters:
+  - `oid`: Organization ID (required)
+  - `iocs`: JSON array of IOC objects (required)
+  - `info_type`: "summary" or "locations" (required)
 
 ### Step 3: Handle Response
 
 Response contains results for each IOC:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "results": {
-      "file_hash": {
-        "abc123...": {
-          "last_1_days": 5,
-          "last_7_days": 10
-        },
-        "def456...": {
-          "last_1_days": 0,
-          "last_7_days": 0
-        }
+  "results": {
+    "file_hash": {
+      "abc123...": {
+        "last_1_days": 5,
+        "last_7_days": 10
       },
-      "domain": {
-        "evil.com": {
-          "last_1_days": 12,
-          "locations": {...}
-        }
+      "def456...": {
+        "last_1_days": 0,
+        "last_7_days": 0
+      }
+    },
+    "domain": {
+      "evil.com": {
+        "last_1_days": 12,
+        "locations": {...}
       }
     }
   }
@@ -120,7 +122,7 @@ NOT FOUND (3):
 
 User: "Check these IOCs from the threat report"
 
-Parse IOC list, group by type, call batch API.
+Parse IOC list, group by type, call batch tool.
 
 ### Example 2: IOC feed processing
 

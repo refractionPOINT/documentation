@@ -47,14 +47,14 @@ Ensure you have:
 Use the `generate_lcql_query` MCP tool from the `limacharlie` server:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_lcql_query(
+mcp__limacharlie__generate_lcql_query(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="find all PowerShell executions in the last 24 hours"
 )
 ```
 
 **Tool Details:**
-- Tool: `mcp__plugin_lc-essentials_limacharlie__generate_lcql_query`
+- Tool: `mcp__limacharlie__generate_lcql_query`
 - Parameters:
   - `oid` (string, required): Organization ID for validation
   - `query` (string, required): Natural language description
@@ -93,19 +93,6 @@ Present the result to the user:
 - Mention that they can refine the query manually if needed
 - Remind them about query performance considerations for large datasets
 
-**Example formatted output:**
-```
-Generated LCQL Query:
-```
-event_type:NEW_PROCESS file_path:powershell* start_ts:>now-24h
-```
-
-Explanation:
-This query searches for NEW_PROCESS events where the file path contains 'powershell' and the event occurred within the last 24 hours. The 'start_ts:>now-24h' filter ensures only recent events are returned.
-
-You can now use this query in the LimaCharlie web interface (Sensors > Search) or via the LCQL API to retrieve matching events.
-```
-
 ## Example Usage
 
 ### Example 1: Find Recent PowerShell Executions
@@ -116,7 +103,7 @@ Steps:
 1. Get organization ID from context
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_lcql_query(
+mcp__limacharlie__generate_lcql_query(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="find all PowerShell executions in the last 24 hours"
 )
@@ -139,7 +126,7 @@ Steps:
 1. Get organization ID
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_lcql_query(
+mcp__limacharlie__generate_lcql_query(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="network connections to IP address 192.168.1.100"
 )
@@ -161,7 +148,7 @@ Steps:
 1. Get organization ID
 2. Call tool with complex description:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_lcql_query(
+mcp__limacharlie__generate_lcql_query(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="DNS requests to domains ending in .ru or .cn from Windows systems in the last week"
 )

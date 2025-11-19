@@ -28,7 +28,7 @@ This skill calls the LimaCharlie API to list all secret names in an organization
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are needed for listing secret names.
@@ -42,23 +42,21 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/secret/[oid]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_secrets",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/secret/{oid}` (replace `{oid}` with actual organization ID)
-- Query parameters: None
-- Body: None (GET request)
+- Tool: `list_secrets`
+- Required parameters:
+  - `oid`: Organization ID
 
 Note: Secrets are stored in the LimaCharlie Hive system, which is a key-value store.
 
@@ -67,31 +65,27 @@ Note: Secrets are stored in the LimaCharlie Hive system, which is a key-value st
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "api-key-prod": {
-      "data": {},
-      "sys_mtd": {
-        "created_at": 1234567890,
-        "created_by": "user@example.com",
-        "last_mod": 1234567890,
-        "last_author": "user@example.com"
-      },
-      "usr_mtd": {
-        "enabled": true
-      }
+  "api-key-prod": {
+    "data": {},
+    "sys_mtd": {
+      "created_at": 1234567890,
+      "created_by": "user@example.com",
+      "last_mod": 1234567890,
+      "last_author": "user@example.com"
     },
-    "webhook-token": {
-      "data": {},
-      "sys_mtd": {...},
-      "usr_mtd": {...}
+    "usr_mtd": {
+      "enabled": true
     }
+  },
+  "webhook-token": {
+    "data": {},
+    "sys_mtd": {...},
+    "usr_mtd": {...}
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response body contains a dictionary where keys are secret names
 - Each secret has metadata but the `data` field is empty (values not returned)
 - Extract secret names from the dictionary keys
@@ -124,54 +118,51 @@ Steps:
 1. Obtain organization ID
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_secrets",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "slack-api-token": {
-      "data": {},
-      "sys_mtd": {
-        "created_at": 1640000000,
-        "created_by": "admin@example.com",
-        "last_mod": 1640000000,
-        "last_author": "admin@example.com"
-      },
-      "usr_mtd": {
-        "enabled": true
-      }
+  "slack-api-token": {
+    "data": {},
+    "sys_mtd": {
+      "created_at": 1640000000,
+      "created_by": "admin@example.com",
+      "last_mod": 1640000000,
+      "last_author": "admin@example.com"
     },
-    "webhook-api-key": {
-      "data": {},
-      "sys_mtd": {
-        "created_at": 1641000000,
-        "created_by": "admin@example.com",
-        "last_mod": 1641000000,
-        "last_author": "admin@example.com"
-      },
-      "usr_mtd": {
-        "enabled": true
-      }
+    "usr_mtd": {
+      "enabled": true
+    }
+  },
+  "webhook-api-key": {
+    "data": {},
+    "sys_mtd": {
+      "created_at": 1641000000,
+      "created_by": "admin@example.com",
+      "last_mod": 1641000000,
+      "last_author": "admin@example.com"
     },
-    "s3-access-key": {
-      "data": {},
-      "sys_mtd": {
-        "created_at": 1642000000,
-        "created_by": "admin@example.com",
-        "last_mod": 1642000000,
-        "last_author": "admin@example.com"
-      },
-      "usr_mtd": {
-        "enabled": true
-      }
+    "usr_mtd": {
+      "enabled": true
+    }
+  },
+  "s3-access-key": {
+    "data": {},
+    "sys_mtd": {
+      "created_at": 1642000000,
+      "created_by": "admin@example.com",
+      "last_mod": 1642000000,
+      "last_author": "admin@example.com"
+    },
+    "usr_mtd": {
+      "enabled": true
     }
   }
 }
@@ -207,10 +198,7 @@ Steps:
 1. Call API as above
 2. Receive empty response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Format output:
@@ -276,7 +264,7 @@ To create this secret, use the set-secret skill.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/secrets.go`

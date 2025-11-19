@@ -40,56 +40,50 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server to call the YARA service:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server to call the YARA service:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/yara/[organization-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_yara_rules",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/yara/{oid}` (YARA hive, replace `{oid}` with organization ID)
-- Query parameters: None
-- Body fields: None
+- Tool: `list_yara_rules`
+- Required parameters:
+  - `oid`: Organization ID
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "rule-source-1": {
-      "by": "user@example.com",
-      "filters": {
-        "tags": ["windows", "malware"],
-        "platforms": ["windows"]
-      },
-      "sources": ["source-name-1"],
-      "updated": 1234567890
+  "rule-source-1": {
+    "by": "user@example.com",
+    "filters": {
+      "tags": ["windows", "malware"],
+      "platforms": ["windows"]
     },
-    "rule-source-2": {
-      "by": "admin@example.com",
-      "filters": {
-        "tags": [],
-        "platforms": ["linux", "macos"]
-      },
-      "sources": ["source-name-2"],
-      "updated": 1234567899
-    }
+    "sources": ["source-name-1"],
+    "updated": 1234567890
+  },
+  "rule-source-2": {
+    "by": "admin@example.com",
+    "filters": {
+      "tags": [],
+      "platforms": ["linux", "macos"]
+    },
+    "sources": ["source-name-2"],
+    "updated": 1234567899
   }
 }
 ```
 
 **Success (200-299):**
-- The response body contains a map of YARA rule sources indexed by name
+- The response contains a map of YARA rule sources indexed by name
 - Each entry includes:
   - `by`: Author/creator email
   - `filters`: Tags and platforms the rule applies to
@@ -124,37 +118,34 @@ Steps:
 1. Get organization ID from context
 2. Call YARA service API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/yara/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_yara_rules",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "malware_detection": {
-      "by": "security@company.com",
-      "filters": {
-        "tags": ["production"],
-        "platforms": ["windows", "linux"]
-      },
-      "sources": ["malware_sigs"],
-      "updated": 1705000000
+  "malware_detection": {
+    "by": "security@company.com",
+    "filters": {
+      "tags": ["production"],
+      "platforms": ["windows", "linux"]
     },
-    "ransomware_signatures": {
-      "by": "threat-intel@company.com",
-      "filters": {
-        "tags": [],
-        "platforms": ["windows"]
-      },
-      "sources": ["ransomware_rules"],
-      "updated": 1705000100
-    }
+    "sources": ["malware_sigs"],
+    "updated": 1705000000
+  },
+  "ransomware_signatures": {
+    "by": "threat-intel@company.com",
+    "filters": {
+      "tags": [],
+      "platforms": ["windows"]
+    },
+    "sources": ["ransomware_rules"],
+    "updated": 1705000100
   }
 }
 ```
@@ -187,7 +178,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/yara.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/yara_rules.go`

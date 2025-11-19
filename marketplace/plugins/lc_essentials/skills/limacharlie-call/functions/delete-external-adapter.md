@@ -24,15 +24,15 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill deletes an external adapter configuration from the organization's Hive storage. Once deleted, the adapter stops receiving and processing data from the associated external source immediately. The operation is permanent and cannot be undone. Historical data already ingested remains in the organization but no new data will be processed. The skill calls the LimaCharlie Hive API to remove the adapter identified by its name from the external_adapter hive.
+This skill deletes an external adapter configuration from the organization's Hive storage. Once deleted, the adapter stops receiving and processing data from the associated external source immediately. The operation is permanent and cannot be undone. Historical data already ingested remains in the organization but no new data will be processed. The skill calls the LimaCharlie MCP tool to remove the adapter identified by its name from the external_adapter hive.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **adapter_name**: Name of the external adapter to delete (required)
+- **name**: Name of the external adapter to delete (required)
 
 To find the adapter name:
 - Use the list-external-adapters skill to see all available adapters
@@ -49,43 +49,34 @@ Ensure you have:
 4. Understanding that data ingestion will stop immediately
 5. Historical data will be retained but no new data will arrive
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/external_adapter/global/[adapter-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_external_adapter",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[adapter-name]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/hive/external_adapter/global/{adapter-name}`
-- Query parameters: None
-- Body: None
-
-The path uses the Hive structure:
-- `external_adapter`: The hive name for external adapter configurations
-- `global`: The partition key (external adapters use the global partition)
-- `{adapter-name}`: The name of the specific adapter to delete (URL-encoded if needed)
+**Tool Details:**
+- Tool Name: `delete_external_adapter`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the external adapter to delete
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - The external adapter has been successfully deleted
 - Data ingestion from this source has stopped immediately
 - The adapter configuration is permanently removed
@@ -93,11 +84,10 @@ The API returns a response with:
 - The deletion cannot be undone
 
 **Common Errors:**
-- **400 Bad Request**: Invalid adapter name format or malformed request
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to delete external adapters (requires platform_admin role)
-- **404 Not Found**: External adapter with the specified name does not exist
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid adapter name**: Adapter name format is invalid or malformed
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to delete external adapters (requires platform_admin role)
+- **Not Found**: External adapter with the specified name does not exist
 
 ### Step 4: Format the Response
 
@@ -118,22 +108,20 @@ User request: "Delete the syslog adapter for the old firewall: old-firewall-sysl
 Steps:
 1. Extract organization ID from context
 2. Verify the adapter name: "old-firewall-syslog"
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/external_adapter/global/old-firewall-syslog"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_external_adapter",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "old-firewall-syslog"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Present to user:
@@ -153,22 +141,20 @@ User request: "Remove the test webhook adapter, we're done testing"
 
 Steps:
 1. Identify the adapter name (e.g., "test-webhook")
-2. Call API:
+2. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/external_adapter/global/test-webhook"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_external_adapter",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "test-webhook"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Present to user:
@@ -186,8 +172,8 @@ Any requests to the webhook endpoint will now return 404 Not Found.
 User request: "Delete the api-test adapter"
 
 Steps:
-1. Call API with adapter name "api-test"
-2. API returns 404 Not Found
+1. Call tool with adapter name "api-test"
+2. Tool returns not found error
 
 Present to user:
 ```
@@ -225,29 +211,6 @@ To delete (permanent):
 Would you like to disable the adapter instead of deleting it?
 ```
 
-### Example 5: Clean up after external system decommissioning
-
-User request: "We decommissioned our old SIEM, remove all related adapters"
-
-Steps:
-1. Use list-external-adapters to find SIEM-related adapters
-2. Delete each adapter individually
-3. Provide summary
-
-Present to user:
-```
-Cleaning up external adapters for decommissioned SIEM...
-
-Deleted:
-- siem-webhook-alerts
-- siem-api-sync
-- siem-backup-feed
-
-All adapters related to the old SIEM have been removed.
-Data ingestion from these sources has stopped.
-Historical data remains available for analysis.
-```
-
 ## Additional Notes
 
 - External adapter deletion is permanent and cannot be undone
@@ -261,7 +224,6 @@ Historical data remains available for analysis.
 - Consider exporting the adapter configuration before deletion for backup
 - After deletion, you must fully reconfigure the adapter to restore ingestion
 - Adapter names are case-sensitive - use exact names
-- Use URL encoding for adapter names with special characters
 - Deletion requires platform_admin permissions
 - If you need to recreate the adapter later, use set-external-adapter with the same configuration
 - Consider cost implications - deleting adapters reduces data ingestion costs
@@ -276,7 +238,7 @@ Historical data remains available for analysis.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/hive/external_adapters.go`

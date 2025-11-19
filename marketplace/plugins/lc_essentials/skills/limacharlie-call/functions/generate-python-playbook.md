@@ -49,13 +49,13 @@ Ensure you have:
 Use the `generate_python_playbook` MCP tool from the `limacharlie` server:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_python_playbook(
+mcp__limacharlie__generate_python_playbook(
   query="create a playbook to list all sensors and export their details to a CSV file"
 )
 ```
 
 **Tool Details:**
-- Tool: `mcp__plugin_lc-essentials_limacharlie__generate_python_playbook`
+- Tool: `mcp__limacharlie__generate_python_playbook`
 - Parameters:
   - `query` (string, required): Natural language description of the automation task
 
@@ -94,59 +94,6 @@ Present the result to the user:
 - Suggest testing in a safe environment first
 - Provide instructions for saving and running the script
 
-**Example formatted output:**
-```
-Generated Python Playbook:
-```python
-import limacharlie
-import csv
-import os
-
-# Initialize LimaCharlie SDK
-api_key = os.environ.get('LC_API_KEY')
-org_id = os.environ.get('LC_OID')
-lc = limacharlie.Manager(api_key=api_key, oid=org_id)
-
-# Get all sensors
-sensors = lc.sensors()
-
-# Export to CSV
-with open('sensors.csv', 'w', newline='') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=['sid', 'hostname', 'platform', 'last_seen'])
-    writer.writeheader()
-    for sensor in sensors:
-        writer.writerow({
-            'sid': sensor.sid,
-            'hostname': sensor.hostname,
-            'platform': sensor.platform,
-            'last_seen': sensor.last_seen
-        })
-
-print('Sensors exported to sensors.csv')
-```
-
-**What this playbook does:**
-1. Imports necessary libraries (limacharlie, csv, os)
-2. Retrieves API credentials from environment variables
-3. Initializes the LimaCharlie Manager
-4. Fetches all sensors in the organization
-5. Exports sensor details to a CSV file named 'sensors.csv'
-
-**Requirements:**
-- Install: `pip install limacharlie`
-- Set environment variables:
-  - `LC_API_KEY`: Your LimaCharlie API key
-  - `LC_OID`: Your organization ID
-- Run: `python playbook.py`
-
-**Next steps:**
-1. Save the code to a file (e.g., `export_sensors.py`)
-2. Install dependencies
-3. Configure credentials
-4. Test in a non-production environment
-5. Customize as needed for your use case
-```
-
 ## Example Usage
 
 ### Example 1: Export Sensors to CSV
@@ -156,18 +103,11 @@ User request: "Create a playbook to list all sensors and export their details to
 Steps:
 1. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_python_playbook(
+mcp__limacharlie__generate_python_playbook(
   query="create a playbook to list all sensors and export their details to a CSV file"
 )
 ```
 2. Present the generated playbook code
-
-Expected response:
-```json
-{
-  "playbook": "import limacharlie\nimport csv\nimport os\n\n..."
-}
-```
 
 ### Example 2: Bulk Sensor Isolation
 
@@ -176,16 +116,9 @@ User request: "Generate a playbook to isolate all sensors with tag 'compromised'
 Steps:
 1. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_python_playbook(
+mcp__limacharlie__generate_python_playbook(
   query="isolate all sensors that have the tag 'compromised'"
 )
-```
-
-Expected response:
-```json
-{
-  "playbook": "import limacharlie\nimport os\n\napi_key = os.environ.get('LC_API_KEY')\norg_id = os.environ.get('LC_OID')\nlc = limacharlie.Manager(api_key=api_key, oid=org_id)\n\n# Get all sensors\nsensors = lc.sensors()\n\n# Isolate sensors with 'compromised' tag\nfor sensor in sensors:\n    if 'compromised' in sensor.tags:\n        print(f'Isolating sensor {sensor.hostname} ({sensor.sid})')\n        sensor.task('isolate')\n        \nprint('Isolation complete')"
-}
 ```
 
 ### Example 3: Detection Export
@@ -195,16 +128,9 @@ User request: "Create a playbook that exports all detections from the last 24 ho
 Steps:
 1. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_python_playbook(
+mcp__limacharlie__generate_python_playbook(
   query="export all detections from the last 24 hours to a JSON file"
 )
-```
-
-Expected response:
-```json
-{
-  "playbook": "import limacharlie\nimport json\nimport os\nfrom datetime import datetime, timedelta\n\napi_key = os.environ.get('LC_API_KEY')\norg_id = os.environ.get('LC_OID')\nlc = limacharlie.Manager(api_key=api_key, oid=org_id)\n\n# Calculate timestamp for 24 hours ago\nstart_time = int((datetime.now() - timedelta(hours=24)).timestamp())\n\n# Fetch detections\ndetections = lc.detections(start_time=start_time)\n\n# Export to JSON\nwith open('detections_24h.json', 'w') as f:\n    json.dump([det.data for det in detections], f, indent=2)\n\nprint(f'Exported {len(detections)} detections to detections_24h.json')"
-}
 ```
 
 ## Additional Notes

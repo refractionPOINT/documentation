@@ -60,13 +60,18 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
+Use the `lc_call_tool` MCP tool:
+
 ```
-mcp__limacharlie__dir_list(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  root_dir="[directory-path]",
-  file_expression="[pattern]",
-  depth=[depth-level]
+mcp__limacharlie__lc_call_tool(
+  tool_name="dir_list",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "root_dir": "[directory-path]",
+    "file_expression": "[pattern]",
+    "depth": [depth-level]
+  }
 )
 ```
 
@@ -143,12 +148,15 @@ Steps:
 2. Use *.* for all files
 3. Call the tool:
 ```
-mcp__limacharlie__dir_list(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  root_dir="C:\\Temp",
-  file_expression="*.*",
-  depth=1
+mcp__limacharlie__lc_call_tool(
+  tool_name="dir_list",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "root_dir": "C:\\Temp",
+    "file_expression": "*.*",
+    "depth": 1
+  }
 )
 ```
 
@@ -183,6 +191,8 @@ Steps:
 - Cross-reference file hashes with threat intelligence
 
 ## Reference
+
+For the MCP tool, this uses the dedicated `dir_list` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

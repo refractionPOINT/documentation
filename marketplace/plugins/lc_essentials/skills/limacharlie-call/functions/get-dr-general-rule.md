@@ -28,9 +28,9 @@ This skill retrieves the complete configuration of a specific D&R rule from the 
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Name of the rule to retrieve (exact match, case-sensitive)
+- **name**: Name of the rule to retrieve (exact match, case-sensitive)
 
 ## How to Use
 
@@ -41,69 +41,58 @@ Ensure you have:
 2. Exact rule name (case-sensitive, must exist in general namespace)
 3. Consider using `list-dr-general-rules` first if unsure of the exact name
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/[organization-id]",
-  query_params={
-    "namespace": "general",
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_dr_general_rule",
+  parameters={
+    "oid": "[organization-id]",
     "name": "[rule-name]"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/rules/{oid}` where `{oid}` is the organization ID
-- Query parameters:
-  - `namespace`: "general" (searches in general namespace)
+**Tool Details:**
+- Tool name: `get_dr_general_rule`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
   - `name`: The exact rule name to retrieve
-- No request body needed
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "rule-name": {
-      "name": "rule-name",
-      "namespace": "general",
-      "detect": {
-        "event": "NEW_PROCESS",
-        "op": "contains",
-        "path": "event/COMMAND_LINE",
-        "value": "powershell -enc"
+  "rule-name": {
+    "name": "rule-name",
+    "namespace": "general",
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "contains",
+      "path": "event/COMMAND_LINE",
+      "value": "powershell -enc"
+    },
+    "respond": [
+      {
+        "action": "report",
+        "name": "encoded_powershell"
       },
-      "respond": [
-        {
-          "action": "report",
-          "name": "encoded_powershell"
-        },
-        {
-          "action": "add tag",
-          "tag": "suspicious",
-          "ttl": 86400
-        }
-      ],
-      "is_enabled": true,
-      "target": "tag=production"
-    }
+      {
+        "action": "add tag",
+        "tag": "suspicious",
+        "ttl": 86400
+      }
+    ],
+    "is_enabled": true,
+    "target": "tag=production"
   }
 }
 ```
 
-**Success (200-299):**
-- Status code 200 indicates successful retrieval
+**Success:**
 - Response contains a single rule object (keyed by rule name)
 - Rule object includes:
   - `name`: Rule identifier
@@ -144,15 +133,12 @@ User request: "Show me the configuration for 'detect-suspicious-powershell' rule
 
 Steps:
 1. Validate the rule name
-2. Call API to retrieve specific rule:
+2. Call tool to retrieve specific rule:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={
-    "namespace": "general",
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_dr_general_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "name": "detect-suspicious-powershell"
   }
 )
@@ -161,35 +147,31 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "detect-suspicious-powershell": {
-      "name": "detect-suspicious-powershell",
-      "namespace": "general",
-      "detect": {
-        "event": "NEW_PROCESS",
-        "op": "contains",
-        "path": "event/COMMAND_LINE",
-        "value": "powershell -enc"
-      },
-      "respond": [
-        {
-          "action": "report",
-          "name": "encoded_powershell",
-          "metadata": {
-            "severity": "high"
-          }
-        },
-        {
-          "action": "add tag",
-          "tag": "suspicious-activity",
-          "ttl": 86400
+  "detect-suspicious-powershell": {
+    "name": "detect-suspicious-powershell",
+    "namespace": "general",
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "contains",
+      "path": "event/COMMAND_LINE",
+      "value": "powershell -enc"
+    },
+    "respond": [
+      {
+        "action": "report",
+        "name": "encoded_powershell",
+        "metadata": {
+          "severity": "high"
         }
-      ],
-      "is_enabled": true,
-      "target": "platform=windows"
-    }
+      },
+      {
+        "action": "add tag",
+        "tag": "suspicious-activity",
+        "ttl": 86400
+      }
+    ],
+    "is_enabled": true,
+    "target": "platform=windows"
   }
 }
 ```
@@ -217,15 +199,12 @@ This rule monitors for encoded PowerShell execution, a common technique for obfu
 User request: "Show me the 'malware-detection' rule"
 
 Steps:
-1. Call API:
+1. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={
-    "namespace": "general",
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_dr_general_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "name": "malware-detection"
   }
 )
@@ -234,8 +213,6 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 404,
-  "status": "404 Not Found",
   "error": "Rule not found"
 }
 ```
@@ -262,7 +239,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/dr_rule.go` (DRRules method with name filter)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/dr_rules.go` (get_dr_general_rule)

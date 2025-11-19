@@ -20,16 +20,16 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill creates or updates an extension configuration in the LimaCharlie Hive system. It POSTs configuration data to the Hive API using the "extension_config" hive name with the "global" partition. The configuration is automatically enabled and includes the provided data. If a configuration with the same name already exists, it will be updated. The operation uses gzip compression and base64 encoding for efficient transfer of potentially large configuration data.
+This skill creates or updates an extension configuration in the LimaCharlie Hive system. It calls the MCP tool using the "extension_config" hive name with the "global" partition. The configuration is automatically enabled and includes the provided data. If a configuration with the same name already exists, it will be updated. The operation uses gzip compression and base64 encoding for efficient transfer of potentially large configuration data.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name for the extension configuration (required)
-- **config_data**: The configuration data object (required, must be valid JSON object)
+- **config**: The configuration data object (required, must be valid JSON object)
 
 Optional parameters:
 - **tags**: Array of tags to categorize the configuration
@@ -44,76 +44,58 @@ Ensure you have:
 1. Valid organization ID (oid)
 2. Extension name (string, will become the configuration key)
 3. Configuration data (object/dict with extension-specific settings)
-4. Validate that config_data structure matches extension requirements
+4. Validate that config structure matches extension requirements
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/extension_config/global/[extension-name]/data",
-  body={
-    "gzdata": "[base64-gzipped-json-data]",
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["tag1", "tag2"],
-      "comment": "Configuration description"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_extension_config",
+  parameters={
+    "oid": "[organization-id]",
+    "extension_name": "[extension-name]",
+    "config": {
+      "setting1": "value1",
+      "setting2": 123
     }
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/extension_config/global/{extension_name}/data`
-  - Replace `{extension_name}` with the URL-encoded extension name
-  - The `/data` suffix indicates we're setting the configuration data
-- Query parameters: None
-- Body fields:
-  - `gzdata`: Configuration data encoded as base64(gzip(json)) - the MCP tool handles this encoding
-  - `usr_mtd`: User metadata object containing:
-    - `enabled`: Boolean, whether config is active (default: true)
-    - `tags`: Array of strings for categorization
-    - `comment`: String description
-    - `expiry`: Unix timestamp for auto-expiration (0 = never, optional)
-
-**Note:** The actual MCP tool implementation handles the gzip compression and base64 encoding automatically. You provide the raw config_data object.
+**Tool Details:**
+- Tool Name: `set_extension_config`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `extension_name`: The name for the extension configuration
+  - `config`: Configuration data object with extension-specific settings
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "guid": "unique-record-id",
-    "hive": {
-      "name": "extension_config",
-      "partition": "global"
-    },
-    "name": "extension-name"
-  }
+  "guid": "unique-record-id",
+  "hive": {
+    "name": "extension_config",
+    "partition": "global"
+  },
+  "name": "extension-name"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Configuration has been created or updated successfully
 - The response includes a unique GUID for the record
 - The `name` field confirms which configuration was set
 - Inform the user that the configuration is now active
 
 **Common Errors:**
-- **400 Bad Request**: Invalid configuration data format or structure - check the config_data object
-- **403 Forbidden**: Insufficient permissions - user needs platform_admin or similar role
-- **409 Conflict**: ETag mismatch if using optimistic locking (advanced use case)
-- **413 Payload Too Large**: Configuration data exceeds size limits
-- **500 Server Error**: Backend issue - advise user to retry or contact support
+- **Invalid configuration**: Invalid configuration data format or structure - check the config object
+- **Forbidden**: Insufficient permissions - user needs platform_admin or similar role
+- **Conflict**: ETag mismatch if using optimistic locking (advanced use case)
+- **Payload Too Large**: Configuration data exceeds size limits
 
 ### Step 4: Format the Response
 
@@ -141,19 +123,17 @@ Steps:
      "auto_collect": true
    }
    ```
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/extension_config/global/artifact-collection/data",
-  body={
-    "gzdata": "[encoded-data]",
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["production"],
-      "comment": "Artifact collection with 90-day retention"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_extension_config",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "extension_name": "artifact-collection",
+    "config": {
+      "retention_days": 90,
+      "max_size_mb": 100,
+      "auto_collect": true
     }
   }
 )
@@ -162,11 +142,8 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "guid": "ext-config-abc123",
-    "name": "artifact-collection"
-  }
+  "guid": "ext-config-abc123",
+  "name": "artifact-collection"
 }
 ```
 
@@ -179,14 +156,13 @@ User request: "Update the logging extension to use S3 bucket 'my-logs-bucket'"
 Steps:
 1. Optionally get existing config first to see current settings
 2. Prepare updated configuration data
-3. POST the new configuration (it will replace the existing one)
+3. Call tool with the new configuration (it will replace the existing one)
 4. Confirm the update was successful
 
 ## Additional Notes
 
 - **Creating vs Updating**: This operation performs an "upsert" - creates if doesn't exist, updates if it does
 - **Data Structure**: Each extension type has its own expected configuration schema - consult extension documentation
-- **Compression**: The API uses gzip+base64 encoding for efficient transfer, but the MCP tool handles this automatically
 - **Enabled by Default**: New configurations are enabled by default unless explicitly set to false
 - **Tags**: Use tags for organization and filtering across multiple configurations
 - **ETag for Safety**: For advanced use cases, you can use ETags to prevent concurrent modification conflicts
@@ -199,7 +175,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Add method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/extension_configs.go`

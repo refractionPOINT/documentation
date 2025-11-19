@@ -20,7 +20,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill unsubscribes an organization from a LimaCharlie extension by sending a DELETE request to the subscriptions API. Once unsubscribed, the extension is deactivated and stops processing events, providing integrations, or delivering functionality. The extension configuration (if any) remains in the Hive and can be used if you re-subscribe later.
+This skill unsubscribes an organization from a LimaCharlie extension by calling the MCP tool. Once unsubscribed, the extension is deactivated and stops processing events, providing integrations, or delivering functionality. The extension configuration (if any) remains in the Hive and can be used if you re-subscribe later.
 
 **Warning:** Unsubscribing may impact security monitoring, data collection, or integrations. Ensure this is the intended action before proceeding.
 
@@ -28,7 +28,7 @@ This skill unsubscribes an organization from a LimaCharlie extension by sending 
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name of the extension to unsubscribe from (required)
 
@@ -42,45 +42,34 @@ Ensure you have:
 3. Verify the extension is currently subscribed
 4. Consider warning the user about impact of unsubscribing
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/orgs/[organization-id]/subscription/extension/[extension-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="unsubscribe_from_extension",
+  parameters={
+    "oid": "[organization-id]",
+    "extension_name": "[extension-name]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/orgs/{oid}/subscription/extension/{extension_name}`
-  - Replace `{oid}` with the organization ID
-  - Replace `{extension_name}` with the URL-encoded extension name
-- Query parameters: None
-- Body: None (DELETE requests have no body)
-
-**Important:**
-- The extension name must be URL-encoded if it contains special characters
-- The API may take up to 60 seconds to complete as it deprovisions resources
-- Timeout is set to 1 minute for this operation
+**Tool Details:**
+- Tool Name: `unsubscribe_from_extension`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `extension_name`: The name of the extension to unsubscribe from
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Unsubscription was successful
 - The extension is now inactive in the organization
 - The extension is no longer processing data
@@ -88,11 +77,9 @@ The API returns a response with:
 - Inform the user that unsubscription is complete
 
 **Common Errors:**
-- **400 Bad Request**: Invalid extension name
-- **403 Forbidden**: Insufficient permissions - user needs platform_admin role
-- **404 Not Found**: Extension doesn't exist, not subscribed, or already unsubscribed
-- **500 Server Error**: Backend deprovisioning issue - advise user to retry or contact support
-- **504 Gateway Timeout**: Extension deprovisioning took too long - check if unsubscription completed
+- **Invalid extension name**: Extension name is invalid
+- **Forbidden**: Insufficient permissions - user needs platform_admin role
+- **Not Found**: Extension doesn't exist, not subscribed, or already unsubscribed
 
 ### Step 4: Format the Response
 
@@ -113,22 +100,20 @@ User request: "Unsubscribe from the threat-intel extension"
 Steps:
 1. Get the organization ID from context
 2. Use extension name "threat-intel"
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/subscription/extension/threat-intel"
+mcp__limacharlie__lc_call_tool(
+  tool_name="unsubscribe_from_extension",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "extension_name": "threat-intel"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Inform user: "Successfully unsubscribed from the threat-intel extension. The extension is now inactive and will no longer process threat intelligence data. The extension configuration remains saved if you want to re-subscribe later."
@@ -139,7 +124,7 @@ User request: "Unsubscribe from the logging extension"
 
 Steps:
 1. Attempt to unsubscribe
-2. Receive 404 Not Found error
+2. Receive not found error
 3. Inform user: "Your organization is not currently subscribed to the logging extension. It may have already been unsubscribed or was never subscribed."
 
 ### Example 3: Complete removal
@@ -178,7 +163,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/extension.go` (UnsubscribeFromExtension method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/extensions.go`

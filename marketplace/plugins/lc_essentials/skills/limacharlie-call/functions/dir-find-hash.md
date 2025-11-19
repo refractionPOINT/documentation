@@ -56,14 +56,19 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
+Use the `lc_call_tool` MCP tool:
+
 ```
-mcp__limacharlie__dir_find_hash(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  root_dir="[directory-path]",
-  file_expression="[pattern]",
-  hashes=["hash1", "hash2", "hash3"],
-  depth=[depth-level]
+mcp__limacharlie__lc_call_tool(
+  tool_name="dir_find_hash",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "root_dir": "[directory-path]",
+    "file_expression": "[pattern]",
+    "hashes": ["hash1", "hash2", "hash3"],
+    "depth": [depth-level]
+  }
 )
 ```
 
@@ -138,13 +143,16 @@ Steps:
 1. Obtain malware SHA256 hash
 2. Call the tool:
 ```
-mcp__limacharlie__dir_find_hash(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  root_dir="C:\\Users",
-  file_expression="*.*",
-  hashes=["d41d8cd98f00b204e9800998ecf8427e..."],
-  depth=5
+mcp__limacharlie__lc_call_tool(
+  tool_name="dir_find_hash",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "root_dir": "C:\\Users",
+    "file_expression": "*.*",
+    "hashes": ["d41d8cd98f00b204e9800998ecf8427e..."],
+    "depth": 5
+  }
 )
 ```
 
@@ -181,6 +189,8 @@ Steps:
 - Empty result means system appears clean for those hashes
 
 ## Reference
+
+For the MCP tool, this uses the dedicated `dir_find_hash` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

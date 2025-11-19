@@ -29,7 +29,7 @@ This skill creates a new LimaCharlie organization with specified name and data r
 
 Before calling this skill, gather:
 
-**⚠️ NOTE**: This is a **user-level operation** that does not require a specific organization ID. When calling the API, **omit the `oid` parameter** entirely. This skill creates a new organization.
+**NOTE**: This is a **user-level operation** that does not require a specific organization ID.
 
 **name**: Organization name (required)
   - Human-readable name for the organization
@@ -54,50 +54,41 @@ Ensure you have:
 3. Optional: Prepared IaC template for configuration
 4. User has permissions to create organizations
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="POST",
-  path="/v1/orgs/new",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="create_org",
+  parameters={
     "name": "[org-name]",
     "location": "[location]",
-    "template": "[yaml-template]"  # Optional
+    "template": "[yaml-template]"  // Optional
   }
-  # Note: oid parameter omitted - not required for user-level operations
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/orgs/new`
-- Query parameters: None
-- Body fields:
-  - `name` (string, required): Organization name
-  - `location` (string, required): Data residency location
-  - `template` (string, optional): YAML IaC template
+**Tool Details:**
+- Tool name: `create_org`
+- Required parameters:
+  - `name` (string): Organization name
+  - `location` (string): Data residency location
+- Optional parameters:
+  - `template` (string): YAML IaC template
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "New Organization",
-    "location": "usa"
-  }
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "name": "New Organization",
+  "location": "usa"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response contains the new organization ID (oid)
 - Organization is immediately created and active
 - If template provided, it's applied automatically
@@ -128,13 +119,11 @@ User request: "Create a new organization called 'Acme Production' in the US"
 
 Steps:
 1. Prepare parameters
-2. Call API to create organization:
+2. Call tool to create organization:
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="POST",
-  path="/v1/orgs/new",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="create_org",
+  parameters={
     "name": "Acme Production",
     "location": "usa"
   }
@@ -144,18 +133,15 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "oid": "c7e8f940-9876-5432-abcd-1234567890ab",
-    "name": "Acme Production",
-    "location": "usa"
-  }
+  "oid": "c7e8f940-9876-5432-abcd-1234567890ab",
+  "name": "Acme Production",
+  "location": "usa"
 }
 ```
 
 Present to user:
 ```
-✅ Organization Created Successfully
+Organization Created Successfully
 
 Name: Acme Production
 Organization ID: c7e8f940-9876-5432-abcd-1234567890ab
@@ -181,11 +167,9 @@ Steps:
 1. Load standard IaC template
 2. Create org with template:
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="POST",
-  path="/v1/orgs/new",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="create_org",
+  parameters={
     "name": "Customer XYZ Security",
     "location": "usa",
     "template": "---\nrules:\n  - name: suspicious-process\n    detect: {...}\n    respond: [...]\noutputs:\n  - name: siem-output\n    module: syslog\n    ..."
@@ -195,7 +179,7 @@ mcp__limacharlie__lc_api_call(
 
 Present to user:
 ```
-✅ Organization Created and Configured
+Organization Created and Configured
 
 Name: Customer XYZ Security
 Organization ID: c7e8f940-5555-6666-7777-888899990000
@@ -203,11 +187,11 @@ Location: USA
 Status: Active and configured
 
 Applied standard template:
-✓ Detection rules deployed (15 rules)
-✓ SIEM output configured
-✓ Response actions enabled
-✓ Secrets configured
-✓ Extensions subscribed
+- Detection rules deployed (15 rules)
+- SIEM output configured
+- Response actions enabled
+- Secrets configured
+- Extensions subscribed
 
 The organization is fully configured and ready for sensor deployment.
 
@@ -224,11 +208,9 @@ Steps:
 1. Specify Europe location for data residency
 2. Create organization:
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="POST",
-  path="/v1/orgs/new",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="create_org",
+  parameters={
     "name": "Acme Europe GDPR",
     "location": "europe"
   }
@@ -237,7 +219,7 @@ mcp__limacharlie__lc_api_call(
 
 Present to user:
 ```
-✅ European Organization Created
+European Organization Created
 
 Name: Acme Europe GDPR
 Organization ID: c7e8f940-aaaa-bbbb-cccc-ddddeeeeefff
@@ -245,9 +227,9 @@ Location: Europe (EU data residency)
 Status: Active
 
 Data Residency:
-✓ All data stored in European data centers
-✓ GDPR compliant data processing
-✓ EU-based infrastructure
+- All data stored in European data centers
+- GDPR compliant data processing
+- EU-based infrastructure
 
 This organization meets European data sovereignty requirements.
 All telemetry, detections, and configurations remain in the EU.
@@ -261,7 +243,6 @@ Next steps:
 ## Additional Notes
 
 - **This is a user-level operation that does not require a specific organization ID**
-- When calling the API, omit the `oid` parameter entirely
 - Organization creation is a user-level operation (not org-scoped)
 - Newly created orgs inherit user's access level (owner)
 - Location determines data residency and cannot be changed later
@@ -276,7 +257,7 @@ Next steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization.go` (CreateOrganization function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterCreateOrg)

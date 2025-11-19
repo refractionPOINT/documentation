@@ -28,7 +28,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Name of the YARA rule source to retrieve (must be exact match)
+- **name**: Name of the YARA rule source to retrieve (must be exact match)
 
 ## How to Use
 
@@ -40,39 +40,35 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/yara/[organization-id]/[rule-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_yara_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/yara/{oid}/{rule_name}/data` (YARA hive endpoint)
-- Query parameters: None
-- Body fields: None
+- Tool: `get_yara_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: YARA rule name
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "rules": "rule malware_detection {\n  meta:\n    author = \"security\"\n    description = \"Detects malware\"\n  strings:\n    $hex1 = { 4D 5A 90 }\n    $str1 = \"malicious\"\n  condition:\n    $hex1 or $str1\n}\n"
-  }
+  "rules": "rule malware_detection {\n  meta:\n    author = \"security\"\n    description = \"Detects malware\"\n  strings:\n    $hex1 = { 4D 5A 90 }\n    $str1 = \"malicious\"\n  condition:\n    $hex1 or $str1\n}\n"
 }
 ```
 
 **Success (200-299):**
-- The response body contains a "rules" field with the YARA rule source code
+- The response contains a "rules" field with the YARA rule source code
 - Present the complete YARA rule text to the user
 - Format the rule content with proper syntax highlighting if possible
 
@@ -102,21 +98,19 @@ Steps:
 2. Extract rule name: "malware_detection"
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/yara/c7e8f940-1234-5678-abcd-1234567890ab/malware_detection/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_yara_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "malware_detection"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "content": "rule suspicious_pe {\n  meta:\n    author = \"security-team\"\n    description = \"Detects suspicious PE files\"\n  strings:\n    $mz = { 4D 5A }\n    $pe = \"PE\\x00\\x00\"\n    $suspicious = \"malware\" nocase\n  condition:\n    $mz at 0 and $pe and $suspicious\n}\n\nrule ransomware_behavior {\n  meta:\n    severity = \"high\"\n  strings:\n    $encrypt = \"CryptEncrypt\"\n    $delete = \"shadow delete\"\n  condition:\n    all of them\n}\n"
-  }
+  "content": "rule suspicious_pe {\n  meta:\n    author = \"security-team\"\n    description = \"Detects suspicious PE files\"\n  strings:\n    $mz = { 4D 5A }\n    $pe = \"PE\\x00\\x00\"\n    $suspicious = \"malware\" nocase\n  condition:\n    $mz at 0 and $pe and $suspicious\n}\n\nrule ransomware_behavior {\n  meta:\n    severity = \"high\"\n  strings:\n    $encrypt = \"CryptEncrypt\"\n    $delete = \"shadow delete\"\n  condition:\n    all of them\n}\n"
 }
 ```
 
@@ -151,7 +145,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/yara.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/yara_rules.go`

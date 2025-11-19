@@ -30,7 +30,7 @@ This skill calls the LimaCharlie API to create a new output configuration. It ac
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Unique name for the output (alphanumeric, hyphens, underscores)
 - **module**: Output module type (e.g., syslog, s3, webhook, slack, gcs, elastic, kafka)
@@ -70,15 +70,13 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/outputs/[oid]",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="add_output",
+  parameters={
+    "oid": "[organization-id]",
     "name": "output-name",
     "module": "syslog",
     "type": "event",
@@ -91,14 +89,12 @@ mcp__limacharlie__lc_api_call(
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/outputs/{oid}` (replace `{oid}` with actual organization ID)
-- Query parameters: None
-- Body fields:
-  - `name` (required): Output identifier
-  - `module` (required): Output module type
-  - `type` or `for` (required): Data type to export
+- Tool: `add_output`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Output identifier
+  - `module`: Output module type
+  - `type` or `for`: Data type to export
   - Module-specific fields (see examples below)
   - Optional filtering fields (tag, event_white_list, etc.)
   - Boolean fields should be strings: "true" or "false"
@@ -108,21 +104,17 @@ mcp__limacharlie__lc_api_call(
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "name": "output-name",
-    "module": "syslog",
-    "for": "event",
-    "dest_host": "10.0.1.50",
-    "dest_port": "514",
-    "is_tls": "true",
-    "tag": "production"
-  }
+  "name": "output-name",
+  "module": "syslog",
+  "for": "event",
+  "dest_host": "10.0.1.50",
+  "dest_port": "514",
+  "is_tls": "true",
+  "tag": "production"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Output is created and immediately active
 - Response contains the full output configuration as created
 - Data matching the configuration will start flowing to the destination
@@ -168,12 +160,10 @@ Steps:
 
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="add_output",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "name": "prod-syslog",
     "module": "syslog",
     "type": "event",
@@ -187,15 +177,12 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "name": "prod-syslog",
-    "module": "syslog",
-    "for": "event",
-    "dest_host": "10.0.1.50",
-    "dest_port": "514",
-    "is_tls": "true"
-  }
+  "name": "prod-syslog",
+  "module": "syslog",
+  "for": "event",
+  "dest_host": "10.0.1.50",
+  "dest_port": "514",
+  "is_tls": "true"
 }
 ```
 
@@ -228,12 +215,10 @@ Steps:
 
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="add_output",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "name": "prod-detections-archive",
     "module": "s3",
     "type": "detect",
@@ -249,17 +234,14 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "name": "prod-detections-archive",
-    "module": "s3",
-    "for": "detect",
-    "bucket": "lc-detections",
-    "region_name": "us-west-2",
-    "tag": "production",
-    "sec_per_file": "3600",
-    "is_compression": "true"
-  }
+  "name": "prod-detections-archive",
+  "module": "s3",
+  "for": "detect",
+  "bucket": "lc-detections",
+  "region_name": "us-west-2",
+  "tag": "production",
+  "sec_per_file": "3600",
+  "is_compression": "true"
 }
 ```
 
@@ -296,12 +278,10 @@ Steps:
 2. First, store the API key as a secret (if not already stored)
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/outputs/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="add_output",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "name": "critical-webhook",
     "module": "webhook",
     "type": "detect",
@@ -316,16 +296,13 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "name": "critical-webhook",
-    "module": "webhook",
-    "for": "detect",
-    "dest_host": "https://api.example.com/alerts",
-    "auth_header_name": "X-API-Key",
-    "auth_header_value": "[secret:webhook-api-key]",
-    "cat": "critical"
-  }
+  "name": "critical-webhook",
+  "module": "webhook",
+  "for": "detect",
+  "dest_host": "https://api.example.com/alerts",
+  "auth_header_name": "X-API-Key",
+  "auth_header_value": "[secret:webhook-api-key]",
+  "cat": "critical"
 }
 ```
 
@@ -370,7 +347,7 @@ Monitor your endpoint for incoming data.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/output.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/outputs.go`

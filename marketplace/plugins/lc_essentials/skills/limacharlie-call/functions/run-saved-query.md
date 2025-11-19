@@ -38,7 +38,7 @@ Then save it with `set-saved-query` for reuse.
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
 
 - **oid**: Organization ID (UUID)
-- **query_name**: Name of the saved query to execute
+- **name**: Name of the saved query to execute
 
 Optional:
 - **limit**: Maximum results to return
@@ -49,11 +49,12 @@ Optional:
 
 Get the saved query definition:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/query/[oid]/[query-name]/data"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_saved_query",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "suspicious-dns"
+  }
 )
 ```
 
@@ -61,31 +62,25 @@ mcp__plugin_lc-essentials_limacharlie__lc_api_call(
 
 Execute the LCQL query string:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="replay",
-  method="POST",
-  path="/",
-  body={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="run_lcql_query",
+  parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "query": "[lcql-from-saved-query]",
-    "limit_event": 1000,
-    "event_source": {"stream": "event", "sensor_events": {"cursor": "-"}}
+    "limit": 1000,
+    "stream": "event"
   }
 )
 ```
 
 ### Step 3: Handle Response
 
-**Success (200):**
+**Success:**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "results": [...],
-    "cursor": "",
-    "stats": {...}
-  }
+  "results": [...],
+  "cursor": "",
+  "stats": {...}
 }
 ```
 
@@ -100,23 +95,26 @@ User: "Run the suspicious-dns query"
 
 **Step 1: Get query**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="...",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/query/{oid}/suspicious-dns/data"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_saved_query",
+  parameters={
+    "oid": "...",
+    "name": "suspicious-dns"
+  }
 )
-// Returns: {"query": "-24h | * | DNS_REQUEST | ..."}
+// Returns: {"data": {"query": "-24h | * | DNS_REQUEST | ..."}}
 ```
 
 **Step 2: Execute**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="...",
-  endpoint="replay",
-  method="POST",
-  path="/",
-  body={...}
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="run_lcql_query",
+  parameters={
+    "oid": "...",
+    "query": "-24h | * | DNS_REQUEST | ...",
+    "limit": 1000,
+    "stream": "event"
+  }
 )
 ```
 

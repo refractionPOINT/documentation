@@ -29,8 +29,8 @@ This skill retrieves detailed information about a LimaCharlie organization. It c
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
 
 No additional parameters are required.
 
@@ -41,49 +41,43 @@ No additional parameters are required.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/[oid]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_org_info",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/orgs/{oid}`
-- Query parameters: None
-- Body fields: None
+**Tool Details:**
+- Tool name: `get_org_info`
+- Required parameters:
+  - `oid` (string): Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "name": "My Organization",
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "location": "usa",
-    "plan": "enterprise",
-    "limits": {
-      "max_sensors": 1000,
-      "max_rules": 500
-    },
-    "features": ["advanced_detection", "threat_intel"],
-    "created": 1609459200
-  }
+  "name": "My Organization",
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "location": "usa",
+  "plan": "enterprise",
+  "limits": {
+    "max_sensors": 1000,
+    "max_rules": 500
+  },
+  "features": ["advanced_detection", "threat_intel"],
+  "created": 1609459200
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response contains comprehensive organization information
 - Includes name, location, plan tier, and limits
 - Shows enabled features and capabilities
@@ -113,31 +107,28 @@ User request: "Show me information about my organization"
 
 Steps:
 1. Extract organization ID from context
-2. Call API to get organization info:
+2. Call tool to get organization info:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_org_info",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "name": "Acme Security",
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "location": "usa",
-    "plan": "enterprise",
-    "limits": {
-      "max_sensors": 5000,
-      "retention_days": 365
-    },
-    "created": 1577836800
-  }
+  "name": "Acme Security",
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "location": "usa",
+  "plan": "enterprise",
+  "limits": {
+    "max_sensors": 5000,
+    "retention_days": 365
+  },
+  "created": 1577836800
 }
 ```
 
@@ -176,7 +167,7 @@ Maximum Sensors: 5,000
 Current Sensors: 3,847
 Available Capacity: 1,153
 
-✅ Yes, you can add 100 more sensors.
+Yes, you can add 100 more sensors.
 
 After adding 100 sensors:
 - Total: 3,947 / 5,000
@@ -198,7 +189,7 @@ You have plenty of capacity for this expansion.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization.go` (GetInfo function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterGetOrgInfo)

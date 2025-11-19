@@ -43,30 +43,29 @@ Optional:
 
 Ensure valid IOC type and value format.
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/objects/file_hash",
-  query_params={
-    "value": "abc123def456...",
-    "case_sensitive": "false",
-    "info": "summary"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="search_iocs",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "ioc_type": "file_hash",
+    "ioc_value": "abc123def456...",
+    "info_type": "summary",
+    "case_sensitive": false
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/insight/{oid}/objects/{ioc_type}`
-- Query parameters:
-  - `value`: IOC value (% for wildcard)
-  - `case_sensitive`: Boolean (as string "true"/"false")
-  - `info`: "summary" for counts or "locations" for sensor details
+**Tool Details:**
+- Tool name: `search_iocs`
+- Parameters:
+  - `oid`: Organization ID (required)
+  - `ioc_type`: Type of IOC (required)
+  - `ioc_value`: The IOC value to search (required)
+  - `info_type`: "summary" or "locations" (required)
+  - `case_sensitive`: Boolean (optional, default false)
 
 **IOC Types:**
 - file_hash: SHA256 file hashes
@@ -84,32 +83,26 @@ mcp__limacharlie__lc_api_call(
 **Summary response:**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "type": "file_hash",
-    "name": "abc123...",
-    "last_1_days": 5,
-    "last_7_days": 23,
-    "last_30_days": 45,
-    "last_365_days": 120,
-    "from_cache": true
-  }
+  "type": "file_hash",
+  "name": "abc123...",
+  "last_1_days": 5,
+  "last_7_days": 23,
+  "last_30_days": 45,
+  "last_365_days": 120,
+  "from_cache": true
 }
 ```
 
 **Locations response:**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "type": "file_hash",
-    "name": "abc123...",
-    "locations": {
-      "sensor-1": {
-        "hostname": "SERVER01",
-        "first_ts": 1705761234,
-        "last_ts": 1705847634
-      }
+  "type": "file_hash",
+  "name": "abc123...",
+  "locations": {
+    "sensor-1": {
+      "hostname": "SERVER01",
+      "first_ts": 1705761234,
+      "last_ts": 1705847634
     }
   }
 }

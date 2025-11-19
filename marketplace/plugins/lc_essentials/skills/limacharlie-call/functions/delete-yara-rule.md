@@ -28,7 +28,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Name of the YARA rule source to delete (must be exact match)
+- **name**: Name of the YARA rule source to delete (must be exact match)
 
 ## How to Use
 
@@ -41,32 +41,29 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/yara_source/[oid]/[rule-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_yara_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/hive/yara_source/{oid}/{rule_name}`
-- Body: None (rule name is in the path)
+- Tool: `delete_yara_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: YARA rule name to delete
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 **Success (200-299):**
@@ -100,20 +97,18 @@ Steps:
 2. Extract rule name: "old_malware_signatures"
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/yara_source/c7e8f940-1234-5678-abcd-1234567890ab/old_malware_signatures"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_yara_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "old_malware_signatures"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 User message: "Successfully deleted YARA rule 'old_malware_signatures'. The rule has been permanently removed and will no longer be used for scanning."
@@ -143,7 +138,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/yara.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/yara_rules.go`

@@ -23,18 +23,18 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill creates or updates a cloud sensor configuration in the organization's Hive storage. Cloud sensors are virtual sensors that collect telemetry from cloud platforms and SaaS services without requiring endpoint agents. The configuration includes the sensor type, connection parameters (credentials, regions, tenants), and metadata. The skill calls the LimaCharlie Hive API to store the sensor configuration with automatic enablement. If a sensor with the same name exists, it will be updated; otherwise, a new sensor is created.
+This skill creates or updates a cloud sensor configuration in the organization's Hive storage. Cloud sensors are virtual sensors that collect telemetry from cloud platforms and SaaS services without requiring endpoint agents. The configuration includes the sensor type, connection parameters (credentials, regions, tenants), and metadata. The skill calls the LimaCharlie MCP tool to store the sensor configuration with automatic enablement. If a sensor with the same name exists, it will be updated; otherwise, a new sensor is created.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **sensor_name**: Name for the cloud sensor (required, alphanumeric with hyphens/underscores)
-- **sensor_config**: Complete configuration object (required, structure varies by sensor type)
+- **name**: Name for the cloud sensor (required, alphanumeric with hyphens/underscores)
+- **config**: Complete configuration object (required, structure varies by sensor type)
 
-The sensor_config structure depends on the cloud platform or service:
+The config structure depends on the cloud platform or service:
 - **AWS CloudTrail**: aws_region, s3_bucket, role_arn, external_id
 - **Azure Activity Logs**: subscription_id, tenant_id, client_id, client_secret
 - **GCP Audit Logs**: project_id, service_account_json
@@ -53,78 +53,59 @@ Ensure you have:
 4. Valid credentials and connection parameters
 5. Understanding of the cloud platform's authentication requirements
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/cloud_sensor/global/[sensor-name]/data",
-  body={
-    "gzdata": "[base64-gzip-encoded-json]",
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["tag1", "tag2"],
-      "comment": "Sensor description",
-      "expiry": 0
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_cloud_sensor",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[sensor-name]",
+    "config": {
+      "sensor_type": "aws_cloudtrail",
+      "aws_region": "us-east-1",
+      "s3_bucket": "my-cloudtrail-logs",
+      "role_arn": "arn:aws:iam::123456789012:role/LCCloudTrail",
+      "external_id": "lc-ext-id-12345"
     }
   }
 )
 ```
 
-**Note**: The body requires `gzdata` which is a gzip-compressed, base64-encoded JSON string of the sensor configuration. For simplicity in this documentation, we show the uncompressed structure. The MCP tool handles compression automatically.
-
-**Simplified API call** (MCP tool handles encoding):
-```
-The actual implementation uses the Hive Add method which:
-1. Takes the sensor_config as a Dict
-2. Automatically gzip-compresses and base64-encodes it
-3. Sets usr_mtd with enabled=true by default
-4. Posts to /hive/cloud_sensor/global/{sensor-name}/data
-```
-
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/cloud_sensor/global/{sensor-name}/data`
-- Body fields:
-  - `gzdata`: Compressed and encoded sensor configuration
-  - `usr_mtd`: User metadata (enabled, tags, comment, expiry)
-  - `etag` (optional): For optimistic concurrency control during updates
+**Tool Details:**
+- Tool Name: `set_cloud_sensor`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `name`: Name for the cloud sensor
+  - `config`: Configuration object with sensor-specific settings
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "guid": "unique-sensor-guid",
-    "hive": {
-      "name": "cloud_sensor",
-      "partition": "global"
-    },
-    "name": "sensor-name"
-  }
+  "guid": "unique-sensor-guid",
+  "hive": {
+    "name": "cloud_sensor",
+    "partition": "global"
+  },
+  "name": "sensor-name"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The cloud sensor has been created or updated successfully
 - The response contains the sensor's GUID and hive information
 - The sensor is automatically enabled unless specified otherwise
 - The sensor will begin collecting data based on its configuration
 
 **Common Errors:**
-- **400 Bad Request**: Missing required fields, invalid configuration structure, or malformed sensor_config
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to manage cloud sensors (requires fleet_management role)
-- **409 Conflict**: ETag mismatch if updating existing sensor with concurrent modifications
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid configuration**: Missing required fields, invalid configuration structure, or malformed config
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to manage cloud sensors (requires fleet_management role)
+- **Conflict**: ETag mismatch if updating existing sensor with concurrent modifications
 
 ### Step 4: Format the Response
 
@@ -147,48 +128,33 @@ Steps:
 1. Extract organization ID from context
 2. Prepare sensor name: "prod-aws-cloudtrail"
 3. Gather AWS configuration: region, S3 bucket, role ARN, external ID
-4. Call API:
+4. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/cloud_sensor/global/prod-aws-cloudtrail/data",
-  body={
-    "gzdata": "[base64-encoded-gzipped-json-of-config]",
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["aws", "production", "cloudtrail"],
-      "comment": "Production AWS CloudTrail integration",
-      "expiry": 0
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_cloud_sensor",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "prod-aws-cloudtrail",
+    "config": {
+      "sensor_type": "aws_cloudtrail",
+      "aws_region": "us-east-1",
+      "s3_bucket": "my-cloudtrail-logs",
+      "role_arn": "arn:aws:iam::123456789012:role/LCCloudTrail",
+      "external_id": "lc-ext-id-12345"
     }
   }
 )
 ```
 
-Where the config (before encoding) is:
-```json
-{
-  "sensor_type": "aws_cloudtrail",
-  "aws_region": "us-east-1",
-  "s3_bucket": "my-cloudtrail-logs",
-  "role_arn": "arn:aws:iam::123456789012:role/LCCloudTrail",
-  "external_id": "lc-ext-id-12345"
-}
-```
-
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "guid": "abc-123-def-456",
-    "hive": {
-      "name": "cloud_sensor",
-      "partition": "global"
-    },
-    "name": "prod-aws-cloudtrail"
-  }
+  "guid": "abc-123-def-456",
+  "hive": {
+    "name": "cloud_sensor",
+    "partition": "global"
+  },
+  "name": "prod-aws-cloudtrail"
 }
 ```
 
@@ -199,7 +165,6 @@ Successfully created AWS CloudTrail cloud sensor!
 Sensor Name: prod-aws-cloudtrail
 Type: AWS CloudTrail
 Status: Enabled
-Tags: aws, production, cloudtrail
 
 Configuration:
 - AWS Region: us-east-1
@@ -217,26 +182,29 @@ User request: "Update the office365-audit sensor with the new client secret afte
 Steps:
 1. Get existing sensor configuration (use get-cloud-sensor skill)
 2. Update only the client_secret field
-3. Call API with updated configuration:
+3. Call tool with updated configuration:
 ```
-The sensor_config would include:
-{
-  "sensor_type": "office365",
-  "tenant_id": "abc-123-def",
-  "client_id": "client-id-456",
-  "client_secret": "new-secret-789",
-  "content_types": ["Audit.General", "Audit.Exchange"]
-}
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_cloud_sensor",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "office365-audit",
+    "config": {
+      "sensor_type": "office365",
+      "tenant_id": "abc-123-def",
+      "client_id": "client-id-456",
+      "client_secret": "new-secret-789",
+      "content_types": ["Audit.General", "Audit.Exchange"]
+    }
+  }
+)
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "guid": "existing-guid",
-    "name": "office365-audit"
-  }
+  "guid": "existing-guid",
+  "name": "office365-audit"
 }
 ```
 
@@ -259,7 +227,7 @@ User request: "Enable the azure-activity-logs sensor"
 Steps:
 1. Get existing configuration
 2. Update with enabled=true in usr_mtd
-3. Call API
+3. Call tool
 
 Present to user:
 ```
@@ -272,7 +240,7 @@ The sensor is now active and will resume collecting Azure Activity Logs.
 
 - Cloud sensors use the Hive storage system under `cloud_sensor` hive with `global` partition
 - Sensor names must be unique within the organization
-- The sensor_config structure is specific to each cloud platform or SaaS service
+- The config structure is specific to each cloud platform or SaaS service
 - Required fields vary by sensor type - consult platform-specific documentation
 - Credentials in sensor configurations are sensitive - handle securely
 - The sensor is automatically enabled unless explicitly disabled in usr_mtd
@@ -296,7 +264,7 @@ The sensor is now active and will resume collecting Azure Activity Logs.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/hive/cloud_sensors.go`

@@ -33,10 +33,15 @@ The sensor must be online.
 
 ### Step 2: Send the Sensor Command
 
+Use the `lc_call_tool` MCP tool:
+
 ```
-mcp__limacharlie__get_drivers(
-  oid="[organization-id]",
-  sid="[sensor-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_drivers",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]"
+  }
 )
 ```
 
@@ -50,6 +55,8 @@ mcp__limacharlie__get_drivers(
 Response contains driver information. Highlight unsigned drivers, unusual driver paths, or drivers loaded from non-system locations.
 
 ## Reference
+
+For the MCP tool, this uses the dedicated `get_drivers` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

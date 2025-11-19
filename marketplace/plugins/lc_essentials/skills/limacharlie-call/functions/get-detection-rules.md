@@ -28,7 +28,7 @@ This skill retrieves all D&R rules from every namespace in the organization, inc
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters needed - this returns all rules from all namespaces.
@@ -40,64 +40,57 @@ No other parameters needed - this returns all rules from all namespaces.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/[organization-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_detection_rules",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/rules/{oid}` where `{oid}` is the organization ID
-- No query parameters needed (to get all namespaces)
-- No request body needed
+**Tool Details:**
+- Tool name: `get_detection_rules`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "rule-name-1": {
-      "name": "rule-name-1",
-      "namespace": "general",
-      "detect": {
-        "event": "NEW_PROCESS",
-        "op": "is",
-        "path": "event/FILE_PATH",
-        "value": "cmd.exe"
-      },
-      "respond": [
-        {
-          "action": "report",
-          "name": "suspicious_cmd_execution"
-        }
-      ],
-      "is_enabled": true
+  "rule-name-1": {
+    "name": "rule-name-1",
+    "namespace": "general",
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "is",
+      "path": "event/FILE_PATH",
+      "value": "cmd.exe"
     },
-    "rule-name-2": {
-      "name": "rule-name-2",
-      "namespace": "managed",
-      "detect": {...},
-      "respond": [...],
-      "is_enabled": true
-    }
+    "respond": [
+      {
+        "action": "report",
+        "name": "suspicious_cmd_execution"
+      }
+    ],
+    "is_enabled": true
+  },
+  "rule-name-2": {
+    "name": "rule-name-2",
+    "namespace": "managed",
+    "detect": {...},
+    "respond": [...],
+    "is_enabled": true
   }
 }
 ```
 
-**Success (200-299):**
-- Status code 200 indicates successful retrieval
+**Success:**
 - Response is a dictionary keyed by rule name
 - Each rule object contains:
   - `name`: Rule identifier
@@ -136,41 +129,37 @@ Present the result to the user:
 User request: "Show me all D&R rules in the organization"
 
 Steps:
-1. Call API to retrieve all rules:
+1. Call tool to retrieve all rules:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_detection_rules",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "detect-suspicious-cmd": {
-      "name": "detect-suspicious-cmd",
-      "namespace": "general",
-      "detect": {
-        "event": "NEW_PROCESS",
-        "op": "is",
-        "path": "event/FILE_PATH",
-        "value": "cmd.exe"
-      },
-      "respond": [{"action": "report", "name": "suspicious_cmd"}],
-      "is_enabled": true
+  "detect-suspicious-cmd": {
+    "name": "detect-suspicious-cmd",
+    "namespace": "general",
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "is",
+      "path": "event/FILE_PATH",
+      "value": "cmd.exe"
     },
-    "ransomware-behavior": {
-      "name": "ransomware-behavior",
-      "namespace": "managed",
-      "detect": {...},
-      "respond": [...],
-      "is_enabled": true
-    }
+    "respond": [{"action": "report", "name": "suspicious_cmd"}],
+    "is_enabled": true
+  },
+  "ransomware-behavior": {
+    "name": "ransomware-behavior",
+    "namespace": "managed",
+    "detect": {...},
+    "respond": [...],
+    "is_enabled": true
   }
 }
 ```
@@ -195,13 +184,13 @@ All rules are currently enabled and active."
 User request: "Export all detection rules for our security audit"
 
 Steps:
-1. Call API to get all rules:
+1. Call tool to get all rules:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_detection_rules",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
@@ -241,7 +230,7 @@ This data includes complete detection logic, response actions, and metadata for 
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/dr_rule.go` (DRRules method without namespace filter)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/dr_rules.go` (get_detection_rules)

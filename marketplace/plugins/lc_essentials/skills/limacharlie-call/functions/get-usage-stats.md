@@ -31,8 +31,8 @@ This skill retrieves detailed usage statistics for a LimaCharlie organization. I
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
 
 No additional parameters are required.
 
@@ -43,56 +43,50 @@ No additional parameters are required.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/usage/[oid]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_usage_stats",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/usage/{oid}`
-- Query parameters: None
-- Body fields: None
+**Tool Details:**
+- Tool name: `get_usage_stats`
+- Required parameters:
+  - `oid` (string): Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "sensors": {
-      "total": 1500,
-      "online": 1420,
-      "by_platform": {
-        "windows": 800,
-        "linux": 500,
-        "macos": 200
-      }
-    },
-    "data_ingestion": {
-      "events_per_day": 50000000,
-      "bytes_per_day": 15000000000
-    },
-    "api_requests": {
-      "per_day": 100000
-    },
-    "retention_days": 30
-  }
+  "sensors": {
+    "total": 1500,
+    "online": 1420,
+    "by_platform": {
+      "windows": 800,
+      "linux": 500,
+      "macos": 200
+    }
+  },
+  "data_ingestion": {
+    "events_per_day": 50000000,
+    "bytes_per_day": 15000000000
+  },
+  "api_requests": {
+    "per_day": 100000
+  },
+  "retention_days": 30
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response contains comprehensive usage metrics
 - Includes sensor counts (total, online, by platform)
 - Shows data ingestion volumes (events, bytes)
@@ -123,37 +117,34 @@ User request: "Show me our current usage statistics"
 
 Steps:
 1. Extract organization ID from context
-2. Call API to get usage stats:
+2. Call tool to get usage stats:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/usage/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_usage_stats",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "sensors": {
-      "total": 2500,
-      "online": 2375,
-      "by_platform": {
-        "windows": 1500,
-        "linux": 800,
-        "macos": 200
-      }
-    },
-    "data_ingestion": {
-      "events_per_day": 75000000,
-      "bytes_per_day": 25000000000
-    },
-    "api_requests": {
-      "per_day": 150000
+  "sensors": {
+    "total": 2500,
+    "online": 2375,
+    "by_platform": {
+      "windows": 1500,
+      "linux": 800,
+      "macos": 200
     }
+  },
+  "data_ingestion": {
+    "events_per_day": 75000000,
+    "bytes_per_day": 25000000000
+  },
+  "api_requests": {
+    "per_day": 150000
   }
 }
 ```
@@ -210,10 +201,10 @@ Monthly Projections:
 - Increase: +150 GB/month
 
 Recommendations:
-✓ Current plan supports this expansion
-✓ Monitor data ingestion after deployment
-✓ Consider optimizing event filtering to reduce volume
-✓ Review retention policies if needed
+- Current plan supports this expansion
+- Monitor data ingestion after deployment
+- Consider optimizing event filtering to reduce volume
+- Review retention policies if needed
 ```
 
 ## Additional Notes
@@ -230,7 +221,7 @@ Recommendations:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (GetUsageStats function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterGetUsageStats)

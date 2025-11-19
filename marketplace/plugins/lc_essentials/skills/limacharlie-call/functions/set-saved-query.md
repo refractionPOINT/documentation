@@ -30,11 +30,13 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID
-- **query_name**: Name for the saved query
-- **lcql_query**: The LCQL query string to save
+- **name**: Name for the saved query
+- **query**: The LCQL query string to save
 
 Optional:
 - **description**: Description of what the query does
+- **tags**: Array of tags for organization
+- **enabled**: Boolean (default true)
 
 ## How to Use
 
@@ -48,45 +50,39 @@ Format query data:
 }
 ```
 
-### Step 2: Call API
+### Step 2: Call the Tool
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/query/{oid}/suspicious-dns/data",
-  body={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="set_saved_query",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "suspicious-dns",
     "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
     "description": "Find DNS requests to Russian domains",
-    "enabled": true,
     "tags": ["threat-hunting", "dns"],
-    "comment": "Monitor for suspicious domains"
+    "enabled": true
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/query/{oid}/{query_name}/data`
-- Body:
-  - `query`: The LCQL query string
-  - `description`: Optional description of the query
-  - `enabled`: Boolean (default true)
-  - `tags`: Array of tags for organization
-  - `comment`: Optional comment
+**Tool Details:**
+- Tool name: `set_saved_query`
+- Parameters:
+  - `oid`: Organization ID (required)
+  - `name`: Name for the saved query (required)
+  - `query`: The LCQL query string (required)
+  - `description`: Optional description
+  - `tags`: Optional array of tags
+  - `enabled`: Optional boolean (default true)
 
 ### Step 3: Handle Response
 
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "success": true,
-    "guid": "query-guid-123",
-    "message": "Successfully saved query 'suspicious-dns'"
-  }
+  "success": true,
+  "guid": "query-guid-123",
+  "message": "Successfully saved query 'suspicious-dns'"
 }
 ```
 
@@ -124,7 +120,7 @@ Save with name, description, and tags.
 
 User: "Update the suspicious-dns query to include .cn domains"
 
-Same API call with updated LCQL - overwrites existing query.
+Same tool call with updated LCQL - overwrites existing query.
 
 ## Additional Notes
 

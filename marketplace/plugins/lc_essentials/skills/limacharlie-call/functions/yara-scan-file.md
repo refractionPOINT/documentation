@@ -29,7 +29,7 @@ Before calling this skill, gather:
 - **oid**: Organization ID (required for all operations)
 - **sid**: Sensor ID (UUID) of the target sensor
 - **file_path**: Full path to the file on the sensor
-- **rule**: YARA rule content (full rule text) or rule name from organization's YARA rules
+- **rules**: YARA rule content (full rule text)
 
 The sensor must be online, the file must exist, and the YARA rule must be valid.
 
@@ -47,14 +47,17 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
-Use the dedicated MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_file(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  file_path="[full-file-path]",
-  rule="[yara-rule-content-or-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_file",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "file_path": "[full-file-path]",
+    "rules": "[yara-rule-content]"
+  }
 )
 ```
 
@@ -62,7 +65,7 @@ mcp__plugin_lc-essentials_limacharlie__yara_scan_file(
 - This executes the `yara_scan` sensor command with filePath parameter
 - Timeout: Up to 10 minutes for large files
 - Requires sensor to be online and file to exist
-- Can use full YARA rule content or reference existing rule by name
+- Must provide full YARA rule content
 - Scans file contents on disk
 - Uses interactive tasking mode
 
@@ -136,11 +139,14 @@ Steps:
 1. Obtain or create comprehensive malware YARA rule
 2. Call the tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_file(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  file_path="C:\\Temp\\suspicious.exe",
-  rule="rule Generic_Malware { strings: $mz = \"MZ\" $sus = \"malicious\" condition: $mz and $sus }"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_file",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "file_path": "C:\\Temp\\suspicious.exe",
+    "rules": "rule Generic_Malware { strings: $mz = \"MZ\" $sus = \"malicious\" condition: $mz and $sus }"
+  }
 )
 ```
 
@@ -168,7 +174,6 @@ Steps:
 - Combine with other analysis (static, dynamic, sandboxing)
 - False positives possible - validate findings
 - Use high-quality, tested YARA rules
-- Can reference organization's saved YARA rules by name
 - Keep rules updated with latest threat intelligence
 - Consider scanning related files (DLLs, configs) in same investigation
 - File offset information helps with manual analysis
@@ -177,7 +182,7 @@ Steps:
 
 ## Reference
 
-For the MCP tool, this uses the dedicated `yara_scan_file` tool.
+For the MCP tool, this uses the dedicated `yara_scan_file` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/yara.go`

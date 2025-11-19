@@ -27,8 +27,8 @@ This skill lists all API keys for a LimaCharlie organization. It calls the LimaC
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
 
 No additional parameters are required for listing API keys.
 
@@ -39,51 +39,45 @@ No additional parameters are required for listing API keys.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/[oid]/keys"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_api_keys",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/orgs/{oid}/keys`
-- Query parameters: None
-- Body fields: None
+**Tool Details:**
+- Tool name: `list_api_keys`
+- Required parameters:
+  - `oid` (string): Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "api_keys": {
-      "key_hash_1": {
-        "created": 1234567890,
-        "priv": ["sensor.get", "sensor.task"],
-        "key_name": "Production API Key"
-      },
-      "key_hash_2": {
-        "created": 1234567899,
-        "priv": [],
-        "key_name": "Development Key"
-      }
+  "api_keys": {
+    "key_hash_1": {
+      "created": 1234567890,
+      "priv": ["sensor.get", "sensor.task"],
+      "key_name": "Production API Key"
+    },
+    "key_hash_2": {
+      "created": 1234567899,
+      "priv": [],
+      "key_name": "Development Key"
     }
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response contains a map of key hashes to API key metadata
 - Each key entry includes creation timestamp, privileges list (`priv`), and description
 - Empty `priv` array means the key has full organization access
@@ -113,32 +107,29 @@ User request: "Show me all API keys for my organization"
 
 Steps:
 1. Extract organization ID from context
-2. Call API to retrieve all keys:
+2. Call tool to retrieve all keys:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_api_keys",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "api_keys": {
-      "a1b2c3d4e5f6": {
-        "created": 1609459200,
-        "priv": [],
-        "key_name": "Main API Key"
-      },
-      "f6e5d4c3b2a1": {
-        "created": 1640995200,
-        "priv": ["sensor.get", "sensor.list"],
-        "key_name": "Read-only Key"
-      }
+  "api_keys": {
+    "a1b2c3d4e5f6": {
+      "created": 1609459200,
+      "priv": [],
+      "key_name": "Main API Key"
+    },
+    "f6e5d4c3b2a1": {
+      "created": 1640995200,
+      "priv": ["sensor.get", "sensor.list"],
+      "key_name": "Read-only Key"
     }
   }
 }
@@ -151,7 +142,7 @@ Found 2 API keys:
 1. Main API Key (Hash: a1b2c3d4e5f6)
    - Created: January 1, 2021
    - Permissions: Full access (no restrictions)
-   - ⚠️ High-privilege key
+   - High-privilege key
 
 2. Read-only Key (Hash: f6e5d4c3b2a1)
    - Created: January 1, 2022
@@ -164,7 +155,7 @@ Found 2 API keys:
 User request: "I need to audit all API keys and their permissions"
 
 Steps:
-1. List all API keys using the API call
+1. List all API keys using the tool call
 2. Analyze permissions for each key
 3. Identify high-risk keys (full access, old keys)
 4. Provide security recommendations
@@ -187,7 +178,7 @@ Present findings with:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (GetAPIKeys function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterListAPIKeys)

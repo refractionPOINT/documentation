@@ -29,8 +29,8 @@ This skill retrieves invoice information for a specific billing period from a Li
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
 - **year**: Invoice year (required, e.g., 2023)
 - **month**: Invoice month (required, 1-12)
 
@@ -51,54 +51,52 @@ Ensure you have:
 3. Valid month (1-12)
 4. Optional format choice based on need
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="billing",
-  method="GET",
-  path="/orgs/[oid]/invoice_url/[year]/[month]?format=[format]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_org_invoice_url",
+  parameters={
+    "oid": "[organization-id]",
+    "year": [year],
+    "month": [month],
+    "format": "[format]"  // Optional
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `billing` (uses billing.limacharlie.io)
-- Method: `GET`
-- Path: `/orgs/{oid}/invoice_url/{year}/{month}` (month zero-padded to 2 digits)
-- Query parameters:
-  - `format` (optional): "json", "simple_json", "simple_csv", or omit for URL
-- Body fields: None
+**Tool Details:**
+- Tool name: `get_org_invoice_url`
+- Required parameters:
+  - `oid` (string): Organization ID
+  - `year` (integer): Invoice year
+  - `month` (integer): Invoice month (1-12)
+- Optional parameters:
+  - `format` (string): "json", "simple_json", "simple_csv", or omit for URL
 
 ### Step 3: Handle the Response
 
-The API returns different structures based on format:
+The tool returns different structures based on format:
 
 **Default (URL format):**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "url": "https://invoice-download-url.stripe.com/..."
-  }
+  "url": "https://invoice-download-url.stripe.com/..."
 }
 ```
 
 **JSON format:**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "invoice": {
-      "id": "in_1234567890",
-      "amount_due": 500000,
-      "currency": "usd",
-      "lines": [...],
-      "period_start": 1640995200,
-      "period_end": 1643673600
-    }
+  "invoice": {
+    "id": "in_1234567890",
+    "amount_due": 500000,
+    "currency": "usd",
+    "lines": [...],
+    "period_start": 1640995200,
+    "period_end": 1643673600
   }
 }
 ```
@@ -106,25 +104,22 @@ The API returns different structures based on format:
 **Simple JSON format:**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "lines": [
-      {
-        "description": "Enterprise Plan",
-        "amount": 400000,
-        "quantity": 1
-      },
-      {
-        "description": "Additional Sensors",
-        "amount": 100000,
-        "quantity": 500
-      }
-    ]
-  }
+  "lines": [
+    {
+      "description": "Enterprise Plan",
+      "amount": 400000,
+      "quantity": 1
+    },
+    {
+      "description": "Additional Sensors",
+      "amount": 100000,
+      "quantity": 500
+    }
+  ]
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - URL format returns downloadable link (expires after time)
 - JSON formats return detailed invoice structure
 - Amounts are typically in cents (divide by 100 for dollars)
@@ -154,23 +149,22 @@ User request: "Get me the invoice for January 2023"
 
 Steps:
 1. Extract organization ID
-2. Call API for invoice URL:
+2. Call tool for invoice URL:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="billing",
-  method="GET",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/invoice_url/2023/01"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_org_invoice_url",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "year": 2023,
+    "month": 1
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "url": "https://pay.stripe.com/invoice/acct_123/invst_456/pdf?s=ap"
-  }
+  "url": "https://pay.stripe.com/invoice/acct_123/invst_456/pdf?s=ap"
 }
 ```
 
@@ -179,7 +173,7 @@ Present to user:
 Invoice Download Link - January 2023
 
 Your invoice is ready for download:
-🔗 https://pay.stripe.com/invoice/acct_123/invst_456/pdf?s=ap
+https://pay.stripe.com/invoice/acct_123/invst_456/pdf?s=ap
 
 Note: This link expires after a few hours for security.
 Download the PDF now for your records.
@@ -193,40 +187,40 @@ Period: January 2023
 User request: "Show me the detailed charges for December 2023"
 
 Steps:
-1. Call API with simple_json format:
+1. Call tool with simple_json format:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="billing",
-  method="GET",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/invoice_url/2023/12?format=simple_json"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_org_invoice_url",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "year": 2023,
+    "month": 12,
+    "format": "simple_json"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "lines": [
-      {
-        "description": "Enterprise Plan - Base",
-        "amount": 400000,
-        "quantity": 1
-      },
-      {
-        "description": "Sensors (2,500 sensors)",
-        "amount": 150000,
-        "quantity": 2500
-      },
-      {
-        "description": "Data Storage (800 GB)",
-        "amount": 50000,
-        "quantity": 800
-      }
-    ],
-    "total": 600000
-  }
+  "lines": [
+    {
+      "description": "Enterprise Plan - Base",
+      "amount": 400000,
+      "quantity": 1
+    },
+    {
+      "description": "Sensors (2,500 sensors)",
+      "amount": 150000,
+      "quantity": 2500
+    },
+    {
+      "description": "Data Storage (800 GB)",
+      "amount": 50000,
+      "quantity": 800
+    }
+  ],
+  "total": 600000
 }
 ```
 
@@ -267,9 +261,9 @@ Invoice Export Complete
 
 Exported 3 months of billing data:
 
-✓ October 2023 - $5,800.00
-✓ November 2023 - $6,100.00
-✓ December 2023 - $6,000.00
+- October 2023 - $5,800.00
+- November 2023 - $6,100.00
+- December 2023 - $6,000.00
 
 Total (Q4 2023): $17,900.00
 
@@ -292,7 +286,7 @@ Each file contains itemized line items with descriptions, quantities, and amount
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/billing.go` (GetBillingInvoiceURL function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterGetOrgInvoiceURL)

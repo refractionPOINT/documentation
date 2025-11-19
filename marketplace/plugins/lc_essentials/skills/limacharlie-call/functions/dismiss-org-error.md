@@ -21,17 +21,15 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill dismisses a specific error from a LimaCharlie organization's error log. It calls the LimaCharlie API to remove the error identified by its component name. This is typically done after the underlying issue has been resolved or when the error is acknowledged and doesn't require further action.
+This skill dismisses a specific error from a LimaCharlie organization's error log. It calls the LimaCharlie API to remove the error identified by its error ID. This is typically done after the underlying issue has been resolved or when the error is acknowledged and doesn't require further action.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-- **component**: Component name of the error to dismiss (required)
-  - Format: "component-type:component-name"
-  - Examples: "output:syslog-prod", "rule:malware-detection", "extension:threat-intel"
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
+- **error_id**: Error ID of the error to dismiss (required)
   - Obtain from get-org-errors skill
 
 ## How to Use
@@ -40,60 +38,56 @@ Before calling this skill, gather:
 
 Ensure you have:
 1. Valid organization ID (oid)
-2. Correct component name from error log
+2. Correct error ID from error log
 3. Confirmation that the issue is resolved or acknowledged
 4. Understanding that dismissal removes the error from tracking
 
 **IMPORTANT**: Always verify the error is resolved before dismissing!
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/errors/[oid]/[component-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="dismiss_org_error",
+  parameters={
+    "oid": "[organization-id]",
+    "error_id": "[error-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/errors/{oid}/{component}` (component should be URL-encoded)
-- Query parameters: None
-- Body fields: None
+**Tool Details:**
+- Tool name: `dismiss_org_error`
+- Required parameters:
+  - `oid` (string): Organization ID
+  - `error_id` (string): Error ID to dismiss
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Empty or minimal response indicates successful dismissal
 - Error is immediately removed from org error log
 - Error will not appear in future get-org-errors calls
 - Dismissal is permanent unless error recurs
 
 **Common Errors:**
-- **400 Bad Request**: Invalid component name format
+- **400 Bad Request**: Invalid error ID format
 - **403 Forbidden**: Insufficient permissions to dismiss errors
-- **404 Not Found**: Component name doesn't match any existing error or org not found
+- **404 Not Found**: Error ID doesn't match any existing error or org not found
 - **500 Server Error**: API service issue - retry or contact support
 
 ### Step 4: Format the Response
 
 Present the result to the user:
 - Confirm successful dismissal
-- Remind user what was dismissed (component name)
+- Remind user what was dismissed (error ID)
 - Note that error is removed from tracking
 - Suggest monitoring to ensure issue doesn't recur
 - If error recurs, it will reappear in error log
@@ -106,38 +100,36 @@ User request: "I fixed the Splunk connection. Can you clear that error?"
 
 Steps:
 1. First verify error is in org errors (use get-org-errors)
-2. Confirm component name
+2. Confirm error ID
 3. Dismiss the error:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/errors/c7e8f940-1234-5678-abcd-1234567890ab/output:splunk-integration"
+mcp__limacharlie__lc_call_tool(
+  tool_name="dismiss_org_error",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "error_id": "error-12345"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Present to user:
 ```
-✅ Error Dismissed Successfully
+Error Dismissed Successfully
 
-Component: output:splunk-integration
+Error ID: error-12345
 Status: Removed from error log
 
 The Splunk integration error has been cleared from your organization's error tracking.
 
 Next steps:
-✓ Monitor output logs to verify data flow
-✓ Check that events are reaching Splunk
-✓ If issue recurs, error will reappear automatically
+- Monitor output logs to verify data flow
+- Check that events are reaching Splunk
+- If issue recurs, error will reappear automatically
 
 The error log is now clean for this component.
 ```
@@ -147,23 +139,24 @@ The error log is now clean for this component.
 User request: "I know about that rate limit warning. Can we dismiss it?"
 
 Steps:
-1. Verify component name from error log
+1. Verify error ID from error log
 2. Confirm user understands impact
 3. Dismiss the warning:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/errors/c7e8f940-1234-5678-abcd-1234567890ab/extension:threat-intel"
+mcp__limacharlie__lc_call_tool(
+  tool_name="dismiss_org_error",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "error_id": "error-67890"
+  }
 )
 ```
 
 Present to user:
 ```
-✅ Warning Acknowledged and Dismissed
+Warning Acknowledged and Dismissed
 
-Component: extension:threat-intel
+Error ID: error-67890
 Issue: API rate limit exceeded
 Action: Acknowledged (non-critical)
 
@@ -188,17 +181,17 @@ Steps:
 
 Present summary:
 ```
-🧹 Error Log Cleanup Complete
+Error Log Cleanup Complete
 
 Dismissed 3 resolved errors:
 
-✓ output:syslog-prod (connection timeout - fixed)
-✓ rule:malware-detection (syntax error - corrected)
-✓ extension:threat-intel (rate limit - acknowledged)
+- error-12345 (connection timeout - fixed)
+- error-23456 (syntax error - corrected)
+- error-34567 (rate limit - acknowledged)
 
 Current error status:
 - Active errors: 0
-- Organization health: Clean ✅
+- Organization health: Clean
 
 All known issues have been resolved and cleared from tracking.
 Run get-org-errors anytime to check for new issues.
@@ -209,8 +202,7 @@ Run get-org-errors anytime to check for new issues.
 - Only dismiss errors after verifying the issue is resolved
 - Dismissed errors will reappear if the problem recurs
 - Some errors may auto-dismiss when underlying issue is fixed
-- Component names must match exactly (case-sensitive)
-- URL-encode component names with special characters
+- Error IDs must match exactly
 - Dismissal is a privileged operation requiring appropriate access
 - Regular error log cleanup maintains clear visibility
 - Consider documenting why errors were dismissed
@@ -219,7 +211,7 @@ Run get-org-errors anytime to check for new issues.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (DismissOrgError function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterDismissOrgError)

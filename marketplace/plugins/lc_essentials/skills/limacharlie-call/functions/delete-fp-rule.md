@@ -28,7 +28,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Name of the FP rule to delete (must be exact match)
+- **name**: Name of the FP rule to delete (must be exact match)
 
 ## How to Use
 
@@ -41,32 +41,29 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/fp/[organization-id]/[rule-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_fp_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/hive/fp/{oid}/{rule_name}`
-- Body fields: None
+- Tool: `delete_fp_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: FP rule name to delete
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 **Success (200-299):**
@@ -100,20 +97,18 @@ Steps:
 2. Extract rule name: "filter_dev_activity"
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/fp/c7e8f940-1234-5678-abcd-1234567890ab/filter_dev_activity"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_fp_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "filter_dev_activity"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 User message: "Successfully deleted FP rule 'filter_dev_activity'. Detections that were previously filtered by this rule will now appear in your timeline."
@@ -126,8 +121,6 @@ Steps:
 1. Call API to delete rule
 2. API returns 404 Not Found
 3. Inform user: "FP rule 'nonexistent_rule' not found. The rule may have already been deleted or the name may be incorrect. Use get-fp-rules to see available rules."
-
-## Example Usage
 
 ### Example 3: Restore accidentally filtered detections
 
@@ -160,7 +153,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/fp_rule.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/fp_rules.go`

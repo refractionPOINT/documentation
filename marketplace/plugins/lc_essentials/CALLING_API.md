@@ -1,202 +1,323 @@
-# Generic LimaCharlie API Access
+# LimaCharlie Tool Access
 
-The `lc_api_call` tool provides direct HTTP access to LimaCharlie's API and billing endpoints. This document explains how to use it effectively from within skills.
+The `lc_call_tool` provides unified access to all LimaCharlie MCP tools. This document explains how to use it effectively from within skills.
 
 ## Basic Parameters
 
-- **endpoint**: Target endpoint type:
-  - `"api"` - Standard API endpoint (api.limacharlie.io)
-  - `"billing"` - Billing endpoint (billing.limacharlie.io)
-  - `"replay"` - Replay/LCQL endpoint (automatically resolves per-org replay instance URL)
-- **method**: HTTP method - GET, POST, PUT, DELETE, or PATCH
-- **path**: API path starting with "/" (e.g., "/rules/{oid}" or "/outputs/{oid}")
-  - For `"replay"` endpoint, use "/" as the path (root path on replay instance)
-- **query_params** (optional): URL query parameters as key-value object
-- **headers** (optional): Custom HTTP headers as key-value object
-- **body** (optional): Request body as object (will be JSON-serialized) - typically used with POST/PUT/PATCH
-  - For `"replay"` endpoint, body must include `"oid"` field
-- **timeout** (optional): Request timeout in seconds (default: 30)
-- **oid**: Organization ID - required for most calls, but **omit this parameter** for user-level and global operations (see below)
+- **tool_name**: Name of the MCP tool to call (e.g., `get_sensor_info`, `run_lcql_query`)
+- **parameters**: Object containing the parameters for the specific tool
 
-## User-Level and Global Operations
+## How It Works
 
-Some API operations don't require a specific organization context and the **`oid` parameter should be omitted**:
+The `lc_call_tool` is a meta-tool that invokes other registered LimaCharlie MCP tools. Instead of making raw HTTP requests, you call specific tools by name with their parameters:
 
-**User-level operations** (use `/user/*` paths):
-- `/user/orgs` (GET) - List organizations accessible to the user
-  - Used by: `list-user-orgs` skill
-  - Omit the `oid` parameter
-
-**Global operations** (don't include `{oid}` in path):
-- `/orgs` (POST) - Create new organization
-  - Used by: `create-org` skill
-  - Omit the `oid` parameter
-- `/ontology` (GET) - Get platform names from global ontology
-  - Used by: `get-platform-names` skill
-  - Omit the `oid` parameter
-
-**All other operations require a valid, specific organization ID.**
-
-For organization-specific operations, the path typically includes `{oid}` as a variable:
-- `/rules/{oid}` - Requires specific organization ID
-- `/sensors/{oid}` - Requires specific organization ID
-- `/outputs/{oid}` - Requires specific organization ID
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_sensor_info",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-sensor-id"
+  }
+)
+```
 
 ## Authentication
 
 Authentication is handled automatically using the MCP server's auth context. You don't need to provide API keys or JWT tokens.
 
-## Path Variables
-
-Always replace path variables with actual values:
-- `{oid}` → Actual organization ID (from user context or parameter)
-- Example: `/rules/{oid}` → `/rules/c7e8f940-1234-5678-abcd-1234567890ab`
-
 ## Response Structure
 
-All responses include:
+Tools return their results directly without HTTP wrapper:
+
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "headers": {...},
-  "body": {...}
+  "sensor": {
+    "sid": "xyz-sensor-id",
+    "hostname": "SERVER01",
+    "platform": "windows",
+    ...
+  }
 }
 ```
 
-When status_code ≥ 400, an `error` field with human-readable message is included.
+Errors are returned with an `error` field:
 
-Success: 200-299 range
-Client errors: 400-499
-Server errors: 500-599
+```json
+{
+  "error": "sensor not found"
+}
+```
+
+## Available Tools
+
+### Core Profile
+- `get_sensor_info` - Get detailed sensor information
+- `list_sensors` - List all sensors (supports filtering)
+- `get_online_sensors` - List online sensors
+- `is_online` - Check if sensor is online
+- `search_hosts` - Search sensors by hostname pattern
+
+### Historical Data Profile
+- `run_lcql_query` - Run LCQL query
+- `get_historic_events` - Get historical events
+- `get_historic_detections` - Get historical detections
+- `search_iocs` - Search for IOCs
+- `batch_search_iocs` - Batch search IOCs
+- `get_time_when_sensor_has_data` - Get sensor data time range
+- `list_saved_queries` - List saved queries
+- `get_saved_query` - Get saved query
+- `run_saved_query` - Execute saved query
+- `set_saved_query` - Create/update saved query
+- `delete_saved_query` - Delete saved query
+- `get_event_schema` - Get event schema
+- `get_event_schemas_batch` - Get multiple event schemas
+- `get_event_types_with_schemas` - List event types with schemas
+- `get_event_types_with_schemas_for_platform` - List event types by platform
+- `get_platform_names` - Get platform names
+- `list_with_platform` - List sensors by platform
+
+### Live Investigation Profile
+- `get_processes` - Get running processes
+- `get_process_modules` - Get process modules
+- `get_process_strings` - Extract process strings
+- `yara_scan_process` - YARA scan process
+- `yara_scan_file` - YARA scan file
+- `yara_scan_directory` - YARA scan directory
+- `yara_scan_memory` - YARA scan memory
+- `get_network_connections` - Get network connections
+- `get_os_version` - Get OS version
+- `get_users` - Get system users
+- `get_services` - Get services
+- `get_drivers` - Get drivers
+- `get_autoruns` - Get autoruns
+- `get_packages` - Get packages
+- `get_registry_keys` - Get registry keys
+- `find_strings` - Find strings in memory
+- `dir_list` - List directory
+- `dir_find_hash` - Find files by hash
+- `list_artifacts` - List artifacts
+- `get_artifact` - Get artifact
+
+### Threat Response Profile
+- `isolate_network` - Isolate sensor
+- `rejoin_network` - Rejoin sensor to network
+- `is_isolated` - Check isolation status
+- `add_tag` - Add tag to sensor
+- `remove_tag` - Remove tag from sensor
+- `delete_sensor` - Delete sensor
+- `reliable_tasking` - Execute reliable task
+- `list_reliable_tasks` - List reliable tasks
+
+### Fleet Management Profile
+- `list_installation_keys` - List installation keys
+- `create_installation_key` - Create installation key
+- `delete_installation_key` - Delete installation key
+- `list_cloud_sensors` - List cloud sensor configs
+- `get_cloud_sensor` - Get cloud sensor config
+- `set_cloud_sensor` - Create/update cloud sensor
+- `delete_cloud_sensor` - Delete cloud sensor
+
+### Detection Engineering Profile
+- `get_detection_rules` - Get all D&R rules
+- `list_dr_general_rules` - List general D&R rules
+- `get_dr_general_rule` - Get general D&R rule
+- `set_dr_general_rule` - Create/update general D&R rule
+- `delete_dr_general_rule` - Delete general D&R rule
+- `list_dr_managed_rules` - List managed D&R rules
+- `get_dr_managed_rule` - Get managed D&R rule
+- `set_dr_managed_rule` - Update managed D&R rule
+- `delete_dr_managed_rule` - Delete managed D&R rule
+- `validate_dr_rule_components` - Validate D&R rule
+- `list_yara_rules` - List YARA rules
+- `get_yara_rule` - Get YARA rule
+- `set_yara_rule` - Create/update YARA rule
+- `delete_yara_rule` - Delete YARA rule
+- `validate_yara_rule` - Validate YARA rule syntax
+- `get_fp_rules` - Get all FP rules
+- `get_fp_rule` - Get FP rule
+- `set_fp_rule` - Create/update FP rule
+- `delete_fp_rule` - Delete FP rule
+- `get_mitre_report` - Get MITRE ATT&CK report
+
+### Platform Admin Profile
+- `get_org_info` - Get organization info
+- `get_usage_stats` - Get usage statistics
+- `get_billing_details` - Get billing details
+- `get_org_errors` - Get organization errors
+- `dismiss_org_error` - Dismiss organization error
+- `get_org_invoice_url` - Get invoice URL
+- `create_org` - Create organization
+- `list_user_orgs` - List user organizations
+- `list_outputs` - List outputs
+- `add_output` - Create output
+- `delete_output` - Delete output
+- `list_secrets` - List secrets
+- `get_secret` - Get secret value
+- `set_secret` - Create/update secret
+- `delete_secret` - Delete secret
+- `list_lookups` - List lookups
+- `get_lookup` - Get lookup
+- `set_lookup` - Create/update lookup
+- `delete_lookup` - Delete lookup
+- `query_lookup` - Query lookup
+- `list_playbooks` - List playbooks
+- `get_playbook` - Get playbook
+- `set_playbook` - Create/update playbook
+- `delete_playbook` - Delete playbook
+- `list_external_adapters` - List external adapters
+- `get_external_adapter` - Get external adapter
+- `set_external_adapter` - Create/update external adapter
+- `delete_external_adapter` - Delete external adapter
+- `list_extension_configs` - List extension configs
+- `get_extension_config` - Get extension config
+- `set_extension_config` - Update extension config
+- `delete_extension_config` - Delete extension config
+- `subscribe_to_extension` - Subscribe to extension
+- `unsubscribe_from_extension` - Unsubscribe from extension
+- `list_rules` - List Hive rules
+- `get_rule` - Get Hive rule
+- `set_rule` - Create/update Hive rule
+- `delete_rule` - Delete Hive rule
+- `list_api_keys` - List API keys
+- `create_api_key` - Create API key
+- `delete_api_key` - Delete API key
+
+### AI-Powered Tools
+- `generate_lcql_query` - Generate LCQL from natural language
+- `generate_dr_rule_detection` - Generate D&R detection component
+- `generate_dr_rule_respond` - Generate D&R response component
+- `generate_sensor_selector` - Generate sensor selector
+- `generate_python_playbook` - Generate Python playbook
+- `generate_detection_summary` - Generate detection summary
 
 ## Common Patterns
 
-### Pattern 1: Simple GET Request (List Resources)
-```
-Use lc_api_call with:
-- endpoint: "api"
-- method: "GET"
-- path: "/outputs/{oid}"
-- oid: [organization-id]
+### Pattern 1: Get Single Resource
 
-No body needed for GET requests.
-Response will contain list of resources in body.
 ```
-
-### Pattern 2: GET with Query Parameters (Filtered List)
-```
-Use lc_api_call with:
-- endpoint: "api"
-- method: "GET"
-- path: "/rules/{oid}"
-- query_params: {"namespace": "general"}
-- oid: [organization-id]
-
-Query params appear in URL: /rules/{oid}?namespace=general
+lc_call_tool(
+  tool_name="get_sensor_info",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-sensor-id"
+  }
+)
 ```
 
-### Pattern 3: GET Single Resource by Name/ID
+### Pattern 2: List Resources
+
 ```
-Some endpoints require name/ID in query params:
-
-Use lc_api_call with:
-- endpoint: "api"
-- method: "GET"
-- path: "/rules/{oid}"
-- query_params: {"name": "rule-name", "namespace": "general"}
-- oid: [organization-id]
-
-The API will filter and return the specific resource.
+lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
+)
 ```
 
-### Pattern 4: POST to Create Resource
+### Pattern 3: List with Filtering
+
 ```
-Use lc_api_call with:
-- endpoint: "api"
-- method: "POST"
-- path: "/outputs/{oid}"
-- body: {
-    "name": "my-output",
+lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "with_hostname_prefix": "web-",
+    "with_ip": "10.0.1.50"
+  }
+)
+```
+
+### Pattern 4: Create Resource
+
+```
+lc_call_tool(
+  tool_name="add_output",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "my-syslog",
     "module": "syslog",
     "type": "event",
-    "dest_host": "syslog.example.com",
+    "dest_host": "10.0.0.5",
     "dest_port": 514
   }
-- oid: [organization-id]
-
-Body contains the resource configuration.
+)
 ```
 
-### Pattern 5: POST with Form Data (Legacy Endpoints)
-```
-Some older endpoints expect form-encoded data. Use body object:
+### Pattern 5: Delete Resource
 
-Use lc_api_call with:
-- endpoint: "api"
-- method: "POST"
-- path: "/rules/{oid}"
-- body: {
-    "name": "rule-name",
-    "namespace": "general",
-    "detect": {...},
-    "respond": [...]
+```
+lc_call_tool(
+  tool_name="delete_output",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "my-syslog"
   }
-- oid: [organization-id]
-
-The tool will serialize as JSON (most endpoints now accept JSON).
+)
 ```
 
-### Pattern 6: PUT to Update Resource
+### Pattern 6: Run Query
+
 ```
-Use lc_api_call with:
-- endpoint: "api"
-- method: "PUT"
-- path: "/configs/extension/{oid}"
-- body: {
-    "name": "extension-name",
-    "config": {...}
+lc_call_tool(
+  tool_name="run_lcql_query",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME contains 'example.com'",
+    "limit": 1000,
+    "stream": "event"
   }
-- oid: [organization-id]
-
-PUT typically replaces the entire resource.
+)
 ```
 
-### Pattern 7: DELETE with Parameters
-```
-Use lc_api_call with:
-- endpoint: "api"
-- method: "DELETE"
-- path: "/outputs/{oid}"
-- body: {"name": "output-name"}
-- oid: [organization-id]
+### Pattern 7: Search IOCs
 
-DELETE may require identifying which resource to delete via body or query params.
 ```
-
-### Pattern 8: PATCH for Partial Updates
-```
-Use lc_api_call with:
-- endpoint: "api"
-- method: "PATCH"
-- path: "/some-resource/{oid}"
-- body: {
-    "field_to_update": "new_value"
+lc_call_tool(
+  tool_name="search_iocs",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "ioc_type": "domain",
+    "ioc_value": "malicious.com",
+    "info_type": "locations"
   }
-- oid: [organization-id]
-
-PATCH updates only specified fields (less common in LC API).
+)
 ```
+
+### Pattern 8: Live Sensor Command
+
+```
+lc_call_tool(
+  tool_name="get_processes",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-sensor-id"
+  }
+)
+```
+
+## User-Level and Global Operations
+
+Some operations don't require a specific organization ID:
+
+**User-level operations** (omit `oid`):
+- `list_user_orgs` - List organizations accessible to the user
+
+**Global operations** (omit `oid`):
+- `create_org` - Create new organization
+- `get_platform_names` - Get platform names from global ontology
+
+**All other operations require a valid organization ID.**
 
 ## Handling Large Results
 
-When API responses exceed approximately 100KB, the `lc_api_call` tool returns a special response format instead of the full data:
+When tool calls return large result sets (>100KB), the `lc_call_tool` returns a special response format instead of the full data:
 
 ```json
 {
   "is_temp_file": false,
   "reason": "results too large, see resource_link for content",
-  "resource_link": "https://storage.googleapis.com/lc-tmp-mcp-export/lc_api_call_20251114_142154_73e57517.json.gz?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=...",
+  "resource_link": "https://storage.googleapis.com/lc-tmp-mcp-export/lc_call_tool_20251114_142154_73e57517.json.gz?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=...",
   "resource_size": 34329,
   "success": true
 }
@@ -208,7 +329,7 @@ When API responses exceed approximately 100KB, the `lc_api_call` tool returns a 
 - **reason**: Explains why the full data wasn't returned inline
 - **resource_link**: Signed Google Cloud Storage URL containing the data
 - **resource_size**: Size of the compressed file in bytes
-- **success**: `true` indicates the API call succeeded
+- **success**: `true` indicates the tool call succeeded
 
 ### Resource Link Details
 
@@ -220,7 +341,7 @@ The `resource_link` URL:
 
 ### Handling Large Results with analyze-lc-result.sh Script
 
-**CRITICAL REQUIREMENT**: When `lc_api_call` returns a `resource_link`, you **MUST** follow this exact workflow. DO NOT attempt to guess the JSON structure or write jq queries before analyzing the schema.
+**CRITICAL REQUIREMENT**: When `lc_call_tool` returns a `resource_link`, you **MUST** follow this exact workflow. DO NOT attempt to guess the JSON structure or write jq queries before analyzing the schema.
 
 **Why this is mandatory**: Skipping the analysis step results in incorrect queries, wasted tokens, and frustration. The schema reveals the actual structure, which may differ from what you expect.
 
@@ -234,7 +355,7 @@ Run the analyze script with the `resource_link` URL directly:
 bash ./marketplace/plugins/lc_essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/lc-tmp-mcp-export/..."
 ```
 
-Replace the URL with the actual `resource_link` value from the API response.
+Replace the URL with the actual `resource_link` value from the tool response.
 
 **What this script does:**
 1. Downloads the file to `/tmp/lc-result-{timestamp}.json`
@@ -281,7 +402,7 @@ rm /tmp/lc-result-{timestamp}.json
 Replace `{timestamp}` with the actual timestamp from Step 1's output.
 
 **When to use this workflow:**
-- `lc_api_call` returns a `resource_link` response
+- `lc_call_tool` returns a `resource_link` response
 - You're asking for specific information (e.g., "find sensors with hostname X", "count enabled rules", "get OID for lc_demo")
 - You don't need the complete result set
 
@@ -293,17 +414,17 @@ Replace `{timestamp}` with the actual timestamp from Step 1's output.
 ### Common Scenarios
 
 **Scenario 1: Large Sensor Lists**
-- API: `GET /sensors/{oid}` for organizations with 1000+ sensors
+- Tool: `list_sensors` for organizations with 1000+ sensors
 - Returns: `resource_link` with full sensor inventory
 - Use jq to: Find specific sensors, filter by platform, check online status
 
 **Scenario 2: Bulk Historical Events**
-- API: `POST /insight/{oid}/lcql` with broad time range
+- Tool: `run_lcql_query` with broad time range
 - Returns: `resource_link` with thousands of events
 - Use jq to: Extract specific event types, count occurrences, find patterns
 
 **Scenario 3: Extensive Rule Lists**
-- API: `GET /rules/{oid}` for organizations with many D&R rules
+- Tool: `list_dr_general_rules` for organizations with many D&R rules
 - Returns: `resource_link` with complete rule set
 - Use jq to: Find rules by name, check which are enabled, analyze detection logic
 
@@ -312,155 +433,43 @@ Replace `{timestamp}` with the actual timestamp from Step 1's output.
 1. **Request specific data**: Be clear about what information you need from large results
 2. **Use the analyze script**: The analyze-lc-result.sh script helps you understand the data structure before querying
 3. **Be patient**: Large files may take time to download and process
-4. **Re-run if expired**: If the signed URL expires (403/404), re-run the original API call for a fresh link
+4. **Re-run if expired**: If the signed URL expires (403/404), re-run the original tool call for a fresh link
 5. **Avoid full dumps**: Don't request the complete dataset unless truly necessary
-
-## Common API Paths
-
-### Detection & Response
-- GET `/rules/{oid}` - List D&R rules (add ?namespace=general or ?namespace=managed)
-- POST `/rules/{oid}` - Create/update D&R rule
-- DELETE `/rules/{oid}` - Delete D&R rule (name in body/query)
-
-### Sensors
-- GET `/sensors/{oid}` - List all sensors
-- GET `/sensors/{oid}/{sid}` - Get specific sensor
-- DELETE `/sensors/{oid}/{sid}` - Delete sensor
-
-### Outputs
-- GET `/outputs/{oid}` - List outputs
-- POST `/outputs/{oid}` - Create output
-- DELETE `/outputs/{oid}` - Delete output (name in body)
-
-### Secrets
-- GET `/secret/{oid}` - List secrets (returns names only)
-- GET `/secret/{oid}/{secret_name}` - Get secret value
-- POST `/secret/{oid}` - Create/update secret
-- DELETE `/secret/{oid}/{secret_name}` - Delete secret
-
-### Lookups
-- GET `/insight/{oid}/lookup` - List lookups
-- GET `/insight/{oid}/lookup/{lookup_name}` - Get lookup
-- POST `/insight/{oid}/lookup/{lookup_name}` - Create/update lookup
-- DELETE `/insight/{oid}/lookup/{lookup_name}` - Delete lookup
-
-### YARA Rules
-- GET `/yara/{oid}` - List YARA rules
-- POST `/yara/{oid}` - Create/update YARA rule
-- DELETE `/yara/{oid}` - Delete YARA rule (name in body)
-
-### Historical Data
-- POST `/` with `endpoint="replay"` - Run LCQL query (requires oid in body, auto-resolves replay URL)
-- GET `/insight/{oid}/events` - Get historical events (time range in query params)
-- GET `/insight/{oid}/detections` - Get historical detections
-
-**Note:** LCQL queries use the `"replay"` endpoint which automatically resolves the per-organization replay instance URL. The path is always `/` (root) when using this endpoint.
 
 ## Error Handling
 
-Always check `status_code` in response:
+Tools return errors in the response:
 
-- **200-299**: Success, proceed with body data
-- **400**: Bad request - check parameter format
-- **401**: Unauthorized - authentication issue
-- **403**: Forbidden - insufficient permissions
-- **404**: Not found - resource doesn't exist
-- **409**: Conflict - resource already exists or state conflict
-- **429**: Rate limited - retry with backoff
-- **500-599**: Server error - retry or report issue
+```json
+{
+  "error": "missing required parameter: sid"
+}
+```
+
+Common errors:
+- **Missing parameter**: Required parameter not provided
+- **Invalid parameter**: Wrong type or format
+- **Not found**: Resource doesn't exist
+- **Permission denied**: Insufficient permissions
+- **Validation failed**: Invalid configuration
 
 ## Best Practices
 
 1. **Always validate OID**: Ensure you have a valid organization ID
-2. **Check required parameters**: Review which fields are required for each endpoint
-3. **Use appropriate HTTP method**: GET for reading, POST for creating, PUT for replacing, DELETE for removing
-4. **Parse response body**: Most endpoints return JSON with structured data
-5. **Handle errors gracefully**: Provide clear error messages to users based on status code
-6. **Reference SDK code**: When unsure, check ../go-limacharlie/limacharlie/ for the Go SDK implementation
-7. **Use form data for legacy endpoints**: Some older endpoints expect form-encoded data in body
-8. **Include namespaces for rules**: D&R rules require namespace ("general" or "managed") in queries
-
-## Examples by Category
-
-### Example: List D&R Rules in General Namespace
-```
-lc_api_call(
-  oid="abc123...",
-  endpoint="api",
-  method="GET",
-  path="/rules/abc123...",
-  query_params={"namespace": "general"}
-)
-```
-
-### Example: Create Output
-```
-lc_api_call(
-  oid="abc123...",
-  endpoint="api",
-  method="POST",
-  path="/outputs/abc123...",
-  body={
-    "name": "my-syslog",
-    "module": "syslog",
-    "type": "event",
-    "dest_host": "10.0.0.5",
-    "dest_port": 514
-  }
-)
-```
-
-### Example: Get Secret Value
-```
-lc_api_call(
-  oid="abc123...",
-  endpoint="api",
-  method="GET",
-  path="/secret/abc123.../my-api-key"
-)
-```
-
-### Example: Run LCQL Query
-```
-lc_api_call(
-  oid="abc123...",
-  endpoint="replay",
-  method="POST",
-  path="/",
-  body={
-    "oid": "abc123...",
-    "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME contains 'example.com'",
-    "limit_event": 1000,
-    "limit_eval": 10000,
-    "event_source": {
-      "stream": "event",
-      "sensor_events": {
-        "cursor": "-"
-      }
-    }
-  }
-)
-```
-
-**Note:** The `"replay"` endpoint automatically resolves the per-organization replay instance URL. Always include the `oid` field in the body when using this endpoint.
-
-## When to Use This Tool
-
-Use `lc_api_call` when:
-- Implementing a skill that needs to interact with LimaCharlie API
-- You know the exact API endpoint and parameters needed
-- You want fine-grained control over the HTTP request
-- You need to access endpoints not yet covered by dedicated MCP tools
+2. **Check required parameters**: Review which fields are required for each tool
+3. **Use appropriate tools**: Choose the right tool for the operation
+4. **Handle errors gracefully**: Provide clear error messages to users
+5. **Reference function docs**: Check the function markdown files for detailed usage
 
 ## MCP Server Configuration
 
-The `lc_api_call` tool is provided by the LimaCharlie MCP server configured in this plugin:
+The `lc_call_tool` is provided by the LimaCharlie MCP server configured in this plugin:
 - **Server name**: `limacharlie`
-- **Profile**: `api_access` (provides only the `lc_api_call` tool)
-- **Tool reference**: `mcp__limacharlie__lc_api_call`
+- **Profile**: `api_access` (provides the `lc_call_tool` tool)
+- **Tool reference**: `mcp__limacharlie__lc_call_tool`
 - **Server URL**: https://mcp.limacharlie.io/mcp/api_access
 
-This MCP server is configured in `.claude-plugin/servers.json` and provides the minimal toolset needed for API access.
+This MCP server is configured in `.claude-plugin/servers.json` and provides access to all LimaCharlie tools through the unified `lc_call_tool` interface.
 
 ## Additional Resources
 

@@ -50,11 +50,16 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
+Use the `lc_call_tool` MCP tool:
+
 ```
-mcp__limacharlie__find_strings(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  strings="[string1,string2,string3]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="find_strings",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "strings": "[string1,string2,string3]"
+  }
 )
 ```
 
@@ -129,10 +134,13 @@ Steps:
 1. Prepare search string list
 2. Call the tool:
 ```
-mcp__limacharlie__find_strings(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  strings="password,credential,secret"
+mcp__limacharlie__lc_call_tool(
+  tool_name="find_strings",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "strings": "password,credential,secret"
+  }
 )
 ```
 
@@ -167,6 +175,8 @@ Steps:
 - Consider privacy implications when searching for credentials
 
 ## Reference
+
+For the MCP tool, this uses the dedicated `find_strings` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

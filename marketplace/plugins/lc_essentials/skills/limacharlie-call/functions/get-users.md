@@ -39,10 +39,15 @@ Ensure you have valid oid and sid, and sensor is online.
 
 ### Step 2: Send the Sensor Command
 
+Use the `lc_call_tool` MCP tool:
+
 ```
-mcp__limacharlie__get_users(
-  oid="[organization-id]",
-  sid="[sensor-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_users",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]"
+  }
 )
 ```
 
@@ -56,6 +61,8 @@ mcp__limacharlie__get_users(
 Response contains user account information. Present findings highlighting suspicious accounts, admin/root users, and recent additions.
 
 ## Reference
+
+For the MCP tool, this uses the dedicated `get_users` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

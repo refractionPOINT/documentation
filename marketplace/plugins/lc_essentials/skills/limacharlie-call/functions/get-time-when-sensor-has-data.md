@@ -22,7 +22,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill queries the sensor's data timeline to return the earliest and latest timestamps for which telemetry data is available.
+This skill queries the sensor's data timeline to return the timestamps for which telemetry data is available.
 
 ## Required Information
 
@@ -38,41 +38,36 @@ Before calling this skill, gather:
 
 Ensure valid org ID and sensor ID.
 
-### Step 2: Call API
+### Step 2: Call the Tool
+
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/xyz-sensor-id/overview",
-  query_params={
-    "start": 1705000000,
-    "end": 1705847634
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_time_when_sensor_has_data",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-sensor-id"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/insight/{oid}/{sid}/overview`
-- Query parameters:
-  - `start`: Unix epoch timestamp in seconds (required)
-  - `end`: Unix epoch timestamp in seconds (required)
+**Tool Details:**
+- Tool name: `get_time_when_sensor_has_data`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID
 
 ### Step 3: Handle Response
 
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "overview": [1705000000, 1705003600, 1705007200, ...]
-  }
+  "overview": [1705000000, 1705003600, 1705007200, ...]
 }
 ```
 
-**Success (200):**
+**Success:**
 - `overview`: Array of Unix timestamps representing time batches where sensor data is available
 - Empty array means no data in the requested timeframe
 
@@ -80,8 +75,6 @@ mcp__limacharlie__lc_api_call(
 
 ```
 Sensor Data Availability: xyz-sensor-id
-
-Query Range: 2024-01-11 12:00:00 to 2024-01-21 14:30:34 UTC
 
 Data Batches Found: 45 timestamps
 - First batch: 2024-01-11 12:00:00 UTC
@@ -96,13 +89,25 @@ Status: Data available for historical queries in this timeframe
 
 User: "Does sensor xyz-123 have data from last week?"
 
-Compare query timeframe with returned earliest/latest range.
+Steps:
+1. Get organization ID from context
+2. Call tool:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_time_when_sensor_has_data",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-123"
+  }
+)
+```
+3. Compare returned timestamps with the requested timeframe
 
 ### Example 2: Troubleshoot missing data
 
 User: "Why can't I query events for this sensor?"
 
-Check timeline to verify sensor has any data.
+Check timeline to verify sensor has any data available.
 
 ## Additional Notes
 
@@ -113,7 +118,7 @@ Check timeline to verify sensor has any data.
 
 ## Reference
 
-See [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 SDK: `../go-limacharlie/limacharlie/organization.go`
 MCP: `../lc-mcp-server/internal/tools/historical/historical.go`

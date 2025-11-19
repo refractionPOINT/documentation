@@ -40,58 +40,52 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/fp/[organization-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_fp_rules",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/fp/{oid}`
-- Query parameters: None
-- Body fields: None (GET request)
+- Tool: `get_fp_rules`
+- Required parameters:
+  - `oid`: Organization ID
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "fp-rule-1": {
-      "name": "fp-rule-1",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "data": {
-        "op": "and",
-        "rules": [
-          {"op": "is", "path": "detect/cat", "value": "PROCESS_ANOMALY"},
-          {"op": "contains", "path": "detect/event/FILE_PATH", "value": "/opt/known_safe/"}
-        ]
-      }
-    },
-    "fp-rule-2": {
-      "name": "fp-rule-2",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "data": {
-        "op": "is",
-        "path": "detect/cat",
-        "value": "NOISY_DETECTION"
-      }
+  "fp-rule-1": {
+    "name": "fp-rule-1",
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "data": {
+      "op": "and",
+      "rules": [
+        {"op": "is", "path": "detect/cat", "value": "PROCESS_ANOMALY"},
+        {"op": "contains", "path": "detect/event/FILE_PATH", "value": "/opt/known_safe/"}
+      ]
+    }
+  },
+  "fp-rule-2": {
+    "name": "fp-rule-2",
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "data": {
+      "op": "is",
+      "path": "detect/cat",
+      "value": "NOISY_DETECTION"
     }
   }
 }
 ```
 
 **Success (200-299):**
-- The response body contains a map of FP rules indexed by rule name
+- The response contains a map of FP rules indexed by rule name
 - Each rule includes:
   - `name`: FP rule name
   - `oid`: Organization ID
@@ -124,40 +118,37 @@ Steps:
 1. Get organization ID from context
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/fp/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_fp_rules",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "filter_safe_processes": {
-      "name": "filter_safe_processes",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "data": {
-        "op": "and",
-        "rules": [
-          {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
-          {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\TrustedApp\\"}
-        ]
-      }
-    },
-    "filter_dev_activity": {
-      "name": "filter_dev_activity",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "data": {
-        "op": "and",
-        "rules": [
-          {"op": "is", "path": "detect/cat", "value": "TOOL_USAGE"},
-          {"op": "contains", "path": "routing/hostname", "value": "dev-"}
-        ]
-      }
+  "filter_safe_processes": {
+    "name": "filter_safe_processes",
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "data": {
+      "op": "and",
+      "rules": [
+        {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
+        {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\TrustedApp\\"}
+      ]
+    }
+  },
+  "filter_dev_activity": {
+    "name": "filter_dev_activity",
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "data": {
+      "op": "and",
+      "rules": [
+        {"op": "is", "path": "detect/cat", "value": "TOOL_USAGE"},
+        {"op": "contains", "path": "routing/hostname", "value": "dev-"}
+      ]
     }
   }
 }
@@ -201,7 +192,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/fp_rule.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/fp_rules.go`

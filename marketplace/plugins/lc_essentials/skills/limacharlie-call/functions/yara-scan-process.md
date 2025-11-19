@@ -29,7 +29,7 @@ Before calling this skill, gather:
 - **oid**: Organization ID (required for all operations)
 - **sid**: Sensor ID (UUID) of the target sensor
 - **pid**: Process ID of the target process
-- **rule**: YARA rule content (full rule text) or rule name from organization's YARA rules
+- **rules**: YARA rule content (full rule text)
 
 The sensor must be online, the process must be running, and the YARA rule must be valid.
 
@@ -47,14 +47,17 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
-Use the dedicated MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  pid=[process-id],
-  rule="[yara-rule-content-or-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_process",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "pid": [process-id],
+    "rules": "[yara-rule-content]"
+  }
 )
 ```
 
@@ -62,7 +65,7 @@ mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
 - This executes the `yara_scan` sensor command
 - Timeout: Up to 10 minutes for large processes
 - Requires sensor to be online and process to exist
-- Can use full YARA rule content or reference existing rule by name
+- Must provide full YARA rule content
 - Scans process virtual memory
 - Uses interactive tasking mode
 
@@ -131,29 +134,35 @@ Steps:
 1. Obtain or create YARA rule for Cobalt Strike
 2. Call the tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  pid=1234,
-  rule="rule CobaltStrike_Beacon { strings: $a = \"beacon\" meta: author = \"SOC\" condition: $a }"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_process",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "pid": 1234,
+    "rules": "rule CobaltStrike_Beacon { strings: $a = \"beacon\" meta: author = \"SOC\" condition: $a }"
+  }
 )
 ```
 
 If match found: "ALERT: Process 1234 matches Cobalt Strike beacon signature. Immediate investigation required."
 
-### Example 2: Using saved rule name
+### Example 2: Using comprehensive malware rules
 
-User request: "Scan the suspicious PowerShell process with our ransomware rules"
+User request: "Scan the suspicious PowerShell process with ransomware rules"
 
 Steps:
 1. Find PowerShell process PID
-2. Reference existing rule by name:
+2. Provide ransomware detection rules:
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  pid=5678,
-  rule="ransomware_detection"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_process",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "pid": 5678,
+    "rules": "rule Ransomware_Generic { strings: $ransom = \"Your files have been encrypted\" condition: $ransom }"
+  }
 )
 ```
 
@@ -162,8 +171,7 @@ mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
 - YARA scanning can be resource-intensive on large processes
 - False positives are possible - validate findings
 - Use high-quality, well-tested YARA rules
-- Can reference organization's saved YARA rules by name
-- Or provide full rule content inline
+- Must provide full rule content inline
 - Process memory is scanned, not the file on disk
 - Useful for detecting fileless malware
 - Packed/obfuscated malware may evade simple rules
@@ -177,7 +185,7 @@ mcp__plugin_lc-essentials_limacharlie__yara_scan_process(
 
 ## Reference
 
-For the MCP tool, this uses the dedicated `yara_scan_process` tool.
+For the MCP tool, this uses the dedicated `yara_scan_process` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/yara.go`

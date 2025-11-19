@@ -28,8 +28,8 @@ This skill sends a YARA rule to the sensor along with a process expression that 
 Before calling this skill, gather:
 - **oid**: Organization ID (required for all operations)
 - **sid**: Sensor ID (UUID) of the target sensor
-- **process_expression**: Process matching expression (e.g., 'name:chrome.exe', 'name:*powershell*')
-- **rule**: YARA rule content (full rule text) or rule name
+- **process_expression**: Process matching expression (e.g., 'powershell.exe', '*chrome*')
+- **rules**: YARA rule content (full rule text)
 
 The sensor must be online and matching processes must exist.
 
@@ -46,23 +46,26 @@ Ensure you have:
 6. Matching processes exist on sensor
 
 **Process Expression Format:**
-- `name:process_name` - Match by exact process name
-- `name:*pattern*` - Match by wildcard pattern
+- Exact process name: `powershell.exe`
+- Wildcard pattern: `*chrome*`
 - Examples:
-  - `name:chrome.exe` - All Chrome processes
-  - `name:powershell.exe` - All PowerShell processes
-  - `name:*svchost*` - All svchost variants
+  - `chrome.exe` - All Chrome processes
+  - `powershell.exe` - All PowerShell processes
+  - `*svchost*` - All svchost variants
 
 ### Step 2: Send the Sensor Command
 
-Use the dedicated MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_memory(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  process_expression="[process-expression]",
-  rule="[yara-rule-content-or-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_memory",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "process_expression": "[process-expression]",
+    "rules": "[yara-rule-content]"
+  }
 )
 ```
 
@@ -147,11 +150,14 @@ Steps:
 1. Create or use PowerShell-specific YARA rule
 2. Call the tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_memory(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  process_expression="name:powershell.exe",
-  rule="rule PS_Malware { strings: $encoded = \"encodedCommand\" condition: $encoded }"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_memory",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "process_expression": "powershell.exe",
+    "rules": "rule PS_Malware { strings: $encoded = \"encodedCommand\" condition: $encoded }"
+  }
 )
 ```
 
@@ -165,11 +171,14 @@ Steps:
 1. Use Cobalt Strike YARA signatures
 2. Target all svchost instances:
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_memory(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  process_expression="name:svchost.exe",
-  rule="cobalt_strike_beacon_rules"
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_memory",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "process_expression": "svchost.exe",
+    "rules": "rule CobaltStrike { strings: $beacon = \"beacon\" condition: $beacon }"
+  }
 )
 ```
 
@@ -194,7 +203,7 @@ mcp__plugin_lc-essentials_limacharlie__yara_scan_memory(
 
 ## Reference
 
-For the MCP tool, this uses the dedicated `yara_scan_memory` tool.
+For the MCP tool, this uses the dedicated `yara_scan_memory` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/yara.go`

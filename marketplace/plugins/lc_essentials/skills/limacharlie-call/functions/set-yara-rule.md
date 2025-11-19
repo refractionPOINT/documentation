@@ -30,7 +30,7 @@ Creates or updates a YARA rule source in the organization. Rules are used for ma
 
 2. **Validate Rule Syntax**
    ```
-   mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
+   mcp__limacharlie__validate_yara_rule(
      rule_content="rule my_rule { ... }"
    )
    ```
@@ -43,7 +43,7 @@ Creates or updates a YARA rule source in the organization. Rules are used for ma
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
 
 - **oid**: Organization ID (UUID)
-- **rule_name**: Unique name for the YARA rule source
+- **name**: Unique name for the YARA rule source
 - **rule_content**: YARA rule source code (valid YARA syntax)
 
 Optional:
@@ -54,31 +54,31 @@ Optional:
 
 ### Step 1: Call the API
 
-Use the `lc_api_call` MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/yara/{oid}/[rule-name]/data",
-  body={
-    "data": "{\"rules\": \"[yara-rule-content]\"}",
-    "usr_mtd": "{\"enabled\": true}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_yara_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]",
+    "rule_content": "[yara-rule-content]"
   }
 )
 ```
 
-**Important**: The rule content should be JSON-encoded as a string in the `data` field.
+**API Details:**
+- Tool: `set_yara_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Rule name
+  - `rule_content`: YARA rule source code
 
 ### Step 2: Handle the Response
 
 **Success (200):**
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 Rule is immediately active across sensors.
 
@@ -109,7 +109,7 @@ rule ransomware_behavior {
 
 **Step 2: Validate syntax**
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
+mcp__limacharlie__validate_yara_rule(
   rule_content="rule ransomware_behavior { ... }"
 )
 // Returns: {"valid": true, "message": "YARA rule passes basic syntax validation"}
@@ -117,14 +117,12 @@ mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
 
 **Step 3: Deploy**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/yara/c7e8f940-1234-5678-abcd-1234567890ab/ransomware_detection/data",
-  body={
-    "data": "{\"rules\": \"rule ransomware_behavior {\\n  meta:\\n    author = \\\"security-team\\\"\\n    description = \\\"Detects common ransomware patterns\\\"\\n  strings:\\n    $encrypt1 = \\\"CryptEncrypt\\\" nocase\\n    $ransom = \\\"YOUR FILES HAVE BEEN ENCRYPTED\\\" nocase\\n  condition:\\n    $encrypt1 and $ransom\\n}\\n\"}",
-    "usr_mtd": "{\"enabled\": true}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_yara_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "ransomware_detection",
+    "rule_content": "rule ransomware_behavior {\n  meta:\n    author = \"security-team\"\n    description = \"Detects common ransomware patterns\"\n  strings:\n    $encrypt1 = \"CryptEncrypt\" nocase\n    $ransom = \"YOUR FILES HAVE BEEN ENCRYPTED\" nocase\n  condition:\n    $encrypt1 and $ransom\n}\n"
   }
 )
 ```

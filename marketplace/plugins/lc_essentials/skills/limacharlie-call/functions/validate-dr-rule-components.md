@@ -49,14 +49,14 @@ Ensure you have:
 Use the `validate_dr_rule_components` MCP tool from the `limacharlie` server:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
+mcp__limacharlie__validate_dr_rule_components(
   detect={"event": "NEW_PROCESS", "op": "contains", "path": "event/COMMAND_LINE", "value": "powershell"},
   respond=[{"action": "report", "name": "powershell_detected"}]
 )
 ```
 
 **Tool Details:**
-- Tool: `mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components`
+- Tool: `mcp__limacharlie__validate_dr_rule_components`
 - Parameters:
   - `detect` (object, required): Detection component structure
   - `respond` (object/array, optional): Response component structure
@@ -128,37 +128,6 @@ Present the result to the user:
 - Remind them this is basic syntax validation only
 - Recommend full testing after deployment
 
-**Example formatted output for success:**
-```
-✓ Validation Passed
-
-Your D&R rule components are syntactically valid:
-- Detection component: Valid operator and structure
-- Response component: Valid actions
-
-Note: This is basic syntax validation. Test the rule with actual data after deployment to ensure it works as expected.
-```
-
-**Example formatted output for failure:**
-```
-✗ Validation Failed
-
-Error: Detection component missing required 'op' field
-
-Your detection component must include an 'op' field specifying the operator. Valid operators include:
-- is, contains, starts with, ends with, matches
-- and, or (for combining multiple conditions)
-- exists, is greater than, is less than, length is
-
-Example:
-{
-  "event": "NEW_PROCESS",
-  "op": "contains",
-  "path": "event/COMMAND_LINE",
-  "value": "powershell"
-}
-```
-
 ## Example Usage
 
 ### Example 1: Validate Detection Component
@@ -169,7 +138,7 @@ Steps:
 1. Get detection component from user
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
+mcp__limacharlie__validate_dr_rule_components(
   detect={
     "event": "NEW_PROCESS",
     "op": "contains",
@@ -196,7 +165,7 @@ Steps:
 1. Get both detection and response components
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
+mcp__limacharlie__validate_dr_rule_components(
   detect={
     "event": "NEW_PROCESS",
     "op": "and",
@@ -212,14 +181,6 @@ mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
 )
 ```
 
-Expected response:
-```json
-{
-  "valid": true,
-  "message": "D&R rule components are valid"
-}
-```
-
 ### Example 3: Catch Invalid Operator
 
 User request: "Is this detection valid?"
@@ -228,7 +189,7 @@ Steps:
 1. Get detection component with invalid operator
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
+mcp__limacharlie__validate_dr_rule_components(
   detect={
     "event": "NEW_PROCESS",
     "op": "equals",
@@ -243,32 +204,6 @@ Expected response:
 {
   "valid": false,
   "error": "Invalid operator 'equals'. Valid operators are: and, or, exists, is, contains, starts with, ends with, matches, is greater than, is less than, length is, lookup",
-  "message": "Validation failed"
-}
-```
-
-### Example 4: Missing Required Field
-
-User request: "Validate this detection component"
-
-Steps:
-1. Get detection component missing 'op' field
-2. Call tool:
-```
-mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
-  detect={
-    "event": "NEW_PROCESS",
-    "path": "event/COMMAND_LINE",
-    "value": "powershell"
-  }
-)
-```
-
-Expected response:
-```json
-{
-  "valid": false,
-  "error": "Detection component missing required 'op' field",
   "message": "Validation failed"
 }
 ```
