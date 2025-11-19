@@ -25,8 +25,32 @@ class MyReport(BaseReport):
 MyReport(oid='your-org-id').save()
 ```
 
-## Available Collectors
+## Available Utilities
 
+### Constants
+```python
+from utils.constants import (
+    DEFAULT_DETECTION_LIMIT,   # 5000
+    MAX_DETECTION_LIMIT,       # 50000
+    INCIDENT_INVESTIGATION_LIMIT,  # 5000
+    PROGRESS_REPORT_INTERVAL,  # 100
+    SEVERITY_MAP,              # Severity number to name mapping
+    CRITICAL_CATEGORIES,       # High-risk detection categories
+    MITRE_CTI_URL,            # MITRE ATT&CK data source
+    MAX_TAG_DISPLAY           # 30
+)
+```
+
+### CLI Helpers
+```python
+from utils.cli import (
+    simple_cli,               # One-liner CLI setup
+    parse_common_args,        # Standard argument parsing
+    execute_report            # Execute report with error handling
+)
+```
+
+### Data Collectors
 ```python
 from utils.data_collectors import (
     collect_org_info,          # Organization metadata
@@ -38,8 +62,7 @@ from utils.data_collectors import (
 )
 ```
 
-## Available Helpers
-
+### Report Helpers
 ```python
 from utils.report_helpers import (
     parse_time_range,          # Time range parsing
@@ -47,12 +70,12 @@ from utils.report_helpers import (
     aggregate_by_category,     # Category aggregation
     aggregate_by_timeline,     # Timeline aggregation
     filter_items,              # Item filtering
-    calculate_duration         # Duration calculation
+    calculate_duration,        # Duration calculation
+    progress_reporter          # Progress reporting context manager
 )
 ```
 
-## Available Formatters
-
+### Formatters
 ```python
 from utils.formatters import (
     render_html_report,        # Jinja2 HTML rendering
@@ -107,28 +130,40 @@ start, end = parse_time_range(start_time=123456, end_time=789012)
 
 ## Examples to Study
 
-1. **incident_investigation_v2.py** - Complete refactored report (228 lines)
-2. **CUSTOM_REPORTS_GUIDE.md** - Full guide with 3 patterns
-3. **FRAMEWORK_SUMMARY.md** - Framework overview
+1. **custom_report_template.py** - Reference example showing best practices (120 lines)
+2. **security_detections.py** - Comprehensive detection analysis (241 lines)
+3. **executive_summary.py** - High-level organizational overview (204 lines)
+4. **CUSTOM_REPORTS_GUIDE.md** - Full guide with patterns and examples
 
 ## Run Examples
 
 ```bash
-# Incident investigation (refactored version)
-python3 incident_investigation_v2.py YOUR_OID 48 html
+# Security detections report
+python3 security_detections.py YOUR_OID --days 7 --format html
 
-# Parameters:
-#   YOUR_OID    - Organization ID
-#   48          - Hours back (optional, default 24)
-#   html        - Format: html, markdown, or json (optional)
+# Executive summary
+python3 executive_summary.py YOUR_OID --days 30 --format html
+
+# Incident investigation with custom parameters
+python3 incident_investigation.py YOUR_OID --hours 48 --sensor SENSOR_ID --category EXFIL
+
+# MITRE ATT&CK coverage
+python3 mitre_coverage.py YOUR_OID
+
+# Configuration audit
+python3 config_audit.py YOUR_OID
+
+# Sensor health report
+python3 sensor_health_report.py YOUR_OID
 ```
 
 ## Next Steps
 
-1. Copy `incident_investigation_v2.py` as template
+1. Copy `custom_report_template.py` as starting point
 2. Modify `collect_data()` method for your needs
-3. Optionally create custom Jinja2 template
-4. Run and iterate!
+3. Optionally create custom Jinja2 template in jinja2/html/
+4. Use `simple_cli()` for instant CLI support
+5. Run and iterate!
 
 ## Need Help?
 
