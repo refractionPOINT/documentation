@@ -3,9 +3,16 @@ Report Helper Utilities
 Common functions for time range handling, aggregation, and data processing
 """
 
+import sys
 import time
 from datetime import datetime, timezone, timedelta
 from collections import defaultdict
+from .constants import (
+    DEFAULT_TIME_RANGE_DAYS,
+    DEFAULT_TIME_RANGE_HOURS,
+    PROGRESS_REPORT_INTERVAL,
+    SEVERITY_MAP
+)
 
 
 def parse_time_range(time_range_days=None, start_time=None, end_time=None, hours_back=None):
@@ -34,8 +41,8 @@ def parse_time_range(time_range_days=None, start_time=None, end_time=None, hours
     elif time_range_days is not None:
         start_time = end_time - (time_range_days * 86400)
     else:
-        # Default to 24 hours
-        start_time = end_time - 86400
+        # Use constant defaults
+        start_time = end_time - (DEFAULT_TIME_RANGE_HOURS * 3600)
 
     return start_time, end_time
 
@@ -253,20 +260,12 @@ def calculate_severity_distribution(items, severity_key='severity'):
     Returns:
         Dictionary with severity counts and percentages
     """
-    severity_map = {
-        0: 'info',
-        1: 'low',
-        2: 'medium',
-        3: 'high',
-        4: 'critical'
-    }
-
     counts = defaultdict(int)
     total = len(items)
 
     for item in items:
         severity_num = item.get(severity_key, 0)
-        severity_name = severity_map.get(severity_num, 'unknown')
+        severity_name = SEVERITY_MAP.get(severity_num, 'unknown')
         counts[severity_name] += 1
 
     # Calculate percentages
@@ -280,6 +279,61 @@ def calculate_severity_distribution(items, severity_key='severity'):
     return distribution
 
 
+def progress_reporter(total, operation='Processing'):
+    """
+    Create a progress reporting context for iterating over large datasets.
+
+    Usage:
+        with progress_reporter(1000, 'Processing detections') as progress:
+            for i, item in enumerate(items):
+                progress.update(i + 1)
+                # ... process item
+
+    Args:
+        total: Total number of items to process
+        operation: Description of the operation
+
+    Returns:
+        ProgressReporter context manager
+    """
+    return ProgressReporter(total, operation)
+
+
+class ProgressReporter:
+    """
+    Context manager for reporting progress on long-running operations.
+    Reports every PROGRESS_REPORT_INTERVAL items.
+    """
+
+    def __init__(self, total, operation='Processing'):
+        self.total = total
+        self.operation = operation
+        self.current = 0
+        self.last_reported = 0
+
+    def __enter__(self):
+        print(f"{self.operation}: 0/{self.total} items...", flush=True)
+        return self
+
+    def update(self, current=None):
+        """Update progress counter and report if interval reached."""
+        if current is not None:
+            self.current = current
+        else:
+            self.current += 1
+
+        # Report at intervals
+        if self.current - self.last_reported >= PROGRESS_REPORT_INTERVAL:
+            percentage = round((self.current / self.total) * 100, 1) if self.total > 0 else 0
+            print(f"{self.operation}: {self.current}/{self.total} items ({percentage}%)...", flush=True)
+            self.last_reported = self.current
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Final report
+        if self.current > 0:
+            print(f"{self.operation}: Complete ({self.current}/{self.total} items)", flush=True)
+
+
 __all__ = [
     'parse_time_range',
     'format_timestamp',
@@ -289,5 +343,7 @@ __all__ = [
     'aggregate_by_field',
     'normalize_sensor_data',
     'filter_items',
-    'calculate_severity_distribution'
+    'calculate_severity_distribution',
+    'progress_reporter',
+    'ProgressReporter'
 ]

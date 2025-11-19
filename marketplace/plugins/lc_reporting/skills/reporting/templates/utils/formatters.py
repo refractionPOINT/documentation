@@ -7,6 +7,7 @@ import json
 import os
 from datetime import datetime, timezone
 from jinja2 import Environment, FileSystemLoader
+from .constants import FORMAT_EXTENSIONS
 
 
 def render_html_report(data, template_name, template_dir=None):
@@ -207,14 +208,8 @@ def save_report(content, output_format='html', prefix='report', output_dir=None)
     # Create output directory if needed
     os.makedirs(output_dir, exist_ok=True)
 
-    # Determine file extension
-    ext_map = {
-        'html': 'html',
-        'markdown': 'md',
-        'json': 'json',
-        'csv': 'csv'
-    }
-    ext = ext_map.get(output_format, 'txt')
+    # Determine file extension from constants
+    ext = FORMAT_EXTENSIONS.get(output_format, 'txt')
 
     # Generate filename with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
