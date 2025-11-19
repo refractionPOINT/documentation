@@ -53,7 +53,7 @@ mcp__limacharlie__lc_api_call(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   endpoint="api",
   method="POST",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/search/batch",
+  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/objects",
   body={
     "objects": {
       "file_hash": ["abc123...", "def456..."],
@@ -68,7 +68,7 @@ mcp__limacharlie__lc_api_call(
 **API Details:**
 - Endpoint: `api`
 - Method: `POST`
-- Path: `/v1/insight/{oid}/search/batch`
+- Path: `/v1/insight/{oid}/objects`
 - Body: Groups IOCs by type for efficient batch processing
 
 ### Step 3: Handle Response
