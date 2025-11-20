@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://mcp.limacharlie.io/mcp",
       "headers": {
-        "X-MCP-Tools": "lc_call_tool,generate_lcql_query,generate_dr_rule_detection,generate_dr_rule_respond,generate_sensor_selector,generate_python_playbook,generate_detection_summary,validate_dr_rule_components,validate_yara_rule"
+        "X-MCP-Tools": "lc_call_tool"
       }
     }
   }

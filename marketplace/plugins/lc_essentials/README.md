@@ -83,6 +83,57 @@ This plugin provides 121 comprehensive skills:
 - **MITRE ATT&CK**: Get MITRE ATT&CK coverage reports
 - **Billing & Usage**: View usage stats, billing details, SKU definitions
 
+## Specialized Skills & Agents
+
+### Sensor Health Reporting
+
+The **sensor-health** skill orchestrates parallel sensor health checks across multiple LimaCharlie organizations for fast, comprehensive fleet reporting.
+
+**Architecture:**
+- **Skill**: `sensor-health` - Orchestrates the workflow
+- **Agent**: `sensor-health-reporter` - Checks a single organization (spawned in parallel, one per org)
+- **Model**: Haiku (fast and cost-effective)
+
+**How It Works:**
+1. Skill gets list of user's organizations
+2. Skill spawns one `sensor-health-reporter` agent per org **in parallel**
+3. Each agent checks its assigned organization independently
+4. Skill aggregates results and presents unified report
+
+**Key Features:**
+- **Massive Parallelization**: Checks 10+ orgs simultaneously
+- **Fast Execution**: Using Haiku model + parallel agents = seconds, not minutes
+- **Comprehensive**: Covers all organizations in your account
+- **Flexible**: Handles various query types (connectivity, data availability, offline sensors)
+
+**Supported Queries:**
+- **Connectivity Issues**: "Show me sensors online but not sending data"
+- **Offline Sensors**: "List sensors that haven't been online for 7 days"
+- **Data Availability**: "Which sensors have no events in the last hour?"
+- **Fleet Health**: "Find all offline sensors across my organizations"
+- **Status Reports**: "Show me sensors with connectivity issues"
+
+**Example Usage:**
+```
+"Show me sensors that are online but not reporting events in the last hour"
+→ Skill spawns 12 parallel agents (one per org)
+→ Each agent checks its org's sensors
+→ Results aggregated into single report
+→ Execution time: ~5-10 seconds for 12 orgs
+
+"List all sensors offline for more than 7 days"
+→ Checks sensor 'alive' timestamps across all orgs
+→ Reports sensors that haven't checked in
+
+"Which sensors in lc_demo haven't sent data today?"
+→ Can target specific org if needed
+```
+
+**Performance:**
+- Sequential approach: ~30-60 seconds for 12 orgs
+- Parallel approach: ~5-10 seconds for 12 orgs
+- Scales efficiently to dozens of organizations
+
 ## Usage Examples
 
 ### Getting Started
