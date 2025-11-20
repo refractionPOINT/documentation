@@ -1,0 +1,9 @@
+{
+  "name": "lc-reporting",
+  "version": "1.0.0",
+  "description": "LimaCharlie MSSP Reporting - Generate comprehensive multi-tenant security and operational reports with strict data accuracy guardrails. Designed for MSSPs managing multiple customer organizations with billing summaries, usage analytics, detection trends, and sensor health monitoring.",
+  "author": {
+    "name": "LimaCharlie",
+    "email": "support@limacharlie.io"
+  }
+}
