@@ -8,7 +8,7 @@ This is a template for creating new skills. Copy this structure and fill in the 
 ---
 name: tool-name-in-kebab-case
 description: Clear, concise description of what this skill does and when Claude should use it. Include key trigger words and use cases. Maximum 1024 characters.
-allowed-tools: mcp__limacharlie__lc_api_call, Read
+allowed-tools: mcp__limacharlie__lc_call_tool, Read
 ---
 
 # [Tool Name in Title Case]
@@ -49,51 +49,45 @@ Ensure you have:
 2. [Other required parameters]
 3. [Validation checks if needed]
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="[GET|POST|PUT|DELETE]",
-  path="/[api-path]/[oid]",
-  [query_params={"param": "value"}]  # if needed
-  [body={"field": "value"}]  # if needed for POST/PUT
+mcp__limacharlie__lc_call_tool(
+  tool_name="[tool_name_in_snake_case]",
+  parameters={
+    "oid": "[organization-id]",
+    "[param1]": "[value1]",
+    "[param2]": "[value2]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api` (or `billing` if billing-related)
-- Method: `[HTTP-METHOD]`
-- Path: `/[exact-api-path]/[oid-placeholder]`
-- Query parameters: [Describe query params if any]
-- Body fields: [Describe body structure if POST/PUT]
+**Tool Details:**
+- Tool name: `[tool_name]`
+- Required parameters: [List required parameters]
+- Optional parameters: [List optional parameters if any]
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns results directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    // Response structure specific to this endpoint
-  }
+  // Response structure specific to this tool
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - [What the response contains]
 - [How to interpret the data]
 - [What to do with the result]
 
 **Common Errors:**
-- **400 Bad Request**: [What causes this and how to fix]
-- **404 Not Found**: [What causes this and how to fix]
-- **403 Forbidden**: [Insufficient permissions - what's needed]
-- **500 Server Error**: [Rare, but what to tell user]
+- **Missing parameter**: [Required parameter not provided]
+- **Not found**: [Resource doesn't exist]
+- **Permission denied**: [Insufficient permissions]
+- **Validation failed**: [Invalid configuration]
 
 ### Step 4: Format the Response
 
@@ -111,23 +105,21 @@ User request: "[Example user request]"
 Steps:
 1. [Step 1]
 2. [Step 2]
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="abc123...",
-  endpoint="api",
-  method="GET",
-  path="/example/abc123..."
+mcp__limacharlie__lc_call_tool(
+  tool_name="example_tool",
+  parameters={
+    "oid": "abc123...",
+    "param": "value"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    // Example response
-  }
+  // Example response
 }
 ```
 
@@ -146,7 +138,7 @@ User request: "[Another example]"
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/[relevant-file].go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/[category]/[tool-file].go`
@@ -156,41 +148,38 @@ For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/[catego
 
 1. **Name**: Use kebab-case matching the snake_case MCP tool name
 2. **Description**: Rich with keywords, use cases, and trigger words (max 1024 chars)
-3. **Allowed Tools**: Always include the lc_api_call tool and Read tool
+3. **Allowed Tools**: Always include the lc_call_tool and Read tool
 4. **Structure**: Follow the template structure for consistency
 5. **Examples**: Include at least 2 concrete examples
-6. **Error Handling**: Document common error codes and how to handle them
-7. **API Details**: Be specific about endpoint, method, path, parameters
+6. **Error Handling**: Document common errors and how to handle them
+7. **Tool Details**: Be specific about tool name and parameters
 8. **Response Handling**: Explain what comes back and how to use it
 
 ## Common Patterns by Operation Type
 
-### List Operations (GET with no params)
-- Method: GET
-- Path usually ends with /{oid}
-- No body, no query params usually
+### List Operations
+- Tool names like `list_sensors`, `list_outputs`
+- Usually requires only `oid` parameter
 - Returns array or object of resources
 
-### Get Single Resource (GET with identifier)
-- Method: GET
-- Path includes resource identifier or uses query params
+### Get Single Resource
+- Tool names like `get_sensor_info`, `get_secret`
+- Requires `oid` plus resource identifier
 - Returns single resource object
 
-### Create Operations (POST)
-- Method: POST
-- Body contains resource configuration
-- Path usually ends with /{oid}
+### Create Operations
+- Tool names like `add_output`, `create_api_key`
+- Requires `oid` plus resource configuration
 - Returns created resource
 
-### Update Operations (POST/PUT)
-- Method: POST or PUT
-- Body contains updated configuration
-- May include resource name/id in body or path
+### Update Operations
+- Tool names like `set_rule`, `set_secret`
+- Requires `oid` plus resource name and new configuration
 - Returns updated resource
 
-### Delete Operations (DELETE)
-- Method: DELETE
-- Resource identifier in body or path
+### Delete Operations
+- Tool names like `delete_sensor`, `delete_output`
+- Requires `oid` plus resource identifier
 - Returns success confirmation
 
 ## Discovery Optimization

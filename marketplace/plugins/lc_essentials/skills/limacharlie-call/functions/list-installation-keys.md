@@ -21,13 +21,13 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves a complete list of all installation keys in the organization. Installation keys are credentials used to deploy LimaCharlie sensors to endpoints. Each key can automatically apply tags to sensors that use it for enrollment. The skill calls the LimaCharlie API to fetch all keys along with their metadata including IID (installation key ID), description, tags, creation timestamp, and the actual key values.
+This skill retrieves a complete list of all installation keys in the organization. Installation keys are credentials used to deploy LimaCharlie sensors to endpoints. Each key can automatically apply tags to sensors that use it for enrollment. The skill calls the LimaCharlie MCP tool to fetch all keys along with their metadata including IID (installation key ID), description, tags, creation timestamp, and the actual key values.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No additional parameters are needed.
@@ -39,52 +39,46 @@ No additional parameters are needed.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/installationkeys/[oid]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_installation_keys",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/installationkeys/{oid}`
-- Query parameters: None
-- Body: None
+**Tool Details:**
+- Tool Name: `list_installation_keys`
+- Required Parameters:
+  - `oid`: Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "{oid}": {
-      "{iid-1}": {
-        "iid": "installation-key-id",
-        "desc": "Description of the key",
-        "tags": "tag1,tag2,tag3",
-        "key": "actual-key-value",
-        "json_key": "json-formatted-key",
-        "created": 1234567890,
-        "use_public_root_ca": false
-      },
-      "{iid-2}": { ... }
-    }
+  "{oid}": {
+    "{iid-1}": {
+      "iid": "installation-key-id",
+      "desc": "Description of the key",
+      "tags": "tag1,tag2,tag3",
+      "key": "actual-key-value",
+      "json_key": "json-formatted-key",
+      "created": 1234567890,
+      "use_public_root_ca": false
+    },
+    "{iid-2}": { ... }
   }
 }
 ```
 
-**Success (200-299):**
-- The response body contains a nested object structure
+**Success:**
+- The response contains a nested object structure
 - Top level key is the organization ID
 - Each installation key is keyed by its IID (installation key ID)
 - Key properties include:
@@ -97,11 +91,10 @@ The API returns a response with:
   - `use_public_root_ca`: Boolean indicating if public CA is used
 
 **Common Errors:**
-- **400 Bad Request**: Invalid organization ID format
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to view installation keys (requires platform_admin role)
-- **404 Not Found**: Organization does not exist
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid organization ID**: Organization ID format is invalid
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to view installation keys (requires platform_admin role)
+- **Not Found**: Organization does not exist
 
 ### Step 4: Format the Response
 
@@ -121,40 +114,37 @@ User request: "Show me all the installation keys"
 
 Steps:
 1. Extract the organization ID from context
-2. Call API:
+2. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_installation_keys",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "c7e8f940-1234-5678-abcd-1234567890ab": {
-      "prod-windows-key": {
-        "iid": "prod-windows-key",
-        "desc": "Production Windows Servers",
-        "tags": "production,windows,server",
-        "key": "abcd1234-5678-90ef-ghij-klmnopqrstuv",
-        "json_key": "{\"oid\":\"c7e8f940...\",\"iid\":\"prod-windows-key\"...}",
-        "created": 1704067200,
-        "use_public_root_ca": false
-      },
-      "dev-linux-key": {
-        "iid": "dev-linux-key",
-        "desc": "Development Linux Workstations",
-        "tags": "development,linux,workstation",
-        "key": "wxyz9876-5432-10ab-cdef-ghijklmnopqr",
-        "json_key": "{\"oid\":\"c7e8f940...\",\"iid\":\"dev-linux-key\"...}",
-        "created": 1704153600,
-        "use_public_root_ca": false
-      }
+  "c7e8f940-1234-5678-abcd-1234567890ab": {
+    "prod-windows-key": {
+      "iid": "prod-windows-key",
+      "desc": "Production Windows Servers",
+      "tags": "production,windows,server",
+      "key": "abcd1234-5678-90ef-ghij-klmnopqrstuv",
+      "json_key": "{\"oid\":\"c7e8f940...\",\"iid\":\"prod-windows-key\"...}",
+      "created": 1704067200,
+      "use_public_root_ca": false
+    },
+    "dev-linux-key": {
+      "iid": "dev-linux-key",
+      "desc": "Development Linux Workstations",
+      "tags": "development,linux,workstation",
+      "key": "wxyz9876-5432-10ab-cdef-ghijklmnopqr",
+      "json_key": "{\"oid\":\"c7e8f940...\",\"iid\":\"dev-linux-key\"...}",
+      "created": 1704153600,
+      "use_public_root_ca": false
     }
   }
 }
@@ -180,7 +170,7 @@ Found 2 installation keys:
 User request: "Which installation keys are for production?"
 
 Steps:
-1. Call API to get all keys
+1. Call tool to get all keys
 2. Filter results for keys with "production" in tags or description
 3. Present filtered results:
 ```
@@ -205,7 +195,7 @@ Production Windows Servers (prod-windows-key)
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/installation_keys.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/config/installation_keys.go`

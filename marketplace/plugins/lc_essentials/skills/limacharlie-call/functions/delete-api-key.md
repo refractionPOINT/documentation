@@ -21,18 +21,17 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill deletes an API key from a LimaCharlie organization. It calls the LimaCharlie API to permanently revoke the key using its hash identifier. Once deleted, the key immediately stops working and cannot be recovered. This is a security-critical operation that should be used carefully.
+This skill deletes an API key from a LimaCharlie organization. It calls the LimaCharlie API to permanently revoke the key using its key ID. Once deleted, the key immediately stops working and cannot be recovered. This is a security-critical operation that should be used carefully.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-- **key_hash**: The hash identifier of the API key to delete (required)
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
+- **key_id**: The ID of the API key to delete (required)
   - Obtain from list-api-keys skill
-  - Format: alphanumeric string (e.g., "a1b2c3d4e5f6")
-  - Not the actual key value, but the hash identifier
+  - Not the actual key value, but the key identifier
 
 ## How to Use
 
@@ -40,48 +39,40 @@ Before calling this skill, gather:
 
 Ensure you have:
 1. Valid organization ID (oid)
-2. Correct key hash from list-api-keys
+2. Correct key ID from list-api-keys
 3. Confirmation that the correct key is being deleted (verify key name/description)
 4. Understanding that deletion is permanent and immediate
 
 **IMPORTANT**: Always list keys first to confirm you're deleting the correct one!
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/orgs/[oid]/keys",
-  body={
-    "key_hash": "[key-hash]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_api_key",
+  parameters={
+    "oid": "[organization-id]",
+    "key_id": "[key-id]"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/orgs/{oid}/keys`
-- Query parameters: None
-- Body fields:
-  - `key_hash` (string, required): Hash of the API key to delete
+**Tool Details:**
+- Tool name: `delete_api_key`
+- Required parameters:
+  - `oid` (string): Organization ID
+  - `key_id` (string): ID of the API key to delete
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Empty or minimal response body indicates successful deletion
 - The API key is immediately revoked and stops working
 - Any applications using this key will fail authentication
@@ -89,9 +80,9 @@ The API returns a response with:
 - The key will no longer appear in list-api-keys output
 
 **Common Errors:**
-- **400 Bad Request**: Invalid key_hash format or missing parameter
+- **400 Bad Request**: Invalid key_id format or missing parameter
 - **403 Forbidden**: Insufficient permissions to delete API keys - requires admin or owner access
-- **404 Not Found**: Key hash does not exist or organization not found
+- **404 Not Found**: Key ID does not exist or organization not found
 - **500 Server Error**: API service issue - retry or contact support
 
 ### Step 4: Format the Response
@@ -112,40 +103,35 @@ User request: "Delete the API key that was accidentally committed to GitHub"
 Steps:
 1. First, list keys to identify the compromised one:
 ```
-# Use list-api-keys to find the key hash
+# Use list-api-keys to find the key ID
 ```
 2. Confirm which key to delete (verify name/description)
 3. Delete the key:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
-  body={
-    "key_hash": "a1b2c3d4e5f6"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_api_key",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "key_id": "a1b2c3d4e5f6"
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Present to user:
 ```
-✅ API Key Deleted Successfully
+API Key Deleted Successfully
 
 The compromised API key has been permanently revoked.
 
-Key Hash: a1b2c3d4e5f6
+Key ID: a1b2c3d4e5f6
 Status: Deleted and immediately deactivated
 
-⚠️ Important next steps:
+Important next steps:
 1. The old key will no longer work for API calls
 2. Update any systems using this key with a new one
 3. Review access logs for unauthorized usage
@@ -165,26 +151,24 @@ Steps:
 3. Confirm with user which keys to delete
 4. Delete each identified key:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
-  body={
-    "key_hash": "f1e2d3c4b5a6"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_api_key",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "key_id": "f1e2d3c4b5a6"
   }
 )
 ```
 
 Present summary:
 ```
-🧹 API Key Cleanup Complete
+API Key Cleanup Complete
 
 Deleted 3 old API keys:
 
-✓ "Old Integration Key" (created 2 years ago)
-✓ "Test Key" (created 18 months ago)
-✓ "Deprecated Automation" (created 14 months ago)
+- "Old Integration Key" (created 2 years ago)
+- "Test Key" (created 18 months ago)
+- "Deprecated Automation" (created 14 months ago)
 
 All keys have been permanently revoked.
 
@@ -204,32 +188,30 @@ Steps:
 2. Verify it's the correct key (check description)
 3. Delete the key:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/keys",
-  body={
-    "key_hash": "9a8b7c6d5e4f"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_api_key",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "key_id": "9a8b7c6d5e4f"
   }
 )
 ```
 
 Present to user:
 ```
-✅ Contractor Access Revoked
+Contractor Access Revoked
 
 API key "Contractor Read-Only Access" has been deleted.
 
-Key Hash: 9a8b7c6d5e4f
+Key ID: 9a8b7c6d5e4f
 Permissions: sensor.get, sensor.list (read-only)
 Status: Permanently revoked
 
 The contractor no longer has API access to your organization.
 
-✓ Access properly terminated
-✓ Least-privilege key removed
-✓ No further cleanup needed
+- Access properly terminated
+- Least-privilege key removed
+- No further cleanup needed
 ```
 
 ## Additional Notes
@@ -241,14 +223,14 @@ The contractor no longer has API access to your organization.
 - Key deletion is a privileged operation requiring admin access
 - Deleted keys immediately stop working for all API calls
 - Use deletion as part of key rotation workflows
-- When rotating keys: create new key → update systems → delete old key
+- When rotating keys: create new key -> update systems -> delete old key
 - Monitor for authentication failures after deletion to catch missed dependencies
-- Key hashes are unique - you cannot accidentally delete wrong org's keys
+- Key IDs are unique - you cannot accidentally delete wrong org's keys
 - Consider implementing automated key rotation with scheduled deletion
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (DeleteAPIKey function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterDeleteAPIKey)

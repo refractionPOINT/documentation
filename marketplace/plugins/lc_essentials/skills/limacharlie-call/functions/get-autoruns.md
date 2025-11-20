@@ -33,10 +33,15 @@ The sensor must be online.
 
 ### Step 2: Send the Sensor Command
 
+Use the `lc_call_tool` MCP tool:
+
 ```
-mcp__limacharlie__get_autoruns(
-  oid="[organization-id]",
-  sid="[sensor-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_autoruns",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]"
+  }
 )
 ```
 
@@ -50,6 +55,8 @@ mcp__limacharlie__get_autoruns(
 Response contains autorun entry information. Highlight suspicious entries, unsigned executables in autorun locations, or entries pointing to unusual file paths.
 
 ## Reference
+
+For the MCP tool, this uses the dedicated `get_autoruns` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

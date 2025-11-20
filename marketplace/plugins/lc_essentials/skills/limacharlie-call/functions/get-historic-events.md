@@ -49,17 +49,16 @@ Ensure you have:
 4. Time range is reasonable (not too large)
 5. Sensor has data retention for the requested timeframe
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/xyz-sensor-id",
-  query_params={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_historic_events",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-sensor-id",
     "start": 1705761234,
     "end": 1705764834,
     "limit": 1000,
@@ -68,26 +67,22 @@ mcp__limacharlie__lc_api_call(
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/insight/{oid}/{sid}` (replace `{oid}` with organization ID and `{sid}` with sensor ID)
-- Query parameters:
+**Tool Details:**
+- Tool name: `get_historic_events`
+- Parameters:
+  - `oid`: Organization ID (required)
+  - `sid`: Sensor ID (required)
   - `start`: Unix epoch timestamp in seconds (required)
   - `end`: Unix epoch timestamp in seconds (required)
   - `limit`: Max events to return (optional, default 1000)
   - `event_type`: Filter by type (optional)
 
-**Note:** The SDK method `org.GetHistoricEvents(sid, req)` returns a channel for streaming events and handles pagination internally.
-
 ### Step 3: Handle the Response
 
-The API returns events via streaming:
+The tool returns events:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": [
+  "events": [
     {
       "event": {
         "TIMESTAMP": 1705761234567,
@@ -103,17 +98,16 @@ The API returns events via streaming:
         "hostname": "SERVER01",
         "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
       }
-    },
-    ...
+    }
   ]
 }
 ```
 
-**Success (200):**
+**Success:**
 - Returns array of events in chronological order
 - Each event contains `event` data and `routing` metadata
 - Events are streamed efficiently for large result sets
-- Pagination handled automatically by SDK
+- Pagination handled automatically
 
 **Common Errors:**
 - **400 Bad Request**: Invalid timestamp format or parameters
@@ -168,14 +162,13 @@ User request: "Show me all events from sensor xyz-123 between 2PM and 3PM yester
 
 Steps:
 1. Convert "2PM to 3PM yesterday" to Unix timestamps
-2. Call API:
+2. Call the tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/xyz-123",
-  query_params={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_historic_events",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-123",
     "start": 1705676400,
     "end": 1705680000,
     "limit": 1000
@@ -191,15 +184,19 @@ User request: "Get process execution history for sensor abc-456 today"
 Steps:
 1. Calculate today's start and end timestamps
 2. Add event_type filter for "NEW_PROCESS"
-3. Call API with filter:
+3. Call the tool with filter:
 ```
-query_params={
-  "sid": "abc-456",
-  "start": 1705708800,
-  "end": 1705795200,
-  "event_type": "NEW_PROCESS",
-  "limit": 500
-}
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_historic_events",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-456",
+    "start": 1705708800,
+    "end": 1705795200,
+    "event_type": "NEW_PROCESS",
+    "limit": 500
+  }
+)
 ```
 4. Display process executions with command lines
 
@@ -222,14 +219,13 @@ Steps:
 - Sensors must have data retention for the queried timeframe
 - Free tier typically has 30-day retention; paid tiers may have longer
 - Consider using LCQL queries for more complex filtering across multiple sensors
-- The SDK streams events via a channel for memory efficiency
 - Large result sets may take time to retrieve
 - Timestamps are in milliseconds in the event data but seconds in the API parameters
 - Combine with `get-sensor-info` to get sensor context before querying events
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/forensics/forensics.go`

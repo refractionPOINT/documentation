@@ -27,7 +27,7 @@ This skill retrieves all playbook records from the LimaCharlie Hive system. It c
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are required.
@@ -41,66 +41,60 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/playbook/{oid}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_playbooks",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/playbook/global`
-- Query parameters: None
-- Body: None
+- Tool: `list_playbooks`
+- Required parameters:
+  - `oid`: Organization ID
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "playbook-name-1": {
-      "data": {
-        "steps": [
-          {
-            "action": "isolate_sensor",
-            "condition": "severity == 'critical'"
-          }
-        ],
-        "trigger": "detection",
-        "description": "Auto-isolate on critical detections"
-      },
-      "sys_mtd": {
-        "etag": "...",
-        "created_by": "user@example.com",
-        "created_at": 1234567890,
-        "last_author": "user@example.com",
-        "last_mod": 1234567899,
-        "guid": "..."
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "expiry": 0,
-        "tags": ["incident-response", "critical"],
-        "comment": "Critical detection response playbook"
-      }
+  "playbook-name-1": {
+    "data": {
+      "steps": [
+        {
+          "action": "isolate_sensor",
+          "condition": "severity == 'critical'"
+        }
+      ],
+      "trigger": "detection",
+      "description": "Auto-isolate on critical detections"
     },
-    "playbook-name-2": {
-      // ... another playbook
+    "sys_mtd": {
+      "etag": "...",
+      "created_by": "user@example.com",
+      "created_at": 1234567890,
+      "last_author": "user@example.com",
+      "last_mod": 1234567899,
+      "guid": "..."
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "expiry": 0,
+      "tags": ["incident-response", "critical"],
+      "comment": "Critical detection response playbook"
     }
+  },
+  "playbook-name-2": {
+    // ... another playbook
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The response body is an object where each key is a playbook name
 - Each value contains `data` (workflow definition), `sys_mtd` (system metadata), and `usr_mtd` (user metadata)
 - Present the list of playbooks with their enabled status and key details
@@ -132,48 +126,45 @@ Steps:
 2. Call the Hive API to list playbooks
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/playbook/{oid}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_playbooks",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "critical-isolation": {
-      "data": {
-        "steps": [
-          {"action": "isolate_sensor"},
-          {"action": "create_case"}
-        ],
-        "trigger": "detection",
-        "filter": "cat == 'CRITICAL'"
-      },
-      "sys_mtd": {
-        "created_at": 1700000000,
-        "last_mod": 1700001000
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["incident-response"],
-        "comment": "Auto-isolate critical threats"
-      }
+  "critical-isolation": {
+    "data": {
+      "steps": [
+        {"action": "isolate_sensor"},
+        {"action": "create_case"}
+      ],
+      "trigger": "detection",
+      "filter": "cat == 'CRITICAL'"
     },
-    "suspicious-file-scan": {
-      "data": {
-        "steps": [
-          {"action": "yara_scan"},
-          {"action": "collect_file"}
-        ]
-      },
-      "usr_mtd": {
-        "enabled": false
-      }
+    "sys_mtd": {
+      "created_at": 1700000000,
+      "last_mod": 1700001000
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["incident-response"],
+      "comment": "Auto-isolate critical threats"
+    }
+  },
+  "suspicious-file-scan": {
+    "data": {
+      "steps": [
+        {"action": "yara_scan"},
+        {"action": "collect_file"}
+      ]
+    },
+    "usr_mtd": {
+      "enabled": false
     }
   }
 }
@@ -214,7 +205,7 @@ The same API call is used, but the response is filtered to show only enabled pla
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (List method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/playbooks.go`

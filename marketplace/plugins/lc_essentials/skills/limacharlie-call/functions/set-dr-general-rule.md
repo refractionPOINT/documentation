@@ -53,55 +53,54 @@ Creates a new D&R rule or updates an existing one in the general namespace (cust
    )
    ```
 
-5. **Deploy Rule** (this API call)
+5. **Deploy Rule** (this tool call)
 
 ## Required Information
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
 
 - **oid**: Organization ID (UUID)
-- **rule_name**: Unique name for the rule (alphanumeric, hyphens, underscores)
-- **detection**: Detection logic (generate using `generate-dr-rule-detection`)
-- **response**: Response actions (generate using `generate-dr-rule-respond`)
+- **name**: Unique name for the rule (alphanumeric, hyphens, underscores)
+- **detect**: Detection logic object (generate using `generate-dr-rule-detection`)
+- **respond**: Response actions array (generate using `generate-dr-rule-respond`)
 
 Optional:
-- **is_replace**: true to update existing rule (default: true)
 - **is_enabled**: true/false to enable/disable rule (default: true)
-- **expire_on**: Unix timestamp for auto-deletion
 
 ## How to Use
 
-### Step 1: Call the API
+### Step 1: Call the Tool
 
-Use the `lc_api_call` MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/rules/[organization-id]",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_dr_general_rule",
+  parameters={
+    "oid": "[organization-id]",
     "name": "[rule-name]",
-    "namespace": "general",
-    "is_replace": true,
-    "is_enabled": true,
-    "detection": "[json-string-of-detect-logic]",
-    "response": "[json-string-of-respond-actions]"
+    "detect": {...detection logic object...},
+    "respond": [...response actions array...],
+    "is_enabled": true
   }
 )
 ```
 
-**Important**: The `detection` and `response` fields must be JSON-encoded strings, not objects.
+**Tool Details:**
+- Tool name: `set_dr_general_rule`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
+  - `name`: Rule name (string)
+  - `detect`: Detection logic (object)
+  - `respond`: Response actions (array)
+- Optional parameters:
+  - `is_enabled`: Whether rule is active (boolean, default: true)
 
 ### Step 2: Handle the Response
 
-**Success (200):**
+**Success:**
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 Rule is immediately active.
 
@@ -145,18 +144,24 @@ mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
 
 **Step 4: Deploy**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_dr_general_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "name": "detect-encoded-powershell",
-    "namespace": "general",
-    "is_replace": true,
-    "is_enabled": true,
-    "detection": "{...validated detection JSON string...}",
-    "response": "[...validated response JSON string...]"
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "contains",
+      "path": "event/COMMAND_LINE",
+      "value": "powershell -enc"
+    },
+    "respond": [
+      {
+        "action": "report",
+        "name": "encoded_powershell"
+      }
+    ],
+    "is_enabled": true
   }
 )
 ```
@@ -173,6 +178,6 @@ mcp__plugin_lc-essentials_limacharlie__lc_api_call(
 
 ## Reference
 
-For the API implementation, see [CALLING_API.md](../../CALLING_API.md).
+For the tool implementation, see [CALLING_API.md](../../CALLING_API.md).
 
 For D&R rule syntax and event types, use the `lookup-lc-doc` skill to search LimaCharlie documentation.

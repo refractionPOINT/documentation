@@ -40,11 +40,11 @@ Creates or updates an automation playbook in the LimaCharlie Hive system. The pl
 
 ## Required Information
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
 
 - **oid**: Organization ID (UUID)
-- **playbook_name**: Name for the playbook
-- **playbook_data**: Workflow definition object containing:
+- **name**: Name for the playbook
+- **content**: Playbook workflow definition object containing:
   - `steps`: Array of actions to execute
   - `trigger`: What triggers the playbook
   - `filter`: Optional conditional logic
@@ -59,37 +59,38 @@ Optional:
 
 ### Step 1: Call the API
 
-Use the `lc_api_call` MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/playbook/global/[playbook-name]/data",
-  body={
-    "gzdata": "[base64-gzipped-json-data]",
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["incident-response"],
-      "comment": "Playbook description"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_playbook",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[playbook-name]",
+    "content": {
+      "steps": [...],
+      "trigger": "detection",
+      "filter": "...",
+      "description": "..."
     }
   }
 )
 ```
 
-**Important**: The `gzdata` field must be base64(gzip(json)) encoded.
+**API Details:**
+- Tool: `set_playbook`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name for the playbook
+  - `content`: Playbook workflow definition
 
 ### Step 2: Handle the Response
 
-**Success (200):**
+**Success:**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "guid": "unique-record-id",
-    "name": "playbook-name"
-  }
+  "guid": "unique-record-id",
+  "name": "playbook-name"
 }
 ```
 Playbook is immediately active.
@@ -115,17 +116,19 @@ mcp__plugin_lc-essentials_limacharlie__generate_python_playbook(
 
 **Step 2: Deploy playbook workflow**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/playbook/global/critical-auto-isolation/data",
-  body={
-    "gzdata": "[encoded-playbook-json]",
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["incident-response"],
-      "comment": "Auto-isolate critical threats"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_playbook",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "critical-auto-isolation",
+    "content": {
+      "steps": [
+        {"action": "isolate_sensor"},
+        {"action": "create_case", "params": {"priority": "high"}}
+      ],
+      "trigger": "detection",
+      "filter": "cat == 'CRITICAL'",
+      "description": "Auto-isolate critical threats"
     }
   }
 )

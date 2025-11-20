@@ -42,44 +42,37 @@ Ensure you have:
 3. Exact tag name to remove (case-sensitive, must match existing tag)
 4. Confirm the tag currently exists on the sensor (optional but recommended)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/[sensor-id]/tags",
-  query_params={
-    "tag": "[tag-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="remove_tag",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012",
+    "tag": "compromised"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/{sid}/tags` where `{sid}` is the sensor UUID
-- Query parameters:
-  - `tag`: Single tag name to remove (case-sensitive)
-  - OR `tags`: Comma-separated list of tags to remove
-- Body: None
+**Tool Details:**
+- Tool name: `remove_tag`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID
+  - `tag`: Tag name to remove (case-sensitive)
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
-- Status code 200 indicates the tag was successfully removed
+**Success:**
+- Empty response indicates the tag was successfully removed
 - The tag is immediately deleted and no longer associated with the sensor
 - D&R rules targeting this tag will no longer apply to this sensor
 - Outputs filtering by this tag will no longer include this sensor
@@ -108,14 +101,13 @@ User request: "Remove the 'compromised' tag from sensor abc12345-6789-0123-4567-
 Steps:
 1. Validate the sensor ID format (UUID)
 2. Confirm the tag name is correct
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/abc12345-6789-0123-4567-890abcdef012/tags",
-  query_params={
+mcp__limacharlie__lc_call_tool(
+  tool_name="remove_tag",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012",
     "tag": "compromised"
   }
 )
@@ -123,11 +115,7 @@ mcp__limacharlie__lc_api_call(
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -140,14 +128,13 @@ User request: "That 'production' tag was added by mistake, remove it"
 Steps:
 1. Identify the sensor ID
 2. Verify the tag exists on the sensor
-3. Call API to remove:
+3. Call tool to remove:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/def45678-90ab-cdef-0123-456789abcdef/tags",
-  query_params={
+mcp__limacharlie__lc_call_tool(
+  tool_name="remove_tag",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "def45678-90ab-cdef-0123-456789abcdef",
     "tag": "production"
   }
 )
@@ -155,11 +142,7 @@ mcp__limacharlie__lc_api_call(
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -182,7 +165,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go` (RemoveTag method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/response/response.go` (remove_tag)

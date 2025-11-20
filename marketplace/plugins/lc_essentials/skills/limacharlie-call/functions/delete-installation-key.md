@@ -21,13 +21,13 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill deletes a specified installation key from the organization. Once deleted, the key can no longer be used to deploy or enroll new sensors. Note that deleting an installation key does NOT affect sensors that were already deployed using that key - those sensors remain operational. This operation is permanent and cannot be undone, so it should be used carefully. The skill calls the LimaCharlie API to remove the key identified by its IID (installation key ID).
+This skill deletes a specified installation key from the organization. Once deleted, the key can no longer be used to deploy or enroll new sensors. Note that deleting an installation key does NOT affect sensors that were already deployed using that key - those sensors remain operational. This operation is permanent and cannot be undone, so it should be used carefully. The skill calls the LimaCharlie MCP tool to remove the key identified by its IID (installation key ID).
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **iid**: Installation key ID to delete (required)
 
@@ -45,53 +45,44 @@ Ensure you have:
 3. Confirmation that this key should be deleted (operation is permanent)
 4. Understanding that existing sensors using this key will continue working
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/installationkeys/[oid]",
-  query_params={
-    "iid": "installation-key-id-to-delete"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_installation_key",
+  parameters={
+    "oid": "[organization-id]",
+    "iid": "[installation-key-id]"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/installationkeys/{oid}`
-- Query parameters:
-  - `iid`: Installation key ID to delete (required)
-- Body: None
+**Tool Details:**
+- Tool Name: `delete_installation_key`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `iid`: Installation key ID to delete
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - The installation key has been successfully deleted
 - The key can no longer be used for new sensor deployments
 - Existing sensors enrolled with this key continue to operate normally
 - The deletion is permanent and cannot be undone
 
 **Common Errors:**
-- **400 Bad Request**: Missing or invalid IID parameter
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to delete installation keys (requires platform_admin role)
-- **404 Not Found**: Installation key with the specified IID does not exist
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid IID**: Missing or invalid IID parameter
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to delete installation keys (requires platform_admin role)
+- **Not Found**: Installation key with the specified IID does not exist
 
 ### Step 4: Format the Response
 
@@ -111,14 +102,12 @@ User request: "Delete the installation key prod-old-key"
 Steps:
 1. Extract organization ID from context
 2. Verify the IID to delete: "prod-old-key"
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_installation_key",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "iid": "prod-old-key"
   }
 )
@@ -126,10 +115,7 @@ mcp__limacharlie__lc_api_call(
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Present to user:
@@ -147,14 +133,12 @@ User request: "We had a security incident, remove the compromised installation k
 Steps:
 1. Extract organization ID
 2. Verify the key to revoke: "dev-test-123"
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_installation_key",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "iid": "dev-test-123"
   }
 )
@@ -162,10 +146,7 @@ mcp__limacharlie__lc_api_call(
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Present to user:
@@ -186,8 +167,8 @@ Next steps:
 User request: "Delete the installation key old-key"
 
 Steps:
-1. Call API with IID "old-key"
-2. API returns 404 Not Found
+1. Call tool with IID "old-key"
+2. Tool returns not found error
 
 Present to user:
 ```
@@ -215,7 +196,7 @@ Use the list-installation-keys skill to see all available keys.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/installation_keys.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/config/installation_keys.go`

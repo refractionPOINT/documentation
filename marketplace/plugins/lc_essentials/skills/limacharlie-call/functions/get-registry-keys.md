@@ -52,11 +52,16 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
+Use the `lc_call_tool` MCP tool:
+
 ```
-mcp__limacharlie__get_registry_keys(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  path="[registry-path]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_registry_keys",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "path": "[registry-path]"
+  }
 )
 ```
 
@@ -125,10 +130,13 @@ Steps:
 1. Query the Run registry key
 2. Call the tool:
 ```
-mcp__limacharlie__get_registry_keys(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  path="HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_registry_keys",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "path": "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+  }
 )
 ```
 
@@ -163,6 +171,8 @@ Steps:
 - Large registry keys may take time to enumerate
 
 ## Reference
+
+For the MCP tool, this uses the dedicated `get_registry_keys` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

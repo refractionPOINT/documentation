@@ -43,61 +43,58 @@ Ensure you have:
 1. Valid organization ID (oid)
 2. Optional filters are properly formatted
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/sensors/{oid}` (replace with actual organization ID)
-- Query parameters: None (pagination handled via continuation tokens internally)
-- No request body needed
+**Tool Details:**
+- Tool name: `list_sensors`
+- Required parameters:
+  - `oid`: Organization ID
+- Optional parameters:
+  - `with_hostname_prefix`: Filter by hostname prefix
+  - `with_ip`: Filter by IP address
 
-**Note:** The SDK method `org.ListSensors()` handles pagination automatically using continuation tokens returned by the API.
+**Note:** The tool handles pagination automatically using continuation tokens returned by the API.
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "sensors": {
-      "sensor-id-1": {
-        "sid": "sensor-id-1",
-        "hostname": "SERVER01",
-        "plat": 268435456,
-        "arch": 1,
-        "enroll": "2024-01-15T10:30:00Z",
-        "alive": "2024-01-20T14:22:13Z",
-        "int_ip": "10.0.1.50",
-        "ext_ip": "203.0.113.45",
-        "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-        "iid": "install-key-123"
-      },
-      "sensor-id-2": {
-        "sid": "sensor-id-2",
-        "hostname": "WORKSTATION-05",
-        ...
-      }
+  "sensors": {
+    "sensor-id-1": {
+      "sid": "sensor-id-1",
+      "hostname": "SERVER01",
+      "plat": 268435456,
+      "arch": 1,
+      "enroll": "2024-01-15T10:30:00Z",
+      "alive": "2024-01-20T14:22:13Z",
+      "int_ip": "10.0.1.50",
+      "ext_ip": "203.0.113.45",
+      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+      "iid": "install-key-123"
     },
-    "continuation_token": ""
-  }
+    "sensor-id-2": {
+      "sid": "sensor-id-2",
+      "hostname": "WORKSTATION-05",
+      ...
+    }
+  },
+  "continuation_token": ""
 }
 ```
 
-**Success (200):**
+**Success:**
 - The response contains a map of sensor objects keyed by sensor ID
 - Each sensor has basic metadata (hostname, platform, IPs, last seen)
 - Empty `continuation_token` means all sensors have been retrieved
@@ -136,13 +133,13 @@ User request: "Show me all sensors in my organization"
 
 Steps:
 1. Get organization ID from context
-2. Call API:
+2. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 3. Format and display all sensors
@@ -150,13 +147,10 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "sensors": {
-      "sensor-1": { ... },
-      "sensor-2": { ... },
-      ...
-    }
+  "sensors": {
+    "sensor-1": { ... },
+    "sensor-2": { ... },
+    ...
   }
 }
 ```
@@ -166,7 +160,7 @@ Expected response:
 User request: "List all sensors with hostname starting with 'prod-'"
 
 Steps:
-1. Get all sensors using the API call
+1. Get all sensors using the tool call
 2. Filter results client-side where `hostname` starts with "prod-"
 3. Display filtered list:
 ```
@@ -181,13 +175,13 @@ Production Sensors (3 total):
 User request: "Find the sensor with IP 10.0.1.50"
 
 Steps:
-1. Get all sensors using the API call
+1. Get all sensors using the tool call
 2. Filter results where `int_ip` or `ext_ip` matches "10.0.1.50"
 3. Display matching sensor(s)
 
 ## Additional Notes
 
-- The API automatically handles pagination using continuation tokens
+- The tool automatically handles pagination using continuation tokens
 - Large organizations may have hundreds or thousands of sensors
 - Platform codes: Windows=268435456, Linux=67108864, macOS=33554432
 - Filtering is done client-side after retrieving all sensors
@@ -199,7 +193,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/core/core.go`

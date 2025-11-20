@@ -33,44 +33,40 @@ Before calling this skill, gather:
 
 ## How to Use
 
-### Step 1: Call API
+### Step 1: Call the Tool
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/query/{oid}"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="list_saved_queries",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/query/global`
-- Uses Hive API for persistent storage
+**Tool Details:**
+- Tool name: `list_saved_queries`
+- Parameters:
+  - `oid`: Organization ID (required)
 
 ### Step 2: Handle Response
 
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "suspicious-dns": {
-      "data": {
-        "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
-        "description": "Find DNS requests to Russian domains"
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["threat-hunting", "dns"],
-        "comment": "Monitor for suspicious domains"
-      },
-      "sys_mtd": {
-        "created_at": 1705000000,
-        "created_by": "user@example.com",
-        "guid": "query-guid-123"
-      }
+  "suspicious-dns": {
+    "data": {
+      "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
+      "description": "Find DNS requests to Russian domains"
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["threat-hunting", "dns"],
+      "comment": "Monitor for suspicious domains"
+    },
+    "sys_mtd": {
+      "created_at": 1705000000,
+      "created_by": "user@example.com",
+      "guid": "query-guid-123"
     }
   }
 }

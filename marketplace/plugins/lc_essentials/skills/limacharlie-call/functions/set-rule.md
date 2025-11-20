@@ -26,20 +26,56 @@ This skill creates or updates a rule in a specified Hive in the LimaCharlie Hive
 - `fp`: False Positive filtering rules
 - Other custom Hives
 
-The skill POSTs rule data to the Hive API using the specified Hive name, "global" partition, and rule name. The rule is automatically enabled and includes the provided definition. If a rule with the same name already exists, it will be updated.
+The rule is automatically enabled and includes the provided definition. If a rule with the same name already exists, it will be updated.
 
 **Note:** `dr-managed` Hive typically contains read-only managed rules and may not allow direct updates.
+
+## Recommended Workflow: AI-Assisted Generation
+
+**For D&R rules, use this workflow:**
+
+1. **Gather Documentation** (if needed)
+   Use `lookup-lc-doc` skill to search for D&R syntax and operators.
+
+2. **Generate Detection Component**
+   ```
+   mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection(
+     oid="your-org-id",
+     query="detect DNS requests to suspicious domains like *.xyz or *.top"
+   )
+   ```
+   Returns the detect section in YAML/JSON format.
+
+3. **Generate Respond Component**
+   ```
+   mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond(
+     oid="your-org-id",
+     query="report the detection and add a suspicious tag for 30 minutes"
+   )
+   ```
+   Returns the respond section in YAML/JSON format.
+
+4. **Validate Before Deployment**
+   ```
+   mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
+     detect={...generated detect...},
+     respond={...generated respond...}
+   )
+   ```
+   Validates syntax and compatibility.
+
+5. **Deploy Rule** (this API call)
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive to create/update rule in (required)
   - Common values: `dr-general`, `fp`
-- **rule_name**: The name for the rule (required)
-- **rule_content**: The rule definition object (required, structure varies by Hive type)
+- **name**: The name for the rule (required)
+- **data**: The rule definition object (required, structure varies by Hive type)
   - For D&R rules: must include `detect` and `respond` sections
   - For FP rules: must include filter/match logic
 
@@ -61,50 +97,42 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/[hive-name]/global/[rule-name]/data",
-  body={
-    "gzdata": "[base64-gzipped-json-data]",
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["detection", "network"],
-      "comment": "Rule description"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "hive_name": "[hive-name]",
+    "name": "[rule-name]",
+    "data": {
+      "detect": {...},
+      "respond": [...]
     }
   }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/{hive_name}/global/{rule_name}/data`
-  - Replace `{hive_name}` with the Hive name
-  - Replace `{rule_name}` with the URL-encoded rule name
-  - The `/data` suffix indicates we're setting the rule data
-- Body fields:
-  - `gzdata`: Rule content encoded as base64(gzip(json))
-  - `usr_mtd`: User metadata object
+- Tool: `set_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `hive_name`: Name of the Hive (e.g., "dr-general", "fp")
+  - `name`: Name for the rule
+  - `data`: Rule definition object
 
 ### Step 3: Handle the Response
 
 The API returns:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "guid": "unique-record-id",
-    "name": "rule-name"
-  }
+  "guid": "unique-record-id",
+  "name": "rule-name"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Rule has been created or updated successfully
 - Inform the user that the rule is now active
 
@@ -124,29 +152,59 @@ Present the result to the user:
 
 ## Example Usage
 
-### Example 1: Create a D&R rule
+### Example 1: Create a D&R rule with AI assistance
 
 User request: "Create a D&R rule to detect suspicious DNS queries to malicious domains"
 
-Steps:
-1. Get the organization ID
-2. Prepare rule content:
-```json
-{
-  "detect": {
-    "event": "DNS_REQUEST",
-    "op": "contains",
-    "path": "event/DOMAIN_NAME",
-    "value": "malicious.com"
-  },
-  "respond": [
-    {"action": "report", "name": "suspicious_dns"},
-    {"action": "add_tag", "tag": "suspicious", "ttl": 900}
-  ]
-}
+**Step 1: Generate detection** (optional - for complex rules)
 ```
-3. Use hive_name "dr-general" and rule_name "suspicious-dns-detection"
-4. Call API
+mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection(
+  oid="c7e8f940-1234-5678-abcd-1234567890ab",
+  query="detect DNS requests containing 'malicious.com'"
+)
+// Returns: {"event": "DNS_REQUEST", "op": "contains", "path": "event/DOMAIN_NAME", "value": "malicious.com"}
+```
+
+**Step 2: Generate response**
+```
+mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond(
+  oid="c7e8f940-1234-5678-abcd-1234567890ab",
+  query="report as suspicious_dns and add suspicious tag for 15 minutes"
+)
+// Returns: [{"action": "report", "name": "suspicious_dns"}, {"action": "add_tag", "tag": "suspicious", "ttl": 900}]
+```
+
+**Step 3: Validate rule**
+```
+mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components(
+  detect={"event": "DNS_REQUEST", "op": "contains", "path": "event/DOMAIN_NAME", "value": "malicious.com"},
+  respond=[{"action": "report", "name": "suspicious_dns"}, {"action": "add_tag", "tag": "suspicious", "ttl": 900}]
+)
+```
+
+**Step 4: Deploy rule**
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hive_name": "dr-general",
+    "name": "suspicious-dns-detection",
+    "data": {
+      "detect": {
+        "event": "DNS_REQUEST",
+        "op": "contains",
+        "path": "event/DOMAIN_NAME",
+        "value": "malicious.com"
+      },
+      "respond": [
+        {"action": "report", "name": "suspicious_dns"},
+        {"action": "add_tag", "tag": "suspicious", "ttl": 900}
+      ]
+    }
+  }
+)
+```
 
 Expected response confirms creation.
 
@@ -172,6 +230,16 @@ Steps:
 3. POST the updated content (it will replace the existing rule)
 4. Confirm the update was successful
 
+## Related Functions
+
+- `generate-dr-rule-detection` - AI-assisted detection generation
+- `generate-dr-rule-respond` - AI-assisted response generation
+- `validate-dr-rule-components` - Validate rule syntax
+- `list-rules` - List all rules in a Hive
+- `get-rule` - Get specific rule definition
+- `delete-rule` - Remove a rule
+- Use `lookup-lc-doc` skill for D&R syntax reference
+
 ## Additional Notes
 
 - **Creating vs Updating**: This operation performs an "upsert" - creates if doesn't exist, updates if it does
@@ -189,7 +257,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Add method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/generic_hive.go`

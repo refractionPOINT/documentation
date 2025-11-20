@@ -48,7 +48,7 @@ Ensure you have:
 Use the `validate_yara_rule` MCP tool from the `limacharlie` server:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
+mcp__limacharlie__validate_yara_rule(
   rule_content='rule SuspiciousPowerShell {
     meta:
         description = "Detects encoded PowerShell"
@@ -62,7 +62,7 @@ mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
 ```
 
 **Tool Details:**
-- Tool: `mcp__plugin_lc-essentials_limacharlie__validate_yara_rule`
+- Tool: `mcp__limacharlie__validate_yara_rule`
 - Parameters:
   - `rule_content` (string, required): YARA rule content to validate
 
@@ -126,37 +126,6 @@ Present the result to the user:
 - Recommend full YARA compilation for comprehensive validation
 - Suggest testing the rule with YARA compiler before deployment
 
-**Example formatted output for success:**
-```
-✓ Basic Validation Passed
-
-Your YARA rule passes basic syntax validation:
-- Contains 'rule' keyword
-- Has balanced braces
-- Includes 'condition:' section
-
-Note: This is basic syntax validation only. For comprehensive validation, test with a full YARA compiler before deploying to production.
-```
-
-**Example formatted output for failure:**
-```
-✗ Validation Failed
-
-Error: YARA rule has unbalanced braces
-
-Your YARA rule must have matching opening { and closing } braces. Check that every { has a corresponding }.
-
-Example of correct structure:
-rule RuleName {
-    meta:
-        description = "Rule description"
-    strings:
-        $pattern = "string pattern"
-    condition:
-        $pattern
-}
-```
-
 ## Example Usage
 
 ### Example 1: Validate Basic YARA Rule
@@ -167,7 +136,7 @@ Steps:
 1. Get YARA rule content from user
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
+mcp__limacharlie__validate_yara_rule(
   rule_content='rule SuspiciousPowerShell {
     strings:
         $ps = "powershell" nocase
@@ -195,7 +164,7 @@ Steps:
 1. Get YARA rule without condition section
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
+mcp__limacharlie__validate_yara_rule(
   rule_content='rule MissingCondition {
     strings:
         $pattern = "test"
@@ -219,7 +188,7 @@ Steps:
 1. Get YARA rule with unbalanced braces
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
+mcp__limacharlie__validate_yara_rule(
   rule_content='rule UnbalancedBraces {
     strings:
         $pattern = "test"
@@ -245,7 +214,7 @@ Steps:
 1. Get comprehensive YARA rule
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
+mcp__limacharlie__validate_yara_rule(
   rule_content='rule MalwareDetection {
     meta:
         description = "Detects specific malware family"
@@ -266,86 +235,6 @@ Expected response:
 {
   "valid": true,
   "message": "YARA rule passes basic syntax validation"
-}
-```
-
-## Example Usage
-
-### Example 1: Validate Basic YARA Rule
-
-User request: "Validate this YARA rule"
-
-Steps:
-1. Get YARA rule content from user
-2. Call tool:
-```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
-  rule_content='rule SuspiciousPowerShell {
-    strings:
-        $ps = "powershell" nocase
-        $enc = "-enc" nocase
-    condition:
-        all of them
-  }'
-)
-```
-3. Present validation result
-
-Expected response:
-```json
-{
-  "valid": true,
-  "message": "YARA rule passes basic syntax validation"
-}
-```
-
-### Example 2: Detect Missing Condition
-
-User request: "Is this YARA rule valid?"
-
-Steps:
-1. Get YARA rule without condition section
-2. Call tool:
-```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
-  rule_content='rule MissingCondition {
-    strings:
-        $pattern = "test"
-  }'
-)
-```
-
-Expected response:
-```json
-{
-  "valid": false,
-  "message": "YARA rule missing 'condition:' section"
-}
-```
-
-### Example 3: Detect Unbalanced Braces
-
-User request: "Check if my YARA rule syntax is correct"
-
-Steps:
-1. Get YARA rule with unbalanced braces
-2. Call tool:
-```
-mcp__plugin_lc-essentials_limacharlie__validate_yara_rule(
-  rule_content='rule UnbalancedBraces {
-    strings:
-        $pattern = "test"
-    condition:
-        $pattern
-  '
-)
-```
-
-Expected response:
-```json
-{
-  "valid": false,
-  "message": "YARA rule has unbalanced braces"
 }
 ```
 

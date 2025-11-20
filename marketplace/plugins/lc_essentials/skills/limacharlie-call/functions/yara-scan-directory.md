@@ -28,9 +28,9 @@ This skill sends a YARA rule to the sensor and recursively scans files in a dire
 Before calling this skill, gather:
 - **oid**: Organization ID (required for all operations)
 - **sid**: Sensor ID (UUID) of the target sensor
-- **directory**: Full path to the directory on the sensor
-- **rule**: YARA rule content (full rule text) or rule name
-- **file_pattern** (optional): File pattern to match (e.g., '*.exe', '*.dll', '*.ps1')
+- **root_dir**: Full path to the directory on the sensor
+- **rules**: YARA rule content (full rule text)
+- **file_expression** (optional): File pattern to match (e.g., '*.exe', '*.dll', '*.ps1')
 - **depth** (optional): Maximum recursion depth (default: 5)
 
 The sensor must be online and the directory must exist.
@@ -50,16 +50,19 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
-Use the dedicated MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  directory="[directory-path]",
-  rule="[yara-rule-content-or-name]",
-  file_pattern="[file-pattern]",  # optional
-  depth=[recursion-depth]  # optional, default 5
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_directory",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "root_dir": "[directory-path]",
+    "rules": "[yara-rule-content]",
+    "file_expression": "[file-pattern]",
+    "depth": [recursion-depth]
+  }
 )
 ```
 
@@ -142,13 +145,16 @@ Steps:
 1. Prepare generic malware YARA rule
 2. Call the tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  directory="C:\\Users\\John\\Downloads",
-  rule="rule Malware { strings: $a = \"malicious\" condition: $a }",
-  file_pattern="*.*",
-  depth=3
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_directory",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "root_dir": "C:\\Users\\John\\Downloads",
+    "rules": "rule Malware { strings: $a = \"malicious\" condition: $a }",
+    "file_expression": "*.*",
+    "depth": 3
+  }
 )
 ```
 
@@ -162,13 +168,16 @@ Steps:
 1. Use PowerShell-specific YARA rules
 2. Filter for .ps1 files:
 ```
-mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  directory="C:\\Scripts",
-  rule="powershell_malware_rules",
-  file_pattern="*.ps1",
-  depth=10
+mcp__limacharlie__lc_call_tool(
+  tool_name="yara_scan_directory",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "root_dir": "C:\\Scripts",
+    "rules": "rule PS_Malware { strings: $encoded = \"encodedCommand\" condition: $encoded }",
+    "file_expression": "*.ps1",
+    "depth": 10
+  }
 )
 ```
 
@@ -176,7 +185,7 @@ mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
 
 - Scanning large directories can take significant time
 - Adjust depth parameter to control recursion
-- Use file_pattern to focus on specific file types (*.exe, *.dll, *.ps1)
+- Use file_expression to focus on specific file types (*.exe, *.dll, *.ps1)
 - Default depth of 5 is reasonable for most scenarios
 - Very deep recursion or large file counts may timeout
 - Some directories may have access restrictions (System, Protected)
@@ -194,7 +203,7 @@ mcp__plugin_lc-essentials_limacharlie__yara_scan_directory(
 
 ## Reference
 
-For the MCP tool, this uses the dedicated `yara_scan_directory` tool.
+For the MCP tool, this uses the dedicated `yara_scan_directory` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/yara.go`

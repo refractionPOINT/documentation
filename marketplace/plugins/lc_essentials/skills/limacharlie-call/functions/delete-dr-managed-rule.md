@@ -26,9 +26,9 @@ This skill permanently deletes a Detection & Response rule from the 'managed' na
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Name of the managed rule to delete (must be exact match)
+- **name**: Name of the managed rule to delete (must be exact match)
 
 ## How to Use
 
@@ -39,43 +39,34 @@ Ensure you have:
 2. Exact rule name to delete (case-sensitive)
 3. Confirm user wants to delete the rule (permanent operation)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/rules/[organization-id]",
-  body={
-    "name": "[rule-name]",
-    "namespace": "managed"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_dr_managed_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/rules/{oid}`
-- Body fields:
+**Tool Details:**
+- Tool name: `delete_dr_managed_rule`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
   - `name`: Rule name to delete (string)
-  - `namespace`: Must be "managed"
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Rule successfully deleted
 - Confirm to user that rule no longer exists
 - Note that rule will not generate future detections
@@ -104,26 +95,20 @@ User request: "Delete the 'old_lateral_movement' managed rule"
 Steps:
 1. Get organization ID from context
 2. Extract rule name: "old_lateral_movement"
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
-    "name": "old_lateral_movement",
-    "namespace": "managed"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_dr_managed_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "old_lateral_movement"
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 User message: "Successfully deleted managed rule 'old_lateral_movement'. The rule has been permanently removed and will no longer generate detections."
@@ -133,7 +118,7 @@ User message: "Successfully deleted managed rule 'old_lateral_movement'. The rul
 User request: "Delete managed rule 'nonexistent_rule'"
 
 Steps:
-1. Call API to delete rule
+1. Call tool to delete rule
 2. API returns 404 Not Found
 3. Inform user: "Managed rule 'nonexistent_rule' not found. The rule may have already been deleted or the name may be incorrect. Use list-dr-managed-rules to see available rules."
 
@@ -152,7 +137,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/dr_rule.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/dr_rules.go`

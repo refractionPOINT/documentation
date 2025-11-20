@@ -7,7 +7,7 @@ Successfully created **120 new SKILL.md files** for the lc_essentials plugin, br
 ## What Was Created
 
 ### 1. Enhanced Documentation
-- **CALLING_API.md**: Comprehensive guide for using lc_api_call with 8 common patterns, error handling, and examples
+- **CALLING_API.md**: Comprehensive guide for using lc_call_tool with 8 common patterns, error handling, and examples
 - **SKILL_TEMPLATE.md**: Detailed template for creating consistent, discoverable skills
 
 ### 2. Skills by Category
@@ -174,7 +174,7 @@ Every SKILL.md file contains:
 1. **YAML Frontmatter**:
    - name: Kebab-case skill name
    - description: Rich, keyword-optimized description (max 1024 chars)
-   - allowed-tools: Relevant MCP tools (lc_api_call, Read, or specific MCP tools)
+   - allowed-tools: Relevant MCP tools (lc_call_tool, Read, or specific MCP tools)
 
 2. **Comprehensive Documentation**:
    - Title and overview
@@ -198,12 +198,10 @@ Every SKILL.md file contains:
 
 ## How Skills Work
 
-### Skills Using lc_api_call
-Most skills (100+) use the `lc_api_call` MCP tool to make direct API requests to LimaCharlie:
-- Endpoint: "api" or "billing"
-- Method: GET, POST, PUT, DELETE, PATCH
-- Path: Exact API path with {oid} placeholder
-- Query params and body as needed
+### Skills Using lc_call_tool
+Most skills (100+) use the `lc_call_tool` MCP tool to invoke LimaCharlie tools:
+- tool_name: Name of the tool to call (e.g., "list_sensors", "get_sensor_info")
+- parameters: Object containing the tool parameters
 - Reference CALLING_API.md for patterns
 
 ### Skills Using Direct MCP Tools
@@ -255,7 +253,7 @@ Launched 8 sub-agents in parallel to create skills by category:
 
 As per design decisions:
 - **test_tool**: Skipped (connectivity check only, no API interaction)
-- **lc_api_call**: Skipped (this is the wrapper used by other skills)
+- **lc_call_tool**: Skipped (this is the wrapper used by other skills)
 - **AI generation tools** (6 total): Skipped (already simple, single-purpose)
   - generate_lcql_query
   - generate_dr_rule_detection
@@ -268,7 +266,7 @@ As per design decisions:
 
 These skills enable Claude to:
 1. Discover the right skill based on user intent (rich descriptions)
-2. Call the LimaCharlie API through lc_api_call
+2. Call the LimaCharlie tools through lc_call_tool
 3. Handle responses and errors appropriately
 4. Format results for users
 

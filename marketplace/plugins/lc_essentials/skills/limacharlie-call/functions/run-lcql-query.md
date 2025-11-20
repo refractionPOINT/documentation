@@ -50,50 +50,37 @@ Executes LCQL queries against LimaCharlie's replay service, supporting complex f
 - **query**: LCQL query string (generate using `generate-lcql-query`)
 
 Optional:
-- **limit_event**: Max events to process
-- **limit_eval**: Max rule evaluations
+- **limit**: Max events to return (default: 1000)
 - **stream**: "event" (default), "detect", or "audit"
 
 ## How to Use
 
-### Step 1: Call the API
+### Step 1: Call the Tool
 
-Use the `lc_api_call` MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="replay",
-  method="POST",
-  path="/",
-  body={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="run_lcql_query",
+  parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "query": "[your-lcql-query]",
-    "limit_event": 1000,
-    "limit_eval": 10000,
-    "event_source": {
-      "stream": "event",
-      "sensor_events": {
-        "cursor": "-"
-      }
-    }
+    "limit": 1000,
+    "stream": "event"
   }
 )
 ```
 
 ### Step 2: Handle the Response
 
-**Success (200):**
+**Success:**
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "results": [...],
-    "cursor": "next-page-cursor",
-    "stats": {
-      "events_searched": 50000,
-      "results_returned": 100
-    }
+  "results": [...],
+  "cursor": "next-page-cursor",
+  "stats": {
+    "events_searched": 50000,
+    "results_returned": 100
   }
 }
 ```
@@ -123,15 +110,13 @@ mcp__plugin_lc-essentials_limacharlie__generate_lcql_query(
 
 **Step 2: Execute query**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="replay",
-  method="POST",
-  path="/",
-  body={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="run_lcql_query",
+  parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME = 'suspicious-domain.com'",
-    "event_source": {"stream": "event", "sensor_events": {"cursor": "-"}}
+    "limit": 1000,
+    "stream": "event"
   }
 )
 ```

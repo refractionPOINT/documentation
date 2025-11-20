@@ -51,62 +51,55 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/[oid]/artifacts",
-  query_params={
-    "sid": "[sensor-id]",        # Optional
-    "type": "[artifact-type]",   # Optional
-    "start": [start-timestamp],  # Optional
-    "end": [end-timestamp]       # Optional
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_artifacts",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",        // Optional
+    "type": "[artifact-type]",   // Optional
+    "start": [start-timestamp],  // Optional
+    "end": [end-timestamp]       // Optional
   }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/insight/{oid}/artifacts`
-- Query parameters (all optional):
+- Tool: `list_artifacts`
+- Required parameters:
+  - `oid`: Organization ID
+- Optional parameters:
   - `sid`: Filter by sensor ID
   - `type`: Filter by artifact type
   - `start`: Start timestamp (Unix seconds)
   - `end`: End timestamp (Unix seconds)
-- Body fields: None
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "artifacts": [
-      {
-        "id": "artifact-123abc",
-        "sid": "sensor-456def",
-        "type": "memory_dump",
-        "size": 52428800,
-        "timestamp": 1640995200,
-        "source": "manual_collection"
-      },
-      {
-        "id": "artifact-789ghi",
-        "sid": "sensor-456def",
-        "type": "pcap",
-        "size": 10485760,
-        "timestamp": 1640995300,
-        "source": "automatic_capture"
-      }
-    ],
-    "total": 2
-  }
+  "artifacts": [
+    {
+      "id": "artifact-123abc",
+      "sid": "sensor-456def",
+      "type": "memory_dump",
+      "size": 52428800,
+      "timestamp": 1640995200,
+      "source": "manual_collection"
+    },
+    {
+      "id": "artifact-789ghi",
+      "sid": "sensor-456def",
+      "type": "pcap",
+      "size": 10485760,
+      "timestamp": 1640995300,
+      "source": "automatic_capture"
+    }
+  ],
+  "total": 2
 }
 ```
 
@@ -144,12 +137,10 @@ Steps:
 1. Calculate timestamp for 24 hours ago
 2. Call API with time filter:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts",
-  query_params={
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_artifacts",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "start": 1672444800,
     "end": 1672531200
   }
@@ -159,25 +150,22 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "artifacts": [
-      {
-        "id": "art-abc123",
-        "sid": "sensor-001",
-        "type": "memory_dump",
-        "size": 104857600,
-        "timestamp": 1672520000
-      },
-      {
-        "id": "art-def456",
-        "sid": "sensor-002",
-        "type": "pcap",
-        "size": 20971520,
-        "timestamp": 1672510000
-      }
-    ]
-  }
+  "artifacts": [
+    {
+      "id": "art-abc123",
+      "sid": "sensor-001",
+      "type": "memory_dump",
+      "size": 104857600,
+      "timestamp": 1672520000
+    },
+    {
+      "id": "art-def456",
+      "sid": "sensor-002",
+      "type": "pcap",
+      "size": 20971520,
+      "timestamp": 1672510000
+    }
+  ]
 }
 ```
 
@@ -211,72 +199,14 @@ User request: "Show me all memory dumps from sensor sensor-abc123"
 Steps:
 1. Filter by sensor ID and artifact type:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/artifacts",
-  query_params={
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_artifacts",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "sid": "sensor-abc123",
     "type": "memory_dump"
   }
 )
-```
-
-Present to user:
-```
-Memory Dumps from sensor-abc123
-
-Found 3 memory dumps:
-
-1. art-mem-001
-   Size: 512 MB
-   Collected: December 28, 2023 2:15 PM
-
-2. art-mem-002
-   Size: 498 MB
-   Collected: December 30, 2023 8:45 AM
-
-3. art-mem-003
-   Size: 515 MB
-   Collected: January 1, 2024 11:00 PM
-
-Total size: ~1.5 GB
-All dumps available for download and analysis.
-```
-
-### Example 3: Audit artifact collection
-
-User request: "What types of artifacts have been collected this month?"
-
-Steps:
-1. Get artifacts for current month
-2. Analyze and group by type
-
-Present summary:
-```
-Artifact Collection Summary - January 2024
-
-Total Artifacts: 47
-
-By Type:
-- Memory Dumps: 12 (1.8 GB)
-- Network Captures (PCAP): 18 (450 MB)
-- Files/Executables: 15 (120 MB)
-- Registry Exports: 2 (5 MB)
-
-By Source:
-- Automatic Collection: 35 (74%)
-- Manual Collection: 12 (26%)
-
-Top Sensors by Artifact Count:
-1. webserver-01: 8 artifacts
-2. workstation-42: 7 artifacts
-3. database-03: 6 artifacts
-
-Total Storage Used: ~2.4 GB
-
-Artifacts are retained according to your data retention policy.
 ```
 
 ## Additional Notes
@@ -295,7 +225,7 @@ Artifacts are retained according to your data retention policy.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/artifact.go` (via GenericGETRequest)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/artifacts/artifacts.go` (RegisterListArtifacts)

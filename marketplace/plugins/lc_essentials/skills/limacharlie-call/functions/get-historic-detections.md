@@ -50,76 +50,66 @@ Ensure you have:
 3. Time range is reasonable
 4. Optional filters are properly formatted
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/detections",
-  query_params={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_historic_detections",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "start": 1705761234,
     "end": 1705847634,
     "sid": "xyz-sensor-id",
     "cat": "suspicious_process",
-    "limit": 100,
-    "cursor": "-"
+    "limit": 100
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/insight/{oid}/detections`
-- Query parameters:
+**Tool Details:**
+- Tool name: `get_historic_detections`
+- Parameters:
+  - `oid`: Organization ID (required)
   - `start`: Unix epoch timestamp in seconds (required)
   - `end`: Unix epoch timestamp in seconds (required)
   - `sid`: Sensor ID filter (optional)
   - `cat`: Detection category filter (optional)
   - `limit`: Max results (optional)
-  - `cursor`: Pagination cursor (optional, use "-" for first page)
-
-**Note:** The SDK method `org.HistoricalDetections()` handles pagination automatically.
 
 ### Step 3: Handle the Response
 
-The API returns:
+The tool returns:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "detects": [
-      {
-        "detect_id": "detect-uuid-123",
-        "cat": "suspicious_process",
-        "detect": {
-          "event": {
-            "TIMESTAMP": 1705761234567,
-            "COMMAND_LINE": "powershell.exe -encodedCommand ...",
-            "FILE_PATH": "C:\\Windows\\System32\\WindowsPowerShell\\..."
-          },
-          "routing": {
-            "sid": "xyz-123",
-            "hostname": "SERVER01"
-          }
+  "detects": [
+    {
+      "detect_id": "detect-uuid-123",
+      "cat": "suspicious_process",
+      "detect": {
+        "event": {
+          "TIMESTAMP": 1705761234567,
+          "COMMAND_LINE": "powershell.exe -encodedCommand ...",
+          "FILE_PATH": "C:\\Windows\\System32\\WindowsPowerShell\\..."
         },
-        "detect_mtd": {
-          "rule_name": "Encoded PowerShell Command",
-          "author": "security-team",
-          "severity": 8
+        "routing": {
+          "sid": "xyz-123",
+          "hostname": "SERVER01"
         }
+      },
+      "detect_mtd": {
+        "rule_name": "Encoded PowerShell Command",
+        "author": "security-team",
+        "severity": 8
       }
-    ],
-    "next_cursor": "cursor-token-or-empty"
-  }
+    }
+  ],
+  "next_cursor": "cursor-token-or-empty"
 }
 ```
 
-**Success (200):**
+**Success:**
 - Returns array of detections with full event context
 - Each detection includes category, event data, routing, and metadata
 - Pagination supported via cursor tokens
@@ -166,12 +156,10 @@ LOW SEVERITY (2):
 User: "Show me all detections from the last 24 hours"
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/insight/c7e8f940-1234-5678-abcd-1234567890ab/detections",
-  query_params={
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_historic_detections",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "start": 1705761234,
     "end": 1705847634
   }
@@ -182,7 +170,7 @@ mcp__limacharlie__lc_api_call(
 
 User: "What alerts triggered on sensor xyz-123 this week?"
 
-Add `sid` filter to query parameters.
+Add `sid` filter to parameters.
 
 ## Additional Notes
 
@@ -195,7 +183,7 @@ Add `sid` filter to query parameters.
 
 ## Reference
 
-See [CALLING_API.md](../../CALLING_API.md) for details on using `lc_api_call`.
+See [CALLING_API.md](../../CALLING_API.md) for details on using `lc_call_tool`.
 
 SDK: `../go-limacharlie/limacharlie/organization.go`
 MCP: `../lc-mcp-server/internal/tools/historical/historical.go`

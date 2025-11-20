@@ -28,9 +28,9 @@ This skill permanently deletes a playbook from the LimaCharlie Hive system. It s
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **playbook_name**: The name of the playbook to delete (required)
+- **name**: The name of the playbook to delete (required)
 
 ## How to Use
 
@@ -44,36 +44,32 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/playbook/[oid]/[playbook-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_playbook",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[playbook-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/hive/playbook/{oid}/{playbook_name}`
-- Query parameters: None
-- Body: None
+- Tool: `delete_playbook`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the playbook to delete
 
 ### Step 3: Handle the Response
 
 The API returns:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Playbook has been permanently deleted
 - Inform the user that the deletion was successful
 - Note that this action cannot be undone
@@ -105,11 +101,12 @@ Steps:
 3. Use playbook name "critical-isolation"
 4. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/playbook/c7e8f940-1234-5678-abcd-1234567890ab/critical-isolation"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_playbook",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "critical-isolation"
+  }
 )
 ```
 
@@ -128,7 +125,7 @@ Inform user: "Successfully deleted the critical-isolation playbook. This action 
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Remove method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/playbooks.go`

@@ -20,7 +20,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill permanently deletes a rule from a specified Hive in the LimaCharlie Hive system. It's a generic operation that works with any Hive name. The skill sends a DELETE request to the Hive API using the specified Hive name, "global" partition, and rule name. Once deleted, the rule and all its data are permanently removed and cannot be recovered.
+This skill permanently deletes a rule from a specified Hive in the LimaCharlie Hive system. It's a generic operation that works with any Hive name. Once deleted, the rule and all its data are permanently removed and cannot be recovered.
 
 **Warning:** This operation is permanent and cannot be undone. The rule will immediately stop executing. Consider getting the rule first if you might need to restore it later.
 
@@ -28,11 +28,11 @@ This skill permanently deletes a rule from a specified Hive in the LimaCharlie H
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive containing the rule (required)
   - Common values: `dr-general`, `fp`
-- **rule_name**: The name of the rule to delete (required)
+- **name**: The name of the rule to delete (required)
 
 ## How to Use
 
@@ -47,39 +47,34 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/[hive-name]/[oid]/[rule-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "hive_name": "[hive-name]",
+    "name": "[rule-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/hive/{hive_name}/{oid}/{rule_name}`
-  - Replace `{hive_name}` with the Hive name
-  - Replace `{rule_name}` with the URL-encoded rule name
-  - No `/data` or `/mtd` suffix - delete operates on the entire record
-- Query parameters: None
-- Body: None
+- Tool: `delete_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `hive_name`: Name of the Hive (e.g., "dr-general", "fp")
+  - `name`: Name of the rule to delete
 
 ### Step 3: Handle the Response
 
 The API returns:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Rule has been permanently deleted
 - Inform the user that the deletion was successful
 - Note that this action cannot be undone
@@ -111,11 +106,13 @@ Steps:
 3. Use hive_name "dr-general" and rule_name "suspicious-dns"
 4. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/dr-general/c7e8f940-1234-5678-abcd-1234567890ab/suspicious-dns"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hive_name": "dr-general",
+    "name": "suspicious-dns"
+  }
 )
 ```
 
@@ -130,7 +127,17 @@ User request: "Remove the 'chrome-fp' false positive rule"
 Steps:
 1. Get organization ID
 2. Use hive_name "fp" and rule_name "chrome-fp"
-3. Call API with path "/hive/fp/{oid}/chrome-fp"
+3. Call API:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hive_name": "fp",
+    "name": "chrome-fp"
+  }
+)
+```
 
 Expected response confirms the FP rule was deleted.
 
@@ -160,7 +167,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Remove method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/generic_hive.go`

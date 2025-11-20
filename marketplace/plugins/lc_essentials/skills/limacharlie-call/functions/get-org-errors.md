@@ -29,8 +29,8 @@ This skill retrieves error logs for a LimaCharlie organization. It calls the Lim
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
 
 No additional parameters are required.
 
@@ -41,53 +41,47 @@ No additional parameters are required.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/errors/[oid]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_org_errors",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/errors/{oid}`
-- Query parameters: None
-- Body fields: None
+**Tool Details:**
+- Tool name: `get_org_errors`
+- Required parameters:
+  - `oid` (string): Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "errors": [
-      {
-        "component": "output:syslog-prod",
-        "error": "Connection refused to host 10.0.0.5:514",
-        "timestamp": 1640995200,
-        "severity": "error"
-      },
-      {
-        "component": "rule:suspicious-process",
-        "error": "Invalid selector syntax in detection rule",
-        "timestamp": 1640995100,
-        "severity": "warning"
-      }
-    ]
-  }
+  "errors": [
+    {
+      "component": "output:syslog-prod",
+      "error": "Connection refused to host 10.0.0.5:514",
+      "timestamp": 1640995200,
+      "severity": "error"
+    },
+    {
+      "component": "rule:suspicious-process",
+      "error": "Invalid selector syntax in detection rule",
+      "timestamp": 1640995100,
+      "severity": "warning"
+    }
+  ]
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response contains array of error objects
 - Each error includes component name, error message, timestamp
 - Severity levels may indicate criticality
@@ -117,30 +111,27 @@ User request: "Are there any errors in my organization?"
 
 Steps:
 1. Extract organization ID from context
-2. Call API to get error logs:
+2. Call tool to get error logs:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/errors/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_org_errors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "errors": [
-      {
-        "component": "output:splunk-integration",
-        "error": "Authentication failed: Invalid API token",
-        "timestamp": 1672531200,
-        "severity": "error"
-      }
-    ]
-  }
+  "errors": [
+    {
+      "component": "output:splunk-integration",
+      "error": "Authentication failed: Invalid API token",
+      "timestamp": 1672531200,
+      "severity": "error"
+    }
+  ]
 }
 ```
 
@@ -148,7 +139,7 @@ Present to user:
 ```
 Organization Health Check
 
-⚠️ 1 Error Found
+1 Error Found
 
 Error: Output Delivery Failure
 Component: output:splunk-integration
@@ -176,10 +167,7 @@ User request: "Check for any issues"
 Expected response with no errors:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "errors": []
-  }
+  "errors": []
 }
 ```
 
@@ -187,12 +175,12 @@ Present to user:
 ```
 Organization Health Check
 
-✅ No Errors Detected
+No Errors Detected
 
 All systems are operating normally:
-✓ No configuration errors
-✓ No integration failures
-✓ No service disruptions
+- No configuration errors
+- No integration failures
+- No service disruptions
 
 Your organization is healthy and all components are functioning properly.
 ```
@@ -204,26 +192,23 @@ User request: "Show me all current errors"
 Expected response with multiple errors:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "errors": [
-      {
-        "component": "output:syslog-prod",
-        "error": "Connection timeout to 10.0.0.5:514",
-        "timestamp": 1672531300
-      },
-      {
-        "component": "rule:malware-detection",
-        "error": "YARA rule compilation failed",
-        "timestamp": 1672531250
-      },
-      {
-        "component": "extension:threat-intel",
-        "error": "API rate limit exceeded",
-        "timestamp": 1672531200
-      }
-    ]
-  }
+  "errors": [
+    {
+      "component": "output:syslog-prod",
+      "error": "Connection timeout to 10.0.0.5:514",
+      "timestamp": 1672531300
+    },
+    {
+      "component": "rule:malware-detection",
+      "error": "YARA rule compilation failed",
+      "timestamp": 1672531250
+    },
+    {
+      "component": "extension:threat-intel",
+      "error": "API rate limit exceeded",
+      "timestamp": 1672531200
+    }
+  ]
 }
 ```
 
@@ -231,7 +216,7 @@ Present to user:
 ```
 Organization Error Report
 
-⚠️ 3 Errors Requiring Attention
+3 Errors Requiring Attention
 
 1. Output Connection Issue (5 minutes ago)
    Component: output:syslog-prod
@@ -266,7 +251,7 @@ Priority: Address these issues to restore full functionality
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (GetOrgErrors function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterGetOrgErrors)

@@ -47,13 +47,13 @@ Ensure you have:
 Use the `generate_sensor_selector` MCP tool from the `limacharlie` server:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector(
+mcp__limacharlie__generate_sensor_selector(
   query="all Windows servers in production"
 )
 ```
 
 **Tool Details:**
-- Tool: `mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector`
+- Tool: `mcp__limacharlie__generate_sensor_selector`
 - Parameters:
   - `query` (string, required): Natural language description of sensor selection criteria
 
@@ -91,22 +91,6 @@ Present the result to the user:
 - Suggest verifying that sensors have the necessary tags if using tag-based selectors
 - Remind them to test the selector to ensure it matches the intended sensors
 
-**Example formatted output:**
-```
-Generated Sensor Selector:
-plat is windows and tag is production
-
-Explanation:
-This selector targets all sensors running the Windows platform that have been tagged with 'production'. It uses the 'and' operator to ensure both conditions must be true for a sensor to match.
-
-Use this selector in:
-- D&R rule 'target' field to scope rules to specific sensors
-- Installation keys to pre-tag sensors during deployment
-- Output configurations to send specific sensor data to external systems
-
-Tip: Verify your production Windows sensors are tagged with 'production' before deploying rules with this selector.
-```
-
 ## Example Usage
 
 ### Example 1: Windows Production Servers
@@ -116,7 +100,7 @@ User request: "Create selector for all Windows servers in production"
 Steps:
 1. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector(
+mcp__limacharlie__generate_sensor_selector(
   query="all Windows servers in production"
 )
 ```
@@ -137,7 +121,7 @@ User request: "Target only Linux systems tagged as database servers"
 Steps:
 1. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector(
+mcp__limacharlie__generate_sensor_selector(
   query="Linux systems tagged as database servers"
 )
 ```
@@ -157,7 +141,7 @@ User request: "Select all macOS endpoints except those tagged 'test'"
 Steps:
 1. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector(
+mcp__limacharlie__generate_sensor_selector(
   query="all macOS endpoints except those tagged test"
 )
 ```
@@ -177,7 +161,7 @@ User request: "Create selector for Windows or Linux servers in either production
 Steps:
 1. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector(
+mcp__limacharlie__generate_sensor_selector(
   query="Windows or Linux servers in production or staging environments"
 )
 ```

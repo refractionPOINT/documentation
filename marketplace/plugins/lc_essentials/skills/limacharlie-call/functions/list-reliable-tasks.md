@@ -28,7 +28,7 @@ This skill retrieves all currently active reliable tasks in the organization. It
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are needed - this returns all pending tasks.
@@ -40,61 +40,55 @@ No other parameters are needed - this returns all pending tasks.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/reliable_tasking"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_reliable_tasks",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/reliable_tasking` (organization-level endpoint, no OID in path)
+**Tool Details:**
+- Tool name: `list_reliable_tasks`
+- Required parameters: oid
 - No query parameters needed
-- No request body needed
+- Returns all pending reliable tasks
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "tasks": [
-      {
-        "task_id": "abc12345-6789-0123-4567-890abcdef012",
-        "command": "mem_map --pid 4",
-        "sensor_selector": "platform=windows and tag=production",
-        "investigation_id": "incident-2024-001",
-        "retention": 172800,
-        "created": 1234567890,
-        "expires": 1234740690,
-        "acknowledged_by": ["sid1", "sid2"],
-        "pending_for": ["sid3", "sid4"]
-      },
-      {
-        "task_id": "def45678-90ab-cdef-0123-456789abcdef",
-        "command": "deny_tree -p malware.exe",
-        "sensor_selector": "tag=compromised",
-        "retention": 86400,
-        "created": 1234567890,
-        "expires": 1234654290
-      }
-    ]
-  }
+  "tasks": [
+    {
+      "task_id": "abc12345-6789-0123-4567-890abcdef012",
+      "command": "mem_map --pid 4",
+      "sensor_selector": "platform=windows and tag=production",
+      "investigation_id": "incident-2024-001",
+      "retention": 172800,
+      "created": 1234567890,
+      "expires": 1234740690,
+      "acknowledged_by": ["sid1", "sid2"],
+      "pending_for": ["sid3", "sid4"]
+    },
+    {
+      "task_id": "def45678-90ab-cdef-0123-456789abcdef",
+      "command": "deny_tree -p malware.exe",
+      "sensor_selector": "tag=compromised",
+      "retention": 86400,
+      "created": 1234567890,
+      "expires": 1234654290
+    }
+  ]
 }
 ```
 
-**Success (200-299):**
-- Status code 200 indicates successful retrieval
+**Success:**
 - Response contains an array of task objects
 - Each task includes:
   - `task_id`: Unique identifier for the task
@@ -135,36 +129,32 @@ Present the result to the user:
 User request: "Show me the status of the memory collection tasks"
 
 Steps:
-1. Call API to list reliable tasks:
+1. Call tool to list reliable tasks:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/reliable_tasking"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_reliable_tasks",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "tasks": [
-      {
-        "task_id": "abc12345-6789-0123-4567-890abcdef012",
-        "command": "mem_map --pid 4",
-        "sensor_selector": "platform=windows and tag=production",
-        "investigation_id": "incident-2024-001",
-        "retention": 172800,
-        "created": 1234567890,
-        "expires": 1234740690,
-        "acknowledged_by": ["sid1", "sid2", "sid3"],
-        "pending_for": ["sid4", "sid5"]
-      }
-    ]
-  }
+  "tasks": [
+    {
+      "task_id": "abc12345-6789-0123-4567-890abcdef012",
+      "command": "mem_map --pid 4",
+      "sensor_selector": "platform=windows and tag=production",
+      "investigation_id": "incident-2024-001",
+      "retention": 172800,
+      "created": 1234567890,
+      "expires": 1234740690,
+      "acknowledged_by": ["sid1", "sid2", "sid3"],
+      "pending_for": ["sid4", "sid5"]
+    }
+  ]
 }
 ```
 
@@ -186,24 +176,20 @@ The memory collection is progressing. 3 sensors have acknowledged and executed t
 User request: "What reliable tasks are currently active?"
 
 Steps:
-1. Call API to list all tasks:
+1. Call tool to list all tasks:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/reliable_tasking"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_reliable_tasks",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "tasks": []
-  }
+  "tasks": []
 }
 ```
 
@@ -231,7 +217,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For the MCP tool, this uses the dedicated `list_reliable_tasks` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/` (GenericGETRequest with reliable_tasking endpoint)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/response/tasking.go` (list_reliable_tasks)

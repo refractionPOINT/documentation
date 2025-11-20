@@ -29,8 +29,8 @@ This skill retrieves detailed billing information for a LimaCharlie organization
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+- **oid**: Organization ID (required)
 
 No additional parameters are required.
 
@@ -42,45 +42,39 @@ Ensure you have:
 1. Valid organization ID (oid)
 2. Appropriate permissions (billing access typically requires admin/owner role)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="billing",
-  method="GET",
-  path="/orgs/[oid]/details"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_billing_details",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `billing` (uses billing.limacharlie.io)
-- Method: `GET`
-- Path: `/orgs/{oid}/details`
-- Query parameters: None
-- Body fields: None
+**Tool Details:**
+- Tool name: `get_billing_details`
+- Required parameters:
+  - `oid` (string): Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "plan": "enterprise",
-    "status": "active",
-    "billing_email": "billing@example.com",
-    "payment_method": "card",
-    "next_billing_date": 1640995200,
-    "subscription_id": "sub_1234567890"
-  }
+  "plan": "enterprise",
+  "status": "active",
+  "billing_email": "billing@example.com",
+  "payment_method": "card",
+  "next_billing_date": 1640995200,
+  "subscription_id": "sub_1234567890"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response contains comprehensive billing details
 - Includes plan type, subscription status, and payment info
 - Shows billing contact and next billing date
@@ -110,29 +104,26 @@ User request: "Show me our billing details"
 
 Steps:
 1. Extract organization ID from context
-2. Call billing API to get details:
+2. Call billing tool to get details:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="billing",
-  method="GET",
-  path="/orgs/c7e8f940-1234-5678-abcd-1234567890ab/details"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_billing_details",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "plan": "enterprise",
-    "status": "active",
-    "billing_email": "billing@acme.com",
-    "payment_method": "card",
-    "last_four": "4242",
-    "next_billing_date": 1672531200,
-    "auto_renew": true
-  }
+  "plan": "enterprise",
+  "status": "active",
+  "billing_email": "billing@acme.com",
+  "payment_method": "card",
+  "last_four": "4242",
+  "next_billing_date": 1672531200,
+  "auto_renew": true
 }
 ```
 
@@ -142,7 +133,7 @@ Billing Details
 
 Subscription:
 - Plan: Enterprise
-- Status: Active ✓
+- Status: Active
 - Auto-renewal: Enabled
 
 Billing Contact:
@@ -151,7 +142,7 @@ Billing Contact:
 Payment Method:
 - Type: Credit Card
 - Last 4 digits: 4242
-- Status: Valid ✓
+- Status: Valid
 
 Next Billing:
 - Date: January 1, 2023
@@ -173,7 +164,7 @@ Present findings:
 ```
 Billing Status Check
 
-⚠️ Issue Detected
+Issue Detected
 
 Subscription: Enterprise
 Status: Payment Failed
@@ -209,7 +200,7 @@ Current Access:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/billing.go` (GetBillingOrgDetails function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterGetBillingDetails)

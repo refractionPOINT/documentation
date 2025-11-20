@@ -26,7 +26,7 @@ This skill retrieves all Detection & Response rules from the 'managed' namespace
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No additional parameters are required.
@@ -38,55 +38,48 @@ No additional parameters are required.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/[organization-id]",
-  query_params={"namespace": "managed"}
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_dr_managed_rules",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/rules/{oid}`
-- Query parameters: `namespace=managed` (filters to managed namespace only)
-- Body fields: None (GET request)
+**Tool Details:**
+- Tool name: `list_dr_managed_rules`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "rule-name-1": {
-      "name": "rule-name-1",
-      "namespace": "managed",
-      "detect": {...},
-      "respond": [...],
-      "is_enabled": true
-    },
-    "rule-name-2": {
-      "name": "rule-name-2",
-      "namespace": "managed",
-      "detect": {...},
-      "respond": [...],
-      "is_enabled": true
-    }
+  "rule-name-1": {
+    "name": "rule-name-1",
+    "namespace": "managed",
+    "detect": {...},
+    "respond": [...],
+    "is_enabled": true
+  },
+  "rule-name-2": {
+    "name": "rule-name-2",
+    "namespace": "managed",
+    "detect": {...},
+    "respond": [...],
+    "is_enabled": true
   }
 }
 ```
 
-**Success (200-299):**
-- The response body contains a map/dictionary of rules indexed by rule name
+**Success:**
+- The response contains a map/dictionary of rules indexed by rule name
 - Each rule object includes: name, namespace, detect component, respond actions, and enabled status
 - Count the number of rules and present to user
 - Display rule names and key information (enabled status, detection types)
@@ -114,37 +107,33 @@ User request: "Show me all my managed detection rules"
 
 Steps:
 1. Get organization ID from context
-2. Call API with managed namespace filter
-3. Call API:
+2. Call tool with managed namespace filter
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={"namespace": "managed"}
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_dr_managed_rules",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "credential_access_detection": {
-      "name": "credential_access_detection",
-      "namespace": "managed",
-      "detect": {"op": "and", "rules": [...]},
-      "respond": [{"action": "report", "name": "credential_access"}],
-      "is_enabled": true
-    },
-    "lateral_movement_smb": {
-      "name": "lateral_movement_smb",
-      "namespace": "managed",
-      "detect": {"op": "is", "path": "event/EVENT_TYPE", "value": "NETWORK_CONNECTIONS"},
-      "respond": [{"action": "report", "name": "lateral_movement"}],
-      "is_enabled": true
-    }
+  "credential_access_detection": {
+    "name": "credential_access_detection",
+    "namespace": "managed",
+    "detect": {"op": "and", "rules": [...]},
+    "respond": [{"action": "report", "name": "credential_access"}],
+    "is_enabled": true
+  },
+  "lateral_movement_smb": {
+    "name": "lateral_movement_smb",
+    "namespace": "managed",
+    "detect": {"op": "is", "path": "event/EVENT_TYPE", "value": "NETWORK_CONNECTIONS"},
+    "respond": [{"action": "report", "name": "lateral_movement"}],
+    "is_enabled": true
   }
 }
 ```
@@ -154,7 +143,7 @@ Expected response:
 User request: "How many managed D&R rules do I have?"
 
 Steps:
-1. Call API to list managed rules
+1. Call tool to list managed rules
 2. Count the number of rules in response
 3. Report count and optionally show rule names
 4. If count is 0, inform user they have no managed rules
@@ -171,7 +160,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/dr_rule.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/dr_rules.go`

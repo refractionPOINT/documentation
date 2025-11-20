@@ -49,39 +49,35 @@ Ensure you have:
 4. Verify you have the correct sensor (check hostname, IP, etc.)
 5. Consider backing up any important data from the sensor first
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/[sensor-id]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_sensor",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/{sid}` where `{sid}` is the sensor UUID
-- No query parameters needed
-- No request body needed
+**Tool Details:**
+- Tool name: `delete_sensor`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID to delete
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
-- Status code 200 indicates the sensor was successfully deleted
+**Success:**
+- Empty response indicates the sensor was successfully deleted
 - All sensor data, history, and configuration are permanently removed
 - The sensor ID is no longer valid in the organization
 - If the endpoint comes online, it will need to be re-enrolled as a new sensor
@@ -111,23 +107,20 @@ Steps:
 1. Validate the sensor ID format (UUID)
 2. Verify the sensor exists and get its details (hostname, etc.)
 3. **Confirm with user**: "This will permanently delete sensor abc12345-6789-0123-4567-890abcdef012 (hostname: SERVER01). All data and history will be lost. Are you sure?"
-4. If confirmed, call API:
+4. If confirmed, call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/abc12345-6789-0123-4567-890abcdef012"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_sensor",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -141,23 +134,20 @@ Steps:
 1. Identify the sensor ID for the test sensor
 2. Verify it's the correct sensor to delete
 3. Confirm deletion intent
-4. Call API:
+4. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/def45678-90ab-cdef-0123-456789abcdef"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_sensor",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "def45678-90ab-cdef-0123-456789abcdef"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -183,7 +173,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go` (Delete method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/response/tasking.go` (delete_sensor)

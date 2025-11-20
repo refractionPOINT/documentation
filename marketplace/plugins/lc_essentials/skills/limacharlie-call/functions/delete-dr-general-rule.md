@@ -28,9 +28,9 @@ This skill permanently deletes a D&R rule from the general namespace (custom rul
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Exact name of the rule to delete (case-sensitive)
+- **name**: Exact name of the rule to delete (case-sensitive)
 
 **IMPORTANT WARNINGS:**
 - Deletion is PERMANENT and IRREVERSIBLE
@@ -50,45 +50,35 @@ Ensure you have:
 4. Consider viewing the rule first with `get-dr-general-rule`
 5. Optionally export/backup the rule configuration before deletion
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/rules/[organization-id]",
-  body={
-    "name": "[rule-name]",
-    "namespace": "general"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_dr_general_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/rules/{oid}` where `{oid}` is the organization ID
-- No query parameters needed
-- Body fields:
-  - `name`: String - exact rule name to delete (required)
-  - `namespace`: "general" (specifies custom rules namespace)
+**Tool Details:**
+- Tool name: `delete_dr_general_rule`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
+  - `name`: Exact rule name to delete (string)
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
-- Status code 200 indicates the rule was successfully deleted
+**Success:**
+- Empty object indicates the rule was successfully deleted
 - The rule immediately stops evaluating events
 - No more detections or response actions will trigger
 - The rule configuration is permanently removed
@@ -120,27 +110,20 @@ Steps:
 1. Validate the rule name
 2. Optionally view the rule first to confirm it's the right one
 3. **Confirm with user**: "This will permanently delete rule 'test-powershell-detection'. The rule configuration cannot be recovered. Are you sure?"
-4. If confirmed, call API:
+4. If confirmed, call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
-    "name": "test-powershell-detection",
-    "namespace": "general"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_dr_general_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "test-powershell-detection"
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -153,27 +136,20 @@ User request: "Remove the old malware detection rule, we have a better one now"
 Steps:
 1. Identify the exact rule name
 2. Confirm deletion intent
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
-    "name": "old-malware-detection",
-    "namespace": "general"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_dr_general_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "old-malware-detection"
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -201,7 +177,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/dr_rule.go` (DRRuleDelete method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/dr_rules.go` (delete_dr_general_rule)

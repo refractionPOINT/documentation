@@ -24,64 +24,44 @@ This skill retrieves the authoritative list of platform names from LimaCharlie's
 
 ## Required Information
 
-Before calling this skill, gather:
-
-**⚠️ NOTE**: This is a **global operation** that queries the platform ontology and does not require a specific organization ID. When calling the API, **omit the `oid` parameter** entirely.
-
-No specific parameters required (global ontology query)
-
-Note: The ontology endpoint returns the global platform list, not organization-specific platforms.
+**Note**: This is a **global operation** that queries the platform ontology and does not require any parameters.
 
 ## How to Use
 
-### Step 1: Validate Parameters
+### Step 1: Call the API
 
-This is a global query - no specific validation required.
-
-### Step 2: Call the API
-
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="GET",
-  path="/ontology"
-  # Note: oid parameter omitted - not required for global operations
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_platform_names",
+  parameters={}
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/ontology` (no /v1 prefix for this endpoint)
-- No query parameters
-- No request body
-- Global endpoint - does not require organization context
+- Tool: `get_platform_names`
+- No parameters required (global operation)
 
-### Step 3: Handle the Response
+### Step 2: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "platforms": {
-      "windows": 1,
-      "linux": 2,
-      "macos": 3,
-      "chrome": 4,
-      "android": 5,
-      "ios": 6,
-      ...
-    }
+  "platforms": {
+    "windows": 1,
+    "linux": 2,
+    "macos": 3,
+    "chrome": 4,
+    "android": 5,
+    "ios": 6,
+    ...
   }
 }
 ```
 
 **Success (200-299):**
-- Body contains `platforms` object mapping platform names to numeric IDs
+- Response contains `platforms` object mapping platform names to numeric IDs
 - Platform names are lowercase strings (e.g., "windows", "linux", "macos")
 - Numeric values are internal platform identifiers
 - Keys (platform names) are what you use in other API calls
@@ -90,7 +70,7 @@ The API returns a response with:
 **Common Errors:**
 - **500 Server Error**: Temporary API issue - retry after a short delay
 
-### Step 4: Format the Response
+### Step 3: Format the Response
 
 Present the result to the user:
 - Extract platform names from the response object keys
@@ -108,26 +88,22 @@ User request: "What platforms does LimaCharlie support?"
 Steps:
 1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="GET",
-  path="/ontology"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_platform_names",
+  parameters={}
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "platforms": {
-      "windows": 1,
-      "linux": 2,
-      "macos": 3,
-      "chrome": 4,
-      "android": 5,
-      "ios": 6
-    }
+  "platforms": {
+    "windows": 1,
+    "linux": 2,
+    "macos": 3,
+    "chrome": 4,
+    "android": 5,
+    "ios": 6
   }
 }
 ```
@@ -146,8 +122,7 @@ Steps:
 
 ## Additional Notes
 
-- **This is a global operation that does not require a specific organization ID**
-- When calling the API, omit the `oid` parameter entirely
+- **This is a global operation that does not require any parameters**
 - This endpoint returns the global platform ontology, not org-specific data
 - Platform names are always lowercase in the API
 - Use exactly these names when filtering (e.g., "windows" not "Windows" or "win")
@@ -161,7 +136,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/schemas.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/schemas/schemas.go`

@@ -28,9 +28,9 @@ This skill calls the LimaCharlie API to retrieve a specific secret's value and m
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **secret_name**: Name of the secret to retrieve
+- **name**: Name of the secret to retrieve
 
 ## How to Use
 
@@ -44,54 +44,50 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/secret/[oid]/[secret-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_secret",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[secret-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/secret/{oid}/{secret_name}` (replace placeholders with actual values)
-- Query parameters: None
-- Body: None (GET request)
+- Tool: `get_secret`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the secret to retrieve
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "data": {
-      "value": "actual-secret-value-here"
-    },
-    "sys_mtd": {
-      "created_at": 1234567890,
-      "created_by": "user@example.com",
-      "last_mod": 1234567890,
-      "last_author": "user@example.com",
-      "etag": "abc123",
-      "guid": "def456"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": [],
-      "comment": ""
-    }
+  "data": {
+    "value": "actual-secret-value-here"
+  },
+  "sys_mtd": {
+    "created_at": 1234567890,
+    "created_by": "user@example.com",
+    "last_mod": 1234567890,
+    "last_author": "user@example.com",
+    "etag": "abc123",
+    "guid": "def456"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": [],
+    "comment": ""
   }
 }
 ```
 
-**Success (200-299):**
-- Secret value is in `body.data.value`
+**Success:**
+- Secret value is in `data.value`
 - Metadata includes creation time, creator, last modification
 - Present value carefully (consider masking in logs)
 - Include metadata for context
@@ -121,31 +117,29 @@ Steps:
 1. Confirm secret name: "webhook-api-key"
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/webhook-api-key"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_secret",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "webhook-api-key"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "value": "sk_live_abc123def456ghi789"
-    },
-    "sys_mtd": {
-      "created_at": 1640000000,
-      "created_by": "admin@example.com",
-      "last_mod": 1640000000,
-      "last_author": "admin@example.com"
-    },
-    "usr_mtd": {
-      "enabled": true
-    }
+  "data": {
+    "value": "sk_live_abc123def456ghi789"
+  },
+  "sys_mtd": {
+    "created_at": 1640000000,
+    "created_by": "admin@example.com",
+    "last_mod": 1640000000,
+    "last_author": "admin@example.com"
+  },
+  "usr_mtd": {
+    "enabled": true
   }
 }
 ```
@@ -171,18 +165,18 @@ User request: "Get the value of prod-database-password"
 Steps:
 1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/prod-database-password"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_secret",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "prod-database-password"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 404,
   "error": "Secret not found"
 }
 ```
@@ -217,7 +211,7 @@ Would you like me to list all secrets to see what's available?
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/secrets.go`

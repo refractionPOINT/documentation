@@ -29,9 +29,9 @@ This skill retrieves a lookup table and searches for a specific key, returning t
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **lookup_name**: Name of the lookup table to query
+- **name**: Name of the lookup table to query
 - **key**: The key to search for in the lookup table
 
 ## How to Use
@@ -45,51 +45,51 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-First, get the lookup table, then extract the key:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/[oid]/[lookup-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="query_lookup",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[lookup-name]",
+    "key": "[key-to-search]"
+  }
 )
 ```
 
-Then search the returned data for the specified key.
-
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/lookup/{oid}/{lookup_name}/data` (replace placeholders)
-- Query parameters: None
-- Body: None (GET request)
-- Post-processing: Extract key from `body.data[key]`
+- Tool: `query_lookup`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the lookup table
+  - `key`: Key to search for
 
 ### Step 3: Handle the Response
 
-The API returns the full lookup table:
+The API returns the value for the key if found:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "key1": "value1",
-      "key2": {"nested": "data"},
-      "searched-key": "found-value"
-    }
+  "found": true,
+  "value": {
+    "severity": "critical",
+    "category": "c2",
+    "source": "threat-feed-1"
   }
 }
 ```
 
-Check if the key exists in `body.data`:
-- If key exists: Return `body.data[key]`
-- If key doesn't exist: Return null/not found
+Or indicates key not found:
+```json
+{
+  "found": false,
+  "value": null
+}
+```
 
-**Success (200-299):**
-- Lookup table retrieved successfully
-- Search for key in the data dictionary
-- Return value if found, null if not found
+**Success:**
+- If key exists: Returns the value
+- If key doesn't exist: Returns null/not found
 - Present results clearly
 
 **Common Errors:**
@@ -118,34 +118,26 @@ Present the result to the user:
 User request: "Is 192.0.2.1 in the malicious-ips lookup?"
 
 Steps:
-1. Get lookup table:
+1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="query_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "malicious-ips",
+    "key": "192.0.2.1"
+  }
 )
 ```
-
-2. Check if "192.0.2.1" exists in data
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "192.0.2.1": {
-        "severity": "critical",
-        "category": "c2",
-        "source": "threat-feed-1"
-      },
-      "198.51.100.5": {
-        "severity": "high",
-        "category": "phishing"
-      }
-    }
+  "found": true,
+  "value": {
+    "severity": "critical",
+    "category": "c2",
+    "source": "threat-feed-1"
   }
 }
 ```
@@ -184,20 +176,23 @@ Example D&R rule:
 User request: "Check if suspicious.com is in the allowed-domains lookup"
 
 Steps:
-1. Get lookup table
-2. Check if "suspicious.com" exists
+1. Call API:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="query_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "allowed-domains",
+    "key": "suspicious.com"
+  }
+)
+```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "example.com": true,
-      "trusted.org": true,
-      "corporate.net": true
-    }
-  }
+  "found": false,
+  "value": null
 }
 ```
 
@@ -230,22 +225,27 @@ This will trigger for any domain not in the allowlist.
 User request: "What data do we have for user john.doe in the user-mapping lookup?"
 
 Steps:
-1. Get lookup table
-2. Check for "john.doe" key
+1. Call API:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="query_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "user-mapping",
+    "key": "john.doe"
+  }
+)
+```
 
 Expected response with nested data:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "john.doe": {
-        "department": "Engineering",
-        "location": "San Francisco",
-        "level": "Senior",
-        "manager": "jane.smith"
-      }
-    }
+  "found": true,
+  "value": {
+    "department": "Engineering",
+    "location": "San Francisco",
+    "level": "Senior",
+    "manager": "jane.smith"
   }
 }
 ```
@@ -285,18 +285,19 @@ User request: "Query 'test-key' in 'nonexistent-lookup'"
 Steps:
 1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/nonexistent-lookup/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="query_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "nonexistent-lookup",
+    "key": "test-key"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 404,
   "error": "Lookup not found"
 }
 ```
@@ -333,7 +334,7 @@ Would you like me to:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/lookups.go`

@@ -20,7 +20,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves a specific false positive rule by name. It fetches the complete rule configuration including the detection filter logic. The rule is located by listing all FP rules and filtering for the requested name.
+This skill retrieves a specific false positive rule by name. It fetches the complete rule configuration including the detection filter logic.
 
 ## Required Information
 
@@ -28,7 +28,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **rule_name**: Name of the FP rule to retrieve (must be exact match)
+- **name**: Name of the FP rule to retrieve (must be exact match)
 
 ## How to Use
 
@@ -40,49 +40,46 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/fp/[organization-id]/[rule-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_fp_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[rule-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/fp/{oid}/{rule_name}/data`
-- Query parameters: None
-- Body fields: None (GET request)
+- Tool: `get_fp_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: FP rule name
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "requested-rule-name": {
-      "name": "requested-rule-name",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "data": {
-        "op": "and",
-        "rules": [...]
-      }
-    }
+  "name": "filter_safe_processes",
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "data": {
+    "op": "and",
+    "rules": [
+      {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
+      {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\TrustedApp\\"}
+    ]
   }
 }
 ```
 
 **Success (200-299):**
-- Parse the response body to find the rule with matching name
+- Response contains the complete rule configuration
 - Extract the complete rule configuration
 - Present filter logic and metadata
-- If rule name not found in results, return "Rule not found" error
+- If rule name not found, return "Rule not found" error
 
 **Common Errors:**
 - **400 Bad Request**: Invalid organization ID format
@@ -110,30 +107,26 @@ Steps:
 2. Extract rule name: "filter_safe_processes"
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/fp/c7e8f940-1234-5678-abcd-1234567890ab/filter_safe_processes/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_fp_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "filter_safe_processes"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "filter_safe_processes": {
-      "name": "filter_safe_processes",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "data": {
-        "op": "and",
-        "rules": [
-          {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
-          {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\TrustedApp\\"}
-        ]
-      }
-    }
+  "name": "filter_safe_processes",
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "data": {
+    "op": "and",
+    "rules": [
+      {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
+      {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\TrustedApp\\"}
+    ]
   }
 }
 ```
@@ -147,10 +140,9 @@ This rule filters SUSPICIOUS_EXECUTION detections where the file path contains '
 User request: "Get FP rule 'nonexistent_rule'"
 
 Steps:
-1. Call API to list all FP rules
-2. Search for "nonexistent_rule" in response
-3. Rule not found
-4. Inform user: "FP rule 'nonexistent_rule' not found. Use get-fp-rules to see available rules."
+1. Call API
+2. API returns 404 Not Found
+3. Inform user: "FP rule 'nonexistent_rule' not found. Use get-fp-rules to see available rules."
 
 ## Additional Notes
 
@@ -170,7 +162,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/fp_rule.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/fp_rules.go`

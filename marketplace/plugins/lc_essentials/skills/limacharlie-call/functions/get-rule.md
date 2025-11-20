@@ -6,32 +6,32 @@ Retrieves a specific rule by name from a Hive in a LimaCharlie organization.
 ## When to Use
 
 Use this skill when the user needs to:
-- Get detailed definition for a specific D&R rule
-- View a false positive rule's filter logic
-- Inspect rule configuration from any Hive
-- Check if a specific rule exists
-- Review rule metadata (creation date, last author, etc.)
-- Understand what a rule does
+- Get detailed detection/response logic for a specific rule
+- View rule definition before modifying it
+- Check if a rule exists
+- Inspect rule metadata (creation date, last author, etc.)
+- Review rule logic as part of troubleshooting
+- Understand what a rule detects and how it responds
 
 Common scenarios:
-- "Show me the 'suspicious-dns' D&R rule from general namespace"
-- "What does the 'chrome-fp' false positive rule do?"
-- "Get the rule named 'malware-detection' from dr-general"
-- "Is the 'ransomware-behavior' rule configured?"
+- "Show me the suspicious-dns rule"
+- "What does the ransomware-detection rule do?"
+- "Get the rule named 'malware-behavior' from dr-general"
+- "Is the chrome-fp rule configured in the fp Hive?"
 
 ## What This Skill Does
 
-This skill retrieves a single rule record from a specified Hive in the LimaCharlie Hive system by its name. It's a generic operation that works with any Hive name and rule name. The skill calls the Hive API with the specified Hive name, organization ID as the partition, and rule name as the key. The response includes the complete rule definition, user metadata (enabled, tags, comments), and system metadata (audit trail).
+This skill retrieves a single rule record from a specified Hive in the LimaCharlie Hive system by its name. It calls the Hive API using the provided hive name with the organization ID as the partition and the specific rule name as the key. The response includes the complete rule definition (detect and respond sections), user metadata (enabled, tags, comments), and system metadata (audit trail).
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive containing the rule (required)
-  - Common values: `dr-general`, `dr-managed`, `fp`
-- **rule_name**: The name of the rule to retrieve (required)
+  - Common values: `dr-general`, `fp`
+- **name**: The name of the rule to retrieve (required)
 
 ## How to Use
 
@@ -39,147 +39,168 @@ Before calling this skill, gather:
 
 Ensure you have:
 1. Valid organization ID (oid)
-2. Hive name (string, determines which Hive to query)
+2. Hive name (string, determines which Hive to retrieve from)
 3. Rule name (string, must be exact match)
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/[hive-name]/{oid}/[rule-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_rule",
+  parameters={
+    "oid": "[organization-id]",
+    "hive_name": "[hive-name]",
+    "name": "[rule-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/{hive_name}/{oid}/{rule_name}/data`
-  - Replace `{hive_name}` with the Hive name
-  - Replace `{oid}` with the organization ID
-  - Replace `{rule_name}` with the URL-encoded rule name
-  - The `/data` suffix retrieves both data and metadata
-- Query parameters: None
-- Body: None
+- Tool: `get_rule`
+- Required parameters:
+  - `oid`: Organization ID
+  - `hive_name`: Name of the Hive (e.g., "dr-general", "fp")
+  - `name`: Name of the rule to retrieve
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "data": {
-      "detect": {
-        "event": "DNS_REQUEST",
-        "op": "and",
-        "rules": [
-          {"op": "contains", "path": "event/DOMAIN_NAME", "value": "malicious"}
-        ]
-      },
-      "respond": [
-        {"action": "report", "name": "malicious_dns"}
-      ]
+  "data": {
+    "detect": {
+      "event": "DNS_REQUEST",
+      "op": "contains",
+      "path": "event/DOMAIN_NAME",
+      "value": "malicious.com"
     },
-    "sys_mtd": {
-      "etag": "abc123...",
-      "created_by": "user@example.com",
-      "created_at": 1234567890,
-      "last_author": "admin@example.com",
-      "last_mod": 1234567899,
-      "guid": "unique-id-123"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "expiry": 0,
-      "tags": ["network", "dns", "threat"],
-      "comment": "Detects malicious DNS requests"
-    }
+    "respond": [
+      {"action": "report", "name": "suspicious-dns"},
+      {"action": "add_tag", "tag": "suspicious", "ttl": 900}
+    ]
+  },
+  "sys_mtd": {
+    "etag": "abc123...",
+    "created_by": "user@example.com",
+    "created_at": 1234567890,
+    "last_author": "admin@example.com",
+    "last_mod": 1234567899,
+    "guid": "unique-id-123"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "expiry": 0,
+    "tags": ["network", "dns"],
+    "comment": "Detects DNS queries to known malicious domains"
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The `data` field contains the complete rule definition
-- For D&R rules: includes `detect` and `respond` sections
-- For FP rules: includes filter/match logic
 - The `usr_mtd` field shows user-controlled metadata
-- The `sys_mtd` field shows system metadata
+- The `sys_mtd` field shows system metadata including audit trail
 - Present the rule details to the user in a readable format
 
 **Common Errors:**
 - **400 Bad Request**: Invalid rule name format
-- **403 Forbidden**: Insufficient permissions
-- **404 Not Found**: The rule doesn't exist in this Hive
-- **500 Server Error**: Backend issue - advise retry
+- **403 Forbidden**: Insufficient permissions - user needs platform_admin or similar role
+- **404 Not Found**: The rule doesn't exist - inform user and suggest creating it
+- **500 Server Error**: Rare backend issue - advise user to retry or contact support
 
 ### Step 4: Format the Response
 
 Present the result to the user:
-- Show the rule name, Hive name, and enabled status prominently
-- For D&R rules: explain the detection logic and response actions
-- For FP rules: explain what false positives are being filtered
+- Show the rule name, Hive, and enabled status prominently
+- Explain what the rule detects (event type, conditions)
+- List the response actions in order
+- Include comment if present
 - Display relevant metadata like creation date and last modification
-- Note any tags or comments
+- Note any tags
 - Explain what the rule does in simple terms
 
 ## Example Usage
 
-### Example 1: Get a D&R rule
+### Example 1: Get a specific D&R rule
 
-User request: "Show me the 'suspicious-dns' D&R rule from general namespace"
+User request: "Show me the suspicious-dns rule from dr-general"
 
 Steps:
 1. Get the organization ID from context
-2. Use hive_name "dr-general" and rule_name "suspicious-dns"
+2. Use hive_name "dr-general" and rule name "suspicious-dns"
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/dr-general/global/suspicious-dns/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hive_name": "dr-general",
+    "name": "suspicious-dns"
+  }
 )
 ```
 
-Expected response contains the D&R rule definition with detect and respond sections.
+Expected response contains the rule definition showing it detects DNS queries to malicious domains.
 
 Format the output explaining:
 - Rule: suspicious-dns (Enabled)
 - Hive: dr-general
-- Detects: DNS requests containing "malicious" in domain name
-- Responds: Reports as "malicious_dns" detection
+- Detects: DNS_REQUEST events containing "malicious.com" in the domain name
+- Responds:
+  1. Report detection as "suspicious-dns"
+  2. Add tag "suspicious" for 15 minutes
 - Last Modified: [date] by admin@example.com
 
 ### Example 2: Get a false positive rule
 
-User request: "What does the 'chrome-fp' false positive rule do?"
+User request: "What's the chrome-update-fp rule?"
 
 Steps:
 1. Get organization ID
-2. Use hive_name "fp" and rule_name "chrome-fp"
-3. Call API with path "/hive/fp/global/chrome-fp/data"
+2. Use hive_name "fp" and rule name "chrome-update-fp"
+3. Call API:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hive_name": "fp",
+    "name": "chrome-update-fp"
+  }
+)
+```
 
-Expected response shows the FP rule filter logic.
+### Example 3: Rule not found
+
+User request: "Show me the nonexistent-rule"
+
+Steps:
+1. Attempt to get the rule
+2. Receive 404 error
+3. Inform user: "The rule 'nonexistent-rule' does not exist in dr-general. Would you like me to list all available rules?"
 
 ## Additional Notes
 
-- **Hive Types**: Different Hives store different types of rules
-- **Rule Structure**: The `data` field structure varies by Hive type
 - Rule names are case-sensitive - use exact name from list-rules
+- The `data` field structure for D&R rules includes:
+  - `detect`: Detection logic (event type, operators, conditions)
+  - `respond`: Array of response actions to execute
+- FP rules have different structure for filtering logic
 - The `enabled` field controls whether the rule is active
 - Use `list-rules` first if you don't know the exact rule name
-- Managed rules (dr-managed) are typically read-only
-- Some rules may have complex nested logic in the detect section
+- Rules can contain complex nested detection logic
+- Common response actions:
+  - `report`: Generate a detection
+  - `add_tag`: Tag the sensor
+  - `isolate`: Isolate the sensor from network
+  - `task`: Send a command to the sensor
+- Review rule logic carefully before enabling in production
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Get method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/generic_hive.go`

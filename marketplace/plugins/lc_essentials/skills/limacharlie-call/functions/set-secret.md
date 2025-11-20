@@ -29,10 +29,10 @@ This skill calls the LimaCharlie API to store a secret securely. The secret is e
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **secret_name**: Name for the secret (alphanumeric, hyphens, underscores)
-- **secret_value**: The actual secret value to store
+- **name**: Name for the secret (alphanumeric, hyphens, underscores)
+- **value**: The actual secret value to store
 
 ## How to Use
 
@@ -46,49 +46,37 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/secret/[oid]/[secret-name]/data",
-  body={
-    "data": "{\"value\": \"secret-value-here\"}",
-    "usr_mtd": "{\"enabled\": true}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_secret",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[secret-name]",
+    "value": "[secret-value]"
   }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/secret/{oid}/{secret_name}/data` (replace `{oid}` with organization ID and `{secret_name}` with the secret name)
-- Query parameters: None
-- Body structure (Hive record format):
-  - `data`: JSON-encoded string containing the secret data (e.g., `{"value": "secret-value"}`)
-  - `usr_mtd`: JSON-encoded string containing user metadata (e.g., `{"enabled": true}`)
+- Tool: `set_secret`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name for the secret
+  - `value`: The secret value to store
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "guid": "abc123...",
-    "hive": {
-      "name": "secret",
-      "partition": "oid"
-    },
-    "name": "secret-name"
-  }
+  "guid": "abc123...",
+  "name": "secret-name"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Secret is stored and immediately available
 - Response includes GUID and confirmation
 - Secret can be referenced as `[secret:secret-name]`
@@ -119,14 +107,12 @@ Steps:
 1. Choose descriptive name: "webhook-api-key"
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/webhook-api-key/data",
-  body={
-    "data": "{\"value\": \"sk_live_abc123def456\"}",
-    "usr_mtd": "{\"enabled\": true}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_secret",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "webhook-api-key",
+    "value": "sk_live_abc123def456"
   }
 )
 ```
@@ -134,10 +120,8 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "guid": "abc123-def456-ghi789"
-  }
+  "guid": "abc123-def456-ghi789",
+  "name": "webhook-api-key"
 }
 ```
 
@@ -164,14 +148,12 @@ Steps:
 1. Use descriptive name: "slack-api-token"
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/secret/c7e8f940-1234-5678-abcd-1234567890ab/slack-api-token/data",
-  body={
-    "data": "{\"value\": \"xoxb-1234567890-abcdefghijk\"}",
-    "usr_mtd": "{\"enabled\": true}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_secret",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "slack-api-token",
+    "value": "xoxb-1234567890-abcdefghijk"
   }
 )
 ```
@@ -230,7 +212,7 @@ Note: The change takes effect immediately. Ensure any services using this secret
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/secrets.go`

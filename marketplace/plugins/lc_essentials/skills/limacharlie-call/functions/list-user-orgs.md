@@ -29,7 +29,7 @@ This skill lists all organizations accessible to the authenticated user. It call
 
 Before calling this skill, gather:
 
-**⚠️ NOTE**: This is a **user-level operation** that does not require a specific organization ID. When calling the API, **omit the `oid` parameter** entirely. This skill is used to discover organization IDs and names.
+**NOTE**: This is a **user-level operation** that does not require a specific organization ID.
 
 No required parameters (user-level query)
 
@@ -46,64 +46,44 @@ Optional parameters:
 This is a user-level query - minimal validation required.
 Optional filters and sorting can refine results.
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="GET",
-  path="/v1/user/orgs",
-  query_params={
-    "filter": "[optional-filter]",
-    "sort_by": "[optional-field]",
-    "sort_order": "[asc|desc]",
-    "offset": "[pagination-offset]",
-    "limit": "[pagination-limit]"
-  }
-  # Note: oid parameter omitted - not required for user-level operations
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_user_orgs",
+  parameters={}
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/user/orgs`
-- Query parameters (all optional):
-  - `filter`: String to filter organization names
-  - `sort_by`: Field name to sort by
-  - `sort_order`: "asc" or "desc"
-  - `offset`: Pagination offset (for large lists)
-  - `limit`: Number of results per page
-- Body fields: None
+**Tool Details:**
+- Tool name: `list_user_orgs`
+- Required parameters: None (user-level operation)
+- Optional parameters: None
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "orgs": [
-      {
-        "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-        "name": "Production Environment",
-        "role": "owner"
-      },
-      {
-        "oid": "c7e8f940-5678-1234-dcba-0987654321ab",
-        "name": "Development Environment",
-        "role": "admin"
-      }
-    ],
-    "total": 2
-  }
+  "orgs": [
+    {
+      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+      "name": "Production Environment",
+      "role": "owner"
+    },
+    {
+      "oid": "c7e8f940-5678-1234-dcba-0987654321ab",
+      "name": "Development Environment",
+      "role": "admin"
+    }
+  ],
+  "total": 2
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response contains array of organization objects
 - Each org includes OID, name, and user's role
 - Total count may be included for pagination
@@ -132,39 +112,35 @@ Present the result to the user:
 User request: "Show me all my organizations"
 
 Steps:
-1. Call API to list user orgs:
+1. Call tool to list user orgs:
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="GET",
-  path="/v1/user/orgs"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_user_orgs",
+  parameters={}
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "orgs": [
-      {
-        "oid": "c7e8f940-1111-2222-3333-444455556666",
-        "name": "Acme Production",
-        "role": "owner"
-      },
-      {
-        "oid": "c7e8f940-7777-8888-9999-aaabbbcccddd",
-        "name": "Acme Development",
-        "role": "owner"
-      },
-      {
-        "oid": "c7e8f940-eeee-ffff-0000-111122223333",
-        "name": "Customer XYZ",
-        "role": "admin"
-      }
-    ],
-    "total": 3
-  }
+  "orgs": [
+    {
+      "oid": "c7e8f940-1111-2222-3333-444455556666",
+      "name": "Acme Production",
+      "role": "owner"
+    },
+    {
+      "oid": "c7e8f940-7777-8888-9999-aaabbbcccddd",
+      "name": "Acme Development",
+      "role": "owner"
+    },
+    {
+      "oid": "c7e8f940-eeee-ffff-0000-111122223333",
+      "name": "Customer XYZ",
+      "role": "admin"
+    }
+  ],
+  "total": 3
 }
 ```
 
@@ -196,31 +172,24 @@ Use the organization ID for API operations.
 User request: "What's the org ID for 'Customer XYZ'?"
 
 Steps:
-1. List orgs with filter:
+1. List orgs:
 ```
-mcp__limacharlie__lc_api_call(
-  endpoint="api",
-  method="GET",
-  path="/v1/user/orgs",
-  query_params={
-    "filter": "Customer XYZ"
-  }
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_user_orgs",
+  parameters={}
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "orgs": [
-      {
-        "oid": "c7e8f940-eeee-ffff-0000-111122223333",
-        "name": "Customer XYZ",
-        "role": "admin"
-      }
-    ]
-  }
+  "orgs": [
+    {
+      "oid": "c7e8f940-eeee-ffff-0000-111122223333",
+      "name": "Customer XYZ",
+      "role": "admin"
+    }
+  ]
 }
 ```
 
@@ -270,7 +239,6 @@ Total: 17 organizations
 ## Additional Notes
 
 - **This is a user-level operation that does not require a specific organization ID**
-- When calling the API, omit the `oid` parameter entirely
 - This skill is the starting point for discovering organization IDs
 - This is not organization-specific
 - Results show only orgs the user has explicit access to
@@ -286,7 +254,7 @@ Total: 17 organizations
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (ListUserOrgs function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterListUserOrgs)

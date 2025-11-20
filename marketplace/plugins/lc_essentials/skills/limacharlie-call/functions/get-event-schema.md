@@ -26,9 +26,7 @@ This skill retrieves the complete schema definition for a specific event type. I
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-- **name**: Event type name (e.g., 'DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS')
+- **event_type**: Event type name (e.g., 'DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS')
 
 The event type name should match LimaCharlie's event type naming convention (usually UPPERCASE_WITH_UNDERSCORES).
 
@@ -37,53 +35,45 @@ The event type name should match LimaCharlie's event type naming convention (usu
 ### Step 1: Validate Parameters
 
 Ensure you have:
-1. Valid organization ID (oid)
-2. Exact event type name (case-sensitive)
-3. Event type exists in LimaCharlie's schema system
+1. Exact event type name (case-sensitive)
+2. Event type exists in LimaCharlie's schema system
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/[organization-id]/schema/[event-type-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_schema",
+  parameters={
+    "event_type": "[event-type-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/orgs/{oid}/schema/{name}` where `{name}` is URL-encoded
-- No query parameters needed
-- No request body
+- Tool: `get_event_schema`
+- Required parameters:
+  - `event_type`: Event type name (e.g., "DNS_REQUEST")
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "schema": {
-      "event_type": "DNS_REQUEST",
-      "elements": [
-        "event/DNS_REQUEST/DOMAIN_NAME",
-        "event/DNS_REQUEST/DNS_TYPE",
-        "event/DNS_REQUEST/RESPONSE_IP",
-        ...
-      ]
-    }
-  }
+  "event_type": "DNS_REQUEST",
+  "elements": [
+    "event/DNS_REQUEST/DOMAIN_NAME",
+    "event/DNS_REQUEST/DNS_TYPE",
+    "event/DNS_REQUEST/RESPONSE_IP",
+    "event/PROCESS_ID",
+    "event/TIMESTAMP"
+  ]
 }
 ```
 
 **Success (200-299):**
-- Body contains a `schema` object with:
+- Response contains a schema object with:
   - `event_type`: The name of the event type
   - `elements`: Array of field paths that can be used in queries and rules
 - Elements use slash notation (e.g., `event/DNS_REQUEST/DOMAIN_NAME`)
@@ -111,35 +101,29 @@ Present the result to the user:
 User request: "Show me what fields are available in DNS_REQUEST events"
 
 Steps:
-1. Extract oid from context
-2. Event type is 'DNS_REQUEST'
-3. Call API:
+1. Event type is 'DNS_REQUEST'
+2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/DNS_REQUEST"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_schema",
+  parameters={
+    "event_type": "DNS_REQUEST"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "schema": {
-      "event_type": "DNS_REQUEST",
-      "elements": [
-        "event/DNS_REQUEST/DOMAIN_NAME",
-        "event/DNS_REQUEST/DNS_TYPE",
-        "event/DNS_REQUEST/RESPONSE_IP",
-        "event/DNS_REQUEST/RESPONSE_VALUES",
-        "event/PROCESS_ID",
-        "event/TIMESTAMP"
-      ]
-    }
-  }
+  "event_type": "DNS_REQUEST",
+  "elements": [
+    "event/DNS_REQUEST/DOMAIN_NAME",
+    "event/DNS_REQUEST/DNS_TYPE",
+    "event/DNS_REQUEST/RESPONSE_IP",
+    "event/DNS_REQUEST/RESPONSE_VALUES",
+    "event/PROCESS_ID",
+    "event/TIMESTAMP"
+  ]
 }
 ```
 
@@ -165,7 +149,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/schemas.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/schemas/schemas.go`

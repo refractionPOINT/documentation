@@ -23,15 +23,15 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves the complete configuration and metadata for a specific cloud sensor by name. Cloud sensors are virtual sensors that collect telemetry from cloud platforms (AWS, Azure, GCP) and SaaS services (Office 365, Okta, GitHub, etc.) without requiring endpoint agents. The skill calls the LimaCharlie Hive API to fetch the sensor's data configuration, user metadata (enabled status, tags, comments), and system metadata (creation info, modification history, errors).
+This skill retrieves the complete configuration and metadata for a specific cloud sensor by name. Cloud sensors are virtual sensors that collect telemetry from cloud platforms (AWS, Azure, GCP) and SaaS services (Office 365, Okta, GitHub, etc.) without requiring endpoint agents. The skill calls the LimaCharlie MCP tool to fetch the sensor's data configuration, user metadata (enabled status, tags, comments), and system metadata (creation info, modification history, errors).
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **sensor_name**: Name of the cloud sensor to retrieve (required)
+- **name**: Name of the cloud sensor to retrieve (required)
 
 To find the sensor name:
 - Use the list-cloud-sensors skill to see all available cloud sensors
@@ -46,68 +46,58 @@ Ensure you have:
 2. Correct cloud sensor name
 3. The sensor name matches exactly (case-sensitive)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/cloud_sensor/{oid}/[sensor-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_cloud_sensor",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[sensor-name]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/cloud_sensor/{oid}/{sensor-name}/data`
-- Query parameters: None
-- Body: None
-
-The path uses the Hive structure:
-- `cloud_sensor`: The hive name for cloud sensor configurations
-- `{oid}`: The partition key (organization ID)
-- `{sensor-name}`: The name of the specific sensor (URL-encoded if needed)
-- `data`: Fetch both data and metadata (use `mtd` for metadata only)
+**Tool Details:**
+- Tool Name: `get_cloud_sensor`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the cloud sensor to retrieve
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "data": {
-      "sensor_type": "aws_cloudtrail",
-      "aws_region": "us-east-1",
-      "s3_bucket": "my-cloudtrail-logs",
-      "role_arn": "arn:aws:iam::123456789012:role/LCCloudTrail",
-      "additional_config": { ... }
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["aws", "production", "cloudtrail"],
-      "comment": "Production AWS CloudTrail integration",
-      "expiry": 0
-    },
-    "sys_mtd": {
-      "etag": "abc123def456",
-      "created_by": "user@example.com",
-      "created_at": 1704067200,
-      "last_author": "admin@example.com",
-      "last_mod": 1704153600,
-      "guid": "unique-guid-123-456",
-      "last_error": "",
-      "last_error_ts": 0
-    }
+  "data": {
+    "sensor_type": "aws_cloudtrail",
+    "aws_region": "us-east-1",
+    "s3_bucket": "my-cloudtrail-logs",
+    "role_arn": "arn:aws:iam::123456789012:role/LCCloudTrail",
+    "additional_config": { ... }
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["aws", "production", "cloudtrail"],
+    "comment": "Production AWS CloudTrail integration",
+    "expiry": 0
+  },
+  "sys_mtd": {
+    "etag": "abc123def456",
+    "created_by": "user@example.com",
+    "created_at": 1704067200,
+    "last_author": "admin@example.com",
+    "last_mod": 1704153600,
+    "guid": "unique-guid-123-456",
+    "last_error": "",
+    "last_error_ts": 0
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The response contains the complete cloud sensor configuration
 - `data`: The sensor configuration specific to the cloud platform or service
   - Varies by sensor type (AWS, Azure, GCP, Office 365, etc.)
@@ -127,11 +117,10 @@ The API returns a response with:
   - `last_error_ts`: Timestamp of last error
 
 **Common Errors:**
-- **400 Bad Request**: Invalid sensor name format or malformed request
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to view cloud sensors (requires fleet_management role)
-- **404 Not Found**: Cloud sensor with the specified name does not exist
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid sensor name**: Sensor name format is invalid or malformed
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to view cloud sensors (requires fleet_management role)
+- **Not Found**: Cloud sensor with the specified name does not exist
 
 ### Step 4: Format the Response
 
@@ -153,44 +142,42 @@ User request: "Show me the configuration for prod-aws-cloudtrail"
 
 Steps:
 1. Extract organization ID from context
-2. URL-encode sensor name if needed: "prod-aws-cloudtrail"
-3. Call API:
+2. Use sensor name: "prod-aws-cloudtrail"
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/cloud_sensor/{oid}/prod-aws-cloudtrail/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_cloud_sensor",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "prod-aws-cloudtrail"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "sensor_type": "aws_cloudtrail",
-      "aws_region": "us-east-1",
-      "s3_bucket": "my-cloudtrail-logs",
-      "role_arn": "arn:aws:iam::123456789012:role/LCCloudTrail",
-      "external_id": "lc-ext-id-123"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["aws", "production", "cloudtrail"],
-      "comment": "Production AWS CloudTrail integration",
-      "expiry": 0
-    },
-    "sys_mtd": {
-      "created_by": "user@example.com",
-      "created_at": 1704067200,
-      "last_author": "admin@example.com",
-      "last_mod": 1704153600,
-      "guid": "guid-123-456",
-      "last_error": "",
-      "last_error_ts": 0
-    }
+  "data": {
+    "sensor_type": "aws_cloudtrail",
+    "aws_region": "us-east-1",
+    "s3_bucket": "my-cloudtrail-logs",
+    "role_arn": "arn:aws:iam::123456789012:role/LCCloudTrail",
+    "external_id": "lc-ext-id-123"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["aws", "production", "cloudtrail"],
+    "comment": "Production AWS CloudTrail integration",
+    "expiry": 0
+  },
+  "sys_mtd": {
+    "created_by": "user@example.com",
+    "created_at": 1704067200,
+    "last_author": "admin@example.com",
+    "last_mod": 1704153600,
+    "guid": "guid-123-456",
+    "last_error": "",
+    "last_error_ts": 0
   }
 }
 ```
@@ -221,28 +208,25 @@ Metadata:
 User request: "Why isn't the office365-audit sensor working?"
 
 Steps:
-1. Call API to get sensor details
+1. Call tool to get sensor details
 2. Check last_error field
 
 Expected response with error:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "sensor_type": "office365",
-      "tenant_id": "abc-123-def"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["office365"],
-      "comment": "",
-      "expiry": 0
-    },
-    "sys_mtd": {
-      "last_error": "Authentication failed: Invalid client secret",
-      "last_error_ts": 1704240000
-    }
+  "data": {
+    "sensor_type": "office365",
+    "tenant_id": "abc-123-def"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["office365"],
+    "comment": "",
+    "expiry": 0
+  },
+  "sys_mtd": {
+    "last_error": "Authentication failed: Invalid client secret",
+    "last_error_ts": 1704240000
   }
 }
 ```
@@ -272,8 +256,8 @@ Troubleshooting steps:
 User request: "Get the azure-logs sensor"
 
 Steps:
-1. Call API with sensor name "azure-logs"
-2. API returns 404 Not Found
+1. Call tool with sensor name "azure-logs"
+2. Tool returns not found error
 
 Present to user:
 ```
@@ -293,7 +277,6 @@ Use the list-cloud-sensors skill to see all available cloud sensors.
   - Office 365 sensors contain tenant ID, client credentials, etc.
 - The `last_error` field is critical for troubleshooting - check it first when investigating issues
 - Cloud sensor configurations may contain sensitive credentials - handle securely
-- Use URL encoding for sensor names with special characters or spaces
 - The `enabled` field controls active data collection - disabled sensors don't fetch data
 - Tags help organize sensors by environment, platform, or purpose
 - The `etag` in sys_mtd is used for optimistic concurrency control during updates
@@ -307,7 +290,7 @@ Use the list-cloud-sensors skill to see all available cloud sensors.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/hive/cloud_sensors.go`

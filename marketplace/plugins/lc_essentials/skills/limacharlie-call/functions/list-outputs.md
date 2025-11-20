@@ -27,7 +27,7 @@ This skill calls the LimaCharlie API to retrieve all output configurations for a
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are needed for listing outputs.
@@ -41,56 +41,50 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/outputs/[oid]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_outputs",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/outputs/{oid}` (replace `{oid}` with actual organization ID)
-- Query parameters: None
-- Body: None (GET request)
+- Tool: `list_outputs`
+- Required parameters:
+  - `oid`: Organization ID
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "[oid]": {
-      "output-name-1": {
-        "name": "output-name-1",
-        "module": "syslog",
-        "for": "event",
-        "dest_host": "syslog.example.com",
-        "dest_port": "514",
-        ...
-      },
-      "output-name-2": {
-        "name": "output-name-2",
-        "module": "s3",
-        "for": "detect",
-        "bucket": "my-bucket",
-        ...
-      }
+  "[oid]": {
+    "output-name-1": {
+      "name": "output-name-1",
+      "module": "syslog",
+      "for": "event",
+      "dest_host": "syslog.example.com",
+      "dest_port": "514",
+      ...
+    },
+    "output-name-2": {
+      "name": "output-name-2",
+      "module": "s3",
+      "for": "detect",
+      "bucket": "my-bucket",
+      ...
     }
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Response body contains a nested object: `{oid: {output-name: output-config}}`
-- Extract the outputs from `body[oid]` to get a dictionary of output configurations
+- Extract the outputs from `response[oid]` to get a dictionary of output configurations
 - Each output has:
   - `name`: Output identifier
   - `module`: Output type (syslog, s3, webhook, slack, gcs, etc.)
@@ -126,45 +120,42 @@ Steps:
 1. Obtain organization ID
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/outputs/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_outputs",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "c7e8f940-1234-5678-abcd-1234567890ab": {
-      "prod-syslog": {
-        "name": "prod-syslog",
-        "module": "syslog",
-        "for": "event",
-        "dest_host": "10.0.1.50",
-        "dest_port": "514",
-        "is_tls": "true",
-        "tag": "production"
-      },
-      "detection-webhook": {
-        "name": "detection-webhook",
-        "module": "webhook",
-        "for": "detect",
-        "dest_host": "https://api.example.com/detections",
-        "auth_header_name": "X-API-Key",
-        "auth_header_value": "[secret:webhook-key]"
-      },
-      "s3-archive": {
-        "name": "s3-archive",
-        "module": "s3",
-        "for": "event",
-        "bucket": "lc-events-archive",
-        "region_name": "us-east-1",
-        "sec_per_file": "3600"
-      }
+  "c7e8f940-1234-5678-abcd-1234567890ab": {
+    "prod-syslog": {
+      "name": "prod-syslog",
+      "module": "syslog",
+      "for": "event",
+      "dest_host": "10.0.1.50",
+      "dest_port": "514",
+      "is_tls": "true",
+      "tag": "production"
+    },
+    "detection-webhook": {
+      "name": "detection-webhook",
+      "module": "webhook",
+      "for": "detect",
+      "dest_host": "https://api.example.com/detections",
+      "auth_header_name": "X-API-Key",
+      "auth_header_value": "[secret:webhook-key]"
+    },
+    "s3-archive": {
+      "name": "s3-archive",
+      "module": "s3",
+      "for": "event",
+      "bucket": "lc-events-archive",
+      "region_name": "us-east-1",
+      "sec_per_file": "3600"
     }
   }
 }
@@ -200,10 +191,7 @@ Steps:
 2. Receive empty response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "c7e8f940-1234-5678-abcd-1234567890ab": {}
-  }
+  "c7e8f940-1234-5678-abcd-1234567890ab": {}
 }
 ```
 
@@ -235,7 +223,7 @@ You can create outputs to send data to syslog, S3, webhooks, Slack, and other de
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/output.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/outputs.go`

@@ -40,61 +40,50 @@ Ensure you have:
 1. Valid organization ID (oid)
 2. Hostname pattern (can include `*` and `?` wildcards)
 
-### Step 2: Call the API
-
-This operation requires listing all sensors and filtering client-side:
+### Step 2: Call the Tool
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="search_hosts",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hostname_expr": "web-*"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/sensors/{oid}`
-- No query parameters
-- Pattern matching is performed client-side using `filepath.Match`
-
-**Note:** The SDK method `org.ListSensors()` followed by client-side pattern matching using Go's `filepath.Match` function.
+**Tool Details:**
+- Tool name: `search_hosts`
+- Parameters:
+  - `oid`: Organization ID (required)
+  - `hostname_expr`: Hostname pattern with wildcards (required)
 
 ### Step 3: Handle the Response
 
-The API returns all sensors:
+The tool returns matching sensors:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "sensors": {
-      "sensor-1": {
-        "sid": "sensor-1",
-        "hostname": "web-server-01",
-        ...
-      },
-      "sensor-2": {
-        "sid": "sensor-2",
-        "hostname": "web-server-02",
-        ...
-      },
-      "sensor-3": {
-        "sid": "sensor-3",
-        "hostname": "db-server-01",
-        ...
-      }
+  "sensors": [
+    {
+      "sid": "sensor-1",
+      "hostname": "web-server-01",
+      "platform": "linux",
+      "last_seen": 1705761234,
+      "internal_ip": "10.0.1.10"
+    },
+    {
+      "sid": "sensor-2",
+      "hostname": "web-server-02",
+      "platform": "linux",
+      "last_seen": 1705761200,
+      "internal_ip": "10.0.1.11"
     }
-  }
+  ]
 }
 ```
 
-**Success (200):**
-- Retrieve all sensors from the organization
-- Apply wildcard pattern matching to hostname field
-- Return only matching sensors
+**Success:**
+- Returns sensors matching the hostname pattern
 - Pattern matching is case-sensitive by default
 
 **Wildcard Pattern Rules:**
@@ -138,17 +127,17 @@ User request: "Find all sensors with hostname starting with 'web-'"
 
 Steps:
 1. Get organization ID from context
-2. Call API to list all sensors:
+2. Call the search_hosts tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/sensors/c7e8f940-1234-5678-abcd-1234567890ab"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="search_hosts",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hostname_expr": "web-*"
+  }
 )
 ```
-3. Filter sensors where hostname matches pattern "web-*"
-4. Display matching sensors
+3. Display matching sensors
 
 Expected result:
 ```
@@ -163,9 +152,8 @@ Found 3 sensors matching "web-*":
 User request: "Show me all production servers (*-prod)"
 
 Steps:
-1. List all sensors
-2. Filter by pattern "*-prod"
-3. Display results:
+1. Call the tool with pattern "*-prod"
+2. Display results:
 ```
 Production Servers (4 found):
 - app-prod (sensor-111)
@@ -179,9 +167,8 @@ Production Servers (4 found):
 User request: "List sensors with 'database' in the hostname"
 
 Steps:
-1. List all sensors
-2. Filter by pattern "*database*"
-3. Show matching sensors
+1. Call the tool with pattern "*database*"
+2. Show matching sensors
 
 ## Additional Notes
 
@@ -195,13 +182,12 @@ Steps:
 - Invalid patterns will fall back to exact string comparison
 - Large organizations may have slower response due to client-side filtering
 - Consider using more specific patterns to reduce result set
-- The search retrieves all sensors first, then filters locally
 - For IP-based filtering, use `list-sensors` with IP filter instead
 - For hostname-only endpoint search, use the org's SearchHostname method for "hostname" IOC type
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/core/core.go`

@@ -1,7 +1,7 @@
 ---
 name: limacharlie-call
 description: Perform LimaCharlie API operations using MCP tool. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_api_call, mcp__plugin_lc-essentials_limacharlie__generate_lcql_query, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond, mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector, mcp__plugin_lc-essentials_limacharlie__generate_python_playbook, mcp__plugin_lc-essentials_limacharlie__generate_detection_summary, mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components, mcp__plugin_lc-essentials_limacharlie__validate_yara_rule, Read, Bash
+allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, mcp__plugin_lc-essentials_limacharlie__generate_lcql_query, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond, mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector, mcp__plugin_lc-essentials_limacharlie__generate_python_playbook, mcp__plugin_lc-essentials_limacharlie__generate_detection_summary, mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components, mcp__plugin_lc-essentials_limacharlie__validate_yara_rule, Read, Bash
 ---
 
 # LimaCharlie API Operations
@@ -12,7 +12,7 @@ Perform any LimaCharlie operation by dynamically loading function references.
 
 **⚠️ CRITICAL**: The Organization ID (OID) is a **UUID** (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name.
 - If you don't have the OID, use `list-user-orgs` function first to get the UUID from the org name
-- All API calls use the MCP tool: `mcp__plugin_lc-essentials_limacharlie__lc_api_call`
+- All operations use the MCP tool: `mcp__plugin_lc-essentials_limacharlie__lc_call_tool`
 
 **⚠️ CRITICAL: JSON Processing with jq**
 When using jq to process JSON files, call jq directly:
@@ -26,6 +26,46 @@ jq '<expression>' <file>
 2. Read the function's reference file: `./functions/{function-name}.md`
 3. Follow the instructions in that file to make the API call
 4. If an OID is needed, get it first with `list-user-orgs`
+
+## Functions by Use Case
+
+Quick reference to find functions by common task:
+
+### Timeline & Data Availability
+- `get-time-when-sensor-has-data` - Check when sensor has data, data availability timeline, sensor overview
+- `get-historic-events` - Query historical telemetry events
+- `get-historic-detections` - Query historical detection alerts
+
+### Sensor Status & Health
+- `is-online` - Check if sensor is currently online
+- `get-online-sensors` - List all online sensors
+- `get-sensor-info` - Get detailed sensor information
+- `list-sensors` - List all sensors in organization
+- `list-with-platform` - Filter sensors by OS platform
+
+### Threat Hunting & Investigation
+- `run-lcql-query` - Search historical data with LCQL
+- `search-iocs` - Search for indicators of compromise
+- `batch-search-iocs` - Bulk IOC search
+- `search-hosts` - Search for hosts by criteria
+
+### Live Response & Forensics
+- `get-processes` - List running processes on sensor
+- `get-network-connections` - View active network connections
+- `get-autoruns` - Check persistence mechanisms
+- `dir-list` - Browse filesystem
+- `yara-scan-process` / `yara-scan-file` / `yara-scan-memory` - YARA scanning
+
+### Billing & Usage
+- `get-org-invoice-url` - Get invoice with cost breakdown
+- `get-billing-details` - Billing configuration
+- `get-usage-stats` - Resource consumption metrics
+
+### Detection Engineering
+- `set-dr-general-rule` - Create/update detection rules
+- `validate-dr-rule-components` - Validate rule syntax
+- `generate-dr-rule-detection` - AI-generate detection logic
+- `generate-dr-rule-respond` - AI-generate response actions
 
 ## Available Functions (124)
 
@@ -203,7 +243,7 @@ For detailed information on using the MCP tool, see [CALLING_API.md](../CALLING_
 
 ### Handling Large Results
 
-When API calls return large result sets (>100KB), the `lc_api_call` tool returns a `resource_link` instead of inline data:
+When tool calls return large result sets (>100KB), the `lc_call_tool` returns a `resource_link` instead of inline data:
 
 ```json
 {

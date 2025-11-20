@@ -27,9 +27,9 @@ This skill retrieves a single playbook record from the LimaCharlie Hive system b
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **playbook_name**: The name of the playbook to retrieve (required)
+- **name**: The name of the playbook to retrieve (required)
 
 ## How to Use
 
@@ -41,68 +41,62 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/playbook/{oid}/[playbook-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_playbook",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[playbook-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/playbook/{oid}/{playbook_name}/data`
-  - Replace `{playbook_name}` with the URL-encoded playbook name
-  - The `/data` suffix retrieves both data and metadata
-- Query parameters: None
-- Body: None
+- Tool: `get_playbook`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the playbook to retrieve
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "data": {
-      "steps": [
-        {
-          "action": "isolate_sensor",
-          "params": {"network": true}
-        },
-        {
-          "action": "create_case",
-          "params": {"priority": "high"}
-        }
-      ],
-      "trigger": "detection",
-      "filter": "cat == 'CRITICAL' and routing.hostname contains 'prod'",
-      "description": "Auto-isolate production systems on critical detections"
-    },
-    "sys_mtd": {
-      "etag": "abc123...",
-      "created_by": "user@example.com",
-      "created_at": 1234567890,
-      "last_author": "admin@example.com",
-      "last_mod": 1234567899,
-      "guid": "unique-id-123"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "expiry": 0,
-      "tags": ["incident-response", "production"],
-      "comment": "Critical threat auto-isolation"
-    }
+  "data": {
+    "steps": [
+      {
+        "action": "isolate_sensor",
+        "params": {"network": true}
+      },
+      {
+        "action": "create_case",
+        "params": {"priority": "high"}
+      }
+    ],
+    "trigger": "detection",
+    "filter": "cat == 'CRITICAL' and routing.hostname contains 'prod'",
+    "description": "Auto-isolate production systems on critical detections"
+  },
+  "sys_mtd": {
+    "etag": "abc123...",
+    "created_by": "user@example.com",
+    "created_at": 1234567890,
+    "last_author": "admin@example.com",
+    "last_mod": 1234567899,
+    "guid": "unique-id-123"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "expiry": 0,
+    "tags": ["incident-response", "production"],
+    "comment": "Critical threat auto-isolation"
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The `data` field contains the complete playbook workflow definition
 - The `usr_mtd` field shows user-controlled metadata
 - The `sys_mtd` field shows system metadata including audit trail
@@ -136,11 +130,12 @@ Steps:
 2. Use playbook name "critical-isolation"
 3. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/playbook/{oid}/critical-isolation/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_playbook",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "critical-isolation"
+  }
 )
 ```
 
@@ -181,7 +176,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (Get method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/playbooks.go`

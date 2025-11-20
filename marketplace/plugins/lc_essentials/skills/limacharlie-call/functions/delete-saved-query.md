@@ -30,7 +30,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID
-- **query_name**: Name of the saved query to delete
+- **name**: Name of the saved query to delete
 
 ## How to Use
 
@@ -38,44 +38,43 @@ Before calling this skill, gather:
 
 Optionally, verify query exists first:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/query/c7e8f940-1234-5678-abcd-1234567890ab/old-query/data"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_saved_query",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "old-query"
+  }
 )
 ```
 
 ### Step 2: Delete Query
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/query/c7e8f940-1234-5678-abcd-1234567890ab/old-query"
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="delete_saved_query",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "old-query"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/v1/hive/query/{oid}/{query_name}`
-- Body: None (query name is in the path)
+**Tool Details:**
+- Tool name: `delete_saved_query`
+- Parameters:
+  - `oid`: Organization ID (required)
+  - `name`: Name of the saved query to delete (required)
 
 ### Step 3: Handle Response
 
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "success": true,
-    "message": "Successfully deleted saved query 'old-query'"
-  }
+  "success": true,
+  "message": "Successfully deleted saved query 'old-query'"
 }
 ```
 
-**Success (200):**
+**Success:**
 - Query is permanently deleted
 - Cannot be recovered
 - Returns confirmation message
@@ -102,7 +101,7 @@ User: "Delete the old-query saved query"
 
 Steps:
 1. Confirm with user if deletion is intentional
-2. Call DELETE API
+2. Call the delete tool
 3. Confirm deletion
 
 ### Example 2: Clean up test queries

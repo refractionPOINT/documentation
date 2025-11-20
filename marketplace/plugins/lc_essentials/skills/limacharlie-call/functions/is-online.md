@@ -39,42 +39,36 @@ Ensure you have:
 1. Valid organization ID (oid)
 2. Valid sensor ID (sid) in UUID format
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/online/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={"sids": ["xyz-sensor-id"]}
+mcp__limacharlie__lc_call_tool(
+  tool_name="is_online",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-sensor-id"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/online/{oid}`
-- Body: `{"sids": ["sensor-id"]}` (array with single sensor ID)
-
-**Note:** The SDK method `sensor.IsOnline()` internally calls the `/online/{oid}` endpoint with the sensor's ID.
+**Tool Details:**
+- Tool name: `is_online`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID
 
 ### Step 3: Handle the Response
 
-The API returns:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "xyz-sensor-id": true
-  }
+  "xyz-sensor-id": true
 }
 ```
 
-**Success (200):**
+**Success:**
 - Response contains a boolean value for the sensor ID
 - `true`: Sensor is currently online and responsive
 - `false`: Sensor is offline or not responding
@@ -119,14 +113,14 @@ User request: "Is sensor xyz-123 online?"
 
 Steps:
 1. Get organization ID from context
-2. Call API to check online status:
+2. Call tool to check online status:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/online/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={"sids": ["xyz-123"]}
+mcp__limacharlie__lc_call_tool(
+  tool_name="is_online",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-123"
+  }
 )
 ```
 3. Report status to user
@@ -134,10 +128,7 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "xyz-123": true
-  }
+  "xyz-123": true
 }
 ```
 
@@ -148,7 +139,7 @@ Result: "Sensor xyz-123 is ONLINE and ready for commands."
 User request: "Why can't I run commands on sensor abc-456?"
 
 Steps:
-1. Check if sensor is online using the API call
+1. Check if sensor is online using the tool call
 2. If offline, suggest troubleshooting steps
 3. Recommend checking last seen timestamp:
 ```
@@ -176,7 +167,7 @@ Troubleshooting steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/core/core.go`

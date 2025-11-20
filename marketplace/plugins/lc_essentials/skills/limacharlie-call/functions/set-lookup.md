@@ -30,10 +30,10 @@ This skill calls the LimaCharlie API to create or update a lookup table. The loo
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **lookup_name**: Name for the lookup table (alphanumeric, hyphens, underscores)
-- **lookup_data**: Dictionary of key-value pairs to store
+- **name**: Name for the lookup table (alphanumeric, hyphens, underscores)
+- **data**: Dictionary of key-value pairs to store
 
 Optional metadata:
 - **tags**: Array of tags for organization
@@ -52,49 +52,40 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/lookup/[oid]/lookup-name/data",
-  body={
-    "key1": "value1",
-    "key2": {"nested": "data"}
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_lookup",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "lookup-name",
+    "data": {
+      "key1": "value1",
+      "key2": {"nested": "data"}
+    }
   }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/hive/lookup/{oid}/{lookup_name}/data` (replace `{oid}` with actual organization ID and `{lookup_name}` with the table name)
-- Query parameters: None
-- Body structure:
-  - Dictionary of key-value pairs (the lookup data directly)
-  - Metadata (tags, comment, enabled) should be passed via query parameters or separate metadata endpoints
+- Tool: `set_lookup`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name for the lookup table
+  - `data`: Dictionary of key-value pairs (the lookup data)
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "guid": "abc123...",
-    "hive": {
-      "name": "lookup",
-      "partition": "oid"
-    },
-    "name": "lookup-name"
-  }
+  "guid": "abc123...",
+  "name": "lookup-name"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - Lookup table is created/updated and immediately available
 - Response includes GUID and confirmation
 - Can be queried in D&R rules immediately
@@ -125,19 +116,20 @@ Steps:
 1. Prepare lookup data as dictionary
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/malicious-ips/data",
-  body={
-    "192.0.2.1": {
-      "severity": "critical",
-      "category": "c2"
-    },
-    "198.51.100.5": {
-      "severity": "high",
-      "category": "phishing"
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "malicious-ips",
+    "data": {
+      "192.0.2.1": {
+        "severity": "critical",
+        "category": "c2"
+      },
+      "198.51.100.5": {
+        "severity": "high",
+        "category": "phishing"
+      }
     }
   }
 )
@@ -146,11 +138,8 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "guid": "abc-123-def",
-    "name": "malicious-ips"
-  }
+  "guid": "abc-123-def",
+  "name": "malicious-ips"
 }
 ```
 
@@ -191,15 +180,16 @@ Steps:
 1. Create simple boolean lookup
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/allowed-domains/data",
-  body={
-    "example.com": true,
-    "trusted.org": true,
-    "corporate.net": true
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "allowed-domains",
+    "data": {
+      "example.com": true,
+      "trusted.org": true,
+      "corporate.net": true
+    }
   }
 )
 ```
@@ -256,7 +246,7 @@ The updated lookup is immediately available for D&R rules.
 ## Additional Notes
 
 - Setting a lookup completely replaces any existing data with that name
-- To add entries without replacing: get existing → merge → set combined
+- To add entries without replacing: get existing -> merge -> set combined
 - Lookup data can be any JSON-serializable structure
 - No size limit on lookup tables, but large tables may impact performance
 - Common lookup patterns:
@@ -274,7 +264,7 @@ The updated lookup is immediately available for D&R rules.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/lookups.go`

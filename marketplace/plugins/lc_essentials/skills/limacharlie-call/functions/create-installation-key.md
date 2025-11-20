@@ -21,19 +21,18 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill creates a new installation key in the LimaCharlie organization. Installation keys are credentials used to deploy and enroll sensors. When sensors are deployed using a specific key, they automatically receive the tags associated with that key. This enables automatic organizational grouping and policy application. The skill calls the LimaCharlie API to generate the key and returns the new key's IID (installation key ID) and the actual key value for deployment.
+This skill creates a new installation key in the LimaCharlie organization. Installation keys are credentials used to deploy and enroll sensors. When sensors are deployed using a specific key, they automatically receive the tags associated with that key. This enables automatic organizational grouping and policy application. The skill calls the LimaCharlie MCP tool to generate the key and returns the new key's IID (installation key ID) and the actual key value for deployment.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **tags**: Array of tags to automatically apply to sensors using this key (required)
 - **description**: Human-readable description of the key's purpose (required)
 
 Optional parameters:
-- **quota**: Maximum number of sensors that can use this key (optional, not currently supported by SDK)
 - **use_public_root_ca**: Whether to use public CA for certificate validation (optional, defaults to false)
 
 ## How to Use
@@ -46,51 +45,40 @@ Ensure you have:
 3. Meaningful description string
 4. Consider what tags best represent the sensor group (e.g., environment, OS, location)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/installationkeys/[oid]",
-  body={
-    "tags": ["tag1", "tag2", "tag3"],
-    "desc": "Description of the installation key",
-    "use_public_root_ca": false
+mcp__limacharlie__lc_call_tool(
+  tool_name="create_installation_key",
+  parameters={
+    "oid": "[organization-id]",
+    "description": "Description of the installation key",
+    "tags": ["tag1", "tag2", "tag3"]
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/installationkeys/{oid}`
-- Query parameters: None
-- Body fields:
-  - `tags`: Array of tag strings (required) - can also be comma-separated string
-  - `desc`: Description string (required)
-  - `use_public_root_ca`: Boolean (optional, defaults to false)
-  - `iid`: Installation key ID (optional, auto-generated if not provided)
+**Tool Details:**
+- Tool Name: `create_installation_key`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `description`: Human-readable description of the key's purpose
+  - `tags`: Array of tag strings to apply to sensors using this key
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "iid": "generated-installation-key-id",
-    "key": "the-actual-key-value-for-deployment",
-    "json_key": "{...json-formatted-key...}"
-  }
+  "iid": "generated-installation-key-id",
+  "key": "the-actual-key-value-for-deployment",
+  "json_key": "{...json-formatted-key...}"
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The response contains the newly created installation key
 - `iid`: Unique identifier for this installation key
 - `key`: The actual key value to use for sensor deployment
@@ -98,11 +86,10 @@ The API returns a response with:
 - Save the key value securely as it's needed for sensor deployment
 
 **Common Errors:**
-- **400 Bad Request**: Missing required fields (tags or desc), invalid tag format, or malformed request body
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to create installation keys (requires platform_admin role)
-- **409 Conflict**: Installation key with the same IID already exists (if IID was provided)
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid parameters**: Missing required fields (tags or description), invalid tag format, or malformed request
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to create installation keys (requires platform_admin role)
+- **Conflict**: Installation key with the same IID already exists (if IID was provided)
 
 ### Step 4: Format the Response
 
@@ -125,17 +112,14 @@ Steps:
 1. Extract organization ID from context
 2. Prepare tags array: ["production", "windows", "server"]
 3. Create descriptive string
-4. Call API:
+4. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
-    "tags": ["production", "windows", "server"],
-    "desc": "Production Windows Servers",
-    "use_public_root_ca": false
+mcp__limacharlie__lc_call_tool(
+  tool_name="create_installation_key",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "description": "Production Windows Servers",
+    "tags": ["production", "windows", "server"]
   }
 )
 ```
@@ -143,12 +127,9 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "iid": "prod-win-server-key",
-    "key": "abcd1234-5678-90ef-ghij-klmnopqrstuv",
-    "json_key": "{\"oid\":\"c7e8f940-1234-5678-abcd-1234567890ab\",\"iid\":\"prod-win-server-key\",\"key\":\"abcd1234-5678-90ef-ghij-klmnopqrstuv\"}"
-  }
+  "iid": "prod-win-server-key",
+  "key": "abcd1234-5678-90ef-ghij-klmnopqrstuv",
+  "json_key": "{\"oid\":\"c7e8f940-1234-5678-abcd-1234567890ab\",\"iid\":\"prod-win-server-key\",\"key\":\"abcd1234-5678-90ef-ghij-klmnopqrstuv\"}"
 }
 ```
 
@@ -174,16 +155,14 @@ User request: "I need a deployment key for our dev team's Linux workstations"
 Steps:
 1. Extract organization ID
 2. Determine appropriate tags: ["development", "linux", "workstation"]
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/installationkeys/c7e8f940-1234-5678-abcd-1234567890ab",
-  body={
-    "tags": ["development", "linux", "workstation"],
-    "desc": "Development Linux Workstations"
+mcp__limacharlie__lc_call_tool(
+  tool_name="create_installation_key",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "description": "Development Linux Workstations",
+    "tags": ["development", "linux", "workstation"]
   }
 )
 ```
@@ -191,12 +170,9 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "iid": "dev-linux-ws-key",
-    "key": "wxyz9876-5432-10ab-cdef-ghijklmnopqr",
-    "json_key": "{\"oid\":\"c7e8f940...\",\"iid\":\"dev-linux-ws-key\"...}"
-  }
+  "iid": "dev-linux-ws-key",
+  "key": "wxyz9876-5432-10ab-cdef-ghijklmnopqr",
+  "json_key": "{\"oid\":\"c7e8f940...\",\"iid\":\"dev-linux-ws-key\"...}"
 }
 ```
 
@@ -219,7 +195,6 @@ Your dev team can use this key to deploy sensors to their Linux workstations.
 - The description field should clearly indicate the key's purpose for easy identification later
 - Multiple sensors can use the same installation key
 - Consider creating separate keys for different environments (production, staging, development)
-- The quota parameter is not currently supported by the SDK but may be added in future versions
 - If you specify an IID manually, ensure it's unique within the organization to avoid conflicts
 - Use the list-installation-keys skill to view all existing keys
 - Use the delete-installation-key skill to remove keys that are no longer needed
@@ -227,7 +202,7 @@ Your dev team can use this key to deploy sensors to their Linux workstations.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/installation_keys.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/config/installation_keys.go`

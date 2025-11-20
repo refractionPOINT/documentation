@@ -47,14 +47,14 @@ Ensure you have:
 Use the `generate_dr_rule_respond` MCP tool from the `limacharlie` server:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond(
+mcp__limacharlie__generate_dr_rule_respond(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="isolate the sensor and send a report with high severity"
 )
 ```
 
 **Tool Details:**
-- Tool: `mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond`
+- Tool: `mcp__limacharlie__generate_dr_rule_respond`
 - Parameters:
   - `oid` (string, required): Organization ID for validation
   - `query` (string, required): Natural language description of how to respond
@@ -94,30 +94,6 @@ Present the result to the user:
 - Suggest testing the response actions in a safe environment first
 - Remind them to pair with appropriate detection logic
 
-**Example formatted output:**
-```
-Generated Response Component:
-```yaml
-- action: isolate network
-- action: report
-  name: suspicious_activity
-  metadata:
-    severity: high
-```
-
-This response performs two actions in sequence:
-1. Isolates the sensor from the network to prevent lateral movement
-2. Creates a detection report named 'suspicious_activity' with high severity metadata
-
-Actions execute in order, so the sensor is isolated before the report is generated.
-
-Next steps:
-1. Review the response actions
-2. Pair with appropriate detection logic
-3. Test in a controlled environment (consider impact of network isolation)
-4. Deploy using the `set-dr-general-rule` function
-```
-
 ## Example Usage
 
 ### Example 1: Report and Isolate
@@ -128,7 +104,7 @@ Steps:
 1. Get organization ID from context
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond(
+mcp__limacharlie__generate_dr_rule_respond(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="isolate the sensor and send a report"
 )
@@ -150,7 +126,7 @@ Steps:
 1. Get organization ID
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond(
+mcp__limacharlie__generate_dr_rule_respond(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="kill the process tree and send a webhook alert"
 )
@@ -171,7 +147,7 @@ Steps:
 1. Get organization ID
 2. Call tool:
 ```
-mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond(
+mcp__limacharlie__generate_dr_rule_respond(
   oid="c7e8f940-1234-5678-abcd-1234567890ab",
   query="kill the process, isolate the sensor, tag as compromised, and create a high-priority report"
 )

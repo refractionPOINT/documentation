@@ -31,9 +31,9 @@ Before calling this skill, gather:
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format) - the sensor to tag
 - **tag**: Tag name/label to add (string, no spaces recommended)
-- **ttl**: Time to live in seconds (0 for permanent, >0 for temporary)
 
 Optional considerations:
+- **ttl**: Time to live in seconds (0 for permanent, >0 for temporary)
 - Choose descriptive tag names (e.g., "production", "dev", "compromised", "investigation-2024")
 - Use TTL for temporary states (e.g., 86400 for 24 hours)
 - Use TTL=0 for permanent categorization tags
@@ -48,45 +48,37 @@ Ensure you have:
 3. Tag name is descriptive and follows your organization's naming convention
 4. TTL is set appropriately (0 for permanent, seconds for temporary)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/[sensor-id]/tags",
-  body={
-    "tags": "[tag-name]",
-    "ttl": [ttl-in-seconds]
+mcp__limacharlie__lc_call_tool(
+  tool_name="add_tag",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012",
+    "tag": "compromised"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/{sid}/tags` where `{sid}` is the sensor UUID
-- No query parameters needed
-- Body fields:
-  - `tags`: String - the tag name to add
-  - `ttl`: Number - time to live in seconds (0 = permanent, >0 = temporary)
+**Tool Details:**
+- Tool name: `add_tag`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID
+  - `tag`: Tag name to add
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
-- Status code 200 indicates the tag was successfully added
+**Success:**
+- Empty response indicates the tag was successfully added
 - The tag is immediately active and available for use
 - If TTL > 0, the tag will automatically expire after the specified duration
 - The tag will appear in sensor metadata and can be used in D&R rules
@@ -116,31 +108,25 @@ User request: "Tag sensor abc12345-6789-0123-4567-890abcdef012 as 'compromised' 
 Steps:
 1. Validate the sensor ID format (UUID)
 2. Calculate TTL: 48 hours = 172800 seconds
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/abc12345-6789-0123-4567-890abcdef012/tags",
-  body={
-    "tags": "compromised",
-    "ttl": 172800
+mcp__limacharlie__lc_call_tool(
+  tool_name="add_tag",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012",
+    "tag": "compromised"
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
-"Successfully added tag 'compromised' to sensor abc12345-6789-0123-4567-890abcdef012. The tag will automatically expire in 48 hours (172800 seconds). You can now use this tag in D&R rules to apply special monitoring or response actions to this sensor during the investigation."
+"Successfully added tag 'compromised' to sensor abc12345-6789-0123-4567-890abcdef012. You can now use this tag in D&R rules to apply special monitoring or response actions to this sensor during the investigation."
 
 ### Example 2: Add Permanent Department Tag
 
@@ -149,27 +135,21 @@ User request: "Tag all finance servers with 'finance-dept' permanently"
 Steps:
 1. For each sensor, validate the sensor ID
 2. Set TTL to 0 for permanent tag
-3. Call API for each sensor:
+3. Call tool for each sensor:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/def45678-90ab-cdef-0123-456789abcdef/tags",
-  body={
-    "tags": "finance-dept",
-    "ttl": 0
+mcp__limacharlie__lc_call_tool(
+  tool_name="add_tag",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "def45678-90ab-cdef-0123-456789abcdef",
+    "tag": "finance-dept"
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -193,7 +173,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go` (AddTag method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/response/response.go` (add_tag)

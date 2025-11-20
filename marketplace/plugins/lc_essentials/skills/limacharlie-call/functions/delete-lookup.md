@@ -28,9 +28,9 @@ This skill calls the LimaCharlie API to permanently delete a lookup table. Any D
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **lookup_name**: Name of the lookup table to delete
+- **name**: Name of the lookup table to delete
 
 ## How to Use
 
@@ -44,36 +44,32 @@ Ensure you have:
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/lookup/[oid]/[lookup-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_lookup",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[lookup-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `DELETE`
-- Path: `/hive/lookup/{oid}/{lookup_name}` (replace placeholders with actual values)
-- Query parameters: None
-- Body: None (DELETE request)
+- Tool: `delete_lookup`
+- Required parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the lookup table to delete
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Lookup table is deleted immediately
 - Response body is typically empty or contains confirmation
 - Lookup name is now available for reuse
@@ -108,20 +104,18 @@ Steps:
 1. Confirm lookup name: "test-lookup"
 2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/test-lookup"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "test-lookup"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Format output:
@@ -142,11 +136,12 @@ Steps:
 1. Confirm approach (could also just update existing)
 2. Delete old lookup:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/old-threat-ips"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "old-threat-ips"
+  }
 )
 ```
 
@@ -173,18 +168,18 @@ User request: "Delete the nonexistent-lookup"
 Steps:
 1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="DELETE",
-  path="/v1/hive/lookup/c7e8f940-1234-5678-abcd-1234567890ab/nonexistent-lookup"
+mcp__limacharlie__lc_call_tool(
+  tool_name="delete_lookup",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "nonexistent-lookup"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 404,
   "error": "Lookup not found"
 }
 ```
@@ -249,7 +244,7 @@ review D&R rules first?
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/lookups.go`

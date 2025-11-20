@@ -23,13 +23,13 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves all external adapter configurations from the organization's Hive storage. External adapters are integrations that receive and process data from external sources such as syslog servers, webhooks, custom APIs, third-party security tools (firewalls, EDR, SIEM), and other log sources. Each adapter typically includes parsing rules to normalize the external data into LimaCharlie's event format. The skill calls the LimaCharlie Hive API to list all entries in the "external_adapter" hive with the organization ID as the partition key, returning each adapter's configuration, enablement status, tags, and metadata.
+This skill retrieves all external adapter configurations from the organization's Hive storage. External adapters are integrations that receive and process data from external sources such as syslog servers, webhooks, custom APIs, third-party security tools (firewalls, EDR, SIEM), and other log sources. Each adapter typically includes parsing rules to normalize the external data into LimaCharlie's event format. The skill calls the LimaCharlie MCP tool to list all entries in the "external_adapter" hive with the organization ID as the partition key, returning each adapter's configuration, enablement status, tags, and metadata.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No additional parameters are needed.
@@ -41,81 +41,70 @@ No additional parameters are needed.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/external_adapter/{oid}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_external_adapters",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/external_adapter/global`
-- Query parameters: None
-- Body: None
-
-The path uses the Hive structure:
-- `external_adapter`: The hive name for external adapter configurations
-- `{oid}`: The partition key (organization ID)
+**Tool Details:**
+- Tool Name: `list_external_adapters`
+- Required Parameters:
+  - `oid`: Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "adapter-name-1": {
-      "data": {
-        "adapter_type": "syslog",
-        "listen_port": 514,
-        "parsing_rules": { ... }
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["syslog", "firewall"],
-        "comment": "Firewall syslog adapter",
-        "expiry": 0
-      },
-      "sys_mtd": {
-        "etag": "abc123",
-        "created_by": "user@example.com",
-        "created_at": 1704067200,
-        "last_author": "user@example.com",
-        "last_mod": 1704153600,
-        "guid": "unique-guid-123",
-        "last_error": "",
-        "last_error_ts": 0
-      }
+  "adapter-name-1": {
+    "data": {
+      "adapter_type": "syslog",
+      "listen_port": 514,
+      "parsing_rules": { ... }
     },
-    "adapter-name-2": { ... }
-  }
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["syslog", "firewall"],
+      "comment": "Firewall syslog adapter",
+      "expiry": 0
+    },
+    "sys_mtd": {
+      "etag": "abc123",
+      "created_by": "user@example.com",
+      "created_at": 1704067200,
+      "last_author": "user@example.com",
+      "last_mod": 1704153600,
+      "guid": "unique-guid-123",
+      "last_error": "",
+      "last_error_ts": 0
+    }
+  },
+  "adapter-name-2": { ... }
 }
 ```
 
-**Success (200-299):**
-- The response body contains a map of external adapter configurations
+**Success:**
+- The response contains a map of external adapter configurations
 - Each key is the adapter name
 - Each value contains:
   - `data`: The adapter configuration including type, connection details, and parsing rules
   - `usr_mtd`: User metadata (enabled status, tags, comment, expiry)
   - `sys_mtd`: System metadata (creation info, modification info, GUID, errors)
-- If no external adapters exist, the response body will be an empty object `{}`
+- If no external adapters exist, the response will be an empty object `{}`
 
 **Common Errors:**
-- **400 Bad Request**: Invalid organization ID format or malformed request
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to view external adapters (requires platform_admin role)
-- **404 Not Found**: Organization does not exist or hive partition not found
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid organization ID**: Organization ID format is invalid or malformed
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to view external adapters (requires platform_admin role)
+- **Not Found**: Organization does not exist or hive partition not found
 
 ### Step 4: Format the Response
 
@@ -137,64 +126,61 @@ User request: "Show me all external adapter configurations"
 
 Steps:
 1. Extract the organization ID from context
-2. Call API:
+2. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/external_adapter/{oid}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_external_adapters",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "firewall-syslog": {
-      "data": {
-        "adapter_type": "syslog",
-        "listen_port": 514,
-        "protocol": "udp",
-        "parsing_rules": {
-          "format": "syslog_rfc5424",
-          "field_mappings": { ... }
-        }
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["syslog", "firewall", "network"],
-        "comment": "Palo Alto firewall syslog adapter",
-        "expiry": 0
-      },
-      "sys_mtd": {
-        "created_at": 1704067200,
-        "last_mod": 1704153600,
-        "last_error": ""
+  "firewall-syslog": {
+    "data": {
+      "adapter_type": "syslog",
+      "listen_port": 514,
+      "protocol": "udp",
+      "parsing_rules": {
+        "format": "syslog_rfc5424",
+        "field_mappings": { ... }
       }
     },
-    "webhook-alerts": {
-      "data": {
-        "adapter_type": "webhook",
-        "endpoint_url": "/webhook/alerts",
-        "auth_token": "***",
-        "parsing_rules": {
-          "format": "json",
-          "event_type_field": "alert_type"
-        }
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["webhook", "alerts"],
-        "comment": "Custom alert webhook integration",
-        "expiry": 0
-      },
-      "sys_mtd": {
-        "created_at": 1704240000,
-        "last_mod": 1704240000,
-        "last_error": ""
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["syslog", "firewall", "network"],
+      "comment": "Palo Alto firewall syslog adapter",
+      "expiry": 0
+    },
+    "sys_mtd": {
+      "created_at": 1704067200,
+      "last_mod": 1704153600,
+      "last_error": ""
+    }
+  },
+  "webhook-alerts": {
+    "data": {
+      "adapter_type": "webhook",
+      "endpoint_url": "/webhook/alerts",
+      "auth_token": "***",
+      "parsing_rules": {
+        "format": "json",
+        "event_type_field": "alert_type"
       }
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["webhook", "alerts"],
+      "comment": "Custom alert webhook integration",
+      "expiry": 0
+    },
+    "sys_mtd": {
+      "created_at": 1704240000,
+      "last_mod": 1704240000,
+      "last_error": ""
     }
   }
 }
@@ -227,7 +213,7 @@ Found 2 external adapters:
 User request: "Which syslog adapters do we have configured?"
 
 Steps:
-1. Call API to get all external adapters
+1. Call tool to get all external adapters
 2. Filter results for syslog adapters (check adapter_type or tags)
 3. Present filtered results:
 ```
@@ -246,8 +232,8 @@ firewall-syslog
 User request: "List external adapters"
 
 Steps:
-1. Call API
-2. Receive empty response body: `{}`
+1. Call tool
+2. Receive empty response: `{}`
 
 Present to user:
 ```
@@ -288,7 +274,7 @@ Use the set-external-adapter skill to create external adapter configurations.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/hive/external_adapters.go`

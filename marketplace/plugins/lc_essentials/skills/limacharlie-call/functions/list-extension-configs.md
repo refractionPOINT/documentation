@@ -20,13 +20,13 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves all extension configuration records from the LimaCharlie Hive system. It calls the Hive API using the "extension_config" hive name with the organization ID as the partition to list all configurations. Each configuration includes the extension's data, enabled status, tags, comments, and system metadata (creation time, last modification, author, etc.).
+This skill retrieves all extension configuration records from the LimaCharlie Hive system. It calls the MCP tool to list all configurations using the "extension_config" hive name with the organization ID as the partition. Each configuration includes the extension's data, enabled status, tags, comments, and system metadata (creation time, last modification, author, etc.).
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are required.
@@ -38,72 +38,65 @@ No other parameters are required.
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/extension_config/{oid}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_extension_configs",
+  parameters={
+    "oid": "[organization-id]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/hive/extension_config/global`
-- Query parameters: None
-- Body: None
+**Tool Details:**
+- Tool Name: `list_extension_configs`
+- Required Parameters:
+  - `oid`: Organization ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "extension-name-1": {
-      "data": {
-        // Extension-specific configuration data
-      },
-      "sys_mtd": {
-        "etag": "...",
-        "created_by": "user@example.com",
-        "created_at": 1234567890,
-        "last_author": "user@example.com",
-        "last_mod": 1234567899,
-        "guid": "...",
-        "last_error": "",
-        "last_error_ts": 0
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "expiry": 0,
-        "tags": ["tag1", "tag2"],
-        "comment": "Description of this config"
-      }
+  "extension-name-1": {
+    "data": {
+      // Extension-specific configuration data
     },
-    "extension-name-2": {
-      // ... another extension config
+    "sys_mtd": {
+      "etag": "...",
+      "created_by": "user@example.com",
+      "created_at": 1234567890,
+      "last_author": "user@example.com",
+      "last_mod": 1234567899,
+      "guid": "...",
+      "last_error": "",
+      "last_error_ts": 0
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "expiry": 0,
+      "tags": ["tag1", "tag2"],
+      "comment": "Description of this config"
     }
+  },
+  "extension-name-2": {
+    // ... another extension config
   }
 }
 ```
 
-**Success (200-299):**
-- The response body is an object where each key is an extension name
+**Success:**
+- The response is an object where each key is an extension name
 - Each value contains `data` (configuration), `sys_mtd` (system metadata), and `usr_mtd` (user metadata)
 - Present the list of extensions with their enabled status and key configuration details
 - Count the total number of configured extensions
 
 **Common Errors:**
-- **403 Forbidden**: Insufficient permissions - user needs platform_admin or similar role to access Hive
-- **404 Not Found**: The hive or partition doesn't exist (unusual, should always exist)
-- **500 Server Error**: Rare backend issue - advise user to retry or contact support
+- **Forbidden**: Insufficient permissions - user needs platform_admin or similar role to access Hive
+- **Not Found**: The hive or partition doesn't exist (unusual, should always exist)
 
 ### Step 4: Format the Response
 
@@ -122,50 +115,47 @@ User request: "Show me all my extension configurations"
 
 Steps:
 1. Get the organization ID from context
-2. Call the Hive API to list extension configs
-3. Call API:
+2. Call the tool to list extension configs
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/extension_config/{oid}"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_extension_configs",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "artifact-collection": {
-      "data": {
-        "retention_days": 90,
-        "max_size_mb": 100
-      },
-      "sys_mtd": {
-        "created_at": 1700000000,
-        "last_mod": 1700001000,
-        "last_author": "admin@example.com"
-      },
-      "usr_mtd": {
-        "enabled": true,
-        "tags": ["production"],
-        "comment": "Artifact collection config"
-      }
+  "artifact-collection": {
+    "data": {
+      "retention_days": 90,
+      "max_size_mb": 100
     },
-    "logging": {
-      "data": {
-        "destinations": ["s3://bucket/path"]
-      },
-      "sys_mtd": {
-        "created_at": 1699000000,
-        "last_mod": 1699000000
-      },
-      "usr_mtd": {
-        "enabled": false,
-        "tags": []
-      }
+    "sys_mtd": {
+      "created_at": 1700000000,
+      "last_mod": 1700001000,
+      "last_author": "admin@example.com"
+    },
+    "usr_mtd": {
+      "enabled": true,
+      "tags": ["production"],
+      "comment": "Artifact collection config"
+    }
+  },
+  "logging": {
+    "data": {
+      "destinations": ["s3://bucket/path"]
+    },
+    "sys_mtd": {
+      "created_at": 1699000000,
+      "last_mod": 1699000000
+    },
+    "usr_mtd": {
+      "enabled": false,
+      "tags": []
     }
   }
 }
@@ -185,7 +175,7 @@ Steps:
 2. List all extension configs
 3. Filter and present only those with `usr_mtd.enabled = true`
 
-The same API call is used, but the response is filtered to show only enabled extensions.
+The same tool call is used, but the response is filtered to show only enabled extensions.
 
 ## Additional Notes
 
@@ -200,7 +190,7 @@ The same API call is used, but the response is filtered to show only enabled ext
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/extension_configs.go`

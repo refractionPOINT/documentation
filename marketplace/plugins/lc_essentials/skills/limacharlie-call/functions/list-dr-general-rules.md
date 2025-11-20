@@ -28,7 +28,7 @@ This skill retrieves all D&R rules from the general namespace, which contains cu
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 ## How to Use
@@ -38,68 +38,57 @@ Before calling this skill, gather:
 Ensure you have:
 1. Valid organization ID (oid)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/[organization-id]",
-  query_params={
-    "namespace": "general"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_dr_general_rules",
+  parameters={
+    "oid": "[organization-id]"
   }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/rules/{oid}` where `{oid}` is the organization ID
-- Query parameters:
-  - `namespace`: "general" (filters to general namespace only)
-- No request body needed
+**Tool Details:**
+- Tool name: `list_dr_general_rules`
+- Required parameters:
+  - `oid`: Organization ID (UUID)
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "custom-rule-1": {
-      "name": "custom-rule-1",
-      "namespace": "general",
-      "detect": {
-        "event": "NEW_PROCESS",
-        "op": "contains",
-        "path": "event/COMMAND_LINE",
-        "value": "powershell"
-      },
-      "respond": [
-        {
-          "action": "report",
-          "name": "suspicious_powershell"
-        }
-      ],
-      "is_enabled": true
+  "custom-rule-1": {
+    "name": "custom-rule-1",
+    "namespace": "general",
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "contains",
+      "path": "event/COMMAND_LINE",
+      "value": "powershell"
     },
-    "custom-rule-2": {
-      "name": "custom-rule-2",
-      "namespace": "general",
-      "detect": {...},
-      "respond": [...],
-      "is_enabled": false
-    }
+    "respond": [
+      {
+        "action": "report",
+        "name": "suspicious_powershell"
+      }
+    ],
+    "is_enabled": true
+  },
+  "custom-rule-2": {
+    "name": "custom-rule-2",
+    "namespace": "general",
+    "detect": {...},
+    "respond": [...],
+    "is_enabled": false
   }
 }
 ```
 
-**Success (200-299):**
-- Status code 200 indicates successful retrieval
+**Success:**
 - Response is a dictionary keyed by rule name
 - Each rule object contains:
   - `name`: Rule identifier
@@ -136,15 +125,12 @@ Present the result to the user:
 User request: "Show me all our custom D&R rules"
 
 Steps:
-1. Call API to list general namespace rules:
+1. Call tool to list general namespace rules:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={
-    "namespace": "general"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_dr_general_rules",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
   }
 )
 ```
@@ -152,37 +138,33 @@ mcp__limacharlie__lc_api_call(
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "detect-suspicious-powershell": {
-      "name": "detect-suspicious-powershell",
-      "namespace": "general",
-      "detect": {
-        "event": "NEW_PROCESS",
-        "op": "contains",
-        "path": "event/COMMAND_LINE",
-        "value": "powershell -enc"
-      },
-      "respond": [
-        {"action": "report", "name": "encoded_powershell"}
-      ],
-      "is_enabled": true
+  "detect-suspicious-powershell": {
+    "name": "detect-suspicious-powershell",
+    "namespace": "general",
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "contains",
+      "path": "event/COMMAND_LINE",
+      "value": "powershell -enc"
     },
-    "block-known-malware": {
-      "name": "block-known-malware",
-      "namespace": "general",
-      "detect": {
-        "event": "CODE_IDENTITY",
-        "op": "is",
-        "path": "event/HASH",
-        "value": "abc123..."
-      },
-      "respond": [
-        {"action": "task", "command": "deny_tree"}
-      ],
-      "is_enabled": true
-    }
+    "respond": [
+      {"action": "report", "name": "encoded_powershell"}
+    ],
+    "is_enabled": true
+  },
+  "block-known-malware": {
+    "name": "block-known-malware",
+    "namespace": "general",
+    "detect": {
+      "event": "CODE_IDENTITY",
+      "op": "is",
+      "path": "event/HASH",
+      "value": "abc123..."
+    },
+    "respond": [
+      {"action": "task", "command": "deny_tree"}
+    ],
+    "is_enabled": true
   }
 }
 ```
@@ -207,26 +189,19 @@ Both rules are active and monitoring your environment."
 User request: "List our custom detection rules"
 
 Steps:
-1. Call API:
+1. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/rules/c7e8f940-1234-5678-abcd-1234567890ab",
-  query_params={
-    "namespace": "general"
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_dr_general_rules",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
   }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -252,7 +227,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/dr_rule.go` (DRRules method with namespace filter)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/dr_rules.go` (list_dr_general_rules)

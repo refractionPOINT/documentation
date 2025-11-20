@@ -26,9 +26,7 @@ This skill retrieves schema definitions for multiple event types in parallel, re
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-- **event_names**: Array of event type names (e.g., ['DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS'])
+- **event_types**: Array of event type names (e.g., ['DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS'])
 
 Event type names should match LimaCharlie's naming convention (UPPERCASE_WITH_UNDERSCORES).
 
@@ -37,31 +35,27 @@ Event type names should match LimaCharlie's naming convention (UPPERCASE_WITH_UN
 ### Step 1: Validate Parameters
 
 Ensure you have:
-1. Valid organization ID (oid)
-2. Array of event type names (at least one)
-3. Each event type name is valid and case-sensitive
-4. No duplicate event types in the array
+1. Array of event type names (at least one)
+2. Each event type name is valid and case-sensitive
+3. No duplicate event types in the array
 
-### Step 2: Call the API for Each Event Type
+### Step 2: Call the API
 
-For each event type in the array, call the API in parallel:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-For each event_name in event_names:
-  mcp__limacharlie__lc_api_call(
-    oid="[organization-id]",
-    endpoint="api",
-    method="GET",
-    path="/v1/orgs/[organization-id]/schema/[event-name]"
-  )
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_schemas_batch",
+  parameters={
+    "event_types": ["DNS_REQUEST", "HTTP_REQUEST", "NETWORK_CONNECTIONS"]
+  }
+)
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/orgs/{oid}/schema/{name}` for each event type
-- Calls are made in parallel for performance
-- Individual failures don't stop other requests
+- Tool: `get_event_schemas_batch`
+- Required parameters:
+  - `event_types`: Array of event type names
 
 ### Step 3: Handle the Response
 
@@ -114,33 +108,15 @@ Present the result to the user:
 User request: "Show me schemas for DNS_REQUEST, HTTP_REQUEST, and NETWORK_CONNECTIONS"
 
 Steps:
-1. Extract oid from context
-2. Event names array: ['DNS_REQUEST', 'HTTP_REQUEST', 'NETWORK_CONNECTIONS']
-3. Call API for each in parallel:
+1. Event names array: ['DNS_REQUEST', 'HTTP_REQUEST', 'NETWORK_CONNECTIONS']
+2. Call API:
 ```
-For 'DNS_REQUEST':
-  mcp__limacharlie__lc_api_call(
-    oid="c7e8f940-1234-5678-abcd-1234567890ab",
-    endpoint="api",
-    method="GET",
-    path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/DNS_REQUEST"
-  )
-
-For 'HTTP_REQUEST':
-  mcp__limacharlie__lc_api_call(
-    oid="c7e8f940-1234-5678-abcd-1234567890ab",
-    endpoint="api",
-    method="GET",
-    path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/HTTP_REQUEST"
-  )
-
-For 'NETWORK_CONNECTIONS':
-  mcp__limacharlie__lc_api_call(
-    oid="c7e8f940-1234-5678-abcd-1234567890ab",
-    endpoint="api",
-    method="GET",
-    path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema/NETWORK_CONNECTIONS"
-  )
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_schemas_batch",
+  parameters={
+    "event_types": ["DNS_REQUEST", "HTTP_REQUEST", "NETWORK_CONNECTIONS"]
+  }
+)
 ```
 
 Expected combined response showing all three schemas with their respective elements.
@@ -150,7 +126,7 @@ Expected combined response showing all three schemas with their respective eleme
 User request: "Get schemas for PROCESS_START, FAKE_EVENT, and FILE_CREATE"
 
 Steps:
-1. Make parallel calls for all three
+1. Call with all three event types
 2. PROCESS_START succeeds
 3. FAKE_EVENT returns 404
 4. FILE_CREATE succeeds
@@ -170,7 +146,7 @@ Result presentation: "Retrieved schemas for PROCESS_START and FILE_CREATE succes
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/schemas.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/schemas/schemas.go`

@@ -39,39 +39,35 @@ Ensure you have:
 2. Valid sensor ID (sid) in UUID format
 3. Confirm the sensor exists and is the correct target for isolation
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/[sensor-id]/isolation"
+mcp__limacharlie__lc_call_tool(
+  tool_name="isolate_network",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/{sid}/isolation` where `{sid}` is the sensor UUID
-- No query parameters needed
-- No request body needed
+**Tool Details:**
+- Tool name: `isolate_network`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
-- Status code 200 indicates the sensor was successfully isolated
+**Success:**
+- Empty response indicates the sensor was successfully isolated
 - The sensor will immediately begin blocking all network traffic except LC communication
 - The sensor remains online and responsive to LC commands
 - Network isolation is persistent until explicitly removed
@@ -101,23 +97,20 @@ User request: "Isolate sensor abc12345-6789-0123-4567-890abcdef012 immediately, 
 Steps:
 1. Validate the sensor ID format (UUID)
 2. Confirm this is the correct sensor to isolate
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/abc12345-6789-0123-4567-890abcdef012/isolation"
+mcp__limacharlie__lc_call_tool(
+  tool_name="isolate_network",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc12345-6789-0123-4567-890abcdef012"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -130,23 +123,20 @@ User request: "Quarantine the host with ransomware immediately to stop it from s
 Steps:
 1. First identify the sensor ID (may need to search by hostname)
 2. Validate the sensor exists and is the correct target
-3. Call API to isolate:
+3. Call tool to isolate:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/def45678-90ab-cdef-0123-456789abcdef/isolation"
+mcp__limacharlie__lc_call_tool(
+  tool_name="isolate_network",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "def45678-90ab-cdef-0123-456789abcdef"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
 Response to user:
@@ -166,7 +156,7 @@ Response to user:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go` (IsolateFromNetwork method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/response/response.go` (isolate_network)

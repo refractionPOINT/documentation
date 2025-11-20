@@ -46,13 +46,16 @@ Ensure you have:
 
 ### Step 2: Send the Sensor Command
 
-Use the dedicated MCP tool:
+Use the `lc_call_tool` MCP tool:
 
 ```
-mcp__limacharlie__get_process_strings(
-  oid="[organization-id]",
-  sid="[sensor-id]",
-  pid=[process-id]
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_process_strings",
+  parameters={
+    "oid": "[organization-id]",
+    "sid": "[sensor-id]",
+    "pid": [process-id]
+  }
 )
 ```
 
@@ -123,10 +126,13 @@ Steps:
 2. Filter for URLs, IP addresses, domain names
 3. Present network-related strings:
 ```
-mcp__limacharlie__get_process_strings(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  sid="abc-123-def-456-ghi-789",
-  pid=1234
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_process_strings",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "abc-123-def-456-ghi-789",
+    "pid": 1234
+  }
 )
 ```
 
@@ -167,7 +173,7 @@ Steps:
 
 ## Reference
 
-For the MCP tool, this uses the dedicated `get_process_strings` tool.
+For the MCP tool, this uses the dedicated `get_process_strings` tool via `lc_call_tool`.
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`

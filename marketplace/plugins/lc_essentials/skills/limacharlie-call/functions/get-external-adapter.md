@@ -25,15 +25,15 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves the complete configuration and metadata for a specific external adapter by name. External adapters receive and process data from external sources like syslog servers, webhooks, custom APIs, and third-party security tools. Each adapter includes parsing rules that transform external data into LimaCharlie's normalized event format. The skill calls the LimaCharlie Hive API to fetch the adapter's data configuration, user metadata (enabled status, tags, comments), and system metadata (creation info, modification history, errors).
+This skill retrieves the complete configuration and metadata for a specific external adapter by name. External adapters receive and process data from external sources like syslog servers, webhooks, custom APIs, and third-party security tools. Each adapter includes parsing rules that transform external data into LimaCharlie's normalized event format. The skill calls the LimaCharlie MCP tool to fetch the adapter's data configuration, user metadata (enabled status, tags, comments), and system metadata (creation info, modification history, errors).
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **adapter_name**: Name of the external adapter to retrieve (required)
+- **name**: Name of the external adapter to retrieve (required)
 
 To find the adapter name:
 - Use the list-external-adapters skill to see all available adapters
@@ -48,75 +48,65 @@ Ensure you have:
 2. Correct external adapter name
 3. The adapter name matches exactly (case-sensitive)
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/external_adapter/{oid}/[adapter-name]/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_external_adapter",
+  parameters={
+    "oid": "[organization-id]",
+    "name": "[adapter-name]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/hive/external_adapter/{oid}/{adapter-name}/data`
-- Query parameters: None
-- Body: None
-
-The path uses the Hive structure:
-- `external_adapter`: The hive name for external adapter configurations
-- `{oid}`: The partition key (organization ID)
-- `{adapter-name}`: The name of the specific adapter (URL-encoded if needed)
-- `data`: Fetch both data and metadata (use `mtd` for metadata only)
+**Tool Details:**
+- Tool Name: `get_external_adapter`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `name`: Name of the external adapter to retrieve
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "data": {
-      "adapter_type": "syslog",
-      "listen_port": 514,
-      "protocol": "udp",
-      "parsing_rules": {
-        "format": "syslog_rfc5424",
-        "field_mappings": {
-          "timestamp": "event.timestamp",
-          "hostname": "routing.hostname",
-          "message": "event.message"
-        },
-        "filters": [ ... ]
-      }
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["syslog", "firewall"],
-      "comment": "Palo Alto firewall syslog adapter",
-      "expiry": 0
-    },
-    "sys_mtd": {
-      "etag": "abc123def456",
-      "created_by": "user@example.com",
-      "created_at": 1704067200,
-      "last_author": "admin@example.com",
-      "last_mod": 1704153600,
-      "guid": "unique-guid-123-456",
-      "last_error": "",
-      "last_error_ts": 0
+  "data": {
+    "adapter_type": "syslog",
+    "listen_port": 514,
+    "protocol": "udp",
+    "parsing_rules": {
+      "format": "syslog_rfc5424",
+      "field_mappings": {
+        "timestamp": "event.timestamp",
+        "hostname": "routing.hostname",
+        "message": "event.message"
+      },
+      "filters": [ ... ]
     }
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["syslog", "firewall"],
+    "comment": "Palo Alto firewall syslog adapter",
+    "expiry": 0
+  },
+  "sys_mtd": {
+    "etag": "abc123def456",
+    "created_by": "user@example.com",
+    "created_at": 1704067200,
+    "last_author": "admin@example.com",
+    "last_mod": 1704153600,
+    "guid": "unique-guid-123-456",
+    "last_error": "",
+    "last_error_ts": 0
   }
 }
 ```
 
-**Success (200-299):**
+**Success:**
 - The response contains the complete external adapter configuration
 - `data`: The adapter configuration
   - `adapter_type`: Type of adapter (syslog, webhook, api, custom)
@@ -129,11 +119,10 @@ The API returns a response with:
 - `sys_mtd`: System-managed metadata (creation, modification, GUID, errors)
 
 **Common Errors:**
-- **400 Bad Request**: Invalid adapter name format or malformed request
-- **401 Unauthorized**: Authentication token is invalid or expired
-- **403 Forbidden**: Insufficient permissions to view external adapters (requires platform_admin role)
-- **404 Not Found**: External adapter with the specified name does not exist
-- **500 Server Error**: Internal server error, retry the request
+- **Invalid adapter name**: Adapter name format is invalid or malformed
+- **Unauthorized**: Authentication token is invalid or expired
+- **Forbidden**: Insufficient permissions to view external adapters (requires platform_admin role)
+- **Not Found**: External adapter with the specified name does not exist
 
 ### Step 4: Format the Response
 
@@ -156,51 +145,49 @@ User request: "Show me the configuration for firewall-syslog"
 
 Steps:
 1. Extract organization ID from context
-2. URL-encode adapter name if needed: "firewall-syslog"
-3. Call API:
+2. Use adapter name: "firewall-syslog"
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/hive/external_adapter/{oid}/firewall-syslog/data"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_external_adapter",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "firewall-syslog"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "adapter_type": "syslog",
-      "listen_port": 514,
-      "protocol": "udp",
-      "parsing_rules": {
-        "format": "syslog_rfc5424",
-        "field_mappings": {
-          "timestamp": "event.timestamp",
-          "hostname": "routing.hostname",
-          "severity": "event.severity",
-          "message": "event.message"
-        }
+  "data": {
+    "adapter_type": "syslog",
+    "listen_port": 514,
+    "protocol": "udp",
+    "parsing_rules": {
+      "format": "syslog_rfc5424",
+      "field_mappings": {
+        "timestamp": "event.timestamp",
+        "hostname": "routing.hostname",
+        "severity": "event.severity",
+        "message": "event.message"
       }
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["syslog", "firewall", "palo-alto"],
-      "comment": "Palo Alto firewall syslog adapter",
-      "expiry": 0
-    },
-    "sys_mtd": {
-      "created_by": "user@example.com",
-      "created_at": 1704067200,
-      "last_author": "admin@example.com",
-      "last_mod": 1704153600,
-      "guid": "guid-123-456",
-      "last_error": "",
-      "last_error_ts": 0
     }
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["syslog", "firewall", "palo-alto"],
+    "comment": "Palo Alto firewall syslog adapter",
+    "expiry": 0
+  },
+  "sys_mtd": {
+    "created_by": "user@example.com",
+    "created_at": 1704067200,
+    "last_author": "admin@example.com",
+    "last_mod": 1704153600,
+    "guid": "guid-123-456",
+    "last_error": "",
+    "last_error_ts": 0
   }
 }
 ```
@@ -219,10 +206,10 @@ Connection Details:
 - Format: RFC 5424
 
 Parsing Rules:
-- timestamp → event.timestamp
-- hostname → routing.hostname
-- severity → event.severity
-- message → event.message
+- timestamp -> event.timestamp
+- hostname -> routing.hostname
+- severity -> event.severity
+- message -> event.message
 
 Metadata:
 - Created by: user@example.com on January 1, 2024
@@ -239,29 +226,26 @@ To send syslog data, configure your firewall to send logs to:
 User request: "Why isn't the webhook-alerts adapter working?"
 
 Steps:
-1. Call API to get adapter details
+1. Call tool to get adapter details
 2. Check last_error field
 
 Expected response with error:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "data": {
-      "adapter_type": "webhook",
-      "endpoint_url": "/webhook/alerts",
-      "auth_token": "***"
-    },
-    "usr_mtd": {
-      "enabled": true,
-      "tags": ["webhook", "alerts"],
-      "comment": "",
-      "expiry": 0
-    },
-    "sys_mtd": {
-      "last_error": "Failed to parse incoming webhook data: invalid JSON",
-      "last_error_ts": 1704240000
-    }
+  "data": {
+    "adapter_type": "webhook",
+    "endpoint_url": "/webhook/alerts",
+    "auth_token": "***"
+  },
+  "usr_mtd": {
+    "enabled": true,
+    "tags": ["webhook", "alerts"],
+    "comment": "",
+    "expiry": 0
+  },
+  "sys_mtd": {
+    "last_error": "Failed to parse incoming webhook data: invalid JSON",
+    "last_error_ts": 1704240000
   }
 }
 ```
@@ -292,8 +276,8 @@ Troubleshooting steps:
 User request: "Get the api-integration adapter"
 
 Steps:
-1. Call API with adapter name "api-integration"
-2. API returns 404 Not Found
+1. Call tool with adapter name "api-integration"
+2. Tool returns not found error
 
 Present to user:
 ```
@@ -316,7 +300,6 @@ Use the list-external-adapters skill to see all available adapters.
 - Field mappings transform external field names to LimaCharlie's event schema
 - The `last_error` field is critical for troubleshooting - check it first
 - External adapter configurations may contain sensitive credentials - handle securely
-- Use URL encoding for adapter names with special characters or spaces
 - The `enabled` field controls active data reception - disabled adapters don't process data
 - Tags help organize adapters by source, type, or purpose
 - The `etag` in sys_mtd is used for optimistic concurrency control during updates
@@ -324,7 +307,7 @@ Use the list-external-adapters skill to see all available adapters.
 - Use the delete-external-adapter skill to remove adapters
 - Parsing rules include:
   - Format specification (syslog, JSON, CEF, LEEF, custom regex)
-  - Field mappings (external field → LimaCharlie field)
+  - Field mappings (external field -> LimaCharlie field)
   - Filters (include/exclude patterns)
   - Transformations (data normalization, enrichment)
 - Common adapter types:
@@ -335,7 +318,7 @@ Use the list-external-adapters skill to see all available adapters.
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/hive.go`
 For the MCP tool implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/lc-mcp-server/internal/tools/hive/external_adapters.go`

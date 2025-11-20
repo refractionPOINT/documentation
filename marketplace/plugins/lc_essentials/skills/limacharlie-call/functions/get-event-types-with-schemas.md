@@ -24,62 +24,45 @@ This skill retrieves the complete list of event type names that have schema defi
 
 ## Required Information
 
-Before calling this skill, gather:
-
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-
-No other parameters are needed - this returns all available event types.
+No parameters are required - this returns all available event types globally.
 
 ## How to Use
 
-### Step 1: Validate Parameters
+### Step 1: Call the API
 
-Ensure you have:
-1. Valid organization ID (oid)
-
-### Step 2: Call the API
-
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/[organization-id]/schema"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_types_with_schemas",
+  parameters={}
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/orgs/{oid}/schema`
-- No query parameters
-- No request body
+- Tool: `get_event_types_with_schemas`
+- No parameters required (global operation)
 
-### Step 3: Handle the Response
+### Step 2: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "event_types": [
-      "DNS_REQUEST",
-      "HTTP_REQUEST",
-      "NETWORK_CONNECTIONS",
-      "PROCESS_START",
-      "FILE_CREATE",
-      ...
-    ]
-  }
+  "event_types": [
+    "DNS_REQUEST",
+    "HTTP_REQUEST",
+    "NETWORK_CONNECTIONS",
+    "PROCESS_START",
+    "FILE_CREATE",
+    "FILE_DELETE",
+    "REGISTRY_CREATE",
+    ...
+  ]
 }
 ```
 
 **Success (200-299):**
-- Body contains `event_types` array with all available event type names
+- Response contains `event_types` array with all available event type names
 - Names use LimaCharlie's standard naming convention (UPPERCASE_WITH_UNDERSCORES)
 - Array typically contains 50-100+ event types depending on platform support
 - These names can be used with `get-event-schema` to get detailed field information
@@ -88,7 +71,7 @@ The API returns a response with:
 - **403 Forbidden**: Insufficient API permissions to read schemas
 - **500 Server Error**: Temporary API issue - retry after a short delay
 
-### Step 4: Format the Response
+### Step 3: Format the Response
 
 Present the result to the user:
 - List event types in logical groups (network, process, file, registry, etc.)
@@ -104,33 +87,27 @@ Present the result to the user:
 User request: "What event types are available in LimaCharlie?"
 
 Steps:
-1. Extract oid from context
-2. Call API:
+1. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_types_with_schemas",
+  parameters={}
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "event_types": [
-      "DNS_REQUEST",
-      "HTTP_REQUEST",
-      "NETWORK_CONNECTIONS",
-      "PROCESS_START",
-      "FILE_CREATE",
-      "FILE_DELETE",
-      "REGISTRY_CREATE",
-      ...
-    ]
-  }
+  "event_types": [
+    "DNS_REQUEST",
+    "HTTP_REQUEST",
+    "NETWORK_CONNECTIONS",
+    "PROCESS_START",
+    "FILE_CREATE",
+    "FILE_DELETE",
+    "REGISTRY_CREATE",
+    ...
+  ]
 }
 ```
 
@@ -161,7 +138,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/schemas.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/schemas/schemas.go`

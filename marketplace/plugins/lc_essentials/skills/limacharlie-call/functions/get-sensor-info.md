@@ -40,57 +40,53 @@ Ensure you have:
 2. Valid sensor ID (sid) in UUID format
 3. Sensor exists in the organization
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/xyz-sensor-id"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_sensor_info",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-sensor-id"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/{sid}` (replace `{sid}` with the sensor ID)
-- No query parameters needed
-- No request body needed
+**Tool Details:**
+- Tool name: `get_sensor_info`
+- Required parameters:
+  - `oid`: Organization ID
+  - `sid`: Sensor ID
 
-**Note:** The SDK method `org.GetSensor(sid)` followed by `sensor.Update()` is used internally, which makes a GET request to `/{sid}` and also fetches tags via GET `/{sid}/tags`.
+**Note:** The tool fetches sensor information and tags in one operation.
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns data directly:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "info": {
-      "sid": "xyz-sensor-id",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "hostname": "SERVER01",
-      "platform": 268435456,
-      "arch": 1,
-      "enroll": "2024-01-15T10:30:00Z",
-      "alive": "2024-01-20T14:22:13Z",
-      "int_ip": "10.0.1.50",
-      "ext_ip": "203.0.113.45",
-      "iid": "install-key-123",
-      "isolated": false,
-      "should_isolate": false,
-      "kernel": true
-    },
-    "is_online": true
-  }
+  "info": {
+    "sid": "xyz-sensor-id",
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "hostname": "SERVER01",
+    "platform": 268435456,
+    "arch": 1,
+    "enroll": "2024-01-15T10:30:00Z",
+    "alive": "2024-01-20T14:22:13Z",
+    "int_ip": "10.0.1.50",
+    "ext_ip": "203.0.113.45",
+    "iid": "install-key-123",
+    "isolated": false,
+    "should_isolate": false,
+    "kernel": true
+  },
+  "is_online": true
 }
 ```
 
-**Success (200):**
+**Success:**
 - The response contains detailed sensor information
 - `info` object has all sensor metadata
 - `is_online` indicates current connection status
@@ -137,32 +133,30 @@ User request: "Show me details about sensor xyz-123"
 Steps:
 1. Validate sensor ID format
 2. Get organization ID from context
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/xyz-123"
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_sensor_info",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "sid": "xyz-123"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "info": {
-      "sid": "xyz-123",
-      "hostname": "WORKSTATION-05",
-      "platform": 268435456,
-      "arch": 1,
-      "int_ip": "192.168.1.105",
-      "alive": "2024-01-20T15:00:00Z",
-      "isolated": false
-    },
-    "is_online": true
-  }
+  "info": {
+    "sid": "xyz-123",
+    "hostname": "WORKSTATION-05",
+    "platform": 268435456,
+    "arch": 1,
+    "int_ip": "192.168.1.105",
+    "alive": "2024-01-20T15:00:00Z",
+    "isolated": false
+  },
+  "is_online": true
 }
 ```
 
@@ -171,7 +165,7 @@ Expected response:
 User request: "Is sensor abc-456 isolated from the network?"
 
 Steps:
-1. Get sensor info using the API call
+1. Get sensor info using the tool call
 2. Check the `isolated` field in the response
 3. Report isolation status:
 ```
@@ -192,7 +186,7 @@ Network isolation status: Normal
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/core/core.go`

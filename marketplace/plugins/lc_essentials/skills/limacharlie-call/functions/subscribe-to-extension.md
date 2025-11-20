@@ -20,13 +20,13 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill subscribes an organization to a LimaCharlie extension by sending a POST request to the subscriptions API. Once subscribed, the extension becomes active in the organization and can process events, provide integrations, or deliver functionality based on its purpose. The subscription is independent of extension configuration - you can subscribe without configuring, or configure without subscribing, but both are typically needed for the extension to work effectively.
+This skill subscribes an organization to a LimaCharlie extension by calling the MCP tool. Once subscribed, the extension becomes active in the organization and can process events, provide integrations, or deliver functionality based on its purpose. The subscription is independent of extension configuration - you can subscribe without configuring, or configure without subscribing, but both are typically needed for the extension to work effectively.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name of the extension to subscribe to (required)
 
@@ -40,57 +40,44 @@ Ensure you have:
 3. Verify the extension exists and is available
 4. Check if already subscribed to avoid duplicate subscription
 
-### Step 2: Call the API
+### Step 2: Call the Tool
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="POST",
-  path="/v1/orgs/[organization-id]/subscription/extension/[extension-name]"
+mcp__limacharlie__lc_call_tool(
+  tool_name="subscribe_to_extension",
+  parameters={
+    "oid": "[organization-id]",
+    "extension_name": "[extension-name]"
+  }
 )
 ```
 
-**API Details:**
-- Endpoint: `api`
-- Method: `POST`
-- Path: `/v1/orgs/{oid}/subscription/extension/{extension_name}`
-  - Replace `{oid}` with the organization ID
-  - Replace `{extension_name}` with the URL-encoded extension name
-- Query parameters: None
-- Body: None (empty body for subscription)
-
-**Important:**
-- The extension name must be URL-encoded if it contains special characters
-- The API may take up to 60 seconds to complete as it provisions resources
-- Timeout is set to 1 minute for this operation
+**Tool Details:**
+- Tool Name: `subscribe_to_extension`
+- Required Parameters:
+  - `oid`: Organization ID
+  - `extension_name`: The name of the extension to subscribe to
 
 ### Step 3: Handle the Response
 
-The API returns a response with:
+The tool returns a response with:
 ```json
-{
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {}
-}
+{}
 ```
 
-**Success (200-299):**
+**Success:**
 - Subscription was successful
 - The extension is now active in the organization
 - The extension can now process data and provide functionality
 - Inform the user that subscription is complete
 
 **Common Errors:**
-- **400 Bad Request**: Invalid extension name or already subscribed
-- **403 Forbidden**: Insufficient permissions - user needs platform_admin role
-- **404 Not Found**: Extension doesn't exist or isn't available
-- **409 Conflict**: Already subscribed to this extension
-- **500 Server Error**: Backend provisioning issue - advise user to retry or contact support
-- **504 Gateway Timeout**: Extension provisioning took too long - check if subscription completed
+- **Invalid extension name**: Extension name is invalid or already subscribed
+- **Forbidden**: Insufficient permissions - user needs platform_admin role
+- **Not Found**: Extension doesn't exist or isn't available
+- **Conflict**: Already subscribed to this extension
 
 ### Step 4: Format the Response
 
@@ -111,22 +98,20 @@ User request: "Subscribe to the threat-intel extension"
 Steps:
 1. Get the organization ID from context
 2. Use extension name "threat-intel"
-3. Call API:
+3. Call tool:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="POST",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/subscription/extension/threat-intel"
+mcp__limacharlie__lc_call_tool(
+  tool_name="subscribe_to_extension",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "extension_name": "threat-intel"
+  }
 )
 ```
 
 Expected response:
 ```json
-{
-  "status_code": 200,
-  "body": {}
-}
+{}
 ```
 
 Inform user: "Successfully subscribed to the threat-intel extension. The extension is now active in your organization. You may need to configure it using set-extension-config for it to function fully."
@@ -137,7 +122,7 @@ User request: "Subscribe to the logging extension"
 
 Steps:
 1. Attempt to subscribe
-2. Receive 409 Conflict error
+2. Receive conflict error
 3. Inform user: "Your organization is already subscribed to the logging extension. To modify its configuration, use set-extension-config. To deactivate it, use unsubscribe-from-extension."
 
 ### Example 3: Subscribe and configure
@@ -172,7 +157,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/extension.go` (SubscribeToExtension method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/config/extensions.go`

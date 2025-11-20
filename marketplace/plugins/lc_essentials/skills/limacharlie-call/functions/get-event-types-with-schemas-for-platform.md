@@ -26,8 +26,6 @@ This skill retrieves the list of event type names that have schema definitions f
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
 - **platform**: Platform name (e.g., 'windows', 'linux', 'macos', 'chrome')
 
 Platform names should match LimaCharlie's platform naming (typically lowercase). Use `get-platform-names` to get the exact list of valid platform names.
@@ -37,52 +35,44 @@ Platform names should match LimaCharlie's platform naming (typically lowercase).
 ### Step 1: Validate Parameters
 
 Ensure you have:
-1. Valid organization ID (oid)
-2. Valid platform name (get from `get-platform-names` if unsure)
-3. Platform name is lowercase and exactly matches LimaCharlie's naming
+1. Valid platform name (get from `get-platform-names` if unsure)
+2. Platform name is lowercase and exactly matches LimaCharlie's naming
 
 ### Step 2: Call the API
 
-Use the `lc_api_call` MCP tool from the `limacharlie` server:
+Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 
 ```
-mcp__limacharlie__lc_api_call(
-  oid="[organization-id]",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/[organization-id]/schema",
-  query_params={"platform": "[platform-name]"}
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_types_with_schemas_for_platform",
+  parameters={
+    "platform": "[platform-name]"
+  }
 )
 ```
 
 **API Details:**
-- Endpoint: `api`
-- Method: `GET`
-- Path: `/v1/orgs/{oid}/schema`
-- Query parameters: `platform` (e.g., "windows", "linux", "macos")
-- No request body
+- Tool: `get_event_types_with_schemas_for_platform`
+- Required parameters:
+  - `platform`: Platform name (e.g., "windows", "linux", "macos")
 
 ### Step 3: Handle the Response
 
 The API returns a response with:
 ```json
 {
-  "status_code": 200,
-  "status": "200 OK",
-  "body": {
-    "event_types": [
-      "DNS_REQUEST",
-      "PROCESS_START",
-      "NETWORK_CONNECTIONS",
-      "REGISTRY_CREATE",
-      ...
-    ]
-  }
+  "event_types": [
+    "DNS_REQUEST",
+    "PROCESS_START",
+    "NETWORK_CONNECTIONS",
+    "REGISTRY_CREATE",
+    ...
+  ]
 }
 ```
 
 **Success (200-299):**
-- Body contains `event_types` array filtered by platform
+- Response contains `event_types` array filtered by platform
 - Windows includes registry events not available on Linux/macOS
 - Linux includes package manager events not on Windows
 - macOS has its own platform-specific events
@@ -110,35 +100,30 @@ Present the result to the user:
 User request: "What event types are available on Windows?"
 
 Steps:
-1. Extract oid from context
-2. Platform is 'windows'
-3. Call API:
+1. Platform is 'windows'
+2. Call API:
 ```
-mcp__limacharlie__lc_api_call(
-  oid="c7e8f940-1234-5678-abcd-1234567890ab",
-  endpoint="api",
-  method="GET",
-  path="/v1/orgs/c7e8f940-1234-5678-abcd-1234567890ab/schema",
-  query_params={"platform": "windows"}
+mcp__limacharlie__lc_call_tool(
+  tool_name="get_event_types_with_schemas_for_platform",
+  parameters={
+    "platform": "windows"
+  }
 )
 ```
 
 Expected response:
 ```json
 {
-  "status_code": 200,
-  "body": {
-    "event_types": [
-      "DNS_REQUEST",
-      "PROCESS_START",
-      "NETWORK_CONNECTIONS",
-      "REGISTRY_CREATE",
-      "REGISTRY_DELETE",
-      "WMI_ACTIVITY",
-      "SERVICE_CHANGE",
-      ...
-    ]
-  }
+  "event_types": [
+    "DNS_REQUEST",
+    "PROCESS_START",
+    "NETWORK_CONNECTIONS",
+    "REGISTRY_CREATE",
+    "REGISTRY_DELETE",
+    "WMI_ACTIVITY",
+    "SERVICE_CHANGE",
+    ...
+  ]
 }
 ```
 
@@ -170,7 +155,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_api_call`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/go-limacharlie/limacharlie/schemas.go`
 For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/schemas/schemas.go`
