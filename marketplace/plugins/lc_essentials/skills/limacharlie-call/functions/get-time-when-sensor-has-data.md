@@ -31,6 +31,10 @@ Before calling this skill, gather:
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID
 - **sid**: Sensor ID
+- **start**: Start timestamp in Unix epoch seconds
+- **end**: End timestamp in Unix epoch seconds
+
+**Note**: The time range (end - start) must be less than 30 days.
 
 ## How to Use
 
@@ -47,7 +51,9 @@ mcp__limacharlie__lc_call_tool(
   tool_name="get_time_when_sensor_has_data",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "sid": "xyz-sensor-id"
+    "sid": "xyz-sensor-id",
+    "start": 1705000000,
+    "end": 1705086400
   }
 )
 ```
@@ -57,18 +63,26 @@ mcp__limacharlie__lc_call_tool(
 - Required parameters:
   - `oid`: Organization ID
   - `sid`: Sensor ID
+  - `start`: Start timestamp in Unix epoch seconds
+  - `end`: End timestamp in Unix epoch seconds
 
 ### Step 3: Handle Response
 
 The tool returns data directly:
 ```json
 {
-  "overview": [1705000000, 1705003600, 1705007200, ...]
+  "sid": "xyz-sensor-id",
+  "start": 1705000000,
+  "end": 1705086400,
+  "timestamps": [1705000000, 1705003600, 1705007200, ...]
 }
 ```
 
 **Success:**
-- `overview`: Array of Unix timestamps representing time batches where sensor data is available
+- `sid`: The sensor ID that was queried
+- `start`: The start timestamp of the query range
+- `end`: The end timestamp of the query range
+- `timestamps`: Array of Unix timestamps representing time batches where sensor data is available
 - Empty array means no data in the requested timeframe
 
 ### Step 4: Format Response
@@ -91,17 +105,20 @@ User: "Does sensor xyz-123 have data from last week?"
 
 Steps:
 1. Get organization ID from context
-2. Call tool:
+2. Calculate start and end timestamps (e.g., 7 days ago to now)
+3. Call tool:
 ```
 mcp__limacharlie__lc_call_tool(
   tool_name="get_time_when_sensor_has_data",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "sid": "xyz-123"
+    "sid": "xyz-123",
+    "start": 1704395200,
+    "end": 1705000000
   }
 )
 ```
-3. Compare returned timestamps with the requested timeframe
+4. Compare returned timestamps with the requested timeframe
 
 ### Example 2: Troubleshoot missing data
 
@@ -111,7 +128,8 @@ Check timeline to verify sensor has any data available.
 
 ## Additional Notes
 
-- Empty response means no data retained
+- Empty timestamps array means no data retained in the specified time range
+- Time range must be less than 30 days
 - Useful before running expensive queries
 - Data retention depends on org tier/policy
 - Sensors may have gaps in timeline
