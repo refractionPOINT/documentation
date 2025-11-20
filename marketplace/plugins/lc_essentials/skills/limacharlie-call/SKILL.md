@@ -27,6 +27,46 @@ jq '<expression>' <file>
 3. Follow the instructions in that file to make the API call
 4. If an OID is needed, get it first with `list-user-orgs`
 
+## Functions by Use Case
+
+Quick reference to find functions by common task:
+
+### Timeline & Data Availability
+- `get-time-when-sensor-has-data` - Check when sensor has data, data availability timeline, sensor overview
+- `get-historic-events` - Query historical telemetry events
+- `get-historic-detections` - Query historical detection alerts
+
+### Sensor Status & Health
+- `is-online` - Check if sensor is currently online
+- `get-online-sensors` - List all online sensors
+- `get-sensor-info` - Get detailed sensor information
+- `list-sensors` - List all sensors in organization
+- `list-with-platform` - Filter sensors by OS platform
+
+### Threat Hunting & Investigation
+- `run-lcql-query` - Search historical data with LCQL
+- `search-iocs` - Search for indicators of compromise
+- `batch-search-iocs` - Bulk IOC search
+- `search-hosts` - Search for hosts by criteria
+
+### Live Response & Forensics
+- `get-processes` - List running processes on sensor
+- `get-network-connections` - View active network connections
+- `get-autoruns` - Check persistence mechanisms
+- `dir-list` - Browse filesystem
+- `yara-scan-process` / `yara-scan-file` / `yara-scan-memory` - YARA scanning
+
+### Billing & Usage
+- `get-org-invoice-url` - Get invoice with cost breakdown
+- `get-billing-details` - Billing configuration
+- `get-usage-stats` - Resource consumption metrics
+
+### Detection Engineering
+- `set-dr-general-rule` - Create/update detection rules
+- `validate-dr-rule-components` - Validate rule syntax
+- `generate-dr-rule-detection` - AI-generate detection logic
+- `generate-dr-rule-respond` - AI-generate response actions
+
 ## Available Functions (124)
 
 ### Organization Management (8)
