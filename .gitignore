@@ -31,3 +31,5 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+
+.claude
