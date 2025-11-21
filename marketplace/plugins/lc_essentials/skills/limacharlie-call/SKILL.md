@@ -114,7 +114,17 @@ Quick reference to find functions by common task:
 - `upgrade-sensors` - Upgrade all sensors to specific version
 
 ### Threat Hunting & Investigation
-- `run-lcql-query` - Search historical data with LCQL
+
+**⚠️ CRITICAL LCQL Workflow:**
+When querying historical data, ALWAYS use this two-step process:
+1. **FIRST**: Call `generate-lcql-query` to convert natural language to LCQL syntax
+2. **THEN**: Call `run-lcql-query` with the generated LCQL query
+
+LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | event.FILE_PATH contains 'powershell'`
+
+**Functions:**
+- `generate-lcql-query` - **USE THIS FIRST** - Convert natural language to LCQL syntax
+- `run-lcql-query` - Execute LCQL query (requires actual LCQL syntax, NOT SQL/English)
 - `search-iocs` - Search for indicators of compromise
 - `batch-search-iocs` - Bulk IOC search
 - `search-hosts` - Search for hosts by criteria

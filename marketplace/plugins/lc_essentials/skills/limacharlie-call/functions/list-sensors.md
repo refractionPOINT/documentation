@@ -10,19 +10,21 @@ Use this skill when the user needs to:
 - Get a sensor inventory or fleet overview
 - Filter sensors by hostname prefix (e.g., all servers starting with "web-")
 - Filter sensors by IP address (internal or external)
+- Filter sensors by online/offline status
 - Count total number of sensors
 - Find sensors matching specific naming patterns
 
 Common scenarios:
 - "Show me all sensors in my organization"
-- "List all Windows sensors"
+- "List all online sensors"
+- "Show me all offline sensors"
 - "Find all sensors with hostname starting with 'prod-'"
 - "Show me sensors with IP address 10.0.1.50"
 - "How many sensors do I have?"
 
 ## What This Skill Does
 
-This skill lists all sensors in the organization by calling the LimaCharlie API. It supports pagination automatically and can filter results by hostname prefix or IP address.
+This skill lists all sensors in the organization by calling the LimaCharlie API. It returns all sensors automatically and can filter results by hostname prefix, IP address, or online status.
 
 ## Required Information
 
@@ -34,6 +36,7 @@ Before calling this skill, gather:
 Optional parameters:
 - **with_hostname_prefix**: Filter sensors where hostname starts with this prefix
 - **with_ip**: Filter sensors with this IP address (matches internal or external IP)
+- **is_online**: Filter sensors by online status (true for online, false for offline)
 
 ## How to Use
 
@@ -63,42 +66,42 @@ mcp__limacharlie__lc_call_tool(
 - Optional parameters:
   - `with_hostname_prefix`: Filter by hostname prefix
   - `with_ip`: Filter by IP address
+  - `is_online`: Filter by online status (boolean)
 
-**Note:** The tool handles pagination automatically using continuation tokens returned by the API.
+**Note:** The tool returns all sensors automatically (pagination is handled internally).
 
 ### Step 3: Handle the Response
 
 The tool returns data directly:
 ```json
 {
-  "sensors": {
-    "sensor-id-1": {
+  "sensors": [
+    {
       "sid": "sensor-id-1",
       "hostname": "SERVER01",
-      "plat": 268435456,
-      "arch": 1,
-      "enroll": "2024-01-15T10:30:00Z",
-      "alive": "2024-01-20T14:22:13Z",
-      "int_ip": "10.0.1.50",
-      "ext_ip": "203.0.113.45",
-      "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-      "iid": "install-key-123"
+      "platform": "windows",
+      "last_seen": "2024-01-20T14:22:13Z",
+      "internal_ip": "10.0.1.50",
+      "external_ip": "203.0.113.45"
     },
-    "sensor-id-2": {
+    {
       "sid": "sensor-id-2",
       "hostname": "WORKSTATION-05",
-      ...
+      "platform": "windows",
+      "last_seen": "2024-01-20T14:20:00Z",
+      "internal_ip": "10.0.1.105",
+      "external_ip": "203.0.113.46"
     }
-  },
-  "continuation_token": ""
+  ],
+  "count": 2
 }
 ```
 
 **Success:**
-- The response contains a map of sensor objects keyed by sensor ID
-- Each sensor has basic metadata (hostname, platform, IPs, last seen)
-- Empty `continuation_token` means all sensors have been retrieved
-- Apply client-side filtering for hostname prefix or IP address after retrieval
+- The response contains an array of sensor objects with basic metadata
+- Each sensor has hostname, platform, IPs, and last seen timestamp
+- The `count` field indicates the total number of sensors returned
+- All matching sensors are returned in a single response
 
 **Common Errors:**
 - **403 Forbidden**: Insufficient permissions to list sensors in the organization
@@ -109,7 +112,7 @@ The tool returns data directly:
 Present the result to the user:
 - Display sensor count at the top
 - List sensors in a tabular format with key fields
-- Apply any requested filters (hostname prefix, IP address)
+- Filters (hostname prefix, IP address, online status) are applied automatically by the tool
 - Sort by hostname or last seen timestamp for better readability
 - Highlight offline sensors or sensors that haven't checked in recently
 
@@ -147,11 +150,11 @@ mcp__limacharlie__lc_call_tool(
 Expected response:
 ```json
 {
-  "sensors": {
-    "sensor-1": { ... },
-    "sensor-2": { ... },
-    ...
-  }
+  "sensors": [
+    { "sid": "sensor-1", "hostname": "SERVER01", ... },
+    { "sid": "sensor-2", "hostname": "WORKSTATION-05", ... }
+  ],
+  "count": 2
 }
 ```
 
@@ -160,9 +163,17 @@ Expected response:
 User request: "List all sensors with hostname starting with 'prod-'"
 
 Steps:
-1. Get all sensors using the tool call
-2. Filter results client-side where `hostname` starts with "prod-"
-3. Display filtered list:
+1. Call tool with hostname filter:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "with_hostname_prefix": "prod-"
+  }
+)
+```
+2. Display filtered results:
 ```
 Production Sensors (3 total):
 - prod-web-01 (sensor-123)
@@ -170,24 +181,49 @@ Production Sensors (3 total):
 - prod-app-01 (sensor-789)
 ```
 
-### Example 3: Filter by IP address
+### Example 3: Filter by online status
+
+User request: "Show me all online sensors"
+
+Steps:
+1. Call tool with online filter:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "is_online": true
+  }
+)
+```
+2. Display online sensors only
+
+### Example 4: Filter by IP address
 
 User request: "Find the sensor with IP 10.0.1.50"
 
 Steps:
-1. Get all sensors using the tool call
-2. Filter results where `int_ip` or `ext_ip` matches "10.0.1.50"
-3. Display matching sensor(s)
+1. Call tool with IP filter:
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "with_ip": "10.0.1.50"
+  }
+)
+```
+2. Display matching sensor(s)
 
 ## Additional Notes
 
-- The tool automatically handles pagination using continuation tokens
+- The tool automatically returns all sensors (pagination is handled internally by the SDK)
 - Large organizations may have hundreds or thousands of sensors
-- Platform codes: Windows=268435456, Linux=67108864, macOS=33554432
-- Filtering is done client-side after retrieving all sensors
-- For more specific searches, consider using `search-hosts` skill with wildcard patterns
-- Use `get-online-sensors` skill if you only need to know which sensors are currently online
-- The `alive` timestamp indicates when the sensor last checked in
+- Filtering is done server-side for `is_online` parameter (more efficient)
+- The `with_hostname_prefix` and `with_ip` filters are applied client-side after retrieval
+- For wildcard hostname searches, use the `search-hosts` skill instead
+- You can combine multiple filters (e.g., `is_online=true` and `with_hostname_prefix="prod-"`)
+- The `last_seen` timestamp indicates when the sensor last checked in
 - Sensors that haven't checked in for more than a few minutes are likely offline
 - Consider caching the sensor list if you need to perform multiple queries
 

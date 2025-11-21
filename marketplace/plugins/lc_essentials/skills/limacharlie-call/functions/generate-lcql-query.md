@@ -3,9 +3,21 @@
 
 Generate LimaCharlie Query Language (LCQL) queries from natural language descriptions using AI-powered assistance.
 
+## ⚠️ CRITICAL: Use This BEFORE run_lcql_query
+
+**ALWAYS use this function FIRST before calling `run_lcql_query`.**
+
+LCQL is NOT SQL or standard query language - it uses a unique pipe-based syntax. Do not attempt to write LCQL manually.
+
+**Correct workflow:**
+1. **FIRST**: Call `generate_lcql_query` with natural language (e.g., "find all PowerShell executions in last 24 hours")
+2. **THEN**: Use the generated LCQL query with `run_lcql_query`
+
+**Example LCQL syntax:** `-24h | * | NEW_PROCESS | event.FILE_PATH contains 'powershell'`
+
 ## When to Use
 
-Use this skill when the user needs to:
+**Use this skill EVERY TIME before running an LCQL query, when the user needs to:**
 - Create LCQL queries from natural language descriptions
 - Convert investigation questions into LCQL syntax
 - Learn proper LCQL query syntax through examples
@@ -20,6 +32,7 @@ Common scenarios:
 - "Generate a query for file creation events on Windows systems"
 - "Help me query DNS requests to specific domains"
 - "Build a query to find process executions with specific command line patterns"
+- "Get unique file paths that have executed in the last week"
 
 ## What This Skill Does
 

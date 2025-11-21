@@ -3,6 +3,25 @@
 
 Execute LCQL (LimaCharlie Query Language) queries against your organization's historical data.
 
+## ⚠️ CRITICAL: LCQL Syntax Required
+
+**This function requires ACTUAL LCQL syntax - NOT SQL, NOT English, NOT natural language.**
+
+LCQL uses a pipe-based syntax like: `-24h | * | DNS_REQUEST | event.DOMAIN_NAME = 'suspicious-domain.com'`
+
+**WRONG:** `SELECT DISTINCT event.FILE_PATH FROM events WHERE sid = 'abc' AND event_type = 'NEW_PROCESS'` (This is SQL)
+**WRONG:** `find all PowerShell executions` (This is English)
+**RIGHT:** `-24h | sid = 'abc' | NEW_PROCESS | event.FILE_PATH contains 'powershell'`
+
+## Required Workflow
+
+**ALWAYS use this two-step workflow:**
+
+1. **FIRST**: Use `generate_lcql_query` to convert natural language to LCQL syntax
+2. **THEN**: Use `run_lcql_query` with the generated LCQL query
+
+**DO NOT** skip step 1 and try to write LCQL manually unless you are certain of the correct syntax.
+
 ## When to Use
 
 Use this skill when the user needs to:
