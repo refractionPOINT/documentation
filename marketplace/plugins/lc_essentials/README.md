@@ -1,6 +1,6 @@
 # LimaCharlie Essentials Plugin
 
-Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 121 comprehensive skills covering core operations, historical data, forensics, detection rules, threat intelligence analysis, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
+Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 122 comprehensive skills covering core operations, historical data, forensics, detection rules, threat intelligence analysis, MSSP multi-tenant reporting, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
 
 ## Important: Organization ID (OID) Requirements
 
@@ -23,11 +23,11 @@ A small number of skills operate at the user-level or global level and **do not 
 - **`create-org`** - Creates a new organization (user-level operation)
 - **`get-platform-names`** - Gets list of platform names from ontology (global operation)
 
-All other 118 skills require a valid, specific organization ID.
+All other 119 skills require a valid, specific organization ID.
 
 ## What It Does
 
-This plugin provides 121 comprehensive skills:
+This plugin provides 122 comprehensive skills:
 
 ### Skills Organized by Category
 
@@ -63,6 +63,9 @@ This plugin provides 121 comprehensive skills:
 
 ### Threat Intelligence & Analysis
 - **Threat Report Evaluation**: Systematically evaluate threat reports, breach analyses, and IOC reports to search for compromise indicators, extract IOCs, perform searches, identify malicious behaviors, generate LCQL queries, and create D&R rules and lookups
+
+### MSSP & Multi-Tenant Reporting
+- **MSSP Reporting**: Generate comprehensive multi-tenant security and operational reports across 50+ customer organizations. Includes billing summaries, usage analytics, detection trends, sensor health monitoring, and configuration audits with strict data accuracy guardrails. Supports partial report generation when organizations fail, with transparent error documentation.
 
 ### Configuration & Integrations
 - **Extensions**: List, get, create, update, delete extension configs
@@ -148,7 +151,7 @@ See [CALLING_API.md](./CALLING_API.md) for details on how large result handling 
 
 ## Skills Summary
 
-See [SKILLS_SUMMARY.md](./SKILLS_SUMMARY.md) for a complete list of all 120 skills with descriptions.
+See [SKILLS_SUMMARY.md](./SKILLS_SUMMARY.md) for a complete list of all 121 skills with descriptions.
 
 ## API Calling Guide
 

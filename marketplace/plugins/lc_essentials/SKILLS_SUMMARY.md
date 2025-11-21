@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully created **120 new SKILL.md files** for the lc_essentials plugin, bringing the total to **121 skills** (including the existing lookup-lc-doc skill).
+Successfully created **121 new SKILL.md files** for the lc_essentials plugin, bringing the total to **122 skills** (including the existing lookup-lc-doc skill and the integrated mssp-reporting skill).
 
 ## What Was Created
 
@@ -34,6 +34,9 @@ Successfully created **120 new SKILL.md files** for the lc_essentials plugin, br
 
 #### Threat Intelligence & Analysis (1 skill)
 - threat-report-evaluation
+
+#### MSSP & Multi-Tenant Reporting (1 skill)
+- mssp-reporting
 
 #### Event Schemas & Platform Info (6 skills)
 - get-event-schema
