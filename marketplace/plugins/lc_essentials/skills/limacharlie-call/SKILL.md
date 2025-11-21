@@ -1,7 +1,7 @@
 ---
 name: limacharlie-call
-description: Perform LimaCharlie API operations using MCP tool. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, mcp__plugin_lc-essentials_limacharlie__generate_lcql_query, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond, mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector, mcp__plugin_lc-essentials_limacharlie__generate_python_playbook, mcp__plugin_lc-essentials_limacharlie__generate_detection_summary, mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components, mcp__plugin_lc-essentials_limacharlie__validate_yara_rule, Read, Bash
+description: Perform LimaCharlie API operations using Haiku sub-agent. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
+allowed-tools: Task, Read, Bash
 ---
 
 # LimaCharlie API Operations
@@ -12,20 +12,88 @@ Perform any LimaCharlie operation by dynamically loading function references.
 
 **⚠️ CRITICAL**: The Organization ID (OID) is a **UUID** (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name.
 - If you don't have the OID, use `list-user-orgs` function first to get the UUID from the org name
-- All operations use the MCP tool: `mcp__plugin_lc-essentials_limacharlie__lc_call_tool`
+- All operations are delegated to the `limacharlie-api-executor` sub-agent which handles MCP tool calls
 
-**⚠️ CRITICAL: JSON Processing with jq**
-When using jq to process JSON files, call jq directly:
-```bash
-jq '<expression>' <file>
-```
+**⚠️ CRITICAL: Always Use the Sub-Agent**
+You must NEVER call MCP tools directly. Always use the Task tool to spawn the `limacharlie-api-executor` sub-agent for all API operations.
 
 ## How to Use
 
+**All LimaCharlie API operations are executed through the `limacharlie-api-executor` sub-agent for optimal performance.**
+
+### Single API Call
+
 1. Find the function you need in the index below
-2. Read the function's reference file: `./functions/{function-name}.md`
-3. Follow the instructions in that file to make the API call
-4. If an OID is needed, get it first with `list-user-orgs`
+2. Spawn the `limacharlie-api-executor` agent with the Task tool:
+
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: <function-name>
+    - Parameters: {<params>}
+    - Extract: (optional) <what to extract>"
+)
+```
+
+**Example**:
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_sensor_info
+    - Parameters: {\"oid\": \"8cbe27f4-bfa1-4afb-ba19-138cd51389cd\", \"sid\": \"xyz-123\"}
+    - Extract: sensor hostname and online status"
+)
+```
+
+### Parallel API Calls
+
+For multiple independent API calls, spawn multiple agents in a **single message** for parallel execution:
+
+```
+<single message with multiple Task calls>
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... sensor1")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... sensor2")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... sensor3")
+</single message>
+```
+
+**Example** (checking data availability for 3 sensors in parallel):
+```
+<function_calls>
+  <Task subagent_type="lc-essentials:limacharlie-api-executor"
+        prompt="Execute LimaCharlie API call:
+          - Function: get_time_when_sensor_has_data
+          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor1\", \"start\": 1234567890, \"end\": 1234567899}">
+  <Task subagent_type="lc-essentials:limacharlie-api-executor"
+        prompt="Execute LimaCharlie API call:
+          - Function: get_time_when_sensor_has_data
+          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor2\", \"start\": 1234567890, \"end\": 1234567899}">
+  <Task subagent_type="lc-essentials:limacharlie-api-executor"
+        prompt="Execute LimaCharlie API call:
+          - Function: get_time_when_sensor_has_data
+          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor3\", \"start\": 1234567890, \"end\": 1234567899}">
+</function_calls>
+```
+
+### Getting Organization ID
+
+If you don't have the OID (Organization ID), get it first with `list-user-orgs`:
+
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}"
+)
+```
+
+Then use the UUID from the results for subsequent calls.
 
 ## Functions by Use Case
 
@@ -243,76 +311,46 @@ For detailed information on using the MCP tool, see [CALLING_API.md](../CALLING_
 
 ### Handling Large Results
 
-When tool calls return large result sets (>100KB), the `lc_call_tool` returns a `resource_link` instead of inline data:
+**The `limacharlie-api-executor` agent handles large results automatically.**
+
+When API calls return large result sets (>100KB), the MCP tool returns a `resource_link` instead of inline data. The sub-agent will:
+
+1. **Download** the data from the signed URL
+2. **Analyze** the JSON schema to understand structure
+3. **Extract** requested data using jq (if extraction instructions provided)
+4. **Clean up** temporary files automatically
+5. **Return** processed results to you
+
+You don't need to handle this manually. Just include extraction instructions in your Task prompt:
+
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"...\"}
+    - Extract: Count of total sensors and count of online sensors"
+)
+```
+
+The agent will receive the `resource_link`, download the data, analyze the schema, extract the counts, and return:
 
 ```json
 {
-  "is_temp_file": false,
-  "reason": "results too large, see resource_link for content",
-  "resource_link": "https://storage.googleapis.com/...",
-  "resource_size": 34329,
-  "success": true
+  "success": true,
+  "data": {
+    "total_sensors": 247,
+    "online_sensors": 198
+  },
+  "metadata": {
+    "function": "list_sensors",
+    "result_size": "large",
+    "extracted": true
+  }
 }
 ```
 
-**CRITICAL REQUIREMENT**: When you see `resource_link` in the response, you **MUST** follow this exact workflow. DO NOT attempt to guess the JSON structure or write jq queries before analyzing the schema.
+**Note**: If you need the full raw data (not extracted), omit the "Extract" instruction and the agent will return the complete dataset.
 
-**Why this is mandatory**: Skipping the analysis step results in incorrect queries, wasted tokens, and frustration. The schema reveals the actual structure, which may differ from what you expect.
-
-### Step 1: Download and Analyze (REQUIRED)
-
-**You MUST run the analyze script first. DO NOT skip this step.**
-
-Run the analyze script with the `resource_link` URL:
-
-```bash
-bash ./marketplace/plugins/lc_essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/..."
-```
-
-Replace the URL with the actual `resource_link` value from the API response.
-
-**What this script does:**
-1. Downloads the file to `/tmp/lc-result-{timestamp}.json`
-2. Outputs the JSON schema to stdout showing object keys, array patterns, and data types
-3. Prints the file path to stderr (after `---FILE_PATH---`)
-
-**Example output:**
-```
-(stdout) {"sensors": [{"sid": "string", "hostname": "string", "platform": "string"}]}
-(stderr) ---FILE_PATH---
-(stderr) /tmp/lc-result-1731633216789456123.json
-```
-
-**Before proceeding to Step 2**, you MUST review the schema output to understand:
-- Is the top-level structure an object or array?
-- What are the available keys/fields?
-- How is the data nested?
-
-### Step 2: Extract Specific Data with jq
-
-**Only after reviewing the schema**, use jq to extract the specific information requested. Use the file path shown in the script output.
-
-Common patterns based on schema:
-
-```bash
-# If schema shows top-level array
-jq '.[] | select(.hostname == "web-01")' /tmp/lc-result-{timestamp}.json
-
-# If schema shows top-level object with named keys
-jq '.sensors[] | {id: .sid, name: .hostname}' /tmp/lc-result-{timestamp}.json
-
-# Count items
-jq '. | length' /tmp/lc-result-{timestamp}.json
-```
-
-### Step 3: Clean Up
-
-Remove the temporary file when done:
-
-```bash
-rm /tmp/lc-result-{timestamp}.json
-```
-
-Replace `{timestamp}` with the actual timestamp from Step 1's output.
-
-See the "Handling Large Results" section in [CALLING_API.md](../CALLING_API.md) for more details.
+For more details on large result handling, see the agent documentation and [CALLING_API.md](../CALLING_API.md).
