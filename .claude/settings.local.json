@@ -34,9 +34,7 @@
       "mcp__plugin_lc-essentials_limacharlie__generate_detection_summary",
       "mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components",
       "mcp__plugin_lc-essentials_limacharlie__validate_yara_rule",
-      "mcp__plugin_lc-essentials_limacharlie__lc_call_tool",
-      "Bash(mkdir:*)",
-      "Skill(lc-essentials:sensor-health)"
+      "mcp__plugin_lc-essentials_limacharlie__lc_call_tool"
     ],
     "deny": []
   }
