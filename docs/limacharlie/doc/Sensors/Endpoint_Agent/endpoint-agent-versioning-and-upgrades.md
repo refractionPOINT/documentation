@@ -19,7 +19,42 @@ LimaCharlie provides three version labels to simplify version management:
 2. **Stable**: A less frequently updated version, ideal for maintaining slower update cadences.
 3. **Experimental**: The beta version of the next "Latest" release.
 
-You can upgrade to any of these versions for your organization by using the LimaCharlie web interface or the [API](https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg).
+You can upgrade to any of these version labels for your organization by using the LimaCharlie web interface or the [API](https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg).
+
+### Upgrading to Specific Versions
+
+In addition to using version labels, you can upgrade your organization to a specific sensor version using semantic version strings (e.g., `4.33.20`). This is useful when:
+
+* You need to pin your organization to a specific tested version
+* You want to maintain version consistency across multiple organizations
+* You need to rollback to a previous version for compatibility reasons
+* You're testing a specific version before broader deployment
+
+To upgrade or manage sensors using the API:
+
+```bash
+# Upgrade to a specific version
+curl -X POST "https://api.limacharlie.io/v1/modules/{oid}?specific_version=4.33.20" \
+  -H "Authorization: Bearer {api_key}" \
+  -H "Content-Type: application/json"
+
+# Upgrade to latest version label
+curl -X POST "https://api.limacharlie.io/v1/modules/{oid}?specific_version=latest" \
+  -H "Authorization: Bearer {api_key}" \
+  -H "Content-Type: application/json"
+
+# Downgrade to previous version (rollback)
+curl -X POST "https://api.limacharlie.io/v1/modules/{oid}?is_fallback=true" \
+  -H "Authorization: Bearer {api_key}" \
+  -H "Content-Type: application/json"
+
+# Move sensors to dormant mode
+curl -X POST "https://api.limacharlie.io/v1/modules/{oid}?is_sleep=true" \
+  -H "Authorization: Bearer {api_key}" \
+  -H "Content-Type: application/json"
+```
+
+**Note**: Specific version strings follow semantic versioning format (MAJOR.MINOR.PATCH) and must correspond to an available LimaCharlie sensor release. If you specify an invalid or unavailable version, the API will return an error.
 
 ## Managing Versioning for Sensors
 

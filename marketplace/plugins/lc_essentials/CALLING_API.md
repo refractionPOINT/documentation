@@ -116,6 +116,7 @@ Errors are returned with an `error` field:
 - `get_cloud_sensor` - Get cloud sensor config
 - `set_cloud_sensor` - Create/update cloud sensor
 - `delete_cloud_sensor` - Delete cloud sensor
+- `upgrade_sensors` - Upgrade sensors to specific version
 
 ### Detection Engineering Profile
 - `get_detection_rules` - Get all D&R rules

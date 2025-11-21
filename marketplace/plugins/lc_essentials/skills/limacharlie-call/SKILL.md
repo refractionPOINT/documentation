@@ -1,6 +1,6 @@
 ---
 name: limacharlie-call
-description: Perform LimaCharlie API operations using MCP tool. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
+description: Perform LimaCharlie API operations using MCP tool. Access 125 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
 allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, mcp__plugin_lc-essentials_limacharlie__generate_lcql_query, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond, mcp__plugin_lc-essentials_limacharlie__generate_sensor_selector, mcp__plugin_lc-essentials_limacharlie__generate_python_playbook, mcp__plugin_lc-essentials_limacharlie__generate_detection_summary, mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components, mcp__plugin_lc-essentials_limacharlie__validate_yara_rule, Read, Bash
 ---
 
@@ -42,6 +42,7 @@ Quick reference to find functions by common task:
 - `get-sensor-info` - Get detailed sensor information
 - `list-sensors` - List all sensors in organization
 - `list-with-platform` - Filter sensors by OS platform
+- `upgrade-sensors` - Upgrade all sensors to specific version
 
 ### Threat Hunting & Investigation
 - `run-lcql-query` - Search historical data with LCQL
@@ -67,7 +68,7 @@ Quick reference to find functions by common task:
 - `generate-dr-rule-detection` - AI-generate detection logic
 - `generate-dr-rule-respond` - AI-generate response actions
 
-## Available Functions (124)
+## Available Functions (125)
 
 ### Organization Management (8)
 - `list-user-orgs` - List organizations available to user → `./functions/list-user-orgs.md`
@@ -84,7 +85,7 @@ Quick reference to find functions by common task:
 - `create-api-key` - Create API key → `./functions/create-api-key.md`
 - `delete-api-key` - Delete API key → `./functions/delete-api-key.md`
 
-### Sensor Operations (12)
+### Sensor Operations (13)
 - `list-sensors` - List all sensors → `./functions/list-sensors.md`
 - `list-with-platform` - List sensors by platform → `./functions/list-with-platform.md`
 - `get-sensor-info` - Get sensor details → `./functions/get-sensor-info.md`
@@ -97,6 +98,7 @@ Quick reference to find functions by common task:
 - `isolate-network` - Isolate sensor from network → `./functions/isolate-network.md`
 - `rejoin-network` - Rejoin sensor to network → `./functions/rejoin-network.md`
 - `get-time-when-sensor-has-data` - Get time range for sensor data → `./functions/get-time-when-sensor-has-data.md`
+- `upgrade-sensors` - Upgrade sensors to specific version → `./functions/upgrade-sensors.md`
 
 ### Installation Keys (3)
 - `list-installation-keys` - List installation keys → `./functions/list-installation-keys.md`
