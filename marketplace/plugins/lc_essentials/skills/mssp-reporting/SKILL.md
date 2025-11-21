@@ -650,7 +650,7 @@ if limit_reached:
 ```
 ┌─ PHASE 1: DISCOVERY ──────────────────────────────┐
 │ 1. Call: list-user-orgs (no OID required)        │
-│    MCP Tool: mcp__plugin_lc-essentials_limacharlie__lc_api_call
+│    MCP Tool: mcp__plugin_lc-essentials_limacharlie__lc_call_tool
 │    Params: {
 │      endpoint: "api",
 │      method: "GET",
