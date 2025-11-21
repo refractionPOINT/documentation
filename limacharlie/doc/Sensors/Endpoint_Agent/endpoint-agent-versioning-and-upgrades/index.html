@@ -1909,7 +1909,37 @@
 <li><strong>Stable</strong>: A less frequently updated version, ideal for maintaining slower update cadences.</li>
 <li><strong>Experimental</strong>: The beta version of the next "Latest" release.</li>
 </ol>
-<p>You can upgrade to any of these versions for your organization by using the LimaCharlie web interface or the <a href="https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg">API</a>.</p>
+<p>You can upgrade to any of these version labels for your organization by using the LimaCharlie web interface or the <a href="https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg">API</a>.</p>
+<h3 id="upgrading-to-specific-versions">Upgrading to Specific Versions<a class="headerlink" href="#upgrading-to-specific-versions" title="Anchor link to this section">&para;</a></h3>
+<p>In addition to using version labels, you can upgrade your organization to a specific sensor version using semantic version strings (e.g., <code>4.33.20</code>). This is useful when:</p>
+<ul>
+<li>You need to pin your organization to a specific tested version</li>
+<li>You want to maintain version consistency across multiple organizations</li>
+<li>You need to rollback to a previous version for compatibility reasons</li>
+<li>You're testing a specific version before broader deployment</li>
+</ul>
+<p>To upgrade or manage sensors using the API:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Upgrade to a specific version</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.limacharlie.io/v1/modules/{oid}?specific_version=4.33.20&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer {api_key}&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Upgrade to latest version label</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.limacharlie.io/v1/modules/{oid}?specific_version=latest&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer {api_key}&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># Downgrade to previous version (rollback)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.limacharlie.io/v1/modules/{oid}?is_fallback=true&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer {api_key}&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># Move sensors to dormant mode</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.limacharlie.io/v1/modules/{oid}?is_sleep=true&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer {api_key}&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span>
+</span></code></pre></div>
+<p><strong>Note</strong>: Specific version strings follow semantic versioning format (MAJOR.MINOR.PATCH) and must correspond to an available LimaCharlie sensor release. If you specify an invalid or unavailable version, the API will return an error.</p>
 <h2 id="managing-versioning-for-sensors">Managing Versioning for Sensors<a class="headerlink" href="#managing-versioning-for-sensors" title="Anchor link to this section">&para;</a></h2>
 <p>To manage the versioning of sensors, you can leverage LimaCharlie's <strong>System</strong> Tags:</p>
 <ul>
