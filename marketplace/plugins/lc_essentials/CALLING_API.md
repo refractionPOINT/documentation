@@ -1,18 +1,44 @@
 # LimaCharlie Tool Access
 
-The `lc_call_tool` provides unified access to all LimaCharlie MCP tools. This document explains how to use it effectively from within skills.
+The `lc_call_tool` provides unified access to all LimaCharlie MCP tools. This document explains the architecture and how it works.
+
+## Execution Architecture
+
+**All LimaCharlie API operations are executed through the `limacharlie-api-executor` sub-agent** for optimal performance, cost efficiency, and parallel execution capability.
+
+### Why Use a Sub-Agent?
+
+- **Cost Optimization**: Haiku model is cheaper for straightforward API calls
+- **Speed**: Faster execution for simple operations
+- **Parallel Execution**: Multiple API calls can run concurrently
+- **Separation of Concerns**: Main thread focuses on orchestration, sub-agent handles API details
+- **Autonomous Result Processing**: Sub-agent handles large result downloads, schema analysis, and data extraction
+
+### Execution Flow
+
+```
+Main Thread/Skill
+    ↓ (delegates via Task tool)
+limacharlie-api-executor Agent (Haiku)
+    ↓ (calls MCP tool)
+lc_call_tool
+    ↓ (API request)
+LimaCharlie Platform
+```
 
 ## Basic Parameters
 
-- **tool_name**: Name of the MCP tool to call (e.g., `get_sensor_info`, `run_lcql_query`)
-- **parameters**: Object containing the parameters for the specific tool
+The sub-agent receives:
+- **Function**: Name of the LimaCharlie API function (e.g., `get_sensor_info`, `run_lcql_query`)
+- **Parameters**: Object containing the parameters for the specific function
+- **Extract** (optional): Instructions for data extraction/filtering
 
 ## How It Works
 
-The `lc_call_tool` is a meta-tool that invokes other registered LimaCharlie MCP tools. Instead of making raw HTTP requests, you call specific tools by name with their parameters:
+The `lc_call_tool` is a meta-tool that invokes other registered LimaCharlie MCP tools. The sub-agent calls it with specific function names and parameters:
 
 ```
-mcp__limacharlie__lc_call_tool(
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="get_sensor_info",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
@@ -20,6 +46,8 @@ mcp__limacharlie__lc_call_tool(
   }
 )
 ```
+
+The sub-agent handles the call, processes results, and returns structured data to the main thread.
 
 ## Authentication
 
@@ -312,6 +340,8 @@ Some operations don't require a specific organization ID:
 
 ## Handling Large Results
 
+**The `limacharlie-api-executor` sub-agent handles large results automatically.** This section documents the underlying mechanism for reference.
+
 When tool calls return large result sets (>100KB), the `lc_call_tool` returns a special response format instead of the full data:
 
 ```json
@@ -340,9 +370,24 @@ The `resource_link` URL:
 - Includes GCP authentication tokens in the URL parameters
 - Can be downloaded directly with tools like `curl` or `WebFetch`
 
-### Handling Large Results with analyze-lc-result.sh Script
+### Autonomous Handling by Sub-Agent
 
-**CRITICAL REQUIREMENT**: When `lc_call_tool` returns a `resource_link`, you **MUST** follow this exact workflow. DO NOT attempt to guess the JSON structure or write jq queries before analyzing the schema.
+When you delegate to the `limacharlie-api-executor` agent with extraction instructions, the agent:
+
+1. **Detects** the `resource_link` in the API response
+2. **Downloads** the data from the signed URL
+3. **Analyzes** the JSON schema using `analyze-lc-result.sh`
+4. **Extracts** requested data using jq based on schema
+5. **Cleans up** temporary files
+6. **Returns** processed results to the main thread
+
+You don't need to handle this manually. See the `limacharlie-call` skill documentation for usage examples.
+
+### Manual Processing (Advanced)
+
+If you need to manually process large results (not recommended), follow this workflow:
+
+**CRITICAL REQUIREMENT**: DO NOT attempt to guess the JSON structure or write jq queries before analyzing the schema.
 
 **Why this is mandatory**: Skipping the analysis step results in incorrect queries, wasted tokens, and frustration. The schema reveals the actual structure, which may differ from what you expect.
 
