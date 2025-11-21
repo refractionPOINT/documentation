@@ -2,7 +2,7 @@
 name: mssp-reporting
 description: Generate comprehensive multi-tenant MSSP security and operational reports from LimaCharlie. Provides billing summaries, usage analytics, detection trends, sensor health monitoring, and configuration audits across multiple customer organizations. Built with strict data accuracy guardrails to prevent fabricated metrics. Supports partial report generation when some organizations fail, with transparent error documentation. Time windows always displayed, detection limits clearly flagged, zero cost calculations.
 allowed-tools:
-  - mcp__plugin_lc-essentials_limacharlie__lc_api_call
+  - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
   - Read
   - Write
   - Bash
