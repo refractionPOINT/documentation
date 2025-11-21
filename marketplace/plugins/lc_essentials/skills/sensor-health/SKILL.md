@@ -1,7 +1,7 @@
 ---
 name: sensor-health
 description: Generate comprehensive sensor health and status reports across all LimaCharlie organizations. Use when users ask about sensor connectivity, data availability, offline sensors, sensors not reporting events, or fleet-wide health queries (e.g., "show me sensors online but not sending data", "list sensors offline for 7 days across all orgs").
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, Bash, Task
+allowed-tools: Task, Read, Bash
 ---
 
 # Sensor Health Reporting Skill
