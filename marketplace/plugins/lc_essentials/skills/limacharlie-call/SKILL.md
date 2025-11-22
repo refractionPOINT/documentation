@@ -1,7 +1,7 @@
 ---
 name: limacharlie-call
 =======
-description: Perform LimaCharlie API operations using Haiku sub-agent. Access 125 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
+description: Perform LimaCharlie API operations using Haiku sub-agent. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
 allowed-tools: Task, Read, Bash
 ---
 
@@ -106,11 +106,10 @@ Quick reference to find functions by common task:
 - `get-historic-detections` - Query historical detection alerts
 
 ### Sensor Status & Health
-- `is-online` - Check if sensor is currently online
-- `get-online-sensors` - List all online sensors
+- `list-sensors` - **PRIMARY** - List all sensors with optional filtering (hostname, IP, online status, platform)
+- `get-online-sensors` - Get online sensor IDs quickly
 - `get-sensor-info` - Get detailed sensor information
-- `list-sensors` - List all sensors in organization
-- `list-with-platform` - Filter sensors by OS platform
+- `is-online` - Check if sensor is currently online
 - `upgrade-sensors` - Upgrade all sensors to specific version
 
 ### Threat Hunting & Investigation
@@ -147,7 +146,7 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `generate-dr-rule-detection` - AI-generate detection logic
 - `generate-dr-rule-respond` - AI-generate response actions
 
-## Available Functions (125)
+## Available Functions (124)
 
 ### Organization Management (8)
 - `list-user-orgs` - List organizations available to user → `./functions/list-user-orgs.md`
@@ -164,9 +163,8 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `create-api-key` - Create API key → `./functions/create-api-key.md`
 - `delete-api-key` - Delete API key → `./functions/delete-api-key.md`
 
-### Sensor Operations (13)
+### Sensor Operations (12)
 - `list-sensors` - List all sensors → `./functions/list-sensors.md`
-- `list-with-platform` - List sensors by platform → `./functions/list-with-platform.md`
 - `get-sensor-info` - Get sensor details → `./functions/get-sensor-info.md`
 - `delete-sensor` - Delete sensor → `./functions/delete-sensor.md`
 - `is-online` - Check if sensor is online → `./functions/is-online.md`
