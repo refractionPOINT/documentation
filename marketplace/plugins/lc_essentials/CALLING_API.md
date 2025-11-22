@@ -244,18 +244,83 @@ lc_call_tool(
 )
 ```
 
-### Pattern 3: List with Filtering
+### Pattern 3: Server-Side Filtering with Selector
+
+**Best practice for sensor filtering**: Use the `selector` parameter with bexpr syntax for powerful server-side filtering.
 
 ```
+# Filter by platform
 lc_call_tool(
   tool_name="list_sensors",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "with_hostname_prefix": "web-",
-    "with_ip": "10.0.1.50"
+    "selector": "plat == `windows`"
+  }
+)
+
+# Filter by hostname pattern
+lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "selector": "hostname matches `^web-`"
+  }
+)
+
+# Filter by IP address
+lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "selector": "int_ip == `10.0.1.50` or ext_ip == `10.0.1.50`"
+  }
+)
+
+# Complex filters (combine multiple conditions)
+lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "selector": "plat == `windows` and hostname matches `^prod-`"
   }
 )
 ```
+
+### Pattern 3b: Efficient Multi-Filter (Selector + Online)
+
+**Best practice for large sensor fleets**: Combine `selector` and `online_only` for maximum efficiency - both are evaluated server-side.
+
+```
+# Online Windows sensors only
+lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "selector": "plat == `windows`",
+    "online_only": true  # Server-side: efficient for large fleets
+  }
+)
+
+# Online production Linux servers
+lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "selector": "plat == `linux` and hostname matches `^prod-`",
+    "online_only": true
+  }
+)
+```
+
+**Why this approach?**
+- Both `selector` and `online_only` are evaluated **server-side** before results are returned
+- Example: If you have 1000 sensors (600 Windows, 400 Linux) and 200 are offline, requesting online Windows sensors returns only 480 results
+- Minimal data transfer and no client-side processing needed
+
+**Filtering performance tips:**
+- **Server-side filters** (most efficient): `selector` (bexpr syntax) and `online_only`
+- **Selector capabilities**: Filter by platform, hostname (regex), IP (regex), tags, architecture, and more
+- **Best practice**: All filtering is now server-side with the new API - use `selector` for complex queries
 
 ### Pattern 4: Create Resource
 
