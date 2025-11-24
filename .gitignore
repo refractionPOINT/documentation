@@ -32,4 +32,11 @@ Thumbs.db
 dist/
 build/
 
-.claude
+# Claude Code - exclude local settings and onboarding marker
+.claude/settings.local.json
+.claude/.onboarded
+.claude/.chat_history
+
+# Claude plugins - exclude Python cache
+.claude-plugin/**/__pycache__/
+.claude-plugin/**/*.pyc

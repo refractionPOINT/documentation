@@ -1,0 +1,25 @@
+{
+  "extraKnownMarketplaces": {
+    "lc-market": {
+      "source": {
+        "source": "file",
+        "path": ".claude-plugin/marketplace.json"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "limacharlie-skills": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/onboarding.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
