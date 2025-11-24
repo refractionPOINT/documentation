@@ -261,6 +261,14 @@ The sensor is now active and will resume collecting Azure Activity Logs.
 - Use list-cloud-sensors to verify the sensor was created
 - Use get-cloud-sensor to inspect the configuration after creation
 - Use delete-cloud-sensor to remove sensors that are no longer needed
+- **Pre-deployment validation**: For cloud sensors using USP parsing configurations, use `validate-usp-mapping` to test parsing rules before deployment
+
+## Related Functions
+
+- `validate-usp-mapping` - Test USP parsing configurations before deployment
+- `get-cloud-sensor` - Retrieve existing sensor configuration
+- `list-cloud-sensors` - List all configured cloud sensors
+- `delete-cloud-sensor` - Remove a cloud sensor
 
 ## Reference
 

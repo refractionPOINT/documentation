@@ -59,6 +59,8 @@ Ensure you have:
 6. Correct connection parameters and credentials
 7. Understanding of the external data source's format and structure
 
+**Pre-Deployment Validation**: Before deploying, use `validate-usp-mapping` to test your parsing rules against sample data. This ensures correct field extraction before production deployment.
+
 ### Step 2: Call the Tool
 
 Use the `lc_call_tool` MCP tool from the `limacharlie` server:
@@ -304,7 +306,7 @@ The adapter will now extract these additional fields from incoming syslog messag
 - Adapter names must be unique within the organization
 - The config structure varies by adapter type (syslog, webhook, api, custom)
 - Parsing rules are critical - incorrect rules result in unparsed or malformed events
-- Test parsing rules with sample data before deploying to production
+- **Pre-deployment validation**: Use `validate-usp-mapping` to test parsing rules with sample data before deploying. This validates regex patterns, field mappings, and transformations against real input
 - Field mappings should align with LimaCharlie's event schema for proper normalization
 - Common LimaCharlie event fields:
   - `event.timestamp`: Event timestamp
@@ -337,6 +339,13 @@ The adapter will now extract these additional fields from incoming syslog messag
 - Use delete-external-adapter to remove adapters that are no longer needed
 - Consider network security when exposing syslog ports or webhook endpoints
 - Document parsing rules and field mappings for maintenance
+
+## Related Functions
+
+- `validate-usp-mapping` - Test parsing configurations before deployment
+- `get-external-adapter` - Retrieve existing adapter configuration
+- `list-external-adapters` - List all configured adapters
+- `delete-external-adapter` - Remove an adapter
 
 ## Reference
 
