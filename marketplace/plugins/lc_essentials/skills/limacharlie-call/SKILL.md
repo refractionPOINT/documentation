@@ -1,7 +1,6 @@
 ---
 name: limacharlie-call
-=======
-description: Perform LimaCharlie API operations using Haiku sub-agent. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
+description: "**REQUIRED for ALL LimaCharlie operations** - list orgs, sensors, rules, detections, queries, and 120+ functions. NEVER call LimaCharlie MCP tools directly. Use cases: 'what orgs do I have', 'list sensors', 'search IOCs', 'run LCQL query', 'create detection rule'. This skill loads function docs and delegates to sub-agent."
 allowed-tools: Task, Read, Bash
 ---
 
