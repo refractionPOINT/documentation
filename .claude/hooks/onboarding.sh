@@ -65,16 +65,6 @@ if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
     fi
 fi
 
-# Check CLI status (don't install, just check if exists)
-if command -v limacharlie &> /dev/null || [ -f "$PROJECT_ROOT/.venv/bin/limacharlie" ]; then
-    STATUS_LINES="${STATUS_LINES}\u001b[32m    ✓ LimaCharlie CLI Tools\u001b[0m\n"
-
-    # Check if authenticated
-    if [ -f "$HOME/.limacharlie/auth.json" ]; then
-        STATUS_LINES="${STATUS_LINES}\u001b[36m       • CLI authenticated and ready\u001b[0m\n"
-    fi
-fi
-
 # Count total tools and capabilities
 TOTAL_MCP_SERVERS=$(echo "$MCP_SERVERS" | grep -v '^$' | wc -l 2>/dev/null || echo 0)
 TOTAL_PLUGINS=$(echo "$PLUGINS" | grep -v '^$' | wc -l 2>/dev/null || echo 0)
