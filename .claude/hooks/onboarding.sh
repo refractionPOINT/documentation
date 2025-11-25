@@ -69,11 +69,6 @@ fi
 TOTAL_MCP_SERVERS=$(echo "$MCP_SERVERS" | grep -v '^$' | wc -l 2>/dev/null || echo 0)
 TOTAL_PLUGINS=$(echo "$PLUGINS" | grep -v '^$' | wc -l 2>/dev/null || echo 0)
 
-# DEBUG: Remove the fallback defaults to always show real system state
-# This ensures dynamic detection is always used
-# If no status lines were generated, it means nothing is configured yet
-# and the screen will just show the welcome message without environment details
-
 # Create marker file on first time only
 if [ "$FIRST_TIME" = true ]; then
     touch "$MARKER_FILE" 2>/dev/null
