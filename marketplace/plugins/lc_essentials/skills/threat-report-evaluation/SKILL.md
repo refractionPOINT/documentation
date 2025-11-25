@@ -14,6 +14,7 @@ Systematically evaluate threat reports to determine organizational impact and cr
 - Search ONLY in the specified LimaCharlie organization
 - NEVER fabricate or assume data not present
 - ALWAYS use AI generation tools for rules—never write YAML manually
+- If the report is PDF or other rich file, download it, convert it to markdown and use that
 - Ask for user confirmation before creating any resources
 
 ## Required Information
