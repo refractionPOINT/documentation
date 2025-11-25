@@ -37,6 +37,5 @@ build/
 .claude/.onboarded
 .claude/.chat_history
 
-# Claude plugins - exclude Python cache
-.claude-plugin/**/__pycache__/
-.claude-plugin/**/*.pyc
+# Claude plugins - these are user-specific installations from marketplace
+.claude-plugin/
