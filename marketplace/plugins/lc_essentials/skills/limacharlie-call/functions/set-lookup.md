@@ -32,8 +32,8 @@ Before calling this skill, gather:
 
 **WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **name**: Name for the lookup table (alphanumeric, hyphens, underscores)
-- **data**: Dictionary of key-value pairs to store
+- **lookup_name**: Name for the lookup table (alphanumeric, hyphens, underscores)
+- **lookup_data**: Dictionary of key-value pairs to store
 
 Optional metadata:
 - **tags**: Array of tags for organization
@@ -59,8 +59,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_lookup",
   parameters={
     "oid": "[organization-id]",
-    "name": "lookup-name",
-    "data": {
+    "lookup_name": "my-lookup-table",
+    "lookup_data": {
       "key1": "value1",
       "key2": {"nested": "data"}
     }
@@ -72,8 +72,8 @@ mcp__limacharlie__lc_call_tool(
 - Tool: `set_lookup`
 - Required parameters:
   - `oid`: Organization ID
-  - `name`: Name for the lookup table
-  - `data`: Dictionary of key-value pairs (the lookup data)
+  - `lookup_name`: Name for the lookup table
+  - `lookup_data`: Dictionary of key-value pairs (the lookup data)
 
 ### Step 3: Handle the Response
 
@@ -120,8 +120,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_lookup",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "malicious-ips",
-    "data": {
+    "lookup_name": "malicious-ips",
+    "lookup_data": {
       "192.0.2.1": {
         "severity": "critical",
         "category": "c2"
@@ -184,8 +184,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_lookup",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "allowed-domains",
-    "data": {
+    "lookup_name": "allowed-domains",
+    "lookup_data": {
       "example.com": true,
       "trusted.org": true,
       "corporate.net": true
@@ -257,10 +257,51 @@ The updated lookup is immediately available for D&R rules.
 - Use tags to organize lookups (threat-intel, allowlist, asset-data, etc.)
 - Comments provide context for future reference
 - Lookups are immediately available after creation
-- Use in D&R rules: `lookup('table-name', key)`
 - Lookup keys are typically strings but can be any JSON type
 - Values can be nested objects accessed via dot notation
 - Related skills: `list_lookups` to see all tables, `get_lookup` to view data, `delete_lookup` to remove, `query_lookup` to test lookups
+
+## Using Lookups in D&R Rules
+
+To reference lookups in D&R rules, always use the `hive://lookup/` prefix:
+
+### YAML Format
+```yaml
+detect:
+  op: lookup
+  path: event/DOMAIN_NAME
+  resource: hive://lookup/my-lookup-table
+```
+
+### JSON Format
+```json
+{
+  "detect": {
+    "op": "lookup",
+    "path": "event/DOMAIN_NAME",
+    "resource": "hive://lookup/my-lookup-table"
+  },
+  "respond": [
+    {"action": "report", "name": "lookup-match-detected"}
+  ]
+}
+```
+
+**Important**: Always use `hive://lookup/lookup-name` format. Never use `lookup://lookup-name`.
+
+### Example: Threat Intel Domain Detection
+
+```yaml
+detect:
+  op: lookup
+  path: event/DOMAIN_NAME
+  resource: hive://lookup/malicious-domains
+respond:
+  - action: report
+    name: malicious-domain-detected
+```
+
+This rule will trigger when any DNS request matches a domain in the `malicious-domains` lookup table.
 
 ## Reference
 
