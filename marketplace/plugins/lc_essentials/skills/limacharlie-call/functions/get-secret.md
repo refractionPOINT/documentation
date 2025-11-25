@@ -28,7 +28,7 @@ This skill calls the LimaCharlie API to retrieve a specific secret's value and m
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name of the secret to retrieve
 
@@ -207,7 +207,7 @@ Would you like me to list all secrets to see what's available?
 - Secret names are case-sensitive
 - The `data.value` field contains the actual secret
 - Metadata provides audit trail (who created/modified, when)
-- Related skills: `list-secrets` to see names, `set-secret` to store values, `delete-secret` to remove
+- Related skills: `list_secrets` to see names, `set_secret` to store values, `delete_secret` to remove
 
 ## Reference
 

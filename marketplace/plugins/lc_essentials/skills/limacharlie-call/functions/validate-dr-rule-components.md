@@ -243,4 +243,4 @@ Expected response:
 
 For more details on the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/validation.go` (validate_dr_rule_components function)
 
-For complete D&R rule syntax and validation, see LimaCharlie's Detection & Response documentation and use the API-based validation via `set-dr-general-rule`.
+For complete D&R rule syntax and validation, see LimaCharlie's Detection & Response documentation and use the API-based validation via `set_dr_general_rule`.

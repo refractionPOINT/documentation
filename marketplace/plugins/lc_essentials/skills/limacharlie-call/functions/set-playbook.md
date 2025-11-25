@@ -40,7 +40,7 @@ Creates or updates an automation playbook in the LimaCharlie Hive system. The pl
 
 ## Required Information
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
 - **name**: Name for the playbook
@@ -138,10 +138,10 @@ Result: Playbook is active and will automatically isolate sensors on critical de
 
 ## Related Functions
 
-- `generate-python-playbook` - AI-assisted Python playbook generation
-- `list-playbooks` - List all playbooks
-- `get-playbook` - Get specific playbook
-- `delete-playbook` - Remove a playbook
+- `generate_python_playbook` - AI-assisted Python playbook generation
+- `list_playbooks` - List all playbooks
+- `get_playbook` - Get specific playbook
+- `delete_playbook` - Remove a playbook
 - Use `lookup-lc-doc` skill for playbook syntax reference
 
 ## Additional Notes

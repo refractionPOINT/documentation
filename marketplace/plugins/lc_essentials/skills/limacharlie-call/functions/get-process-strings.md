@@ -169,7 +169,7 @@ Steps:
 - Some strings may be partial or corrupted
 - Reflective loading may leave artifacts in memory strings
 - Compare with known IOCs from threat intelligence
-- Use `find-strings` for targeted string search instead of full extraction
+- Use `find_strings` for targeted string search instead of full extraction
 
 ## Reference
 

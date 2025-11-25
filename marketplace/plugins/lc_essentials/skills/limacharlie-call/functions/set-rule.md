@@ -70,7 +70,7 @@ The rule is automatically enabled and includes the provided definition. If a rul
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive to create/update rule in (required)
   - Common values: `dr-general`, `fp`
@@ -232,12 +232,12 @@ Steps:
 
 ## Related Functions
 
-- `generate-dr-rule-detection` - AI-assisted detection generation
-- `generate-dr-rule-respond` - AI-assisted response generation
-- `validate-dr-rule-components` - Validate rule syntax
-- `list-rules` - List all rules in a Hive
-- `get-rule` - Get specific rule definition
-- `delete-rule` - Remove a rule
+- `generate_dr_rule_detection` - AI-assisted detection generation
+- `generate_dr_rule_respond` - AI-assisted response generation
+- `validate_dr_rule_components` - Validate rule syntax
+- `list_rules` - List all rules in a Hive
+- `get_rule` - Get specific rule definition
+- `delete_rule` - Remove a rule
 - Use `lookup-lc-doc` skill for D&R syntax reference
 
 ## Additional Notes
@@ -252,8 +252,8 @@ Steps:
 - **No Partial Updates**: POST replaces the entire rule - include all fields you want to keep
 - **Testing**: Consider testing rules in a non-production environment first
 - **Impact**: Rules execute in real-time - ensure detection and response logic is correct
-- Use `get-rule` to verify the rule was set correctly
-- Use `list-rules` to see the rule in context with other rules
+- Use `get_rule` to verify the rule was set correctly
+- Use `list_rules` to see the rule in context with other rules
 
 ## Reference
 

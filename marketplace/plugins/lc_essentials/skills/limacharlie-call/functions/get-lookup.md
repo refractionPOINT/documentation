@@ -29,7 +29,7 @@ This skill calls the LimaCharlie API to retrieve a specific lookup table with it
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name of the lookup table to retrieve
 
@@ -306,7 +306,7 @@ Would you like me to list all lookup tables to see what's available?
 - Disabled lookups can still be retrieved but won't work in queries
 - Tags help organize and categorize lookups
 - Comments provide description and context
-- Related skills: `list-lookups` to see all tables, `set-lookup` to create/update, `query-lookup` to search specific key
+- Related skills: `list_lookups` to see all tables, `set_lookup` to create/update, `query_lookup` to search specific key
 
 ## Reference
 

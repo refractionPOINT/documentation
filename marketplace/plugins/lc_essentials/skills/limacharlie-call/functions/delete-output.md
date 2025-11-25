@@ -30,7 +30,7 @@ This skill calls the LimaCharlie API to delete an output configuration. Once del
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name of the output to delete
 
@@ -206,7 +206,7 @@ Would you like me to list all outputs to see what's configured?
 - Consider checking list-outputs first to verify the exact output name
 - Output names are case-sensitive - must match exactly
 - Deleting an output does not delete historical data already exported
-- Related skills: `list-outputs` to see configured outputs, `add-output` to create new outputs
+- Related skills: `list_outputs` to see configured outputs, `add_output` to create new outputs
 - For temporary disabling, consider creating with restrictive filters instead of deleting
 
 ## Reference

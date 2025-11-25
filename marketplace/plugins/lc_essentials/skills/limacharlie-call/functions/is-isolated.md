@@ -26,7 +26,7 @@ This skill retrieves the current network isolation status of a sensor. It return
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format) - the sensor to check
 
@@ -84,8 +84,8 @@ The tool returns data directly:
 
 Present the result to the user:
 - Clearly state whether the sensor is isolated or not
-- If isolated, remind the user they can use `rejoin-network` to restore access
-- If not isolated, mention they can use `isolate-network` if needed
+- If isolated, remind the user they can use `rejoin_network` to restore access
+- If not isolated, mention they can use `isolate_network` if needed
 - Include the sensor ID and hostname for clarity
 - Suggest next actions based on the isolation state
 
@@ -152,7 +152,7 @@ Response to user:
 - The `is_isolated` field is always present in sensor information
 - You can check isolation status even if the sensor is offline
 - This is useful before performing isolation or rejoin operations
-- Consider checking this before calling `rejoin-network` to confirm isolation is active
+- Consider checking this before calling `rejoin_network` to confirm isolation is active
 - Use this in automation workflows to make decisions based on isolation state
 - The isolation state persists across sensor reboots and remains until explicitly removed
 

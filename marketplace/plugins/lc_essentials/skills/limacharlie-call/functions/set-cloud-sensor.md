@@ -29,7 +29,7 @@ This skill creates or updates a cloud sensor configuration in the organization's
 
 Before calling this skill, gather:
 
-**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name for the cloud sensor (required, alphanumeric with hyphens/underscores)
 - **config**: Complete configuration object (required, structure varies by sensor type)
@@ -261,14 +261,14 @@ The sensor is now active and will resume collecting Azure Activity Logs.
 - Use list-cloud-sensors to verify the sensor was created
 - Use get-cloud-sensor to inspect the configuration after creation
 - Use delete-cloud-sensor to remove sensors that are no longer needed
-- **Pre-deployment validation**: For cloud sensors using USP parsing configurations, use `validate-usp-mapping` to test parsing rules before deployment
+- **Pre-deployment validation**: For cloud sensors using USP parsing configurations, use `validate_usp_mapping` to test parsing rules before deployment
 
 ## Related Functions
 
-- `validate-usp-mapping` - Test USP parsing configurations before deployment
-- `get-cloud-sensor` - Retrieve existing sensor configuration
-- `list-cloud-sensors` - List all configured cloud sensors
-- `delete-cloud-sensor` - Remove a cloud sensor
+- `validate_usp_mapping` - Test USP parsing configurations before deployment
+- `get_cloud_sensor` - Retrieve existing sensor configuration
+- `list_cloud_sensors` - List all configured cloud sensors
+- `delete_cloud_sensor` - Remove a cloud sensor
 
 ## Reference
 

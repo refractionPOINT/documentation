@@ -26,7 +26,7 @@ This skill retrieves a single extension configuration record from the LimaCharli
 
 Before calling this skill, gather:
 
-**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name of the extension configuration to retrieve (required)
 
@@ -173,7 +173,7 @@ Steps:
 - The `enabled` field controls whether the configuration is active
 - ETag in sys_mtd is used for optimistic locking in updates
 - A configuration can exist even if the extension isn't subscribed (though it won't be used)
-- Use `list-extension-configs` first if you don't know the exact extension name
+- Use `list_extension_configs` first if you don't know the exact extension name
 - Extensions with the same name across different partition keys are separate configurations
 
 ## Reference

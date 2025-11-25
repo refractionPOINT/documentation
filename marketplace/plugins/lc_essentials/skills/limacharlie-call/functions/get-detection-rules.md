@@ -28,7 +28,7 @@ This skill retrieves all D&R rules from every namespace in the organization, inc
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters needed - this returns all rules from all namespaces.
@@ -221,7 +221,7 @@ This data includes complete detection logic, response actions, and metadata for 
 - The `respond` field is an array of response actions
 - `is_enabled: false` means the rule exists but won't trigger
 - Rules with `target` fields only apply to specific sensors
-- Use `list-dr-general-rules` to see only custom rules
+- Use `list_dr_general_rules` to see only custom rules
 - This is read-only - it doesn't modify rules
 - Large organizations may have hundreds of rules
 - Consider filtering by namespace for focused analysis

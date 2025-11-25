@@ -28,7 +28,7 @@ This skill retrieves all rule records from a specified Hive in the LimaCharlie H
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive to list rules from (required)
   - Common values: `dr-general`, `fp`
@@ -212,7 +212,7 @@ mcp__limacharlie__lc_call_tool(
 - Tags can be used for filtering and organizing rules
 - System metadata provides audit trail information
 - Empty result (no rules) is valid and means no rules have been created in that Hive
-- Use the `get-rule` skill to retrieve a specific rule's full definition
+- Use the `get_rule` skill to retrieve a specific rule's full definition
 - Rules are powerful - ensure enabled rules are tested and validated
 
 ## Reference

@@ -65,7 +65,7 @@ The API returns a response with:
 - Response contains `event_types` array with all available event type names
 - Names use LimaCharlie's standard naming convention (UPPERCASE_WITH_UNDERSCORES)
 - Array typically contains 50-100+ event types depending on platform support
-- These names can be used with `get-event-schema` to get detailed field information
+- These names can be used with `get_event_schema` to get detailed field information
 
 **Common Errors:**
 - **403 Forbidden**: Insufficient API permissions to read schemas

@@ -63,10 +63,10 @@ Executes LCQL queries against LimaCharlie's replay service, supporting complex f
 
 ## Required Information
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
-- **query**: LCQL query string (generate using `generate-lcql-query`)
+- **query**: LCQL query string (generate using `generate_lcql_query`)
 
 Optional:
 - **limit**: Max events to return (default: 1000)
@@ -107,7 +107,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - Empty `cursor` means all results retrieved
 
 **Common Errors:**
-- **400 Bad Request**: Invalid LCQL syntax - use `generate-lcql-query` first
+- **400 Bad Request**: Invalid LCQL syntax - use `generate_lcql_query` first
 - **403 Forbidden**: Insufficient permissions
 - **413 Request Too Large**: Add filters or limits
 - **500 Server Error**: Query timeout, simplify query
@@ -152,10 +152,10 @@ Query Results: 45 events found
 
 ## Related Functions
 
-- `generate-lcql-query` - AI-assisted query generation from natural language
-- `list-saved-queries` - List saved queries
-- `set-saved-query` - Save a query for reuse
-- `run-saved-query` - Execute a saved query
+- `generate_lcql_query` - AI-assisted query generation from natural language
+- `list_saved_queries` - List saved queries
+- `set_saved_query` - Save a query for reuse
+- `run_saved_query` - Execute a saved query
 - Use `lookup-lc-doc` skill for LCQL syntax reference
 
 ## Reference

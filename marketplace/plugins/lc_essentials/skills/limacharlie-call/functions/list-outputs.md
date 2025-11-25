@@ -27,7 +27,7 @@ This skill calls the LimaCharlie API to retrieve all output configurations for a
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are needed for listing outputs.
@@ -219,7 +219,7 @@ You can create outputs to send data to syslog, S3, webhooks, Slack, and other de
   - **splunk**: Forward to Splunk HEC
 - Outputs can filter by tags, sensors, event types, detection categories
 - Multiple outputs can be configured for the same data type
-- Related skills: `add-output`, `delete-output` for managing outputs
+- Related skills: `add_output`, `delete_output` for managing outputs
 
 ## Reference
 

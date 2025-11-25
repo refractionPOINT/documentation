@@ -30,7 +30,7 @@ This skill calls the LimaCharlie API to create or update a lookup table. The loo
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name for the lookup table (alphanumeric, hyphens, underscores)
 - **data**: Dictionary of key-value pairs to store
@@ -260,7 +260,7 @@ The updated lookup is immediately available for D&R rules.
 - Use in D&R rules: `lookup('table-name', key)`
 - Lookup keys are typically strings but can be any JSON type
 - Values can be nested objects accessed via dot notation
-- Related skills: `list-lookups` to see all tables, `get-lookup` to view data, `delete-lookup` to remove, `query-lookup` to test lookups
+- Related skills: `list_lookups` to see all tables, `get_lookup` to view data, `delete_lookup` to remove, `query_lookup` to test lookups
 
 ## Reference
 

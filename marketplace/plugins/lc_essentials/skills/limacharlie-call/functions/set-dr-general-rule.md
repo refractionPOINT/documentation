@@ -57,12 +57,12 @@ Creates a new D&R rule or updates an existing one in the general namespace (cust
 
 ## Required Information
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
 - **name**: Unique name for the rule (alphanumeric, hyphens, underscores)
-- **detect**: Detection logic object (generate using `generate-dr-rule-detection`)
-- **respond**: Response actions array (generate using `generate-dr-rule-respond`)
+- **detect**: Detection logic object (generate using `generate_dr_rule_detection`)
+- **respond**: Response actions array (generate using `generate_dr_rule_respond`)
 
 Optional:
 - **is_enabled**: true/false to enable/disable rule (default: true)
@@ -105,7 +105,7 @@ mcp__limacharlie__lc_call_tool(
 Rule is immediately active.
 
 **Common Errors:**
-- **400 Bad Request**: Invalid syntax - use `validate-dr-rule-components` first
+- **400 Bad Request**: Invalid syntax - use `validate_dr_rule_components` first
 - **403 Forbidden**: Insufficient permissions
 - **422 Unprocessable Entity**: Validation failed - check event types and operators
 
@@ -168,12 +168,12 @@ mcp__limacharlie__lc_call_tool(
 
 ## Related Functions
 
-- `generate-dr-rule-detection` - AI-assisted detection component generation
-- `generate-dr-rule-respond` - AI-assisted response actions generation
-- `validate-dr-rule-components` - Validate syntax before deployment
-- `generate-sensor-selector` - Generate sensor targeting expressions
-- `get-dr-general-rule` - Verify rule after creation
-- `delete-dr-general-rule` - Remove rules
+- `generate_dr_rule_detection` - AI-assisted detection component generation
+- `generate_dr_rule_respond` - AI-assisted response actions generation
+- `validate_dr_rule_components` - Validate syntax before deployment
+- `generate_sensor_selector` - Generate sensor targeting expressions
+- `get_dr_general_rule` - Verify rule after creation
+- `delete_dr_general_rule` - Remove rules
 - Use `lookup-lc-doc` skill for D&R syntax reference and event types
 
 ## Reference

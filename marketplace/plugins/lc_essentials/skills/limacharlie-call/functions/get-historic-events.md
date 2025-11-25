@@ -28,7 +28,7 @@ This skill retrieves historical telemetry events for a single sensor within a sp
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format)
 - **start**: Start timestamp in Unix epoch seconds
@@ -221,7 +221,7 @@ Steps:
 - Consider using LCQL queries for more complex filtering across multiple sensors
 - Large result sets may take time to retrieve
 - Timestamps are in milliseconds in the event data but seconds in the API parameters
-- Combine with `get-sensor-info` to get sensor context before querying events
+- Combine with `get_sensor_info` to get sensor context before querying events
 
 ## Reference
 

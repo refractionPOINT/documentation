@@ -28,7 +28,7 @@ This skill retrieves all currently active reliable tasks in the organization. It
 
 Before calling this skill, gather:
 
-**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are needed - this returns all pending tasks.
@@ -208,7 +208,7 @@ Response to user:
 - Check this regularly during fleet-wide operations to monitor progress
 - Empty task list means all operations completed or no tasks were created
 - This is read-only - it doesn't modify task state
-- Use this to verify reliable tasks created with the `reliable-tasking` skill
+- Use this to verify reliable tasks created with the `reliable_tasking` skill
 - Investigation IDs help group related tasks together
 - Consider the time remaining before expiration when monitoring tasks
 - Tasks near expiration may need retention extension (requires new task)

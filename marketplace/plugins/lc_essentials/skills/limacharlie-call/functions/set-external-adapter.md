@@ -31,7 +31,7 @@ This skill creates or updates an external adapter configuration in the organizat
 
 Before calling this skill, gather:
 
-**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name for the external adapter (required, alphanumeric with hyphens/underscores)
 - **adapter_type**: Type of adapter (required: syslog, webhook, api, custom)
@@ -59,7 +59,7 @@ Ensure you have:
 6. Correct connection parameters and credentials
 7. Understanding of the external data source's format and structure
 
-**Pre-Deployment Validation**: Before deploying, use `validate-usp-mapping` to test your parsing rules against sample data. This ensures correct field extraction before production deployment.
+**Pre-Deployment Validation**: Before deploying, use `validate_usp_mapping` to test your parsing rules against sample data. This ensures correct field extraction before production deployment.
 
 ### Step 2: Call the Tool
 
@@ -306,7 +306,7 @@ The adapter will now extract these additional fields from incoming syslog messag
 - Adapter names must be unique within the organization
 - The config structure varies by adapter type (syslog, webhook, api, custom)
 - Parsing rules are critical - incorrect rules result in unparsed or malformed events
-- **Pre-deployment validation**: Use `validate-usp-mapping` to test parsing rules with sample data before deploying. This validates regex patterns, field mappings, and transformations against real input
+- **Pre-deployment validation**: Use `validate_usp_mapping` to test parsing rules with sample data before deploying. This validates regex patterns, field mappings, and transformations against real input
 - Field mappings should align with LimaCharlie's event schema for proper normalization
 - Common LimaCharlie event fields:
   - `event.timestamp`: Event timestamp
@@ -342,10 +342,10 @@ The adapter will now extract these additional fields from incoming syslog messag
 
 ## Related Functions
 
-- `validate-usp-mapping` - Test parsing configurations before deployment
-- `get-external-adapter` - Retrieve existing adapter configuration
-- `list-external-adapters` - List all configured adapters
-- `delete-external-adapter` - Remove an adapter
+- `validate_usp_mapping` - Test parsing configurations before deployment
+- `get_external_adapter` - Retrieve existing adapter configuration
+- `list_external_adapters` - List all configured adapters
+- `delete_external_adapter` - Remove an adapter
 
 ## Reference
 

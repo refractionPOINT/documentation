@@ -29,7 +29,7 @@ This skill calls the LimaCharlie API to store a secret securely. The secret is e
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name for the secret (alphanumeric, hyphens, underscores)
 - **value**: The actual secret value to store
@@ -208,7 +208,7 @@ Note: The change takes effect immediately. Ensure any services using this secret
 - Secret values are never logged or displayed after storage
 - Rotate secrets regularly for security
 - Delete secrets that are no longer needed
-- Related skills: `list-secrets` to view names, `get-secret` to retrieve values, `delete-secret` to remove
+- Related skills: `list_secrets` to view names, `get_secret` to retrieve values, `delete_secret` to remove
 
 ## Reference
 

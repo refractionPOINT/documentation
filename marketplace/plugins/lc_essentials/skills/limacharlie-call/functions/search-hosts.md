@@ -28,7 +28,7 @@ This skill searches for sensors by hostname using wildcard patterns. It supports
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **hostname_expr**: Hostname pattern with wildcards (e.g., "web-*", "*-prod", "*database*")
 
@@ -182,7 +182,7 @@ Steps:
 - Invalid patterns will fall back to exact string comparison
 - Large organizations may have slower response due to client-side filtering
 - Consider using more specific patterns to reduce result set
-- For IP-based filtering, use `list-sensors` with IP filter instead
+- For IP-based filtering, use `list_sensors` with IP filter instead
 - For hostname-only endpoint search, use the org's SearchHostname method for "hostname" IOC type
 
 ## Reference

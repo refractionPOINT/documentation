@@ -20,13 +20,13 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill removes network isolation from a sensor, restoring full network connectivity. The sensor will be able to communicate with all systems and services normally. This reverses the action taken by the `isolate-network` skill and should only be done after confirming the threat has been contained or the endpoint has been remediated.
+This skill removes network isolation from a sensor, restoring full network connectivity. The sensor will be able to communicate with all systems and services normally. This reverses the action taken by the `isolate_network` skill and should only be done after confirming the threat has been contained or the endpoint has been remediated.
 
 ## Required Information
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format) - the sensor to rejoin to the network
 
@@ -37,7 +37,7 @@ Before calling this skill, gather:
 Ensure you have:
 1. Valid organization ID (oid)
 2. Valid sensor ID (sid) in UUID format
-3. Confirm the sensor is currently isolated (use `is-isolated` skill to check)
+3. Confirm the sensor is currently isolated (use `is_isolated` skill to check)
 4. Verify the threat has been remediated or investigation is complete
 5. Confirm it's safe to restore network access
 
@@ -151,10 +151,10 @@ Response to user:
 - The sensor maintains all its configuration, tags, and management state
 - If the sensor was not isolated, the operation will return a 404 or similar error
 - Always verify remediation is complete before rejoining to prevent re-infection
-- Consider using the `is-isolated` skill first to confirm current isolation status
-- You may want to add a tag (use `add-tag` skill) to track when and why isolation was removed
+- Consider using the `is_isolated` skill first to confirm current isolation status
+- You may want to add a tag (use `add_tag` skill) to track when and why isolation was removed
 - Monitor the sensor closely after rejoining to ensure no malicious activity resumes
-- This reverses the `isolate-network` action - both operations are complementary
+- This reverses the `isolate_network` action - both operations are complementary
 - Network restoration affects all traffic - there's no partial network access option
 
 ## Reference

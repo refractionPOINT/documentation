@@ -28,7 +28,7 @@ This skill retrieves the complete configuration of a specific D&R rule from the 
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name of the rule to retrieve (exact match, case-sensitive)
 
@@ -39,7 +39,7 @@ Before calling this skill, gather:
 Ensure you have:
 1. Valid organization ID (oid)
 2. Exact rule name (case-sensitive, must exist in general namespace)
-3. Consider using `list-dr-general-rules` first if unsure of the exact name
+3. Consider using `list_dr_general_rules` first if unsure of the exact name
 
 ### Step 2: Call the Tool
 
@@ -224,7 +224,7 @@ Response to user:
 
 - Rule names are case-sensitive - "Rule-Name" and "rule-name" are different
 - This only searches the general namespace (custom rules)
-- For managed or service rules, use `get-detection-rules` and filter results
+- For managed or service rules, use `get_detection_rules` and filter results
 - The detection logic uses event types like NEW_PROCESS, DNS_REQUEST, NETWORK_CONNECTIONS
 - Operators include: is, contains, starts_with, ends_with, matches (regex), and more
 - Response actions can be: report, task, isolate, add tag, webhook, and others
@@ -233,7 +233,7 @@ Response to user:
 - `is_enabled: false` means the rule exists but won't trigger
 - TTL (time-to-live) causes rules to auto-delete after specified seconds
 - Use this before updating a rule to see current configuration
-- This is read-only - use `set-dr-general-rule` to modify
+- This is read-only - use `set_dr_general_rule` to modify
 - Empty body or 404 means the rule doesn't exist in general namespace
 - Consider the rule's target field when troubleshooting why it's not triggering
 
