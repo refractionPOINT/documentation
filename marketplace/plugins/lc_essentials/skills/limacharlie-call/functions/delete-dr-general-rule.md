@@ -28,7 +28,7 @@ This skill permanently deletes a D&R rule from the general namespace (custom rul
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Exact name of the rule to delete (case-sensitive)
 
@@ -47,7 +47,7 @@ Ensure you have:
 1. Valid organization ID (oid)
 2. Exact rule name (case-sensitive)
 3. **CRITICAL**: Confirm with the user that they want to permanently delete this rule
-4. Consider viewing the rule first with `get-dr-general-rule`
+4. Consider viewing the rule first with `get_dr_general_rule`
 5. Optionally export/backup the rule configuration before deletion
 
 ### Step 2: Call the Tool
@@ -97,7 +97,7 @@ Present the result to the user:
 - Warn that this action is irreversible
 - Mention that detection and response actions have stopped
 - Remind that the rule cannot be recovered
-- Suggest verifying with `list-dr-general-rules` if needed
+- Suggest verifying with `list_dr_general_rules` if needed
 - Note the rule name is now available for reuse
 
 ## Example Usage
@@ -159,7 +159,7 @@ Response to user:
 
 - **This operation is PERMANENT and IRREVERSIBLE** - there is no undo
 - Always confirm with the user before deleting a rule
-- Consider exporting the rule with `get-dr-general-rule` before deletion
+- Consider exporting the rule with `get_dr_general_rule` before deletion
 - Deleted rules cannot be recovered - they must be recreated from scratch
 - The rule name becomes available for reuse after deletion
 - Deletion is immediate - all detection activity stops instantly

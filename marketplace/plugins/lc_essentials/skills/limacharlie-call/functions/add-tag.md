@@ -27,7 +27,7 @@ This skill adds a tag to a sensor with an optional time-to-live (TTL). Tags are 
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format) - the sensor to tag
 - **tag**: Tag name/label to add (string, no spaces recommended)
@@ -167,7 +167,7 @@ Response to user:
 - Tags enable output filtering (e.g., only send alerts from production sensors)
 - Consider using consistent naming conventions (e.g., `dept-`, `env-`, `status-`)
 - Tags are inherited by new sensor enrollments if set at installation key level
-- Use the `remove-tag` skill to remove a tag before its TTL expires
+- Use the `remove_tag` skill to remove a tag before its TTL expires
 - Tags are immediately visible in sensor metadata and searches
 - Adding a tag that already exists will update its TTL
 

@@ -28,7 +28,7 @@ This skill retrieves all sensors in the organization that are currently online a
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 ## How to Use
@@ -149,11 +149,11 @@ Fleet Status:
 - A sensor is typically considered online if it checked in within the last few minutes
 - Online status can change rapidly as sensors connect/disconnect
 - This check is real-time and reflects current connectivity
-- For individual sensor status, use `is-online` skill
-- For full sensor details, use `get-sensor-info` skill
+- For individual sensor status, use `is_online` skill
+- For full sensor details, use `get_sensor_info` skill
 - The tool efficiently checks all sensors in a single operation
 - Sensors behind firewalls or with network issues may appear offline even if running
-- Consider the sensor's `alive` timestamp from `list-sensors` for historical context
+- Consider the sensor's `alive` timestamp from `list_sensors` for historical context
 
 ## Reference
 

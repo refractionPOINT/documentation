@@ -29,7 +29,7 @@ This skill uses AI (Gemini) to generate D&R rule response components from natura
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for validation against org's D&R rule schema)
 - **query**: Natural language description of how to respond when detection triggers
 
@@ -183,7 +183,7 @@ Expected response:
 - **Reversibility**: Some actions (like deny_tree) cannot be undone
 - **Detection Required**: Response component must be paired with detection logic
 - **Best Practice**: Start with reporting, then add automated responses gradually
-- **Combine with Detection**: Use with `generate-dr-rule-detection` to create complete rules
+- **Combine with Detection**: Use with `generate_dr_rule_detection` to create complete rules
 - **Prompt Template**: Uses `prompts/gen_dr_respond.txt` from the MCP server
 
 ## Reference

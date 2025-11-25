@@ -28,14 +28,14 @@ Before calling this skill, gather:
 
 - **platform**: Platform name (e.g., 'windows', 'linux', 'macos', 'chrome')
 
-Platform names should match LimaCharlie's platform naming (typically lowercase). Use `get-platform-names` to get the exact list of valid platform names.
+Platform names should match LimaCharlie's platform naming (typically lowercase). Use `get_platform_names` to get the exact list of valid platform names.
 
 ## How to Use
 
 ### Step 1: Validate Parameters
 
 Ensure you have:
-1. Valid platform name (get from `get-platform-names` if unsure)
+1. Valid platform name (get from `get_platform_names` if unsure)
 2. Platform name is lowercase and exactly matches LimaCharlie's naming
 
 ### Step 2: Call the API
@@ -80,7 +80,7 @@ The API returns a response with:
 
 **Common Errors:**
 - **400 Bad Request**: Invalid platform name format
-- **404 Not Found**: Platform name doesn't exist - use `get-platform-names` to get valid names
+- **404 Not Found**: Platform name doesn't exist - use `get_platform_names` to get valid names
 - **403 Forbidden**: Insufficient API permissions to read schemas
 - **500 Server Error**: Temporary API issue - retry after a short delay
 
@@ -149,7 +149,7 @@ Steps:
   - Linux: PACKAGE_*, SYSTEMD_*
   - macOS: AUTHORIZATION_*, KEYCHAIN_*
 - Chrome OS has its own set of browser-focused events
-- Use `get-platform-names` first if unsure of exact platform name
+- Use `get_platform_names` first if unsure of exact platform name
 - Not all platforms have equal telemetry breadth
 - The organization must have sensors on the platform for the events to actually generate
 

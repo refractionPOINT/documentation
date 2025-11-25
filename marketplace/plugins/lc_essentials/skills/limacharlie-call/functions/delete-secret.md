@@ -28,7 +28,7 @@ This skill calls the LimaCharlie API to permanently delete a secret. Any configu
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name of the secret to delete
 
@@ -234,7 +234,7 @@ What would you like to do?
 - After deletion, monitor org errors for any failures
 - Secret name becomes available for reuse immediately
 - Consider disabling instead of deleting if unsure (update with dummy value)
-- Related skills: `list-secrets` to view names, `set-secret` to create replacements, `get-secret` to verify values before deletion
+- Related skills: `list_secrets` to view names, `set_secret` to create replacements, `get_secret` to verify values before deletion
 
 ## Reference
 

@@ -29,7 +29,7 @@ This skill retrieves a lookup table and searches for a specific key, returning t
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Name of the lookup table to query
 - **key**: The key to search for in the lookup table
@@ -330,7 +330,7 @@ Would you like me to:
 - Query results help validate lookup tables before using in production rules
 - Test different keys to ensure lookup data is complete
 - Verify nested structure matches what rules expect
-- Related skills: `get-lookup` to see all data, `list-lookups` to see all tables, `set-lookup` to modify data
+- Related skills: `get_lookup` to see all data, `list_lookups` to see all tables, `set_lookup` to modify data
 
 ## Reference
 

@@ -30,7 +30,7 @@ This skill calls the LimaCharlie API to retrieve all lookup tables with their co
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are needed for listing lookup tables.
@@ -277,7 +277,7 @@ These tables can be used to enrich detections and block known threats.
 - Query lookups in D&R rules: `lookup('table-name', key)`
 - Query returns the value if key exists, null if not found
 - Lookups are organization-wide (not per-sensor)
-- Related skills: `get-lookup` for single table, `set-lookup` to create/update, `delete-lookup` to remove, `query-lookup` to search specific key
+- Related skills: `get_lookup` for single table, `set_lookup` to create/update, `delete_lookup` to remove, `query_lookup` to search specific key
 
 ## Reference
 

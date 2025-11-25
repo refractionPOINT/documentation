@@ -28,7 +28,7 @@ This skill retrieves all D&R rules from the general namespace, which contains cu
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 ## How to Use
@@ -211,7 +211,7 @@ Response to user:
 
 - General namespace contains only custom, user-created rules
 - This does NOT include managed rules (from LC) or service rules (from extensions)
-- Use `get-detection-rules` to see rules from all namespaces
+- Use `get_detection_rules` to see rules from all namespaces
 - Rules in general namespace are fully manageable (create, update, delete)
 - Empty response means no custom rules - you may still have managed/service rules
 - Rule names must be unique within the general namespace
@@ -219,8 +219,8 @@ Response to user:
 - Rules can target specific sensors using the `target` field
 - Response actions include: report, task, isolate, add_tag, and more
 - Detection logic uses event matching with operators (is, contains, starts_with, etc.)
-- This is read-only - use `set-dr-general-rule` to create/update rules
-- Use `get-dr-general-rule` to view a specific rule's full configuration
+- This is read-only - use `set_dr_general_rule` to create/update rules
+- Use `get_dr_general_rule` to view a specific rule's full configuration
 - General namespace rules are included in org exports and backups
 - Custom rules persist across sensor deployments and org changes
 - Consider organizing rules by purpose (detection, blocking, alerting, etc.)

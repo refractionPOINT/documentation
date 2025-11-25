@@ -26,7 +26,7 @@ This skill creates or updates an extension configuration in the LimaCharlie Hive
 
 Before calling this skill, gather:
 
-**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name for the extension configuration (required)
 - **config**: The configuration data object (required, must be valid JSON object)
@@ -170,8 +170,8 @@ Steps:
 - **Validation**: The API may validate configuration structure against extension schema
 - **No Partial Updates**: POST replaces the entire configuration - include all fields you want to keep
 - **Subscription Required**: For the configuration to take effect, the extension must also be subscribed
-- Use `get-extension-config` to verify the configuration was set correctly
-- Use `subscribe-to-extension` to activate the extension if not already subscribed
+- Use `get_extension_config` to verify the configuration was set correctly
+- Use `subscribe_to_extension` to activate the extension if not already subscribed
 
 ## Reference
 

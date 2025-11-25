@@ -21,7 +21,7 @@ Enables or disables a D&R rule in the 'managed' namespace. This changes the rule
 
 ## Required Information
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
 - **name**: Name of the rule to enable/disable
@@ -98,9 +98,9 @@ mcp__limacharlie__lc_call_tool(
 
 ## Related Functions
 
-- `get-dr-managed-rule` - View rule configuration before modifying
-- `delete-dr-managed-rule` - Remove rules
-- `list-dr-managed-rules` - List all managed rules
+- `get_dr_managed_rule` - View rule configuration before modifying
+- `delete_dr_managed_rule` - Remove rules
+- `list_dr_managed_rules` - List all managed rules
 
 ## Reference
 

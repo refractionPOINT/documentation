@@ -128,7 +128,7 @@ Steps:
 - Use exactly these names when filtering (e.g., "windows" not "Windows" or "win")
 - The numeric platform IDs are for internal use - use the string names in API calls
 - Just because a platform is listed doesn't mean the organization has sensors on it
-- Use `list-with-platform` to see which platforms have active sensors
+- Use `list_with_platform` to see which platforms have active sensors
 - Common platforms: windows, linux, macos, chrome
 - Mobile platforms: android, ios
 - Platform names are stable and rarely change

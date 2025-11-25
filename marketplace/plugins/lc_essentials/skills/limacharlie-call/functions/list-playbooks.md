@@ -27,7 +27,7 @@ This skill retrieves all playbook records from the LimaCharlie Hive system. It c
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are required.
@@ -199,7 +199,7 @@ The same API call is used, but the response is filtered to show only enabled pla
   - `description`: Human-readable explanation
 - System metadata provides audit trail information
 - Empty result (no playbooks) is valid and means no playbooks have been created yet
-- Use the `get-playbook` skill to retrieve a specific playbook's full definition
+- Use the `get_playbook` skill to retrieve a specific playbook's full definition
 - Playbooks are powerful automation tools - ensure enabled playbooks are tested and validated
 - Some playbooks may have sensitive actions (isolate, delete files, etc.)
 

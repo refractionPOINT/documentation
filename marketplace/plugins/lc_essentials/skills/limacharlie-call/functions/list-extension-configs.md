@@ -26,7 +26,7 @@ This skill retrieves all extension configuration records from the LimaCharlie Hi
 
 Before calling this skill, gather:
 
-**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 
 No other parameters are required.
@@ -186,7 +186,7 @@ The same tool call is used, but the response is filtered to show only enabled ex
 - The `data` field structure varies by extension type - each extension defines its own schema
 - System metadata is automatically managed and shows audit trail information
 - Empty result (no configs) is valid and means no extensions have been configured yet
-- Use the `get-extension-config` skill to retrieve a specific extension's full configuration
+- Use the `get_extension_config` skill to retrieve a specific extension's full configuration
 
 ## Reference
 

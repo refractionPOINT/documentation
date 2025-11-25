@@ -27,7 +27,7 @@ This skill checks the online status of a specific sensor by calling the LimaChar
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format)
 
@@ -159,9 +159,9 @@ Troubleshooting steps:
 - Online status is real-time and can change quickly
 - Sensors may go offline temporarily due to network issues or host restarts
 - Always check online status before attempting live investigation tasks
-- For bulk checking, use `get-online-sensors` to check all sensors at once
+- For bulk checking, use `get_online_sensors` to check all sensors at once
 - The online check is lightweight and fast
-- Combine with `get-sensor-info` to get full details including last seen timestamp
+- Combine with `get_sensor_info` to get full details including last seen timestamp
 - Sensors in isolated mode may still be online but network-isolated
 - Consider sensor location and network topology when troubleshooting connectivity
 

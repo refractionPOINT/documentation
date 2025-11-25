@@ -24,18 +24,18 @@ Retrieves a saved query by name from hive storage and executes it, returning the
 
 **Use this function** for running existing saved queries.
 
-**Use `generate-lcql-query`** to create new queries from natural language:
+**Use `generate_lcql_query`** to create new queries from natural language:
 ```
 mcp__plugin_lc-essentials_limacharlie__generate_lcql_query(
   oid="[your-oid]",
   query="find suspicious PowerShell executions"
 )
 ```
-Then save it with `set-saved-query` for reuse.
+Then save it with `set_saved_query` for reuse.
 
 ## Required Information
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
 - **name**: Name of the saved query to execute
@@ -127,12 +127,12 @@ Results: 12 events found
 
 ## Related Functions
 
-- `generate-lcql-query` - AI-assisted query generation for new queries
-- `list-saved-queries` - List available saved queries
-- `get-saved-query` - Get query definition without executing
-- `set-saved-query` - Save a new query for reuse
-- `delete-saved-query` - Remove a saved query
-- `run-lcql-query` - Execute ad-hoc LCQL queries
+- `generate_lcql_query` - AI-assisted query generation for new queries
+- `list_saved_queries` - List available saved queries
+- `get_saved_query` - Get query definition without executing
+- `set_saved_query` - Save a new query for reuse
+- `delete_saved_query` - Remove a saved query
+- `run_lcql_query` - Execute ad-hoc LCQL queries
 
 ## Reference
 

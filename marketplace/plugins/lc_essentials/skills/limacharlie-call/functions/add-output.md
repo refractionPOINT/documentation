@@ -30,7 +30,7 @@ This skill calls the LimaCharlie API to create a new output configuration. It ac
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **name**: Unique name for the output (alphanumeric, hyphens, underscores)
 - **module**: Output module type (e.g., syslog, s3, webhook, slack, gcs, elastic, kafka)
@@ -343,7 +343,7 @@ Monitor your endpoint for incoming data.
 - Filtering options reduce data volume and costs
 - Use tag filters to route different sensor groups to different destinations
 - Event type filtering uses event names like "DNS_REQUEST", "PROCESS_CREATE"
-- Related skills: `list-outputs` to view configurations, `delete-output` to remove outputs
+- Related skills: `list_outputs` to view configurations, `delete_output` to remove outputs
 
 ## Reference
 

@@ -29,7 +29,7 @@ This skill uses AI (Gemini) to generate D&R rule detection components from natur
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for validation against org's D&R rule schema)
 - **query**: Natural language description of what threat or behavior to detect
 
@@ -176,7 +176,7 @@ Expected response:
 - **Performance**: Consider performance impact of complex detection on high-volume events
 - **False Positives**: Review and refine to minimize false positives
 - **Best Practice**: Start with specific detections and broaden if needed
-- **Combine with Response**: Use with `generate-dr-rule-respond` to create complete rules
+- **Combine with Response**: Use with `generate_dr_rule_respond` to create complete rules
 - **Prompt Template**: Uses `prompts/gen_dr_detect.txt` from the MCP server
 
 ## Reference

@@ -27,7 +27,7 @@ This skill retrieves detailed information about a specific sensor by calling the
 
 Before calling this skill, gather:
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format, e.g., "c7e8f940-1234-5678-abcd-1234567890ab")
 
@@ -181,8 +181,8 @@ Network isolation status: Normal
 - The `iid` field contains the installation key ID used to enroll the sensor
 - Tags can be used to organize and filter sensors (e.g., by environment, role, or criticality)
 - The `kernel` field indicates if kernel-level monitoring is available on the sensor
-- Use `is-online` skill if you only need to check online status without full details
-- Use `list-sensors` skill to get a list of all sensors before getting details
+- Use `is_online` skill if you only need to check online status without full details
+- Use `list_sensors` skill to get a list of all sensors before getting details
 
 ## Reference
 

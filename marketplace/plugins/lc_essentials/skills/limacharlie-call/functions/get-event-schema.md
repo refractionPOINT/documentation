@@ -145,7 +145,7 @@ Steps:
 - Some fields are common across event types (like TIMESTAMP, PROCESS_ID)
 - Platform-specific fields may only appear on certain OS types
 - Use `get-event-types-with-schemas` to list all available event types first
-- For multiple event types, consider using `get-event-schemas-batch` for better performance
+- For multiple event types, consider using `get_event_schemas_batch` for better performance
 
 ## Reference
 

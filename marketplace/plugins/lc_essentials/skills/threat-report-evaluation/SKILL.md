@@ -28,7 +28,7 @@ Before starting, obtain:
 ## Step 1: Platform Check
 
 1. Read the threat report and identify mentioned platforms
-2. Get platforms in org via `get-platform-names` function
+2. Get platforms in org via `get_platform_names` function
 3. Proceed only with platforms present in BOTH report AND organization
 
 ---
@@ -48,7 +48,7 @@ Before starting, obtain:
 
 ### Search IOCs
 
-Use `search-iocs` or `batch-search-iocs` for each IOC type.
+Use `search_iocs` or `batch_search_iocs` for each IOC type.
 
 ### Classify Results
 
@@ -75,8 +75,8 @@ Use `search-iocs` or `batch-search-iocs` for each IOC type.
 ### Generate & Execute LCQL Queries
 
 For each behavior:
-1. Use `generate-lcql-query` with specific natural language description
-2. Execute via `run-lcql-query`
+1. Use `generate_lcql_query` with specific natural language description
+2. Execute via `run_lcql_query`
 3. If >100 results: refine query with exclusions
 4. Document all queries and results
 
@@ -89,11 +89,11 @@ For each behavior:
 ### Detection Generation Workflow
 
 For EVERY detection:
-1. `generate-dr-rule-detection` → detection component
-2. `generate-dr-rule-respond` → response component
-3. `validate-dr-rule-components` → validate before creation
+1. `generate_dr_rule_detection` → detection component
+2. `generate_dr_rule_respond` → response component
+3. `validate_dr_rule_components` → validate before creation
 4. Present to user → get approval
-5. Create via `set-dr-general-rule`
+5. Create via `set_dr_general_rule`
 
 ---
 
@@ -168,7 +168,7 @@ Create rules for:
 **D. YARA Rules**
 - Scan files for malicious content patterns
 - Create YARA rule targeting strings/patterns from report
-- Deploy via `set-yara-rule` function
+- Deploy via `set_yara_rule` function
 
 **E. Suspicious Extensions**
 - Detect double extensions, script files in unexpected locations
@@ -368,7 +368,7 @@ For each lookup, create matching D&R rules:
 - [ ] Path lookup created and referenced
 
 ### Validation
-- [ ] All rules validated via `validate-dr-rule-components`
+- [ ] All rules validated via `validate_dr_rule_components`
 - [ ] FP suppression rules created for noisy detections
 - [ ] User approved all detections before creation
 

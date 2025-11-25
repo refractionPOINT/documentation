@@ -27,7 +27,7 @@ This skill retrieves a single rule record from a specified Hive in the LimaCharl
 
 Before calling this skill, gather:
 
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list-user-orgs` skill first to get the OID from the organization name.
+**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive containing the rule (required)
   - Common values: `dr-general`, `fp`
@@ -189,7 +189,7 @@ Steps:
   - `respond`: Array of response actions to execute
 - FP rules have different structure for filtering logic
 - The `enabled` field controls whether the rule is active
-- Use `list-rules` first if you don't know the exact rule name
+- Use `list_rules` first if you don't know the exact rule name
 - Rules can contain complex nested detection logic
 - Common response actions:
   - `report`: Generate a detection

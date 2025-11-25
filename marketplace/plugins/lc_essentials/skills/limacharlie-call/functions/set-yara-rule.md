@@ -40,7 +40,7 @@ Creates or updates a YARA rule source in the organization. Rules are used for ma
 
 ## Required Information
 
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list-user-orgs` first.
+**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
 - **name**: Unique name for the YARA rule source
@@ -83,7 +83,7 @@ mcp__limacharlie__lc_call_tool(
 Rule is immediately active across sensors.
 
 **Common Errors:**
-- **400 Bad Request**: Invalid YARA syntax - use `validate-yara-rule` first
+- **400 Bad Request**: Invalid YARA syntax - use `validate_yara_rule` first
 - **403 Forbidden**: Insufficient permissions
 - **500 Server Error**: YARA service issue
 
@@ -129,12 +129,12 @@ mcp__limacharlie__lc_call_tool(
 
 ## Related Functions
 
-- `validate-yara-rule` - Validate YARA syntax before deployment
-- `list-yara-rules` - List all YARA rules
-- `get-yara-rule` - Get specific rule content
-- `delete-yara-rule` - Remove a YARA rule
-- `yara-scan-file` - Test rule against files
-- `yara-scan-process` - Test rule against processes
+- `validate_yara_rule` - Validate YARA syntax before deployment
+- `list_yara_rules` - List all YARA rules
+- `get_yara_rule` - Get specific rule content
+- `delete_yara_rule` - Remove a YARA rule
+- `yara_scan_file` - Test rule against files
+- `yara_scan_process` - Test rule against processes
 
 ## Reference
 
