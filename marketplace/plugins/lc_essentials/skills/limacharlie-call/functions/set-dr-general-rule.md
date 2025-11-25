@@ -166,6 +166,39 @@ mcp__limacharlie__lc_call_tool(
 )
 ```
 
+### Example: Lookup-Based Threat Detection
+
+When using lookups for IOC-based detection (e.g., from threat intelligence), use the `op: lookup` operator with the correct resource format.
+
+**Important**: When creating rules via the API (JSON format), use `hive://lookup/` prefix for the resource:
+
+```
+mcp__limacharlie__lc_call_tool(
+  tool_name="set_dr_general_rule",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "detect-malicious-domains",
+    "detect": {
+      "op": "lookup",
+      "path": "event/DOMAIN_NAME",
+      "resource": "hive://lookup/threat-intel-domains"
+    },
+    "respond": [
+      {
+        "action": "report",
+        "name": "malicious-domain-detected"
+      }
+    ],
+    "is_enabled": true
+  }
+)
+```
+
+**Important**: Always use `hive://lookup/lookup-name` format. Never use `lookup://lookup-name`, which will cause an error:
+```
+error: resource category not allowed here
+```
+
 ## Related Functions
 
 - `generate-dr-rule-detection` - AI-assisted detection component generation
@@ -174,6 +207,7 @@ mcp__limacharlie__lc_call_tool(
 - `generate-sensor-selector` - Generate sensor targeting expressions
 - `get-dr-general-rule` - Verify rule after creation
 - `delete-dr-general-rule` - Remove rules
+- `set-lookup` - Create lookup tables for IOC-based detection
 - Use `lookup-lc-doc` skill for D&R syntax reference and event types
 
 ## Reference
