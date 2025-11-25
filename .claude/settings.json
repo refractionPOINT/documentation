@@ -8,7 +8,7 @@
     }
   },
   "enabledPlugins": {
-    "limacharlie-skills": true
+    "lc-essentials": true
   },
   "hooks": {
     "SessionStart": [

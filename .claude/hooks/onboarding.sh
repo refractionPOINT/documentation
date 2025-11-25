@@ -16,10 +16,10 @@ fi
 STATUS_LINES=""
 SETUP_REQUIRED=false
 
-# Check if LimaCharlie MCP server is configured
+# Check if LimaCharlie plugin is enabled (MCP comes from plugin)
 LC_MCP_CONFIGURED=false
-if [ -f "$PROJECT_ROOT/.mcp.json" ]; then
-    if grep -q '"limacharlie"' "$PROJECT_ROOT/.mcp.json"; then
+if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
+    if grep -qE '"lc-essentials"\s*:\s*true' "$PROJECT_ROOT/.claude/settings.json"; then
         LC_MCP_CONFIGURED=true
     fi
 fi
@@ -28,12 +28,13 @@ if [ "$LC_MCP_CONFIGURED" = false ]; then
     SETUP_REQUIRED=true
 fi
 
-# Check MCP servers
-if [ -f "$PROJECT_ROOT/.mcp.json" ]; then
-    MCP_COUNT=$(grep -o '"mcpServers"' "$PROJECT_ROOT/.mcp.json" | wc -l)
+# Check MCP servers from installed plugin
+PLUGIN_MCP="$PROJECT_ROOT/.claude-plugin/plugins/lc-essentials/.mcp.json"
+if [ -f "$PLUGIN_MCP" ]; then
+    MCP_COUNT=$(grep -o '"mcpServers"' "$PLUGIN_MCP" | wc -l)
     if [ $MCP_COUNT -gt 0 ]; then
         # Extract server names using grep and sed
-        MCP_SERVERS=$(grep -oP '"\K[^"]+(?="\s*:\s*\{)' "$PROJECT_ROOT/.mcp.json" | grep -v "mcpServers" | head -5)
+        MCP_SERVERS=$(grep -oP '"\K[^"]+(?="\s*:\s*\{)' "$PLUGIN_MCP" | grep -v "mcpServers" | head -5)
         if [ -n "$MCP_SERVERS" ]; then
             STATUS_LINES="${STATUS_LINES}\u001b[32m    ✓ MCP Servers:\u001b[0m\n"
             while IFS= read -r server; do
