@@ -463,7 +463,7 @@ If you need to manually process large results (not recommended), follow this wor
 Run the analyze script with the `resource_link` URL directly:
 
 ```bash
-bash ./marketplace/plugins/lc_essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/lc-tmp-mcp-export/..."
+bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/lc-tmp-mcp-export/..."
 ```
 
 Replace the URL with the actual `resource_link` value from the tool response.

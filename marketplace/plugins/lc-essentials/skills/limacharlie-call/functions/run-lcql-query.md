@@ -158,6 +158,10 @@ Query Results: 45 events found
 - `run_saved_query` - Execute a saved query
 - Use `lookup-lc-doc` skill for LCQL syntax reference
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 2.2 (LCQL Exploration)** of that workflow.
+
 ## Reference
 
 For the API implementation, see [CALLING_API.md](../../CALLING_API.md).

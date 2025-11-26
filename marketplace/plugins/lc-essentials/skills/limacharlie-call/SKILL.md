@@ -1,7 +1,6 @@
 ---
 name: limacharlie-call
-=======
-description: Perform LimaCharlie API operations using Haiku sub-agent. Access 124 functions for sensors, rules, outputs, cloud integrations, artifacts, AI-powered generation, and validation. Load function references on-demand from ./functions/ directory.
+description: "**REQUIRED for ALL LimaCharlie operations** - list orgs, sensors, rules, detections, queries, and 120+ functions. NEVER call LimaCharlie MCP tools directly. Use cases: 'what orgs do I have', 'list sensors', 'search IOCs', 'run LCQL query', 'create detection rule'. This skill loads function docs and delegates to sub-agent."
 allowed-tools: Task, Read, Bash
 ---
 
@@ -142,11 +141,13 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 
 ### Detection Engineering
 - `set_dr_general_rule` - Create/update detection rules
-- `validate_dr_rule_components` - Validate rule syntax
+- `validate_dr_rule_components` - Validate rule syntax (server-side)
+- `test_dr_rule_events` - Test rules against inline events
+- `replay_dr_rule` - Test rules against historical data
 - `generate_dr_rule_detection` - AI-generate detection logic
 - `generate_dr_rule_respond` - AI-generate response actions
 
-## Available Functions (124)
+## Available Functions (126)
 
 ### Organization Management (8)
 - `list_user_orgs` - List organizations available to user → `./functions/list-user-orgs.md`
@@ -216,7 +217,7 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `reliable_tasking` - Execute reliable task → `./functions/reliable-tasking.md`
 - `list_reliable_tasks` - List reliable tasks → `./functions/list-reliable-tasks.md`
 
-### Detection & Response Rules (10)
+### Detection & Response Rules (12)
 - `get_detection_rules` - Get all detection rules → `./functions/get-detection-rules.md`
 - `list_dr_general_rules` - List D&R general rules → `./functions/list-dr-general-rules.md`
 - `get_dr_general_rule` - Get D&R general rule → `./functions/get-dr-general-rule.md`
@@ -227,6 +228,8 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `set_dr_managed_rule` - Create/update D&R managed rule → `./functions/set-dr-managed-rule.md`
 - `delete_dr_managed_rule` - Delete D&R managed rule → `./functions/delete-dr-managed-rule.md`
 - `get_mitre_report` - Get MITRE ATT&CK report → `./functions/get-mitre-report.md`
+- `test_dr_rule_events` - Test D&R rule against inline events → `./functions/test-dr-rule-events.md`
+- `replay_dr_rule` - Test D&R rule against historical data → `./functions/replay-dr-rule.md`
 
 ### False Positive Rules (4)
 - `get_fp_rules` - Get all FP rules → `./functions/get-fp-rules.md`

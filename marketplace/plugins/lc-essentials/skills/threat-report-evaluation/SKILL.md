@@ -14,6 +14,7 @@ Systematically evaluate threat reports to determine organizational impact and cr
 - Search ONLY in the specified LimaCharlie organization
 - NEVER fabricate or assume data not present
 - ALWAYS use AI generation tools for rules—never write YAML manually
+- If the report is PDF or other rich file, download it, convert it to markdown and use that
 - Ask for user confirmation before creating any resources
 
 ## Required Information
@@ -94,6 +95,8 @@ For EVERY detection:
 3. `validate_dr_rule_components` → validate before creation
 4. Present to user → get approval
 5. Create via `set_dr_general_rule`
+
+**Testing & Refinement**: For comprehensive testing of created rules (unit tests, historical replay, multi-org parallel testing), use the `detection-engineering` skill which provides iterative test-refine workflows.
 
 ---
 

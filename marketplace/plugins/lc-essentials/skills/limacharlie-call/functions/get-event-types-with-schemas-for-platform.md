@@ -153,6 +153,10 @@ Steps:
 - Not all platforms have equal telemetry breadth
 - The organization must have sensors on the platform for the events to actually generate
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 2.1 (Schema Research)** of that workflow.
+
 ## Reference
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
