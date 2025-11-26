@@ -59,6 +59,71 @@ Sensors with issues (N):
 4. Filters results based on check criteria
 5. Returns concise findings for this org only (parent skill aggregates)
 
+### dr-replay-tester
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Test D&R rules via historical replay against a **single** LimaCharlie organization. Designed to be spawned in parallel by the `detection-engineering` skill for multi-org testing.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one instance per org) by the `detection-engineering` skill when users want to:
+- Test a D&R rule across multiple organizations
+- Validate detection logic against real historical data
+- Compare rule performance across different environments
+
+**Architecture Role**:
+- **Parent Skill**: `detection-engineering` (orchestrates parallel execution)
+- **This Agent**: Tests rule against ONE organization's historical data
+- **Parallelization**: Multiple instances run simultaneously, one per org
+
+**Expected Input**:
+Receives a prompt specifying:
+- Organization name and ID (UUID)
+- Detection rule (YAML/dict)
+- Response rule (optional)
+- Time window (e.g., "last 1 hour", "last 24 hours")
+- Sensor selector (optional, e.g., `plat == "windows"`)
+
+**Output Format**:
+Returns **summarized** findings (not all matches):
+```markdown
+### {Org Name}
+
+**Match Statistics**:
+- Events processed: {N}
+- Events matched: {M}
+- Match rate: {X.X%}
+
+**Sample Matches** (showing 5 of {total}):
+1. {hostname}: {process} - {command_line_snippet}
+...
+
+**Common Patterns**:
+- Top hostname: {hostname} ({N} matches)
+- Top process: {process_name} ({N} matches)
+
+**Assessment**: {Brief assessment}
+```
+
+**Key Features**:
+- **Single-Org Focus**: Only tests against the one organization specified
+- **Result Summarization**: Returns stats and top 5 samples, not all hits
+- **Pattern Analysis**: Identifies common patterns in matches (hostnames, processes)
+- **Fast Execution**: Uses Haiku model for quick turnaround
+- **Designed for Parallelism**: Optimized to run alongside other instances
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For `replay_dr_rule` API calls
+
+**How It Works**:
+1. Extracts org ID, detection rule, time window, and selector from prompt
+2. Converts time window to `last_seconds` parameter
+3. Runs `replay_dr_rule` with extracted parameters
+4. Analyzes results: calculates stats, extracts top samples, finds patterns
+5. Returns concise summary for this org only (parent skill aggregates)
+
+---
+
 ## Agent Architecture
 
 All agents follow Claude Code best practices:

@@ -2,7 +2,12 @@
 
 ## Overview
 
-Successfully created **121 new SKILL.md files** for the lc_essentials plugin, bringing the total to **122 skills** (including the existing lookup-lc-doc skill and the integrated mssp-reporting skill).
+Successfully created **122 new SKILL.md files** for the lc_essentials plugin, bringing the total to **123 skills** (including the existing lookup-lc-doc skill, mssp-reporting skill, and detection-engineering skill).
+
+**Sub-Agents**: 3 specialized agents for parallel operations:
+- `limacharlie-api-executor`: Execute single API operations
+- `sensor-health-reporter`: Check sensor health for a single org
+- `dr-replay-tester`: Test D&R rules via replay for a single org
 
 ## What Was Created
 
@@ -75,6 +80,9 @@ Successfully created **121 new SKILL.md files** for the lc_essentials plugin, br
 - delete-sensor
 - reliable-tasking
 - list-reliable-tasks
+
+#### Detection Engineering (1 skill)
+- **detection-engineering**: Expert Detection Engineer assistant for end-to-end D&R rule development (understand → research → build → test → deploy). Uses iterative test-refine cycles, integrates with `lookup-lc-doc` for syntax help, and orchestrates `dr-replay-tester` sub-agent for multi-org parallel testing.
 
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
