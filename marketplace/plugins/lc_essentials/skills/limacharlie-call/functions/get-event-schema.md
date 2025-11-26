@@ -147,6 +147,10 @@ Steps:
 - Use `get-event-types-with-schemas` to list all available event types first
 - For multiple event types, consider using `get_event_schemas_batch` for better performance
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 2.1 (Schema Research)** of that workflow.
+
 ## Reference
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).

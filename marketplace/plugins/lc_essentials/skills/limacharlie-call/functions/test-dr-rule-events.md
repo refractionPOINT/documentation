@@ -281,6 +281,10 @@ Response will include detailed trace showing which conditions passed/failed.
 - `generate_dr_rule_respond` - AI-generate response actions
 - `set_dr_general_rule` - Deploy validated rules
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 4.1 (Unit Testing)** of that workflow.
+
 ## Reference
 
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/replay/replay.go`

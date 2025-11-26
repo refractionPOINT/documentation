@@ -298,6 +298,11 @@ mcp__limacharlie__lc_call_tool(
 - `set_dr_general_rule` - Deploy validated rules
 - `get_historic_events` - Query raw historical events
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 4.2 (Historical Replay)** of that workflow.
+- **dr-replay-tester agent**: For parallel multi-org replay testing, the detection-engineering skill uses this specialized agent to test rules across multiple organizations simultaneously.
+
 ## Reference
 
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/replay/replay.go`

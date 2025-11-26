@@ -192,6 +192,10 @@ Expected response:
 - **Best Practice**: Start with simpler queries and build complexity incrementally
 - **Prompt Template**: Uses `prompts/gen_lcql.txt` from the MCP server
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 2.2 (LCQL Exploration)** of that workflow.
+
 ## Reference
 
 For more details on the MCP tool implementation, check: `../lc-mcp-server/internal/tools/ai/ai.go` (generate_lcql_query function)

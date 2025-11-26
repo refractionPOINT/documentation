@@ -96,6 +96,8 @@ For EVERY detection:
 4. Present to user → get approval
 5. Create via `set_dr_general_rule`
 
+**Testing & Refinement**: For comprehensive testing of created rules (unit tests, historical replay, multi-org parallel testing), use the `detection-engineering` skill which provides iterative test-refine workflows.
+
 ---
 
 ### Layer 1: Process-Based Detections
