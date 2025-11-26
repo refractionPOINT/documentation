@@ -16,10 +16,10 @@ fi
 STATUS_LINES=""
 SETUP_REQUIRED=false
 
-# Check if LimaCharlie MCP server is configured
+# Check if LimaCharlie plugin is enabled (MCP comes from plugin)
 LC_MCP_CONFIGURED=false
-if [ -f "$PROJECT_ROOT/.mcp.json" ]; then
-    if grep -q '"limacharlie"' "$PROJECT_ROOT/.mcp.json"; then
+if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
+    if grep -qE '"lc-essentials@lc-marketplace"\s*:\s*true' "$PROJECT_ROOT/.claude/settings.json"; then
         LC_MCP_CONFIGURED=true
     fi
 fi
@@ -28,12 +28,13 @@ if [ "$LC_MCP_CONFIGURED" = false ]; then
     SETUP_REQUIRED=true
 fi
 
-# Check MCP servers
-if [ -f "$PROJECT_ROOT/.mcp.json" ]; then
-    MCP_COUNT=$(grep -o '"mcpServers"' "$PROJECT_ROOT/.mcp.json" | wc -l)
+# Check MCP servers from installed plugin
+PLUGIN_MCP="$PROJECT_ROOT/marketplace/plugins/lc-essentials/.mcp.json"
+if [ -f "$PLUGIN_MCP" ]; then
+    MCP_COUNT=$(grep -o '"mcpServers"' "$PLUGIN_MCP" | wc -l)
     if [ $MCP_COUNT -gt 0 ]; then
         # Extract server names using grep and sed
-        MCP_SERVERS=$(grep -oP '"\K[^"]+(?="\s*:\s*\{)' "$PROJECT_ROOT/.mcp.json" | grep -v "mcpServers" | head -5)
+        MCP_SERVERS=$(grep -oP '"\K[^"]+(?="\s*:\s*\{)' "$PLUGIN_MCP" | grep -v "mcpServers" | head -5)
         if [ -n "$MCP_SERVERS" ]; then
             STATUS_LINES="${STATUS_LINES}\u001b[32m    ✓ MCP Servers:\u001b[0m\n"
             while IFS= read -r server; do
@@ -49,12 +50,15 @@ if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
     if [ -n "$PLUGINS" ]; then
         STATUS_LINES="${STATUS_LINES}\u001b[32m    ✓ Skills & Plugins:\u001b[0m\n"
         while IFS= read -r plugin; do
+            # Strip @marketplace suffix for display and folder lookup
+            PLUGIN_BASE=$(echo "$plugin" | sed 's/@.*//')
             # Format plugin name nicely
-            PLUGIN_NAME=$(echo "$plugin" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+            PLUGIN_NAME=$(echo "$PLUGIN_BASE" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
             STATUS_LINES="${STATUS_LINES}\u001b[32m       • $PLUGIN_NAME\u001b[0m\n"
 
             # Check if this plugin has skills
-            PLUGIN_SKILLS_DIR="$PROJECT_ROOT/.claude-plugin/plugins/$plugin/skills"
+            PLUGIN_DIR_NAME="$PLUGIN_BASE"
+            PLUGIN_SKILLS_DIR="$PROJECT_ROOT/marketplace/plugins/$PLUGIN_DIR_NAME/skills"
             if [ -d "$PLUGIN_SKILLS_DIR" ]; then
                 SKILL_COUNT=$(ls "$PLUGIN_SKILLS_DIR" 2>/dev/null | wc -l)
                 if [ $SKILL_COUNT -gt 0 ]; then

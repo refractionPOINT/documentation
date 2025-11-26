@@ -133,7 +133,7 @@ API returns a reference to download:
 Run the analyze script with the `resource_link`:
 
 ```bash
-bash ./marketplace/plugins/lc_essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/..."
+bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/..."
 ```
 
 **What this script does**:
@@ -265,7 +265,7 @@ Execute LimaCharlie API call:
 **Your Actions**:
 1. Call MCP tool
 2. Receive `resource_link` response
-3. Run `bash ./marketplace/plugins/lc_essentials/scripts/analyze-lc-result.sh "<url>"`
+3. Run `bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "<url>"`
 4. Review schema: `[{"sid":"string","hostname":"string","is_online":"boolean",...}]`
 5. Extract counts:
    ```bash

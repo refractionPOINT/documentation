@@ -186,6 +186,10 @@ Expected response:
 - **Combine with Detection**: Use with `generate_dr_rule_detection` to create complete rules
 - **Prompt Template**: Uses `prompts/gen_dr_respond.txt` from the MCP server
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 3.2 (Generate Response)** of that workflow.
+
 ## Reference
 
 For more details on the MCP tool implementation, check: `../lc-mcp-server/internal/tools/ai/ai.go` (generate_dr_rule_respond function)

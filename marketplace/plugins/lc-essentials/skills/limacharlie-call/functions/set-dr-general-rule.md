@@ -210,6 +210,10 @@ error: resource category not allowed here
 - `set_lookup` - Create lookup tables for IOC-based detection
 - Use `lookup-lc-doc` skill for D&R syntax reference and event types
 
+## See Also
+
+- **detection-engineering skill**: For end-to-end detection development workflow (understand → research → build → test → deploy). This function is used in **Phase 5 (Deploy)** of that workflow.
+
 ## Reference
 
 For the tool implementation, see [CALLING_API.md](../../CALLING_API.md).
