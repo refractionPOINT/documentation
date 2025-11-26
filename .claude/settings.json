@@ -17,8 +17,8 @@
   "extraKnownMarketplaces": {
     "lc-marketplace": {
       "source": {
-        "source": "file",
-        "path": "marketplace/.claude-plugin/marketplace.json"
+        "source": "directory",
+        "path": "marketplace/"
       }
     }
   }
