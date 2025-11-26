@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully created **122 new SKILL.md files** for the lc_essentials plugin, bringing the total to **123 skills** (including the existing lookup-lc-doc skill, mssp-reporting skill, and detection-engineering skill).
+Successfully created **122 new SKILL.md files** for the lc-essentials plugin, bringing the total to **123 skills** (including the existing lookup-lc-doc skill, mssp-reporting skill, and detection-engineering skill).
 
 **Sub-Agents**: 3 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
@@ -238,7 +238,7 @@ All 116 skills have been verified:
 
 All skills are located at:
 ```
-/home/maxime/goProject/github.com/refractionPOINT/documentation/marketplace/plugins/lc_essentials/skills/[skill-name]/SKILL.md
+/home/maxime/goProject/github.com/refractionPOINT/documentation/marketplace/plugins/lc-essentials/skills/[skill-name]/SKILL.md
 ```
 
 ## Implementation Approach

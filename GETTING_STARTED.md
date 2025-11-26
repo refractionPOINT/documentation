@@ -28,7 +28,7 @@ From within Claude Code, run:
 /plugin marketplace add ./marketplace
 ```
 
-## Step 4: Install the lc_essentials Plugin
+## Step 4: Install the lc-essentials Plugin
 
 ```
 /plugin install lc-essentials@limacharlie-marketplace
@@ -56,4 +56,4 @@ The plugin provides 121 skills for LimaCharlie operations including:
 - LCQL queries and historical data analysis
 - AI-powered query and rule generation
 
-See `marketplace/plugins/lc_essentials/README.md` for full documentation.
+See `marketplace/plugins/lc-essentials/README.md` for full documentation.
