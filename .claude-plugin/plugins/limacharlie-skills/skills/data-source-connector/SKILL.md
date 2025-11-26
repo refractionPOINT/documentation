@@ -48,11 +48,17 @@ Return:
 
 LimaCharlie uses several types of identifiers that you must handle correctly:
 
-| Identifier | Format | Description |
-|------------|--------|-------------|
-| **OID** (Organization ID) | UUID | Unique identifier for a LimaCharlie organization |
-| **SID** (Sensor ID) | UUID | Unique identifier for a sensor/endpoint |
-| **IID** (Installation Key ID) | UUID | Identifier for an installation key |
+| Identifier | Format | Example | Description |
+|------------|--------|---------|-------------|
+| **OID** (Organization ID) | UUID | Example: `95de69c2-5a29-4378-aab2-efdcfaa044f7` | Unique identifier for a LimaCharlie organization |
+| **SID** (Sensor ID) | UUID | Example: `a4b3c2d1-1234-5678-abcd-123456789abc` | Unique identifier for a sensor/endpoint |
+| **IID** (Installation Key ID) | UUID | Example: `a2f7d425-a256-4efe-880c-5b8c1f530c11` | Identifier for an installation key |
+
+**These are NOT valid identifiers:**
+- Organization names like `my-company` or `prod-environment`
+- Hostnames like `web-server-01` or `gcp-lc-sales-audit`
+- Project names like `lc-sales`
+- Arbitrary strings or labels
 
 ### Critical Rules
 
@@ -70,14 +76,14 @@ LimaCharlie uses several types of identifiers that you must handle correctly:
   - `mcp__limacharlie__search_hosts` - Find sensors by hostname
   - `mcp__limacharlie__list_installation_keys` - Get installation keys
 - **Validate** that identifiers are in proper UUID format before use
-- **Show users** where to find their OID in the LimaCharlie web UI (Organization Settings)
+- **Show users** where to find their OID in the LimaCharlie web UI (Access Management → REST API)
 
 ### Where Users Find Their OID
 
 Direct users to find their Organization ID:
 1. Log in to https://app.limacharlie.io
-2. Navigate to **Organization Settings** (gear icon)
-3. The OID is displayed on the main settings page
+2. Navigate to **Access Management** → **REST API**
+3. The OID is displayed on this page
 
 ### Example: Asking for OID
 
@@ -93,22 +99,19 @@ What's your OID?"
 
 ## Available USP Adapters Catalog
 
-### Cloud Storage & Messaging (10 adapters)
+### Cloud Storage & Messaging (7 adapters)
 
 | Adapter | Description | Use When |
 |---------|-------------|----------|
 | `s3` | AWS S3 bucket polling | Ingesting CloudTrail, VPC Flow Logs, any S3-stored logs |
-| `sqs` | AWS SQS queue consumer | Real-time AWS event streaming |
-| `sqs-files` | S3 files via SQS notifications | S3 with SNS/SQS notification pipeline |
+| `sqs` | AWS SQS queue consumer | Real-time AWS event streaming, GuardDuty |
 | `gcs` | Google Cloud Storage | GCP audit logs, Cloud Storage files |
 | `pubsub` | Google Pub/Sub | Real-time GCP event streaming |
 | `azure_event_hub` | Azure Event Hub consumer | Azure Monitor, Entra ID, Defender logs |
-| `bigquery` | Google BigQuery | Historical log analysis, batch ingestion |
-| `file` | Local file monitoring | On-prem log files, application logs |
+| `file` | Local file monitoring | On-prem log files, application logs, IIS logs |
 | `stdin` | Standard input | Piped data, testing, custom integrations |
-| `simulator` | Test data generator | Testing and development |
 
-### Identity & Access Management (5 adapters)
+### Identity & Access Management (4 adapters)
 
 | Adapter | Description | Use When |
 |---------|-------------|----------|
@@ -116,9 +119,8 @@ What's your OID?"
 | `entraid` | Microsoft Entra ID (Azure AD) | Azure AD sign-ins, audit logs |
 | `duo` | Duo Security | MFA events, authentication logs |
 | `1password` | 1Password Events API | Password manager audit events |
-| `bitwarden` | Bitwarden Events | Password manager audit events |
 
-### Security Tools (10 adapters)
+### Security Tools (9 adapters)
 
 | Adapter | Description | Use When |
 |---------|-------------|----------|
@@ -126,24 +128,23 @@ What's your OID?"
 | `falconcloud` | CrowdStrike Falcon | Falcon EDR streaming events |
 | `sentinelone` | SentinelOne | SentinelOne EDR events |
 | `sophos` | Sophos Central | Sophos endpoint events |
-| `cylance` | BlackBerry Cylance | Cylance EDR events |
-| `wiz` | Wiz Cloud Security | Wiz findings and events |
-| `trendmicro` | Trend Micro | Trend Micro security events |
+| `carbon_black` | VMware Carbon Black | Carbon Black EDR events via S3 |
+| `guard_duty` | AWS GuardDuty | AWS threat detection findings via S3/SQS |
 | `cato` | Cato Networks | Cato SASE events |
 | `sublime` | Sublime Security | Email security events |
-| `proofpoint_tap` | Proofpoint TAP | Targeted Attack Protection events |
+| `canary_token` | Canarytokens | Digital tripwires/honeypots via webhook |
 
 ### Business Applications (7 adapters)
 
 | Adapter | Description | Use When |
 |---------|-------------|----------|
 | `o365` | Microsoft 365 | Office 365 audit logs (Exchange, SharePoint, Teams) |
-| `ms_graph` | Microsoft Graph API | Azure/M365 via Graph API |
 | `slack` | Slack Audit Logs | Slack enterprise audit events |
+| `atlassian` | Atlassian (Jira) | Jira issue and project events via webhook |
 | `zendesk` | Zendesk | Support ticket and admin events |
 | `hubspot` | HubSpot | CRM activity logs |
-| `box` | Box | File sharing audit events |
 | `pandadoc` | PandaDoc | Document workflow events |
+| `tailscale` | Tailscale | VPN connection and device events via webhook |
 
 ### Infrastructure & IT (5 adapters)
 
