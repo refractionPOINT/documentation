@@ -19,7 +19,7 @@ SETUP_REQUIRED=false
 # Check if LimaCharlie plugin is enabled (MCP comes from plugin)
 LC_MCP_CONFIGURED=false
 if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
-    if grep -qE '"lc-essentials"\s*:\s*true' "$PROJECT_ROOT/.claude/settings.json"; then
+    if grep -qE '"lc-essentials@lc-marketplace"\s*:\s*true' "$PROJECT_ROOT/.claude/settings.json"; then
         LC_MCP_CONFIGURED=true
     fi
 fi
@@ -29,7 +29,7 @@ if [ "$LC_MCP_CONFIGURED" = false ]; then
 fi
 
 # Check MCP servers from installed plugin
-PLUGIN_MCP="$PROJECT_ROOT/.claude-plugin/plugins/lc-essentials/.mcp.json"
+PLUGIN_MCP="$PROJECT_ROOT/marketplace/plugins/lc_essentials/.mcp.json"
 if [ -f "$PLUGIN_MCP" ]; then
     MCP_COUNT=$(grep -o '"mcpServers"' "$PLUGIN_MCP" | wc -l)
     if [ $MCP_COUNT -gt 0 ]; then
@@ -50,12 +50,15 @@ if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
     if [ -n "$PLUGINS" ]; then
         STATUS_LINES="${STATUS_LINES}\u001b[32m    ✓ Skills & Plugins:\u001b[0m\n"
         while IFS= read -r plugin; do
+            # Strip @marketplace suffix for display and folder lookup
+            PLUGIN_BASE=$(echo "$plugin" | sed 's/@.*//')
             # Format plugin name nicely
-            PLUGIN_NAME=$(echo "$plugin" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+            PLUGIN_NAME=$(echo "$PLUGIN_BASE" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
             STATUS_LINES="${STATUS_LINES}\u001b[32m       • $PLUGIN_NAME\u001b[0m\n"
 
-            # Check if this plugin has skills
-            PLUGIN_SKILLS_DIR="$PROJECT_ROOT/.claude-plugin/plugins/$plugin/skills"
+            # Check if this plugin has skills (convert hyphen to underscore for folder name)
+            PLUGIN_DIR_NAME=$(echo "$PLUGIN_BASE" | tr '-' '_')
+            PLUGIN_SKILLS_DIR="$PROJECT_ROOT/marketplace/plugins/$PLUGIN_DIR_NAME/skills"
             if [ -d "$PLUGIN_SKILLS_DIR" ]; then
                 SKILL_COUNT=$(ls "$PLUGIN_SKILLS_DIR" 2>/dev/null | wc -l)
                 if [ $SKILL_COUNT -gt 0 ]; then

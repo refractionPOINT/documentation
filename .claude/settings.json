@@ -1,15 +1,4 @@
 {
-  "extraKnownMarketplaces": {
-    "lc-market": {
-      "source": {
-        "source": "file",
-        "path": ".claude-plugin/marketplace.json"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "lc-essentials": true
-  },
   "hooks": {
     "SessionStart": [
       {
@@ -21,5 +10,16 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "lc-essentials@lc-marketplace": true
+  },
+  "extraKnownMarketplaces": {
+    "lc-marketplace": {
+      "source": {
+        "source": "file",
+        "path": "marketplace/.claude-plugin/marketplace.json"
+      }
+    }
   }
 }
