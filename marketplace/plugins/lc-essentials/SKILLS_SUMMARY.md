@@ -4,10 +4,11 @@
 
 Successfully created **122 new SKILL.md files** for the lc-essentials plugin, bringing the total to **123 skills** (including the existing lookup-lc-doc skill, mssp-reporting skill, and detection-engineering skill).
 
-**Sub-Agents**: 3 specialized agents for parallel operations:
+**Sub-Agents**: 4 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
 - `sensor-health-reporter`: Check sensor health for a single org
 - `dr-replay-tester`: Test D&R rules via replay for a single org
+- `mssp-org-reporter`: Collect comprehensive reporting data for a single org
 
 ## What Was Created
 

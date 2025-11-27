@@ -2,7 +2,8 @@
 name: mssp-reporting
 description: Generate comprehensive multi-tenant MSSP security and operational reports from LimaCharlie. Provides billing summaries, usage analytics, detection trends, sensor health monitoring, and configuration audits across multiple customer organizations. Built with strict data accuracy guardrails to prevent fabricated metrics. Supports partial report generation when some organizations fail, with transparent error documentation. Time windows always displayed, detection limits clearly flagged, zero cost calculations.
 allowed-tools:
-  - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
+  - Skill
+  - Task
   - Read
   - Write
   - Bash
@@ -638,6 +639,48 @@ if limit_reached:
 
 ## Workflow Patterns
 
+### Architecture Overview
+
+This skill uses a **parallel subagent architecture** for efficient multi-tenant data collection:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  mssp-reporting (this skill)                                │
+│  ├─ Phase 1: Discovery (list orgs via limacharlie-call)     │
+│  ├─ Phase 2: Time range validation                          │
+│  ├─ Phase 3: Spawn parallel agents ────────────────────┐    │
+│  ├─ Phase 4: Aggregate results                         │    │
+│  └─ Phase 5: Generate report                           │    │
+└────────────────────────────────────────────────────────┼────┘
+                                                         │
+    ┌────────────────────────────────────────────────────┘
+    │
+    │  Spawns ONE agent per organization (in parallel)
+    │
+    ▼
+┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
+│mssp-org-  │  │mssp-org-  │  │mssp-org-  │  │mssp-org-  │
+│reporter   │  │reporter   │  │reporter   │  │reporter   │
+│  Org 1    │  │  Org 2    │  │  Org 3    │  │  Org N    │
+└─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
+      │              │              │              │
+      │  Each agent collects ALL data for its org:
+      │  - org info, usage, billing, sensors,
+      │  - detections, rules, outputs
+      │              │              │              │
+      └──────────────┴──────┬───────┴──────────────┘
+                            │
+                            ▼
+                    Structured JSON results
+                    returned to parent skill
+```
+
+**Benefits of this architecture:**
+- True parallelism across organizations
+- Each agent handles its own error recovery
+- Reduced context usage in main skill
+- Scalable to 50+ organizations
+
 ### Pattern 1: Multi-Tenant MSSP Comprehensive Report
 
 **User Request Examples:**
@@ -649,24 +692,17 @@ if limit_reached:
 
 ```
 ┌─ PHASE 1: DISCOVERY ──────────────────────────────┐
-│ 1. Call: list-user-orgs (no OID required)        │
-│    MCP Tool: mcp__plugin_lc-essentials_limacharlie__lc_call_tool
-│    Params: {
-│      endpoint: "api",
-│      method: "GET",
-│      path: "/v1/user/orgs"
-│    }
+│ 1. Use limacharlie-call skill to get org list:   │
+│    Function: list-user-orgs (no OID required)     │
 │                                                    │
 │ 2. Validation:                                    │
-│    ✓ Check response.body.orgs exists              │
-│    ✓ Verify orgs array not empty                  │
+│    ✓ Check orgs array exists and not empty        │
 │    ✓ Validate each OID is UUID format             │
 │    ✓ Count total organizations                    │
 │                                                    │
 │ 3. User Confirmation (if >20 orgs):              │
 │    "Found 50 organizations. Generate report for   │
-│     all 50? This will take approximately 5-10     │
-│     minutes and make ~300 API calls."             │
+│     all 50? This may take a few minutes."         │
 │                                                    │
 │    Options to present:                            │
 │    - Yes, process all 50                          │
@@ -695,81 +731,54 @@ if limit_reached:
 │     - Unix: 1730419200 to 1733011199"             │
 └────────────────────────────────────────────────────┘
 
-┌─ PHASE 3: PARALLEL DATA COLLECTION ───────────────┐
-│ For each organization (process in parallel):      │
+┌─ PHASE 3: SPAWN PARALLEL AGENTS ──────────────────┐
+│ 7. Spawn mssp-org-reporter agents IN PARALLEL:   │
 │                                                    │
-│ 7. Organization Info:                             │
-│    Call: get-org-info                             │
-│    Validate: Status 200, extract name/oid         │
-│    On error: Record failure, continue             │
+│    CRITICAL: Send ALL Task calls in a SINGLE      │
+│    message to achieve true parallelism:           │
 │                                                    │
-│ 8. Usage Statistics:                              │
-│    Call: get-usage-stats                          │
-│    Filter: Only dates in time range               │
-│    Validate: 'usage' key exists                   │
-│    Extract: Daily metrics for period              │
-│    On error: Record failure, continue             │
+│    Task(                                          │
+│      subagent_type="lc-essentials:mssp-org-reporter",
+│      model="haiku",                               │
+│      prompt="Collect reporting data for org       │
+│        'Client ABC' (OID: uuid-1)                 │
+│        Time Range:                                │
+│        - Start: 1730419200                        │
+│        - End: 1733011199                          │
+│        Detection Limit: 5000"                     │
+│    )                                              │
+│    Task(                                          │
+│      subagent_type="lc-essentials:mssp-org-reporter",
+│      model="haiku",                               │
+│      prompt="Collect reporting data for org       │
+│        'Client XYZ' (OID: uuid-2)..."             │
+│    )                                              │
+│    ... (one Task per organization)                │
 │                                                    │
-│ 9. Billing Details:                               │
-│    Call: get-billing-details                      │
-│    Validate: Status 200 (403 expected for some)   │
-│    Extract: plan, status, next billing date       │
-│    On 403: Note permission issue, continue        │
-│    On other error: Record failure, continue       │
+│ 8. Each agent returns structured JSON:           │
+│    {                                              │
+│      "org_name": "...",                           │
+│      "oid": "...",                                │
+│      "status": "success|partial|failed",          │
+│      "data": { usage, billing, sensors, ... },    │
+│      "errors": [...],                             │
+│      "warnings": [...]                            │
+│    }                                              │
 │                                                    │
-│ 10. Sensor Inventory:                             │
-│     Call: list-sensors                            │
-│     Check for: resource_link (large result)       │
-│     If resource_link:                             │
-│       a. Download: analyze-lc-result.sh [URL]     │
-│       b. Review schema output                     │
-│       c. Extract: count, sample hostnames         │
-│     Validate: Response structure                  │
-│     On error: Record failure, continue            │
-│                                                    │
-│ 11. Online Sensor Status:                         │
-│     Call: get-online-sensors                      │
-│     Validate: Returns SID string array            │
-│     Calculate: online count, offline count        │
-│     On error: Mark status unavailable             │
-│                                                    │
-│ 12. Detection Summary:                            │
-│     Call: get-historic-detections                 │
-│     Params: {                                     │
-│       start: [unix_timestamp],                    │
-│       end: [unix_timestamp],                      │
-│       limit: 5000                                 │
-│     }                                             │
-│     Track: retrieved_count                        │
-│     Check: limit_reached = (count >= 5000)        │
-│     Extract: Categories, timestamps               │
-│     On error: Record failure, continue            │
-│                                                    │
-│ 13. D&R Rules Count:                              │
-│     Call: list-dr-general-rules                   │
-│     Count: Total and enabled rules                │
-│     On error: Record failure, continue            │
-│                                                    │
-│ 14. Categorize Results:                           │
-│     success_orgs = [] (all APIs succeeded)        │
-│     partial_orgs = [] (some APIs failed)          │
-│     failed_orgs = [] (all critical APIs failed)   │
+│ 9. Wait for all agents to complete               │
 └────────────────────────────────────────────────────┘
 
-┌─ PHASE 4: VALIDATION & AGGREGATION ───────────────┐
-│ 15. Per-Organization Data Validation:            │
-│     For each successful/partial org:              │
-│       ✓ Normalize all timestamps                  │
-│       ✓ Verify no negative values                 │
-│       ✓ Confirm dates within time range           │
-│       ✓ Validate units (bytes, counts)            │
-│       ✓ Check for missing critical fields         │
+┌─ PHASE 4: AGGREGATE RESULTS ──────────────────────┐
+│ 10. Categorize agent results:                    │
+│     success_orgs = [] (status == "success")       │
+│     partial_orgs = [] (status == "partial")       │
+│     failed_orgs = [] (status == "failed")         │
 │                                                    │
-│ 16. Multi-Org Aggregation:                       │
-│     Aggregate across SUCCESSFUL orgs only:        │
-│     - Sum sensor_events (from usage stats)        │
-│     - Sum output_bytes_tx (convert to GB)         │
-│     - Sum replay_num_evals                        │
+│ 11. Multi-Org Aggregation:                       │
+│     Aggregate across SUCCESS + PARTIAL orgs:      │
+│     - Sum total_events (from usage)               │
+│     - Sum total_output_bytes (convert to GB)      │
+│     - Sum total_evaluations                       │
 │     - Sum peak_sensors                            │
 │     - Count total sensors                         │
 │     - Count total detections (track limits)       │
@@ -945,25 +954,22 @@ Progress Reporting During Execution:
 - "Show me subscription status across organizations"
 - "Usage report for invoicing"
 
-**Focused Data Collection:**
+**Workflow:**
 ```
-1. list-user-orgs
-2. For each org (parallel):
-   - get-org-info (metadata)
-   - get-usage-stats (filter to month)
-   - get-billing-details (plan, status)
-   - get-org-invoice-url (direct link)
+1. Use limacharlie-call skill: list-user-orgs
 
-3. Skip (not billing-relevant):
-   - Historic detections
-   - D&R rules
-   - Detailed sensor list
+2. Spawn mssp-org-reporter agents in parallel (same as Pattern 1)
+   - Agents collect ALL data (billing focus is in report generation)
 
-4. Report Focus:
+3. Aggregate results focusing on billing data:
+   - Extract only: usage, billing, invoice_url from each agent result
+   - Skip: detections, rules, detailed sensor data
+
+4. Generate Billing-Focused Report:
    - Usage metrics per org (NO cost calculations)
    - Subscription status
    - Invoice links
-   - Billing issues flagged
+   - Billing permission issues flagged
 ```
 
 ### Pattern 3: Single Organization Deep Dive
@@ -973,47 +979,50 @@ Progress Reporting During Execution:
 - "Complete security analysis for organization XYZ"
 - "Show me everything for [org name]"
 
-**Enhanced Data Collection:**
+**Workflow:**
 ```
-1. Get OID from name (list-user-orgs + filter)
-2. Collect comprehensive data:
-   - All standard metrics
-   - Individual sensor details (not just count)
-   - Detection breakdown by rule
-   - Sensor health by platform
-   - Offline sensor investigation
-   - Output configuration details
+1. Use limacharlie-call skill: list-user-orgs
+   - Filter to find OID for the specified org name
 
-3. Deep analysis:
-   - Per-platform sensor statistics
-   - Top detection categories with context
-   - Stale sensor identification
-   - D&R rule coverage analysis
+2. Spawn ONE mssp-org-reporter agent for that organization:
+   Task(
+     subagent_type="lc-essentials:mssp-org-reporter",
+     model="haiku",
+     prompt="Collect reporting data for org 'Client ABC' (OID: uuid)
+       Time Range: [start] to [end]
+       Detection Limit: 5000"
+   )
 
-4. More detailed sections:
-   - Individual sensor list
-   - Detection timeline
-   - Rule effectiveness metrics
+3. Generate Detailed Single-Org Report:
+   - Full usage breakdown
+   - Complete sensor inventory with platforms
+   - Detection breakdown by category
+   - All D&R rules listed
+   - Output configurations
+   - Any errors or warnings from collection
 ```
 
 ## Validation Checkpoints
 
 AI must validate at these critical points:
 
-### Before API Calls
+### Before Spawning Agents
 ```
-✓ OID is valid UUID format (not org name)
+✓ Organization list retrieved successfully
+✓ Each OID is valid UUID format (not org name)
 ✓ Timestamps are reasonable (start < end, not future)
 ✓ Limit values are positive integers
 ✓ Date ranges <= 90 days (warn if larger)
+✓ User confirmed processing for large org counts (>20)
 ```
 
-### After API Response
+### After Agent Results
 ```
-✓ Status code is 2xx (200-299)
-✓ Response body structure matches expected schema
-✓ Required fields present
-✓ Check for resource_link (large result handling)
+✓ Each agent returned valid JSON structure
+✓ Check agent status: "success", "partial", or "failed"
+✓ Required data fields present in successful results
+✓ Errors array populated for any failures
+✓ Warnings array checked for detection limits, etc.
 ```
 
 ### Before Calculations
