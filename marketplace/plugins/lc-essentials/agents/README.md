@@ -122,20 +122,20 @@ Returns **summarized** findings (not all matches):
 4. Analyzes results: calculates stats, extracts top samples, finds patterns
 5. Returns concise summary for this org only (parent skill aggregates)
 
-### mssp-org-reporter
+### org-reporter
 
 **Model**: Claude Haiku (fast and cost-effective)
 
-**Purpose**: Collect comprehensive reporting data for a **single** LimaCharlie organization. Designed to be spawned in parallel by the `mssp-reporting` skill for multi-tenant MSSP reports.
+**Purpose**: Collect comprehensive reporting data for a **single** LimaCharlie organization. Designed to be spawned in parallel by the `reporting` skill for multi-tenant reports.
 
 **When to Use**:
-This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one instance per org) by the `mssp-reporting` skill when users want to:
-- Generate multi-tenant MSSP reports across all organizations
-- Create billing and usage summaries for customers
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one instance per org) by the `reporting` skill when users want to:
+- Generate multi-tenant reports across all organizations
+- Create billing and usage summaries (roll-ups and per-tenant)
 - Produce security and operational dashboards
 
 **Architecture Role**:
-- **Parent Skill**: `mssp-reporting` (orchestrates parallel execution)
+- **Parent Skill**: `reporting` (orchestrates parallel execution)
 - **This Agent**: Collects ALL reporting data for ONE organization
 - **Parallelization**: Multiple instances run simultaneously, one per org
 

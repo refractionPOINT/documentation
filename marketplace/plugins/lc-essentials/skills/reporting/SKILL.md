@@ -1,6 +1,6 @@
 ---
-name: mssp-reporting
-description: Generate comprehensive multi-tenant MSSP security and operational reports from LimaCharlie. Provides billing summaries, usage analytics, detection trends, sensor health monitoring, and configuration audits across multiple customer organizations. Built with strict data accuracy guardrails to prevent fabricated metrics. Supports partial report generation when some organizations fail, with transparent error documentation. Time windows always displayed, detection limits clearly flagged, zero cost calculations.
+name: reporting
+description: Generate comprehensive multi-tenant security and operational reports from LimaCharlie. Provides billing summaries, usage roll-ups, detection trends, sensor health monitoring, and configuration audits across multiple organizations. Supports both per-tenant detailed breakdowns and cross-tenant aggregated roll-ups. Built with strict data accuracy guardrails to prevent fabricated metrics. Supports partial report generation when some organizations fail, with transparent error documentation. Time windows always displayed, detection limits clearly flagged, zero cost calculations.
 allowed-tools:
   - Skill
   - Task
@@ -9,17 +9,17 @@ allowed-tools:
   - Bash
 ---
 
-# LimaCharlie MSSP Reporting Skill
+# LimaCharlie Reporting Skill
 
 ## Overview
 
-This skill enables AI-assisted generation of comprehensive security and operational reports for MSSPs managing multiple LimaCharlie organizations. It provides structured access to billing data, usage statistics, detection summaries, sensor health, and configuration audits across customer tenants.
+This skill enables AI-assisted generation of comprehensive security and operational reports across LimaCharlie organizations. It provides structured access to billing data, usage statistics, detection summaries, sensor health, and configuration audits. Supports both per-tenant detailed reports and cross-tenant aggregated roll-ups.
 
 **Core Philosophy**: Accuracy over completeness. This skill prioritizes data accuracy with strict guardrails that make fabricated metrics impossible. Reports clearly document what data is available, what failed, and what limits were applied.
 
 ## Purpose
 
-- Generate multi-tenant MSSP reports across 50+ customer organizations
+- Generate multi-tenant reports across 50+ organizations
 - Provide billing and usage summaries for customer invoicing
 - Analyze security detection trends across customer base
 - Monitor sensor health and deployment status
@@ -645,7 +645,7 @@ This skill uses a **parallel subagent architecture** for efficient multi-tenant 
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  mssp-reporting (this skill)                                │
+│  reporting (this skill)                                │
 │  ├─ Phase 1: Discovery (list orgs via limacharlie-call)     │
 │  ├─ Phase 2: Time range validation                          │
 │  ├─ Phase 3: Spawn parallel agents ────────────────────┐    │
@@ -659,7 +659,7 @@ This skill uses a **parallel subagent architecture** for efficient multi-tenant 
     │
     ▼
 ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
-│mssp-org-  │  │mssp-org-  │  │mssp-org-  │  │mssp-org-  │
+│org-       │  │org-       │  │org-       │  │org-       │
 │reporter   │  │reporter   │  │reporter   │  │reporter   │
 │  Org 1    │  │  Org 2    │  │  Org 3    │  │  Org N    │
 └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
@@ -732,13 +732,13 @@ This skill uses a **parallel subagent architecture** for efficient multi-tenant 
 └────────────────────────────────────────────────────┘
 
 ┌─ PHASE 3: SPAWN PARALLEL AGENTS ──────────────────┐
-│ 7. Spawn mssp-org-reporter agents IN PARALLEL:   │
+│ 7. Spawn org-reporter agents IN PARALLEL:   │
 │                                                    │
 │    CRITICAL: Send ALL Task calls in a SINGLE      │
 │    message to achieve true parallelism:           │
 │                                                    │
 │    Task(                                          │
-│      subagent_type="lc-essentials:mssp-org-reporter",
+│      subagent_type="lc-essentials:org-reporter",
 │      model="haiku",                               │
 │      prompt="Collect reporting data for org       │
 │        'Client ABC' (OID: uuid-1)                 │
@@ -748,7 +748,7 @@ This skill uses a **parallel subagent architecture** for efficient multi-tenant 
 │        Detection Limit: 5000"                     │
 │    )                                              │
 │    Task(                                          │
-│      subagent_type="lc-essentials:mssp-org-reporter",
+│      subagent_type="lc-essentials:org-reporter",
 │      model="haiku",                               │
 │      prompt="Collect reporting data for org       │
 │        'Client XYZ' (OID: uuid-2)..."             │
@@ -958,7 +958,7 @@ Progress Reporting During Execution:
 ```
 1. Use limacharlie-call skill: list-user-orgs
 
-2. Spawn mssp-org-reporter agents in parallel (same as Pattern 1)
+2. Spawn org-reporter agents in parallel (same as Pattern 1)
    - Agents collect ALL data (billing focus is in report generation)
 
 3. Aggregate results focusing on billing data:
@@ -984,9 +984,9 @@ Progress Reporting During Execution:
 1. Use limacharlie-call skill: list-user-orgs
    - Filter to find OID for the specified org name
 
-2. Spawn ONE mssp-org-reporter agent for that organization:
+2. Spawn ONE org-reporter agent for that organization:
    Task(
-     subagent_type="lc-essentials:mssp-org-reporter",
+     subagent_type="lc-essentials:org-reporter",
      model="haiku",
      prompt="Collect reporting data for org 'Client ABC' (OID: uuid)
        Time Range: [start] to [end]
