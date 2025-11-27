@@ -13,9 +13,20 @@ Systematically evaluate threat reports to determine organizational impact and cr
 - Extract IOCs and behaviors ONLY from the provided report
 - Search ONLY in the specified LimaCharlie organization
 - NEVER fabricate or assume data not present
-- ALWAYS use AI generation tools for rules—never write YAML manually
-- If the report is PDF or other rich file, download it, convert it to markdown and use that
 - Ask for user confirmation before creating any resources
+- If the report is PDF or other rich file, download it, convert it to markdown and use that
+
+### MANDATORY: Use MCP Generation Tools
+
+**NEVER generate LCQL queries or D&R rules locally.** LCQL has a unique pipe-based syntax that differs from SQL. D&R rules have specific YAML schema requirements. Local generation WILL produce incorrect syntax.
+
+**ALWAYS use these MCP tools:**
+- `generate_lcql_query` → for ALL LCQL queries
+- `generate_dr_rule_detection` → for ALL detection components
+- `generate_dr_rule_respond` → for ALL response components
+- `validate_dr_rule_components` → before creating any rule
+
+These tools use AI with validated prompts and iterative schema validation against your organization's actual telemetry.
 
 ## Required Information
 
@@ -73,13 +84,39 @@ Use `search_iocs` or `batch_search_iocs` for each IOC type.
 - Privilege escalation methods
 - Defense evasion tactics
 
-### Generate & Execute LCQL Queries
+### Search for Behaviors via LCQL
 
-For each behavior:
-1. Use `generate_lcql_query` with specific natural language description
-2. Execute via `run_lcql_query`
-3. If >100 results: refine query with exclusions
-4. Document all queries and results
+**IMPORTANT: NEVER write LCQL queries yourself. ALWAYS use `generate_lcql_query`.**
+
+For each extracted behavior:
+
+**Step 1: Generate query (MANDATORY)**
+```
+tool: generate_lcql_query
+parameters: {
+  "oid": "<organization_id>",
+  "query": "<natural language description of behavior to search for>"
+}
+```
+
+Example natural language queries:
+- "Find PowerShell processes with encoded command line arguments in the last 7 days"
+- "Show DNS requests to domains containing 'malware-c2.com' in the last 24 hours"
+- "Find processes spawned by excel.exe or winword.exe"
+
+**Step 2: Execute the generated query**
+```
+tool: run_lcql_query
+parameters: {
+  "oid": "<organization_id>",
+  "query": "<query_string_from_step_1>",
+  "limit": 100
+}
+```
+
+**Step 3: Refine if needed**
+- If >100 results: call `generate_lcql_query` again with more specific exclusions
+- Document all queries and results
 
 ---
 
@@ -89,14 +126,53 @@ For each behavior:
 
 ### Detection Generation Workflow
 
-For EVERY detection:
-1. `generate_dr_rule_detection` → detection component
-2. `generate_dr_rule_respond` → response component
-3. `validate_dr_rule_components` → validate before creation
-4. Present to user → get approval
-5. Create via `set_dr_general_rule`
+**IMPORTANT: NEVER write D&R rule YAML yourself. ALWAYS use the generation tools.**
 
-**Testing & Refinement**: For comprehensive testing of created rules (unit tests, historical replay, multi-org parallel testing), use the `detection-engineering` skill which provides iterative test-refine workflows.
+For EVERY detection, follow these steps exactly:
+
+**Step 1: Generate Detection Component (MANDATORY)**
+```
+tool: generate_dr_rule_detection
+parameters: {
+  "oid": "<organization_id>",
+  "query": "<natural language description of what to detect>"
+}
+```
+
+**Step 2: Generate Response Component (MANDATORY)**
+```
+tool: generate_dr_rule_respond
+parameters: {
+  "oid": "<organization_id>",
+  "query": "<natural language description of response actions>"
+}
+```
+
+**Step 3: Validate Components (MANDATORY)**
+```
+tool: validate_dr_rule_components
+parameters: {
+  "oid": "<organization_id>",
+  "detect": <yaml_from_step_1>,
+  "respond": <yaml_from_step_2>
+}
+```
+
+**Step 4: Present to user for approval**
+
+**Step 5: Create the rule**
+```
+tool: set_dr_general_rule
+parameters: {
+  "oid": "<organization_id>",
+  "name": "<threat-name>-<detection-type>-<indicator>",
+  "detect": <validated_detection>,
+  "respond": <validated_response>,
+  "is_enabled": true
+}
+```
+
+**Testing & Refinement**: For comprehensive testing (unit tests, historical replay, multi-org parallel testing), use the `detection-engineering` skill.
 
 ---
 
@@ -106,23 +182,23 @@ Create rules for:
 
 **A. Process Execution**
 - Detect specific malicious process names
-- Prompt: "Detect process execution of [process.exe] on [platform]"
+- Call `generate_dr_rule_detection` with query: "Detect process execution of [process.exe] on [platform]"
 
 **B. Command-Line Patterns**
 - Detect suspicious arguments, encoded commands, LOLBins abuse
-- Prompt: "Detect [process] with command line containing [pattern]"
+- Call `generate_dr_rule_detection` with query: "Detect [process] with command line containing [pattern]"
 
 **C. Parent-Child Anomalies**
 - Detect unusual parent-child relationships (e.g., excel.exe spawning cmd.exe)
-- Prompt: "Detect [child process] spawned by [parent process]"
+- Call `generate_dr_rule_detection` with query: "Detect [child process] spawned by [parent process]"
 
 **D. Process Path Anomalies**
 - Detect execution from suspicious locations (temp, appdata, public folders)
-- Prompt: "Detect process execution from path containing [suspicious_path]"
+- Call `generate_dr_rule_detection` with query: "Detect process execution from path containing [suspicious_path]"
 
 **E. Module Loading**
 - Detect suspicious DLL loads
-- Prompt: "Detect MODULE_LOAD where module path contains [malicious_dll]"
+- Call `generate_dr_rule_detection` with query: "Detect MODULE_LOAD where module path contains [malicious_dll]"
 
 ---
 
@@ -132,23 +208,23 @@ Create rules for:
 
 **A. DNS Requests**
 - Match domains against lookups
-- Prompt: "Detect DNS_REQUEST where domain matches [lookup-name] lookup"
+- Call `generate_dr_rule_detection` with query: "Detect DNS_REQUEST where domain matches [lookup-name] lookup"
 
 **B. Network Connections**
 - Match IPs and ports
-- Prompt: "Detect NETWORK_CONNECTIONS to IP [ip_address] or port [port]"
+- Call `generate_dr_rule_detection` with query: "Detect NETWORK_CONNECTIONS to IP [ip_address] or port [port]"
 
 **C. HTTP/SSL Patterns**
 - Detect suspicious user agents, URLs, JA3 hashes
-- Prompt: "Detect HTTP requests with user agent containing [pattern]"
+- Call `generate_dr_rule_detection` with query: "Detect HTTP requests with user agent containing [pattern]"
 
 **D. Beaconing Behavior**
 - Detect periodic callbacks to C2
-- Prompt: "Detect repeated network connections to same destination within [timeframe]"
+- Call `generate_dr_rule_detection` with query: "Detect repeated network connections to same destination within [timeframe]"
 
 **E. External Data Transfer**
 - Detect large outbound transfers
-- Prompt: "Detect NETWORK_CONNECTIONS with bytes sent exceeding [threshold]"
+- Call `generate_dr_rule_detection` with query: "Detect NETWORK_CONNECTIONS with bytes sent exceeding [threshold]"
 
 ---
 
@@ -158,15 +234,15 @@ Create rules for:
 
 **A. File Creation**
 - Detect malicious file drops
-- Prompt: "Detect NEW_DOCUMENT where file path matches [path_pattern]"
+- Call `generate_dr_rule_detection` with query: "Detect NEW_DOCUMENT where file path matches [path_pattern]"
 
 **B. File Modification**
 - Detect tampering with critical files
-- Prompt: "Detect FILE_MOD in [critical_directory]"
+- Call `generate_dr_rule_detection` with query: "Detect FILE_MOD in [critical_directory]"
 
 **C. File Hash Matching**
 - Match against hash lookups
-- Prompt: "Detect file activity where hash matches [lookup-name] lookup"
+- Call `generate_dr_rule_detection` with query: "Detect file activity where hash matches [lookup-name] lookup"
 
 **D. YARA Rules**
 - Scan files for malicious content patterns
@@ -175,7 +251,7 @@ Create rules for:
 
 **E. Suspicious Extensions**
 - Detect double extensions, script files in unexpected locations
-- Prompt: "Detect file creation with extension [.hta/.scr/.js] in user directories"
+- Call `generate_dr_rule_detection` with query: "Detect file creation with extension [.hta/.scr/.js] in user directories"
 
 ---
 
@@ -185,27 +261,27 @@ Create rules for:
 
 **A. Registry Persistence (Windows)**
 - Run keys, services, scheduled tasks via registry
-- Prompt: "Detect registry modification to [Run key path]"
+- Call `generate_dr_rule_detection` with query: "Detect registry modification to [Run key path]"
 
 **B. Scheduled Tasks / Cron Jobs**
 - Detect task creation
-- Prompt: "Detect NEW_PROCESS of schtasks.exe or at.exe with /create"
+- Call `generate_dr_rule_detection` with query: "Detect NEW_PROCESS of schtasks.exe or at.exe with /create"
 
 **C. Service Installation**
 - Detect new services
-- Prompt: "Detect service creation events in Windows Event Log"
+- Call `generate_dr_rule_detection` with query: "Detect service creation events in Windows Event Log"
 
 **D. Startup Folder Modifications**
 - Detect drops in startup locations
-- Prompt: "Detect NEW_DOCUMENT in startup folder paths"
+- Call `generate_dr_rule_detection` with query: "Detect NEW_DOCUMENT in startup folder paths"
 
 **E. WMI Persistence**
 - Detect WMI event subscriptions
-- Prompt: "Detect WMI process creation with EventConsumer or EventFilter"
+- Call `generate_dr_rule_detection` with query: "Detect WMI process creation with EventConsumer or EventFilter"
 
 **F. Linux Persistence**
 - Cron, systemd, init.d modifications
-- Prompt: "Detect file modification in /etc/cron* or /etc/systemd/"
+- Call `generate_dr_rule_detection` with query: "Detect file modification in /etc/cron* or /etc/systemd/"
 
 ---
 
@@ -215,15 +291,15 @@ Create rules for:
 
 **A. Credential Dumping**
 - LSASS access, SAM/SECURITY hive access
-- Prompt: "Detect process accessing lsass.exe memory"
+- Call `generate_dr_rule_detection` with query: "Detect process accessing lsass.exe memory"
 
 **B. Privilege Escalation Tools**
 - Detect known priv-esc tools
-- Prompt: "Detect execution of [mimikatz/rubeus/potato] variants"
+- Call `generate_dr_rule_detection` with query: "Detect execution of [mimikatz/rubeus/potato] variants"
 
 **C. Token Manipulation**
 - Detect token theft/impersonation
-- Prompt: "Detect process with SeDebugPrivilege or SeImpersonatePrivilege abuse"
+- Call `generate_dr_rule_detection` with query: "Detect process with SeDebugPrivilege or SeImpersonatePrivilege abuse"
 
 ---
 
@@ -233,15 +309,15 @@ Create rules for:
 
 **A. Remote Execution**
 - PsExec, WMI, WinRM, SSH
-- Prompt: "Detect [psexec/wmic/winrs] with remote execution arguments"
+- Call `generate_dr_rule_detection` with query: "Detect [psexec/wmic/winrs] with remote execution arguments"
 
 **B. Pass-the-Hash/Ticket**
 - Detect anomalous authentication patterns
-- Prompt: "Detect authentication events with suspicious logon type"
+- Call `generate_dr_rule_detection` with query: "Detect authentication events with suspicious logon type"
 
 **C. RDP/VNC Activity**
 - Detect unexpected remote desktop
-- Prompt: "Detect mstsc.exe or vnc execution from non-admin systems"
+- Call `generate_dr_rule_detection` with query: "Detect mstsc.exe or vnc execution from non-admin systems"
 
 ---
 
@@ -251,19 +327,19 @@ Create rules for:
 
 **A. Log Clearing**
 - Detect event log clearing
-- Prompt: "Detect wevtutil or Clear-EventLog execution"
+- Call `generate_dr_rule_detection` with query: "Detect wevtutil or Clear-EventLog execution"
 
 **B. Security Tool Tampering**
 - Detect AV/EDR disabling
-- Prompt: "Detect process terminating security product processes"
+- Call `generate_dr_rule_detection` with query: "Detect process terminating security product processes"
 
 **C. Timestomping**
 - Detect file timestamp manipulation
-- Prompt: "Detect timestomp tool execution or suspicious SetFileTime calls"
+- Call `generate_dr_rule_detection` with query: "Detect timestomp tool execution or suspicious SetFileTime calls"
 
 **D. Masquerading**
 - Detect processes mimicking legitimate names in wrong locations
-- Prompt: "Detect svchost.exe execution from non-System32 path"
+- Call `generate_dr_rule_detection` with query: "Detect svchost.exe execution from non-System32 path"
 
 ---
 
@@ -277,7 +353,7 @@ Create rules for:
 
 **B. Threshold Alerts**
 - Detect high-frequency events
-- Prompt: "Detect more than [N] failed logins within [timeframe]"
+- Call `generate_dr_rule_detection` with query: "Detect more than [N] failed logins within [timeframe]"
 
 **C. Aggregation Rules**
 - Detect patterns across multiple sensors
@@ -313,7 +389,7 @@ For each lookup, create matching D&R rules:
 
 **B. Create FP Suppression Rules**
 - Exclude known-good software, paths, users
-- Prompt: "Detect [behavior] excluding processes signed by [vendor]"
+- Call `generate_dr_rule_detection` with query: "Detect [behavior] excluding processes signed by [vendor]"
 
 **C. Exclusion Lookups**
 - Create allowlist lookups for legitimate software
