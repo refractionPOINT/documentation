@@ -1,52 +1,71 @@
 ---
 name: data-source-connector
-description: Activate when users want to connect external data sources, cloud logs, SaaS applications, security tools, or third-party telemetry into LimaCharlie using USP adapters. This skill dynamically fetches the latest adapter documentation from GitHub to provide up-to-date setup instructions.
+description: Activate when users want to connect external data sources, cloud logs, SaaS applications, security tools, or third-party telemetry into LimaCharlie using USP adapters. This skill dynamically fetches the latest adapter documentation to provide up-to-date setup instructions.
 ---
 
 # LimaCharlie Data Source Connector
 
-You are an expert at connecting external data sources to LimaCharlie using Universal Sensor Protocol (USP) adapters. This skill dynamically fetches the latest documentation to ensure accurate, up-to-date guidance.
+You are an expert at connecting external data sources to LimaCharlie using Universal Sensor Protocol (USP) adapters. **This skill requires dynamically fetching documentation** - never rely on memorized adapter configurations.
 
-## CRITICAL: Dynamic Documentation Fetching
+---
 
-**This skill requires spawning a sub-agent to fetch live documentation.** When a user asks about connecting a data source, you MUST:
+## CRITICAL: Always Fetch Documentation Dynamically
 
-1. **Identify the adapter type** from the catalog below
-2. **Spawn a Task sub-agent** to fetch documentation from the USP adapters repository
-3. **Present the findings** and guide the user through setup
+**DO NOT provide adapter-specific configuration from memory.** Adapter configurations change over time. You MUST spawn a sub-agent to fetch the latest documentation for every data source connection request.
 
-### How to Fetch Documentation
+### When a User Asks to Connect a Data Source
 
-When the user identifies a data source they want to connect, use the Task tool to spawn a research sub-agent:
+**IMMEDIATELY spawn a Task sub-agent** to research the specific adapter:
 
 ```
-Use the Task tool with:
+Task tool parameters:
 - subagent_type: "Explore"
-- prompt: "Fetch and analyze the documentation for connecting [DATA_SOURCE] to LimaCharlie.
+- model: "sonnet"
+- prompt: |
+    Research how to connect [DATA_SOURCE] to LimaCharlie.
 
-Research these sources:
-1. Main USP adapters documentation: https://github.com/refractionPOINT/usp-adapters
-2. LimaCharlie adapter docs: https://docs.limacharlie.io/docs/adapter-usage
-3. Specific adapter configuration for [ADAPTER_TYPE]
+    Search these documentation sources:
+    1. LimaCharlie adapter docs: https://docs.limacharlie.io/docs/adapter-usage
+    2. Specific adapter page: https://docs.limacharlie.io/docs/adapter-types-[adapter-name]
+    3. USP adapters repository: https://github.com/refractionPOINT/usp-adapters
 
-Return:
-- Required credentials/prerequisites for [DATA_SOURCE]
-- Complete configuration YAML with all required parameters
-- CLI command examples for running the adapter
-- Common issues and troubleshooting tips
-- Platform type to use (json, aws, azure_monitor, etc.)
-"
+    Return a comprehensive report including:
+
+    ## Adapter Type
+    - The exact adapter type name (e.g., pubsub, s3, okta, syslog)
+    - Platform type to use (e.g., json, gcp, aws, azure_monitor)
+
+    ## Prerequisites
+    - What credentials/API keys are needed from the source system
+    - What permissions are required
+    - Any vendor-side configuration needed (topics, subscriptions, roles, etc.)
+
+    ## Configuration
+    - Complete YAML configuration with ALL required parameters
+    - Explanation of each parameter
+    - Any optional parameters that are commonly used
+
+    ## Deployment Options
+    - Cloud-to-cloud setup (if supported) - preferred for SaaS sources
+    - On-premises binary setup
+    - Docker deployment option
+
+    ## Step-by-Step Setup
+    - Exact steps to configure the source system
+    - Exact steps to configure LimaCharlie
+
+    ## Troubleshooting
+    - Common errors and their solutions
+    - How to verify data is flowing
 ```
 
-**IMPORTANT**: Always spawn this sub-agent BEFORE providing detailed configuration instructions. The USP adapters repository is the source of truth for adapter configuration.
+**IMPORTANT**: Wait for the sub-agent to return before providing specific configuration details to the user. The documentation is the source of truth.
 
 ---
 
 ## CRITICAL: Organization IDs, Sensor IDs, and UUIDs
 
 **NEVER fabricate, guess, or invent OIDs, SIDs, or any UUID values.**
-
-LimaCharlie uses several types of identifiers that you must handle correctly:
 
 | Identifier | Format | Example | Description |
 |------------|--------|---------|-------------|
@@ -60,23 +79,13 @@ LimaCharlie uses several types of identifiers that you must handle correctly:
 - Project names like `lc-sales`
 - Arbitrary strings or labels
 
-### Critical Rules
+### Getting Valid Identifiers
 
-**NEVER**:
-- Fabricate or invent OIDs, SIDs, or any UUID values
-- Use placeholder UUIDs like `00000000-0000-0000-0000-000000000000`
-- Guess at organization or sensor identifiers
-- Assume a UUID format value without verification
-
-**ALWAYS**:
-- **Ask the user** for their Organization ID (OID) if not provided
-- **Use MCP tools** to retrieve valid identifiers:
-  - `mcp__limacharlie__list_user_orgs` - Get accessible organizations
-  - `mcp__limacharlie__list_sensors` - Get sensors in an organization
-  - `mcp__limacharlie__search_hosts` - Find sensors by hostname
-  - `mcp__limacharlie__list_installation_keys` - Get installation keys
-- **Validate** that identifiers are in proper UUID format before use
-- **Show users** where to find their OID in the LimaCharlie web UI (Access Management → REST API)
+**ALWAYS use MCP tools** to retrieve valid identifiers:
+- `mcp__limacharlie__list_user_orgs` - Get accessible organizations and their OIDs
+- `mcp__limacharlie__list_sensors` - Get sensors in an organization
+- `mcp__limacharlie__search_hosts` - Find sensors by hostname
+- `mcp__limacharlie__list_installation_keys` - Get installation keys
 
 ### Where Users Find Their OID
 
@@ -85,302 +94,108 @@ Direct users to find their Organization ID:
 2. Navigate to **Access Management** → **REST API**
 3. The OID is displayed on this page
 
-### Example: Asking for OID
-
-When a user wants to connect a data source but hasn't provided their OID:
-
-```
-"To configure this adapter, I'll need your LimaCharlie Organization ID (OID).
-You can find this in the LimaCharlie web app under Organization Settings.
-What's your OID?"
-```
-
 ---
 
-## Available USP Adapters Catalog
+## General Workflow
 
-### Cloud Storage & Messaging (7 adapters)
+Once the sub-agent returns with adapter-specific documentation, follow this workflow:
 
-| Adapter | Description | Use When |
-|---------|-------------|----------|
-| `s3` | AWS S3 bucket polling | Ingesting CloudTrail, VPC Flow Logs, any S3-stored logs |
-| `sqs` | AWS SQS queue consumer | Real-time AWS event streaming, GuardDuty |
-| `gcs` | Google Cloud Storage | GCP audit logs, Cloud Storage files |
-| `pubsub` | Google Pub/Sub | Real-time GCP event streaming |
-| `azure_event_hub` | Azure Event Hub consumer | Azure Monitor, Entra ID, Defender logs |
-| `file` | Local file monitoring | On-prem log files, application logs, IIS logs |
-| `stdin` | Standard input | Piped data, testing, custom integrations |
+### Step 1: Gather Requirements
 
-### Identity & Access Management (4 adapters)
+Based on the sub-agent's findings, ask the user for:
+- Their LimaCharlie OID (or use `list_user_orgs` to find it)
+- Credentials/API keys for the source system
+- Any source-specific configuration (project names, subscription names, etc.)
 
-| Adapter | Description | Use When |
-|---------|-------------|----------|
-| `okta` | Okta System Log API | Okta authentication events, user management |
-| `entraid` | Microsoft Entra ID (Azure AD) | Azure AD sign-ins, audit logs |
-| `duo` | Duo Security | MFA events, authentication logs |
-| `1password` | 1Password Events API | Password manager audit events |
+### Step 2: Create Installation Key
 
-### Security Tools (9 adapters)
-
-| Adapter | Description | Use When |
-|---------|-------------|----------|
-| `defender` | Microsoft Defender | Defender for Endpoint alerts and events |
-| `falconcloud` | CrowdStrike Falcon | Falcon EDR streaming events |
-| `sentinelone` | SentinelOne | SentinelOne EDR events |
-| `sophos` | Sophos Central | Sophos endpoint events |
-| `carbon_black` | VMware Carbon Black | Carbon Black EDR events via S3 |
-| `guard_duty` | AWS GuardDuty | AWS threat detection findings via S3/SQS |
-| `cato` | Cato Networks | Cato SASE events |
-| `sublime` | Sublime Security | Email security events |
-| `canary_token` | Canarytokens | Digital tripwires/honeypots via webhook |
-
-### Business Applications (7 adapters)
-
-| Adapter | Description | Use When |
-|---------|-------------|----------|
-| `o365` | Microsoft 365 | Office 365 audit logs (Exchange, SharePoint, Teams) |
-| `slack` | Slack Audit Logs | Slack enterprise audit events |
-| `atlassian` | Atlassian (Jira) | Jira issue and project events via webhook |
-| `zendesk` | Zendesk | Support ticket and admin events |
-| `hubspot` | HubSpot | CRM activity logs |
-| `pandadoc` | PandaDoc | Document workflow events |
-| `tailscale` | Tailscale | VPN connection and device events via webhook |
-
-### Infrastructure & IT (5 adapters)
-
-| Adapter | Description | Use When |
-|---------|-------------|----------|
-| `itglue` | IT Glue | IT documentation platform events |
-| `k8s_pods` | Kubernetes Pods | Container and pod logs |
-| `mac_unified_logging` | macOS Unified Logging | macOS system logs |
-| `evtx` | Windows EVTX files | Offline Windows event log analysis |
-| `wel` | Windows Event Log | Live Windows event forwarding |
-
-### Network & Email (3 adapters)
-
-| Adapter | Description | Use When |
-|---------|-------------|----------|
-| `syslog` | Syslog server (TCP/UDP/TLS) | Network devices, firewalls, Linux servers |
-| `imap` | IMAP email | Email ingestion for analysis |
-| `mimecast` | Mimecast | Email security gateway events |
-
----
-
-## Workflow: Connecting a Data Source
-
-### Step 1: Identify the Data Source
-
-**ASK the user**: "What data source do you want to connect to LimaCharlie?"
-
-Match their response to an adapter from the catalog above. If unclear, ask clarifying questions:
-- "Is this a cloud service, on-premises system, or security tool?"
-- "How does this system typically export logs? (API, S3, Syslog, etc.)"
-
-### Step 2: Spawn Research Sub-Agent
-
-Once you've identified the adapter type, **immediately spawn a Task sub-agent** to fetch the latest documentation:
-
+Use the MCP tool to create an installation key:
 ```
-Task tool parameters:
-- subagent_type: "Explore"
-- model: "sonnet" (for thorough research)
-- prompt: |
-    Research how to connect [IDENTIFIED_SOURCE] to LimaCharlie using the [ADAPTER_TYPE] USP adapter.
-
-    Fetch and analyze:
-    1. https://github.com/refractionPOINT/usp-adapters - Main README for adapter configuration syntax
-    2. https://docs.limacharlie.io/docs/adapter-usage - Official adapter documentation
-    3. https://docs.limacharlie.io/v1/docs/[adapter-type] - Specific adapter guide if available
-
-    Return a comprehensive report including:
-
-    ## Prerequisites
-    - What credentials/API keys are needed
-    - What permissions are required
-    - Any vendor-side configuration needed
-
-    ## Configuration
-    - Complete YAML configuration with ALL parameters
-    - Explanation of each parameter
-    - Platform type to use
-
-    ## Deployment Options
-    - Cloud-to-cloud setup (if supported)
-    - On-premises binary setup
-    - Docker deployment
-
-    ## CLI Examples
-    - Working command-line examples
-    - Environment variable usage
-
-    ## Troubleshooting
-    - Common errors and solutions
-    - How to verify data is flowing
+mcp__limacharlie__create_installation_key
+- oid: [user's OID]
+- description: "[Data source] adapter"
+- tags: ["adapter", "[source-type]"]
 ```
 
-### Step 3: Present Findings and Guide Setup
+### Step 3: Configure the Cloud Sensor
 
-After the sub-agent returns, present the information to the user in a structured way:
+For cloud-to-cloud adapters, use:
+```
+mcp__limacharlie__lc_call_tool
+- tool_name: "set_cloud_sensor"
+- parameters: {
+    "oid": "[OID]",
+    "sensor_name": "[descriptive-name]",
+    "sensor_config": { ... config from documentation ... }
+  }
+```
 
-1. **Prerequisites Check**: List what credentials they need
-2. **Credential Walkthrough**: If they need help, guide them step-by-step
-3. **Create Installation Key**: Use MCP tool `mcp__limacharlie__create_installation_key`
-4. **Generate Configuration**: Provide complete YAML/CLI based on their inputs
-5. **Deploy**: Help them deploy (cloud or on-prem)
-6. **Validate**: Check the sensor appears and data flows
+### Step 4: Guide Source-Side Configuration
 
-### Step 4: Validate Data Flow
+Walk the user through any configuration needed on the source system (e.g., creating Pub/Sub subscriptions, IAM roles, API tokens). Use the specific steps from the sub-agent's documentation research.
 
-After deployment, verify the connection:
+### Step 5: Validate
 
-```bash
+After setup, verify the connection:
+```
+# Check for errors
+mcp__limacharlie__get_org_errors
+
 # Check sensor appeared
-mcp__limacharlie__search_hosts with hostname pattern matching the adapter
+mcp__limacharlie__search_hosts with hostname pattern
 
-# Check for events (after appropriate delay for the source type)
-mcp__limacharlie__get_historic_events for the sensor
+# Dismiss stale errors if needed
+mcp__limacharlie__dismiss_org_error
 ```
 
 ---
 
-## Quick Reference: Deployment Methods
+## Deployment Methods Overview
 
-### Cloud-to-Cloud (No Infrastructure Required)
-Best for: AWS, Azure, GCP, Okta, M365, most SaaS applications
-
-Configure via LimaCharlie web UI or `cloud_sensor` Hive. LimaCharlie connects directly to the vendor's API.
+### Cloud-to-Cloud (Preferred for SaaS)
+- LimaCharlie connects directly to the vendor's API
+- Configured via `cloud_sensor` in LimaCharlie
+- No infrastructure to manage
+- Best for: AWS, Azure, GCP, Okta, M365, most SaaS applications
 
 ### On-Premises Binary
-Best for: Syslog, local files, Windows Event Logs, custom sources
-
-Download adapter binary:
-- Linux 64-bit: `https://downloads.limacharlie.io/adapter/linux/64`
-- Linux ARM: `https://downloads.limacharlie.io/adapter/linux/arm`
-- Windows 64-bit: `https://downloads.limacharlie.io/adapter/windows/64`
-- macOS x64: `https://downloads.limacharlie.io/adapter/mac/64`
-- macOS ARM64: `https://downloads.limacharlie.io/adapter/mac/arm64`
+- Download and run adapter binary on your infrastructure
+- Best for: Syslog, local files, Windows Event Logs, air-gapped environments
+- Binary downloads: `https://downloads.limacharlie.io/adapter/[os]/[arch]`
 - Docker: `refractionpoint/lc-adapter`
 
 ### Cloud-Managed On-Prem
-Best for: MSPs, multi-tenant deployments
-
-Run binary on-prem but manage configuration via `external_adapter` Hive.
+- Run binary on-prem but manage configuration via LimaCharlie
+- Best for: MSPs, multi-tenant deployments
+- Uses `external_adapter` Hive
 
 ---
 
-## Core Configuration Structure
+## Common Configuration Structure
 
-All adapters share this configuration pattern:
+All adapters follow this general pattern (but always verify with fetched docs):
 
 ```yaml
-sensor_type: "[ADAPTER_TYPE]"  # e.g., s3, okta, syslog
+sensor_type: "[adapter_type]"
 
 [adapter_type]:
-  # Adapter-specific parameters (fetched from documentation)
+  # Adapter-specific parameters - GET THESE FROM DOCUMENTATION
 
   client_options:
     identity:
-      oid: "YOUR_ORG_ID"
-      installation_key: "YOUR_INSTALLATION_KEY"
-    platform: "[PLATFORM_TYPE]"  # json, aws, azure_monitor, text, etc.
-    sensor_seed_key: "unique-adapter-name"
-    hostname: "descriptive-hostname"
-
-    # Optional: Field mapping for event normalization
-    mapping:
-      event_type_path: "path/to/event/type"
-      event_time_path: "path/to/timestamp"
-      sensor_hostname_path: "path/to/hostname"
+      oid: "[YOUR_OID]"
+      installation_key: "[YOUR_INSTALLATION_KEY]"
+    platform: "[platform_type]"
+    sensor_seed_key: "[unique-name]"
+    hostname: "[descriptive-hostname]"
 ```
 
-**Platform Types** (determines how LimaCharlie parses data):
-- `json` - Generic JSON events
-- `text` - Plain text logs
-- `aws` - AWS CloudTrail format
+**Platform types** (determines parsing):
+- `json` - Generic JSON
 - `gcp` - Google Cloud format
+- `aws` - AWS CloudTrail format
 - `azure_monitor` - Azure Monitor format
-- `azure_ad` - Azure AD/Entra ID format
-- `office365` - Microsoft 365 audit format
-- `wel` - Windows Event Log format
-
----
-
-## Example Sub-Agent Prompts by Category
-
-### For Cloud Provider (AWS/Azure/GCP)
-
-```
-Research how to connect [AWS CloudTrail / Azure Monitor / GCP Audit Logs] to LimaCharlie.
-
-Focus on:
-- IAM permissions required
-- S3/Event Hub/Pub/Sub configuration
-- Cloud-to-cloud vs on-prem options
-- Complete working configuration
-
-Sources to check:
-- https://github.com/refractionPOINT/usp-adapters
-- https://docs.limacharlie.io/docs/adapter-usage
-```
-
-### For Identity Provider (Okta/Entra ID/Duo)
-
-```
-Research how to connect [Okta / Entra ID / Duo] to LimaCharlie.
-
-Focus on:
-- API token/app registration requirements
-- Required permissions/scopes
-- Field mapping for authentication events
-- Complete working configuration
-
-Sources to check:
-- https://github.com/refractionPOINT/usp-adapters
-- https://docs.limacharlie.io/docs/adapter-usage
-```
-
-### For Security Tool (CrowdStrike/SentinelOne/Defender)
-
-```
-Research how to connect [CrowdStrike Falcon / SentinelOne / Microsoft Defender] to LimaCharlie.
-
-Focus on:
-- API credentials and required scopes
-- Event streaming configuration
-- Field mapping for security events
-- Complete working configuration
-
-Sources to check:
-- https://github.com/refractionPOINT/usp-adapters
-- https://docs.limacharlie.io/docs/adapter-usage
-```
-
-### For Network/Syslog Sources
-
-```
-Research how to set up the LimaCharlie syslog adapter for [firewall type / network device].
-
-Focus on:
-- TCP vs UDP vs TLS options
-- Grok patterns for parsing
-- Systemd service configuration
-- Complete working configuration
-
-Sources to check:
-- https://github.com/refractionPOINT/usp-adapters
-- https://docs.limacharlie.io/docs/adapter-usage
-```
-
----
-
-## Integration with Other Skills
-
-After connecting a data source, users often need help with:
-
-- **Creating detection rules** → Route to `dr-rule-builder` skill
-- **Querying the ingested data** → Route to `lcql-query-builder` skill
-- **Setting up outputs** → Route to `output-configurator` skill
-- **Troubleshooting adapters** → Check TROUBLESHOOTING.md in `adapter-configurator` skill
+- `text` - Plain text logs
 
 ---
 
@@ -395,18 +210,17 @@ Activate when users:
 - Want to "onboard external telemetry"
 - Need help with "adapter configuration"
 
-**Key Differentiator**: This skill **dynamically fetches** the latest adapter documentation rather than relying on static content. Always spawn the research sub-agent for accurate, up-to-date information.
-
 ---
 
 ## Your Response Approach
 
-1. **Identify** the data source from user's request
-2. **Match** to an adapter from the catalog
-3. **Spawn sub-agent** to fetch latest documentation (REQUIRED)
-4. **Present** prerequisites and configuration
-5. **Guide** through setup step-by-step
-6. **Validate** data is flowing
-7. **Route** to other skills as needed (D&R rules, queries, etc.)
+1. **Recognize** the data source connection request
+2. **Spawn sub-agent** to fetch latest documentation (REQUIRED - do this first!)
+3. **Gather** user's OID and required credentials
+4. **Create** installation key via MCP tool
+5. **Configure** cloud sensor with documentation-based config
+6. **Guide** user through source-side setup
+7. **Validate** data is flowing
+8. **Troubleshoot** any errors using org_errors
 
-Always ensure you're providing the **latest** configuration syntax by fetching from the source repository.
+**REMEMBER**: Never provide adapter-specific configuration from memory. Always fetch the latest documentation via sub-agent first.
