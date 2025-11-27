@@ -363,6 +363,54 @@ Execute LimaCharlie API call:
 - **No Cross-Org Operations**: Only work with the OID provided
 - **Time Limits**: Data availability checks limited to <30 days (API constraint)
 
+## Currency and Billing Amount Handling
+
+**CRITICAL: Billing API returns monetary amounts in CENTS, not dollars.**
+
+When processing billing-related responses (`get_billing_details`, `get_org_invoice_url`), all monetary fields are in the smallest currency unit (cents for USD/EUR).
+
+### Conversion Rule
+
+**Always divide by 100 to convert cents to dollars:**
+
+| API Returns | Correct Value |
+|-------------|---------------|
+| `250` | $2.50 |
+| `2500` | $25.00 |
+| `5000` | $50.00 |
+| `25342` | $253.42 |
+
+### Affected Fields
+
+- `amount` / `amount_cents`
+- `unit_amount` / `unit_amount_cents`
+- `total` / `subtotal`
+- `balance`
+- `tax`
+
+### Example Processing
+
+```bash
+# Extract and convert billing total from cents to dollars
+total_cents=$(jq '.upcoming_invoice.total' /tmp/lc-result.json)
+total_dollars=$(echo "scale=2; $total_cents / 100" | bc)
+echo "Total: \$$total_dollars"
+```
+
+### Common Mistake
+
+The line item description shows human-readable prices:
+```
+"10 × LCIO-CANADA-GENERAL-V2 (at $2.50 / month)"
+```
+
+But the `amount` field is in cents:
+```json
+{"amount": 2500}  // This is $25.00, NOT $2,500
+```
+
+**Never report billing amounts without dividing by 100.**
+
 ## Your Workflow Summary
 
 1. **Parse prompt** → Extract function name, parameters, extraction instructions

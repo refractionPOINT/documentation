@@ -51,6 +51,12 @@ Detection Limit: 5000
 - NEVER calculate costs or estimate bills
 - Include invoice URL for billing details
 
+### 2a. Currency Conversion (CRITICAL)
+- Billing API returns all amounts in **CENTS**, not dollars
+- **Always divide by 100** to convert to dollars
+- Example: API returns `25342` → actual cost is `$253.42`
+- Fields affected: `amount`, `unit_amount`, `total`, `subtotal`, `balance`, `tax`
+
 ### 3. Detection Limit Tracking
 - Track how many detections were retrieved
 - Flag if limit was reached (count >= limit)
