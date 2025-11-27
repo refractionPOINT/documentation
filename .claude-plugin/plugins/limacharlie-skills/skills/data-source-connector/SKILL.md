@@ -81,11 +81,17 @@ Task tool parameters:
 
 ### Getting Valid Identifiers
 
-**ALWAYS use MCP tools** to retrieve valid identifiers:
-- `mcp__limacharlie__list_user_orgs` - Get accessible organizations and their OIDs
-- `mcp__limacharlie__list_sensors` - Get sensors in an organization
-- `mcp__limacharlie__search_hosts` - Find sensors by hostname
-- `mcp__limacharlie__list_installation_keys` - Get installation keys
+**ALWAYS use the `lc-essentials:limacharlie-call` skill** to retrieve valid identifiers:
+- `list_user_orgs` - Get accessible organizations and their OIDs
+- `list_sensors` - Get sensors in an organization
+- `search_hosts` - Find sensors by hostname
+- `list_installation_keys` - Get installation keys
+
+To invoke API operations, use the Skill tool:
+```
+Skill tool: "lc-essentials:limacharlie-call"
+```
+Then follow the skill's instructions for calling the specific function.
 
 ### Where Users Find Their OID
 
@@ -103,32 +109,21 @@ Once the sub-agent returns with adapter-specific documentation, follow this work
 ### Step 1: Gather Requirements
 
 Based on the sub-agent's findings, ask the user for:
-- Their LimaCharlie OID (or use `list_user_orgs` to find it)
+- Their LimaCharlie OID (or use `lc-essentials:limacharlie-call` skill with `list_user_orgs` to find it)
 - Credentials/API keys for the source system
 - Any source-specific configuration (project names, subscription names, etc.)
 
 ### Step 2: Create Installation Key
 
-Use the MCP tool to create an installation key:
-```
-mcp__limacharlie__create_installation_key
-- oid: [user's OID]
-- description: "[Data source] adapter"
-- tags: ["adapter", "[source-type]"]
-```
+Use the `lc-essentials:limacharlie-call` skill to create an installation key:
+- Function: `create_installation_key`
+- Parameters: oid, description, tags
 
 ### Step 3: Configure the Cloud Sensor
 
-For cloud-to-cloud adapters, use:
-```
-mcp__limacharlie__lc_call_tool
-- tool_name: "set_cloud_sensor"
-- parameters: {
-    "oid": "[OID]",
-    "sensor_name": "[descriptive-name]",
-    "sensor_config": { ... config from documentation ... }
-  }
-```
+For cloud-to-cloud adapters, use the `lc-essentials:limacharlie-call` skill:
+- Function: `set_cloud_sensor`
+- Parameters: oid, name, config (structure from fetched documentation)
 
 ### Step 4: Guide Source-Side Configuration
 
@@ -136,17 +131,10 @@ Walk the user through any configuration needed on the source system (e.g., creat
 
 ### Step 5: Validate
 
-After setup, verify the connection:
-```
-# Check for errors
-mcp__limacharlie__get_org_errors
-
-# Check sensor appeared
-mcp__limacharlie__search_hosts with hostname pattern
-
-# Dismiss stale errors if needed
-mcp__limacharlie__dismiss_org_error
-```
+After setup, use `lc-essentials:limacharlie-call` skill to verify the connection:
+- `get_org_errors` - Check for errors
+- `search_hosts` - Verify sensor appeared
+- `dismiss_org_error` - Dismiss stale errors if needed
 
 ---
 
@@ -217,10 +205,10 @@ Activate when users:
 1. **Recognize** the data source connection request
 2. **Spawn sub-agent** to fetch latest documentation (REQUIRED - do this first!)
 3. **Gather** user's OID and required credentials
-4. **Create** installation key via MCP tool
-5. **Configure** cloud sensor with documentation-based config
+4. **Create** installation key via `lc-essentials:limacharlie-call` skill
+5. **Configure** cloud sensor via `lc-essentials:limacharlie-call` skill with documentation-based config
 6. **Guide** user through source-side setup
-7. **Validate** data is flowing
-8. **Troubleshoot** any errors using org_errors
+7. **Validate** data is flowing via `lc-essentials:limacharlie-call` skill
+8. **Troubleshoot** any errors using `get_org_errors` function
 
-**REMEMBER**: Never provide adapter-specific configuration from memory. Always fetch the latest documentation via sub-agent first.
+**REMEMBER**: Never provide adapter-specific configuration from memory. Always fetch the latest documentation via sub-agent first. Always use the `lc-essentials:limacharlie-call` skill for API operations - never call MCP tools directly.
