@@ -15,19 +15,19 @@ You are an expert at connecting external data sources to LimaCharlie using Unive
 
 ### When a User Asks to Connect a Data Source
 
-**IMMEDIATELY spawn a Task sub-agent** to research the specific adapter:
+**IMMEDIATELY spawn a Task sub-agent** that uses `lc-essentials:lookup-lc-doc` to research the specific adapter:
 
 ```
 Task tool parameters:
-- subagent_type: "Explore"
+- subagent_type: "general-purpose"
 - model: "sonnet"
 - prompt: |
     Research how to connect [DATA_SOURCE] to LimaCharlie.
 
-    Search these documentation sources:
-    1. LimaCharlie adapter docs: https://docs.limacharlie.io/docs/adapter-usage
-    2. Specific adapter page: https://docs.limacharlie.io/docs/adapter-types-[adapter-name]
-    3. USP adapters repository: https://github.com/refractionPOINT/usp-adapters
+    Use the `lc-essentials:lookup-lc-doc` skill to search for documentation about:
+    - The specific adapter type (e.g., "pubsub adapter", "okta adapter")
+    - USP adapter configuration for this data source
+    - Cloud sensor setup requirements
 
     Return a comprehensive report including:
 
@@ -57,6 +57,9 @@ Task tool parameters:
     ## Troubleshooting
     - Common errors and their solutions
     - How to verify data is flowing
+
+    IMPORTANT: You MUST use the `lc-essentials:lookup-lc-doc` skill to fetch documentation.
+    Do NOT rely on memorized information. Do NOT call MCP tools directly.
 ```
 
 **IMPORTANT**: Wait for the sub-agent to return before providing specific configuration details to the user. The documentation is the source of truth.
@@ -81,17 +84,20 @@ Task tool parameters:
 
 ### Getting Valid Identifiers
 
-**ALWAYS use the `lc-essentials:limacharlie-call` skill** to retrieve valid identifiers:
+**Spawn a sub-agent using `lc-essentials:limacharlie-api-executor`** to retrieve valid identifiers:
 - `list_user_orgs` - Get accessible organizations and their OIDs
 - `list_sensors` - Get sensors in an organization
 - `search_hosts` - Find sensors by hostname
 - `list_installation_keys` - Get installation keys
 
-To invoke API operations, use the Skill tool:
 ```
-Skill tool: "lc-essentials:limacharlie-call"
+Task tool parameters:
+- subagent_type: "lc-essentials:limacharlie-api-executor"
+- model: "haiku"
+- prompt: |
+    Use the `lc-essentials:limacharlie-call` skill to call `list_user_orgs`.
+    Return the list of organizations with their OIDs.
 ```
-Then follow the skill's instructions for calling the specific function.
 
 ### Where Users Find Their OID
 
@@ -104,37 +110,55 @@ Direct users to find their Organization ID:
 
 ## General Workflow
 
-Once the sub-agent returns with adapter-specific documentation, follow this workflow:
+Once the documentation sub-agent returns with adapter-specific information, spawn additional sub-agents to perform API operations using the `lc-essentials:limacharlie-call` skill:
 
 ### Step 1: Gather Requirements
 
-Based on the sub-agent's findings, ask the user for:
-- Their LimaCharlie OID (or use `lc-essentials:limacharlie-call` skill with `list_user_orgs` to find it)
+Based on the documentation sub-agent's findings, ask the user for:
+- Their LimaCharlie OID (or spawn a sub-agent with `lc-essentials:limacharlie-api-executor` to call `list_user_orgs`)
 - Credentials/API keys for the source system
 - Any source-specific configuration (project names, subscription names, etc.)
 
 ### Step 2: Create Installation Key
 
-Use the `lc-essentials:limacharlie-call` skill to create an installation key:
-- Function: `create_installation_key`
-- Parameters: oid, description, tags
+Spawn a sub-agent to create an installation key:
+```
+Task tool parameters:
+- subagent_type: "lc-essentials:limacharlie-api-executor"
+- model: "haiku"
+- prompt: |
+    Use the `lc-essentials:limacharlie-call` skill to call the `create_installation_key` function.
+    Parameters: oid=[OID], description="[Data source] adapter", tags=["adapter", "[source-type]"]
+```
 
 ### Step 3: Configure the Cloud Sensor
 
-For cloud-to-cloud adapters, use the `lc-essentials:limacharlie-call` skill:
-- Function: `set_cloud_sensor`
-- Parameters: oid, name, config (structure from fetched documentation)
+Spawn a sub-agent to configure the cloud sensor:
+```
+Task tool parameters:
+- subagent_type: "lc-essentials:limacharlie-api-executor"
+- model: "haiku"
+- prompt: |
+    Use the `lc-essentials:limacharlie-call` skill to call the `set_cloud_sensor` function.
+    Parameters: oid=[OID], name=[sensor-name], config=[config from documentation]
+```
 
 ### Step 4: Guide Source-Side Configuration
 
-Walk the user through any configuration needed on the source system (e.g., creating Pub/Sub subscriptions, IAM roles, API tokens). Use the specific steps from the sub-agent's documentation research.
+Walk the user through any configuration needed on the source system (e.g., creating Pub/Sub subscriptions, IAM roles, API tokens). Use the specific steps from the documentation sub-agent's research.
 
 ### Step 5: Validate
 
-After setup, use `lc-essentials:limacharlie-call` skill to verify the connection:
-- `get_org_errors` - Check for errors
-- `search_hosts` - Verify sensor appeared
-- `dismiss_org_error` - Dismiss stale errors if needed
+Spawn a sub-agent to verify the connection:
+```
+Task tool parameters:
+- subagent_type: "lc-essentials:limacharlie-api-executor"
+- model: "haiku"
+- prompt: |
+    Use the `lc-essentials:limacharlie-call` skill to:
+    1. Call `get_org_errors` for oid=[OID] to check for errors
+    2. Call `search_hosts` for oid=[OID] with hostname pattern to verify sensor appeared
+```
 
 ---
 
@@ -203,12 +227,15 @@ Activate when users:
 ## Your Response Approach
 
 1. **Recognize** the data source connection request
-2. **Spawn sub-agent** to fetch latest documentation (REQUIRED - do this first!)
-3. **Gather** user's OID and required credentials
-4. **Create** installation key via `lc-essentials:limacharlie-call` skill
-5. **Configure** cloud sensor via `lc-essentials:limacharlie-call` skill with documentation-based config
+2. **Spawn sub-agent** with `lc-essentials:lookup-lc-doc` skill to fetch latest documentation (REQUIRED - do this first!)
+3. **Gather** user's OID and required credentials (spawn sub-agent if needed to list orgs)
+4. **Spawn sub-agent** with `lc-essentials:limacharlie-call` skill to create installation key
+5. **Spawn sub-agent** with `lc-essentials:limacharlie-call` skill to configure cloud sensor
 6. **Guide** user through source-side setup
-7. **Validate** data is flowing via `lc-essentials:limacharlie-call` skill
-8. **Troubleshoot** any errors using `get_org_errors` function
+7. **Spawn sub-agent** with `lc-essentials:limacharlie-call` skill to validate data is flowing
+8. **Troubleshoot** any errors by spawning sub-agent to check `get_org_errors`
 
-**REMEMBER**: Never provide adapter-specific configuration from memory. Always fetch the latest documentation via sub-agent first. Always use the `lc-essentials:limacharlie-call` skill for API operations - never call MCP tools directly.
+**CRITICAL REQUIREMENTS**:
+- Never provide adapter-specific configuration from memory - always fetch via sub-agent with `lc-essentials:lookup-lc-doc`
+- Never call MCP tools directly - always spawn sub-agents that use `lc-essentials` skills
+- Use sub-agents to preserve context window
