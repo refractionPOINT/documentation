@@ -25,15 +25,15 @@ Task tool parameters:
     Research how to connect [DATA_SOURCE] to LimaCharlie.
 
     Use the `lc-essentials:lookup-lc-doc` skill to search for documentation about:
-    - The specific adapter type (e.g., "pubsub adapter", "okta adapter")
+    - The specific adapter type for this data source
     - USP adapter configuration for this data source
     - Cloud sensor setup requirements
 
     Return a comprehensive report including:
 
     ## Adapter Type
-    - The exact adapter type name (e.g., pubsub, s3, okta, syslog)
-    - Platform type to use (e.g., json, gcp, aws, azure_monitor)
+    - The exact adapter type name (from documentation)
+    - Platform type to use (from documentation)
 
     ## Prerequisites
     - What credentials/API keys are needed from the source system
@@ -78,8 +78,8 @@ Task tool parameters:
 
 **These are NOT valid identifiers:**
 - Organization names like `my-company` or `prod-environment`
-- Hostnames like `web-server-01` or `gcp-lc-sales-audit`
-- Project names like `lc-sales`
+- Hostnames like `web-server-01` or `cloud-audit-sensor`
+- Project names like `my-project`
 - Arbitrary strings or labels
 
 ### Getting Valid Identifiers
@@ -145,7 +145,7 @@ Task tool parameters:
 
 ### Step 4: Guide Source-Side Configuration
 
-Walk the user through any configuration needed on the source system (e.g., creating Pub/Sub subscriptions, IAM roles, API tokens). Use the specific steps from the documentation sub-agent's research.
+Walk the user through any configuration needed on the source system. Use the specific steps from the documentation sub-agent's research.
 
 ### Step 5: Validate
 
@@ -159,55 +159,6 @@ Task tool parameters:
     1. Call `get_org_errors` for oid=[OID] to check for errors
     2. Call `search_hosts` for oid=[OID] with hostname pattern to verify sensor appeared
 ```
-
----
-
-## Deployment Methods Overview
-
-### Cloud-to-Cloud (Preferred for SaaS)
-- LimaCharlie connects directly to the vendor's API
-- Configured via `cloud_sensor` in LimaCharlie
-- No infrastructure to manage
-- Best for: AWS, Azure, GCP, Okta, M365, most SaaS applications
-
-### On-Premises Binary
-- Download and run adapter binary on your infrastructure
-- Best for: Syslog, local files, Windows Event Logs, air-gapped environments
-- Binary downloads: `https://downloads.limacharlie.io/adapter/[os]/[arch]`
-- Docker: `refractionpoint/lc-adapter`
-
-### Cloud-Managed On-Prem
-- Run binary on-prem but manage configuration via LimaCharlie
-- Best for: MSPs, multi-tenant deployments
-- Uses `external_adapter` Hive
-
----
-
-## Common Configuration Structure
-
-All adapters follow this general pattern (but always verify with fetched docs):
-
-```yaml
-sensor_type: "[adapter_type]"
-
-[adapter_type]:
-  # Adapter-specific parameters - GET THESE FROM DOCUMENTATION
-
-  client_options:
-    identity:
-      oid: "[YOUR_OID]"
-      installation_key: "[YOUR_INSTALLATION_KEY]"
-    platform: "[platform_type]"
-    sensor_seed_key: "[unique-name]"
-    hostname: "[descriptive-hostname]"
-```
-
-**Platform types** (determines parsing):
-- `json` - Generic JSON
-- `gcp` - Google Cloud format
-- `aws` - AWS CloudTrail format
-- `azure_monitor` - Azure Monitor format
-- `text` - Plain text logs
 
 ---
 
