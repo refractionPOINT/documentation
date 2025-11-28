@@ -33,11 +33,15 @@ Task(
   prompt="Execute LimaCharlie API call:
     - Function: <function-name>
     - Parameters: {<params>}
-    - Extract: (optional) <what to extract>"
+    - Return: RAW | <what data you need back>"
 )
 ```
 
-**Example**:
+**⚠️ The Return field is REQUIRED.** It tells the agent exactly what data you need:
+- `Return: RAW` → Complete API response, no processing
+- `Return: <instructions>` → Extract/summarize specific data (e.g., "Count of sensors", "Only hostnames")
+
+**Example (extraction)**:
 ```
 Task(
   subagent_type="lc-essentials:limacharlie-api-executor",
@@ -45,7 +49,19 @@ Task(
   prompt="Execute LimaCharlie API call:
     - Function: get_sensor_info
     - Parameters: {\"oid\": \"8cbe27f4-bfa1-4afb-ba19-138cd51389cd\", \"sid\": \"xyz-123\"}
-    - Extract: sensor hostname and online status"
+    - Return: sensor hostname and online status"
+)
+```
+
+**Example (raw data)**:
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_sensor_info
+    - Parameters: {\"oid\": \"8cbe27f4-bfa1-4afb-ba19-138cd51389cd\", \"sid\": \"xyz-123\"}
+    - Return: RAW"
 )
 ```
 
@@ -55,9 +71,9 @@ For multiple independent API calls, spawn multiple agents in a **single message*
 
 ```
 <single message with multiple Task calls>
-Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... sensor1")
-Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... sensor2")
-Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... sensor3")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... - Return: ...")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... - Return: ...")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... - Return: ...")
 </single message>
 ```
 
@@ -67,15 +83,18 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="Execute... 
   <Task subagent_type="lc-essentials:limacharlie-api-executor"
         prompt="Execute LimaCharlie API call:
           - Function: get_time_when_sensor_has_data
-          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor1\", \"start\": 1234567890, \"end\": 1234567899}">
+          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor1\", \"start\": 1234567890, \"end\": 1234567899}
+          - Return: RAW">
   <Task subagent_type="lc-essentials:limacharlie-api-executor"
         prompt="Execute LimaCharlie API call:
           - Function: get_time_when_sensor_has_data
-          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor2\", \"start\": 1234567890, \"end\": 1234567899}">
+          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor2\", \"start\": 1234567890, \"end\": 1234567899}
+          - Return: RAW">
   <Task subagent_type="lc-essentials:limacharlie-api-executor"
         prompt="Execute LimaCharlie API call:
           - Function: get_time_when_sensor_has_data
-          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor3\", \"start\": 1234567890, \"end\": 1234567899}">
+          - Parameters: {\"oid\": \"...\", \"sid\": \"sensor3\", \"start\": 1234567890, \"end\": 1234567899}
+          - Return: RAW">
 </function_calls>
 ```
 
@@ -89,7 +108,8 @@ Task(
   model="haiku",
   prompt="Execute LimaCharlie API call:
     - Function: list_user_orgs
-    - Parameters: {}"
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -102,7 +122,8 @@ Quick reference to find functions by common task:
 ### Timeline & Data Availability
 - `get_time_when_sensor_has_data` - Check when sensor has data, data availability timeline, sensor overview
 - `get_historic_events` - Query historical telemetry events
-- `get_historic_detections` - Query historical detection alerts
+- `get_historic_detections(oid, start, end)` - **SEARCH by time range**
+- `get_detection(oid, detection_id)` - **GET ONE by ID**
 
 ### Sensor Status & Health
 - `list_sensors` - **PRIMARY** - List all sensors with optional filtering (hostname, IP, online status, platform)
@@ -147,7 +168,7 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `generate_dr_rule_detection` - AI-generate detection logic
 - `generate_dr_rule_respond` - AI-generate response actions
 
-## Available Functions (126)
+## Available Functions (127)
 
 ### Organization Management (8)
 - `list_user_orgs` - List organizations available to user → `./functions/list-user-orgs.md`
@@ -300,12 +321,29 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `delete_saved_query` - Delete saved query → `./functions/delete-saved-query.md`
 - `run_saved_query` - Run saved query → `./functions/run-saved-query.md`
 
-### Searching & Detection History (5)
+### Searching & Detection History (6)
+
+**⚠️ CRITICAL: Detection Functions - DIFFERENT PARAMETERS!**
+
+```
+# To GET ONE DETECTION by its ID:
+get_detection(oid="...", detection_id="<the-detection-uuid>")
+
+# To SEARCH DETECTIONS by time range:
+get_historic_detections(oid="...", start=<epoch>, end=<epoch>)
+```
+
+| Function | Use Case | Call Syntax |
+|----------|----------|-------------|
+| `get_detection` | Have detection ID → get details | `get_detection(oid, detection_id)` |
+| `get_historic_detections` | Search by time → list detections | `get_historic_detections(oid, start, end)` |
+
 - `search_hosts` - Search hosts → `./functions/search-hosts.md`
 - `search_iocs` - Search IOCs → `./functions/search-iocs.md`
 - `batch_search_iocs` - Batch search IOCs → `./functions/batch-search-iocs.md`
 - `get_historic_events` - Get historic events → `./functions/get-historic-events.md`
-- `get_historic_detections` - Get historic detections → `./functions/get-historic-detections.md`
+- `get_historic_detections` - **SEARCH by time**: `(oid, start, end)` → `./functions/get-historic-detections.md`
+- `get_detection` - **GET ONE by ID**: `(oid, detection_id)` → `./functions/get-detection.md`
 
 ### AI-Powered Generation (6)
 - `generate_lcql_query` - Generate LCQL query from natural language → `./functions/generate-lcql-query.md`
@@ -331,12 +369,13 @@ When API calls return large result sets (>100KB), the MCP tool returns a `resour
 
 1. **Download** the data from the signed URL
 2. **Analyze** the JSON schema to understand structure
-3. **Extract** requested data using jq (if extraction instructions provided)
+3. **Process** data according to the Return specification
 4. **Clean up** temporary files automatically
 5. **Return** processed results to you
 
-You don't need to handle this manually. Just include extraction instructions in your Task prompt:
+You don't need to handle this manually. Just specify what you need in the Return field:
 
+**Example (extraction/summarization)**:
 ```
 Task(
   subagent_type="lc-essentials:limacharlie-api-executor",
@@ -344,7 +383,7 @@ Task(
   prompt="Execute LimaCharlie API call:
     - Function: list_sensors
     - Parameters: {\"oid\": \"...\"}
-    - Extract: Count of total sensors and count of online sensors"
+    - Return: Count of total sensors and count of online sensors"
 )
 ```
 
@@ -360,11 +399,21 @@ The agent will receive the `resource_link`, download the data, analyze the schem
   "metadata": {
     "function": "list_sensors",
     "result_size": "large",
-    "extracted": true
+    "return_type": "extracted"
   }
 }
 ```
 
-**Note**: If you need the full raw data (not extracted), omit the "Extract" instruction and the agent will return the complete dataset.
+**Example (raw data)**:
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"...\"}
+    - Return: RAW"
+)
+```
 
 For more details on large result handling, see the agent documentation and [CALLING_API.md](../CALLING_API.md).

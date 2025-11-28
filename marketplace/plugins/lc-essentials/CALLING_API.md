@@ -31,7 +31,22 @@ LimaCharlie Platform
 The sub-agent receives:
 - **Function**: Name of the LimaCharlie API function (e.g., `get_sensor_info`, `run_lcql_query`)
 - **Parameters**: Object containing the parameters for the specific function
-- **Extract** (optional): Instructions for data extraction/filtering
+- **Return** (required): Specifies what data the caller wants back
+
+### Return Field Options
+
+The **Return** field is required and tells the agent exactly what data to return:
+
+| Return Value | Meaning |
+|-------------|---------|
+| `RAW` | Return the complete API response as-is, no processing |
+| `<extraction instructions>` | Extract/summarize specific data (e.g., "Count of online sensors", "Only hostnames") |
+
+**Examples**:
+- `Return: RAW` - Full API response
+- `Return: Count of total sensors and count of online sensors` - Summarized counts
+- `Return: Only sensors that are online with hostname and SID` - Filtered data
+- `Return: Summary with total count, breakdown by platform` - Aggregated report
 
 ## How It Works
 
@@ -437,14 +452,17 @@ The `resource_link` URL:
 
 ### Autonomous Handling by Sub-Agent
 
-When you delegate to the `limacharlie-api-executor` agent with extraction instructions, the agent:
+When you delegate to the `limacharlie-api-executor` agent with a Return specification, the agent:
 
-1. **Detects** the `resource_link` in the API response
-2. **Downloads** the data from the signed URL
-3. **Analyzes** the JSON schema using `analyze-lc-result.sh`
-4. **Extracts** requested data using jq based on schema
-5. **Cleans up** temporary files
-6. **Returns** processed results to the main thread
+1. **Parses** the Return field to understand what data is needed
+2. **Detects** the `resource_link` in the API response (for large results)
+3. **Downloads** the data from the signed URL
+4. **Analyzes** the JSON schema using `analyze-lc-result.sh`
+5. **Processes** data according to Return specification:
+   - If `Return: RAW` → Returns complete data as-is
+   - If extraction instructions → Extracts/summarizes using jq
+6. **Cleans up** temporary files
+7. **Returns** processed results to the main thread
 
 You don't need to handle this manually. See the `limacharlie-call` skill documentation for usage examples.
 
