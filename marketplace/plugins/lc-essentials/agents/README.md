@@ -122,6 +122,70 @@ Returns **summarized** findings (not all matches):
 4. Analyzes results: calculates stats, extracts top samples, finds patterns
 5. Returns concise summary for this org only (parent skill aggregates)
 
+### org-reporter
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Collect comprehensive reporting data for a **single** LimaCharlie organization. Designed to be spawned in parallel by the `reporting` skill for multi-tenant reports.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one instance per org) by the `reporting` skill when users want to:
+- Generate multi-tenant reports across all organizations
+- Create billing and usage summaries (roll-ups and per-tenant)
+- Produce security and operational dashboards
+
+**Architecture Role**:
+- **Parent Skill**: `reporting` (orchestrates parallel execution)
+- **This Agent**: Collects ALL reporting data for ONE organization
+- **Parallelization**: Multiple instances run simultaneously, one per org
+
+**Expected Input**:
+Receives a prompt specifying:
+- Organization name and ID (UUID)
+- Time range (start and end Unix timestamps)
+- Detection limit (default: 5000)
+
+**Output Format**:
+Returns structured JSON with all collected data:
+```json
+{
+  "org_name": "Client ABC",
+  "oid": "uuid...",
+  "status": "success|partial|failed",
+  "time_range": { "start": ..., "end": ..., "days": 30 },
+  "data": {
+    "org_info": {...},
+    "usage": { "total_events": ..., "total_output_gb": ... },
+    "billing": { "plan": ..., "status": ... },
+    "sensors": { "total": ..., "online": ..., "platforms": {...} },
+    "detections": { "retrieved_count": ..., "limit_reached": ..., "top_categories": [...] },
+    "rules": { "total_general": ..., "enabled": ... },
+    "outputs": { "total": ..., "types": [...] }
+  },
+  "errors": [...],
+  "warnings": [...],
+  "metadata": { "apis_called": 9, "apis_succeeded": 8, ... }
+}
+```
+
+**Key Features**:
+- **Single-Org Focus**: Only collects data for the one organization specified
+- **Comprehensive Collection**: Gathers usage, billing, sensors, detections, rules, and outputs
+- **Error Tolerance**: Continues with partial data on non-critical failures
+- **Detection Limit Tracking**: Flags when 5000 detection limit is reached
+- **No Cost Calculations**: Reports usage metrics only (guardrail enforced)
+- **Structured Output**: Returns JSON for easy aggregation by parent skill
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For all API operations
+
+**How It Works**:
+1. Extracts org ID, name, time range, and detection limit from prompt
+2. Invokes `limacharlie-call` skill to collect all data (9 API functions)
+3. Filters usage stats to requested time range
+4. Tracks detection limit and flags if reached
+5. Returns structured JSON for aggregation by parent skill
+
 ---
 
 ## Agent Architecture
