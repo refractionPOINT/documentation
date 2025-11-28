@@ -211,6 +211,60 @@ Use generate_lcql_query with:
 
 From all gathered events, extract and classify entities:
 
+## Phase 4.5: Attack Classification & Tagging
+
+Apply standardized tags to enable attack chain visualization and cross-timeline analysis.
+
+### Fetching MITRE ATT&CK Data
+
+Before applying MITRE tags, fetch the authoritative framework data:
+
+**Source:** `https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json`
+
+**Parsing Instructions:**
+1. Fetch the STIX bundle JSON
+2. Filter objects where `type` = `attack-pattern` (techniques) or `type` = `x-mitre-tactic` (tactics)
+3. Extract:
+   - Technique ID: `external_references[].external_id` where `source_name` = `mitre-attack`
+   - Technique Name: `name`
+   - Tactic: `kill_chain_phases[].phase_name`
+4. Use this data to validate and suggest MITRE tags
+
+### Required Tags for Malicious/Suspicious Events
+
+1. **Attack Phase Tag** (mandatory for malicious events):
+   - Determine which MITRE ATT&CK tactic this event represents
+   - Format: `phase:{tactic-name}` (e.g., `phase:initial-access`)
+   - Valid tactics: Fetch from STIX data `x-mitre-tactic` objects
+
+2. **MITRE Technique Tag** (strongly recommended):
+   - Identify the specific technique observed
+   - Format: `mitre:{technique-id}` (e.g., `mitre:T1566`)
+   - Valid techniques: Fetch from STIX data `attack-pattern` objects
+
+3. **Timing Tags** (apply where relevant):
+   - `timing:first-observed` - earliest malicious activity
+   - `timing:pivot-point` - critical events in attack chain
+   - `timing:detection-trigger` - what triggered the investigation
+
+4. **Confidence Tag** (on entities and key events):
+   - `confidence:high` - confirmed through multiple sources
+   - `confidence:medium` - strong indicators
+   - `confidence:low` - needs further investigation
+
+### Optional Attribution Tags
+
+- `actor:{identifier}` - threat actor attribution (e.g., `actor:apt-29`)
+- `tool:{name}` - identified tooling (e.g., `tool:mimikatz`)
+- `impact:{type}` - observed impact (e.g., `impact:data-exfiltration`)
+- `root-cause:{cause}` - for initial access events (e.g., `root-cause:phishing`)
+- `scope:{extent}` - attack scope (e.g., `scope:domain-wide`)
+- `gap:{deficiency}` - defense gaps identified (e.g., `gap:no-mfa`)
+
+See [Timeline Investigation Guide](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md) for complete tag format reference.
+
+---
+
 | Entity Type | How to Extract | Example Values |
 |-------------|----------------|----------------|
 | `ip` | NETWORK_CONNECTIONS.DESTINATION.IP_ADDRESS, DNS responses | 203.0.113.50 |
@@ -250,13 +304,13 @@ Construct the Timeline Hive record with all gathered information:
       "sid": "[sensor-id]",
       "relevance": "[why this event matters to the investigation]",
       "verdict": "[malicious|suspicious|benign|unknown]",
-      "tags": ["[category_tags]"]
+      "tags": ["phase:[tactic]", "mitre:[technique-id]", "timing:[marker]"]
     }
   ],
   "detections": [
     {
       "detection_id": "[detection-id]",
-      "tags": ["[category_tags]"]
+      "tags": ["phase:[tactic]", "mitre:[technique-id]"]
     }
   ],
   "entities": [
@@ -265,7 +319,7 @@ Construct the Timeline Hive record with all gathered information:
       "value": "[entity_value]",
       "first_seen": "[unix_epoch_ms]",
       "last_seen": "[unix_epoch_ms]",
-      "context": "[why this entity is relevant]",
+      "context": "Provenance: [how discovered]. TI: [threat intel correlation].",
       "verdict": "[verdict]",
       "related_events": ["[atom_refs]"]
     }
@@ -273,7 +327,7 @@ Construct the Timeline Hive record with all gathered information:
   "notes": [
     {
       "type": "finding",
-      "content": "[key investigation finding]",
+      "content": "ATTACK CHAIN: [Phase 1] → [Phase 2] → [Phase 3]\nTechniques: [T1xxx] → [T1xxx] → [T1xxx]",
       "timestamp": "[unix_epoch_ms]"
     }
   ],

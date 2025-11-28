@@ -246,6 +246,11 @@ hives:
 }
 ```
 
+## Best Practices
+
+For opinionated guidance on tagging events and detections for SOC investigations, including MITRE ATT&CK mapping and attack chain visualization, see the [Timeline Investigation Guide](../../Getting_Started/Use_Cases/timeline-investigation-guide.md).
+
 ## Related
 
+* [Timeline Investigation Guide](../../Getting_Started/Use_Cases/timeline-investigation-guide.md) - Best practices for tagging and documenting investigations
 * [expand_timeline](../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md) - Hydrate timeline with full event/detection data
