@@ -48,7 +48,7 @@ For the complete timeline schema reference, see [Config Hive: Timeline](../../..
 Timelines can contain:
 - **name**: Timeline name (required, max 256 chars)
 - **description**: Timeline description (max 4096 chars)
-- **status**: Investigation status (new, in_progress, pending_review, escalated, resolved, closed)
+- **status**: Investigation status (new, in_progress, pending_review, escalated, closed_false_positive, closed_true_positive)
 - **priority**: Priority level (critical, high, medium, low, informational)
 - **events**: Array of event references with atom, sid, tags, comments, relevance, verdict
 - **detections**: Array of detection references with detection_id, tags, comments, false_positive info

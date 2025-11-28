@@ -99,7 +99,7 @@ Comments can be added to events, detections, and entities.
 ### Enum Values
 
 **Status:**
-`new`, `in_progress`, `pending_review`, `escalated`, `resolved`, `closed`
+`new`, `in_progress`, `pending_review`, `escalated`, `closed_false_positive`, `closed_true_positive`
 
 **Priority:**
 `critical`, `high`, `medium`, `low`, `informational`

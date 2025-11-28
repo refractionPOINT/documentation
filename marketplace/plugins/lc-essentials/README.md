@@ -1,6 +1,6 @@
 # LimaCharlie Essentials Plugin
 
-Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 122 comprehensive skills covering core operations, historical data, forensics, detection rules, threat intelligence analysis, MSSP multi-tenant reporting, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
+Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 123 comprehensive skills covering core operations, historical data, forensics, detection rules, threat intelligence analysis, MSSP multi-tenant reporting, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
 
 ## Important: Organization ID (OID) Requirements
 
@@ -27,7 +27,7 @@ All other 119 skills require a valid, specific organization ID.
 
 ## What It Does
 
-This plugin provides 122 comprehensive skills:
+This plugin provides 123 comprehensive skills:
 
 ### Skills Organized by Category
 

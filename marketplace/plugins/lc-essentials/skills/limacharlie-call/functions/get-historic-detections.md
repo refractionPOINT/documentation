@@ -1,11 +1,15 @@
 
 # Get Historic Detections
 
-Retrieve historical security detections and alerts for your organization within a specified time range.
+Retrieve historical security detections and alerts for your organization within a **specified time range**.
+
+**⚠️ IMPORTANT: This is NOT `get_detection`**
+- Use `get_historic_detections` (THIS skill) to **search by time range** (requires `start` and `end` timestamps)
+- Use `get_detection` when you have a **specific detection ID** and want its details
 
 ## When to Use
 
-Use this skill when the user needs to:
+Use `get_historic_detections` (THIS skill) when the user needs to:
 - Review all detections in a time period
 - Analyze threat activity over time
 - Filter detections by sensor or category

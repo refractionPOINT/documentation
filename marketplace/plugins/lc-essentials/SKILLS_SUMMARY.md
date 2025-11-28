@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully created **122 new SKILL.md files** for the lc-essentials plugin, bringing the total to **123 skills** (including the existing lookup-lc-doc skill, mssp-reporting skill, and detection-engineering skill).
+Successfully created **124 new SKILL.md files** for the lc-essentials plugin, bringing the total to **125 skills** (including the existing lookup-lc-doc skill, mssp-reporting skill, detection-engineering skill, and timeline-creation skill).
 
 **Sub-Agents**: 3 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
@@ -24,10 +24,11 @@ Successfully created **122 new SKILL.md files** for the lc-essentials plugin, br
 - is-online
 - search-hosts
 
-#### Historical Data & Queries (11 skills)
+#### Historical Data & Queries (12 skills)
 - run-lcql-query
 - get-historic-events
-- get-historic-detections
+- get-historic-detections - **SEARCH by time range** (params: `start`, `end`)
+- get-detection - **GET ONE by ID** (param: `detection_id`)
 - search-iocs
 - batch-search-iocs
 - get-time-when-sensor-has-data
@@ -83,6 +84,9 @@ Successfully created **122 new SKILL.md files** for the lc-essentials plugin, br
 
 #### Detection Engineering (1 skill)
 - **detection-engineering**: Expert Detection Engineer assistant for end-to-end D&R rule development (understand → research → build → test → deploy). Uses iterative test-refine cycles, integrates with `lookup-lc-doc` for syntax help, and orchestrates `dr-replay-tester` sub-agent for multi-org parallel testing.
+
+#### Timeline Creation & Investigation (1 skill)
+- **timeline-creation**: Automated SOC analyst that creates investigation timelines from security events, detections, or LCQL queries. Autonomously investigates related activity (parent/child processes, network connections, file operations), extracts IOCs, and builds Timeline Hive records for SOC working reports.
 
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
