@@ -43,6 +43,8 @@ One of the following (mutually exclusive):
 
 ## Timeline Structure
 
+For the complete timeline schema reference, see [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md).
+
 Timelines can contain:
 - **name**: Timeline name (required, max 256 chars)
 - **description**: Timeline description (max 4096 chars)
@@ -256,5 +258,6 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 See [CALLING_API.md](../../CALLING_API.md) for details on using `lc_call_tool`.
 
-MCP: `../lc-mcp-server/internal/tools/historical/timeline.go`
-Hive Schema: `../legion_config_hive/hives/def_timeline.go`
+- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
+- **MCP Implementation**: `../lc-mcp-server/internal/tools/historical/timeline.go`
+- **Hive Schema**: `../legion_config_hive/hives/def_timeline.go`
