@@ -3,6 +3,23 @@
 
 Execute LCQL (LimaCharlie Query Language) queries against your organization's historical data.
 
+---
+
+## ⛔⛔⛔ STOP: You MUST Use generate_lcql_query FIRST ⛔⛔⛔
+
+**NEVER call this function with a query you wrote yourself.**
+
+Before EVERY call to `run_lcql_query`, you MUST first call `generate_lcql_query` with a natural language description. No exceptions.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  ❌ FORBIDDEN: run_lcql_query(query="<anything you wrote>")    │
+│  ✅ REQUIRED:  generate_lcql_query() → run_lcql_query()        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## ⚠️ CRITICAL: LCQL Syntax Required
 
 **This function requires ACTUAL LCQL syntax - NOT SQL, NOT English, NOT natural language.**
@@ -11,16 +28,21 @@ LCQL uses a pipe-based syntax like: `-24h | * | DNS_REQUEST | event.DOMAIN_NAME 
 
 **WRONG:** `SELECT DISTINCT event.FILE_PATH FROM events WHERE sid = 'abc' AND event_type = 'NEW_PROCESS'` (This is SQL)
 **WRONG:** `find all PowerShell executions` (This is English)
-**RIGHT:** `-24h | sid = 'abc' | NEW_PROCESS | event.FILE_PATH contains 'powershell'`
+**WRONG:** `-24h | aa62... | NEW_PROCESS | event/FILE_PATH contains 'svchost'` (You wrote this - USE GENERATOR)
+**RIGHT:** Output from `generate_lcql_query` function ONLY
 
-## Required Workflow
+## ⛔ Mandatory Workflow (NO EXCEPTIONS)
 
 **ALWAYS use this two-step workflow:**
 
 1. **FIRST**: Use `generate_lcql_query` to convert natural language to LCQL syntax
-2. **THEN**: Use `run_lcql_query` with the generated LCQL query
+2. **THEN**: Use `run_lcql_query` with the EXACT query string returned
 
-**DO NOT** skip step 1 and try to write LCQL manually unless you are certain of the correct syntax.
+**You are PROHIBITED from:**
+- Writing LCQL syntax manually
+- Guessing field paths like `event/FILE_PATH` or `event.COMMAND_LINE`
+- Copying LCQL from examples and modifying it
+- Skipping the generation step for "simple" queries
 
 ## When to Use
 

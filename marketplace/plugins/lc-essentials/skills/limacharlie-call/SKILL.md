@@ -8,6 +8,27 @@ allowed-tools: Task, Read, Bash
 
 Perform any LimaCharlie operation by dynamically loading function references.
 
+---
+
+## ⛔ CRITICAL: NEVER Write LCQL Queries Manually
+
+**Before using `run_lcql_query`, you MUST first call `generate_lcql_query`.**
+
+LCQL is NOT SQL. It uses unique pipe-based syntax that varies by organization schema. Manual queries WILL fail.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  ❌ FORBIDDEN: run_lcql_query(query="<anything you wrote>")    │
+│  ✅ REQUIRED:  generate_lcql_query() → run_lcql_query()        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Workflow for EVERY LCQL query:**
+1. Call `generate_lcql_query` with natural language description
+2. Call `run_lcql_query` with the EXACT generated query string
+
+---
+
 ## Core Concepts
 
 **⚠️ CRITICAL**: The Organization ID (OID) is a **UUID** (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name.
@@ -140,16 +161,17 @@ Quick reference to find functions by common task:
 
 ### Threat Hunting & Investigation
 
-**⚠️ CRITICAL LCQL Workflow:**
-When querying historical data, ALWAYS use this two-step process:
-1. **FIRST**: Call `generate_lcql_query` to convert natural language to LCQL syntax
-2. **THEN**: Call `run_lcql_query` with the generated LCQL query
+**⛔ MANDATORY LCQL Workflow - NO EXCEPTIONS:**
+```
+Step 1: generate_lcql_query(query="natural language")  ← ALWAYS DO THIS FIRST
+Step 2: run_lcql_query(query=<output from step 1>)     ← USE GENERATED QUERY ONLY
+```
 
-LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | event.FILE_PATH contains 'powershell'`
+You are PROHIBITED from writing LCQL syntax manually. The generator validates against your org's schema.
 
 **Functions:**
-- `generate_lcql_query` - **USE THIS FIRST** - Convert natural language to LCQL syntax
-- `run_lcql_query` - Execute LCQL query (requires actual LCQL syntax, NOT SQL/English)
+- `generate_lcql_query` - **⛔ MANDATORY FIRST STEP** - Convert natural language to LCQL syntax
+- `run_lcql_query` - Execute LCQL query (⚠️ ONLY accepts output from generate_lcql_query)
 - `search_iocs` - Search for indicators of compromise
 - `batch_search_iocs` - Bulk IOC search
 - `search_hosts` - Search for hosts by criteria
@@ -174,7 +196,7 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `generate_dr_rule_detection` - AI-generate detection logic
 - `generate_dr_rule_respond` - AI-generate response actions
 
-## Available Functions (127)
+## Available Functions (129)
 
 ### Organization Management (8)
 - `list_user_orgs` - List organizations available to user → `./functions/list-user-orgs.md`
@@ -327,7 +349,7 @@ LCQL is NOT SQL - it uses pipe-based syntax like: `-24h | * | NEW_PROCESS | even
 - `delete_saved_query` - Delete saved query → `./functions/delete-saved-query.md`
 - `run_saved_query` - Run saved query → `./functions/run-saved-query.md`
 
-### Searching & Detection History (6)
+### Searching & Detection History (8)
 
 **⚠️ CRITICAL: Detection Functions - DIFFERENT PARAMETERS!**
 
@@ -350,6 +372,8 @@ get_historic_detections(oid="...", start=<epoch>, end=<epoch>)
 - `get_historic_events` - Get historic events → `./functions/get-historic-events.md`
 - `get_historic_detections` - **SEARCH by time**: `(oid, start, end)` → `./functions/get-historic-detections.md`
 - `get_detection` - **GET ONE by ID**: `(oid, detection_id)` → `./functions/get-detection.md`
+- `get_event_by_atom` - Get event by atom → `./functions/get-event-by-atom.md`
+- `get_atom_children` - Get children of atom → `./functions/get-atom-children.md`
 
 ### AI-Powered Generation (6)
 - `generate_lcql_query` - Generate LCQL query from natural language → `./functions/generate-lcql-query.md`
