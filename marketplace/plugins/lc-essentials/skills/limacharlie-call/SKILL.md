@@ -120,9 +120,15 @@ Then use the UUID from the results for subsequent calls.
 Quick reference to find functions by common task:
 
 ### Timeline & Data Availability
+
+**⚠️ CRITICAL: Timestamp Format for Historic Queries**
+- `get_historic_events` and `get_historic_detections` require timestamps in **SECONDS** (10 digits)
+- Detection/event data contains timestamps in **milliseconds** (13 digits)
+- **Always divide by 1000** when using timestamps from detection data: `event_time / 1000`
+
 - `get_time_when_sensor_has_data` - Check when sensor has data, data availability timeline, sensor overview
-- `get_historic_events` - Query historical telemetry events
-- `get_historic_detections(oid, start, end)` - **SEARCH by time range**
+- `get_historic_events` - Query historical telemetry events (timestamps in **seconds**)
+- `get_historic_detections(oid, start, end)` - **SEARCH by time range** (timestamps in **seconds**)
 - `get_detection(oid, detection_id)` - **GET ONE by ID**
 
 ### Sensor Status & Health

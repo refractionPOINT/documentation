@@ -29,10 +29,25 @@ This skill retrieves historical telemetry events for a single sensor within a sp
 Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
+
+**⚠️ CRITICAL: Timestamps Must Be in SECONDS, Not Milliseconds**
+
+The `start` and `end` parameters require Unix epoch timestamps in **seconds** (10 digits), NOT milliseconds (13 digits).
+
+- Detection and event data from LimaCharlie contains timestamps in **milliseconds** (e.g., `event_time: 1764445150453`)
+- This API requires timestamps in **seconds** (e.g., `start: 1764445150`)
+- **You MUST divide by 1000** when using timestamps from detection/event data
+
+```
+Detection timestamp (ms): 1764445150453
+                        ÷ 1000
+API parameter (seconds):  1764445150
+```
+
 - **oid**: Organization ID (required for all API calls)
 - **sid**: Sensor ID (UUID format)
-- **start**: Start timestamp in Unix epoch seconds
-- **end**: End timestamp in Unix epoch seconds
+- **start**: Start timestamp in Unix epoch **seconds** (NOT milliseconds)
+- **end**: End timestamp in Unix epoch **seconds** (NOT milliseconds)
 
 Optional parameters:
 - **limit**: Maximum number of events to return (default: 1000)
@@ -209,8 +224,31 @@ Steps:
 2. Filter for DNS_REQUEST events
 3. Format results showing domains queried
 
+## Common Mistakes
+
+| Mistake | Symptom | Fix |
+|---------|---------|-----|
+| Using milliseconds instead of seconds | Empty results, no data found | Divide timestamp by 1000 |
+| Timestamp from detection data used directly | Query returns nothing | `event_time / 1000` for seconds |
+| Time range too narrow | No events returned | Expand window by a few seconds |
+| Time range too wide | Timeout or too many results | Narrow window, use limit parameter |
+
+**Example of the most common mistake:**
+
+```
+# WRONG - Using milliseconds from detection
+start: 1764445150453  # 13 digits = milliseconds = WRONG
+end:   1764445200453
+
+# CORRECT - Converted to seconds
+start: 1764445150     # 10 digits = seconds = CORRECT
+end:   1764445200
+```
+
 ## Additional Notes
 
+- **Timestamps in API parameters**: Must be in **seconds** (10 digits)
+- **Timestamps in returned event data**: Are in **milliseconds** (13 digits)
 - Time range should be reasonable; very large ranges may timeout
 - Default limit of 1000 events prevents overwhelming responses
 - Events are returned in chronological order
@@ -220,7 +258,6 @@ Steps:
 - Free tier typically has 30-day retention; paid tiers may have longer
 - Consider using LCQL queries for more complex filtering across multiple sensors
 - Large result sets may take time to retrieve
-- Timestamps are in milliseconds in the event data but seconds in the API parameters
 - Combine with `get_sensor_info` to get sensor context before querying events
 
 ## Reference

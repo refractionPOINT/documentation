@@ -51,6 +51,17 @@ Determine the investigation approach based on what the user provides:
 
 ## Phase 2: Gather Initial Context
 
+**⚠️ CRITICAL: Timestamp Conversion Required**
+
+Detection and event data from LimaCharlie contains timestamps in **milliseconds** (13 digits like `1764445150453`), but `get_historic_events` and `get_historic_detections` require timestamps in **seconds** (10 digits).
+
+**Always divide by 1000 when converting:**
+```
+detection.event_time = 1764445150453  (milliseconds)
+                     ÷ 1000
+API start parameter  = 1764445150     (seconds)
+```
+
 ### For Event Starting Point
 
 1. Get full event details:
@@ -59,8 +70,8 @@ tool: get_historic_events
 parameters:
   oid: [oid]
   sid: [sensor-id]
-  start: [event_time - 1 second]
-  end: [event_time + 1 second]
+  start: [event_time / 1000 - 1]    # Convert ms→s, then subtract 1 second
+  end: [event_time / 1000 + 1]      # Convert ms→s, then add 1 second
   limit: 10
 ```
 
@@ -81,15 +92,17 @@ parameters:
 
 ### For Detection Starting Point
 
-1. Get detection details:
+1. Get detection details using `get_detection` (NOT `get_historic_detections`):
 ```
-tool: get_historic_detections
+tool: get_detection
 parameters:
   oid: [oid]
   detection_id: [detection-id]
 ```
 
-2. Extract the triggering event atom and sensor ID
+**Note:** Use `get_detection` when you have a specific detection ID. Use `get_historic_detections` when searching by time range.
+
+2. Extract the triggering event atom, sensor ID, and **timestamps** (remember to divide by 1000 for subsequent queries)
 3. Continue as event-based investigation
 
 ### For LCQL Query Starting Point
@@ -188,14 +201,14 @@ Use generate_lcql_query with:
 
 ### 3.5 Related Detections
 
-**Same Sensor**:
+**Same Sensor** (remember: timestamps must be in **seconds**, not milliseconds):
 ```
 tool: get_historic_detections
 parameters:
   oid: [oid]
   sid: [sid]
-  start: [window_start]
-  end: [window_end]
+  start: [window_start / 1000]    # Convert ms→s if from detection data
+  end: [window_end / 1000]        # Convert ms→s if from detection data
   limit: 50
 ```
 
