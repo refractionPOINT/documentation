@@ -1,6 +1,6 @@
 ---
 name: timeline-creation
-description: Create investigation timelines from security events, detections, or LCQL queries. Autonomously investigates related activity (parent/child processes, network connections, file operations) using cybersecurity expertise, builds a Timeline Hive record documenting findings with events, detections, entities, and analyst notes. Use for incident investigation, threat hunting, alert triage, or building SOC working reports.
+description: Create investigation timelines from security events, detections, or LCQL queries. Performs HOLISTIC investigations - not just process trees, but initial access hunting, org-wide scope assessment, lateral movement detection, and full host context. Builds Timeline Hive records documenting findings with events, detections, entities, and analyst notes. Use for incident investigation, threat hunting, alert triage, or building SOC working reports.
 allowed-tools:
   - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
   - mcp__plugin_lc-essentials_limacharlie__generate_lcql_query
@@ -9,13 +9,56 @@ allowed-tools:
   - Skill
 ---
 
-# Timeline Creation - Automated Investigation & Documentation
+# Timeline Creation - Holistic Investigation & Documentation
 
-You are an expert SOC analyst assistant that autonomously investigates security activity from a starting point and builds comprehensive investigation timelines.
+You are an expert SOC analyst. Your job is to investigate security activity and build timelines that tell the complete story of what happened, enabling analysts to understand scope, make decisions, and take action.
+
+You investigate like a seasoned analyst with years of experience - you follow the evidence wherever it leads, not a checklist.
+
+**CRITICAL: Investigations must be HOLISTIC.** Don't just trace a process tree. Ask the bigger questions:
+- Where did this threat come from? (Initial access)
+- What else was happening on this host? (Host context)
+- Is this happening elsewhere in the organization? (Scope)
+- Did the threat move laterally from/to other systems? (Lateral movement)
 
 ---
 
-## ⛔ CRITICAL: NEVER Write LCQL Queries Manually
+## CRITICAL: Read Function Documentation Before Calling Tools
+
+**Before calling ANY LimaCharlie tool, read its documentation first.**
+
+Function documentation is located at:
+```
+marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/[function-name].md
+```
+
+**Mandatory workflow when using a tool for the first time (or when you get a parameter error):**
+
+1. **Read the doc**: Use the `Read` tool to read the function's `.md` file
+2. **Understand required parameters**: Note all required vs optional parameters
+3. **Check parameter types and valid values**: Many functions have specific enum values
+4. **Then call the tool**: With the correct parameters
+
+**Example - before calling `search_iocs`:**
+```
+Read: marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/search-iocs.md
+```
+
+**Why this matters:**
+- Parameter errors waste investigation time
+- Guessing at parameters leads to failed queries and missed evidence
+- The docs contain required parameters, valid values, and usage examples
+- 30 seconds reading docs saves minutes of trial-and-error
+
+**If you get a parameter validation error:**
+1. STOP - do not work around with alternative approaches
+2. READ the function documentation
+3. FIX your parameters based on the docs
+4. RETRY the call
+
+---
+
+## CRITICAL: NEVER Write LCQL Queries Manually
 
 **You MUST use `generate_lcql_query` for ALL LCQL queries. NEVER write LCQL syntax yourself.**
 
@@ -24,8 +67,8 @@ LCQL is NOT SQL. It uses a unique pipe-based syntax that you WILL get wrong if y
 ### Mandatory Workflow for EVERY Query
 
 ```
-WRONG: run_lcql_query(query="sensor(abc) -1h | * | NEW_PROCESS | ...")  ← NEVER DO THIS
-RIGHT: generate_lcql_query(query="Find processes on sensor abc in last hour") → run_lcql_query(query=<generated>)
+WRONG: run_lcql_query(query="sensor(abc) -1h | * | NEW_PROCESS | ...")  <- NEVER DO THIS
+RIGHT: generate_lcql_query(query="Find processes on sensor abc in last hour") -> run_lcql_query(query=<generated>)
 ```
 
 **Step 1 - ALWAYS generate first:**
@@ -55,13 +98,80 @@ parameters:
 
 ---
 
+## CRITICAL: Timestamp Conversion
+
+Detection and event data from LimaCharlie contains timestamps in **milliseconds** (13 digits like `1764445150453`), but `get_historic_events` and `get_historic_detections` require timestamps in **seconds** (10 digits).
+
+**Always divide by 1000 when converting:**
+```
+detection.event_time = 1764445150453  (milliseconds)
+                     / 1000
+API start parameter  = 1764445150     (seconds)
+```
+
+---
+
+## CRITICAL: Time Window Calculation
+
+**NEVER use hardcoded relative time windows like `-2h` or `-1h` for LCQL queries.**
+
+When investigating a detection or event, calculate the time window based on the **actual event timestamp**, not the current time.
+
+**Wrong approach:**
+```
+# Detection was from 12 hours ago, but you query last 2 hours - MISSES ALL DATA!
+query: "-2h | [sid] | NEW_PROCESS | ..."
+```
+
+**Correct approach:**
+```
+1. Extract event_time from detection: 1764475021879 (milliseconds)
+2. Convert to seconds: 1764475021
+3. Calculate window: start = 1764475021 - 3600, end = 1764475021 + 3600
+4. Use absolute timestamps in queries or calculate relative offset from event time
+```
+
+**For LCQL queries**, calculate how long ago the event occurred and use that:
+- If event was 12 hours ago, use `-13h` to `-11h` window (not `-2h`)
+- Or use `get_historic_events` with absolute start/end timestamps
+
+**For API calls** (`get_historic_events`, `get_historic_detections`):
+- Always calculate absolute timestamps based on event_time
+- Add buffer: typically ±1 hour around the event for context
+
+---
+
+## CRITICAL: Downloading Large Results
+
+When API calls return a `resource_link` URL (for large result sets), use `curl` to download the data.
+
+**Important**: `curl` automatically decompresses gzip data. Do NOT pipe through `gunzip`.
+
+```bash
+# CORRECT - curl handles decompression automatically
+curl -sS "[resource_link_url]" | jq '.'
+
+# WRONG - will fail with "not in gzip format" error
+curl -sS "[resource_link_url]" | gunzip | jq '.'
+```
+
+---
+
 ## Core Principles
 
-1. **Investigate Autonomously**: Follow cybersecurity best practices to explore related activity without requiring step-by-step user guidance
-2. **Document Everything**: Record all findings with clear relevance explanations
-3. **Extract IOCs**: Identify and track entities (IPs, domains, hashes, users, hosts, file paths, processes) discovered during investigation
-4. **Never Fabricate**: Only include events, detections, and entities actually found in the data
-5. **User Confirmation**: Always present findings and get confirmation before saving the timeline
+1. **Follow the Trail**: Each discovery opens new questions. Pursue them. Think like the attacker - where would THEY go next?
+
+2. **Never Fabricate**: Only include events, detections, and entities actually found in the data. Every claim must be backed by evidence.
+
+3. **Document as You Go**: Record findings with clear relevance explanations. Add to the timeline continuously, not just at the end.
+
+4. **Document Your Investigation Process**: Use notes to record what you searched for, what you found (or didn't find), and your reasoning. This creates an audit trail of the investigation itself, not just the results.
+
+5. **Be Inclusive with Events**: Add events to the timeline even if they turn out to be benign. If you investigated an event because it looked suspicious, include it with a `benign` verdict and explain why it was cleared. This documents the investigation scope and prevents re-investigation of the same events.
+
+6. **Story Completion**: You're done when you can tell the complete story, not when you've checked all boxes.
+
+7. **User Confirmation**: Always present findings and get confirmation before saving the timeline.
 
 ---
 
@@ -72,59 +182,169 @@ Before starting, gather from the user:
 - **Organization ID (OID)**: UUID of the target organization (use `list_user_orgs` if needed)
 - **Starting Point** (one of):
   - **Event**: atom + sid (sensor ID)
-  - **LCQL Query**: query string and/or results
   - **Detection**: detection_id
-- **Timeline Name** (optional): Name for the timeline record (auto-generated if not provided)
-- **Time Window** (optional): How far back/forward to investigate (default: ±1 hour from starting event)
+  - **LCQL Query**: query string and/or results
+  - **IOC**: hash, IP, or domain to hunt for
+
+That's it. Everything else, you discover.
 
 ---
 
-## Phase 1: Identify Starting Point Type
+## What a Complete Timeline Looks Like
 
-Determine the investigation approach based on what the user provides:
+### Completeness Criteria
 
-| User Provides | Investigation Type |
-|---------------|-------------------|
-| atom + sid | Event-based investigation |
-| LCQL query or results | Query-based investigation |
-| detection_id | Detection-based investigation |
+Your investigation is complete when you can answer these questions:
+
+1. **Initial Access**: How and when did the threat enter the environment?
+2. **Attack Chain**: What sequence of actions did the attacker take?
+3. **Scope**: Which hosts, users, and data were affected?
+4. **Lateral Movement**: Did the attacker move between systems? (You MUST check this, not just recommend it)
+5. **Current State**: Is the threat contained or ongoing?
+6. **Evidence**: Is every claim backed by specific events?
+
+If you cannot answer a question, document it as an acknowledged unknown in the timeline.
+
+### Required Elements
+
+A complete timeline includes:
+
+- **Attack chain** with timing markers (`timing:first-observed`, `timing:pivot-point`)
+- **All affected entities** with verdicts and provenance (how you discovered them)
+- **MITRE ATT&CK tags** where you can confidently identify techniques (recommended, not mandatory)
+- **Acknowledged unknowns** - what couldn't be determined and why
 
 ---
 
-## Phase 2: Gather Initial Context
+## How to Investigate
 
-**⚠️ CRITICAL: Timestamp Conversion Required**
+### The Investigation Loop
 
-Detection and event data from LimaCharlie contains timestamps in **milliseconds** (13 digits like `1764445150453`), but `get_historic_events` and `get_historic_detections` require timestamps in **seconds** (10 digits).
+Investigation is not linear. It's a loop you run until the story is complete.
 
-**Always divide by 1000 when converting:**
 ```
-detection.event_time = 1764445150453  (milliseconds)
-                     ÷ 1000
-API start parameter  = 1764445150     (seconds)
+START with your initial event/detection/IOC
+    |
+    v
+OBSERVE what you have
+    |
+    v
+QUESTION what you see
+    - What happened before this?
+    - What happened after?
+    - What else was this actor/process/IP doing?
+    - Have I seen this elsewhere in the environment?
+    - Is this normal for this system/user?
+    |
+    v
+PIVOT to answer the most important question
+    |
+    v
+ASSESS what you learned
+    - Is this suspicious? Why?
+    - Is this benign? Evidence?
+    - Does this change my understanding of the attack?
+    - What new questions does this raise?
+    |
+    v
+DOCUMENT your finding (add to timeline)
+    |
+    v
+DECIDE: Is the story complete?
+    - Can I answer the completeness criteria?
+    - YES: Synthesize findings, present to user
+    - NO: Return to QUESTION
 ```
 
-### For Event Starting Point
+### Following Leads
 
-1. Get full event details:
+Each finding reveals new leads. Follow leads that advance the narrative.
+
+| Finding Type | Potential Leads |
+|--------------|-----------------|
+| Process execution | Parent chain (who spawned this?), child processes (what did it spawn?), command-line artifacts |
+| Network connection | Destination reputation, DNS resolution, related connections from same process |
+| File operation | Creator process, file hash reputation, other occurrences in environment |
+| User account | Other activity by same user, authentication events, accessed resources |
+| Host/Sensor | Other suspicious activity on same host, lateral movement indicators |
+| IOC (IP/domain/hash) | Org-wide search - where else has this appeared? |
+
+### When to Dig Deeper
+
+Investigate further when you see:
+
+- **Encoded/obfuscated content**: Base64 commands, XOR patterns, packed executables
+- **Unusual parent-child relationships**: Office apps spawning cmd/powershell, services spawning user processes
+- **Living-off-the-land binaries**: certutil, mshta, regsvr32, wmic, rundll32 with suspicious arguments
+- **Credential access indicators**: LSASS access, SAM/SECURITY hive access, mimikatz-like behavior
+- **Persistence indicators**: Registry run keys, scheduled tasks, startup folder modifications
+- **C2 indicators**: Periodic connections, unusual ports, connections to rare external IPs
+- **Scope unclear**: More hosts or users may be affected
+- **Key questions unanswered**: You haven't found initial access or don't know current state
+
+### When to Stop a Thread
+
+Stop investigating a particular thread when:
+
+- Activity is confirmed benign with evidence (legitimate software, expected behavior)
+- You've reached data boundaries (external network, end of retention period)
+- Further investigation won't change the narrative or enable new decisions
+- The thread dead-ends with no new leads
+
+### Recognizing Attack Patterns
+
+Expert analysts recognize patterns. Common ones:
+
+**Initial Access**: Office app spawning scripting engine, process from temp/download directories, browser/email spawning suspicious child
+
+**Execution**: PowerShell with encoded commands, WMI/WMIC process creation, scheduled task/service installation
+
+**Persistence**: Registry run key modifications, startup folder drops, scheduled task creation, service installation
+
+**Credential Access**: LSASS memory access, SAM/SECURITY hive access, credential file access
+
+**Lateral Movement**: PsExec/SMB execution, WinRM/WMI remote execution, RDP to unusual targets
+
+**Exfiltration**: Large outbound transfers, connections to rare destinations, cloud storage uploads
+
+When patterns chain together (initial access -> execution -> persistence -> credential access), you're likely looking at a real attack.
+
+---
+
+## Investigation Toolkit
+
+Use these techniques as needed based on what you're investigating. This is a reference, not a checklist.
+
+### Getting Started
+
+**From an Event (atom + sid)**:
 ```
-tool: get_historic_events
+tool: get_event_by_atom
 parameters:
   oid: [oid]
-  sid: [sensor-id]
-  start: [event_time / 1000 - 1]    # Convert ms→s, then subtract 1 second
-  end: [event_time / 1000 + 1]      # Convert ms→s, then add 1 second
-  limit: 10
+  sid: [sid]
+  atom: [atom]
 ```
 
-2. Extract key pivot points from the event:
-   - Process ID (PID) and Parent Process ID
-   - File path and command line
-   - User account
-   - Network IPs and domains (if present)
-   - File hashes (if present)
+**From a Detection**:
+```
+tool: get_detection
+parameters:
+  oid: [oid]
+  detection_id: [detection-id]
+```
+Extract the triggering event atom, sensor ID, and timestamps.
 
-3. Get sensor context:
+**From an LCQL Query**:
+```
+tool: run_lcql_query
+parameters:
+  oid: [oid]
+  query: [use generate_lcql_query first!]
+  limit: 100
+```
+
+**Sensor Context**:
 ```
 tool: get_sensor_info
 parameters:
@@ -132,52 +352,11 @@ parameters:
   sid: [sensor-id]
 ```
 
-### For Detection Starting Point
+### Process Investigation
 
-1. Get detection details using `get_detection` (NOT `get_historic_detections`):
-```
-tool: get_detection
-parameters:
-  oid: [oid]
-  detection_id: [detection-id]
-```
+**Direct Atom Navigation** (preferred when you have atoms):
 
-**Note:** Use `get_detection` when you have a specific detection ID. Use `get_historic_detections` when searching by time range.
-
-2. Extract the triggering event atom, sensor ID, and **timestamps** (remember to divide by 1000 for subsequent queries)
-3. Continue as event-based investigation
-
-### For LCQL Query Starting Point
-
-1. If query string provided, execute it:
-```
-tool: run_lcql_query
-parameters:
-  oid: [oid]
-  query: [lcql-query]
-  limit: 100
-```
-
-2. Analyze results to identify:
-   - Common pivot points across results
-   - Most significant event to use as anchor
-   - Patterns indicating related activity
-
----
-
-## Phase 3: Autonomous Investigation
-
-Investigate these dimensions around the starting event. Use your cybersecurity expertise to determine which are relevant based on the event type and context.
-
-### 3.1 Process Tree Investigation
-
-**When**: Starting event is NEW_PROCESS or has process context
-
-#### Direct Atom Navigation (Preferred when atoms are known)
-
-When you have atom identifiers, use direct atom-based navigation for faster, more precise results:
-
-**Get Parent Event**:
+Get Parent:
 ```
 tool: get_event_by_atom
 parameters:
@@ -186,7 +365,7 @@ parameters:
   atom: [routing.parent from current event]
 ```
 
-**Get All Child Events**:
+Get Children:
 ```
 tool: get_atom_children
 parameters:
@@ -195,240 +374,455 @@ parameters:
   atom: [routing.this from parent event]
 ```
 
-Repeat to build full ancestor/descendant tree (max 5 levels).
+**LCQL Queries** (when searching by attributes):
+- "Find the parent process of PID [pid] on sensor [sid] around time [timestamp]"
+- "Find all processes spawned by PID [pid] on sensor [sid] within [time_window]"
 
-#### LCQL-Based Navigation (When atoms are unknown)
+**What to Look For**:
+- Unusual parent-child (Office -> cmd/powershell)
+- Encoded command lines
+- Processes from suspicious paths (Temp, AppData, Public)
+- LOLBins with suspicious arguments
 
-**Parent Process Chain**:
-```
-Use generate_lcql_query with:
-"Find the parent process of PID [parent_pid] on sensor [sid] around time [timestamp]"
-```
-
-Repeat to build ancestor chain (max 5 levels).
-
-**Child Processes**:
-```
-Use generate_lcql_query with:
-"Find all processes spawned by PID [pid] on sensor [sid] within [time_window]"
-```
-
-**Flag suspicious patterns**:
-- Office apps spawning cmd/powershell
-- Services spawning user-space processes
-- Unusual parent-child relationships
-
-### 3.2 Network Activity Investigation
-
-**When**: Event contains network indicators or is network-related
+### Network Investigation
 
 **DNS Requests**:
-```
-Use generate_lcql_query with:
-"Find all DNS requests from sensor [sid] within [time_window]"
-```
+- "Find all DNS requests from sensor [sid] within [time_window]"
 
 **Network Connections**:
-```
-Use generate_lcql_query with:
-"Find network connections to IP [ip_address] from sensor [sid] within [time_window]"
-```
+- "Find network connections to IP [ip] from sensor [sid] within [time_window]"
+- "Find all outbound connections from process [process_name] on sensor [sid]"
 
-**Correlate DNS and Network**:
-- Match DNS resolutions to connection destinations
-- Identify C2-like patterns (periodic connections, unusual ports)
+**What to Look For**:
+- C2 patterns: periodic connections, unusual ports, beaconing
+- DNS-network correlation: resolution followed by connection
+- Connections to external IPs after suspicious process execution
 
-### 3.3 File Operations Investigation
+### File Investigation
 
-**When**: Event involves file paths or file operations
+**File Operations**:
+- "Find file creation events in directory [path] on sensor [sid] within [time_window]"
+- "Find events related to file hash [hash] across all sensors"
 
-**File Creation/Modification**:
-```
-Use generate_lcql_query with:
-"Find file creation events in directory [directory] on sensor [sid] within [time_window]"
-```
+**Persistence Paths**:
+- Windows: `\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`, `\Windows\System32\Tasks`
+- Linux: `/etc/cron.d`, `/etc/systemd/system`, `/etc/init.d`
 
-**Persistence Locations** (check these paths):
-- Windows: `\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`
-- Windows: `\Windows\System32\Tasks`
-- Linux: `/etc/cron.d`, `/etc/systemd/system`
+### User/Detection Correlation
 
-### 3.4 User Activity Investigation
+**User Activity**:
+- "Find all process executions by user [username] on sensor [sid] within [time_window]"
 
-**When**: Event has user context
-
-```
-Use generate_lcql_query with:
-"Find all process executions by user [username] on sensor [sid] within [time_window]"
-```
-
-**Look for**:
-- Privilege escalation attempts
-- Lateral movement indicators
-- Unusual authentication events
-
-### 3.5 Related Detections
-
-**Same Sensor** (remember: timestamps must be in **seconds**, not milliseconds):
+**Related Detections** (remember: divide timestamps by 1000!):
 ```
 tool: get_historic_detections
 parameters:
   oid: [oid]
   sid: [sid]
-  start: [window_start / 1000]    # Convert ms→s if from detection data
-  end: [window_end / 1000]        # Convert ms→s if from detection data
+  start: [timestamp_in_seconds]
+  end: [timestamp_in_seconds]
   limit: 50
 ```
 
-**Org-wide for Same IOCs**:
+**Org-wide IOC Search** (read `search-iocs.md` first!):
 ```
-Use generate_lcql_query with:
-"Find detections mentioning [ioc_value] across all sensors in last [time_window]"
+tool: search_iocs
+parameters:
+  oid: [oid]
+  ioc_type: "ip"           # Required: ip, domain, file_hash, file_path, file_name, user, etc.
+  ioc_value: "203.0.113.50" # Required: the IOC value to search
+  info_type: "locations"    # Required: "summary" for counts, "locations" for sensor details
 ```
 
 ---
 
-## Phase 4: Entity Extraction
+## Holistic Investigation Phases
 
-From all gathered events, extract and classify entities:
+**CRITICAL**: Process tree analysis is just the beginning. A complete investigation must explore ALL of these dimensions. Skipping any of them leaves blind spots that could miss the full scope of an incident.
 
-## Phase 4.5: Attack Classification & Tagging
+**YOU MUST EXECUTE ALL PHASES** - not just recommend them. Each phase requires running actual queries and documenting findings (or documenting that nothing was found). Your timeline is incomplete if you haven't:
+1. Hunted for initial access
+2. Checked host context (other detections, persistence, credentials)
+3. Searched org-wide for the same IOCs
+4. **Checked for lateral movement** (inbound AND outbound)
 
-Apply standardized tags to enable attack chain visualization and cross-timeline analysis.
+### Phase 1: Initial Access Hunting
 
-### Fetching MITRE ATT&CK Data
+**The Question**: How did this threat get here in the first place?
 
-Before applying MITRE tags, fetch the authoritative framework data:
+Don't stop at the suspicious process - trace backwards to find the entry point.
 
-**Source:** `https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json`
+**Investigation Steps**:
+1. **Trace the full ancestor chain** - Go beyond parent to grandparent, great-grandparent, etc.
+2. **Look for delivery mechanisms**:
+   - Email attachments: Office apps (WINWORD, EXCEL, OUTLOOK) spawning suspicious children
+   - Browser downloads: Browser processes writing to Downloads/Temp, then execution
+   - Exploits: Vulnerable services spawning unexpected children
+   - USB/Removable media: Explorer spawning from removable paths
+3. **Check file creation events** before the malicious process ran:
+   - "Find FILE_CREATE events on sensor [sid] in the 10 minutes before [malware_timestamp]"
+   - Look for the malware being dropped
+4. **Search for download activity**:
+   - "Find NETWORK_CONNECTIONS from browser processes on sensor [sid] before [timestamp]"
+   - "Find DNS requests on sensor [sid] before [timestamp]"
 
-**Parsing Instructions:**
-1. Fetch the STIX bundle JSON
-2. Filter objects where `type` = `attack-pattern` (techniques) or `type` = `x-mitre-tactic` (tactics)
-3. Extract:
-   - Technique ID: `external_references[].external_id` where `source_name` = `mitre-attack`
-   - Technique Name: `name`
-   - Tactic: `kill_chain_phases[].phase_name`
-4. Use this data to validate and suggest MITRE tags
+**What to Document**:
+- First malicious activity timestamp (timing:first-observed)
+- Delivery vector if identified (root-cause:phishing, root-cause:exploit, etc.)
+- Gap if initial access cannot be determined (document as acknowledged unknown)
 
-### Required Tags for Malicious/Suspicious Events
+### Phase 2: Host Context - What Else Was Happening?
 
-1. **Attack Phase Tag** (mandatory for malicious events):
-   - Determine which MITRE ATT&CK tactic this event represents
-   - Format: `phase:{tactic-name}` (e.g., `phase:initial-access`)
-   - Valid tactics: Fetch from STIX data `x-mitre-tactic` objects
+**The Question**: Is this an isolated event or part of broader activity on this host?
 
-2. **MITRE Technique Tag** (strongly recommended):
-   - Identify the specific technique observed
-   - Format: `mitre:{technique-id}` (e.g., `mitre:T1566`)
-   - Valid techniques: Fetch from STIX data `attack-pattern` objects
+**Investigation Steps**:
+1. **Get all detections on this host** around the incident time:
+   ```
+   tool: get_historic_detections
+   parameters:
+     oid: [oid]
+     sid: [sid]
+     start: [event_time_seconds - 3600]  # 1 hour before
+     end: [event_time_seconds + 3600]    # 1 hour after
+     limit: 100
+   ```
 
-3. **Timing Tags** (apply where relevant):
-   - `timing:first-observed` - earliest malicious activity
-   - `timing:pivot-point` - critical events in attack chain
-   - `timing:detection-trigger` - what triggered the investigation
+2. **Look for related suspicious activity**:
+   - "Find all NEW_PROCESS events on sensor [sid] in the hour around [timestamp]"
+   - Filter for suspicious paths: Temp, AppData, ProgramData, Public folders
+   - Filter for suspicious processes: powershell, cmd, wscript, cscript, mshta, certutil, etc.
 
-4. **Confidence Tag** (on entities and key events):
-   - `confidence:high` - confirmed through multiple sources
-   - `confidence:medium` - strong indicators
-   - `confidence:low` - needs further investigation
+3. **Check for persistence mechanisms being installed**:
+   - "Find REGISTRY events on sensor [sid] around [timestamp]" (look for Run keys, services)
+   - "Find FILE_CREATE in startup folders on sensor [sid]"
+   - "Find events related to scheduled tasks on sensor [sid]"
 
-### Optional Attribution Tags
+4. **Check for credential access**:
+   - "Find events accessing LSASS on sensor [sid]"
+   - "Find events accessing SAM or SECURITY registry hives on sensor [sid]"
 
-- `actor:{identifier}` - threat actor attribution (e.g., `actor:apt-29`)
-- `tool:{name}` - identified tooling (e.g., `tool:mimikatz`)
-- `impact:{type}` - observed impact (e.g., `impact:data-exfiltration`)
-- `root-cause:{cause}` - for initial access events (e.g., `root-cause:phishing`)
-- `scope:{extent}` - attack scope (e.g., `scope:domain-wide`)
-- `gap:{deficiency}` - defense gaps identified (e.g., `gap:no-mfa`)
+5. **Look for data staging/exfiltration**:
+   - "Find FILE_CREATE events for archives (.zip, .rar, .7z) on sensor [sid]"
+   - Unusual outbound data volumes
 
-See [Timeline Investigation Guide](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md) for complete tag format reference.
+**What to Document**:
+- Other suspicious activity on same host
+- Persistence mechanisms found
+- Evidence of credential theft
+- Any data access or staging
+
+### Phase 3: Org-Wide Scope Assessment
+
+**The Question**: Is this happening on other systems? How widespread is the compromise?
+
+**Investigation Steps**:
+1. **Search for the malware hash org-wide** (read `search-iocs.md` for full parameter details):
+   ```
+   tool: search_iocs
+   parameters:
+     oid: [oid]
+     ioc_type: "file_hash"
+     ioc_value: "[malware_sha256]"
+     info_type: "locations"
+   ```
+
+2. **Search for C2 IPs/domains org-wide** (one search per IOC type):
+   ```
+   tool: search_iocs
+   parameters:
+     oid: [oid]
+     ioc_type: "ip"
+     ioc_value: "[c2_ip]"
+     info_type: "locations"
+   ```
+   ```
+   tool: search_iocs
+   parameters:
+     oid: [oid]
+     ioc_type: "domain"
+     ioc_value: "[c2_domain]"
+     info_type: "locations"
+   ```
+
+3. **Search for the malware file path pattern org-wide**:
+   - "Find NEW_PROCESS events with FILE_PATH containing [suspicious_path_pattern] across all sensors"
+   - Example: If malware was at C:\Windows\Temp\svchost.exe, search for svchost.exe in Temp across all sensors
+
+4. **Search for the same command-line patterns**:
+   - "Find processes with similar command-line patterns across all sensors"
+   - Particularly for encoded PowerShell, unusual LOLBin arguments
+
+5. **Check for related detections org-wide**:
+   ```
+   tool: get_historic_detections
+   parameters:
+     oid: [oid]
+     # No sid - searches all sensors
+     start: [timestamp_seconds - 86400]  # 24 hours before
+     end: [timestamp_seconds + 3600]
+     limit: 200
+   ```
+   Filter results for same rule name or similar detection categories.
+
+**What to Document**:
+- List of all affected hosts
+- Timeline of when each was compromised (if determinable)
+- Common IOCs across hosts
+- scope:single-host or scope:multi-host or scope:domain-wide
+
+### Phase 4: Lateral Movement Analysis (MANDATORY)
+
+**The Question**: Did the attacker move between systems? Where did they come from? Where did they go?
+
+**THIS PHASE IS MANDATORY** - You MUST execute these queries and include the results in your timeline. Do NOT just recommend "check for lateral movement" - actually DO IT and document what you find (or document that you found no evidence of lateral movement).
+
+**Investigation Steps**:
+1. **Check for inbound connections to this host**:
+   - "Find NETWORK_CONNECTIONS with destination [internal_ip] from internal sources on sensor [sid]"
+   - Look for SMB (445), WinRM (5985/5986), RDP (3389), WMI/DCOM ports
+
+2. **Check for outbound lateral movement from this host**:
+   - "Find NETWORK_CONNECTIONS to internal IPs on ports 445, 3389, 5985 from sensor [sid]"
+   - These indicate potential lateral movement attempts
+
+3. **Look for remote execution indicators**:
+   - PsExec: Look for PSEXESVC service, pipes named \\.\pipe\psexesvc
+   - WMI: wmiprvse.exe spawning unusual processes
+   - WinRM: wsmprovhost.exe spawning processes
+   - RDP: tsvchost.exe activity, RDP connection events
+
+4. **Check authentication events**:
+   - "Find authentication events involving user [compromised_user] across all sensors"
+   - Look for the same account authenticating to multiple systems
+
+5. **Trace the infection path**:
+   - If this host was laterally accessed, find the source host
+   - If this host laterally moved to others, identify all targets
+
+**What to Document** (REQUIRED - include in timeline even if negative):
+- Source of lateral movement (if not patient zero)
+- Systems this host laterally accessed
+- Techniques used for lateral movement
+- MITRE tags: phase:lateral-movement, mitre:T1021.002 (SMB), mitre:T1021.001 (RDP), etc.
+- **If no lateral movement found**: Document this explicitly as a `finding` note: "No evidence of lateral movement detected. Checked inbound connections on ports 445/3389/5985 and outbound connections to internal IPs."
+
+### Phase 5: Synthesize the Full Picture
+
+After completing all phases, you should be able to answer:
+
+| Question | Your Answer | Queries Executed |
+|----------|-------------|------------------|
+| **Initial Access** | How did the threat enter? When? | Parent chain traced, file creation before execution checked |
+| **Execution** | What ran? How did it establish itself? | Process tree analyzed |
+| **Persistence** | Did it install persistence? Where? | Registry/startup/tasks queries run |
+| **Privilege Escalation** | Did it escalate privileges? How? | User context analyzed |
+| **Credential Access** | Were credentials stolen? Evidence? | LSASS/SAM access checked |
+| **Lateral Movement** | Did it spread? To where? From where? | **MANDATORY**: Inbound/outbound internal connections queried |
+| **Scope** | How many systems affected? | Org-wide IOC search executed |
+| **Current State** | Is it contained or ongoing? | Recent activity checked |
+| **Unknowns** | What couldn't you determine? | Documented as `question` notes |
+
+If you cannot answer a question, document it explicitly as an unknown in your timeline notes using `type: "question"`.
 
 ---
 
-| Entity Type | How to Extract | Example Values |
-|-------------|----------------|----------------|
+## Documenting the Timeline
+
+Build the timeline as you go. Don't wait until the end.
+
+### Document Your Investigation Process
+
+**Use notes liberally to document your investigation journey.** The timeline should tell the story of both:
+1. What happened (the attack/incident)
+2. How you investigated it (your process)
+
+**Add investigation notes for:**
+- Queries you ran and what they returned (or didn't return)
+- Hypotheses you formed and tested
+- Dead ends you encountered (e.g., "Searched for lateral movement on ports 445/3389/5985 - no connections found")
+- Tools or APIs that failed and how you worked around them
+- Reasoning for why you marked something benign vs suspicious
+
+**Example investigation notes:**
+```json
+{"type": "observation", "content": "Ran LCQL query for parent PID 2476 - no results found. Parent process may predate telemetry window."}
+{"type": "observation", "content": "Searched org-wide for C2 IP 35.232.8.38 using get_historic_detections - found second affected host desktop-c2a1841."}
+{"type": "finding", "content": "No lateral movement detected. Checked inbound/outbound connections on ports 445/3389/5985 between both affected hosts - no direct connections found."}
+{"type": "hypothesis", "content": "Both hosts may have been independently compromised via same phishing campaign rather than lateral spread."}
+```
+
+This documentation is valuable because:
+- Future analysts can understand what was already checked
+- It prevents duplicate investigation work
+- It explains gaps in findings (e.g., "couldn't find X because Y")
+- It provides accountability and audit trail
+
+### Event Records
+
+**Be inclusive** - add events to the timeline if you investigated them, regardless of verdict. Include:
+- Malicious events (confirmed threats)
+- Suspicious events (require further review)
+- Benign events that you investigated but cleared (explain why in relevance field)
+- Unknown events (insufficient context to determine)
+
+For each event you investigated:
+
+```json
+{
+  "atom": "[event-atom]",
+  "sid": "[sensor-id]",
+  "relevance": "[Why this event matters - be specific about what it reveals]",
+  "verdict": "[malicious|suspicious|benign|unknown]",
+  "tags": ["phase:[tactic]", "mitre:[technique-id]", "timing:[marker]"]
+}
+```
+
+### Entity Records
+
+For each IOC or entity of interest:
+
+```json
+{
+  "type": "[ip|domain|hash|user|host|file_path|process]",
+  "value": "[entity_value]",
+  "first_seen": "[unix_epoch_ms]",
+  "last_seen": "[unix_epoch_ms]",
+  "context": "Provenance: [how discovered]. TI: [threat intel if available].",
+  "verdict": "[malicious|suspicious|benign|unknown]",
+  "related_events": ["[atom_refs]"]
+}
+```
+
+**Valid Entity Types (from timeline.schema.json)**
+
+| Entity Type | How to Extract | Example |
+|-------------|----------------|---------|
 | `ip` | NETWORK_CONNECTIONS.DESTINATION.IP_ADDRESS, DNS responses | 203.0.113.50 |
 | `domain` | DNS_REQUEST.DOMAIN_NAME | malware-c2.example.com |
 | `hash` | NEW_PROCESS.HASH, FILE_CREATE.HASH | d41d8cd98f00b204... |
 | `user` | Event USER field | DOMAIN\administrator |
 | `host` | Routing hostname | SERVER01 |
+| `email` | Email addresses from logs or alerts | attacker@malicious.com |
 | `file_path` | FILE_PATH, COMMAND_LINE paths | C:\Users\Public\payload.exe |
 | `process` | Process names from investigation | powershell.exe, certutil.exe |
+| `url` | Full URLs from web traffic or command lines | https://malware.com/payload.exe |
+| `other` | Anything else that doesn't fit above | Registry key, mutex name, etc. |
 
-### Assign Verdicts
+### Verdicts
 
-Based on investigation context:
-
-| Verdict | Criteria |
-|---------|----------|
+| Verdict | When to Use |
+|---------|-------------|
 | `malicious` | Clear IOC match, known-bad behavior, confirmed threat |
 | `suspicious` | Unusual but not definitively malicious, requires review |
 | `benign` | Known-good, cleared by investigation, legitimate activity |
 | `unknown` | Insufficient context, requires further analysis |
 
+**Important**: `benign` is a valuable verdict, not a reason to exclude an event. If you investigated something because it looked suspicious but determined it was legitimate, add it to the timeline with verdict `benign` and explain your reasoning in the `relevance` field. This documents what was checked and prevents future analysts from re-investigating the same activity.
+
+**Example benign event:**
+```json
+{
+  "atom": "abc123...",
+  "sid": "sensor-id",
+  "relevance": "Initially suspicious: svchost.exe with unusual parent. Cleared: Parent is services.exe (PID 684), this is normal Windows service startup. Command line contains legitimate service flags.",
+  "verdict": "benign",
+  "tags": ["investigated", "cleared"]
+}
+```
+
+### Notes
+
+Use notes to capture your reasoning. Notes have a **type** field that must be one of the valid enum values.
+
+```json
+{
+  "type": "[observation|hypothesis|finding|conclusion|action_item|question]",
+  "content": "[Your note content]",
+  "timestamp": "[unix_epoch_ms]",
+  "related_events": ["[optional atom refs]"],
+  "related_detections": ["[optional detection ids]"],
+  "resolved": false  // Only for action_item and question types
+}
+```
+
+**IMPORTANT: Valid Note Types (from timeline.schema.json)**
+
+| Type | When to Use | Example |
+|------|-------------|---------|
+| `observation` | Raw facts observed during investigation | "Process rundll32.exe spawned without arguments at 19:39:10" |
+| `hypothesis` | Working theory to be tested | "Hypothesis: This may be Cobalt Strike based on the beaconing pattern" |
+| `finding` | Confirmed conclusion backed by evidence | "FINDING: Active C2 communication to 35.232.8.38 confirmed via 60+ network connections" |
+| `conclusion` | Final assessment of the investigation | "CONCLUSION: This is a true positive - active malware with C2 capability" |
+| `action_item` | Recommended next steps (can mark resolved=true when done) | "ACTION: Isolate host immediately to stop C2 communication" |
+| `question` | Unanswered questions (can mark resolved=true when answered) | "QUESTION: How was the malware initially delivered? No evidence of phishing or exploit found." |
+
+**Invalid types will cause API errors.** Do NOT use types like "recommendation", "summary", "ioc", etc.
+
+**Best Practice Note Structure**:
+- **Attack Chain Note**: Document the full attack chain as a `finding`
+- **IOC Summary**: List all IOCs as a `finding`
+- **Recommendations**: Use `action_item` type (NOT "recommendation")
+- **Unknowns**: Document gaps as `question` type
+
+### Attack Chain Note
+
+Document the attack chain when you've identified it:
+
+```
+ATTACK CHAIN: [Phase 1] -> [Phase 2] -> [Phase 3]
+Techniques: [T1566] -> [T1059.001] -> [T1547.001]
+Dwell Time: [first observed] to [last observed]
+```
+
+### MITRE ATT&CK Tagging (Recommended)
+
+When you can confidently identify techniques, apply tags:
+
+- **Phase tags**: `phase:initial-access`, `phase:execution`, `phase:persistence`, etc.
+- **Technique tags**: `mitre:T1566`, `mitre:T1059.001`, etc.
+- **Timing tags**: `timing:first-observed`, `timing:pivot-point`, `timing:detection-trigger`
+- **Confidence tags**: `confidence:high`, `confidence:medium`, `confidence:low`
+
+For MITRE reference, fetch from: `https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json`
+
+See [Timeline Investigation Guide](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md) for complete tag format reference.
+
 ---
 
-## Phase 5: Build Timeline Record
+## Timeline Record Structure
 
-Construct the Timeline Hive record with all gathered information:
+The complete timeline record:
 
 ```json
 {
   "name": "[timeline_name]",
   "description": "Investigation starting from [starting_point_description]",
   "status": "in_progress",
-  "priority": "[derived_priority]",
-  "events": [
-    {
-      "atom": "[event-atom]",
-      "sid": "[sensor-id]",
-      "relevance": "[why this event matters to the investigation]",
-      "verdict": "[malicious|suspicious|benign|unknown]",
-      "tags": ["phase:[tactic]", "mitre:[technique-id]", "timing:[marker]"]
-    }
-  ],
+  "priority": "[critical|high|medium|low|informational]",
+  "events": [...],
   "detections": [
     {
       "detection_id": "[detection-id]",
       "tags": ["phase:[tactic]", "mitre:[technique-id]"]
     }
   ],
-  "entities": [
-    {
-      "type": "[ip|domain|hash|user|host|file_path|process]",
-      "value": "[entity_value]",
-      "first_seen": "[unix_epoch_ms]",
-      "last_seen": "[unix_epoch_ms]",
-      "context": "Provenance: [how discovered]. TI: [threat intel correlation].",
-      "verdict": "[verdict]",
-      "related_events": ["[atom_refs]"]
-    }
-  ],
-  "notes": [
-    {
-      "type": "finding",
-      "content": "ATTACK CHAIN: [Phase 1] → [Phase 2] → [Phase 3]\nTechniques: [T1xxx] → [T1xxx] → [T1xxx]",
-      "timestamp": "[unix_epoch_ms]"
-    }
-  ],
-  "summary": "[executive summary of investigation findings]"
+  "entities": [...],
+  "notes": [...],
+  "summary": "[executive summary - what happened, impact, current state]"
 }
 ```
 
 ### Priority Assignment
 
-Derive priority from investigation findings:
-
-| Priority | Findings |
-|----------|----------|
-| `critical` | Active C2, ransomware indicators, credential theft, active data exfiltration |
-| `high` | Malicious file drops, suspicious process chains, persistence mechanisms |
-| `medium` | Unusual but not clearly malicious activity, potential false positives |
+| Priority | Indicators |
+|----------|------------|
+| `critical` | Active C2, ransomware, credential theft, ongoing exfiltration |
+| `high` | Malware drops, persistence mechanisms, lateral movement attempts |
+| `medium` | Unusual but not clearly malicious, potential false positives |
 | `low` | Minor anomalies, informational findings |
 | `informational` | Clean investigation, no threats found |
 
-### Timeline Naming Convention
+### Timeline Naming
 
 If user doesn't provide a name, auto-generate:
 `[threat-indicator]-[hostname]-[date]`
@@ -436,24 +830,36 @@ If user doesn't provide a name, auto-generate:
 Examples:
 - `encoded-powershell-SERVER01-2024-01-20`
 - `c2-communication-WORKSTATION5-2024-01-20`
-- `detection-triage-abc123-2024-01-20`
 
 ---
 
-## Phase 6: Present and Save
+## Present and Save
 
-### Present Findings to User
+### When the Story is Complete
 
-Display a summary including:
-- Number of events collected
-- Number of detections found
-- Entities extracted with verdicts
-- Key findings/observations
-- Assigned priority and rationale
+You know you're done when:
+- You can explain what happened from start to finish
+- You've identified the initial access (or documented why you couldn't)
+- You understand the scope (which systems, users, data)
+- You know the current state (contained? ongoing?)
+- Every claim is backed by evidence
+- Remaining unknowns are documented
+
+### Present Findings
+
+Summarize for the user:
+1. **What happened**: The attack narrative
+2. **When**: Timeline of key events
+3. **What was affected**: Systems, users, data
+4. **Current state**: Ongoing? Contained?
+5. **Key findings**: Evidence that tells the story
+6. **Entities of interest**: IOCs discovered with verdicts
+7. **Confidence level**: How certain are you?
+8. **Gaps**: What couldn't you determine?
 
 ### Get User Confirmation
 
-Ask the user to confirm:
+Always confirm with user before saving:
 1. Timeline name is acceptable
 2. Findings are complete
 3. Ready to save
@@ -470,70 +876,6 @@ parameters:
 
 ---
 
-## Example Usage
-
-### Example 1: Start from Suspicious Process Event
-
-**User**: "Investigate this event: atom abc123 on sensor xyz-456 in org c7e8f940-..."
-
-**Investigation Flow**:
-1. Retrieve event details → PowerShell with encoded command
-2. Query parent process → Excel spawned PowerShell (suspicious!)
-3. Query child processes → certutil download, regsvr32 execution
-4. Query network → Connections to 203.0.113.50
-5. Query DNS → Requests to malware-c2.com
-6. Extract entities: IP, domain, file paths
-7. Build timeline with 12 events, 2 detections, 4 entities
-8. Present summary and save to timeline hive
-
-**Result**: Timeline documenting full attack chain from phishing to C2 communication.
-
-### Example 2: Start from Detection Alert
-
-**User**: "Create a timeline from detection det-789 in org c7e8f940-..."
-
-**Investigation Flow**:
-1. Get detection details → Ransomware behavior detected
-2. Extract triggering event → FILE_CREATE of suspicious .exe
-3. Investigate process that created file → wscript.exe from email attachment
-4. Check for lateral movement → No other sensors affected
-5. Build timeline with key events and entities
-
-### Example 3: Start from LCQL Query
-
-**User**: "Build a timeline from this query: -24h | * | NEW_PROCESS | event.COMMAND_LINE contains '-enc'"
-
-**Investigation Flow**:
-1. Run query, find 5 encoded PowerShell executions
-2. Group by sensor, investigate each execution context
-3. Identify common C2 infrastructure across events
-4. Build timeline spanning multiple sensors
-5. Document coordinated attack pattern
-
----
-
-## Investigation Limits
-
-To prevent runaway queries:
-- **Max events per query**: 100
-- **Max pivot iterations**: 5
-- **Time window bounds**: Default ±1 hour, max ±24 hours
-- **Track visited atoms**: Avoid circular investigation
-
----
-
-## LCQL Query Generation
-
-**IMPORTANT**: Always use `generate_lcql_query` to create queries. Never write LCQL manually.
-
-Example natural language queries:
-- "Find all processes spawned by PID 1234 on sensor abc-456 in the last hour"
-- "Show DNS requests to domains containing 'malware' from sensor xyz"
-- "Find network connections to IP 203.0.113.50"
-- "Get file creation events in the user's temp directory"
-
----
-
 ## Related Skills
 
 - `lookup-lc-doc` - For LCQL syntax and event schema reference
@@ -543,4 +885,18 @@ Example natural language queries:
 ## Reference
 
 - **Timeline Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
+- **Timeline JSON Schema**: The authoritative schema defining valid fields, types, and enums is at `legion_config_hive/hives/schemas/timeline.schema.json`
 - **expand_timeline function**: [Expand Timeline](../limacharlie-call/functions/expand-timeline.md)
+- **Timeline Investigation Guide**: [Investigation Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md)
+
+## Schema Quick Reference
+
+**Status values**: `new`, `in_progress`, `pending_review`, `escalated`, `closed_false_positive`, `closed_true_positive`
+
+**Priority values**: `critical`, `high`, `medium`, `low`, `informational`
+
+**Verdict values**: `unknown`, `benign`, `suspicious`, `malicious`
+
+**Entity types**: `ip`, `domain`, `hash`, `user`, `host`, `email`, `file_path`, `process`, `url`, `other`
+
+**Note types**: `observation`, `hypothesis`, `finding`, `conclusion`, `action_item`, `question`
