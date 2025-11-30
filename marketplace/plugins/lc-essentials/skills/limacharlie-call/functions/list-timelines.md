@@ -173,7 +173,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 - **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
 - **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`

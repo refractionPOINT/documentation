@@ -1,70 +1,15 @@
+# list_user_orgs
 
-# List User Organizations
+Retrieve all LimaCharlie organizations accessible to the authenticated user.
 
-Retrieve all LimaCharlie organizations accessible to the current authenticated user.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| (none) | - | - | User-level operation, no org ID required |
 
-Use this skill when the user needs to:
-- View all organizations they have access to
-- Switch between multiple organizations
-- Audit organization access and permissions
-- Find organization IDs for API operations
-- Manage multi-tenant or MSP deployments
-- Review customer organization list
+## Returns
 
-Common scenarios:
-- MSPs managing multiple customer organizations
-- Users with access to multiple business units
-- Finding specific organization by name
-- Auditing user access across organizations
-- Preparing organization selection menus
-- Documenting organization inventory
-
-## What This Skill Does
-
-This skill lists all organizations accessible to the authenticated user. It calls the LimaCharlie API at the user level (not organization-scoped) to retrieve the complete list of orgs the user can access, along with organization names and metadata. Results can be filtered and sorted.
-
-## Required Information
-
-Before calling this skill, gather:
-
-**NOTE**: This is a **user-level operation** that does not require a specific organization ID.
-
-No required parameters (user-level query)
-
-Optional parameters:
-- **filter**: Filter string to match organization names (optional)
-- **sort_by**: Field to sort results by (optional)
-- **sort_order**: Sort direction "asc" or "desc" (optional)
-- **with_names**: Include organization names (default: true)
-
-## How to Use
-
-### Step 1: Validate Parameters
-
-This is a user-level query - minimal validation required.
-Optional filters and sorting can refine results.
-
-### Step 2: Call the Tool
-
-Use the `lc_call_tool` MCP tool from the `limacharlie` server:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
-)
-```
-
-**Tool Details:**
-- Tool name: `list_user_orgs`
-- Required parameters: None (user-level operation)
-- Optional parameters: None
-
-### Step 3: Handle the Response
-
-The tool returns a response with:
 ```json
 {
   "orgs": [
@@ -83,178 +28,16 @@ The tool returns a response with:
 }
 ```
 
-**Success:**
-- Response contains array of organization objects
-- Each org includes OID, name, and user's role
-- Total count may be included for pagination
-- Empty array means user has no organization access
-- Results respect filter and sort parameters
+## Example
 
-**Common Errors:**
-- **401 Unauthorized**: Authentication issue
-- **403 Forbidden**: User context issue (rare)
-- **500 Server Error**: API service issue - retry or contact support
-
-### Step 4: Format the Response
-
-Present the result to the user:
-- List organizations with names and IDs
-- Show user's role in each organization
-- Group by role level if multiple orgs
-- Highlight currently active organization
-- Format for easy selection or reference
-- Show total count if large list
-
-## Example Usage
-
-### Example 1: List all accessible organizations
-
-User request: "Show me all my organizations"
-
-Steps:
-1. Call tool to list user orgs:
 ```
-mcp__limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
-)
+lc_call_tool(tool_name="list_user_orgs", parameters={})
 ```
 
-Expected response:
-```json
-{
-  "orgs": [
-    {
-      "oid": "c7e8f940-1111-2222-3333-444455556666",
-      "name": "Acme Production",
-      "role": "owner"
-    },
-    {
-      "oid": "c7e8f940-7777-8888-9999-aaabbbcccddd",
-      "name": "Acme Development",
-      "role": "owner"
-    },
-    {
-      "oid": "c7e8f940-eeee-ffff-0000-111122223333",
-      "name": "Customer XYZ",
-      "role": "admin"
-    }
-  ],
-  "total": 3
-}
-```
+## Notes
 
-Present to user:
-```
-Your LimaCharlie Organizations
-
-You have access to 3 organizations:
-
-Organizations You Own:
-1. Acme Production
-   ID: c7e8f940-1111-2222-3333-444455556666
-   Role: Owner
-
-2. Acme Development
-   ID: c7e8f940-7777-8888-9999-aaabbbcccddd
-   Role: Owner
-
-Organizations with Admin Access:
-3. Customer XYZ
-   ID: c7e8f940-eeee-ffff-0000-111122223333
-   Role: Admin
-
-Use the organization ID for API operations.
-```
-
-### Example 2: Find specific organization by name
-
-User request: "What's the org ID for 'Customer XYZ'?"
-
-Steps:
-1. List orgs:
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
-)
-```
-
-Expected response:
-```json
-{
-  "orgs": [
-    {
-      "oid": "c7e8f940-eeee-ffff-0000-111122223333",
-      "name": "Customer XYZ",
-      "role": "admin"
-    }
-  ]
-}
-```
-
-Present to user:
-```
-Found Organization: Customer XYZ
-
-Organization ID: c7e8f940-eeee-ffff-0000-111122223333
-Your Role: Admin
-Status: Active
-
-This ID can be used for API calls and CLI operations.
-```
-
-### Example 3: List MSP customer organizations
-
-User request: "Show me all our customer organizations"
-
-Steps:
-1. List all orgs and filter/group by type
-2. Present customer orgs separately
-
-Present to user:
-```
-MSP Customer Organizations
-
-You manage 15 customer organizations:
-
-Active Customers (12):
-1. ABC Corp Security (oid: c7e8f940-aaaa-...)
-2. DEF Industries (oid: c7e8f940-bbbb-...)
-3. GHI Enterprises (oid: c7e8f940-cccc-...)
-...
-
-Trial Customers (3):
-13. JKL Startup (oid: c7e8f940-dddd-...)
-14. MNO Tech (oid: c7e8f940-eeee-...)
-15. PQR Solutions (oid: c7e8f940-ffff-...)
-
-Internal Organizations (2):
-- Your Production (oid: c7e8f940-0000-...)
-- Your Development (oid: c7e8f940-1111-...)
-
-Total: 17 organizations
-```
-
-## Additional Notes
-
-- **This is a user-level operation that does not require a specific organization ID**
-- This skill is the starting point for discovering organization IDs
-- This is not organization-specific
-- Results show only orgs the user has explicit access to
-- Role levels: owner, admin, user (permissions vary)
-- Large result sets support pagination via offset/limit
-- Filtering helps find specific organizations quickly
-- Organization names can be changed without affecting OIDs
-- OIDs are permanent unique identifiers
-- Use OIDs for all API operations and automation
-- Some operations require owner or admin role
-- For MSPs: This lists all customer organizations
-- Consider caching org list for performance in UIs
-
-## Reference
-
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
-
-For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (ListUserOrgs function)
-For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterListUserOrgs)
+- **Does not require an organization ID** - user-level operation
+- Use this to discover OIDs before calling other functions
+- Role levels: owner, admin, user
+- OIDs are permanent unique identifiers (org names can change)
+- For MSPs: lists all customer organizations

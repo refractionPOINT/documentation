@@ -257,7 +257,7 @@ Next steps:
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization.go` (CreateOrganization function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterCreateOrg)

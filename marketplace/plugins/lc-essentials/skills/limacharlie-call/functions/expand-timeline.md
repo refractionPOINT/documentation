@@ -256,7 +256,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 ## Reference
 
-See [CALLING_API.md](../../CALLING_API.md) for details on using `lc_call_tool`.
+See [CALLING_API.md](../../../CALLING_API.md) for details on using `lc_call_tool`.
 
 - **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
 - **MCP Implementation**: `../lc-mcp-server/internal/tools/historical/timeline.go`

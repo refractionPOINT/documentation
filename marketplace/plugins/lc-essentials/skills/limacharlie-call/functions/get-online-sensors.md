@@ -1,64 +1,15 @@
+# get_online_sensors
 
-# Get Online Sensors
+Retrieve all sensors currently online and connected to the LimaCharlie platform.
 
-Retrieve a list of all sensors that are currently online and actively connected to the LimaCharlie platform.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 
-Use this skill when the user needs to:
-- Check which sensors are currently online
-- Get real-time fleet availability status
-- Identify which sensors can receive live commands
-- Determine sensor connectivity before investigation
-- Monitor sensor health and uptime
-- Count active vs inactive sensors
+## Returns
 
-Common scenarios:
-- "Which sensors are currently online?"
-- "Show me all active sensors"
-- "How many sensors are connected right now?"
-- "Can I run commands on sensor xyz-123?" (check if it's online first)
-- "List sensors available for live investigation"
-
-## What This Skill Does
-
-This skill retrieves all sensors in the organization that are currently online and actively connected. It returns the sensor IDs that are currently active.
-
-## Required Information
-
-Before calling this skill, gather:
-
-**⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-
-## How to Use
-
-### Step 1: Validate Parameters
-
-Ensure you have:
-1. Valid organization ID (oid)
-
-### Step 2: Call the Tool
-
-Use the `lc_call_tool` MCP tool from the `limacharlie` server:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_online_sensors",
-  parameters={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
-  }
-)
-```
-
-**Tool Details:**
-- Tool name: `get_online_sensors`
-- Required parameters:
-  - `oid`: Organization ID
-
-### Step 3: Handle the Response
-
-The tool returns data directly:
 ```json
 {
   "sensor-id-1": true,
@@ -67,97 +18,18 @@ The tool returns data directly:
 }
 ```
 
-**Success:**
-- The response maps sensor IDs to boolean values
-- Only online sensors are returned with `true` status
-- Empty response means no sensors are currently online
+Returns a map of all online sensor IDs with `true` values. Empty map means no sensors online.
 
-**Common Errors:**
-- **403 Forbidden**: Insufficient permissions to check sensor status
-- **500 Server Error**: Rare, retry or check LimaCharlie service status
+## Example
 
-### Step 4: Format the Response
-
-Present the result to the user:
-- Display count of online sensors vs total sensors
-- List online sensor IDs
-- Optionally include hostname if sensor list is enriched
-- Indicate when the status was checked
-- Consider sorting by hostname or sensor ID
-
-**Example formatted output:**
 ```
-Online Sensors: 12 of 15 total
-
-Currently Active:
-- xyz-123 (SERVER01)
-- abc-456 (WORKSTATION-05)
-- def-789 (ubuntu-web-01)
-- ghi-012 (macbook-pro-15)
-...
-
-Status checked at: 2024-01-20 14:30:00 UTC
+lc_call_tool(tool_name="get_online_sensors", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+})
 ```
 
-## Example Usage
+## Notes
 
-### Example 1: Check all online sensors
-
-User request: "Which sensors are currently online?"
-
-Steps:
-1. Get organization ID from context
-2. Call tool:
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_online_sensors",
-  parameters={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
-  }
-)
-```
-3. Display online sensors
-
-Expected response:
-```json
-{
-  "sensor-1": true,
-  "sensor-3": true
-}
-```
-
-### Example 2: Count active vs inactive sensors
-
-User request: "How many sensors are connected right now?"
-
-Steps:
-1. Get online sensors using the tool call
-2. Count sensors in the response
-3. Optionally call list_sensors to get total count
-4. Report summary:
-```
-Fleet Status:
-- Online: 12 sensors
-- Offline: 3 sensors
-- Total: 15 sensors
-- Availability: 80%
-```
-
-## Additional Notes
-
-- Sensor online status is determined by recent heartbeat/check-in activity
-- A sensor is typically considered online if it checked in within the last few minutes
-- Online status can change rapidly as sensors connect/disconnect
-- This check is real-time and reflects current connectivity
-- For individual sensor status, use `is_online` skill
-- For full sensor details, use `get_sensor_info` skill
-- The tool efficiently checks all sensors in a single operation
-- Sensors behind firewalls or with network issues may appear offline even if running
-- Consider the sensor's `alive` timestamp from `list_sensors` for historical context
-
-## Reference
-
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
-
-For the Go SDK implementation, check: `../go-limacharlie/limacharlie/sensor.go`
-For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/core/core.go`
+- Efficient single call to check all sensors
+- For individual sensor status, use `is_online`
+- For detailed sensor info with hostnames, use `list_sensors` with `online_only: true`

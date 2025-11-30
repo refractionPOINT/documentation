@@ -1,62 +1,40 @@
+# get_packages
 
-# Get Packages
+Retrieve installed software packages from a sensor.
 
-Retrieve the list of installed software packages from a specific sensor.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
+| sid | UUID | Yes | Sensor ID (must be online) |
 
-Use this skill when the user needs to:
-- List all installed software packages
-- Perform software inventory
-- Identify vulnerable software versions
-- Detect unauthorized applications
-- Audit installed software
-- Check patch levels and versions
+## Returns
 
-Common scenarios:
-- "Show me all installed software on this sensor"
-- "List packages on this Linux system"
-- "What version of Apache is installed?"
-- "Check installed software on sensor abc-123"
-
-## What This Skill Does
-
-This skill sends a live command to retrieve all installed software packages. On Linux, this includes RPM/DEB packages. On Windows, this includes installed programs. On macOS, this includes installed applications.
-
-## Required Information
-
-Before calling this skill, gather:
-- **oid**: Organization ID
-- **sid**: Sensor ID (UUID)
-
-The sensor must be online.
-
-### Step 2: Send the Sensor Command
-
-Use the `lc_call_tool` MCP tool:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_packages",
-  parameters={
-    "oid": "[organization-id]",
-    "sid": "[sensor-id]"
-  }
-)
+```json
+{
+  "packages": [
+    {
+      "name": "openssh-server",
+      "version": "8.9p1-3ubuntu0.1",
+      "architecture": "amd64"
+    }
+  ]
+}
 ```
 
-**Technical Details:**
-- Executes the `os_packages` sensor command
-- Timeout: Up to 10 minutes
-- Returns all installed packages/applications
+## Example
 
-### Step 3: Handle the Response
+```
+lc_call_tool(tool_name="get_packages", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "sid": "abc-123-def-456"
+})
+```
 
-Response contains package information including names, versions, and installation details. Cross-reference with vulnerability databases to identify outdated or vulnerable software.
+## Notes
 
-## Reference
-
-For the MCP tool, this uses the dedicated `get_packages` tool via `lc_call_tool`.
-
-For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
-For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`
+- Live operation (up to 10 min timeout)
+- Linux: RPM/DEB packages; Windows: installed programs; macOS: applications
+- Cross-reference with vulnerability databases
+- Useful for software inventory and patch assessment

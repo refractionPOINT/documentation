@@ -329,7 +329,7 @@ applying version tags to individual sensors.
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For sensor versioning documentation, see: `docs/limacharlie/doc/Sensors/Endpoint_Agent/endpoint-agent-versioning-and-upgrades.md`
 For the API reference, see: https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg

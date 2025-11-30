@@ -154,6 +154,6 @@ Result: Playbook is active and will automatically isolate sensors on critical de
 
 ## Reference
 
-For the API implementation, see [CALLING_API.md](../../CALLING_API.md).
+For the API implementation, see [CALLING_API.md](../../../CALLING_API.md).
 
 For playbook syntax and actions, use the `lookup-lc-doc` skill to search LimaCharlie documentation.

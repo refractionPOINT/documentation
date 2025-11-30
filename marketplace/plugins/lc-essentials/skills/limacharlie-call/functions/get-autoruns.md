@@ -1,62 +1,41 @@
+# get_autoruns
 
-# Get Autoruns
+Retrieve autorun/startup entries showing persistence mechanisms on a sensor.
 
-Retrieve autorun entries (startup items) from a specific sensor, showing all persistence mechanisms.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
+| sid | UUID | Yes | Sensor ID (must be online) |
 
-Use this skill when the user needs to:
-- List all startup/autorun entries
-- Detect malware persistence mechanisms
-- Identify suspicious startup items
-- Audit system autorun configuration
-- Investigate how malware maintains presence
-- Check registry run keys and startup folders
+## Returns
 
-Common scenarios:
-- "Show me all startup items on this sensor"
-- "List autorun entries on this Windows system"
-- "What programs start automatically?"
-- "Check for malicious persistence on sensor abc-123"
-
-## What This Skill Does
-
-This skill sends a live command to retrieve all autorun entries, including registry run keys, startup folders, scheduled tasks, services, and other persistence locations.
-
-## Required Information
-
-Before calling this skill, gather:
-- **oid**: Organization ID
-- **sid**: Sensor ID (UUID)
-
-The sensor must be online.
-
-### Step 2: Send the Sensor Command
-
-Use the `lc_call_tool` MCP tool:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_autoruns",
-  parameters={
-    "oid": "[organization-id]",
-    "sid": "[sensor-id]"
-  }
-)
+```json
+{
+  "autoruns": [
+    {
+      "location": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+      "name": "SecurityHealth",
+      "path": "C:\\Windows\\System32\\SecurityHealthSystray.exe",
+      "signed": true
+    }
+  ]
+}
 ```
 
-**Technical Details:**
-- Executes the `os_autoruns` sensor command
-- Timeout: Up to 10 minutes
-- Returns all autorun/startup entries
+## Example
 
-### Step 3: Handle the Response
+```
+lc_call_tool(tool_name="get_autoruns", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "sid": "abc-123-def-456"
+})
+```
 
-Response contains autorun entry information. Highlight suspicious entries, unsigned executables in autorun locations, or entries pointing to unusual file paths.
+## Notes
 
-## Reference
-
-For the MCP tool, this uses the dedicated `get_autoruns` tool via `lc_call_tool`.
-
-For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
-For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`
+- Live operation (up to 10 min timeout)
+- Includes registry run keys, startup folders, scheduled tasks, services
+- Primary location for malware persistence
+- Look for unsigned executables or unusual paths

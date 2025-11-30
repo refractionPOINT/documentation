@@ -554,7 +554,7 @@ Configuration is ready. Deploy with set-external-adapter.
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For the Go SDK implementation, check: `/home/maxime/goProject/github.com/refractionPOINT/go-limacharlie/limacharlie/validation.go` (ValidateUSPMapping method, lines 294-376)
 

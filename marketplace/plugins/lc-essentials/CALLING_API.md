@@ -26,6 +26,41 @@ lc_call_tool
 LimaCharlie Platform
 ```
 
+## Core Concepts
+
+### Organization ID (OID)
+
+The OID is a **UUID** (e.g., `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name.
+
+- Use `list_user_orgs` to get the OID from an org name
+- All functions require OID except: `list_user_orgs`, `create_org`, `get_platform_names`
+
+### LCQL Query Generation
+
+**Never write LCQL queries manually.** LCQL uses unique pipe-based syntax validated against org-specific schemas. Manual queries will fail or produce incorrect results.
+
+Always use this workflow:
+1. `generate_lcql_query` - Convert natural language to LCQL
+2. `run_lcql_query` - Execute with the generated query string
+
+### Timestamp Formats
+
+| API | Format | Example |
+|-----|--------|---------|
+| `get_historic_events`, `get_historic_detections` | **Seconds** (10 digits) | `1699574400` |
+| Detection/event data | Milliseconds (13 digits) | `1699574400000` |
+
+**Always divide by 1000** when using timestamps from detection data in historic queries.
+
+### Common Errors
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `missing required parameter` | Required field not provided | Check function docs for required params |
+| `no such entity` | Resource doesn't exist | Verify OID/SID/resource name |
+| `permission denied` | Insufficient API permissions | Check API key scopes |
+| `validation failed` | Invalid config/syntax | Use validation tools first |
+
 ## Basic Parameters
 
 The sub-agent receives:

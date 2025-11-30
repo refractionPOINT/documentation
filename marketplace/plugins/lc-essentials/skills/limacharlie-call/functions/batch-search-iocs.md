@@ -140,7 +140,7 @@ Read feed, convert to batch format, search all at once.
 
 ## Reference
 
-See [CALLING_API.md](../../CALLING_API.md).
+See [CALLING_API.md](../../../CALLING_API.md).
 
 SDK: `../go-limacharlie/limacharlie/insight.go`
 MCP: `../lc-mcp-server/internal/tools/historical/historical.go`

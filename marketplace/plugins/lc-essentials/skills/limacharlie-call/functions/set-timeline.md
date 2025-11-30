@@ -284,7 +284,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 - **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
 - **Timeline Investigation Guide**: [Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md)

@@ -745,6 +745,12 @@ Use notes to capture your reasoning. Notes have a **type** field that must be on
 }
 ```
 
+**IMPORTANT: Timestamp for Notes**
+
+The `timestamp` field should be the **current time in milliseconds** (Unix epoch) when you create the note - NOT an event timestamp from the investigation. This records when the analyst made the observation/finding, creating an audit trail of the investigation process itself.
+
+To get the current timestamp in milliseconds, use: `date +%s%3N` (bash) or `Date.now()` (JavaScript).
+
 **IMPORTANT: Valid Note Types (from timeline.schema.json)**
 
 | Type | When to Use | Example |

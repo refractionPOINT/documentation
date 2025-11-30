@@ -136,6 +136,6 @@ Results: 12 events found
 
 ## Reference
 
-For the API implementation, see [CALLING_API.md](../../CALLING_API.md).
+For the API implementation, see [CALLING_API.md](../../../CALLING_API.md).
 
 For LCQL syntax, use the `lookup-lc-doc` skill to search LimaCharlie documentation.

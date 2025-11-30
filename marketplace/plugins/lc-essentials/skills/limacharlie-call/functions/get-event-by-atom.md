@@ -191,6 +191,6 @@ User has a detection and wants to see the triggering event:
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/historical/historical.go`

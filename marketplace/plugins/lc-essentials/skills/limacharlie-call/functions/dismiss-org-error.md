@@ -211,7 +211,7 @@ Run get-org-errors anytime to check for new issues.
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (DismissOrgError function)
 For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterDismissOrgError)
