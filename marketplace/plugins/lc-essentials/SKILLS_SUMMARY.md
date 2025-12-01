@@ -85,6 +85,9 @@ Successfully created **122 new SKILL.md files** for the lc-essentials plugin, br
 #### Detection Engineering (1 skill)
 - **detection-engineering**: Expert Detection Engineer assistant for end-to-end D&R rule development (understand → research → build → test → deploy). Uses iterative test-refine cycles, integrates with `lookup-lc-doc` for syntax help, and orchestrates `dr-replay-tester` sub-agent for multi-org parallel testing.
 
+#### Infrastructure as Code (1 skill)
+- **limacharlie-iac**: Manage LimaCharlie configurations using ext-git-sync compatible Infrastructure as Code. Initialize IaC repos, add/remove tenants, manage global and tenant-specific configurations, import existing rules from tenants, promote tenant rules to global. Compatible with LimaCharlie's ext-git-sync extension for automated deployment.
+
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
 - list-dr-general-rules
