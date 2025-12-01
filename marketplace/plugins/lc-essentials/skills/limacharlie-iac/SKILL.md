@@ -497,7 +497,10 @@ After initializing the repo and adding tenants, each org needs ext-git-sync conf
 
 ### Per-Organization Setup
 
-1. **Enable ext-git-sync extension** in each org
+1. **Subscribe to ext-git-sync extension** in each org:
+   ```
+   subscribe_to_extension(oid, "ext-git-sync")
+   ```
 
 2. **Create SSH deploy key:**
    ```bash
@@ -506,21 +509,86 @@ After initializing the repo and adding tenants, each org needs ext-git-sync conf
 
 3. **Add public key to GitHub** (Settings → Deploy keys → Allow write access)
 
-4. **Store private key in LC Secret Manager** for each org
+4. **Store private key in LC Secret Manager** for each org:
+   ```
+   set_secret(oid, "git-sync-ssh-key", <private_key_content>)
+   ```
 
-5. **Configure ext-git-sync** in LC:
-   - SSH Key: Select from Secret Manager
-   - Repository: `git@github.com:your-org/your-repo.git`
-   - Branch: `main`
-   - Enable "Recurring Apply" for automatic sync
+5. **Configure ext-git-sync** using the exact config schema below
+
+### ext-git-sync Config Schema
+
+**CRITICAL: Use these exact field names when configuring ext-git-sync:**
+
+```yaml
+# Required fields
+repo_url: "git@github.com:your-org/your-repo.git"    # NOT "repository"
+branch: "main"
+conf_root: "orgs/<oid>/index.yaml"                   # Path to org's config entry point
+
+# SSH authentication (recommended)
+ssh_key_source: "secret"                              # Use LC Secret Manager
+ssh_key_secret_name: "git-sync-ssh-key"              # Name of secret containing private key
+
+# Alternative: inline SSH key (not recommended for production)
+# ssh_key_source: "inline"
+# ssh_key: "<private_key_content>"
+```
+
+**API Call Example:**
+```
+set_extension_config(
+  oid: "<org-oid>",
+  extension_name: "ext-git-sync",
+  config_data: {
+    "repo_url": "git@github.com:your-org/your-repo.git",
+    "branch": "main",
+    "conf_root": "orgs/<oid>/index.yaml",
+    "ssh_key_source": "secret",
+    "ssh_key_secret_name": "git-sync-ssh-key"
+  }
+)
+```
 
 ### Shared SSH Key Option
 
 For MSSP scenarios, you can use ONE deploy key across all orgs:
 1. Create single SSH key
 2. Add to GitHub repo
-3. Store same private key in each org's Secret Manager
+3. Store same private key in each org's Secret Manager (same secret name)
 4. Configure ext-git-sync in each org pointing to same repo
+
+### Verify ext-git-sync Setup
+
+After configuration, verify the setup is working:
+
+1. **Check extension subscription:**
+   ```
+   list_extension_configs(oid)
+   → Should show ext-git-sync in the list
+   ```
+
+2. **Verify secret exists:**
+   ```
+   list_secrets(oid)
+   → Should include "git-sync-ssh-key"
+   ```
+
+3. **Check extension config:**
+   ```
+   get_extension_config(oid, "ext-git-sync")
+   → Verify repo_url, branch, conf_root are correct
+   ```
+
+4. **Check for org errors:**
+   ```
+   get_org_errors(oid)
+   → Look for ext-git-sync errors (SSH auth failures, repo access issues)
+   ```
+
+5. **Trigger manual sync (optional):**
+   - In LC UI: Extensions → ext-git-sync → "Sync Now"
+   - Check org errors afterward for any issues
 
 ---
 
@@ -685,14 +753,51 @@ Use consistent naming: `[category]-[description]`
 
 ## Troubleshooting
 
+### General Issues
+
 | Issue | Solution |
 |-------|----------|
 | Include path not found | Check relative path from index.yaml location |
 | YAML syntax error | Validate with `python -c "import yaml; yaml.safe_load(open('file.yaml'))"` |
 | Org not in manifest | Run "add tenant" command |
-| ext-git-sync not syncing | Check SSH key permissions, verify repo URL |
 | Rule not appearing | Check `enabled: true` in usr_mtd |
 | Rule exists in LC but not IaC | Use "import rule" command |
+
+### ext-git-sync Specific Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| "repo_url is required" | Wrong field name | Use `repo_url`, not `repository` |
+| "ssh_key is required" | Secret doesn't exist or wrong name | Verify secret exists with `list_secrets(oid)` |
+| "conf_root not found" | Wrong path in config | Use full path: `orgs/<oid>/index.yaml` |
+| SSH auth failure | Deploy key not added or wrong key | Verify public key is in GitHub deploy keys |
+| "Host key verification failed" | First connection to GitHub | Add GitHub to known_hosts or use `ssh -o StrictHostKeyChecking=no` |
+| Sync runs but no changes | Branch mismatch | Verify `branch` field matches your repo's default branch |
+| Extension not in list | Not subscribed | Run `subscribe_to_extension(oid, "ext-git-sync")` |
+
+### Debugging ext-git-sync
+
+1. **Check org errors first:**
+   ```
+   get_org_errors(oid)
+   ```
+   This shows recent errors from ext-git-sync including SSH failures and config issues.
+
+2. **Verify the complete config:**
+   ```
+   get_extension_config(oid, "ext-git-sync")
+   ```
+   Ensure all required fields are present: `repo_url`, `branch`, `conf_root`, `ssh_key_source`, `ssh_key_secret_name`
+
+3. **Test SSH key locally:**
+   ```bash
+   ssh -i ~/.ssh/your-key -T git@github.com
+   ```
+   Should return: "Hi username! You've successfully authenticated..."
+
+4. **Verify GitHub deploy key permissions:**
+   - Must have "Allow write access" checked if using bidirectional sync
+   - Key must be added to the specific repository, not account-level
 
 ---
 
