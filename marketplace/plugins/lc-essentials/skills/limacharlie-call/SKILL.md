@@ -100,8 +100,9 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `list_outputs` / `add_output` / `delete_output` - Data outputs
 - `list_secrets` / `set_secret` / `delete_secret` - Secrets
 - `list_lookups` / `set_lookup` / `query_lookup` - Lookups
+- `list_payloads` / `create_payload` / `get_payload` / `delete_payload` - Payloads
 
-## Available Functions (128)
+## Available Functions (133)
 
 ### Organization Management (8)
 - `list_user_orgs` → `./functions/list-user-orgs.md`
@@ -118,7 +119,7 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `create_api_key` → `./functions/create-api-key.md`
 - `delete_api_key` → `./functions/delete-api-key.md`
 
-### Sensor Operations (12)
+### Sensor Operations (13)
 - `list_sensors` → `./functions/list-sensors.md`
 - `get_sensor_info` → `./functions/get-sensor-info.md`
 - `delete_sensor` → `./functions/delete-sensor.md`
@@ -126,6 +127,7 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `get_online_sensors` → `./functions/get-online-sensors.md`
 - `add_tag` → `./functions/add-tag.md`
 - `remove_tag` → `./functions/remove-tag.md`
+- `list_sensor_tags` → `./functions/list-sensor-tags.md`
 - `is_isolated` → `./functions/is-isolated.md`
 - `isolate_network` → `./functions/isolate-network.md`
 - `rejoin_network` → `./functions/rejoin-network.md`
@@ -237,6 +239,12 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 ### Artifacts (2)
 - `list_artifacts` → `./functions/list-artifacts.md`
 - `get_artifact` → `./functions/get-artifact.md`
+
+### Payloads (4)
+- `list_payloads` → `./functions/list-payloads.md`
+- `create_payload` → `./functions/create-payload.md`
+- `get_payload` → `./functions/get-payload.md`
+- `delete_payload` → `./functions/delete-payload.md`
 
 ### Event Schemas (5)
 - `get_event_schema` → `./functions/get-event-schema.md`
