@@ -7,7 +7,7 @@ Permanently delete a secret from secure storage.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Secret name (case-sensitive) |
+| secret_name | string | Yes | Secret name (case-sensitive) |
 
 ## Returns
 
@@ -22,7 +22,7 @@ Empty response indicates success.
 ```
 lc_call_tool(tool_name="delete_secret", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "old-webhook-key"
+  "secret_name": "old-webhook-key"
 })
 ```
 

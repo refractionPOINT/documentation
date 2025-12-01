@@ -7,8 +7,8 @@ Store a secret securely. Secrets can be referenced in outputs, D&R rules, and in
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Secret name (alphanumeric, hyphens, underscores) |
-| value | string | Yes | The secret value to store |
+| secret_name | string | Yes | Secret name (alphanumeric, hyphens, underscores) |
+| secret_value | string | Yes | The secret value to store |
 
 ## Returns
 
@@ -24,8 +24,8 @@ Store a secret securely. Secrets can be referenced in outputs, D&R rules, and in
 ```
 lc_call_tool(tool_name="set_secret", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "webhook-api-key",
-  "value": "sk_live_abc123def456"
+  "secret_name": "webhook-api-key",
+  "secret_value": "sk_live_abc123def456"
 })
 ```
 
