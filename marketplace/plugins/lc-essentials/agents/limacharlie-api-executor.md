@@ -386,6 +386,18 @@ Execute LimaCharlie API call:
 - **No Cross-Org Operations**: Only work with the OID provided
 - **Time Limits**: Data availability checks limited to <30 days (API constraint)
 
+### CRITICAL: Timestamp Calculation
+
+**❌ NEVER calculate epoch timestamps manually** - LLMs produce incorrect values (e.g., 2024 instead of 2025).
+
+**✅ ALWAYS use bash before making API calls with time parameters:**
+```bash
+start=$(date -d '7 days ago' +%s)
+end=$(date +%s)
+```
+
+Then use `$start` and `$end` in your API call parameters.
+
 ## Currency and Billing Amount Handling
 
 **CRITICAL: Billing API returns monetary amounts in CENTS, not dollars.**

@@ -29,6 +29,36 @@ The OID is a **UUID** (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), NOT the org
 - Detection data contains **milliseconds** (13 digits)
 - **Always divide by 1000** when using timestamps from detection data
 
+### CRITICAL: Calculating Timestamps
+
+**❌ NEVER calculate epoch timestamps manually** - LLMs are fundamentally bad at this and WILL produce wrong values (e.g., outputting 2024 timestamps when meaning 2025).
+
+**✅ ALWAYS use bash `date` commands:**
+```bash
+# Current time (seconds)
+date +%s
+
+# 1 hour ago
+date -d '1 hour ago' +%s
+
+# 7 days ago
+date -d '7 days ago' +%s
+
+# 30 days ago
+date -d '30 days ago' +%s
+
+# Specific date (Jan 15, 2025 00:00 UTC)
+date -d '2025-01-15 00:00:00 UTC' +%s
+```
+
+**Example workflow:**
+```bash
+# User asks for "last 7 days of detections"
+start=$(date -d '7 days ago' +%s)
+end=$(date +%s)
+# Use $start and $end in API calls
+```
+
 ## How to Use
 
 All API operations go through the `limacharlie-api-executor` sub-agent:

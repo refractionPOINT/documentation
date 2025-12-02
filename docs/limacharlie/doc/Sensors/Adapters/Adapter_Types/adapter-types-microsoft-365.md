@@ -4,6 +4,8 @@ Microsoft 365, formerly Office 365, is a product family of productivity software
 
 Microsoft 365 events can be ingested in LimaCharlie and observed as the `office365` platform.
 
+> **Note on naming:** The platform identifier `office365` reflects the legacy product name. Microsoft renamed Office 365 to Microsoft 365 in 2020.
+
 ## Adapter Deployment
 
 Microsoft 365 events are ingested via a cloud-to-cloud Adapter configured specifically to review M365 events. When creating an Adapter, the following data points are required:
@@ -18,12 +20,17 @@ Microsoft 365 events are ingested via a cloud-to-cloud Adapter configured specif
 
   + Options include:
 
-    - `Audit.AzureActiveDirectory`
-    - `Audit.Exchange`
-    - `Audit.SharePoint`
-    - `Audit.General`
-    - `DLP.All`
+    | Content Type | Description |
+    |--------------|-------------|
+    | `Audit.AzureActiveDirectory` | User and admin activities in Azure AD: sign-ins, password changes, group/user management, app consent, directory role changes |
+    | `Audit.Exchange` | Mailbox activities: message access, send/receive, folder operations, delegate permissions, mailbox audit events |
+    | `Audit.SharePoint` | SharePoint and OneDrive activities: file access, downloads, sharing, site administration, permissions changes |
+    | `Audit.General` | Activities from other workloads: Microsoft Teams, Power BI, Dynamics 365, Yammer, Stream, and other M365 services |
+    | `DLP.All` | Data Loss Prevention events: policy matches, alerts when sensitive data is detected in documents or emails |
+
   + *Default is all of the above*
+
+For the complete list of audit activities by workload, see [Microsoft's audit log activities documentation](https://learn.microsoft.com/en-us/purview/audit-log-activities).
 
 If creating a Microsoft 365 Adapter via the Web UI, the helper form will navigate you through providing these values.
 

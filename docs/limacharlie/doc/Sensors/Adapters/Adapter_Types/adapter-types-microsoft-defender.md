@@ -8,6 +8,55 @@ Documentation for creating an event hub can be found here [here](https://learn.m
 
 Telemetry Platform: `msdefender`
 
+## Data Collected
+
+### API vs Event Hub Comparison
+
+| Method | Data Source | What You Get | Use Case |
+|--------|-------------|--------------|----------|
+| **Defender API** | Microsoft Graph API | Security Alerts only | Alert-focused monitoring |
+| **Azure Event Hub** | Defender Streaming API | Raw telemetry events | Full visibility into endpoint activity |
+
+### Microsoft Defender API
+
+The API adapter polls Microsoft Graph's `/security/alerts_v2` endpoint every 30 seconds. This provides **security alerts** from Microsoft Defender products including:
+
+- Defender for Endpoint
+- Defender for Office 365
+- Defender for Identity
+- Defender for Cloud Apps
+
+These are curated, high-fidelity alerts that Microsoft has already correlated and enriched.
+
+For alert schema details, see [Microsoft's alerts_v2 API documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-alert).
+
+### Azure Event Hub (Streaming API)
+
+When using Event Hub with Defender, you receive **raw telemetry** via the Defender Streaming API. This includes detailed event tables such as:
+
+- **DeviceProcessEvents** - Process creation and execution
+- **DeviceNetworkEvents** - Network connections
+- **DeviceFileEvents** - File operations
+- **DeviceLogonEvents** - Authentication events
+- **DeviceRegistryEvents** - Registry modifications
+- **DeviceEvents** - Miscellaneous security events
+
+This provides full endpoint telemetry for custom detection rules and threat hunting.
+
+For the complete list of supported streaming event types, see [Microsoft's Defender XDR streaming event types documentation](https://learn.microsoft.com/en-us/defender-xdr/supported-event-types).
+
+### Defender API Configuration
+
+To collect data via the Microsoft Defender API, configure an App Registration in Azure with the following permission:
+
+- `SecurityAlert.Read.All`
+
+Then create a Defender adapter in LimaCharlie with:
+
+- Tenant ID
+- Client ID
+- Client Secret
+
 ## Deployment Configurations
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.

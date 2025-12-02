@@ -12,6 +12,40 @@ This Adapter allows you to connect to an Azure Event Hub to fetch structured dat
 
 Documentation for creating an event hub can be found here [here](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 
+## Configuring Data Streams
+
+When using Azure Event Hub, you must configure the source service to stream data to your Event Hub. The data you receive depends entirely on what you configure in Azure.
+
+### For Entra ID (`azure_ad`)
+
+Configure **Azure AD Diagnostic Settings** to stream to your Event Hub:
+
+1. In Azure Portal, go to **Entra ID** > **Diagnostic settings**
+2. Add a diagnostic setting and select your Event Hub
+3. Choose which logs to stream (SignInLogs, AuditLogs, etc.)
+
+See: [Stream Entra ID logs to Event Hub](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub)
+
+### For Microsoft Defender (`msdefender`)
+
+Configure **Defender Streaming API** to export raw telemetry:
+
+1. In Microsoft Defender portal, go to **Settings** > **Streaming API**
+2. Add your Event Hub connection
+3. Select which event types to stream (DeviceProcessEvents, DeviceNetworkEvents, etc.)
+
+See: [Defender XDR streaming event types](https://learn.microsoft.com/en-us/defender-xdr/supported-event-types)
+
+### For Azure Monitor (`azure_monitor`)
+
+Configure **Diagnostic Settings** on individual Azure resources:
+
+1. Navigate to the Azure resource you want to monitor
+2. Go to **Diagnostic settings** and add a setting
+3. Select your Event Hub and choose logs/metrics to stream
+
+See: [Stream Azure platform logs to Event Hub](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/stream-monitoring-data-event-hubs)
+
 ## Deployment Configurations
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
