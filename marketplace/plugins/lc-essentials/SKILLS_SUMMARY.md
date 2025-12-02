@@ -2,12 +2,11 @@
 
 ## Overview
 
-Successfully created **124 new SKILL.md files** for the lc-essentials plugin, bringing the total to **125 skills** (including the existing lookup-lc-doc skill, mssp-reporting skill, detection-engineering skill, and timeline-creation skill).
-
-**Sub-Agents**: 3 specialized agents for parallel operations:
+**Sub-Agents**: 4 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
 - `sensor-health-reporter`: Check sensor health for a single org
 - `dr-replay-tester`: Test D&R rules via replay for a single org
+- `org-reporter`: Collect comprehensive reporting data for a single org
 
 ## What Was Created
 
@@ -41,8 +40,8 @@ Successfully created **124 new SKILL.md files** for the lc-essentials plugin, br
 #### Threat Intelligence & Analysis (1 skill)
 - threat-report-evaluation
 
-#### MSSP & Multi-Tenant Reporting (1 skill)
-- mssp-reporting
+#### Multi-Tenant Reporting (1 skill)
+- reporting
 
 #### Event Schemas & Platform Info (6 skills)
 - get-event-schema
@@ -87,6 +86,9 @@ Successfully created **124 new SKILL.md files** for the lc-essentials plugin, br
 
 #### Timeline Creation & Investigation (1 skill)
 - **timeline-creation**: Automated SOC analyst that creates investigation timelines from security events, detections, or LCQL queries. Autonomously investigates related activity (parent/child processes, network connections, file operations), extracts IOCs, and builds Timeline Hive records for SOC working reports.
+
+#### Infrastructure as Code (1 skill)
+- **limacharlie-iac**: Manage LimaCharlie configurations using ext-git-sync compatible Infrastructure as Code. Initialize IaC repos, add/remove tenants, manage global and tenant-specific configurations, import existing rules from tenants, promote tenant rules to global. Compatible with LimaCharlie's ext-git-sync extension for automated deployment.
 
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
