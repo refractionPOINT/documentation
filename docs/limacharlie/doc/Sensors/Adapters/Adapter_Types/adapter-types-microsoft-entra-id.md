@@ -6,6 +6,41 @@ The Entra ID API Adapter currently receives risk detection alerts, as generated 
 
 Entra ID events are recognized as the `azure_ad` platform.
 
+> **Note on naming:** The platform identifier `azure_ad` reflects the legacy product name (Azure Active Directory). Microsoft renamed this product to Microsoft Entra ID in 2023.
+
+## Data Collected
+
+### API vs Event Hub vs Webhook Comparison
+
+| Method | Data Source | What You Get |
+|--------|-------------|--------------|
+| **Entra ID API** | Microsoft Graph API | Identity Protection Risk Detections only |
+| **Azure Event Hub** | Azure Diagnostic Settings | Whatever logs you configure (sign-in, audit, etc.) |
+| **Webhook** | Your configuration | Whatever you send to the webhook URL |
+
+### Entra ID API
+
+The API adapter polls Microsoft Graph's `/identityProtection/riskDetections` endpoint every 30 seconds. This provides **Identity Protection risk detection alerts** including:
+
+- Risky sign-ins (unfamiliar location, impossible travel, etc.)
+- Compromised credentials
+- Leaked credentials
+- Anonymous IP usage
+- Malware-linked IP addresses
+
+For the full list of risk detection types, see [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/id-protection/concept-identity-protection-risks).
+
+### Azure Event Hub
+
+When using Event Hub, you receive whatever data you configure Azure to stream. You must configure **Azure Diagnostic Settings** in Entra ID to send logs to your Event Hub. Common log types include:
+
+- **Sign-in logs** - Interactive and non-interactive authentication events
+- **Audit logs** - Directory changes (user/group management, app registrations)
+- **Provisioning logs** - User provisioning to SaaS apps
+- **Risky users/sign-ins** - Identity Protection detections (alternative to API)
+
+See [Microsoft's documentation on streaming Entra ID logs](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
+
 ## Adapter Deployment
 
 Microsoft Entra ID logs are ingested into LimaCharlie via:
