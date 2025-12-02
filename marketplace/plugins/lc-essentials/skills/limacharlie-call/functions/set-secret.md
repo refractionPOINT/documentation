@@ -42,5 +42,6 @@ slack_api_token: [secret:slack-token]
 - Secrets are encrypted at rest
 - Setting an existing name updates the value (no confirmation)
 - Secret values are never logged after storage
+- Multi-line values are supported (newlines and special characters are preserved)
 - Use descriptive names: `service-type-credential`
 - Related: `list_secrets`, `get_secret`, `delete_secret`
