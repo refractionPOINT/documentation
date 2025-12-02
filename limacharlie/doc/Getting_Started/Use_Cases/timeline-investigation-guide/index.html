@@ -12,7 +12,7 @@
         <meta name="author" content="refractionPOINT">
       
       
-        <link rel="canonical" href="https://refractionpoint.github.io/documentation/limacharlie/doc/Getting_Started/Use_Cases/incident-response/">
+        <link rel="canonical" href="https://refractionpoint.github.io/documentation/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Incident Response - LimaCharlie Documentation</title>
+        <title>Timeline Investigation Guide - LimaCharlie Documentation</title>
       
     
     
@@ -153,7 +153,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#incident-response" class="md-skip">
+        <a href="#timeline-investigation-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -188,7 +188,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Incident Response
+              Timeline Investigation Guide
             
           </span>
         </div>
@@ -1893,25 +1893,469 @@
   
 
 
-<h1 id="incident-response">Incident Response<a class="headerlink" href="#incident-response" title="Anchor link to this section">&para;</a></h1>
-<p>LimaCharlie provides incident response teams with a powerful, centralized solution that unifies threat visibility across diverse data sources, streamlines detection capabilities, enhances threat hunting and analysis, and enables instant deployment. IR teams can respond to incidents with unparalleled speed, accuracy, and effectiveness.</p>
-<h4 id="incident-response-problems">Incident response problems<a class="headerlink" href="#incident-response-problems" title="Anchor link to this section">&para;</a></h4>
+<h1 id="timeline-investigation-guide">Timeline Investigation Guide<a class="headerlink" href="#timeline-investigation-guide" title="Anchor link to this section">&para;</a></h1>
+<p>This guide provides opinionated best practices for SOC analysts using LimaCharlie Timelines to document and encode security investigations. By following these conventions, you enable attack chain visualization, cross-timeline analysis, and consistent reporting.</p>
+<h2 id="tag-format-specification">Tag Format Specification<a class="headerlink" href="#tag-format-specification" title="Anchor link to this section">&para;</a></h2>
+<p>Use colon-separated tags to categorize events, detections, and entities within your timeline. This section defines the format patterns - actual values are either format-based (you define them) or fetched dynamically from authoritative sources.</p>
+<h3 id="mitre-attck-tags-dynamic">MITRE ATT&amp;CK Tags (Dynamic)<a class="headerlink" href="#mitre-attck-tags-dynamic" title="Anchor link to this section">&para;</a></h3>
+<p>MITRE ATT&amp;CK tags should be validated against the authoritative MITRE STIX data rather than hardcoded lists.</p>
+<p><strong>Authoritative Source:</strong> https://github.com/mitre-attack/attack-stix-data</p>
+<p><strong>Tag Formats:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phase:{tactic-name}</code></td>
+<td>Attack phase aligned with MITRE tactic</td>
+<td><code>phase:initial-access</code></td>
+</tr>
+<tr>
+<td><code>mitre:{technique-id}</code></td>
+<td>Specific MITRE ATT&amp;CK technique</td>
+<td><code>mitre:T1566</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fetching Valid Values at Runtime:</strong></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>URL: https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Parsing:
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>1. Tactics: Filter objects where type=&quot;x-mitre-tactic&quot;
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   - Use x_mitre_shortname for phase tag values
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>2. Techniques: Filter objects where type=&quot;attack-pattern&quot;
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   - Extract external_references[] where source_name=&quot;mitre-attack&quot;
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   - Use external_id for mitre: tag values (e.g., T1566)
+</span></code></pre></div>
+<h3 id="operational-tags-format-based">Operational Tags (Format-Based)<a class="headerlink" href="#operational-tags-format-based" title="Anchor link to this section">&para;</a></h3>
+<p>These tags follow a consistent format pattern. You define the values based on your investigation context.</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Format</th>
+<th>Description</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Timing</strong></td>
+<td><code>timing:{marker}</code></td>
+<td>Investigation timing markers</td>
+<td><code>timing:first-observed</code>, <code>timing:pivot-point</code>, <code>timing:detection-trigger</code></td>
+</tr>
+<tr>
+<td><strong>Confidence</strong></td>
+<td><code>confidence:{level}</code></td>
+<td>Analyst confidence in findings</td>
+<td><code>confidence:high</code>, <code>confidence:medium</code>, <code>confidence:low</code></td>
+</tr>
+<tr>
+<td><strong>Actor</strong></td>
+<td><code>actor:{identifier}</code></td>
+<td>Threat actor attribution</td>
+<td><code>actor:apt-29</code>, <code>actor:ransomware-lockbit</code>, <code>actor:nation-state</code></td>
+</tr>
+<tr>
+<td><strong>Tool</strong></td>
+<td><code>tool:{name}</code></td>
+<td>Identified attack tools</td>
+<td><code>tool:cobalt-strike</code>, <code>tool:mimikatz</code>, <code>tool:psexec</code></td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td><code>impact:{type}</code></td>
+<td>Observed or potential impact</td>
+<td><code>impact:data-exfiltration</code>, <code>impact:ransomware</code>, <code>impact:credential-compromise</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td><code>scope:{extent}</code></td>
+<td>Attack scope</td>
+<td><code>scope:single-host</code>, <code>scope:subnet</code>, <code>scope:domain-wide</code></td>
+</tr>
+<tr>
+<td><strong>Root Cause</strong></td>
+<td><code>root-cause:{cause}</code></td>
+<td>Initial access method</td>
+<td><code>root-cause:phishing</code>, <code>root-cause:vuln-exploit</code>, <code>root-cause:credential-reuse</code></td>
+</tr>
+<tr>
+<td><strong>Defense Gap</strong></td>
+<td><code>gap:{deficiency}</code></td>
+<td>Security control failures</td>
+<td><code>gap:no-mfa</code>, <code>gap:missing-detection</code>, <code>gap:no-segmentation</code></td>
+</tr>
+<tr>
+<td><strong>Asset</strong></td>
+<td><code>asset:{classification}</code></td>
+<td>Business asset classification</td>
+<td><code>asset:crown-jewels</code>, <code>asset:pci-scope</code>, <code>asset:external-facing</code></td>
+</tr>
+<tr>
+<td><strong>Customer</strong></td>
+<td><code>customer:{name}</code></td>
+<td>MSSP customer identifier</td>
+<td><code>customer:acme-corp</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="attack-chain-visualization">Attack Chain Visualization<a class="headerlink" href="#attack-chain-visualization" title="Anchor link to this section">&para;</a></h2>
+<p>Use <code>phase:</code> tags chronologically to visualize attack progression through MITRE ATT&amp;CK tactics:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[phase:initial-access] → [phase:execution] → [phase:persistence] → [phase:credential-access] → [phase:lateral-movement] → [phase:exfiltration]
+</span></code></pre></div>
+<h3 id="timing-markers">Timing Markers<a class="headerlink" href="#timing-markers" title="Anchor link to this section">&para;</a></h3>
+<p>Apply timing tags to key events:</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>When to Apply</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timing:first-observed</code></td>
+<td>Earliest confirmed malicious activity</td>
+</tr>
+<tr>
+<td><code>timing:pivot-point</code></td>
+<td>Critical decision points in the attack chain</td>
+</tr>
+<tr>
+<td><code>timing:detection-trigger</code></td>
+<td>Event/detection that initiated the investigation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-attack-chain-tags">Example: Attack Chain Tags<a class="headerlink" href="#example-attack-chain-tags" title="Anchor link to this section">&para;</a></h3>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;events&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-001&quot;</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:initial-access&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1566&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;timing:first-observed&quot;</span><span class="p">],</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User opened phishing attachment&quot;</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-002&quot;</span><span class="p">,</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:execution&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1059&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;timing:pivot-point&quot;</span><span class="p">],</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Encoded PowerShell executed from macro&quot;</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-003&quot;</span><span class="p">,</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:credential-access&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1003&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;tool:mimikatz&quot;</span><span class="p">],</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LSASS memory access detected&quot;</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="p">}</span>
+</span></code></pre></div>
+<hr />
+<h2 id="entity-enrichment-best-practices">Entity Enrichment Best Practices<a class="headerlink" href="#entity-enrichment-best-practices" title="Anchor link to this section">&para;</a></h2>
+<h3 id="ioc-provenance">IOC Provenance<a class="headerlink" href="#ioc-provenance" title="Anchor link to this section">&para;</a></h3>
+<p>Document how entities were discovered and validated in the <code>context</code> field:</p>
+<p><strong>Pattern:</strong> <code>Provenance: [how discovered]. Validation: [how confirmed]. Attribution: [threat intel correlation].</code></p>
+<p><strong>Example:</strong>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ip&quot;</span><span class="p">,</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;203.0.113.50&quot;</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provenance: Extracted from C2 beacon traffic. Validation: Cross-referenced with TI feed (58/72 VirusTotal). Attribution: Matches APT29 infrastructure per CISA AA24-001.&quot;</span><span class="p">,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<h3 id="verdict-assignment">Verdict Assignment<a class="headerlink" href="#verdict-assignment" title="Anchor link to this section">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>malicious</code></td>
+<td>Confirmed IOC match, known-bad behavior, validated threat</td>
+</tr>
+<tr>
+<td><code>suspicious</code></td>
+<td>Anomalous but not definitively malicious, requires review</td>
+</tr>
+<tr>
+<td><code>benign</code></td>
+<td>Cleared by investigation, legitimate activity</td>
+</tr>
+<tr>
+<td><code>unknown</code></td>
+<td>Insufficient context, further analysis needed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="entity-context-templates">Entity Context Templates<a class="headerlink" href="#entity-context-templates" title="Anchor link to this section">&para;</a></h3>
+<p><strong>For IPs:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Provenance: [discovered in which event type]. Geo: [country/ASN]. TI: [threat intel match]. Historical: [seen before in org?].
+</span></code></pre></div></p>
+<p><strong>For Hashes:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Provenance: [file name and path]. AV: [detection ratio]. Sandbox: [behavior summary]. First seen: [date].
+</span></code></pre></div></p>
+<p><strong>For Domains:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Provenance: [DNS query or URL]. Registration: [age, registrar]. TI: [threat intel match]. Resolution: [IP addresses].
+</span></code></pre></div></p>
+<hr />
+<h2 id="note-taking-templates">Note-Taking Templates<a class="headerlink" href="#note-taking-templates" title="Anchor link to this section">&para;</a></h2>
+<p>Use structured note types for consistent documentation:</p>
+<h3 id="observation-notes">Observation Notes<a class="headerlink" href="#observation-notes" title="Anchor link to this section">&para;</a></h3>
+<p>Record raw facts without interpretation:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>[TIMESTAMP] [HOST] [EVENT_TYPE]
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Observed: [description of what was seen]
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Key data: [relevant field values]
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>Related atoms: [list of event atoms]
+</span></code></pre></div></p>
+<h3 id="hypothesis-notes">Hypothesis Notes<a class="headerlink" href="#hypothesis-notes" title="Anchor link to this section">&para;</a></h3>
+<p>Document working theories:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>HYPOTHESIS: [statement]
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Supporting evidence:
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>- [evidence 1]
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>- [evidence 2]
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>Tests to validate:
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>1. [query or action to confirm/refute]
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>2. [additional validation step]
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>Alternative explanations:
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>- [alternative 1]
+</span></code></pre></div></p>
+<h3 id="finding-notes">Finding Notes<a class="headerlink" href="#finding-notes" title="Anchor link to this section">&para;</a></h3>
+<p>Document confirmed discoveries:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>FINDING: [definitive statement]
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Evidence:
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>- [primary evidence]
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>- [corroborating evidence]
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>Impact:
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>- Affected systems: [list]
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>- Data at risk: [description]
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>Confidence: [high/medium/low]
+</span></code></pre></div></p>
+<h3 id="attack-chain-summary-note">Attack Chain Summary Note<a class="headerlink" href="#attack-chain-summary-note" title="Anchor link to this section">&para;</a></h3>
+<p>Document the full attack narrative:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ATTACK CHAIN:
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>[Phase 1] → [Phase 2] → [Phase 3] → ...
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>Techniques: [T1566] → [T1059] → [T1003] → ...
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>Dwell time: [hours/days from first access to detection]
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>Root cause: [initial access method]
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>Defense gaps: [what failed]
+</span></code></pre></div></p>
+<hr />
+<h2 id="investigation-workflow">Investigation Workflow<a class="headerlink" href="#investigation-workflow" title="Anchor link to this section">&para;</a></h2>
+<h3 id="status-transitions">Status Transitions<a class="headerlink" href="#status-transitions" title="Anchor link to this section">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>new</code></td>
+<td>Timeline just created, investigation not started</td>
+</tr>
+<tr>
+<td><code>in_progress</code></td>
+<td>Active investigation underway</td>
+</tr>
+<tr>
+<td><code>pending_review</code></td>
+<td>Analyst completed, awaiting peer review</td>
+</tr>
+<tr>
+<td><code>escalated</code></td>
+<td>Requires senior analyst or management attention</td>
+</tr>
+<tr>
+<td><code>closed_false_positive</code></td>
+<td>Confirmed benign, documented rationale</td>
+</tr>
+<tr>
+<td><code>closed_true_positive</code></td>
+<td>Confirmed incident, remediation complete</td>
+</tr>
+</tbody>
+</table>
+<h3 id="closure-criteria">Closure Criteria<a class="headerlink" href="#closure-criteria" title="Anchor link to this section">&para;</a></h3>
+<p><strong>For <code>closed_false_positive</code>:</strong>
+- [ ] Benign explanation documented in conclusion
+- [ ] Finding note with FP rationale
+- [ ] Consider FP rule if pattern is common</p>
+<p><strong>For <code>closed_true_positive</code>:</strong>
+- [ ] All action item notes resolved
+- [ ] Containment/eradication verified
+- [ ] Root cause identified
+- [ ] Summary field completed
+- [ ] Conclusion field completed
+- [ ] All entities have verdicts assigned</p>
+<hr />
+<h2 id="summary-and-conclusion-fields">Summary and Conclusion Fields<a class="headerlink" href="#summary-and-conclusion-fields" title="Anchor link to this section">&para;</a></h2>
+<h3 id="summary-field-executive-audience">Summary Field (Executive Audience)<a class="headerlink" href="#summary-field-executive-audience" title="Anchor link to this section">&para;</a></h3>
+<p>Write for non-technical stakeholders:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>On [date], [attack type] was detected on [target]. The attacker [brief action summary].
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Impact: [what was affected]. Status: [current state]. Attribution: [if known].
+</span></code></pre></div></p>
+<p><strong>Example:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>On November 15, 2024, a targeted spearphishing attack compromised a Finance department workstation.
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>The attacker harvested credentials and moved laterally to 15 servers, exfiltrating approximately 50GB
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>of financial data over 72 hours. Containment was achieved by isolating affected systems.
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>Attribution: Financially-motivated actor (medium confidence).
+</span></code></pre></div></p>
+<h3 id="conclusion-field-technical-closure">Conclusion Field (Technical Closure)<a class="headerlink" href="#conclusion-field-technical-closure" title="Anchor link to this section">&para;</a></h3>
+<p>Document technical determination:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>CLASSIFICATION: [true positive/false positive] - [incident type]
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>ROOT CAUSE: [initial access method]
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>ATTRIBUTION: [threat actor/campaign] ([confidence level])
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>IMPACT: [data affected], [systems affected]
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>DWELL TIME: [duration from first access to detection]
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>CONTAINMENT: [status and date]
+</span></code></pre></div></p>
+<hr />
+<h2 id="example-complete-tagged-timeline">Example: Complete Tagged Timeline<a class="headerlink" href="#example-complete-tagged-timeline" title="Anchor link to this section">&para;</a></h2>
+<p><em>Note: MITRE technique IDs shown are illustrative. Validate against the authoritative STIX source.</em></p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;APT-Investigation-2024-001&quot;</span><span class="p">,</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Investigation of targeted attack against Finance department&quot;</span><span class="p">,</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;closed_true_positive&quot;</span><span class="p">,</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="nt">&quot;events&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-001&quot;</span><span class="p">,</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">      </span><span class="nt">&quot;sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensor-001&quot;</span><span class="p">,</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:initial-access&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1566&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;timing:first-observed&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;root-cause:phishing&quot;</span><span class="p">],</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User opened phishing attachment with malicious macro&quot;</span><span class="p">,</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">      </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-002&quot;</span><span class="p">,</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">      </span><span class="nt">&quot;sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensor-001&quot;</span><span class="p">,</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:execution&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1059&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;timing:pivot-point&quot;</span><span class="p">],</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Encoded PowerShell executed by Word macro&quot;</span><span class="p">,</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">      </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-003&quot;</span><span class="p">,</span>
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">      </span><span class="nt">&quot;sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensor-001&quot;</span><span class="p">,</span>
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:credential-access&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1003&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;tool:mimikatz&quot;</span><span class="p">],</span>
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LSASS memory access - credential harvesting&quot;</span><span class="p">,</span>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w">      </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-004&quot;</span><span class="p">,</span>
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">      </span><span class="nt">&quot;sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensor-002&quot;</span><span class="p">,</span>
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:lateral-movement&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1021&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scope:domain-wide&quot;</span><span class="p">],</span>
+</span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RDP to domain controller with stolen credentials&quot;</span><span class="p">,</span>
+</span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a><span class="w">      </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span>
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a><span class="w">      </span><span class="nt">&quot;atom&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt-005&quot;</span><span class="p">,</span>
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a><span class="w">      </span><span class="nt">&quot;sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensor-003&quot;</span><span class="p">,</span>
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a><span class="w">      </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;phase:exfiltration&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mitre:T1041&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;impact:data-exfiltration&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;timing:detection-trigger&quot;</span><span class="p">],</span>
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a><span class="w">      </span><span class="nt">&quot;relevance&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Large HTTPS upload to external IP&quot;</span><span class="p">,</span>
+</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a><span class="w">      </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span>
+</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a><span class="w">  </span><span class="p">],</span>
+</span><span id="__span-14-43"><a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a><span class="w">  </span><span class="nt">&quot;entities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-14-44"><a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-45"><a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a><span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ip&quot;</span><span class="p">,</span>
+</span><span id="__span-14-46"><a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a><span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;203.0.113.50&quot;</span><span class="p">,</span>
+</span><span id="__span-14-47"><a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;C2 Server&quot;</span><span class="p">,</span>
+</span><span id="__span-14-48"><a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a><span class="w">      </span><span class="nt">&quot;context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provenance: Network connection from compromised host. TI: Matches APT29 infrastructure per CISA AA24-001.&quot;</span><span class="p">,</span>
+</span><span id="__span-14-49"><a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a><span class="w">      </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span><span class="p">,</span>
+</span><span id="__span-14-50"><a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a><span class="w">      </span><span class="nt">&quot;related_events&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;evt-005&quot;</span><span class="p">]</span>
+</span><span id="__span-14-51"><a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-14-52"><a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-53"><a id="__codelineno-14-53" name="__codelineno-14-53" href="#__codelineno-14-53"></a><span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hash&quot;</span><span class="p">,</span>
+</span><span id="__span-14-54"><a id="__codelineno-14-54" name="__codelineno-14-54" href="#__codelineno-14-54"></a><span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d41d8cd98f00b204e9800998ecf8427e&quot;</span><span class="p">,</span>
+</span><span id="__span-14-55"><a id="__codelineno-14-55" name="__codelineno-14-55" href="#__codelineno-14-55"></a><span class="w">      </span><span class="nt">&quot;context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provenance: Dropped by macro execution. AV: 52/72 detections. Sandbox: Downloads secondary payload.&quot;</span><span class="p">,</span>
+</span><span id="__span-14-56"><a id="__codelineno-14-56" name="__codelineno-14-56" href="#__codelineno-14-56"></a><span class="w">      </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span><span class="p">,</span>
+</span><span id="__span-14-57"><a id="__codelineno-14-57" name="__codelineno-14-57" href="#__codelineno-14-57"></a><span class="w">      </span><span class="nt">&quot;related_events&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;evt-002&quot;</span><span class="p">]</span>
+</span><span id="__span-14-58"><a id="__codelineno-14-58" name="__codelineno-14-58" href="#__codelineno-14-58"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-59"><a id="__codelineno-14-59" name="__codelineno-14-59" href="#__codelineno-14-59"></a><span class="w">  </span><span class="p">],</span>
+</span><span id="__span-14-60"><a id="__codelineno-14-60" name="__codelineno-14-60" href="#__codelineno-14-60"></a><span class="w">  </span><span class="nt">&quot;notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-14-61"><a id="__codelineno-14-61" name="__codelineno-14-61" href="#__codelineno-14-61"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-62"><a id="__codelineno-14-62" name="__codelineno-14-62" href="#__codelineno-14-62"></a><span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finding&quot;</span><span class="p">,</span>
+</span><span id="__span-14-63"><a id="__codelineno-14-63" name="__codelineno-14-63" href="#__codelineno-14-63"></a><span class="w">      </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ATTACK CHAIN:\nInitial Access (T1566) → Execution (T1059) → Credential Access (T1003) → Lateral Movement (T1021) → Exfiltration (T1041)\n\nDwell time: 48 hours from first access to detection.&quot;</span>
+</span><span id="__span-14-64"><a id="__codelineno-14-64" name="__codelineno-14-64" href="#__codelineno-14-64"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-14-65"><a id="__codelineno-14-65" name="__codelineno-14-65" href="#__codelineno-14-65"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-66"><a id="__codelineno-14-66" name="__codelineno-14-66" href="#__codelineno-14-66"></a><span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finding&quot;</span><span class="p">,</span>
+</span><span id="__span-14-67"><a id="__codelineno-14-67" name="__codelineno-14-67" href="#__codelineno-14-67"></a><span class="w">      </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEFENSE GAPS IDENTIFIED:\n- gap:no-mfa on domain admin accounts\n- gap:missing-detection for PowerShell script block logging\n- gap:no-segmentation between workstations and servers&quot;</span>
+</span><span id="__span-14-68"><a id="__codelineno-14-68" name="__codelineno-14-68" href="#__codelineno-14-68"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-14-69"><a id="__codelineno-14-69" name="__codelineno-14-69" href="#__codelineno-14-69"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-14-70"><a id="__codelineno-14-70" name="__codelineno-14-70" href="#__codelineno-14-70"></a><span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;action_item&quot;</span><span class="p">,</span>
+</span><span id="__span-14-71"><a id="__codelineno-14-71" name="__codelineno-14-71" href="#__codelineno-14-71"></a><span class="w">      </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rotate all domain admin credentials&quot;</span><span class="p">,</span>
+</span><span id="__span-14-72"><a id="__codelineno-14-72" name="__codelineno-14-72" href="#__codelineno-14-72"></a><span class="w">      </span><span class="nt">&quot;resolved&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+</span><span id="__span-14-73"><a id="__codelineno-14-73" name="__codelineno-14-73" href="#__codelineno-14-73"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-14-74"><a id="__codelineno-14-74" name="__codelineno-14-74" href="#__codelineno-14-74"></a><span class="w">  </span><span class="p">],</span>
+</span><span id="__span-14-75"><a id="__codelineno-14-75" name="__codelineno-14-75" href="#__codelineno-14-75"></a><span class="w">  </span><span class="nt">&quot;summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Targeted spearphishing attack compromised Finance workstation. Attacker harvested domain admin credentials within 4 hours, moved laterally to file server, exfiltrated 50GB over 48 hours. Attributed to financially-motivated actor (medium confidence).&quot;</span><span class="p">,</span>
+</span><span id="__span-14-76"><a id="__codelineno-14-76" name="__codelineno-14-76" href="#__codelineno-14-76"></a><span class="w">  </span><span class="nt">&quot;conclusion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CLASSIFICATION: True positive - data breach\nROOT CAUSE: Spearphishing with compromised vendor sender\nATTRIBUTION: Financially-motivated (medium confidence)\nIMPACT: 50GB data exfiltrated, 15 servers accessed\nDWELL TIME: 48 hours\nCONTAINMENT: Complete as of 2024-11-18&quot;</span>
+</span><span id="__span-14-77"><a id="__codelineno-14-77" name="__codelineno-14-77" href="#__codelineno-14-77"></a><span class="p">}</span>
+</span></code></pre></div>
+<hr />
+<h2 id="cross-timeline-analysis">Cross-Timeline Analysis<a class="headerlink" href="#cross-timeline-analysis" title="Anchor link to this section">&para;</a></h2>
+<p>Consistent tagging enables searching across multiple investigations:</p>
+<table>
+<thead>
+<tr>
+<th>Search Goal</th>
+<th>Tag Pattern to Query</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All ransomware incidents</td>
+<td><code>impact:ransomware</code></td>
+</tr>
+<tr>
+<td>APT activity</td>
+<td><code>actor:apt-*</code></td>
+</tr>
+<tr>
+<td>Critical asset compromises</td>
+<td><code>asset:crown-jewels</code></td>
+</tr>
+<tr>
+<td>Open investigations</td>
+<td><code>status:in_progress</code></td>
+</tr>
+<tr>
+<td>Phishing-originated attacks</td>
+<td><code>root-cause:phishing</code></td>
+</tr>
+<tr>
+<td>MFA gaps</td>
+<td><code>gap:no-mfa</code></td>
+</tr>
+<tr>
+<td>Specific customer (MSSP)</td>
+<td><code>customer:acme-corp</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Anchor link to this section">&para;</a></h2>
 <ul>
-<li><strong>Limited visibility and data correlation:</strong> Incident response teams often face incomplete or fragmented data from clients, hindering their ability to grasp the full extent of an incident and make informed analysis.</li>
-<li><strong>Time-consuming manual analysis:</strong> Manually sifting through large volumes of logs, alerts, and endpoint data can be time-consuming and prone to human error, delaying incident response and remediation.</li>
-<li><strong>Lack of centralized threat hunting capabilities:</strong> Traditional IR toolkits often lack advanced analytics and threat hunting features, making it challenging to proactively uncover hidden threats or investigate complex attack patterns.</li>
-<li><strong>Slow infrastructure deployment:</strong> Setting up traditional incident response infrastructure can take hours or even days, leaving critical time gaps where attackers have the upper hand.</li>
-</ul>
-<h4 id="limacharlies-solution">LimaCharlie's solution<a class="headerlink" href="#limacharlies-solution" title="Anchor link to this section">&para;</a></h4>
-<ul>
-<li><strong>Unified Threat Visibility:</strong> LimaCharlie aggregates data from diverse sources (endpoints, networks, cloud environments, security tools), providing incident response teams with centralized visibility and context for swift analysis.</li>
-<li><strong>Streamlined Detection Capabilities:</strong> The platform's powerful detection and response capabilities allow IR teams to quickly pinpoint relevant data, identify patterns, and correlate events across multiple impacted systems.</li>
-<li><strong>Enhanced Threat Hunting and Analysis:</strong> LimaCharlie's advanced analytics and threat intelligence feeds enable IR teams to proactively hunt for hidden threats, investigate attack chains, and attribute attacks with greater confidence.</li>
-<li><strong>Instant Deployment:</strong> Launch LimaCharlie in seconds, not hours, gaining immediate visibility and control over the compromised environment to outpace attacker timelines and minimize damage.</li>
-</ul>
-<h4 id="related-resources">Related Resources<a class="headerlink" href="#related-resources" title="Anchor link to this section">&para;</a></h4>
-<ul>
-<li><a href="../timeline-investigation-guide/">Timeline Investigation Guide</a> - Best practices for documenting investigations with MITRE ATT&amp;CK mapping and standardized tagging</li>
+<li><a href="../../../Platform_Management/Config_Hive/config-hive-timeline/">Config Hive: Timeline</a> - Timeline schema reference</li>
+<li><a href="../../../../../marketplace/plugins/lc-essentials/skills/timeline-creation/SKILL.md">Timeline Creation Skill</a> - Automated timeline creation</li>
+<li><a href="../../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md">expand_timeline function</a> - Hydrate timeline with full event data</li>
 </ul>
 
 
