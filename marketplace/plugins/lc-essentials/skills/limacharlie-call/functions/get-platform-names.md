@@ -1,100 +1,15 @@
+# get_platform_names
 
-# Get Platform Names
+Get the list of supported platform identifiers from LimaCharlie's ontology.
 
-Retrieve the official list of platform names from LimaCharlie's ontology, providing the canonical identifiers for all supported platforms.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| (none) | - | - | Global operation, no parameters required |
 
-Use this skill when the user needs to:
-- Get the correct platform identifier for API calls
-- Discover what platforms LimaCharlie supports
-- Validate platform names before filtering operations
-- Build cross-platform detection logic
-- Understand platform taxonomy
+## Returns
 
-Common scenarios:
-- "What platforms does LimaCharlie support?"
-- "What's the correct name for Windows in the API?"
-- "Show me all available platform identifiers"
-- "I need to filter by platform - what are the valid names?"
-
-## What This Skill Does
-
-This skill retrieves the authoritative list of platform names from LimaCharlie's ontology endpoint. These are the canonical platform identifiers used throughout the LimaCharlie API for filtering sensors, event types, and building platform-specific rules. Note that this returns the platform ontology, not necessarily platforms with active sensors in the organization.
-
-## Required Information
-
-**Note**: This is a **global operation** that queries the platform ontology and does not require any parameters.
-
-## How to Use
-
-### Step 1: Call the API
-
-Use the `lc_call_tool` MCP tool from the `limacharlie` server:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_platform_names",
-  parameters={}
-)
-```
-
-**API Details:**
-- Tool: `get_platform_names`
-- No parameters required (global operation)
-
-### Step 2: Handle the Response
-
-The API returns a response with:
-```json
-{
-  "platforms": {
-    "windows": 1,
-    "linux": 2,
-    "macos": 3,
-    "chrome": 4,
-    "android": 5,
-    "ios": 6,
-    ...
-  }
-}
-```
-
-**Success (200-299):**
-- Response contains `platforms` object mapping platform names to numeric IDs
-- Platform names are lowercase strings (e.g., "windows", "linux", "macos")
-- Numeric values are internal platform identifiers
-- Keys (platform names) are what you use in other API calls
-- This is the authoritative source for platform naming
-
-**Common Errors:**
-- **500 Server Error**: Temporary API issue - retry after a short delay
-
-### Step 3: Format the Response
-
-Present the result to the user:
-- Extract platform names from the response object keys
-- List platforms in a logical order (common platforms first)
-- Group by category if helpful (desktop, mobile, cloud)
-- Indicate which platforms are most commonly used
-- Note that this is the global list, not org-specific
-
-## Example Usage
-
-### Example 1: Getting all platform names
-
-User request: "What platforms does LimaCharlie support?"
-
-Steps:
-1. Call API:
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_platform_names",
-  parameters={}
-)
-```
-
-Expected response:
 ```json
 {
   "platforms": {
@@ -108,35 +23,27 @@ Expected response:
 }
 ```
 
-Present to user: "LimaCharlie supports the following platforms: Windows, Linux, macOS, Chrome OS, Android, and iOS. Use these lowercase names (windows, linux, macos, chrome, android, ios) when filtering by platform in API calls."
+## Example
 
-### Example 2: Validating platform name before filtering
+```
+lc_call_tool(tool_name="get_platform_names", parameters={})
+```
 
-User request: "I want to filter events for Mac computers"
+## Common Platforms
 
-Steps:
-1. Get platform names
-2. Identify that "macos" is the correct platform identifier (not "mac" or "osx")
-3. Inform user of the correct name: "macos"
-4. Use this in subsequent platform filtering operations
+| Name | Description |
+|------|-------------|
+| windows | Windows desktop/server |
+| linux | Linux distributions |
+| macos | macOS/OS X |
+| chrome | Chrome OS |
+| android | Android mobile |
+| ios | iOS/iPadOS |
 
-## Additional Notes
+## Notes
 
-- **This is a global operation that does not require any parameters**
-- This endpoint returns the global platform ontology, not org-specific data
-- Platform names are always lowercase in the API
-- Use exactly these names when filtering (e.g., "windows" not "Windows" or "win")
-- The numeric platform IDs are for internal use - use the string names in API calls
-- Just because a platform is listed doesn't mean the organization has sensors on it
-- Use `list_with_platform` to see which platforms have active sensors
-- Common platforms: windows, linux, macos, chrome
-- Mobile platforms: android, ios
-- Platform names are stable and rarely change
-- These same platform names are used in sensor selectors and D&R rules
-
-## Reference
-
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
-
-For the Go SDK implementation, check: `/go-limacharlie/limacharlie/schemas.go`
-For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/schemas/schemas.go`
+- **Global operation** - no OID or parameters required
+- Use these exact names (lowercase) when filtering by platform
+- Platform names are used in sensor selectors and D&R rules
+- Returns ontology (all supported), not org-specific active platforms
+- Related: `list_sensors` (see which platforms have sensors)

@@ -26,12 +26,62 @@ lc_call_tool
 LimaCharlie Platform
 ```
 
+## Core Concepts
+
+### Organization ID (OID)
+
+The OID is a **UUID** (e.g., `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name.
+
+- Use `list_user_orgs` to get the OID from an org name
+- All functions require OID except: `list_user_orgs`, `create_org`, `get_platform_names`
+
+### LCQL Query Generation
+
+**Never write LCQL queries manually.** LCQL uses unique pipe-based syntax validated against org-specific schemas. Manual queries will fail or produce incorrect results.
+
+Always use this workflow:
+1. `generate_lcql_query` - Convert natural language to LCQL
+2. `run_lcql_query` - Execute with the generated query string
+
+### Timestamp Formats
+
+| API | Format | Example |
+|-----|--------|---------|
+| `get_historic_events`, `get_historic_detections` | **Seconds** (10 digits) | `1699574400` |
+| Detection/event data | Milliseconds (13 digits) | `1699574400000` |
+
+**Always divide by 1000** when using timestamps from detection data in historic queries.
+
+### Common Errors
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `missing required parameter` | Required field not provided | Check function docs for required params |
+| `no such entity` | Resource doesn't exist | Verify OID/SID/resource name |
+| `permission denied` | Insufficient API permissions | Check API key scopes |
+| `validation failed` | Invalid config/syntax | Use validation tools first |
+
 ## Basic Parameters
 
 The sub-agent receives:
 - **Function**: Name of the LimaCharlie API function (e.g., `get_sensor_info`, `run_lcql_query`)
 - **Parameters**: Object containing the parameters for the specific function
-- **Extract** (optional): Instructions for data extraction/filtering
+- **Return** (required): Specifies what data the caller wants back
+
+### Return Field Options
+
+The **Return** field is required and tells the agent exactly what data to return:
+
+| Return Value | Meaning |
+|-------------|---------|
+| `RAW` | Return the complete API response as-is, no processing |
+| `<extraction instructions>` | Extract/summarize specific data (e.g., "Count of online sensors", "Only hostnames") |
+
+**Examples**:
+- `Return: RAW` - Full API response
+- `Return: Count of total sensors and count of online sensors` - Summarized counts
+- `Return: Only sensors that are online with hostname and SID` - Filtered data
+- `Return: Summary with total count, breakdown by platform` - Aggregated report
 
 ## How It Works
 
@@ -437,14 +487,17 @@ The `resource_link` URL:
 
 ### Autonomous Handling by Sub-Agent
 
-When you delegate to the `limacharlie-api-executor` agent with extraction instructions, the agent:
+When you delegate to the `limacharlie-api-executor` agent with a Return specification, the agent:
 
-1. **Detects** the `resource_link` in the API response
-2. **Downloads** the data from the signed URL
-3. **Analyzes** the JSON schema using `analyze-lc-result.sh`
-4. **Extracts** requested data using jq based on schema
-5. **Cleans up** temporary files
-6. **Returns** processed results to the main thread
+1. **Parses** the Return field to understand what data is needed
+2. **Detects** the `resource_link` in the API response (for large results)
+3. **Downloads** the data from the signed URL
+4. **Analyzes** the JSON schema using `analyze-lc-result.sh`
+5. **Processes** data according to Return specification:
+   - If `Return: RAW` → Returns complete data as-is
+   - If extraction instructions → Extracts/summarizes using jq
+6. **Cleans up** temporary files
+7. **Returns** processed results to the main thread
 
 You don't need to handle this manually. See the `limacharlie-call` skill documentation for usage examples.
 

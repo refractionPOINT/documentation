@@ -1,62 +1,41 @@
+# get_drivers
 
-# Get Drivers
+Retrieve installed kernel drivers/modules from a sensor.
 
-Retrieve the list of installed drivers (kernel modules) from a specific sensor.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
+| sid | UUID | Yes | Sensor ID (must be online) |
 
-Use this skill when the user needs to:
-- List all kernel drivers/modules on a system
-- Detect rootkits or malicious drivers
-- Identify unsigned or suspicious kernel modules
-- Audit driver installation and signatures
-- Investigate kernel-level persistence
-- Check for vulnerable drivers
+## Returns
 
-Common scenarios:
-- "Show me all drivers installed on this sensor"
-- "List kernel modules on this system"
-- "Are there any unsigned drivers?"
-- "Check for rootkit drivers on sensor abc-123"
-
-## What This Skill Does
-
-This skill sends a live command to retrieve all installed drivers/kernel modules, including driver metadata, file paths, digital signatures, and version information.
-
-## Required Information
-
-Before calling this skill, gather:
-- **oid**: Organization ID
-- **sid**: Sensor ID (UUID)
-
-The sensor must be online.
-
-### Step 2: Send the Sensor Command
-
-Use the `lc_call_tool` MCP tool:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_drivers",
-  parameters={
-    "oid": "[organization-id]",
-    "sid": "[sensor-id]"
-  }
-)
+```json
+{
+  "drivers": [
+    {
+      "name": "ntfs",
+      "path": "C:\\Windows\\system32\\drivers\\ntfs.sys",
+      "signed": true,
+      "signer": "Microsoft Windows"
+    }
+  ]
+}
 ```
 
-**Technical Details:**
-- Executes the `os_drivers` sensor command
-- Timeout: Up to 10 minutes
-- Returns all installed drivers/kernel modules
+## Example
 
-### Step 3: Handle the Response
+```
+lc_call_tool(tool_name="get_drivers", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "sid": "abc-123-def-456"
+})
+```
 
-Response contains driver information. Highlight unsigned drivers, unusual driver paths, or drivers loaded from non-system locations.
+## Notes
 
-## Reference
-
-For the MCP tool, this uses the dedicated `get_drivers` tool via `lc_call_tool`.
-
-For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
-For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`
+- Live operation (up to 10 min timeout)
+- Kernel modules on Linux, drivers on Windows
+- Unsigned drivers may indicate rootkits
+- Check for drivers from non-system locations

@@ -31,16 +31,17 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required)
-- **Exactly ONE of the following** (mutually exclusive):
-  - **version**: Target sensor version or label (string)
+- **Optional parameters** (mutually exclusive - use at most ONE):
+  - **version**: Target sensor semantic version, e.g., `4.33.20` (string). Version labels NOT supported.
   - **is_fallback**: Downgrade to previous version (boolean)
   - **is_sleep**: Move sensors to dormant mode (boolean)
+  - **If none provided**: Defaults to upgrading to the **latest** version
 
 ### Option 1: Specific Version (`version` parameter)
 - **Semantic version**: Specific version like `4.33.20` (format: MAJOR.MINOR.PATCH)
-- **Version labels**: `latest`, `stable`, or `experimental`
+- **Note**: Version labels (`latest`, `stable`, `experimental`) are NOT supported with this parameter. See "Version Labels Workaround" section below for alternatives.
 
-Version label meanings:
+Version label meanings (for reference - use sensor tags to apply these):
 - `latest`: Most recent release with new fixes and features
 - `stable`: Less frequently updated, ideal for slower update cadences
 - `experimental`: Beta version of the next "latest" release
@@ -103,12 +104,16 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - Tool name: `upgrade_sensors`
 - Required parameters:
   - `oid` (string): Organization ID
-  - ONE of: `version` (string) OR `is_fallback` (boolean) OR `is_sleep` (boolean)
+- Optional parameters (use at most ONE, defaults to latest if none provided):
+  - `version` (string): Semantic version only (e.g., `4.33.20`). Labels NOT supported.
+  - `is_fallback` (boolean): Downgrade to previous version
+  - `is_sleep` (boolean): Move sensors to dormant mode
 - API endpoint: `POST /v1/modules/{oid}`
 - Query parameters:
-  - `specific_version={value}`: For semantic versions or labels (latest/stable/experimental)
+  - `specific_version={value}`: For semantic versions only (e.g., `4.33.20`). Labels NOT supported.
   - `is_fallback=true`: To downgrade to previous version
   - `is_sleep=true`: To move sensors to dormant mode
+  - If no parameters: Defaults to upgrading to the latest version
 
 ### Step 3: Handle the Response
 
@@ -185,19 +190,18 @@ Best Practice: Monitor sensor versions after the update window to ensure
 successful deployment across your fleet.
 ```
 
-### Example 2: Upgrade to latest version label
+### Example 2: Upgrade to latest version (default)
 
 User request: "Upgrade to the latest sensor version"
 
 Steps:
 1. Validate organization ID
-2. Use "latest" as the version parameter:
+2. Call without version parameter (defaults to latest):
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="upgrade_sensors",
   parameters={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "version": "latest"
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
   }
 )
 ```
@@ -220,42 +224,32 @@ Recommendation: Consider testing on a subset of sensors first using the
 lc:latest tag before organization-wide upgrades.
 ```
 
-### Example 3: Switch to stable release channel
+### Example 3: Track stable release channel with sensor tags
 
 User request: "Move our production org to the stable release channel"
 
-Steps:
-1. Validate organization ID
-2. Use "stable" as the version parameter:
-```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="upgrade_sensors",
-  parameters={
-    "oid": "c7e8f940-prod-org-abcd-1234567890ab",
-    "version": "stable"
-  }
-)
-```
+**Note**: Version labels (`stable`, `experimental`) cannot be passed via the `version` parameter. Instead, use sensor tags to track release channels.
 
-Expected response:
-```json
-{
-  "success": true
-}
-```
+Steps:
+1. Explain to the user that release channels are managed via sensor tags
+2. Tag sensors with `lc:stable` using the `set_sensor_tag` function or web interface
+3. Sensors with this tag will automatically update to the stable version within 10 minutes
 
 Present to user:
 ```
-Switched to Stable Release Channel
+Tracking Stable Release Channel
 
-Your production organization is now configured to use the stable release
-channel. This version is less frequently updated and ideal for production
-environments requiring slower update cadences.
+To track the stable release channel, sensors need the `lc:stable` tag applied.
+This can be done via:
+- The `set_sensor_tag` function for individual sensors
+- The LimaCharlie web interface for bulk tagging
+- Installation parameters for new deployments
 
-All sensors will update to the current stable version within 20 minutes.
+Once tagged, sensors will automatically update to the current stable version
+within 10 minutes. Tagged sensors will continue to receive stable updates
+as new versions are released.
 
-To enable automatic updates when new stable versions are released, tag your
-sensors with lc:stable.
+Note: Sensor tags override organization-level version settings.
 ```
 
 ### Example 4: Rollback to previous version
@@ -300,6 +294,34 @@ You can maintain this version by keeping the organization setting or by
 applying version tags to individual sensors.
 ```
 
+## Version Labels Workaround
+
+The `version` parameter only supports semantic versions (e.g., `4.33.20`). To use version labels, use these alternatives:
+
+### Option A: Upgrade to Latest (No Parameters)
+
+Call `upgrade_sensors` with only the `oid` parameter - **no version, is_fallback, or is_sleep**. This defaults to upgrading all sensors to the latest version:
+
+```
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="upgrade_sensors",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+  }
+)
+```
+
+### Option B: Using Sensor Tags for Version Labels
+
+Tag sensors with system version tags to track specific release channels:
+- `lc:latest` - Track the latest release
+- `lc:stable` - Track the stable release
+- `lc:experimental` - Track experimental releases
+
+Tags can be applied via the `set_sensor_tag` function or through the LimaCharlie web interface.
+
+**Important**: Sensor tags override organization-level version settings and take effect within 10 minutes.
+
 ## Additional Notes
 
 - **Update time**: Sensors update within approximately 20 minutes
@@ -317,10 +339,10 @@ applying version tags to individual sensors.
 - **Auto-update**: Tag sensors with `lc:stable` to auto-update on new stable releases
 - **Rollback plan**: Always maintain ability to rollback to previous version
 - **Production recommendation**: Use specific version numbers for production (e.g., `4.33.20`) rather than labels for consistency
-- **Testing recommendation**: Use `experimental` label only in dev/test environments
+- **Testing recommendation**: Use `lc:experimental` sensor tag only in dev/test environments
 - **API endpoint**: `POST /v1/modules/{oid}`
-- **Query parameters** (mutually exclusive):
-  - `specific_version={version}`: Upgrade to specific semantic version or label (latest/stable/experimental)
+- **Query parameters** (mutually exclusive, all optional - defaults to latest if none provided):
+  - `specific_version={version}`: Upgrade to specific semantic version only (e.g., `4.33.20`). Labels NOT supported.
   - `is_fallback=true`: Downgrade to the previous version
   - `is_sleep=true`: Move sensors to dormant mode
 - **API reference**: https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg
@@ -329,7 +351,7 @@ applying version tags to individual sensors.
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For sensor versioning documentation, see: `docs/limacharlie/doc/Sensors/Endpoint_Agent/endpoint-agent-versioning-and-upgrades.md`
 For the API reference, see: https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg

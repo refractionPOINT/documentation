@@ -225,7 +225,7 @@ Consider creating detection rules for these high-priority techniques."
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/organization_ext.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/admin/admin.go`

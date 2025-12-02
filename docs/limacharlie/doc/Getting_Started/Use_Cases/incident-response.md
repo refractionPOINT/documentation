@@ -15,3 +15,7 @@ LimaCharlie provides incident response teams with a powerful, centralized soluti
 * **Streamlined Detection Capabilities:** The platform's powerful detection and response capabilities allow IR teams to quickly pinpoint relevant data, identify patterns, and correlate events across multiple impacted systems.
 * **Enhanced Threat Hunting and Analysis:** LimaCharlie's advanced analytics and threat intelligence feeds enable IR teams to proactively hunt for hidden threats, investigate attack chains, and attribute attacks with greater confidence.
 * **Instant Deployment:** Launch LimaCharlie in seconds, not hours, gaining immediate visibility and control over the compromised environment to outpace attacker timelines and minimize damage.
+
+#### Related Resources
+
+* [Timeline Investigation Guide](./timeline-investigation-guide.md) - Best practices for documenting investigations with MITRE ATT&CK mapping and standardized tagging

@@ -1,62 +1,42 @@
+# get_services
 
-# Get Services
+Retrieve services (running and configured) from a sensor.
 
-Retrieve the list of services (running and configured) from a specific sensor.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
+| sid | UUID | Yes | Sensor ID (must be online) |
 
-Use this skill when the user needs to:
-- List all services on a system
-- Identify malicious or suspicious services
-- Detect service-based persistence mechanisms
-- Audit service configuration
-- Investigate unauthorized services
-- Check service executable paths
+## Returns
 
-Common scenarios:
-- "Show me all running services on this sensor"
-- "List services on this Windows system"
-- "Are there any suspicious services running?"
-- "What services are configured for automatic startup?"
-
-## What This Skill Does
-
-This skill sends a live command to retrieve all services configured on the sensor, including running services, stopped services, and their startup configuration.
-
-## Required Information
-
-Before calling this skill, gather:
-- **oid**: Organization ID
-- **sid**: Sensor ID (UUID)
-
-The sensor must be online.
-
-### Step 2: Send the Sensor Command
-
-Use the `lc_call_tool` MCP tool:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_services",
-  parameters={
-    "oid": "[organization-id]",
-    "sid": "[sensor-id]"
-  }
-)
+```json
+{
+  "services": [
+    {
+      "name": "wuauserv",
+      "display_name": "Windows Update",
+      "state": "running",
+      "start_type": "automatic",
+      "path": "C:\\Windows\\system32\\svchost.exe -k netsvcs"
+    }
+  ]
+}
 ```
 
-**Technical Details:**
-- Executes the `os_services` sensor command
-- Timeout: Up to 10 minutes
-- Returns all configured services
+## Example
 
-### Step 3: Handle the Response
+```
+lc_call_tool(tool_name="get_services", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "sid": "abc-123-def-456"
+})
+```
 
-Response contains service information. Highlight suspicious services, unusual executable paths, or services running from temp directories.
+## Notes
 
-## Reference
-
-For the MCP tool, this uses the dedicated `get_services` tool via `lc_call_tool`.
-
-For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
-For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`
+- Live operation (up to 10 min timeout)
+- Services are common persistence mechanism
+- Check for unusual paths or unsigned services
+- Look for services running from temp directories

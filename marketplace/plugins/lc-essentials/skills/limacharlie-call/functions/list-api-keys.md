@@ -1,123 +1,15 @@
+# list_api_keys
 
-# List API Keys
+List all API keys with their metadata and permissions.
 
-Retrieve all API keys configured for a LimaCharlie organization, including their metadata, permissions, and configuration details.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 
-Use this skill when the user needs to:
-- View all API keys in an organization
-- Audit API key permissions and access levels
-- Check when API keys were created or last used
-- Identify API keys for rotation or deletion
-- Review organization authentication credentials
+## Returns
 
-Common scenarios:
-- Security audits of API access
-- Troubleshooting authentication issues
-- API key management and cleanup
-- Preparing for key rotation
-- Documenting organization access patterns
-
-## What This Skill Does
-
-This skill lists all API keys for a LimaCharlie organization. It calls the LimaCharlie API to retrieve API key metadata including key hashes, creation timestamps, permissions, and usage information. For security reasons, actual API key values are never returned - only the key hashes and metadata.
-
-## Required Information
-
-Before calling this skill, gather:
-
-**IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required)
-
-No additional parameters are required for listing API keys.
-
-## How to Use
-
-### Step 1: Validate Parameters
-
-Ensure you have:
-1. Valid organization ID (oid)
-
-### Step 2: Call the Tool
-
-Use the `lc_call_tool` MCP tool from the `limacharlie` server:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="list_api_keys",
-  parameters={
-    "oid": "[organization-id]"
-  }
-)
-```
-
-**Tool Details:**
-- Tool name: `list_api_keys`
-- Required parameters:
-  - `oid` (string): Organization ID
-
-### Step 3: Handle the Response
-
-The tool returns a response with:
-```json
-{
-  "api_keys": {
-    "key_hash_1": {
-      "created": 1234567890,
-      "priv": ["sensor.get", "sensor.task"],
-      "key_name": "Production API Key"
-    },
-    "key_hash_2": {
-      "created": 1234567899,
-      "priv": [],
-      "key_name": "Development Key"
-    }
-  }
-}
-```
-
-**Success:**
-- Response contains a map of key hashes to API key metadata
-- Each key entry includes creation timestamp, privileges list (`priv`), and description
-- Empty `priv` array means the key has full organization access
-- Key hashes can be used to delete specific keys
-
-**Common Errors:**
-- **400 Bad Request**: Invalid organization ID format
-- **403 Forbidden**: Insufficient permissions to view API keys - requires admin or owner access
-- **404 Not Found**: Organization does not exist
-- **500 Server Error**: API service issue - retry or contact support
-
-### Step 4: Format the Response
-
-Present the result to the user:
-- Display each API key with its name/description
-- Show the key hash (needed for deletion)
-- List the permissions for each key (or indicate full access)
-- Include creation timestamps in human-readable format
-- Highlight keys with no permissions (full access) as these are high-privilege
-- Consider suggesting rotation for very old keys
-
-## Example Usage
-
-### Example 1: List all API keys in an organization
-
-User request: "Show me all API keys for my organization"
-
-Steps:
-1. Extract organization ID from context
-2. Call tool to retrieve all keys:
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="list_api_keys",
-  parameters={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
-  }
-)
-```
-
-Expected response:
 ```json
 {
   "api_keys": {
@@ -135,50 +27,26 @@ Expected response:
 }
 ```
 
-Present to user:
+## Example
+
 ```
-Found 2 API keys:
-
-1. Main API Key (Hash: a1b2c3d4e5f6)
-   - Created: January 1, 2021
-   - Permissions: Full access (no restrictions)
-   - High-privilege key
-
-2. Read-only Key (Hash: f6e5d4c3b2a1)
-   - Created: January 1, 2022
-   - Permissions: sensor.get, sensor.list
-   - Limited to sensor read operations
+lc_call_tool(tool_name="list_api_keys", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
+})
 ```
 
-### Example 2: Audit API keys for security review
+## Key Properties
 
-User request: "I need to audit all API keys and their permissions"
+| Field | Description |
+|-------|-------------|
+| key_hash | Identifier for key management (not the actual key) |
+| created | Unix timestamp |
+| priv | Permissions array (empty = full access) |
+| key_name | Description |
 
-Steps:
-1. List all API keys using the tool call
-2. Analyze permissions for each key
-3. Identify high-risk keys (full access, old keys)
-4. Provide security recommendations
+## Notes
 
-Present findings with:
-- Keys with full organization access highlighted
-- Keys older than 90 days flagged for rotation
-- Keys with minimal permissions marked as least-privilege
-- Recommendations for improving API key security
-
-## Additional Notes
-
-- API key values are only shown once during creation - they cannot be retrieved later
-- Key hashes are stable identifiers used for management operations
-- Empty permissions array indicates full organization access (highest privilege)
-- Keys with specific permissions follow principle of least privilege
-- Consider implementing key rotation policies (90-180 days)
-- Always use restricted permissions when possible
-- This is a read-only operation - no keys are modified
-
-## Reference
-
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
-
-For the Go SDK implementation, check: `go-limacharlie/limacharlie/organization_ext.go` (GetAPIKeys function)
-For the MCP tool implementation, check: `lc-mcp-server/internal/tools/admin/admin.go` (RegisterListAPIKeys)
+- Actual API key values are never returned (security)
+- Empty `priv` array means full organization access (high privilege)
+- Key hashes are used for `delete_api_key` calls
+- Related: `create_api_key`, `delete_api_key`

@@ -1,143 +1,36 @@
+# delete_dr_managed_rule
 
-# Delete Managed D&R Rule
+Permanently delete a D&R rule from the managed namespace.
 
-Delete a specific managed Detection & Response rule from the managed namespace by name.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
+| name | string | Yes | Rule name (case-sensitive, exact match) |
 
-Use this skill when the user needs to:
-- Delete a managed D&R rule
-- Remove unwanted or outdated managed detection rules
-- Clean up managed rules from the organization
-- Decommission automated detection rules
-- Remove incorrectly configured managed rules
+## Returns
 
-Common scenarios:
-- Rule cleanup: "Delete the 'old_detection' managed rule"
-- Decommission: "Remove the 'test_rule' managed rule from my organization"
-- Correction: "Delete managed rule 'incorrect_config' so I can recreate it"
-- Maintenance: "Clean up unused managed detection rules"
-
-## What This Skill Does
-
-This skill permanently deletes a Detection & Response rule from the 'managed' namespace by its name. The rule is immediately removed from the organization and will no longer generate detections. This operation cannot be undone.
-
-## Required Information
-
-Before calling this skill, gather:
-
-**WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
-- **oid**: Organization ID (required for all API calls)
-- **name**: Name of the managed rule to delete (must be exact match)
-
-## How to Use
-
-### Step 1: Validate Parameters
-
-Ensure you have:
-1. Valid organization ID (oid)
-2. Exact rule name to delete (case-sensitive)
-3. Confirm user wants to delete the rule (permanent operation)
-
-### Step 2: Call the Tool
-
-Use the `lc_call_tool` MCP tool from the `limacharlie` server:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="delete_dr_managed_rule",
-  parameters={
-    "oid": "[organization-id]",
-    "name": "[rule-name]"
-  }
-)
-```
-
-**Tool Details:**
-- Tool name: `delete_dr_managed_rule`
-- Required parameters:
-  - `oid`: Organization ID (UUID)
-  - `name`: Rule name to delete (string)
-
-### Step 3: Handle the Response
-
-The tool returns data directly:
 ```json
 {}
 ```
 
-**Success:**
-- Rule successfully deleted
-- Confirm to user that rule no longer exists
-- Note that rule will not generate future detections
+Empty response indicates success.
 
-**Common Errors:**
-- **400 Bad Request**: Invalid request format or missing parameters
-- **403 Forbidden**: Insufficient permissions - user needs detection engineering write permissions
-- **404 Not Found**: Rule with specified name does not exist in managed namespace
-- **500 Server Error**: API service issue - retry or contact support
+## Example
 
-### Step 4: Format the Response
-
-Present the result to the user:
-- Confirm rule was successfully deleted
-- Show the rule name that was removed
-- Note that the deletion is permanent and cannot be undone
-- Suggest verifying deletion with list-dr-managed-rules if needed
-- If rule not found, suggest checking the rule name spelling or using list-dr-managed-rules
-
-## Example Usage
-
-### Example 1: Delete a managed rule
-
-User request: "Delete the 'old_lateral_movement' managed rule"
-
-Steps:
-1. Get organization ID from context
-2. Extract rule name: "old_lateral_movement"
-3. Call tool:
 ```
-mcp__limacharlie__lc_call_tool(
-  tool_name="delete_dr_managed_rule",
-  parameters={
-    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "old_lateral_movement"
-  }
-)
+lc_call_tool(tool_name="delete_dr_managed_rule", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "name": "old_lateral_movement"
+})
 ```
 
-Expected response:
-```json
-{}
-```
+## Notes
 
-User message: "Successfully deleted managed rule 'old_lateral_movement'. The rule has been permanently removed and will no longer generate detections."
-
-### Example 2: Rule not found
-
-User request: "Delete managed rule 'nonexistent_rule'"
-
-Steps:
-1. Call tool to delete rule
-2. API returns 404 Not Found
-3. Inform user: "Managed rule 'nonexistent_rule' not found. The rule may have already been deleted or the name may be incorrect. Use list-dr-managed-rules to see available rules."
-
-## Additional Notes
-
-- Deletion is permanent and cannot be undone
-- The rule must exist in the managed namespace
-- Rule names are case-sensitive
-- Deletion takes effect immediately
-- No confirmation prompt from the API - ensure user intends to delete
-- To delete general namespace rules, use delete-dr-general-rule instead
-- If you want to disable a rule temporarily instead of deleting it, use set-dr-managed-rule with is_enabled=false
-- Consider backing up the rule configuration before deletion (use get-dr-managed-rule first)
-- Deleted rules will not appear in MITRE ATT&CK coverage reports
-- Historical detections generated by this rule will remain in the timeline
-
-## Reference
-
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
-
-For the Go SDK implementation, check: `../go-limacharlie/limacharlie/dr_rule.go`
-For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/dr_rules.go`
+- **Deletion is permanent and irreversible**
+- Rule immediately stops generating detections
+- Historical detections remain in timeline
+- Consider disabling first (`is_enabled: false`) to test impact
+- For general namespace rules, use `delete_dr_general_rule`
+- Related: `list_dr_managed_rules`, `get_dr_managed_rule`, `set_dr_managed_rule`

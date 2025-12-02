@@ -1,68 +1,41 @@
+# get_users
 
-# Get Users
+Retrieve user accounts configured on a sensor.
 
-Retrieve the list of user accounts configured on a specific sensor.
+## Parameters
 
-## When to Use
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
+| sid | UUID | Yes | Sensor ID (must be online) |
 
-Use this skill when the user needs to:
-- List all user accounts on a system
-- Identify unauthorized or suspicious accounts
-- Audit user account configuration
-- Investigate privilege escalation
-- Understand user context for investigations
-- Check for backdoor accounts
+## Returns
 
-Common scenarios:
-- "Show me all user accounts on this sensor"
-- "List users on this Windows system"
-- "Are there any suspicious admin accounts?"
-- "What users exist on sensor abc-123?"
-
-## What This Skill Does
-
-This skill sends a live command to retrieve all user accounts configured on the sensor, including local accounts and domain users (on Windows). Returns usernames, user IDs, group memberships, and account metadata.
-
-## Required Information
-
-Before calling this skill, gather:
-- **oid**: Organization ID (required for all operations)
-- **sid**: Sensor ID (UUID) of the target sensor
-
-The sensor must be online and responsive.
-
-## How to Use
-
-### Step 1: Validate Parameters
-
-Ensure you have valid oid and sid, and sensor is online.
-
-### Step 2: Send the Sensor Command
-
-Use the `lc_call_tool` MCP tool:
-
-```
-mcp__limacharlie__lc_call_tool(
-  tool_name="get_users",
-  parameters={
-    "oid": "[organization-id]",
-    "sid": "[sensor-id]"
-  }
-)
+```json
+{
+  "users": [
+    {
+      "username": "Administrator",
+      "uid": 500,
+      "groups": ["Administrators"],
+      "home": "C:\\Users\\Administrator"
+    }
+  ]
+}
 ```
 
-**Technical Details:**
-- Executes the `os_users` sensor command
-- Timeout: Up to 10 minutes
-- Returns all configured user accounts
+## Example
 
-### Step 3: Handle the Response
+```
+lc_call_tool(tool_name="get_users", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+  "sid": "abc-123-def-456"
+})
+```
 
-Response contains user account information. Present findings highlighting suspicious accounts, admin/root users, and recent additions.
+## Notes
 
-## Reference
-
-For the MCP tool, this uses the dedicated `get_users` tool via `lc_call_tool`.
-
-For the Go SDK implementation, check: `/go-limacharlie/limacharlie/sensor.go`
-For the MCP tool implementation, check: `/lc-mcp-server/internal/tools/forensics/forensics.go`
+- Live operation (up to 10 min timeout)
+- Includes local and domain users on Windows
+- Check for unauthorized admin accounts
+- Look for recently created or suspicious accounts

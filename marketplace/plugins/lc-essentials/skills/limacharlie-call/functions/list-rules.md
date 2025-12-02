@@ -217,7 +217,7 @@ mcp__limacharlie__lc_call_tool(
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/hive.go` (List method)
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/hive/generic_hive.go`

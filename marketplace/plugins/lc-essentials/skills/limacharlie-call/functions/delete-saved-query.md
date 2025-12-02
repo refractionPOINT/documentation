@@ -126,7 +126,7 @@ Steps:
 
 ## Reference
 
-See [CALLING_API.md](../../CALLING_API.md).
+See [CALLING_API.md](../../../CALLING_API.md).
 
 SDK: `../go-limacharlie/limacharlie/hive.go`
 MCP: `../lc-mcp-server/internal/tools/hive/saved_queries.go`

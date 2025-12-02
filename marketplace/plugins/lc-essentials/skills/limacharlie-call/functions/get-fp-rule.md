@@ -162,7 +162,7 @@ Steps:
 
 ## Reference
 
-For more details on using `lc_call_tool`, see [CALLING_API.md](../../CALLING_API.md).
+For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 For the Go SDK implementation, check: `../go-limacharlie/limacharlie/fp_rule.go`
 For the MCP tool implementation, check: `../lc-mcp-server/internal/tools/rules/fp_rules.go`
