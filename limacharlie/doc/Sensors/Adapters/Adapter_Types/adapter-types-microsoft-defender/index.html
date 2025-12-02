@@ -1898,6 +1898,65 @@
 <p>LimaCharlie can ingest <a href="https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide">Microsoft 365 Defender logs</a> via three methods <a href="../adapter-types-azure-event-hub/">Azure Event Hub</a> Adapter, the <a href="https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-create-app-nativeapp">Microsoft Defender API</a>, or a Custom Webhook</p>
 <p>Documentation for creating an event hub can be found here <a href="https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create">here</a>.</p>
 <p>Telemetry Platform: <code>msdefender</code></p>
+<h2 id="data-collected">Data Collected<a class="headerlink" href="#data-collected" title="Anchor link to this section">&para;</a></h2>
+<h3 id="api-vs-event-hub-comparison">API vs Event Hub Comparison<a class="headerlink" href="#api-vs-event-hub-comparison" title="Anchor link to this section">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Data Source</th>
+<th>What You Get</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Defender API</strong></td>
+<td>Microsoft Graph API</td>
+<td>Security Alerts only</td>
+<td>Alert-focused monitoring</td>
+</tr>
+<tr>
+<td><strong>Azure Event Hub</strong></td>
+<td>Defender Streaming API</td>
+<td>Raw telemetry events</td>
+<td>Full visibility into endpoint activity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="microsoft-defender-api">Microsoft Defender API<a class="headerlink" href="#microsoft-defender-api" title="Anchor link to this section">&para;</a></h3>
+<p>The API adapter polls Microsoft Graph's <code>/security/alerts_v2</code> endpoint every 30 seconds. This provides <strong>security alerts</strong> from Microsoft Defender products including:</p>
+<ul>
+<li>Defender for Endpoint</li>
+<li>Defender for Office 365</li>
+<li>Defender for Identity</li>
+<li>Defender for Cloud Apps</li>
+</ul>
+<p>These are curated, high-fidelity alerts that Microsoft has already correlated and enriched.</p>
+<p>For alert schema details, see <a href="https://learn.microsoft.com/en-us/graph/api/resources/security-alert">Microsoft's alerts_v2 API documentation</a>.</p>
+<h3 id="azure-event-hub-streaming-api">Azure Event Hub (Streaming API)<a class="headerlink" href="#azure-event-hub-streaming-api" title="Anchor link to this section">&para;</a></h3>
+<p>When using Event Hub with Defender, you receive <strong>raw telemetry</strong> via the Defender Streaming API. This includes detailed event tables such as:</p>
+<ul>
+<li><strong>DeviceProcessEvents</strong> - Process creation and execution</li>
+<li><strong>DeviceNetworkEvents</strong> - Network connections</li>
+<li><strong>DeviceFileEvents</strong> - File operations</li>
+<li><strong>DeviceLogonEvents</strong> - Authentication events</li>
+<li><strong>DeviceRegistryEvents</strong> - Registry modifications</li>
+<li><strong>DeviceEvents</strong> - Miscellaneous security events</li>
+</ul>
+<p>This provides full endpoint telemetry for custom detection rules and threat hunting.</p>
+<p>For the complete list of supported streaming event types, see <a href="https://learn.microsoft.com/en-us/defender-xdr/supported-event-types">Microsoft's Defender XDR streaming event types documentation</a>.</p>
+<h3 id="defender-api-configuration">Defender API Configuration<a class="headerlink" href="#defender-api-configuration" title="Anchor link to this section">&para;</a></h3>
+<p>To collect data via the Microsoft Defender API, configure an App Registration in Azure with the following permission:</p>
+<ul>
+<li><code>SecurityAlert.Read.All</code></li>
+</ul>
+<p>Then create a Defender adapter in LimaCharlie with:</p>
+<ul>
+<li>Tenant ID</li>
+<li>Client ID</li>
+<li>Client Secret</li>
+</ul>
 <h2 id="deployment-configurations">Deployment Configurations<a class="headerlink" href="#deployment-configurations" title="Anchor link to this section">&para;</a></h2>
 <p>All adapters support the same <code>client_options</code>, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.</p>
 <ul>

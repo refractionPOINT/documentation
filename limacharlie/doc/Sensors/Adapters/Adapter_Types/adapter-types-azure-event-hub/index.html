@@ -1903,6 +1903,32 @@
 <li>Microsoft Defender (Platform: <code>msdefender</code>)</li>
 </ul>
 <p>Documentation for creating an event hub can be found here <a href="https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create">here</a>.</p>
+<h2 id="configuring-data-streams">Configuring Data Streams<a class="headerlink" href="#configuring-data-streams" title="Anchor link to this section">&para;</a></h2>
+<p>When using Azure Event Hub, you must configure the source service to stream data to your Event Hub. The data you receive depends entirely on what you configure in Azure.</p>
+<h3 id="for-entra-id-azure_ad">For Entra ID (<code>azure_ad</code>)<a class="headerlink" href="#for-entra-id-azure_ad" title="Anchor link to this section">&para;</a></h3>
+<p>Configure <strong>Azure AD Diagnostic Settings</strong> to stream to your Event Hub:</p>
+<ol>
+<li>In Azure Portal, go to <strong>Entra ID</strong> &gt; <strong>Diagnostic settings</strong></li>
+<li>Add a diagnostic setting and select your Event Hub</li>
+<li>Choose which logs to stream (SignInLogs, AuditLogs, etc.)</li>
+</ol>
+<p>See: <a href="https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub">Stream Entra ID logs to Event Hub</a></p>
+<h3 id="for-microsoft-defender-msdefender">For Microsoft Defender (<code>msdefender</code>)<a class="headerlink" href="#for-microsoft-defender-msdefender" title="Anchor link to this section">&para;</a></h3>
+<p>Configure <strong>Defender Streaming API</strong> to export raw telemetry:</p>
+<ol>
+<li>In Microsoft Defender portal, go to <strong>Settings</strong> &gt; <strong>Streaming API</strong></li>
+<li>Add your Event Hub connection</li>
+<li>Select which event types to stream (DeviceProcessEvents, DeviceNetworkEvents, etc.)</li>
+</ol>
+<p>See: <a href="https://learn.microsoft.com/en-us/defender-xdr/supported-event-types">Defender XDR streaming event types</a></p>
+<h3 id="for-azure-monitor-azure_monitor">For Azure Monitor (<code>azure_monitor</code>)<a class="headerlink" href="#for-azure-monitor-azure_monitor" title="Anchor link to this section">&para;</a></h3>
+<p>Configure <strong>Diagnostic Settings</strong> on individual Azure resources:</p>
+<ol>
+<li>Navigate to the Azure resource you want to monitor</li>
+<li>Go to <strong>Diagnostic settings</strong> and add a setting</li>
+<li>Select your Event Hub and choose logs/metrics to stream</li>
+</ol>
+<p>See: <a href="https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/stream-monitoring-data-event-hubs">Stream Azure platform logs to Event Hub</a></p>
 <h2 id="deployment-configurations">Deployment Configurations<a class="headerlink" href="#deployment-configurations" title="Anchor link to this section">&para;</a></h2>
 <p>All adapters support the same <code>client_options</code>, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.</p>
 <ul>

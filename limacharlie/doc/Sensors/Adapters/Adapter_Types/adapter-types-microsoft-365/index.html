@@ -1896,6 +1896,9 @@
 <h1 id="microsoft-365">Microsoft 365<a class="headerlink" href="#microsoft-365" title="Anchor link to this section">&para;</a></h1>
 <p>Microsoft 365, formerly Office 365, is a product family of productivity software, collaboration and cloud-based services owned by Microsoft. This Adapter allows you to ingest audit events from the <a href="https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference">Office 365 Management Activity API</a>.</p>
 <p>Microsoft 365 events can be ingested in LimaCharlie and observed as the <code>office365</code> platform.</p>
+<blockquote>
+<p><strong>Note on naming:</strong> The platform identifier <code>office365</code> reflects the legacy product name. Microsoft renamed Office 365 to Microsoft 365 in 2020.</p>
+</blockquote>
 <h2 id="adapter-deployment">Adapter Deployment<a class="headerlink" href="#adapter-deployment" title="Anchor link to this section">&para;</a></h2>
 <p>Microsoft 365 events are ingested via a cloud-to-cloud Adapter configured specifically to review M365 events. When creating an Adapter, the following data points are required:</p>
 <ul>
@@ -1910,16 +1913,42 @@
 </li>
 <li>
 <p>Options include:</p>
-<ul>
-<li><code>Audit.AzureActiveDirectory</code></li>
-<li><code>Audit.Exchange</code></li>
-<li><code>Audit.SharePoint</code></li>
-<li><code>Audit.General</code></li>
-<li><code>DLP.All</code></li>
-<li><em>Default is all of the above</em></li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Content Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Audit.AzureActiveDirectory</code></td>
+<td>User and admin activities in Azure AD: sign-ins, password changes, group/user management, app consent, directory role changes</td>
+</tr>
+<tr>
+<td><code>Audit.Exchange</code></td>
+<td>Mailbox activities: message access, send/receive, folder operations, delegate permissions, mailbox audit events</td>
+</tr>
+<tr>
+<td><code>Audit.SharePoint</code></td>
+<td>SharePoint and OneDrive activities: file access, downloads, sharing, site administration, permissions changes</td>
+</tr>
+<tr>
+<td><code>Audit.General</code></td>
+<td>Activities from other workloads: Microsoft Teams, Power BI, Dynamics 365, Yammer, Stream, and other M365 services</td>
+</tr>
+<tr>
+<td><code>DLP.All</code></td>
+<td>Data Loss Prevention events: policy matches, alerts when sensitive data is detected in documents or emails</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><em>Default is all of the above</em></p>
 </li>
 </ul>
+<p>For the complete list of audit activities by workload, see <a href="https://learn.microsoft.com/en-us/purview/audit-log-activities">Microsoft's audit log activities documentation</a>.</p>
 <p>If creating a Microsoft 365 Adapter via the Web UI, the helper form will navigate you through providing these values.</p>
 <p>Establishing a cloud-to-cloud connector between LimaCharlie and Office 365 requires a few steps to provide the correct permissions for the <a href="https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference">Office 365 Management Activity API</a>.</p>
 <h3 id="infrastructure-as-code-deployment">Infrastructure as Code Deployment<a class="headerlink" href="#infrastructure-as-code-deployment" title="Anchor link to this section">&para;</a></h3>
