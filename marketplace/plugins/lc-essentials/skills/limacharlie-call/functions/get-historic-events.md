@@ -12,6 +12,25 @@ Detection/event data contains timestamps in milliseconds → **divide by 1000** 
 Detection timestamp: 1764445150453 (ms)  ÷ 1000  →  API parameter: 1764445150 (seconds)
 ```
 
+## CRITICAL: Calculating Timestamps
+
+**❌ NEVER calculate epoch values manually** - LLMs produce incorrect timestamps (e.g., 2024 instead of 2025).
+
+**✅ ALWAYS use bash:**
+```bash
+# Last 7 days
+start=$(date -d '7 days ago' +%s)
+end=$(date +%s)
+
+# Last 24 hours
+start=$(date -d '24 hours ago' +%s)
+end=$(date +%s)
+
+# Specific date range
+start=$(date -d '2025-01-15 00:00:00 UTC' +%s)
+end=$(date -d '2025-01-22 00:00:00 UTC' +%s)
+```
+
 ## Parameters
 
 | Name | Type | Required | Description |

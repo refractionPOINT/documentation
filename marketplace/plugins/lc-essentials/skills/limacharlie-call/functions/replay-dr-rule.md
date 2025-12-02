@@ -2,6 +2,21 @@
 
 Test a D&R rule against historical sensor data to validate detection logic on real telemetry.
 
+## CRITICAL: Calculating Timestamps
+
+**❌ NEVER calculate epoch values manually** - LLMs produce incorrect timestamps (e.g., 2024 instead of 2025).
+
+**✅ ALWAYS use bash for `start_time`/`end_time`:**
+```bash
+# Last 7 days
+start=$(date -d '7 days ago' +%s)
+end=$(date +%s)
+
+# Last 1 hour
+start=$(date -d '1 hour ago' +%s)
+end=$(date +%s)
+```
+
 ## Parameters
 
 | Name | Type | Required | Description |

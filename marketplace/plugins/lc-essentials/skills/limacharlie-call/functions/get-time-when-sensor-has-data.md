@@ -2,6 +2,21 @@
 
 Get the time range when a sensor has telemetry data available.
 
+## CRITICAL: Calculating Timestamps
+
+**❌ NEVER calculate epoch values manually** - LLMs produce incorrect timestamps (e.g., 2024 instead of 2025).
+
+**✅ ALWAYS use bash:**
+```bash
+# Last 7 days
+start=$(date -d '7 days ago' +%s)
+end=$(date +%s)
+
+# Last 24 hours
+start=$(date -d '24 hours ago' +%s)
+end=$(date +%s)
+```
+
 ## Parameters
 
 | Name | Type | Required | Description |
