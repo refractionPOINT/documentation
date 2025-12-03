@@ -186,6 +186,127 @@ Returns structured JSON with all collected data:
 4. Tracks detection limit and flags if reached
 5. Returns structured JSON for aggregation by parent skill
 
+### threat-report-parser
+
+**Model**: Claude Sonnet (requires intelligence for entity extraction)
+
+**Purpose**: Parse threat reports (PDF, HTML, text files) and extract ALL IOCs and behaviors. Returns structured JSON with categorized indicators. Expects reports to already be downloaded to local files by the parent skill.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned by the `threat-report-evaluation` skill when users want to:
+- Analyze threat intelligence reports
+- Extract IOCs from breach reports or malware analysis
+- Process APT campaign documentation
+
+**Architecture Role**:
+- **Parent Skill**: `threat-report-evaluation` (orchestrates the workflow)
+- **Phase 0**: Parent skill downloads report to `/tmp/` (keeps content out of main context)
+- **This Agent**: Reads local file and extracts structured data
+- **Context Savings**: ~200KB PDF → ~10KB JSON (report never enters main context)
+
+**Expected Input**:
+- Report source (local file path in `/tmp/`, pre-downloaded by parent)
+- Report type (pdf, html, text)
+
+**Output Format**:
+Returns structured JSON with:
+- Report metadata (title, author, threat name)
+- IOCs categorized by type (hashes, domains, IPs, paths, etc.)
+- Behaviors with MITRE ATT&CK mappings
+- Platform requirements
+
+**Skills Used**:
+- `Read` - For reading PDF/HTML/text files (handles PDFs natively)
+- `Bash` - For any file operations if needed
+
+### ioc-hunter
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Search for IOCs within a **single** LimaCharlie organization. Designed to be spawned in parallel (one instance per org) by the `threat-report-evaluation` skill.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel by the `threat-report-evaluation` skill for multi-org IOC hunting.
+
+**Architecture Role**:
+- **Parent Skill**: `threat-report-evaluation` (orchestrates parallel execution)
+- **This Agent**: Searches ONE organization for IOCs
+- **Parallelization**: Multiple instances run simultaneously, one per org
+
+**Expected Input**:
+- Organization name and ID (UUID)
+- IOC list (hashes, domains, IPs, paths, etc.)
+- Time window (default: 30 days)
+
+**Output Format**:
+Returns summarized findings classified by severity:
+- Critical findings (immediate investigation)
+- High/moderate/low priority findings
+- Affected sensors with hostnames
+- IOCs not found
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For IOC search APIs
+
+### behavior-hunter
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Search for malicious behaviors within a **single** LimaCharlie organization using LCQL queries. Designed to be spawned in parallel by the `threat-report-evaluation` skill.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel by the `threat-report-evaluation` skill for multi-org behavior hunting.
+
+**Architecture Role**:
+- **Parent Skill**: `threat-report-evaluation` (orchestrates parallel execution)
+- **This Agent**: Generates LCQL queries and searches ONE organization
+- **Parallelization**: Multiple instances run simultaneously, one per org
+
+**Expected Input**:
+- Organization name and ID (UUID)
+- Behavior list with MITRE mappings
+- Available platforms
+- Time window (default: 7 days)
+
+**Output Format**:
+Returns summarized findings with:
+- Behaviors found with sample events (max 5 per behavior)
+- LCQL queries used
+- Classification by event count (NONE/FEW/MODERATE/MANY/EXCESSIVE)
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For LCQL generation and execution
+
+### detection-builder
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Generate and validate D&R rules for a specific detection layer within a **single** LimaCharlie organization. Designed to be spawned in parallel (one per layer) by the `threat-report-evaluation` skill.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel by the `threat-report-evaluation` skill for building detections across multiple layers.
+
+**Architecture Role**:
+- **Parent Skill**: `threat-report-evaluation` (orchestrates parallel execution)
+- **This Agent**: Builds rules for ONE detection layer (process, network, file, etc.)
+- **Parallelization**: Up to 10 instances run simultaneously, one per layer
+
+**Expected Input**:
+- Organization name and ID (UUID)
+- Detection layer (process, network, file, persistence, etc.)
+- Threat name for rule naming
+- Detection requirements list
+
+**Output Format**:
+Returns validated rules ready for deployment:
+- Rule name, description, MITRE technique
+- Detection YAML (validated)
+- Response YAML (validated)
+- Validation failures with error details
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For D&R rule generation and validation
+
 ---
 
 ## Agent Architecture

@@ -1,548 +1,486 @@
 ---
 name: threat-report-evaluation
 description: Evaluate threat reports, breach analyses, and IOC reports to search for compromise indicators across LimaCharlie organizations. Extract IOCs (hashes, domains, IPs, file paths), perform IOC searches, identify malicious behaviors, generate LCQL queries, create D&R rules and lookups. Use when investigating threats, APT reports, malware analysis, breach postmortems, or threat intelligence feeds. Emphasizes working ONLY with data from the report and organization, never making assumptions.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, mcp__plugin_lc-essentials_limacharlie__generate_lcql_query, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection, mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond, mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components, Read, Bash, Skill
+allowed-tools: Task, mcp__plugin_lc-essentials_limacharlie__lc_call_tool, Read, Bash, Skill, AskUserQuestion, WebFetch
 ---
 
 # Threat Report Evaluation & IOC Analysis
 
 Systematically evaluate threat reports to determine organizational impact and create comprehensive defense-in-depth detections.
 
+## Architecture
+
+This skill uses specialized sub-agents to reduce context usage and enable parallel processing:
+
+```
+Main Skill (Orchestrator)
+├── Phase 0: Download report to /tmp/ (keeps content out of main context)
+├── Phase 1: Spawn threat-report-parser → Get structured IOCs/behaviors
+├── Phase 2: Platform check (lightweight API call)
+├── Phase 3: Spawn ioc-hunter agents (parallel, one per org)
+├── Phase 4: Spawn behavior-hunter agents (parallel, one per org)
+├── Phase 5: User checkpoint - present findings
+├── Phase 6: Spawn detection-builder agents (parallel, by layer)
+├── Phase 7: User approval - confirm rules to deploy
+├── Phase 8: Deploy approved rules
+└── Phase 9: Generate final report from aggregated summaries
+```
+
 ## Critical Principles
 
 - Extract IOCs and behaviors ONLY from the provided report
-- Search ONLY in the specified LimaCharlie organization
+- Search ONLY in the specified LimaCharlie organization(s)
 - NEVER fabricate or assume data not present
 - Ask for user confirmation before creating any resources
-- If the report is PDF or other rich file, download it, convert it to markdown and use that
-
-### MANDATORY: Use MCP Generation Tools
-
-**NEVER generate LCQL queries or D&R rules locally.** LCQL has a unique pipe-based syntax that differs from SQL. D&R rules have specific YAML schema requirements. Local generation WILL produce incorrect syntax.
-
-**ALWAYS use these MCP tools:**
-- `generate_lcql_query` → for ALL LCQL queries
-- `generate_dr_rule_detection` → for ALL detection components
-- `generate_dr_rule_respond` → for ALL response components
-- `validate_dr_rule_components` → before creating any rule
-
-These tools use AI with validated prompts and iterative schema validation against your organization's actual telemetry.
+- Use sub-agents for context-heavy operations
 
 ## Required Information
 
 Before starting, obtain:
 - **Threat Report**: URL, PDF, or text
-- **Organization ID (OID)**: Target LimaCharlie org
-- **Time Window**: Search depth (default: 7 days)
+- **Organization ID (OID)**: Target LimaCharlie org (or multiple for parallel hunting)
+- **Time Window**: Search depth (default: 7 days for behaviors, 30 days for IOCs)
 
 ---
 
-## Step 1: Platform Check
+## Phase 0: Download Report (if URL provided)
 
-1. Read the threat report and identify mentioned platforms
-2. Get platforms in org via `get_platform_names` function
-3. Proceed only with platforms present in BOTH report AND organization
+**IMPORTANT**: Before spawning the parser agent, download the report to a local file. This keeps the report content out of the main context and allows sub-agents to process it independently.
+
+### For URL reports:
+
+```bash
+# Download HTML/web reports
+curl -sL "https://example.com/threat-report.html" -o /tmp/threat_report.html
+
+# Download PDF reports
+curl -sL "https://example.com/report.pdf" -o /tmp/threat_report.pdf
+```
+
+### For storage URLs (cloud-hosted PDFs):
+
+```bash
+# Google Cloud Storage
+curl -sL "https://storage.googleapis.com/bucket/report.pdf" -o /tmp/threat_report.pdf
+
+# S3 (public)
+curl -sL "https://bucket.s3.amazonaws.com/report.pdf" -o /tmp/threat_report.pdf
+```
+
+**Important Notes**:
+- Always use `/tmp/` for downloaded files
+- Use `-sL` flags to follow redirects silently
+- Pass the **file path** (not URL) to the parser agent
+- The parser agent uses `Read` tool which handles PDFs natively
 
 ---
 
-## Step 2: Extract & Search IOCs
+## Phase 1: Parse Threat Report
 
-### Extract from Report
+Spawn the `threat-report-parser` agent to extract all IOCs and behaviors. Always pass the **local file path** from Phase 0 (not the original URL).
 
-- File hashes (MD5, SHA1, SHA256)
-- File names and paths
-- Domains and URLs
-- IP addresses
-- Email addresses
-- User/package names
-- Registry keys
-- Process names
+```
+Task(
+  subagent_type="lc-essentials:threat-report-parser",
+  model="sonnet",
+  prompt="Parse threat report and extract all IOCs and behaviors:
 
-### Search IOCs
+Report Source: /tmp/threat_report.pdf
+Report Type: pdf"
+)
+```
 
-Use `search_iocs` or `batch_search_iocs` for each IOC type.
+**Agent returns structured JSON with**:
+- Report metadata (title, author, threat name)
+- IOCs categorized by type (hashes, domains, IPs, paths, etc.)
+- Behaviors with MITRE ATT&CK mappings
+- Platform requirements
 
-### Classify Results
-
-- **NOT FOUND**: Clean
-- **RARE (1-10)**: Investigate immediately
-- **MODERATE (10-100)**: Manual review required
-- **UBIQUITOUS (>100)**: Weak IOC, possible false positive
+**Display to user**: Summary of extracted IOCs and behaviors with counts.
 
 ---
 
-## Step 3: Behavioral Analysis
+## Phase 2: Platform Check
 
-### Extract Behaviors from Report
+Use a lightweight API call to verify platforms exist in target org(s).
 
-- Process execution patterns
-- Command-line arguments
-- Network behaviors
-- File operations
-- Registry modifications
-- Lateral movement techniques
-- Privilege escalation methods
-- Defense evasion tactics
-
-### Search for Behaviors via LCQL
-
-**IMPORTANT: NEVER write LCQL queries yourself. ALWAYS use `generate_lcql_query`.**
-
-For each extracted behavior:
-
-**Step 1: Generate query (MANDATORY)**
 ```
-tool: generate_lcql_query
-parameters: {
-  "oid": "<organization_id>",
-  "query": "<natural language description of behavior to search for>"
-}
+Function: get_platform_names
+Parameters: {"oid": "<organization_id>"}
 ```
 
-Example natural language queries:
-- "Find PowerShell processes with encoded command line arguments in the last 7 days"
-- "Show DNS requests to domains containing 'malware-c2.com' in the last 24 hours"
-- "Find processes spawned by excel.exe or winword.exe"
-
-**Step 2: Execute the generated query**
-```
-tool: run_lcql_query
-parameters: {
-  "oid": "<organization_id>",
-  "query": "<query_string_from_step_1>",
-  "limit": 100
-}
-```
-
-**Step 3: Refine if needed**
-- If >100 results: call `generate_lcql_query` again with more specific exclusions
-- Document all queries and results
+Filter IOCs and behaviors to matching platforms only.
 
 ---
 
-## Step 4: Defense-in-Depth Detection Setup
+## Phase 3: IOC Hunting (Parallel)
 
-**Create comprehensive, layered detections covering all attack surfaces. Complete the Detection Checklist below.**
+Spawn one `ioc-hunter` agent per organization. For multi-org scenarios, spawn all agents in a SINGLE message for parallel execution.
 
-### Detection Generation Workflow
-
-**IMPORTANT: NEVER write D&R rule YAML yourself. ALWAYS use the generation tools.**
-
-For EVERY detection, follow these steps exactly:
-
-**Step 1: Generate Detection Component (MANDATORY)**
 ```
-tool: generate_dr_rule_detection
-parameters: {
+Task(
+  subagent_type="lc-essentials:ioc-hunter",
+  model="haiku",
+  prompt="Search for IOCs in organization '{org_name}' (OID: {oid})
+
+IOCs:
+{iocs_json}
+
+Time Window: 30 days"
+)
+```
+
+**Spawn multiple in parallel for multi-org**:
+```
+# Single message with multiple Task calls = parallel execution
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org1...")
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org2...")
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org3...")
+```
+
+**Agent returns**:
+- Findings classified by severity (critical/high/moderate/low)
+- Affected sensors with hostnames
+- IOCs not found
+
+---
+
+## Phase 4: Behavior Hunting (Parallel)
+
+Spawn one `behavior-hunter` agent per organization.
+
+```
+Task(
+  subagent_type="lc-essentials:behavior-hunter",
+  model="haiku",
+  prompt="Search for behaviors in organization '{org_name}' (OID: {oid})
+
+Behaviors:
+{behaviors_json}
+
+Platforms Available: {platforms}
+Time Window: 7 days"
+)
+```
+
+**Agent returns**:
+- Behaviors found with sample events (max 5 per behavior)
+- LCQL queries used
+- Classification by event count
+
+---
+
+## Phase 5: User Checkpoint
+
+Present aggregated findings to user:
+
+```markdown
+## IOC Hunt Results
+
+### Critical Findings (Immediate Investigation)
+- [IOC type]: [value] - Found on [X] sensors
+
+### High Priority Findings
+- ...
+
+### No Findings
+- [X] IOCs searched, [Y] not found
+
+## Behavior Hunt Results
+
+### Suspicious Activity Detected
+- [Behavior]: [X] events on [Y] sensors
+  - Sample: [hostname]: [command_line]
+
+### No Activity Detected
+- ...
+
+## Affected Sensors Summary
+| Hostname | IOC Hits | Behavior Hits | Action Required |
+|----------|----------|---------------|-----------------|
+```
+
+**Ask user**: "Continue with detection creation? Which layers are needed?"
+
+---
+
+## Phase 6: Detection Building (Parallel by Layer)
+
+Based on findings and user input, spawn `detection-builder` agents for each detection layer.
+
+**Detection Layers**:
+1. **process** - Process execution, command-line, parent-child
+2. **network** - DNS, connections, HTTP patterns
+3. **file** - File creation, hash matching
+4. **persistence** - Registry, scheduled tasks, services
+5. **credential** - Credential dumping, priv-esc tools
+6. **lateral** - Remote execution, authentication
+7. **evasion** - Log clearing, masquerading
+8. **stateful** - Chained detections, thresholds
+9. **lookup** - IOC lookup matching rules
+10. **fp_management** - False positive exclusions
+
+```
+Task(
+  subagent_type="lc-essentials:detection-builder",
+  model="haiku",
+  prompt="Build detections for layer 'process' in organization '{org_name}' (OID: {oid})
+
+Threat Name: {threat_name}
+
+Detection Requirements:
+{detection_requirements_json}"
+)
+```
+
+**Spawn layers in parallel**:
+```
+Task(subagent_type="lc-essentials:detection-builder", prompt="...layer: process...")
+Task(subagent_type="lc-essentials:detection-builder", prompt="...layer: network...")
+Task(subagent_type="lc-essentials:detection-builder", prompt="...layer: file...")
+```
+
+**Agent returns**:
+- Validated D&R rules ready for deployment
+- Validation failures with error details
+
+---
+
+## Phase 7: User Approval
+
+Present all generated rules for approval:
+
+```markdown
+## Generated Detection Rules
+
+### Process Detections (5 rules)
+| Rule Name | MITRE | Priority | Status |
+|-----------|-------|----------|--------|
+| apt-x-process-encoded-powershell | T1059.001 | 8 | validated |
+
+### Network Detections (3 rules)
+| Rule Name | MITRE | Priority | Status |
+|-----------|-------|----------|--------|
+
+[Show full YAML for each rule if requested]
+
+## Validation Failures
+- apt-x-network-exfil: Schema error - bytes_sent not available
+
+## Deploy Rules?
+- [ ] Deploy all validated rules
+- [ ] Select specific rules to deploy
+- [ ] Skip deployment (rules returned for manual review)
+```
+
+---
+
+## Phase 8: Deploy Approved Rules
+
+For each approved rule, deploy using:
+
+```
+Function: set_dr_general_rule
+Parameters: {
   "oid": "<organization_id>",
-  "query": "<natural language description of what to detect>"
-}
-```
-
-**Step 2: Generate Response Component (MANDATORY)**
-```
-tool: generate_dr_rule_respond
-parameters: {
-  "oid": "<organization_id>",
-  "query": "<natural language description of response actions>"
-}
-```
-
-**Step 3: Validate Components (MANDATORY)**
-```
-tool: validate_dr_rule_components
-parameters: {
-  "oid": "<organization_id>",
-  "detect": <yaml_from_step_1>,
-  "respond": <yaml_from_step_2>
-}
-```
-
-**Step 4: Present to user for approval**
-
-**Step 5: Create the rule**
-```
-tool: set_dr_general_rule
-parameters: {
-  "oid": "<organization_id>",
-  "name": "<threat-name>-<detection-type>-<indicator>",
-  "detect": <validated_detection>,
-  "respond": <validated_response>,
+  "name": "<rule_name>",
+  "detection": <detect_yaml>,
+  "response": <respond_yaml>,
   "is_enabled": true
 }
 ```
 
-**Testing & Refinement**: For comprehensive testing (unit tests, historical replay, multi-org parallel testing), use the `detection-engineering` skill.
+Also create IOC lookup tables:
+
+```
+Function: set_lookup
+Parameters: {
+  "oid": "<organization_id>",
+  "name": "<threat>-<ioc-type>",
+  "data": {<ioc_data>}
+}
+```
 
 ---
 
-### Layer 1: Process-Based Detections
+## Phase 9: Final Report
 
-Create rules for:
+Generate final report from aggregated agent outputs:
 
-**A. Process Execution**
-- Detect specific malicious process names
-- Call `generate_dr_rule_detection` with query: "Detect process execution of [process.exe] on [platform]"
+```markdown
+# Threat Report Evaluation: [Report Name]
+Date: [YYYY-MM-DD]
+Organization: [OID(s)]
 
-**B. Command-Line Patterns**
-- Detect suspicious arguments, encoded commands, LOLBins abuse
-- Call `generate_dr_rule_detection` with query: "Detect [process] with command line containing [pattern]"
+## Executive Summary
+[2-3 sentences on findings from agent summaries]
 
-**C. Parent-Child Anomalies**
-- Detect unusual parent-child relationships (e.g., excel.exe spawning cmd.exe)
-- Call `generate_dr_rule_detection` with query: "Detect [child process] spawned by [parent process]"
+## IOC Search Results
+| IOC Type | Searched | Found | Critical | High |
+|----------|----------|-------|----------|------|
+| Hashes   | 12       | 2     | 1        | 1    |
+| Domains  | 8        | 0     | 0        | 0    |
 
-**D. Process Path Anomalies**
-- Detect execution from suspicious locations (temp, appdata, public folders)
-- Call `generate_dr_rule_detection` with query: "Detect process execution from path containing [suspicious_path]"
+## Behavioral Query Results
+| Behavior | MITRE | Events | Sensors | Status |
+|----------|-------|--------|---------|--------|
+| Encoded PS | T1059.001 | 45 | 3 | Review |
 
-**E. Module Loading**
-- Detect suspicious DLL loads
-- Call `generate_dr_rule_detection` with query: "Detect MODULE_LOAD where module path contains [malicious_dll]"
+## Detections Created
 
----
+### D&R Rules Deployed
+| Rule Name | Layer | Priority |
+|-----------|-------|----------|
 
-### Layer 2: Network-Based Detections
+### Lookups Created
+| Lookup Name | IOC Count |
+|-------------|-----------|
 
-Create rules for:
+## Affected Sensors
+| Sensor | Findings | Action |
+|--------|----------|--------|
 
-**A. DNS Requests**
-- Match domains against lookups
-- Call `generate_dr_rule_detection` with query: "Detect DNS_REQUEST where domain matches [lookup-name] lookup"
-
-**B. Network Connections**
-- Match IPs and ports
-- Call `generate_dr_rule_detection` with query: "Detect NETWORK_CONNECTIONS to IP [ip_address] or port [port]"
-
-**C. HTTP/SSL Patterns**
-- Detect suspicious user agents, URLs, JA3 hashes
-- Call `generate_dr_rule_detection` with query: "Detect HTTP requests with user agent containing [pattern]"
-
-**D. Beaconing Behavior**
-- Detect periodic callbacks to C2
-- Call `generate_dr_rule_detection` with query: "Detect repeated network connections to same destination within [timeframe]"
-
-**E. External Data Transfer**
-- Detect large outbound transfers
-- Call `generate_dr_rule_detection` with query: "Detect NETWORK_CONNECTIONS with bytes sent exceeding [threshold]"
-
----
-
-### Layer 3: File-Based Detections
-
-Create rules for:
-
-**A. File Creation**
-- Detect malicious file drops
-- Call `generate_dr_rule_detection` with query: "Detect NEW_DOCUMENT where file path matches [path_pattern]"
-
-**B. File Modification**
-- Detect tampering with critical files
-- Call `generate_dr_rule_detection` with query: "Detect FILE_MOD in [critical_directory]"
-
-**C. File Hash Matching**
-- Match against hash lookups
-- Call `generate_dr_rule_detection` with query: "Detect file activity where hash matches [lookup-name] lookup"
-
-**D. YARA Rules**
-- Scan files for malicious content patterns
-- Create YARA rule targeting strings/patterns from report
-- Deploy via `set_yara_rule` function
-
-**E. Suspicious Extensions**
-- Detect double extensions, script files in unexpected locations
-- Call `generate_dr_rule_detection` with query: "Detect file creation with extension [.hta/.scr/.js] in user directories"
-
----
-
-### Layer 4: Persistence & System Modification
-
-Create rules for:
-
-**A. Registry Persistence (Windows)**
-- Run keys, services, scheduled tasks via registry
-- Call `generate_dr_rule_detection` with query: "Detect registry modification to [Run key path]"
-
-**B. Scheduled Tasks / Cron Jobs**
-- Detect task creation
-- Call `generate_dr_rule_detection` with query: "Detect NEW_PROCESS of schtasks.exe or at.exe with /create"
-
-**C. Service Installation**
-- Detect new services
-- Call `generate_dr_rule_detection` with query: "Detect service creation events in Windows Event Log"
-
-**D. Startup Folder Modifications**
-- Detect drops in startup locations
-- Call `generate_dr_rule_detection` with query: "Detect NEW_DOCUMENT in startup folder paths"
-
-**E. WMI Persistence**
-- Detect WMI event subscriptions
-- Call `generate_dr_rule_detection` with query: "Detect WMI process creation with EventConsumer or EventFilter"
-
-**F. Linux Persistence**
-- Cron, systemd, init.d modifications
-- Call `generate_dr_rule_detection` with query: "Detect file modification in /etc/cron* or /etc/systemd/"
-
----
-
-### Layer 5: Credential & Privilege Escalation
-
-Create rules for:
-
-**A. Credential Dumping**
-- LSASS access, SAM/SECURITY hive access
-- Call `generate_dr_rule_detection` with query: "Detect process accessing lsass.exe memory"
-
-**B. Privilege Escalation Tools**
-- Detect known priv-esc tools
-- Call `generate_dr_rule_detection` with query: "Detect execution of [mimikatz/rubeus/potato] variants"
-
-**C. Token Manipulation**
-- Detect token theft/impersonation
-- Call `generate_dr_rule_detection` with query: "Detect process with SeDebugPrivilege or SeImpersonatePrivilege abuse"
-
----
-
-### Layer 6: Lateral Movement
-
-Create rules for:
-
-**A. Remote Execution**
-- PsExec, WMI, WinRM, SSH
-- Call `generate_dr_rule_detection` with query: "Detect [psexec/wmic/winrs] with remote execution arguments"
-
-**B. Pass-the-Hash/Ticket**
-- Detect anomalous authentication patterns
-- Call `generate_dr_rule_detection` with query: "Detect authentication events with suspicious logon type"
-
-**C. RDP/VNC Activity**
-- Detect unexpected remote desktop
-- Call `generate_dr_rule_detection` with query: "Detect mstsc.exe or vnc execution from non-admin systems"
-
----
-
-### Layer 7: Defense Evasion
-
-Create rules for:
-
-**A. Log Clearing**
-- Detect event log clearing
-- Call `generate_dr_rule_detection` with query: "Detect wevtutil or Clear-EventLog execution"
-
-**B. Security Tool Tampering**
-- Detect AV/EDR disabling
-- Call `generate_dr_rule_detection` with query: "Detect process terminating security product processes"
-
-**C. Timestomping**
-- Detect file timestamp manipulation
-- Call `generate_dr_rule_detection` with query: "Detect timestomp tool execution or suspicious SetFileTime calls"
-
-**D. Masquerading**
-- Detect processes mimicking legitimate names in wrong locations
-- Call `generate_dr_rule_detection` with query: "Detect svchost.exe execution from non-System32 path"
-
----
-
-### Layer 8: Stateful & Threshold Rules
-
-Create rules for:
-
-**A. Chained Detections**
-- Detect sequence: recon → exploitation → persistence
-- Use stateful rules with `with child` or `with descendant` operators
-
-**B. Threshold Alerts**
-- Detect high-frequency events
-- Call `generate_dr_rule_detection` with query: "Detect more than [N] failed logins within [timeframe]"
-
-**C. Aggregation Rules**
-- Detect patterns across multiple sensors
-- Use `COUNT_UNIQUE` in LCQL to identify scope
-
----
-
-### Layer 9: IOC Lookups
-
-Create lookups for ALL extracted IOCs:
-
-| Lookup Name | IOC Type | Example |
-|-------------|----------|---------|
-| `[threat]-hashes` | SHA256, SHA1, MD5 | Malware samples |
-| `[threat]-domains` | DNS names | C2 domains |
-| `[threat]-ips` | IPv4/IPv6 | C2 infrastructure |
-| `[threat]-paths` | File paths | Persistence locations |
-| `[threat]-urls` | Full URLs | Payload delivery |
-| `[threat]-emails` | Email addresses | Phishing senders |
-
-For each lookup, create matching D&R rules:
-- DNS_REQUEST → domain lookup
-- NETWORK_CONNECTIONS → IP lookup
-- NEW_PROCESS/NEW_DOCUMENT → hash lookup
-- File events → path lookup
-
----
-
-### Layer 10: False Positive Management
-
-**A. Identify Noisy Rules**
-- Rules with >50 hits/day need tuning
-
-**B. Create FP Suppression Rules**
-- Exclude known-good software, paths, users
-- Call `generate_dr_rule_detection` with query: "Detect [behavior] excluding processes signed by [vendor]"
-
-**C. Exclusion Lookups**
-- Create allowlist lookups for legitimate software
-- Reference in rules with `op: lookup` negation
+## Recommendations
+1. [Action items based on findings]
+```
 
 ---
 
 ## Detection Checklist
 
-**Claude MUST complete this checklist for every threat report:**
+For comprehensive coverage, ensure agents cover:
 
 ### Process Detections
-- [ ] Malicious process names detected
-- [ ] Command-line patterns detected
-- [ ] Parent-child anomalies detected
-- [ ] Suspicious execution paths detected
-- [ ] Module loading detected (if applicable)
+- [ ] Malicious process names
+- [ ] Command-line patterns
+- [ ] Parent-child anomalies
+- [ ] Suspicious execution paths
+- [ ] Module loading
 
 ### Network Detections
-- [ ] DNS lookups for threat domains created
-- [ ] Network connections to threat IPs created
-- [ ] HTTP/URL patterns detected
-- [ ] Beaconing patterns detected (if applicable)
+- [ ] DNS lookups for threat domains
+- [ ] Network connections to threat IPs
+- [ ] HTTP/URL patterns
+- [ ] Beaconing patterns
 
 ### File Detections
-- [ ] File creation in persistence locations detected
-- [ ] File hash matching via lookups created
-- [ ] YARA rules created (if file samples available)
-- [ ] Suspicious file extensions detected
+- [ ] File creation in persistence locations
+- [ ] File hash matching via lookups
+- [ ] Suspicious file extensions
 
 ### Persistence Detections
-- [ ] Registry persistence detected (Windows)
-- [ ] Scheduled task creation detected
-- [ ] Service installation detected
-- [ ] Startup modifications detected
-- [ ] WMI/cron persistence detected
+- [ ] Registry persistence
+- [ ] Scheduled task creation
+- [ ] Service installation
+- [ ] Startup modifications
 
 ### Credential/Privilege Detections
-- [ ] Credential dumping detected
-- [ ] Known priv-esc tools detected
+- [ ] Credential dumping
+- [ ] Known priv-esc tools
 
 ### Lateral Movement Detections
-- [ ] Remote execution tools detected
-- [ ] Anomalous authentication detected
+- [ ] Remote execution tools
+- [ ] Anomalous authentication
 
 ### Defense Evasion Detections
-- [ ] Log clearing detected
-- [ ] Security tool tampering detected
-- [ ] Masquerading detected
+- [ ] Log clearing
+- [ ] Security tool tampering
+- [ ] Masquerading
 
 ### IOC Lookups
-- [ ] Hash lookup created and referenced
-- [ ] Domain lookup created and referenced
-- [ ] IP lookup created and referenced
-- [ ] Path lookup created and referenced
-
-### Validation
-- [ ] All rules validated via `validate_dr_rule_components`
-- [ ] FP suppression rules created for noisy detections
-- [ ] User approved all detections before creation
+- [ ] Hash lookup created
+- [ ] Domain lookup created
+- [ ] IP lookup created
+- [ ] Path lookup created
 
 ---
 
 ## Rule Naming Convention
 
-Use consistent naming: `[threat-name]-[detection-type]-[indicator]`
+All rules follow: `[threat-name]-[layer]-[indicator]`
 
 Examples:
 - `apt-x-process-encoded-powershell`
 - `apt-x-network-c2-domain`
-- `apt-x-file-persistence-path`
-- `apt-x-registry-runkey`
+- `apt-x-file-malicious-dll`
+- `apt-x-persistence-runkey`
 
 ---
 
 ## Response Actions
 
-For each rule, include appropriate responses:
+Priority-based response actions:
 
-**High Priority (8-10):**
+**High Priority (8-10)**:
 - Report with publish: true
 - Add tag with 7-day TTL
 - Consider sensor isolation for critical hits
 
-**Medium Priority (5-7):**
+**Medium Priority (5-7)**:
 - Report with publish: true
 - Add tag with 3-day TTL
 
-**Low Priority (1-4):**
+**Low Priority (1-4)**:
 - Report only
 - Add informational tag
 
-Always include metadata:
+All responses include metadata:
 - MITRE ATT&CK technique IDs
 - Threat campaign name
 - Remediation steps
-- Report source reference
 
 ---
 
-## Final Report Template
+## Multi-Organization Workflow
 
-```markdown
-# Threat Report Evaluation: [Report Name]
-Date: [YYYY-MM-DD]
-Organization: [OID]
+For MSSP scenarios with multiple organizations:
 
-## Executive Summary
-[2-3 sentences on findings]
+1. **Get org list** via `list_user_orgs`
+2. **Spawn ioc-hunter agents in parallel** (one per org in single message)
+3. **Spawn behavior-hunter agents in parallel** (one per org in single message)
+4. **Aggregate results** across all orgs
+5. **Build detections** for each affected org
 
-## IOC Search Results
-| IOC Type | Value | Status | Occurrences |
-|----------|-------|--------|-------------|
-
-## Behavioral Query Results
-| Behavior | Query | Results | Status |
-|----------|-------|---------|--------|
-
-## Detections Created
-
-### D&R Rules
-| Rule Name | Detection Type | Priority |
-|-----------|---------------|----------|
-
-### Lookups
-| Lookup Name | IOC Count | Types |
-|-------------|-----------|-------|
-
-### YARA Rules
-| Rule Name | Target |
-|-----------|--------|
-
-## Affected Sensors
-| Sensor | Reason | Action Required |
-|--------|--------|-----------------|
-
-## Detection Checklist Status
-[Include completed checklist]
-
-## Recommendations
-1. [Action items]
+```
+# Parallel IOC hunting across 5 orgs
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org1...")
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org2...")
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org3...")
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org4...")
+Task(subagent_type="lc-essentials:ioc-hunter", prompt="...org5...")
 ```
 
 ---
 
 ## Troubleshooting
 
-**Validation fails**: Refine your AI generation prompt—don't manually edit YAML.
+**Download fails**: Check URL accessibility, try with `curl -v` for verbose output
 
-**Too many results**: Add exclusions to your detection prompt.
+**Parser fails on PDF**: Ensure Phase 0 downloaded to `/tmp/`, then Read tool (handles PDFs natively)
 
-**IOC ubiquitous**: Mark as weak IOC, consider excluding from detections.
+**Too many IOC results**: Check for ubiquitous IOCs (>100 hits) - likely weak indicators
 
-**Platform missing**: Skip that platform's detections, document in report.
+**Behavior queries return excessive events**: Ask agent to refine with more specific exclusions
 
-**Query errors**: Use `lookup-lc-doc` skill for LCQL syntax reference.
+**Rule validation fails**: Agent will retry; if still failing, review error in output
+
+**Platform missing**: Agent automatically skips behaviors/detections for unavailable platforms
+
+---
+
+## Context Efficiency
+
+This skill uses sub-agents and file-based report handling to reduce main context usage by ~90%:
+
+| Phase | Without Optimization | With Optimization | Savings |
+|-------|---------------------|-------------------|---------|
+| Report Download | ~200KB in context | ~0KB (file on disk) | 100% |
+| PDF Parsing | ~200KB | ~10KB JSON | 95% |
+| IOC Search | ~100KB | ~20KB summaries | 80% |
+| Behavior Search | ~150KB | ~15KB summaries | 90% |
+| Detection Rules | ~50KB | ~25KB validated | 50% |
+
+**Key optimizations**:
+- Report downloaded to `/tmp/` - never enters main context
+- Parser agent reads file directly and returns only structured JSON
+- Each agent receives only the data it needs and returns summarized results

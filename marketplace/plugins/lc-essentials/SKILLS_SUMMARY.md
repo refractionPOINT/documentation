@@ -90,6 +90,9 @@
 #### Infrastructure as Code (1 skill)
 - **limacharlie-iac**: Manage LimaCharlie configurations using ext-git-sync compatible Infrastructure as Code. Initialize IaC repos, add/remove tenants, manage global and tenant-specific configurations, import existing rules from tenants, promote tenant rules to global. Compatible with LimaCharlie's ext-git-sync extension for automated deployment.
 
+#### Testing & Development (1 skill)
+- **test-limacharlie-edr**: Deploy a temporary LimaCharlie EDR agent on the local Linux host for testing. Downloads and runs the LC sensor in a temp directory with automatic cleanup. Requires root/sudo for full system monitoring. Use for testing D&R rules, investigating sensor behavior, or development.
+
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
 - list-dr-general-rules
