@@ -40,7 +40,7 @@ lc_call_tool(tool_name="list_sensors", parameters={
 
 ## Selector Syntax (Bexpr)
 
-**Fields:** `sid`, `oid`, `plat`, `arch`, `hostname`, `int_ip`, `ext_ip`, `alive`, `tags`
+**Fields:** `sid`, `oid`, `iid`, `plat`, `arch`, `hostname`, `int_ip`, `ext_ip`, `alive`, `tags`
 
 **Operators:**
 - `==`, `!=`, `>`, `<`, `>=`, `<=` - comparison
@@ -55,6 +55,7 @@ plat == `windows`                              # Platform filter
 hostname matches `^prod-`                      # Hostname regex
 `critical` in tags                             # Tag filter
 plat == `linux` and hostname matches `^web-`   # Combined
+iid == `a1b2c3d4-e5f6-...`                     # Installation key ID filter
 ```
 
 Note: String literals use backticks in bexpr.
