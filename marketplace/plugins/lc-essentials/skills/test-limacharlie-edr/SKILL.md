@@ -108,16 +108,19 @@ echo "Sensor started with PID: $!"
 
 ### Verify Sensor Connection
 
-After starting, the sensor should appear in your LimaCharlie organization within a few seconds. Verify by checking that a sensor with a matching `iid` (Installation ID) appears:
+After starting, the sensor should appear in your LimaCharlie organization within a few seconds. Verify by listing sensors with a selector that matches the installation key's `iid` (Installation ID, a UUID):
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="list_sensors",
-  parameters={"oid": "<SELECTED_ORG_ID>"}
+  parameters={
+    "oid": "<SELECTED_ORG_ID>",
+    "selector": "iid == `<INSTALLATION_KEY_IID>`"
+  }
 )
 ```
 
-Look for a sensor where the `iid` field matches the `iid` from the installation key used (e.g., if the installation key has `"iid": "test-edr"`, the sensor should also have `"iid": "test-edr"`). This confirms the sensor enrolled with the correct key.
+Replace `<INSTALLATION_KEY_IID>` with the `iid` UUID from the installation key used. This selector fetches only the sensor enrolled with that specific installation key, rather than listing all sensors in the organization.
 
 ### Stopping and Cleanup
 
@@ -188,7 +191,16 @@ cd "$TEMP_DIR" && sudo nohup ./lc_sensor -d "abc123:def456:..." > /dev/null 2>&1
 echo "Sensor started, temp dir: $TEMP_DIR"
 ```
 
-6. Verify sensor connection by listing sensors and matching the `iid` field.
+6. Verify sensor connection using a selector with the installation key's `iid`:
+```
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="list_sensors",
+  parameters={
+    "oid": "abc123-def456-...",
+    "selector": "iid == `<IID_FROM_INSTALLATION_KEY>`"
+  }
+)
+```
 
 7. Inform user the sensor is running and how to stop it (using `sudo pkill -f lc_sensor`).
 
