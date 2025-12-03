@@ -444,6 +444,49 @@ Execute LimaCharlie API call:
 - **No Cross-Org Operations**: Only work with the OID provided
 - **Time Limits**: Data availability checks limited to <30 days (API constraint)
 
+## Special Handling: create_payload
+
+The `create_payload` function supports uploading payloads via either `file_path` (server-side) or `file_content` (base64-encoded). Since the MCP server runs remotely and cannot access local files, you must convert local file paths to base64 content.
+
+**When you receive a `create_payload` call with `file_path`:**
+
+1. Read the file content using Bash:
+   ```bash
+   base64 -w 0 "/path/to/file.ps1"
+   ```
+
+2. Replace `file_path` with `file_content` in parameters:
+   ```python
+   # Original parameters (will fail with remote MCP)
+   {"oid": "...", "name": "script.ps1", "file_path": "/home/user/script.ps1"}
+
+   # Transformed parameters (works with remote MCP)
+   {"oid": "...", "name": "script.ps1", "file_content": "<base64_output>"}
+   ```
+
+3. Execute the MCP tool call with the transformed parameters
+
+**Example Workflow:**
+
+Step 1: Read and encode file using Bash:
+```bash
+base64 -w 0 "/home/user/Manage-FirewallIP.ps1"
+```
+
+Step 2: Use the base64 output as `file_content`:
+```
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="create_payload",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "Manage-FirewallIP.ps1",
+    "file_content": "<base64_output_from_step_1>"
+  }
+)
+```
+
+**Important**: Always use `file_content` for local files. The `file_path` parameter only works when the MCP server can directly access the filesystem path.
+
 ### CRITICAL: Timestamp Calculation
 
 **❌ NEVER calculate epoch timestamps manually** - LLMs produce incorrect values (e.g., 2024 instead of 2025).
