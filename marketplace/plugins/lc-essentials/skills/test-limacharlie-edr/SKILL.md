@@ -97,30 +97,27 @@ echo "Sensor downloaded to: $TEMP_DIR"
 **Step 2**: Run the sensor in background (as root):
 
 ```bash
-sudo setsid "$TEMP_DIR/lc_sensor" -d <INSTALLATION_KEY> > /dev/null 2>&1 &
-echo "Sensor started in $TEMP_DIR"
+cd "$TEMP_DIR" && sudo nohup ./lc_sensor -d <INSTALLATION_KEY> > /dev/null 2>&1 &
+echo "Sensor started with PID: $!"
 ```
 
 **Important**:
-- Uses `setsid` to create a new session and fully detach from the terminal (prevents Claude Code from hanging)
+- The sensor runs detached from the shell using `nohup` with output redirected to `/dev/null`
 - Store the `TEMP_DIR` path for cleanup later
 - The sensor process name is `lc_sensor` - use this for stopping
 
 ### Verify Sensor Connection
 
-After starting, the sensor should appear in your LimaCharlie organization within a few seconds. Verify by listing sensors with a selector that matches the installation key's `iid` (Installation ID, a UUID):
+After starting, the sensor should appear in your LimaCharlie organization within a few seconds. Verify by checking that a sensor with a matching `iid` (Installation ID) appears:
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="list_sensors",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "selector": "iid == `<INSTALLATION_KEY_IID>`"
-  }
+  parameters={"oid": "<SELECTED_ORG_ID>"}
 )
 ```
 
-Replace `<INSTALLATION_KEY_IID>` with the `iid` UUID from the installation key used. This selector fetches only the sensor enrolled with that specific installation key, rather than listing all sensors in the organization.
+Look for a sensor where the `iid` field matches the `iid` from the installation key used (e.g., if the installation key has `"iid": "test-edr"`, the sensor should also have `"iid": "test-edr"`). This confirms the sensor enrolled with the correct key.
 
 ### Stopping and Cleanup
 
@@ -187,20 +184,11 @@ Returns: `{"iid": "test-edr", "key": "abc123:def456:..."}`
 TEMP_DIR=$(mktemp -d -t lc-edr-test-XXXXXX)
 curl -sSL https://downloads.limacharlie.io/sensor/linux/64 -o "$TEMP_DIR/lc_sensor"
 chmod +x "$TEMP_DIR/lc_sensor"
-sudo setsid "$TEMP_DIR/lc_sensor" -d "abc123:def456:..." > /dev/null 2>&1 &
-echo "Sensor started in $TEMP_DIR"
+cd "$TEMP_DIR" && sudo nohup ./lc_sensor -d "abc123:def456:..." > /dev/null 2>&1 &
+echo "Sensor started, temp dir: $TEMP_DIR"
 ```
 
-6. Verify sensor connection using a selector with the installation key's `iid`:
-```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "abc123-def456-...",
-    "selector": "iid == `<IID_FROM_INSTALLATION_KEY>`"
-  }
-)
-```
+6. Verify sensor connection by listing sensors and matching the `iid` field.
 
 7. Inform user the sensor is running and how to stop it (using `sudo pkill -f lc_sensor`).
 
