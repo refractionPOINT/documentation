@@ -97,12 +97,12 @@ echo "Sensor downloaded to: $TEMP_DIR"
 **Step 2**: Run the sensor in background (as root):
 
 ```bash
-cd "$TEMP_DIR" && sudo nohup ./lc_sensor -d <INSTALLATION_KEY> > /dev/null 2>&1 &
-echo "Sensor started with PID: $!"
+sudo setsid "$TEMP_DIR/lc_sensor" -d <INSTALLATION_KEY> > /dev/null 2>&1 &
+echo "Sensor started in $TEMP_DIR"
 ```
 
 **Important**:
-- The sensor runs detached from the shell using `nohup` with output redirected to `/dev/null`
+- Uses `setsid` to create a new session and fully detach from the terminal (prevents Claude Code from hanging)
 - Store the `TEMP_DIR` path for cleanup later
 - The sensor process name is `lc_sensor` - use this for stopping
 
@@ -187,8 +187,8 @@ Returns: `{"iid": "test-edr", "key": "abc123:def456:..."}`
 TEMP_DIR=$(mktemp -d -t lc-edr-test-XXXXXX)
 curl -sSL https://downloads.limacharlie.io/sensor/linux/64 -o "$TEMP_DIR/lc_sensor"
 chmod +x "$TEMP_DIR/lc_sensor"
-cd "$TEMP_DIR" && sudo nohup ./lc_sensor -d "abc123:def456:..." > /dev/null 2>&1 &
-echo "Sensor started, temp dir: $TEMP_DIR"
+sudo setsid "$TEMP_DIR/lc_sensor" -d "abc123:def456:..." > /dev/null 2>&1 &
+echo "Sensor started in $TEMP_DIR"
 ```
 
 6. Verify sensor connection using a selector with the installation key's `iid`:
