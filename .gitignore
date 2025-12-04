@@ -37,5 +37,9 @@ build/
 .claude/.onboarded
 .claude/.chat_history
 
+# Session memory - these are per-session temporary files
+.claude/session-memory/session.md
+.claude/session-memory/.initialized
+
 # Claude plugins - these are user-specific installations from marketplace
 .claude-plugin/
