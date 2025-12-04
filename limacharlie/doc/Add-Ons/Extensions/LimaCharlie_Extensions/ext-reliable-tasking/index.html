@@ -1914,51 +1914,78 @@
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>--header &#39;Content-Type: application/x-www-form-urlencoded&#39; \
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>--data &#39;oid=$YOUR_OID&amp;action=task&amp;data={&quot;context&quot;:&quot;version&quot;,&quot;selector&quot;:&quot;plat==windows&quot;,&quot;task&quot;:&quot;run --shell-command whoami&quot;,&quot;ttl&quot;:3600}&#39;
 </span></code></pre></div>
-<p>The <code>task</code> is similar to a command-line <code>task</code>. Optionally, you can also specify which endpoints to task by specifying:</p>
+<p>All parameters are provided in the request body as URL-encoded form data. The <code>data</code> parameter should contain a JSON object with the following fields:</p>
+<p><strong>Required Parameters:</strong></p>
 <ul>
-<li><code>sid</code> : A specific Sensor ID</li>
-<li><code>tag</code> : All Sensor(s) with a Tag</li>
-<li><code>plat</code>: All Sensor(s) of the specified platform</li>
+<li><code>task</code>: The command to execute, similar to a command-line <code>task</code> (e.g., <code>"run --shell-command whoami"</code>, <code>"mem_map --pid 4"</code>)</li>
 </ul>
-<p>You can use the <code>ttl</code> to specify how long the extension should try to keep sending the task. The <code>ttl</code> value is a number of seconds and defaults to 1 week.</p>
-<h4 id="list-tasks"><strong>List Tasks</strong><a class="headerlink" href="#list-tasks" title="Anchor link to this section">&para;</a></h4>
+<p><strong>Optional Parameters:</strong></p>
+<ul>
+<li><code>selector</code>: A <a href="../../../../Sensors/Reference/reference-sensor-selector-expressions/">Sensor Selector Expression</a> to specify which sensors should receive the task. If omitted, the task will be sent to all sensors in the organization.</li>
+<li>Examples:<ul>
+<li><code>"selector":"plat==windows"</code> - All Windows sensors</li>
+<li><code>"selector":"sid=='abc-123-def'"</code> - A specific sensor by ID</li>
+<li><code>"selector":"production in tags"</code> - All sensors with the "production" tag</li>
+<li><code>"selector":"plat==linux and int_ip matches '^10\\.3\\..*'"</code> - Complex expressions using AND/OR logic</li>
+</ul>
+</li>
+<li><code>context</code>: An identifier that will be reflected in the <code>investigation_id</code> of the corresponding <code>RECEIPT</code> or <code>_REP</code> event, allowing you to craft D&amp;R rules based on the response</li>
+<li><code>ttl</code>: Time-to-live in seconds - how long the extension should try to keep sending the task to sensors that haven't acknowledged it. Defaults to 1 week (604800 seconds)</li>
+</ul>
+<p>For more details on sensor selector syntax and available fields (<code>sid</code>, <code>plat</code>, <code>tags</code>, <code>hostname</code>, <code>int_ip</code>, etc.), see the <a href="../../../../Sensors/Reference/reference-sensor-selector-expressions/">Sensor Selector Expressions reference</a>.</p>
+<p><strong>Additional Examples:</strong></p>
+<p>Target a specific sensor:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>curl --location &#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39; \
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>--header &#39;Authorization: Bearer $JWT&#39; \
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>--header &#39;Content-Type: application/x-www-form-urlencoded&#39; \
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>--data &#39;oid=$YOUR_OID&amp;action=list&amp;data={}&#39;
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>--data &#39;oid=$YOUR_OID&amp;action=task&amp;data={&quot;task&quot;:&quot;os_version&quot;,&quot;selector&quot;:&quot;sid==&#39;\&#39;&#39;sensor-123-abc&#39;\&#39;&#39;&quot;,&quot;ttl&quot;:86400}&#39;
+</span></code></pre></div></p>
+<p>Target all Linux servers with a specific tag:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl --location &#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39; \
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>--header &#39;Authorization: Bearer $JWT&#39; \
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>--header &#39;Content-Type: application/x-www-form-urlencoded&#39; \
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>--data &#39;oid=$YOUR_OID&amp;action=task&amp;data={&quot;task&quot;:&quot;file_get -f /etc/passwd&quot;,&quot;selector&quot;:&quot;plat==linux and production in tags&quot;,&quot;context&quot;:&quot;audit-2024&quot;,&quot;ttl&quot;:172800}&#39;
+</span></code></pre></div></p>
+<p>Target all sensors (no selector):
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl --location &#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39; \
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>--header &#39;Authorization: Bearer $JWT&#39; \
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>--header &#39;Content-Type: application/x-www-form-urlencoded&#39; \
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>--data &#39;oid=$YOUR_OID&amp;action=task&amp;data={&quot;task&quot;:&quot;os_version&quot;,&quot;ttl&quot;:3600}&#39;
+</span></code></pre></div></p>
+<h4 id="list-tasks"><strong>List Tasks</strong><a class="headerlink" href="#list-tasks" title="Anchor link to this section">&para;</a></h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl --location &#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39; \
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>--header &#39;Authorization: Bearer $JWT&#39; \
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>--header &#39;Content-Type: application/x-www-form-urlencoded&#39; \
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>--data &#39;oid=$YOUR_OID&amp;action=list&amp;data={}&#39;
 </span></code></pre></div>
-<p>When listing tasks, you can specify which endpoints to get queued tasks from by using one of:</p>
-<ul>
-<li><code>sid</code> : A specific sensor ID</li>
-<li><code>tag</code> : All Sensor(s) with a tag</li>
-<li><code>plat</code>: All Sensor(s) of the specified platform</li>
-</ul>
+<p>This returns all pending reliable tasks for the organization. The response includes task details such as the task ID, command, sensor selector expression, and which sensors have acknowledged execution.</p>
+<p><strong>Note:</strong> The current API returns all tasks regardless of selector. If you need to filter tasks by sensor characteristics, retrieve all tasks and filter the results based on the <code>sensor_selector</code> field in each task object.</p>
 <h2 id="capturing-task-responses">Capturing Task Responses<a class="headerlink" href="#capturing-task-responses" title="Anchor link to this section">&para;</a></h2>
 <p>If you're using reliable tasks to issue commands across your sensors, you're probably going to want to view or act on the responses from these commands as well.</p>
 <p>If you add a value to the <code>context</code> parameter in the extension request, this value will be reflected in the <code>investigation_id</code> of the corresponding <code>RECEIPT</code> or <code>_REP</code> event, allowing you to craft a D&amp;R rule based on the response.</p>
 <p>The above example cURL command has a <code>context</code> of <code>version</code> so the below D&amp;R rule looks for that value.</p>
 <h4 id="example-detect-block">Example detect block:<a class="headerlink" href="#example-detect-block" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>op: contains
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>event: RECEIPT
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>path: routing/investigation_id
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>value: version
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>op: contains
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>event: RECEIPT
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>path: routing/investigation_id
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>value: version
 </span></code></pre></div>
 <h4 id="example-respond-block">Example respond block:<a class="headerlink" href="#example-respond-block" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>- action: output
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  name: tasks-output         # Send responses to the specified output
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>- action: report
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  name: &quot;Reliable task ran&quot;  # Detect on the task being run
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>- action: output
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  name: tasks-output         # Send responses to the specified output
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>- action: report
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  name: &quot;Reliable task ran&quot;  # Detect on the task being run
 </span></code></pre></div>
 <h2 id="migrating-rule-from-legacy-service-to-new-extension">Migrating Rule from legacy Service to new Extension<a class="headerlink" href="#migrating-rule-from-legacy-service-to-new-extension" title="Anchor link to this section">&para;</a></h2>
 <p><strong><em>Note: LimaCharlie has migrated from Services to Extensions. Legacy services are no longer supported.</em></strong></p>
 <p>The <a href="https://github.com/refractionPOINT/python-limacharlie">Python CLI</a> gives you a direct way to assess if any rules reference the legacy reliable tasking service and convert them to use the extension.</p>
 <p>Command line to preview Reliable Tasking rule conversion:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>limacharlie extension convert_rules --name ext-reliable-tasking
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limacharlie extension convert_rules --name ext-reliable-tasking
 </span></code></pre></div>
 <p>A dry-run response (default) will display the rule name being changed, a JSON of the service request rule and a JSON of the incoming extension request change.</p>
 <p>To execute the change in the rule, explicitly set <code>--dry-run</code> flag to <code>--no-dry-run</code></p>
 <p>Command line to execute reliable tasking rule conversion:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>limacharlie extension convert_rules --name ext-reliable-tasking --no-dry-run
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>limacharlie extension convert_rules --name ext-reliable-tasking --no-dry-run
 </span></code></pre></div>
 
 
