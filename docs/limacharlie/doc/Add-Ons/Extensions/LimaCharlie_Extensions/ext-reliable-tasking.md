@@ -31,13 +31,50 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 --data 'oid=$YOUR_OID&action=task&data={"context":"version","selector":"plat==windows","task":"run --shell-command whoami","ttl":3600}'
 ```
 
-The `task` is similar to a command-line `task`. Optionally, you can also specify which endpoints to task by specifying:
+All parameters are provided in the request body as URL-encoded form data. The `data` parameter should contain a JSON object with the following fields:
 
-* `sid` : A specific Sensor ID
-* `tag` : All Sensor(s) with a Tag
-* `plat`: All Sensor(s) of the specified platform
+**Required Parameters:**
 
-You can use the `ttl` to specify how long the extension should try to keep sending the task. The `ttl` value is a number of seconds and defaults to 1 week.
+* `task`: The command to execute, similar to a command-line `task` (e.g., `"run --shell-command whoami"`, `"mem_map --pid 4"`)
+
+**Optional Parameters:**
+
+* `selector`: A [Sensor Selector Expression](../../../Sensors/Reference/reference-sensor-selector-expressions.md) to specify which sensors should receive the task. If omitted, the task will be sent to all sensors in the organization.
+  * Examples:
+    * `"selector":"plat==windows"` - All Windows sensors
+    * `"selector":"sid=='abc-123-def'"` - A specific sensor by ID
+    * `"selector":"production in tags"` - All sensors with the "production" tag
+    * `"selector":"plat==linux and int_ip matches '^10\\.3\\..*'"` - Complex expressions using AND/OR logic
+* `context`: An identifier that will be reflected in the `investigation_id` of the corresponding `RECEIPT` or `_REP` event, allowing you to craft D&R rules based on the response
+* `ttl`: Time-to-live in seconds - how long the extension should try to keep sending the task to sensors that haven't acknowledged it. Defaults to 1 week (604800 seconds)
+
+For more details on sensor selector syntax and available fields (`sid`, `plat`, `tags`, `hostname`, `int_ip`, etc.), see the [Sensor Selector Expressions reference](../../../Sensors/Reference/reference-sensor-selector-expressions.md).
+
+**Additional Examples:**
+
+Target a specific sensor:
+```
+curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
+--header 'Authorization: Bearer $JWT' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data 'oid=$YOUR_OID&action=task&data={"task":"os_version","selector":"sid=='\''sensor-123-abc'\''","ttl":86400}'
+```
+
+Target all Linux servers with a specific tag:
+```
+curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
+--header 'Authorization: Bearer $JWT' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data 'oid=$YOUR_OID&action=task&data={"task":"file_get -f /etc/passwd","selector":"plat==linux and production in tags","context":"audit-2024","ttl":172800}'
+```
+
+Target all sensors (no selector):
+```
+curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
+--header 'Authorization: Bearer $JWT' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data 'oid=$YOUR_OID&action=task&data={"task":"os_version","ttl":3600}'
+```
 
 #### **List Tasks**
 
@@ -48,11 +85,9 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 --data 'oid=$YOUR_OID&action=list&data={}'
 ```
 
-When listing tasks, you can specify which endpoints to get queued tasks from by using one of:
+This returns all pending reliable tasks for the organization. The response includes task details such as the task ID, command, sensor selector expression, and which sensors have acknowledged execution.
 
-* `sid` : A specific sensor ID
-* `tag` : All Sensor(s) with a tag
-* `plat`: All Sensor(s) of the specified platform
+**Note:** The current API returns all tasks regardless of selector. If you need to filter tasks by sensor characteristics, retrieve all tasks and filter the results based on the `sensor_selector` field in each task object.
 
 ## Capturing Task Responses
 
