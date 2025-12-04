@@ -29,7 +29,7 @@ This skill performs a multi-phase deployment:
 The adapter:
 - Runs in the background (non-blocking)
 - Uses a unique temp directory (avoids file conflicts)
-- Streams logs in real-time (`tail -f` on Linux, `log stream` on Mac OS)
+- Streams logs in real-time (`journalctl -f` or `tail -f` on Linux, `log stream` on Mac OS)
 - Does NOT require root/sudo
 - Cleans up automatically when stopped
 
@@ -40,7 +40,7 @@ Before starting, ensure you have:
 - **LimaCharlie organization**: Select from your available orgs or create a new one
 - **Linux or Mac OS host**: Supports Linux x64, Mac Intel (x64), and Mac Apple Silicon (arm64)
 - **Internet access**: Required to download the adapter binary
-- **Log access**: On Linux, needs read access to log files in `/var/log`. On Mac OS, uses the unified logging system via `log stream`
+- **Log access**: On Linux with journalctl, uses system journal (preferred). On Linux without journalctl, needs read access to log files in `/var/log`. On Mac OS, uses the unified logging system via `log stream`
 
 ## How to Use
 
@@ -96,13 +96,18 @@ OS_TYPE=$(uname -s)
 echo "Platform: $OS_TYPE"
 ```
 
-**For Linux**: Find the most recently modified log files in `/var/log`:
+**For Linux**: Check if `journalctl` is available (preferred), otherwise find log files in `/var/log`:
 
 ```bash
-find /var/log -maxdepth 1 -type f \( -name "*.log" -o -name "syslog" -o -name "messages" -o -name "auth.log" \) -readable -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -5
+if command -v journalctl &> /dev/null; then
+  echo "journalctl available - will use journalctl -f for log streaming"
+else
+  # Fall back to file-based detection
+  find /var/log -maxdepth 1 -type f \( -name "*.log" -o -name "syslog" -o -name "messages" -o -name "auth.log" \) -readable -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -5
+fi
 ```
 
-This shows the 5 most recently modified log files. Pick the most active one (typically `/var/log/syslog` or `/var/log/messages`). Confirm the selected log file with the user before proceeding.
+If `journalctl` is available, it will be used for log streaming (no file selection needed). If not, the command shows the 5 most recently modified log files - pick the most active one (typically `/var/log/syslog` or `/var/log/messages`). Confirm the log source with the user before proceeding.
 
 **For Mac OS**: No file detection needed - uses the unified logging system via `log stream`. The adapter will receive logs directly from macOS's unified logging system.
 
@@ -135,35 +140,61 @@ chmod +x "$TEMP_DIR/lc_adapter"
 echo "Adapter downloaded to: $TEMP_DIR"
 ```
 
-**Step 3**: Run the adapter with logs piped to stdin:
+**Step 3**: Create a launch script and run it in background:
+
+First, create the launch script based on the platform:
 
 ```bash
 if [ "$OS_TYPE" = "Darwin" ]; then
   # Mac: pipe from log stream (unified logging)
-  nohup bash -c "log stream --style syslog | $TEMP_DIR/lc_adapter stdin \
-    client_options.identity.installation_key=<IID> \
-    client_options.identity.oid=<OID> \
-    client_options.platform=text \
-    client_options.sensor_seed_key=test-adapter \
-    client_options.hostname=$HOSTNAME \
-    > $TEMP_DIR/adapter.log 2>&1" > /dev/null 2>&1 &
+  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
+#!/bin/bash
+log stream --style syslog | $TEMP_DIR/lc_adapter stdin \\
+  client_options.identity.installation_key=<IID> \\
+  client_options.identity.oid=<OID> \\
+  client_options.platform=text \\
+  client_options.sensor_seed_key=test-adapter \\
+  client_options.hostname=$HOSTNAME \\
+  > $TEMP_DIR/adapter.log 2>&1
+SCRIPT
+elif command -v journalctl &> /dev/null; then
+  # Linux with journalctl: pipe from journalctl -f
+  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
+#!/bin/bash
+journalctl -f --no-pager | $TEMP_DIR/lc_adapter stdin \\
+  client_options.identity.installation_key=<IID> \\
+  client_options.identity.oid=<OID> \\
+  client_options.platform=text \\
+  client_options.sensor_seed_key=test-adapter \\
+  client_options.hostname=$HOSTNAME \\
+  > $TEMP_DIR/adapter.log 2>&1
+SCRIPT
 else
-  # Linux: pipe from tail -f on log file
-  setsid bash -c "tail -f <LOG_FILE_PATH> | $TEMP_DIR/lc_adapter stdin \
-    client_options.identity.installation_key=<IID> \
-    client_options.identity.oid=<OID> \
-    client_options.platform=text \
-    client_options.sensor_seed_key=test-adapter \
-    client_options.hostname=$HOSTNAME \
-    > $TEMP_DIR/adapter.log 2>&1" > /dev/null 2>&1 &
+  # Linux without journalctl: fall back to tail -f on log file
+  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
+#!/bin/bash
+tail -f <LOG_FILE_PATH> | $TEMP_DIR/lc_adapter stdin \\
+  client_options.identity.installation_key=<IID> \\
+  client_options.identity.oid=<OID> \\
+  client_options.platform=text \\
+  client_options.sensor_seed_key=test-adapter \\
+  client_options.hostname=$HOSTNAME \\
+  > $TEMP_DIR/adapter.log 2>&1
+SCRIPT
 fi
-echo "Adapter started in $TEMP_DIR"
+chmod +x "$TEMP_DIR/run_adapter.sh"
+echo "Launch script created at $TEMP_DIR/run_adapter.sh"
+```
+
+Then, run the script using the Bash tool with `run_in_background: true`:
+
+```
+Bash(command="$TEMP_DIR/run_adapter.sh", run_in_background=true)
 ```
 
 **Important**:
-- **Linux** uses `setsid` to create a new session and `tail -f` to stream log files
-- **Mac OS** uses `nohup` for detachment and `log stream` for unified logging
-- Both approaches prevent Claude Code from hanging while waiting for the process
+- **MUST use `run_in_background: true`** - Shell backgrounding (`&`, `nohup`, `setsid`) does NOT work reliably with Claude Code's Bash tool
+- The script approach ensures proper process detachment
 - Does NOT require sudo - the adapter runs as regular user
 - Logs output to `$TEMP_DIR/adapter.log` for debugging
 - Store the `TEMP_DIR` path for cleanup later
@@ -198,13 +229,13 @@ When the user wants to stop the test adapter:
 **Single command to stop and clean up** (recommended):
 
 ```bash
-pkill -9 -f lc_adapter; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf <TEMP_DIR>; echo "Cleanup complete"
+pkill -9 -f lc_adapter; pkill -9 -f "journalctl -f"; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf <TEMP_DIR>; echo "Cleanup complete"
 ```
 
 **Important notes**:
 - Use `-9` (SIGKILL) for reliable termination of detached processes
 - Use `;` instead of `&&` - pkill returns non-zero exit codes even on success (e.g., 144 when the signal is delivered)
-- Kill `lc_adapter` AND the log source process (`tail -f` on Linux, `log stream` on Mac)
+- Kill `lc_adapter` AND the log source process (`journalctl -f` or `tail -f` on Linux, `log stream` on Mac)
 - Do NOT use `KillShell` to stop the adapter - always use `pkill`
 
 **Verify cleanup succeeded**:
@@ -257,20 +288,24 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 Returns: `{"iid": "729b2770-9ae6-4e14-beea-5e42b854adf5", ...}`
 
-5. Detect platform and find log source (Linux only):
+5. Detect platform and check log source:
 ```bash
 OS_TYPE=$(uname -s)
 ARCH=$(uname -m)
-# On Linux, find most active log file:
+# On Linux, check for journalctl (preferred) or fall back to log files:
 if [ "$OS_TYPE" = "Linux" ]; then
-  find /var/log -maxdepth 1 -type f \( -name "*.log" -o -name "syslog" -o -name "messages" -o -name "auth.log" \) -readable -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -5
+  if command -v journalctl &> /dev/null; then
+    echo "journalctl available - will use journalctl -f for log streaming"
+  else
+    find /var/log -maxdepth 1 -type f \( -name "*.log" -o -name "syslog" -o -name "messages" -o -name "auth.log" \) -readable -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -5
+  fi
 fi
 # On Mac: uses log stream, no file detection needed
 ```
 
-On Linux, shows `/var/log/syslog` is most active. On Mac, skip this step.
+On Linux with journalctl, no file selection needed. On Linux without journalctl, shows log files - pick the most active one. On Mac, skip this step.
 
-6. Download and run adapter:
+6. Download adapter and create launch script:
 ```bash
 TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lc-adapter-test-XXXXXX")
 HOSTNAME=$(hostname)
@@ -287,24 +322,48 @@ fi
 curl -sSL "$DOWNLOAD_URL" -o "$TEMP_DIR/lc_adapter"
 chmod +x "$TEMP_DIR/lc_adapter"
 
+# Create launch script
 if [ "$OS_TYPE" = "Darwin" ]; then
-  nohup bash -c "log stream --style syslog | $TEMP_DIR/lc_adapter stdin \
-    client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \
-    client_options.identity.oid=abc123-def456-... \
-    client_options.platform=text \
-    client_options.sensor_seed_key=test-adapter \
-    client_options.hostname=$HOSTNAME \
-    > $TEMP_DIR/adapter.log 2>&1" > /dev/null 2>&1 &
+  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
+#!/bin/bash
+log stream --style syslog | $TEMP_DIR/lc_adapter stdin \\
+  client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \\
+  client_options.identity.oid=abc123-def456-... \\
+  client_options.platform=text \\
+  client_options.sensor_seed_key=test-adapter \\
+  client_options.hostname=$HOSTNAME \\
+  > $TEMP_DIR/adapter.log 2>&1
+SCRIPT
+elif command -v journalctl &> /dev/null; then
+  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
+#!/bin/bash
+journalctl -f --no-pager | $TEMP_DIR/lc_adapter stdin \\
+  client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \\
+  client_options.identity.oid=abc123-def456-... \\
+  client_options.platform=text \\
+  client_options.sensor_seed_key=test-adapter \\
+  client_options.hostname=$HOSTNAME \\
+  > $TEMP_DIR/adapter.log 2>&1
+SCRIPT
 else
-  setsid bash -c "tail -f /var/log/syslog | $TEMP_DIR/lc_adapter stdin \
-    client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \
-    client_options.identity.oid=abc123-def456-... \
-    client_options.platform=text \
-    client_options.sensor_seed_key=test-adapter \
-    client_options.hostname=$HOSTNAME \
-    > $TEMP_DIR/adapter.log 2>&1" > /dev/null 2>&1 &
+  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
+#!/bin/bash
+tail -f /var/log/syslog | $TEMP_DIR/lc_adapter stdin \\
+  client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \\
+  client_options.identity.oid=abc123-def456-... \\
+  client_options.platform=text \\
+  client_options.sensor_seed_key=test-adapter \\
+  client_options.hostname=$HOSTNAME \\
+  > $TEMP_DIR/adapter.log 2>&1
+SCRIPT
 fi
-echo "Adapter started in $TEMP_DIR"
+chmod +x "$TEMP_DIR/run_adapter.sh"
+echo "Launch script created at $TEMP_DIR/run_adapter.sh"
+```
+
+Then run the script in background:
+```
+Bash(command="$TEMP_DIR/run_adapter.sh", run_in_background=true)
 ```
 
 7. Verify adapter connection:
@@ -328,7 +387,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 1. Stop adapter and clean up (single command):
 ```bash
-pkill -9 -f lc_adapter; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf /tmp/lc-adapter-test-XXXXXX; echo "Cleanup complete"
+pkill -9 -f lc_adapter; pkill -9 -f "journalctl -f"; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf /tmp/lc-adapter-test-XXXXXX; echo "Cleanup complete"
 ```
 
 2. Verify cleanup:
@@ -352,14 +411,15 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - **Cross-platform support**: Works on Linux (x64), Mac OS Intel (x64), and Mac OS Apple Silicon (arm64)
 - **No root required**: The adapter runs as a regular user
 - **Log sources differ by platform**:
-  - **Linux**: Uses `tail -f` to stream log files from `/var/log`
+  - **Linux with journalctl**: Uses `journalctl -f --no-pager` to stream system logs (preferred)
+  - **Linux without journalctl**: Falls back to `tail -f` on log files from `/var/log`
   - **Mac OS**: Uses `log stream` to access macOS unified logging (no file selection needed)
 - **Temp directory**: The adapter may create working files, so we use a dedicated temp directory to keep things clean
 - **Automatic tags**: Sensors enrolled with this key get `test-adapter` and `temporary` tags for easy identification
 - **Console visibility**: The adapter appears as a sensor in your LimaCharlie web console at https://app.limacharlie.io
-- **Background execution**: The adapter runs in background, so you can continue working while it streams logs
+- **Background execution**: MUST use `run_in_background: true` with the Bash tool - shell backgrounding (`&`, `nohup`, `setsid`) does NOT work reliably with Claude Code
 - **Reusable key**: The "Test Adapter" installation key is reused if it already exists, avoiding duplicate keys
-- **Real-time streaming**: Uses `tail -f` (Linux) or `log stream` (Mac) for reliable streaming
+- **Real-time streaming**: Uses `journalctl -f --no-pager` or `tail -f` (Linux) or `log stream` (Mac) for reliable streaming
 - **Cleanup**: Always clean up when done to avoid orphaned processes and files. Use `;` not `&&` when chaining cleanup commands since pkill returns non-zero exit codes even on success
 - **Debugging**: Check `$TEMP_DIR/adapter.log` if the adapter isn't connecting
 
