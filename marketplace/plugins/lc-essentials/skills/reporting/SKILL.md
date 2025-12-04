@@ -69,10 +69,78 @@ Ensure you are authenticated to LimaCharlie with access to target organizations:
 - OIDs are permanent identifiers (names can change)
 
 ### Time Range Requirements
+
+**⚠️ MANDATORY: Prompt User for Time Range**
+
+Before generating any report that requires detection or event data, you MUST ask the user to confirm or specify the time range using the `AskUserQuestion` tool:
+
+```
+AskUserQuestion(
+  questions=[{
+    "question": "What time range should I use for this report?",
+    "header": "Time Range",
+    "options": [
+      {"label": "Last 24 hours", "description": "Most recent day of data"},
+      {"label": "Last 7 days", "description": "Past week of activity"},
+      {"label": "Last 30 days", "description": "Past month of activity"},
+      {"label": "Custom range", "description": "I'll specify exact dates"}
+    ],
+    "multiSelect": false
+  }]
+)
+```
+
+If user selects "Custom range", follow up to get specific start/end dates.
+
+**Core Requirements:**
 - All reports MUST specify explicit time ranges
 - Time windows MUST be displayed in every report section
-- Default to last 30 days if not specified (but always confirm with user)
+- NEVER assume a default time range without user confirmation
 - Maximum recommended range: 90 days (API limitations)
+
+**⚠️ CRITICAL: Dynamic Timestamp Calculation**
+
+**NEVER use hardcoded epoch values from examples or documentation!**
+
+ALWAYS calculate timestamps dynamically using bash before making API calls:
+
+```bash
+# Get current Unix timestamp
+NOW=$(date +%s)
+
+# Calculate relative time ranges
+HOURS_24_AGO=$((NOW - 86400))        # 24 hours = 86400 seconds
+DAYS_7_AGO=$((NOW - 604800))          # 7 days = 604800 seconds
+DAYS_30_AGO=$((NOW - 2592000))        # 30 days = 2592000 seconds
+DAYS_90_AGO=$((NOW - 7776000))        # 90 days = 7776000 seconds
+
+# For specific date ranges (user-provided)
+START=$(date -d "2025-11-01 00:00:00 UTC" +%s)
+END=$(date -d "2025-11-30 23:59:59 UTC" +%s)
+
+# Display human-readable for confirmation
+echo "Time range: $(date -d @$START) to $(date -d @$END)"
+```
+
+**Why This Matters:**
+- The detection API (`get_historic_detections`) uses Unix epoch timestamps in SECONDS
+- Using stale or example timestamps (like those in documentation) returns NO DATA
+- The API only returns detections within the specified time window
+- Incorrect timestamps = empty results = incorrect reports
+
+**Validation Before API Call:**
+```bash
+# Verify timestamps are reasonable
+if [ $START -gt $END ]; then
+  echo "ERROR: Start time is after end time"
+  exit 1
+fi
+
+if [ $END -gt $NOW ]; then
+  echo "WARNING: End time is in the future, using current time"
+  END=$NOW
+fi
+```
 
 ## Data Accuracy Guardrails
 
@@ -710,25 +778,45 @@ This skill uses a **parallel subagent architecture** for efficient multi-tenant 
 │    - Show me the organization list                │
 └────────────────────────────────────────────────────┘
 
-┌─ PHASE 2: TIME RANGE VALIDATION ──────────────────┐
-│ 4. Parse time range from user request:           │
-│    - "monthly" → Last 30 days from today          │
-│    - "November" → Nov 1-30, 2025 (full month)     │
-│    - "last week" → 7 days from today              │
-│    - Specific dates → Parse and validate          │
+┌─ PHASE 2: TIME RANGE - ASK USER & CALCULATE ──────┐
 │                                                    │
-│ 5. Validation Checks:                             │
+│ 4. ⚠️ MANDATORY: Ask user for time range:         │
+│                                                    │
+│    Use AskUserQuestion tool:                      │
+│    - "Last 24 hours"                              │
+│    - "Last 7 days"                                │
+│    - "Last 30 days"                               │
+│    - "Custom range"                               │
+│                                                    │
+│    If "Custom range", ask for specific dates.     │
+│    NEVER assume or default without asking!        │
+│                                                    │
+│ 5. ⚠️ CRITICAL: Calculate timestamps dynamically: │
+│                                                    │
+│    ```bash                                        │
+│    NOW=$(date +%s)                                │
+│    # Based on user selection:                     │
+│    # 24h:  START=$((NOW - 86400))                 │
+│    # 7d:   START=$((NOW - 604800))                │
+│    # 30d:  START=$((NOW - 2592000))               │
+│    END=$NOW                                       │
+│    ```                                            │
+│                                                    │
+│    NEVER use hardcoded epoch values!              │
+│    Stale timestamps = NO DATA returned!           │
+│                                                    │
+│ 6. Validation Checks:                             │
 │    ✓ Start timestamp < End timestamp              │
 │    ✓ End timestamp <= Current time                │
 │    ✓ Range is reasonable (<= 90 days)            │
-│    ✓ Convert to Unix epoch (seconds)              │
+│    ✓ Timestamps are Unix epoch in SECONDS         │
 │                                                    │
-│ 6. Display for user confirmation:                 │
+│ 7. Display for user confirmation:                 │
 │    "Time Range:                                    │
-│     - Start: Nov 1, 2025 00:00:00 UTC             │
-│     - End: Nov 30, 2025 23:59:59 UTC              │
-│     - Duration: 30 days                           │
-│     - Unix: 1730419200 to 1733011199"             │
+│     - Start: [calculated date] UTC                │
+│     - End: [calculated date] UTC                  │
+│     - Duration: X days                            │
+│     - Unix: [start_epoch] to [end_epoch]"         │
 └────────────────────────────────────────────────────┘
 
 ┌─ PHASE 3: SPAWN PARALLEL AGENTS ──────────────────┐
@@ -1010,10 +1098,13 @@ AI must validate at these critical points:
 ```
 ✓ Organization list retrieved successfully
 ✓ Each OID is valid UUID format (not org name)
+✓ USER WAS ASKED to confirm time range (MANDATORY)
+✓ Timestamps calculated DYNAMICALLY using $(date +%s)
 ✓ Timestamps are reasonable (start < end, not future)
 ✓ Limit values are positive integers
 ✓ Date ranges <= 90 days (warn if larger)
 ✓ User confirmed processing for large org counts (>20)
+✓ Time range displayed to user before proceeding
 ```
 
 ### After Agent Results
@@ -1058,11 +1149,23 @@ RIGHT: Severity not in detection records - only in D&R rule config
 
 ### ❌ Timestamp Mistakes
 ```
+WRONG: Using hardcoded epoch values from documentation examples
+RIGHT: ALWAYS calculate dynamically: NOW=$(date +%s); START=$((NOW - 604800))
+
+WRONG: Assuming a default time range without asking user
+RIGHT: Use AskUserQuestion to confirm time range before querying
+
+WRONG: Using timestamps from skill examples (e.g., 1730419200)
+RIGHT: Calculate current time and subtract: $(($(date +%s) - 86400))
+
 WRONG: Assuming all timestamps are seconds
 RIGHT: Check magnitude, normalize if > 10000000000 (milliseconds)
 
 WRONG: Ignoring invalid timestamps
 RIGHT: Validate range (2020-01-01 to now+1day), flag invalid
+
+WRONG: Not confirming calculated timestamps with user
+RIGHT: Display "Time range: [date] to [date]" before running queries
 ```
 
 ### ❌ Sensor Status Mistakes
