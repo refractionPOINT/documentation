@@ -12,3 +12,4 @@ Common questions about LimaCharlie.
 - [Sensor Installation](faq-sensor-installation.md)
 - [Troubleshooting](faq-troubleshooting.md)
 - [Sensor Removal](sensor-removal.md)
+- [Detect and Respond Rules](faq-detect-and-respond-rules.md)

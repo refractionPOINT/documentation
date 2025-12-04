@@ -563,3 +563,8 @@ Now is the time to push the new rule to production, the easy part.
 
 Simply run `limacharlie dr add --rule-name T1196 --rule-file T1196.rule`
 and confirm it is operational by running `limacharlie dr list`.
+
+## More Information
+
+See our [FAQ on Detection and Response](../FAQ/faq-detect-and-respond-rules.md) for additional information.
+
