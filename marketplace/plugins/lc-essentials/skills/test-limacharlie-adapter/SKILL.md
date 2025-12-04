@@ -1,6 +1,6 @@
 ---
 name: test-limacharlie-adapter
-description: Deploy a temporary LimaCharlie Adapter on the local Linux host for testing log ingestion. Downloads the adapter, auto-detects active logs in /var/log, and streams them to your LimaCharlie organization. Supports raw text or syslog parsing.
+description: Deploy a temporary LimaCharlie Adapter on the local Linux host for testing log ingestion. Downloads the adapter, auto-detects active logs in /var/log, and streams them to your LimaCharlie organization using tail -f.
 allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, Bash, Read, AskUserQuestion, Skill
 ---
 
@@ -13,9 +13,9 @@ Deploy a temporary LimaCharlie Adapter on the local Linux host for testing log i
 Use this skill when:
 
 - **Testing log ingestion**: Validate that logs flow correctly into LimaCharlie
-- **Testing D&R rules on logs**: Write and test detection rules against real syslog/auth logs
-- **Exploring adapter behavior**: Understand how adapters parse and forward log data
-- **Development and debugging**: Test log parsing configurations before production deployment
+- **Testing D&R rules on logs**: Write and test detection rules against real log data
+- **Exploring adapter behavior**: Understand how adapters forward log data
+- **Development and debugging**: Test adapter configurations before production deployment
 - **Learning**: Explore LimaCharlie's log ingestion capabilities hands-on
 
 ## What This Skill Does
@@ -24,13 +24,13 @@ This skill performs a multi-phase deployment:
 
 1. **Phase 1 - Installation Key**: Creates or finds an existing "Test Adapter" installation key in your selected LimaCharlie organization
 2. **Phase 2 - Log Detection**: Auto-detects the most active log file in `/var/log` based on recent modification time
-3. **Phase 3 - Parsing Mode**: Lets you choose between raw text or structured syslog parsing
-4. **Phase 4 - Adapter Deployment**: Downloads the Linux adapter binary to a temporary directory and runs it in the background
+3. **Phase 3 - Adapter Deployment**: Downloads the Linux adapter binary to a temporary directory and runs it with `tail -f` piping logs to stdin
 
 The adapter:
 - Runs in the background (non-blocking)
 - Uses a unique temp directory (avoids file conflicts)
-- Streams logs in real-time (like `tail -f`)
+- Streams logs in real-time using `tail -f | adapter stdin` pattern
+- Does NOT require root/sudo
 - Cleans up automatically when stopped
 
 ## Required Information
@@ -68,7 +68,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 )
 ```
 
-**If "Test Adapter" key exists**: Extract the `key` value from the response.
+**If "Test Adapter" key exists**: Extract the `iid` value from the response.
 
 **If not exists**: Create one:
 
@@ -83,7 +83,9 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 )
 ```
 
-Save the returned `key` value and `iid` for later phases.
+Save the returned `iid` for later phases.
+
+> **IMPORTANT**: For adapters, the `installation_key` parameter is the **IID (UUID format)**, NOT the full base64-encoded key used by EDR sensors.
 
 ### Phase 2: Auto-Detect Active Log File
 
@@ -97,20 +99,7 @@ This shows the 5 most recently modified log files. Pick the most active one (typ
 
 Confirm the selected log file with the user before proceeding.
 
-### Phase 3: Choose Parsing Mode
-
-Ask the user to select a parsing mode using AskUserQuestion:
-
-**Option 1: Raw Text** - Simple, no parsing
-- Events appear as raw log lines
-- Good for quick testing or when you'll parse later with D&R rules
-
-**Option 2: Syslog Parsed** - Structured parsing with grok patterns
-- Extracts timestamp, hostname, program, pid, and message
-- Events are structured JSON with named fields
-- Good for writing specific detections
-
-### Phase 4: Download and Run the Adapter
+### Phase 3: Download and Run the Adapter
 
 **Step 1**: Create a temp directory and download the adapter:
 
@@ -121,38 +110,31 @@ chmod +x "$TEMP_DIR/lc_adapter"
 echo "Adapter downloaded to: $TEMP_DIR"
 ```
 
-**Step 2**: Run the adapter in background.
-
-**For Raw Text mode:**
+**Step 2**: Get the hostname (do this separately to avoid shell parsing issues):
 
 ```bash
-sudo setsid "$TEMP_DIR/lc_adapter" file \
-  file_path=<LOG_FILE_PATH> \
-  client_options.identity.installation_key=<INSTALLATION_KEY> \
-  client_options.identity.oid=<OID> \
-  client_options.platform=text \
-  client_options.sensor_seed_key=test-adapter \
-  client_options.hostname=$(hostname) > /dev/null 2>&1 &
-echo "Adapter started in $TEMP_DIR"
+HOSTNAME=$(hostname)
+echo "Hostname: $HOSTNAME"
 ```
 
-**For Syslog Parsed mode:**
+**Step 3**: Run the adapter using `tail -f` piped to stdin:
 
 ```bash
-sudo setsid "$TEMP_DIR/lc_adapter" file \
-  file_path=<LOG_FILE_PATH> \
-  client_options.identity.installation_key=<INSTALLATION_KEY> \
+setsid bash -c "tail -f <LOG_FILE_PATH> | $TEMP_DIR/lc_adapter stdin \
+  client_options.identity.installation_key=<IID> \
   client_options.identity.oid=<OID> \
   client_options.platform=text \
   client_options.sensor_seed_key=test-adapter \
-  client_options.hostname=$(hostname) \
-  'client_options.mapping.parsing_grok=message: %{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:source_host} %{PROG:program}(?:\[%{POSINT:pid}\])?: %{GREEDYDATA:log_message}' \
-  client_options.mapping.event_type_path=program > /dev/null 2>&1 &
+  client_options.hostname=$HOSTNAME \
+  > $TEMP_DIR/adapter.log 2>&1" > /dev/null 2>&1 &
 echo "Adapter started in $TEMP_DIR"
 ```
 
 **Important**:
 - Uses `setsid` to create a new session and fully detach from the terminal (prevents Claude Code from hanging)
+- Uses `tail -f | stdin` pattern for reliable streaming (no "file too old" issues)
+- Does NOT require sudo - the adapter runs as regular user
+- Logs output to `$TEMP_DIR/adapter.log` for debugging
 - Store the `TEMP_DIR` path for cleanup later
 - The adapter process name is `lc_adapter` - use this for stopping
 
@@ -165,12 +147,18 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="list_sensors",
   parameters={
     "oid": "<SELECTED_ORG_ID>",
-    "selector": "iid == `<INSTALLATION_KEY_IID>`"
+    "selector": "iid == `<IID>`"
   }
 )
 ```
 
-Replace `<INSTALLATION_KEY_IID>` with the `iid` UUID from the installation key used.
+You can also check the adapter log for connection status:
+
+```bash
+cat "$TEMP_DIR/adapter.log"
+```
+
+Look for `usp-client connected` to confirm successful connection.
 
 ### Stopping and Cleanup
 
@@ -179,13 +167,13 @@ When the user wants to stop the test adapter:
 **Step 1**: Kill the adapter process by name:
 
 ```bash
-sudo pkill -f lc_adapter
+pkill -f lc_adapter
 ```
 
 **Step 2**: Clean up the temp directory:
 
 ```bash
-sudo rm -rf <TEMP_DIR>
+rm -rf <TEMP_DIR>
 ```
 
 **Important**: Do NOT use `KillShell` to stop the adapter - this can kill the parent shell process unexpectedly. Always use `pkill` to terminate the adapter process directly.
@@ -230,7 +218,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 )
 ```
 
-Returns: `{"iid": "test-adapter-iid", "key": "abc123:def456:..."}`
+Returns: `{"iid": "729b2770-9ae6-4e14-beea-5e42b854adf5", ...}`
 
 5. Find most active log:
 ```bash
@@ -239,37 +227,34 @@ find /var/log -maxdepth 1 -type f \( -name "*.log" -o -name "syslog" -o -name "m
 
 Shows `/var/log/syslog` is most active.
 
-6. Ask user for parsing mode (via AskUserQuestion) - user selects "Syslog Parsed"
-
-7. Download and run adapter:
+6. Download and run adapter:
 ```bash
 TEMP_DIR=$(mktemp -d -t lc-adapter-test-XXXXXX)
 curl -sSL https://downloads.limacharlie.io/adapter/linux/64 -o "$TEMP_DIR/lc_adapter"
 chmod +x "$TEMP_DIR/lc_adapter"
-sudo setsid "$TEMP_DIR/lc_adapter" file \
-  file_path=/var/log/syslog \
-  client_options.identity.installation_key="abc123:def456:..." \
-  client_options.identity.oid="abc123-def456-..." \
+HOSTNAME=$(hostname)
+setsid bash -c "tail -f /var/log/syslog | $TEMP_DIR/lc_adapter stdin \
+  client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \
+  client_options.identity.oid=abc123-def456-... \
   client_options.platform=text \
   client_options.sensor_seed_key=test-adapter \
-  client_options.hostname=$(hostname) \
-  'client_options.mapping.parsing_grok=message: %{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:source_host} %{PROG:program}(?:\[%{POSINT:pid}\])?: %{GREEDYDATA:log_message}' \
-  client_options.mapping.event_type_path=program > /dev/null 2>&1 &
+  client_options.hostname=$HOSTNAME \
+  > $TEMP_DIR/adapter.log 2>&1" > /dev/null 2>&1 &
 echo "Adapter started in $TEMP_DIR"
 ```
 
-8. Verify adapter connection:
+7. Verify adapter connection:
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="list_sensors",
   parameters={
     "oid": "abc123-def456-...",
-    "selector": "iid == `test-adapter-iid`"
+    "selector": "iid == `729b2770-9ae6-4e14-beea-5e42b854adf5`"
   }
 )
 ```
 
-9. Inform user the adapter is running and how to stop it.
+8. Inform user the adapter is running and how to stop it.
 
 ### Example 2: Stopping the Test Adapter
 
@@ -279,12 +264,12 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 1. Kill the adapter process:
 ```bash
-sudo pkill -f lc_adapter
+pkill -f lc_adapter
 ```
 
 2. Clean up:
 ```bash
-sudo rm -rf /tmp/lc-adapter-test-XXXXXX
+rm -rf /tmp/lc-adapter-test-XXXXXX
 ```
 
 3. Optionally, delete the sensor from LimaCharlie:
@@ -300,31 +285,15 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 ## Additional Notes
 
-- **Read access required**: The adapter needs to be able to read the log files. If running without sudo, ensure the log files are readable by the current user.
+- **No root required**: The adapter runs as a regular user. Only needs read access to log files.
 - **Temp directory**: The adapter may create working files, so we use a dedicated temp directory to keep things clean
 - **Automatic tags**: Sensors enrolled with this key get `test-adapter` and `temporary` tags for easy identification
 - **Console visibility**: The adapter appears as a sensor in your LimaCharlie web console at https://app.limacharlie.io
 - **Background execution**: The adapter runs in background, so you can continue working while it streams logs
 - **Reusable key**: The "Test Adapter" installation key is reused if it already exists, avoiding duplicate keys
-- **Real-time streaming**: The adapter follows the log file and streams new entries as they're written
+- **Real-time streaming**: Uses `tail -f` for reliable streaming regardless of file age
 - **Cleanup**: Always clean up when done to avoid orphaned processes and files
-
-## Parsing Options Explained
-
-### Raw Text Mode
-- `platform=text`
-- Events appear with the full log line in a `TEXT` event type
-- Simple and fast, good for quick testing
-
-### Syslog Parsed Mode
-- Uses grok pattern: `%{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:source_host} %{PROG:program}(?:\[%{POSINT:pid}\])?: %{GREEDYDATA:log_message}`
-- Extracts structured fields:
-  - `timestamp`: The syslog timestamp
-  - `source_host`: The hostname from the log
-  - `program`: The program/daemon name (used as event type)
-  - `pid`: Process ID (if present)
-  - `log_message`: The actual log message
-- Events are typed by program name (e.g., `sshd`, `systemd`, `cron`)
+- **Debugging**: Check `$TEMP_DIR/adapter.log` if the adapter isn't connecting
 
 ## Related Skills
 
