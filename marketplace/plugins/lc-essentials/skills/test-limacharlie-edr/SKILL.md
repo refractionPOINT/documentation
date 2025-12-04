@@ -149,19 +149,24 @@ Replace `<INSTALLATION_KEY_IID>` with the `iid` UUID from the installation key u
 
 When the user wants to stop the test EDR:
 
-**Step 1**: Kill the sensor process by name:
+**Single command to stop and clean up** (recommended):
 
 ```bash
-sudo pkill -f lc_sensor
+sudo pkill -9 -f lc_sensor; sudo rm -rf <TEMP_DIR>; echo "Cleanup complete"
 ```
 
-**Step 2**: Clean up the temp directory:
+**Important notes**:
+- Use `-9` (SIGKILL) for reliable termination of detached processes
+- Use `;` instead of `&&` - pkill returns non-zero exit codes even on success (e.g., 144 when the signal is delivered)
+- Do NOT use `KillShell` to stop the sensor - always use `pkill`
+
+**Verify cleanup succeeded**:
 
 ```bash
-sudo rm -rf <TEMP_DIR>
+ps aux | grep "[l]c_sensor" || echo "Sensor stopped"
 ```
 
-**Important**: Do NOT use `KillShell` to stop the sensor - this can kill the parent shell process unexpectedly. Always use `pkill` to terminate the sensor process directly.
+The `[l]` bracket trick prevents grep from matching itself in the output.
 
 ## Example Usage
 
@@ -250,14 +255,14 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 **Steps**:
 
-1. Kill the sensor process:
+1. Stop sensor and clean up (single command):
 ```bash
-sudo pkill -f lc_sensor
+sudo pkill -9 -f lc_sensor; sudo rm -rf /tmp/lc-edr-test-XXXXXX; echo "Cleanup complete"
 ```
 
-2. Clean up:
+2. Verify cleanup:
 ```bash
-sudo rm -rf /tmp/lc-edr-test-XXXXXX
+ps aux | grep "[l]c_sensor" || echo "Sensor stopped"
 ```
 
 3. Optionally, delete the sensor from LimaCharlie:
@@ -281,7 +286,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - **Console visibility**: The sensor appears in your LimaCharlie web console at https://app.limacharlie.io
 - **Background execution**: The sensor runs in background, so you can continue working while it monitors
 - **Reusable key**: The "Test EDR" installation key is reused if it already exists, avoiding duplicate keys
-- **Cleanup**: Always clean up when done to avoid orphaned processes and files
+- **Cleanup**: Always clean up when done to avoid orphaned processes and files. Use `;` not `&&` when chaining cleanup commands since pkill returns non-zero exit codes even on success
 
 ## Related Skills
 

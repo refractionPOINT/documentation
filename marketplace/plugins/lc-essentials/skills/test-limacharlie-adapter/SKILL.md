@@ -195,19 +195,25 @@ Look for `usp-client connected` to confirm successful connection.
 
 When the user wants to stop the test adapter:
 
-**Step 1**: Kill the adapter process by name:
+**Single command to stop and clean up** (recommended):
 
 ```bash
-pkill -f lc_adapter
+pkill -9 -f lc_adapter; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf <TEMP_DIR>; echo "Cleanup complete"
 ```
 
-**Step 2**: Clean up the temp directory:
+**Important notes**:
+- Use `-9` (SIGKILL) for reliable termination of detached processes
+- Use `;` instead of `&&` - pkill returns non-zero exit codes even on success (e.g., 144 when the signal is delivered)
+- Kill `lc_adapter` AND the log source process (`tail -f` on Linux, `log stream` on Mac)
+- Do NOT use `KillShell` to stop the adapter - always use `pkill`
+
+**Verify cleanup succeeded**:
 
 ```bash
-rm -rf <TEMP_DIR>
+ps aux | grep "[l]c_adapter" || echo "Adapter stopped"
 ```
 
-**Important**: Do NOT use `KillShell` to stop the adapter - this can kill the parent shell process unexpectedly. Always use `pkill` to terminate the adapter process directly.
+The `[l]` bracket trick prevents grep from matching itself in the output.
 
 ## Example Usage
 
@@ -320,14 +326,14 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 **Steps**:
 
-1. Kill the adapter process:
+1. Stop adapter and clean up (single command):
 ```bash
-pkill -f lc_adapter
+pkill -9 -f lc_adapter; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf /tmp/lc-adapter-test-XXXXXX; echo "Cleanup complete"
 ```
 
-2. Clean up:
+2. Verify cleanup:
 ```bash
-rm -rf /tmp/lc-adapter-test-XXXXXX
+ps aux | grep "[l]c_adapter" || echo "Adapter stopped"
 ```
 
 3. Optionally, delete the sensor from LimaCharlie:
@@ -354,7 +360,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - **Background execution**: The adapter runs in background, so you can continue working while it streams logs
 - **Reusable key**: The "Test Adapter" installation key is reused if it already exists, avoiding duplicate keys
 - **Real-time streaming**: Uses `tail -f` (Linux) or `log stream` (Mac) for reliable streaming
-- **Cleanup**: Always clean up when done to avoid orphaned processes and files
+- **Cleanup**: Always clean up when done to avoid orphaned processes and files. Use `;` not `&&` when chaining cleanup commands since pkill returns non-zero exit codes even on success
 - **Debugging**: Check `$TEMP_DIR/adapter.log` if the adapter isn't connecting
 
 ## Related Skills
