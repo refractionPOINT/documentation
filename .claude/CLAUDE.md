@@ -1,73 +1,50 @@
+# SESSION CONTINUATION PROTOCOL
+
+The banner prompts users to type "continue" or "fresh" when a previous session exists.
+
+**Handle these responses:**
+
+- **User says "continue" (or similar):** Load the context from the session log below and summarize what was being worked on. Then proceed with the task.
+
+- **User says "fresh" or "start fresh":** Clear session.md using the template at the bottom of this file. Confirm the reset.
+
+- **User ignores the prompt and asks something else:** That's fine - proceed normally. The session context is available if needed.
+
+**Key point:** Don't gate-keep. If they want to work, let them work. The session log is there for context, not as a barrier.
+
+---
+
+## Session Log (Auto-Imported)
+
+@.claude/session-memory/session.md
+
+---
+
 # LimaCharlie SecOps Workspace
 
 This workspace provides agentic security operations capabilities through the LimaCharlie platform.
 
-## Session Memory
+---
 
-The session memory system tracks context between sessions.
+## Session Behavior
 
-### CRITICAL STARTUP BEHAVIOR
+**Throughout the session:**
+- The PostToolUse hook automatically logs actions to session.md
+- You should also update these manually when relevant:
+  - Organizations accessed (name, OID, role)
+  - Sensors investigated (hostname, SID, platform)
+  - Detections found (ID, rule, sensor, status)
+  - LCQL queries run (query, purpose, time range)
+  - Important decisions and reasoning
+  - Pending/next steps
 
-When your first message shows "PREVIOUS SESSION DETECTED" in the system context:
-
-1. **IMMEDIATELY** display a prominent session recovery prompt as your FIRST response
-2. Show the session summary (objective, recent actions, pending items)
-3. Ask clearly: "Want to continue from where you left off, or start fresh?"
-4. **DO NOT** start working on anything until the user answers
-
-Example first response format:
-```
-📋 **Previous Session Detected**
-
-**From:** [date]
-**Objective:** [objective from session]
-**Last actions:**
-- [action 1]
-- [action 2]
-
-**Pending:**
-- [ ] [pending item]
+**When user says "start fresh":** Clear session.md with the template below.
 
 ---
 
-**Continue where you left off, or start fresh?**
-```
+## Session Template
 
-**If user says "yes" to continue**: Use the session context to resume work seamlessly.
-
-**If user says "no" or "start fresh"**: Clear the session log by replacing its contents with a fresh template, then begin a new session.
-
-**Session log location**: `.claude/session-memory/session.md`
-
-## Session Logging Instructions
-
-Throughout each session, you MUST actively maintain the session log at `.claude/session-memory/session.md`. Update it when:
-
-1. **Organizations accessed**: Add to the Organizations table with name, OID, and role
-2. **Sensors investigated**: Add to the Sensors table with hostname, SID, platform, notes
-3. **Detections found**: Add to the Detections table with ID, rule, sensor, status
-4. **API keys used**: Record key names (never values) and their purpose
-5. **LCQL queries run**: Record queries, their purpose, and time ranges used
-6. **Time ranges**: Track investigation time windows
-7. **Major actions**: Add timestamped entries to Actions Taken section
-8. **Decisions made**: Document significant choices and reasoning
-9. **Pending items**: Keep Next Steps updated with remaining work
-
-### Log Update Format
-
-When updating the session log, use this format:
-
-**For timestamps**: Use ISO format like `2025-12-01T14:30:00`
-
-**For actions**: `1. **HH:MM** - Description of action taken`
-
-**For tables**: Append new rows, don't replace existing data
-
-**Session start**: Always update "Session Started" and "Last Updated" timestamps
-
-## Clearing a Session
-
-When the user wants to start fresh, replace the session.md contents with this template:
+When clearing a session, replace session.md with:
 
 ```markdown
 # Session Log
