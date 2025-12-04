@@ -42,8 +42,8 @@ Execute LimaCharlie API call:
 ```
 Execute LimaCharlie API call:
 - Function: list_sensors
-- Parameters: {"oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd"}
-- Return: Only sensors that are online (is_online == true)
+- Parameters: {"oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd", "online_only": true}
+- Return: RAW
 ```
 
 ```
@@ -60,8 +60,8 @@ Execute LimaCharlie API call:
 ```
 Execute LimaCharlie API call:
 - Function: list_sensors
-- Parameters: {"oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd"}
-- Return: Summary with total count, online count, and breakdown by platform
+- Parameters: {"oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd", "online_only": true, "selector": "plat == windows"}
+- Return: RAW
 ```
 
 ## How You Work
@@ -122,11 +122,14 @@ API returns data directly:
 ```json
 {
   "sensors": [
-    {"sid": "xyz", "hostname": "web-01", "is_online": true},
-    {"sid": "abc", "hostname": "db-01", "is_online": false}
-  ]
+    {"sid": "xyz", "hostname": "web-01", "platform": 268435456, "last_seen": "2024-01-20T14:22:13Z", "internal_ip": "10.0.1.50", "external_ip": "203.0.113.45"},
+    {"sid": "abc", "hostname": "db-01", "platform": 268435456, "last_seen": "2024-01-20T12:15:00Z", "internal_ip": "10.0.1.51", "external_ip": "203.0.113.46"}
+  ],
+  "count": 2
 }
 ```
+
+**Note**: The `list_sensors` response does NOT include an `is_online` field. To get only online sensors, use the `online_only: true` parameter in your API call.
 
 Proceed to Step 5 (extraction/formatting).
 
@@ -160,7 +163,7 @@ bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "https://s
 
 **Example output**:
 ```
-(stdout) {"sensors":[{"sid":"string","hostname":"string","platform":"number","is_online":"boolean"}]}
+(stdout) {"sensors":[{"sid":"string","hostname":"string","platform":"number","last_seen":"string","internal_ip":"string","external_ip":"string"}],"count":"number"}
 (stderr) ---FILE_PATH---
 (stderr) /tmp/lc-result-1731633216789456123.json
 ```
@@ -184,18 +187,20 @@ Use the file path from the script output (shown after `---FILE_PATH---`).
 **Common patterns**:
 
 ```bash
-# Count items (if top-level array)
-jq '. | length' /tmp/lc-result-{timestamp}.json
+# Count sensors (list_sensors returns {sensors: [...], count: N})
+jq '.sensors | length' /tmp/lc-result-{timestamp}.json
 
-# Filter by condition
-jq '.[] | select(.is_online == true)' /tmp/lc-result-{timestamp}.json
+# Extract specific fields from sensors
+jq '.sensors[] | {id: .sid, name: .hostname, platform: .platform}' /tmp/lc-result-{timestamp}.json
 
-# Extract specific fields
-jq '.[] | {id: .sid, name: .hostname, status: .is_online}' /tmp/lc-result-{timestamp}.json
+# Get unique hostnames
+jq '[.sensors[] | .hostname] | unique' /tmp/lc-result-{timestamp}.json
 
-# Get unique values
-jq '[.[] | .hostname] | unique' /tmp/lc-result-{timestamp}.json
+# Filter by platform (Windows = 268435456)
+jq '.sensors[] | select(.platform == 268435456)' /tmp/lc-result-{timestamp}.json
 ```
+
+**Note**: To filter online sensors, use `online_only: true` in the API call parameters rather than post-filtering, as the response doesn't include online status.
 
 #### Step 4d: Clean Up
 
@@ -279,7 +284,7 @@ Execute LimaCharlie API call:
 Execute LimaCharlie API call:
 - Function: list_sensors
 - Parameters: {"oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd"}
-- Return: Count of total sensors and count of online sensors
+- Return: Count of total sensors and breakdown by platform
 ```
 
 **Your Actions**:
@@ -287,11 +292,13 @@ Execute LimaCharlie API call:
 2. Call MCP tool
 3. Receive `resource_link` response
 4. Run `bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "<url>"`
-5. Review schema: `[{"sid":"string","hostname":"string","is_online":"boolean",...}]`
+5. Review schema: `{"sensors":[{"sid":"string","hostname":"string","platform":"number",...}],"count":"number"}`
 6. Extract counts per Return instructions:
    ```bash
-   total=$(jq '. | length' /tmp/lc-result-{timestamp}.json)
-   online=$(jq '[.[] | select(.is_online == true)] | length' /tmp/lc-result-{timestamp}.json)
+   total=$(jq '.count' /tmp/lc-result-{timestamp}.json)
+   windows=$(jq '[.sensors[] | select(.platform == 268435456)] | length' /tmp/lc-result-{timestamp}.json)
+   linux=$(jq '[.sensors[] | select(.platform == 536870912)] | length' /tmp/lc-result-{timestamp}.json)
+   macos=$(jq '[.sensors[] | select(.platform == 805306368)] | length' /tmp/lc-result-{timestamp}.json)
    ```
 7. Clean up: `rm /tmp/lc-result-{timestamp}.json`
 8. Return formatted output
@@ -302,7 +309,11 @@ Execute LimaCharlie API call:
   "success": true,
   "data": {
     "total_sensors": 247,
-    "online_sensors": 198
+    "by_platform": {
+      "windows": 182,
+      "linux": 45,
+      "macos": 20
+    }
   },
   "metadata": {
     "function": "list_sensors",
@@ -311,6 +322,8 @@ Execute LimaCharlie API call:
   }
 }
 ```
+
+**Note**: To get only online sensors, use `online_only: true` in the parameters. The `list_sensors` response does not include per-sensor online status.
 
 ### Example 3: Error Handling
 
@@ -342,6 +355,51 @@ Execute LimaCharlie API call:
   }
 }
 ```
+
+### Example 4: Filtering Online Sensors by Platform
+
+**Prompt**:
+```
+Execute LimaCharlie API call:
+- Function: list_sensors
+- Parameters: {
+    "oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd",
+    "online_only": true,
+    "selector": "plat == windows"
+  }
+- Return: RAW
+```
+
+**Your Actions**:
+1. Parse prompt: function=`list_sensors`, Return=`RAW`
+2. Call MCP tool with `online_only: true` and `selector: "plat == windows"`
+3. Receive filtered response (only online Windows sensors)
+4. Return complete response (RAW requested)
+
+**Output**:
+```json
+{
+  "success": true,
+  "data": {
+    "sensors": [
+      {"sid": "abc-123", "hostname": "WIN-SERVER01", "platform": 268435456, "last_seen": "2024-01-20T14:22:13Z", "internal_ip": "10.0.1.50", "external_ip": "203.0.113.45"},
+      {"sid": "def-456", "hostname": "WIN-DESKTOP02", "platform": 268435456, "last_seen": "2024-01-20T14:20:00Z", "internal_ip": "10.0.1.51", "external_ip": "203.0.113.46"}
+    ],
+    "count": 2
+  },
+  "metadata": {
+    "function": "list_sensors",
+    "result_size": "small",
+    "return_type": "raw"
+  }
+}
+```
+
+**Key Points**:
+- Use `online_only: true` for server-side filtering of online sensors
+- Use `selector: "plat == windows"` for platform filtering (also: `linux`, `macos`)
+- Both filters are applied server-side for efficiency
+- Platform codes in response: Windows=268435456, Linux=536870912, macOS=805306368
 
 ## Important Guidelines
 
@@ -385,6 +443,49 @@ Execute LimaCharlie API call:
 - **Parameter Validation**: Trust parent to provide valid parameters
 - **No Cross-Org Operations**: Only work with the OID provided
 - **Time Limits**: Data availability checks limited to <30 days (API constraint)
+
+## Special Handling: create_payload
+
+The `create_payload` function supports uploading payloads via either `file_path` (server-side) or `file_content` (base64-encoded). Since the MCP server runs remotely and cannot access local files, you must convert local file paths to base64 content.
+
+**When you receive a `create_payload` call with `file_path`:**
+
+1. Read the file content using Bash:
+   ```bash
+   base64 -w 0 "/path/to/file.ps1"
+   ```
+
+2. Replace `file_path` with `file_content` in parameters:
+   ```python
+   # Original parameters (will fail with remote MCP)
+   {"oid": "...", "name": "script.ps1", "file_path": "/home/user/script.ps1"}
+
+   # Transformed parameters (works with remote MCP)
+   {"oid": "...", "name": "script.ps1", "file_content": "<base64_output>"}
+   ```
+
+3. Execute the MCP tool call with the transformed parameters
+
+**Example Workflow:**
+
+Step 1: Read and encode file using Bash:
+```bash
+base64 -w 0 "/home/user/Manage-FirewallIP.ps1"
+```
+
+Step 2: Use the base64 output as `file_content`:
+```
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="create_payload",
+  parameters={
+    "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
+    "name": "Manage-FirewallIP.ps1",
+    "file_content": "<base64_output_from_step_1>"
+  }
+)
+```
+
+**Important**: Always use `file_content` for local files. The `file_path` parameter only works when the MCP server can directly access the filesystem path.
 
 ### CRITICAL: Timestamp Calculation
 
