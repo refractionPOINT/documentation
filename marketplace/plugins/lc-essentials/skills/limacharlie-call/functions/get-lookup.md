@@ -7,7 +7,7 @@ Retrieve a specific lookup table with all its data and metadata.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Lookup table name (case-sensitive) |
+| lookup_name | string | Yes | Lookup table name (case-sensitive) |
 
 ## Returns
 
@@ -34,7 +34,7 @@ Retrieve a specific lookup table with all its data and metadata.
 ```
 lc_call_tool(tool_name="get_lookup", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "malicious-ips"
+  "lookup_name": "malicious-ips"
 })
 ```
 

@@ -12,13 +12,14 @@ Retrieve all sensors currently online and connected to the LimaCharlie platform.
 
 ```json
 {
-  "sensor-id-1": true,
-  "sensor-id-2": true,
-  "sensor-id-3": true
+  "sensors": ["sensor-id-1", "sensor-id-2", "sensor-id-3"],
+  "count": 3
 }
 ```
 
-Returns a map of all online sensor IDs with `true` values. Empty map means no sensors online.
+Returns an object with:
+- `sensors`: Array of online sensor IDs
+- `count`: Number of online sensors
 
 ## Example
 

@@ -8,6 +8,7 @@ Download or get a signed URL for a specific artifact.
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | artifact_id | string | Yes | Artifact ID from `list_artifacts` |
+| get_url_only | boolean | No | When true, returns only the signed URL without downloading content (default: false) |
 
 ## Returns
 

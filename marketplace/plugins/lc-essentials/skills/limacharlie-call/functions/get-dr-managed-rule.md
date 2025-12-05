@@ -7,7 +7,7 @@ Retrieve a specific D&R rule from the managed namespace by name.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Rule name (case-sensitive, exact match) |
+| rule_name | string | Yes | Rule name (case-sensitive, exact match) |
 
 ## Returns
 
@@ -36,7 +36,7 @@ Retrieve a specific D&R rule from the managed namespace by name.
 ```
 lc_call_tool(tool_name="get_dr_managed_rule", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "credential_access_detection"
+  "rule_name": "credential_access_detection"
 })
 ```
 

@@ -7,7 +7,7 @@ Retrieve a specific YARA rule's source content and signatures.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | YARA rule source name (case-sensitive) |
+| rule_name | string | Yes | YARA rule source name (case-sensitive) |
 
 ## Returns
 
@@ -22,7 +22,7 @@ Retrieve a specific YARA rule's source content and signatures.
 ```
 lc_call_tool(tool_name="get_yara_rule", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "malware_detection"
+  "rule_name": "malware_detection"
 })
 ```
 

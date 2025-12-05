@@ -29,7 +29,7 @@ Before calling this skill, gather:
 
 **WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **name**: The name of the playbook to retrieve (required)
+- **playbook_name**: The name of the playbook to retrieve (required)
 
 ## How to Use
 
@@ -48,7 +48,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="get_playbook",
   parameters={
     "oid": "[organization-id]",
-    "name": "[playbook-name]"
+    "playbook_name": "[playbook-name]"
   }
 )
 ```
@@ -57,7 +57,7 @@ mcp__limacharlie__lc_call_tool(
 - Tool: `get_playbook`
 - Required parameters:
   - `oid`: Organization ID
-  - `name`: Name of the playbook to retrieve
+  - `playbook_name`: Name of the playbook to retrieve
 
 ### Step 3: Handle the Response
 
@@ -134,7 +134,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="get_playbook",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "critical-isolation"
+    "playbook_name": "critical-isolation"
   }
 )
 ```

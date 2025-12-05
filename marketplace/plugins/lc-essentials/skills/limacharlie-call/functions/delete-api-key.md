@@ -7,7 +7,7 @@ Permanently delete an API key, immediately revoking its access.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| key_id | string | Yes | Key ID from `list_api_keys` |
+| key_hash | string | Yes | Key hash from `list_api_keys` |
 
 ## Returns
 
@@ -22,7 +22,7 @@ Empty response indicates success.
 ```
 lc_call_tool(tool_name="delete_api_key", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "key_id": "a1b2c3d4e5f6"
+  "key_hash": "a1b2c3d4e5f6"
 })
 ```
 

@@ -74,8 +74,8 @@ Before calling this skill, gather:
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive to create/update rule in (required)
   - Common values: `dr-general`, `fp`
-- **name**: The name for the rule (required)
-- **data**: The rule definition object (required, structure varies by Hive type)
+- **rule_name**: The name for the rule (required)
+- **rule_content**: The rule definition object (required, structure varies by Hive type)
   - For D&R rules: must include `detect` and `respond` sections
   - For FP rules: must include filter/match logic
 
@@ -105,8 +105,8 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "[organization-id]",
     "hive_name": "[hive-name]",
-    "name": "[rule-name]",
-    "data": {
+    "rule_name": "[rule-name]",
+    "rule_content": {
       "detect": {...},
       "respond": [...]
     }
@@ -119,8 +119,8 @@ mcp__limacharlie__lc_call_tool(
 - Required parameters:
   - `oid`: Organization ID
   - `hive_name`: Name of the Hive (e.g., "dr-general", "fp")
-  - `name`: Name for the rule
-  - `data`: Rule definition object
+  - `rule_name`: Name for the rule
+  - `rule_content`: Rule definition object
 
 ### Step 3: Handle the Response
 
@@ -189,8 +189,8 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "hive_name": "dr-general",
-    "name": "suspicious-dns-detection",
-    "data": {
+    "rule_name": "suspicious-dns-detection",
+    "rule_content": {
       "detect": {
         "event": "DNS_REQUEST",
         "op": "contains",

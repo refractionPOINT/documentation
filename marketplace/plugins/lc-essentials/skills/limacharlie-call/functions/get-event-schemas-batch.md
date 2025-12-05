@@ -26,7 +26,7 @@ This skill retrieves schema definitions for multiple event types in parallel, re
 
 Before calling this skill, gather:
 
-- **event_types**: Array of event type names (e.g., ['DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS'])
+- **event_names**: Array of event type names (e.g., ['DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS'])
 
 Event type names should match LimaCharlie's naming convention (UPPERCASE_WITH_UNDERSCORES).
 
@@ -47,7 +47,7 @@ Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_call_tool(
   tool_name="get_event_schemas_batch",
   parameters={
-    "event_types": ["DNS_REQUEST", "HTTP_REQUEST", "NETWORK_CONNECTIONS"]
+    "event_names": ["DNS_REQUEST", "HTTP_REQUEST", "NETWORK_CONNECTIONS"]
   }
 )
 ```
@@ -55,7 +55,7 @@ mcp__limacharlie__lc_call_tool(
 **API Details:**
 - Tool: `get_event_schemas_batch`
 - Required parameters:
-  - `event_types`: Array of event type names
+  - `event_names`: Array of event type names
 
 ### Step 3: Handle the Response
 
@@ -114,7 +114,7 @@ Steps:
 mcp__limacharlie__lc_call_tool(
   tool_name="get_event_schemas_batch",
   parameters={
-    "event_types": ["DNS_REQUEST", "HTTP_REQUEST", "NETWORK_CONNECTIONS"]
+    "event_names": ["DNS_REQUEST", "HTTP_REQUEST", "NETWORK_CONNECTIONS"]
   }
 )
 ```

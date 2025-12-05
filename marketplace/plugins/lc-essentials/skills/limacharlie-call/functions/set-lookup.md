@@ -9,9 +9,6 @@ Create or update a lookup table for storing reference data (threat intel, allowl
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | lookup_name | string | Yes | Table name (alphanumeric, hyphens, underscores) |
 | lookup_data | object | Yes | Key-value pairs to store |
-| tags | array | No | Tags for organization |
-| comment | string | No | Description |
-| enabled | boolean | No | Enable/disable (default: true) |
 
 ## Returns
 

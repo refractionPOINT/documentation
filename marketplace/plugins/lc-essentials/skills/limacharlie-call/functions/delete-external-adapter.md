@@ -32,7 +32,7 @@ Before calling this skill, gather:
 
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **name**: Name of the external adapter to delete (required)
+- **adapter_name**: Name of the external adapter to delete (required)
 
 To find the adapter name:
 - Use the list-external-adapters skill to see all available adapters
@@ -58,7 +58,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="delete_external_adapter",
   parameters={
     "oid": "[organization-id]",
-    "name": "[adapter-name]"
+    "adapter_name": "[adapter-name]"
   }
 )
 ```
@@ -67,7 +67,7 @@ mcp__limacharlie__lc_call_tool(
 - Tool Name: `delete_external_adapter`
 - Required Parameters:
   - `oid`: Organization ID
-  - `name`: Name of the external adapter to delete
+  - `adapter_name`: Name of the external adapter to delete
 
 ### Step 3: Handle the Response
 
@@ -114,7 +114,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="delete_external_adapter",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "old-firewall-syslog"
+    "adapter_name": "old-firewall-syslog"
   }
 )
 ```
@@ -147,7 +147,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="delete_external_adapter",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "test-webhook"
+    "adapter_name": "test-webhook"
   }
 )
 ```

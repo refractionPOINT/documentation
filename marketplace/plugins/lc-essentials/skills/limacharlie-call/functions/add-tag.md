@@ -9,7 +9,7 @@ Add a tag to a sensor for organization, D&R rule targeting, and investigation tr
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | sid | UUID | Yes | Sensor ID to tag |
 | tag | string | Yes | Tag name (no spaces recommended) |
-| ttl | integer | No | Time-to-live in seconds (0=permanent, default=0) |
+| ttl | integer | Yes | Time-to-live in seconds (0=permanent) |
 
 ## Returns
 
@@ -25,7 +25,8 @@ Empty response indicates success.
 lc_call_tool(tool_name="add_tag", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
   "sid": "abc12345-6789-0123-4567-890abcdef012",
-  "tag": "compromised"
+  "tag": "compromised",
+  "ttl": 0
 })
 ```
 

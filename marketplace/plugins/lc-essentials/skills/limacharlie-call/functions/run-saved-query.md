@@ -38,7 +38,7 @@ Then save it with `set_saved_query` for reuse.
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
-- **name**: Name of the saved query to execute
+- **query_name**: Name of the saved query to execute
 
 Optional:
 - **limit**: Maximum results to return
@@ -53,7 +53,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="get_saved_query",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "suspicious-dns"
+    "query_name": "suspicious-dns"
   }
 )
 ```
@@ -99,7 +99,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="get_saved_query",
   parameters={
     "oid": "...",
-    "name": "suspicious-dns"
+    "query_name": "suspicious-dns"
   }
 )
 // Returns: {"data": {"query": "-24h | * | DNS_REQUEST | ..."}}
