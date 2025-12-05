@@ -24,11 +24,13 @@ First, use the Task tool with `subagent_type="claude-code-guide"` to look up:
 
 ## Step 2: Review Plugin Framework Documentation
 
-Read these files to understand the lc-essentials framework:
-- `marketplace/plugins/lc-essentials/CALLING_API.md` - API execution architecture
-- `marketplace/plugins/lc-essentials/SKILL_TEMPLATE.md` - Template structure
-- `marketplace/plugins/lc-essentials/agents/README.md` - Sub-agent patterns
-- `marketplace/plugins/lc-essentials/skills/limacharlie-call/SKILL.md` - Core API skill reference
+Read these files to understand the lc-essentials framework (paths relative to plugin root):
+- `CALLING_API.md` - API execution architecture
+- `SKILL_TEMPLATE.md` - Template structure
+- `agents/README.md` - Sub-agent patterns
+- `skills/limacharlie-call/SKILL.md` - Core API skill reference
+
+Plugin root: `marketplace/plugins/lc-essentials/`
 
 ## Step 3: CRITICAL FRAMEWORK RULES
 
@@ -166,7 +168,7 @@ Both are evaluated server-side BEFORE results are returned.
 
 ## Step 4: Skill Structure
 
-Create the skill in: `marketplace/plugins/lc-essentials/skills/{skill-name}/SKILL.md`
+Create the skill in: `skills/{skill-name}/SKILL.md` (relative to plugin root)
 
 Required YAML frontmatter:
 ```yaml
@@ -208,7 +210,7 @@ Skills that search and combine information.
 ## Step 6: Create Supporting Files (if needed)
 
 If your skill needs a dedicated sub-agent, create it in:
-`marketplace/plugins/lc-essentials/agents/{agent-name}.md`
+`agents/{agent-name}.md` (relative to plugin root)
 
 Agent frontmatter:
 ```yaml
@@ -224,8 +226,8 @@ skills:
 ## Step 7: Update Documentation
 
 After creating the skill:
-1. Add entry to `marketplace/plugins/lc-essentials/SKILLS_SUMMARY.md`
-2. If creating an agent, update `marketplace/plugins/lc-essentials/agents/README.md`
+1. Add entry to `SKILLS_SUMMARY.md` (in plugin root)
+2. If creating an agent, update `agents/README.md`
 
 ## Your Task
 
