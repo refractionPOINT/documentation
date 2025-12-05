@@ -29,8 +29,8 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **name**: Name for the FP rule (unique identifier)
-- **pattern**: Rule configuration object containing the filter logic
+- **rule_name**: Name for the FP rule (unique identifier)
+- **rule_content**: Object containing a `detection` (or `detect`) key with the filter logic
 
 ### Filter Logic Structure
 
@@ -65,13 +65,15 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_fp_rule",
   parameters={
     "oid": "[organization-id]",
-    "name": "[rule-name]",
-    "pattern": {
-      "op": "and",
-      "rules": [
-        {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
-        {"op": "contains", "path": "detect/event/FILE_PATH", "value": "/opt/safe_app/"}
-      ]
+    "rule_name": "[rule-name]",
+    "rule_content": {
+      "detection": {
+        "op": "and",
+        "rules": [
+          {"op": "is", "path": "cat", "value": "SUSPICIOUS_EXECUTION"},
+          {"op": "contains", "path": "detect/event/FILE_PATH", "value": "/opt/safe_app/"}
+        ]
+      }
     }
   }
 )
@@ -81,8 +83,8 @@ mcp__limacharlie__lc_call_tool(
 - Tool: `set_fp_rule`
 - Required parameters:
   - `oid`: Organization ID
-  - `name`: Rule name
-  - `pattern`: Filter logic object
+  - `rule_name`: Rule name
+  - `rule_content`: Object with `detection` (or `detect`) key containing filter logic
 
 ### Step 3: Handle the Response
 
@@ -125,13 +127,15 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_fp_rule",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "filter_monitoring_tool",
-    "pattern": {
-      "op": "and",
-      "rules": [
-        {"op": "is", "path": "detect/cat", "value": "SUSPICIOUS_EXECUTION"},
-        {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\MonitoringTool\\"}
-      ]
+    "rule_name": "filter_monitoring_tool",
+    "rule_content": {
+      "detection": {
+        "op": "and",
+        "rules": [
+          {"op": "is", "path": "cat", "value": "SUSPICIOUS_EXECUTION"},
+          {"op": "contains", "path": "detect/event/FILE_PATH", "value": "C:\\Program Files\\MonitoringTool\\"}
+        ]
+      }
     }
   }
 )
@@ -158,13 +162,15 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_fp_rule",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "filter_dev_activity",
-    "pattern": {
-      "op": "and",
-      "rules": [
-        {"op": "is", "path": "detect/cat", "value": "TOOL_USAGE"},
-        {"op": "contains", "path": "routing/hostname", "value": "dev-"}
-      ]
+    "rule_name": "filter_dev_activity",
+    "rule_content": {
+      "detection": {
+        "op": "and",
+        "rules": [
+          {"op": "is", "path": "cat", "value": "TOOL_USAGE"},
+          {"op": "contains", "path": "routing/hostname", "value": "dev-"}
+        ]
+      }
     }
   }
 )
