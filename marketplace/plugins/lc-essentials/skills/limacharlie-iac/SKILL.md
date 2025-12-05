@@ -8,10 +8,7 @@ description: |
   Use when setting up multi-tenant config management, adding orgs to IaC, or managing
   detection rules across organizations via git.
 allowed-tools:
-  - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
-  - mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection
-  - mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond
-  - mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components
+  - Task
   - Read
   - Write
   - Edit
@@ -23,6 +20,9 @@ allowed-tools:
 ---
 
 # LimaCharlie Infrastructure as Code Manager
+
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
 
 Manage multi-tenant LimaCharlie configurations using git-based Infrastructure as Code, compatible with the `ext-git-sync` extension.
 

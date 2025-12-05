@@ -2,7 +2,7 @@
 name: adapter-assistant
 description: Complete adapter lifecycle assistant for LimaCharlie. Supports External Adapters (cloud-managed), Cloud Sensors (SaaS/cloud integrations), and On-prem USP adapters. Dynamically researches adapter types from local docs and GitHub usp-adapters repo. Creates, validates, deploys, and troubleshoots adapter configurations. Handles parsing rules (Grok, regex), field mappings, credential setup, and multi-adapter configs. Use when setting up new data sources (Okta, S3, Azure Event Hub, syslog, webhook, etc.), troubleshooting ingestion issues, or managing adapter deployments.
 allowed-tools:
-  - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
+  - Task
   - Read
   - Bash
   - WebFetch
@@ -11,10 +11,14 @@ allowed-tools:
   - Grep
   - AskUserQuestion
   - Skill
-  - Task
 ---
 
 # Adapter Assistant
+
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
+
+> **CRITICAL - LCQL Queries**: NEVER write LCQL queries manually. ALWAYS use `generate_lcql_query` first, then `run_lcql_query`. See [Critical Requirements](../limacharlie-call/SKILL.md#critical-requirements) for all mandatory workflows.
 
 A comprehensive, dynamic assistant for LimaCharlie adapter lifecycle management. This skill researches adapter configurations from multiple sources and helps you create, validate, deploy, and troubleshoot adapters for any data source.
 
@@ -144,33 +148,49 @@ Execute the dynamic research strategy above to gather all relevant information a
 
 **Get organizations:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
 **List existing External Adapters:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_external_adapters",
-  parameters={"oid": "<org-id>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_external_adapters
+    - Parameters: {\"oid\": \"<org-id>\"}
+    - Return: RAW"
 )
 ```
 
 **List existing Cloud Sensors:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_cloud_sensors",
-  parameters={"oid": "<org-id>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_cloud_sensors
+    - Parameters: {\"oid\": \"<org-id>\"}
+    - Return: RAW"
 )
 ```
 
 **Get existing configuration (if modifying):**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_external_adapter",  # or get_cloud_sensor
-  parameters={"oid": "<org-id>", "name": "<adapter-name>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_external_adapter  # or get_cloud_sensor
+    - Parameters: {\"oid\": \"<org-id>\", \"name\": \"<adapter-name>\"}
+    - Return: RAW"
 )
 ```
 
@@ -206,9 +226,13 @@ client_secret: "hive://secret/azure-client-secret"
 
 Check existing secrets:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_secrets",
-  parameters={"oid": "<org-id>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_secrets
+    - Parameters: {\"oid\": \"<org-id>\"}
+    - Return: RAW"
 )
 ```
 
@@ -231,20 +255,24 @@ Supported index types: `file_hash`, `file_path`, `file_name`, `domain`, `ip`, `u
 **Validate parsing rules before deployment:**
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="validate_usp_mapping",
-  parameters={
-    "oid": "<org-id>",
-    "platform": "text",
-    "mapping": {
-      "parsing_grok": {
-        "message": "%{TIMESTAMP_ISO8601:timestamp} %{WORD:action} ..."
-      },
-      "event_type_path": "action",
-      "event_time_path": "timestamp"
-    },
-    "text_input": "<sample-log-lines>"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: validate_usp_mapping
+    - Parameters: {
+        \"oid\": \"<org-id>\",
+        \"platform\": \"text\",
+        \"mapping\": {
+          \"parsing_grok\": {
+            \"message\": \"%{TIMESTAMP_ISO8601:timestamp} %{WORD:action} ...\"
+          },
+          \"event_type_path\": \"action\",
+          \"event_time_path\": \"timestamp\"
+        },
+        \"text_input\": \"<sample-log-lines>\"
+      }
+    - Return: RAW"
 )
 ```
 
@@ -268,26 +296,34 @@ Skill("test-limacharlie-adapter")
 
 **Deploy External Adapter:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="set_external_adapter",
-  parameters={
-    "oid": "<org-id>",
-    "name": "<adapter-name>",
-    "adapter_type": "syslog|webhook|...",
-    "config": {<full-configuration>}
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: set_external_adapter
+    - Parameters: {
+        \"oid\": \"<org-id>\",
+        \"name\": \"<adapter-name>\",
+        \"adapter_type\": \"syslog|webhook|...\",
+        \"config\": {<full-configuration>}
+      }
+    - Return: RAW"
 )
 ```
 
 **Deploy Cloud Sensor:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="set_cloud_sensor",
-  parameters={
-    "oid": "<org-id>",
-    "name": "<sensor-name>",
-    "config": {<full-configuration>}
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: set_cloud_sensor
+    - Parameters: {
+        \"oid\": \"<org-id>\",
+        \"name\": \"<sensor-name>\",
+        \"config\": {<full-configuration>}
+      }
+    - Return: RAW"
 )
 ```
 
@@ -336,12 +372,13 @@ docker run -d --rm -p 514:514/udp refractionpoint/lc-adapter syslog \
 
 **Verify deployment:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "<org-id>",
-    "selector": "iid == `<installation-key-iid>`"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"<org-id>\", \"selector\": \"iid == `<installation-key-iid>`\"}
+    - Return: RAW"
 )
 ```
 
@@ -351,9 +388,13 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 1. Check adapter last_error field:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_external_adapter",
-  parameters={"oid": "<org-id>", "name": "<adapter-name>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_external_adapter
+    - Parameters: {\"oid\": \"<org-id>\", \"name\": \"<adapter-name>\"}
+    - Return: RAW"
 )
 ```
 
@@ -364,15 +405,13 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 # First calculate timestamps dynamically
 start=$(date -d '1 hour ago' +%s) && end=$(date +%s)
 
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_historic_events",
-  parameters={
-    "oid": "<org-id>",
-    "sid": "<sensor-id>",
-    "start": <start-epoch>,
-    "end": <end-epoch>,
-    "limit": 10
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_historic_events
+    - Parameters: {\"oid\": \"<org-id>\", \"sid\": \"<sensor-id>\", \"start\": <start-epoch>, \"end\": <end-epoch>, \"limit\": 10}
+    - Return: RAW"
 )
 ```
 
@@ -471,31 +510,35 @@ Task(
 
 4. **Deploy as External Adapter**:
    ```
-   mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-     tool_name="set_external_adapter",
-     parameters={
-       "oid": "<oid>",
-       "name": "firewall-syslog",
-       "adapter_type": "syslog",
-       "config": {
-         "port": 514,
-         "is_udp": true,
-         "client_options": {
-           "identity": {"oid": "<oid>", "installation_key": "<iid>"},
-           "platform": "text",
-           "sensor_seed_key": "firewall-logs",
-           "hostname": "firewall-syslog",
-           "mapping": {
-             "parsing_grok": {
-               "message": "<%{INT:priority}>%{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:host} %{WORD:action} %{WORD:protocol} %{IP:src_ip}:%{NUMBER:src_port} %{IP:dst_ip}:%{NUMBER:dst_port}"
-             },
-             "event_type_path": "action",
-             "event_time_path": "timestamp",
-             "sensor_hostname_path": "host"
+   Task(
+     subagent_type="lc-essentials:limacharlie-api-executor",
+     model="haiku",
+     prompt="Execute LimaCharlie API call:
+       - Function: set_external_adapter
+       - Parameters: {
+           \"oid\": \"<oid>\",
+           \"name\": \"firewall-syslog\",
+           \"adapter_type\": \"syslog\",
+           \"config\": {
+             \"port\": 514,
+             \"is_udp\": true,
+             \"client_options\": {
+               \"identity\": {\"oid\": \"<oid>\", \"installation_key\": \"<iid>\"},
+               \"platform\": \"text\",
+               \"sensor_seed_key\": \"firewall-logs\",
+               \"hostname\": \"firewall-syslog\",
+               \"mapping\": {
+                 \"parsing_grok\": {
+                   \"message\": \"<%{INT:priority}>%{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:host} %{WORD:action} %{WORD:protocol} %{IP:src_ip}:%{NUMBER:src_port} %{IP:dst_ip}:%{NUMBER:dst_port}\"
+                 },
+                 \"event_type_path\": \"action\",
+                 \"event_time_path\": \"timestamp\",
+                 \"sensor_hostname_path\": \"host\"
+               }
+             }
            }
          }
-       }
-     }
+       - Return: RAW"
    )
    ```
 
@@ -535,9 +578,13 @@ Task(
 
 1. **Get current configuration**:
    ```
-   mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-     tool_name="get_cloud_sensor",
-     parameters={"oid": "<oid>", "name": "azure-event-hub"}
+   Task(
+     subagent_type="lc-essentials:limacharlie-api-executor",
+     model="haiku",
+     prompt="Execute LimaCharlie API call:
+       - Function: get_cloud_sensor
+       - Parameters: {\"oid\": \"<oid>\", \"name\": \"azure-event-hub\"}
+       - Return: RAW"
    )
    ```
 

@@ -1,10 +1,13 @@
 ---
 name: parsing-helper
 description: Customize and test Grok parsing for USP, Cloud Sensor, and External adapters. Helps generate parsing rules from sample logs, validate against test data, and deploy configurations. Use when setting up new log sources, troubleshooting parsing issues, or modifying field extraction for adapters.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, AskUserQuestion, Skill, Read, Bash
+allowed-tools: Task, AskUserQuestion, Skill, Read, Bash
 ---
 
 # Parsing Helper
+
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
 
 A guided workflow for creating, testing, and deploying Grok parsing configurations for LimaCharlie adapters. This skill helps you customize how log data is parsed and normalized as it's ingested into LimaCharlie.
 
@@ -59,9 +62,13 @@ Before starting, gather:
 Get the list of available organizations:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -75,20 +82,25 @@ Ask the user which adapter type they're working with using `AskUserQuestion`:
 
 1. List available external adapters:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_external_adapters",
-  parameters={"oid": "<SELECTED_ORG_ID>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_external_adapters
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\"}
+    - Return: RAW"
 )
 ```
 
 2. Get the selected adapter's current configuration:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_external_adapter",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "name": "<ADAPTER_NAME>"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_external_adapter
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"name\": \"<ADAPTER_NAME>\"}
+    - Return: RAW"
 )
 ```
 
@@ -96,20 +108,25 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 1. List available cloud sensors:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_cloud_sensors",
-  parameters={"oid": "<SELECTED_ORG_ID>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_cloud_sensors
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\"}
+    - Return: RAW"
 )
 ```
 
 2. Get the selected cloud sensor's current configuration:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_cloud_sensor",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "name": "<SENSOR_NAME>"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_cloud_sensor
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"name\": \"<SENSOR_NAME>\"}
+    - Return: RAW"
 )
 ```
 
@@ -125,12 +142,13 @@ If the adapter is already ingesting data, you can fetch sample events:
 
 1. Find the sensor by IID (Installation ID from the adapter's installation key):
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "selector": "iid == `<IID>`"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"selector\": \"iid == `<IID>`\"}
+    - Return: RAW"
 )
 ```
 
@@ -146,15 +164,13 @@ start=$(date -d '1 hour ago' +%s) && end=$(date +%s) && echo "start=$start end=$
 Then use the actual output values (e.g., `start=1764805928 end=1764809528`) directly in the API call - do NOT use placeholder values:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_historic_events",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "sid": "<SENSOR_ID>",
-    "start": 1764805928,
-    "end": 1764809528,
-    "limit": 10
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_historic_events
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"sid\": \"<SENSOR_ID>\", \"start\": 1764805928, \"end\": 1764809528, \"limit\": 10}
+    - Return: RAW"
 )
 ```
 
@@ -238,21 +254,25 @@ client_options:
 Use `validate_usp_mapping` to test the Grok pattern against sample data:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="validate_usp_mapping",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "platform": "text",
-    "mapping": {
-      "parsing_grok": {
-        "message": "%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{WORD:service}\\[%{INT:pid}\\]: %{GREEDYDATA:msg}"
-      },
-      "event_type_path": "service",
-      "event_time_path": "date",
-      "sensor_hostname_path": "host"
-    },
-    "text_input": "<SAMPLE_LOG_LINES>"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: validate_usp_mapping
+    - Parameters: {
+        \"oid\": \"<SELECTED_ORG_ID>\",
+        \"platform\": \"text\",
+        \"mapping\": {
+          \"parsing_grok\": {
+            \"message\": \"%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{WORD:service}\\\\[%{INT:pid}\\\\]: %{GREEDYDATA:msg}\"
+          },
+          \"event_type_path\": \"service\",
+          \"event_time_path\": \"date\",
+          \"sensor_hostname_path\": \"host\"
+        },
+        \"text_input\": \"<SAMPLE_LOG_LINES>\"
+      }
+    - Return: RAW"
 )
 ```
 
@@ -273,38 +293,46 @@ If validation fails or fields are missing, adjust the Grok pattern and re-valida
 
 **For External Adapters:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="set_external_adapter",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "name": "<ADAPTER_NAME>",
-    "adapter_type": "<EXISTING_TYPE>",
-    "config": {
-      // ... existing config ...
-      "parsing_rules": {
-        "parsing_grok": {
-          "message": "<GROK_PATTERN>"
-        },
-        "event_type_path": "<PATH>",
-        "event_time_path": "<PATH>",
-        "sensor_hostname_path": "<PATH>"
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: set_external_adapter
+    - Parameters: {
+        \"oid\": \"<SELECTED_ORG_ID>\",
+        \"name\": \"<ADAPTER_NAME>\",
+        \"adapter_type\": \"<EXISTING_TYPE>\",
+        \"config\": {
+          // ... existing config ...
+          \"parsing_rules\": {
+            \"parsing_grok\": {
+              \"message\": \"<GROK_PATTERN>\"
+            },
+            \"event_type_path\": \"<PATH>\",
+            \"event_time_path\": \"<PATH>\",
+            \"sensor_hostname_path\": \"<PATH>\"
+          }
+        }
       }
-    }
-  }
+    - Return: RAW"
 )
 ```
 
 **For Cloud Sensors:**
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="set_cloud_sensor",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "name": "<SENSOR_NAME>",
-    "config": {
-      // ... existing config with updated parsing ...
-    }
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: set_cloud_sensor
+    - Parameters: {
+        \"oid\": \"<SELECTED_ORG_ID>\",
+        \"name\": \"<SENSOR_NAME>\",
+        \"config\": {
+          // ... existing config with updated parsing ...
+        }
+      }
+    - Return: RAW"
 )
 ```
 

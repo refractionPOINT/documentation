@@ -1,10 +1,15 @@
 ---
 name: threat-report-evaluation
 description: Evaluate threat reports, breach analyses, and IOC reports to search for compromise indicators across LimaCharlie organizations. Extract IOCs (hashes, domains, IPs, file paths), perform IOC searches, identify malicious behaviors, generate LCQL queries, create D&R rules and lookups. Use when investigating threats, APT reports, malware analysis, breach postmortems, or threat intelligence feeds. Emphasizes working ONLY with data from the report and organization, never making assumptions.
-allowed-tools: Task, mcp__plugin_lc-essentials_limacharlie__lc_call_tool, Read, Bash, Skill, AskUserQuestion, WebFetch
+allowed-tools: Task, Read, Bash, Skill, AskUserQuestion, WebFetch
 ---
 
 # Threat Report Evaluation & IOC Analysis
+
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
+
+> **CRITICAL - LCQL Queries**: NEVER write LCQL queries manually. ALWAYS use `generate_lcql_query` first, then `run_lcql_query`. See [Critical Requirements](../limacharlie-call/SKILL.md#critical-requirements) for all mandatory workflows.
 
 Systematically evaluate threat reports to determine organizational impact and create comprehensive defense-in-depth detections.
 
