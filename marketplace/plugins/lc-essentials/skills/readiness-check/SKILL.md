@@ -2,14 +2,19 @@
 name: readiness-check
 description: Autonomous Asset Inventory Maintainer for MSSPs. Builds comprehensive asset profiles from sensor data, identifies coverage gaps (stale endpoints, Shadow IT), calculates risk scores, and suggests remediation actions. Use for fleet inventory, coverage SLA tracking, offline sensor detection, new asset alerts, or when asked about endpoint health, asset management, or coverage gaps.
 allowed-tools:
-  - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
   - Task
   - Read
   - Bash
+  - Skill
   - AskUserQuestion
 ---
 
 # Readiness Check - Autonomous Asset Inventory Maintainer
+
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
+
+> **CRITICAL - LCQL Queries**: NEVER write LCQL queries manually. ALWAYS use `generate_lcql_query` first, then `run_lcql_query`. See [Critical Requirements](../limacharlie-call/SKILL.md#critical-requirements) for all mandatory workflows.
 
 You are an Asset Inventory specialist helping MSSPs maintain comprehensive endpoint coverage and identify gaps. You combine sensor metadata, system information, and telemetry data to build asset profiles, detect coverage issues, and suggest remediation actions.
 
@@ -75,9 +80,13 @@ Phase 5: Report Generation & Remediation
 If OID not provided, get the user's organizations:
 
 ```
-lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -114,9 +123,13 @@ Proceed with readiness check?
 ### 2.1 Get All Sensors
 
 ```
-lc_call_tool(
-  tool_name="list_sensors",
-  parameters={"oid": "[org-id]"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"[org-id]\"}
+    - Return: RAW"
 )
 ```
 
@@ -125,13 +138,19 @@ Returns sensor list with `sid`, `hostname`, `alive`, `plat`, `tags`, etc.
 ### 2.2 Get Online Sensors
 
 ```
-lc_call_tool(
-  tool_name="get_online_sensors",
-  parameters={"oid": "[org-id]"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: get_online_sensors
+    - Parameters: {\"oid\": \"[org-id]\"}
+    - Return: RAW"
 )
 ```
 
 Returns map of `{sid: true}` for currently online sensors.
+
+**TIP**: Spawn both API calls in parallel (single message with multiple Task blocks) to reduce execution time.
 
 ### 2.3 Classify by Offline Duration
 
@@ -334,6 +353,40 @@ Use `AskUserQuestion` to offer export formats:
 - **Markdown**: Human-readable report
 - **HTML Dashboard**: Via `graphic-output` skill
 
+### 5.4 Generate HTML Dashboard (Optional)
+
+If user requests visual output, invoke the `graphic-output` skill:
+
+```
+Skill(skill="lc-essentials:graphic-output")
+```
+
+Then provide the structured report data for visualization. The graphic-output skill will generate an interactive HTML dashboard with:
+- Coverage gauge (online % vs SLA target)
+- Offline breakdown pie chart
+- Risk distribution bar chart
+- Sortable sensor tables
+- Remediation action items
+
+**Example data structure for graphic-output:**
+```json
+{
+  "report_type": "readiness_check",
+  "title": "Asset Inventory Report",
+  "org": {"name": "Client ABC", "oid": "..."},
+  "summary": {
+    "total_sensors": 150,
+    "online": 142,
+    "coverage_pct": 94.7,
+    "sla_target": 95,
+    "sla_status": "FAILING"
+  },
+  "offline_breakdown": {...},
+  "risk_distribution": {...},
+  "top_issues": [...]
+}
+```
+
 ---
 
 ## Asset Profile Schema
@@ -412,10 +465,52 @@ Use `AskUserQuestion` to offer export formats:
 
 ## Integration with Other Skills
 
-- **sensor-health**: Complements with deeper asset profiling
-- **reporting**: Combines for full MSSP reports
-- **graphic-output**: Generates visual dashboards
-- **timeline-creation**: Investigates specific problematic sensors
+This skill is designed to work seamlessly with other lc-essentials skills:
+
+### sensor-health
+**Use when**: User wants to check for sensors online but not sending data, or detailed telemetry availability.
+
+```
+Skill(skill="lc-essentials:sensor-health")
+```
+
+The `sensor-health` skill focuses on data availability (online but silent sensors), while `readiness-check` provides broader asset inventory and gap analysis. Use together for comprehensive fleet monitoring.
+
+### reporting
+**Use when**: User wants multi-org MSSP reports combining billing, usage, and sensor data.
+
+```
+Skill(skill="lc-essentials:reporting")
+```
+
+The `reporting` skill aggregates data across multiple organizations. Combine with readiness-check for coverage SLA reporting across the entire MSSP portfolio.
+
+### graphic-output
+**Use when**: User requests visual dashboards, charts, or HTML exports.
+
+```
+Skill(skill="lc-essentials:graphic-output")
+```
+
+Generate interactive HTML dashboards from readiness-check data. See Section 5.4 for integration details.
+
+### timeline-creation
+**Use when**: Investigating specific problematic sensors or security incidents.
+
+```
+Skill(skill="lc-essentials:timeline-creation")
+```
+
+After identifying high-risk sensors in readiness-check, use timeline-creation to investigate specific endpoints in detail.
+
+### detection-engineering
+**Use when**: Creating D&R rules for asset-related detections (e.g., detect new Shadow IT enrollments).
+
+```
+Skill(skill="lc-essentials:detection-engineering")
+```
+
+Build automated detection rules that trigger on enrollment events matching Shadow IT patterns identified by readiness-check.
 
 ---
 
