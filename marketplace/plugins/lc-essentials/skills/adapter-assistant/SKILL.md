@@ -73,11 +73,11 @@ Search local documentation:
 Glob("./docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/*{keyword}*.md")
 ```
 
-Check GitHub usp-adapters repository:
+Check GitHub usp-adapters repository (use API at root - adapters are NOT in a subdirectory):
 ```
 WebFetch(
-  url="https://api.github.com/repos/refractionPOINT/usp-adapters/contents/adapters",
-  prompt="List all available adapter directories"
+  url="https://api.github.com/repos/refractionPOINT/usp-adapters/contents",
+  prompt="List all available adapter directories from the JSON response"
 )
 ```
 
@@ -88,10 +88,17 @@ If a native adapter exists:
 Read("./docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-{name}.md")
 ```
 
-For advanced configuration options, fetch the source:
+For advanced configuration options, first list files in the adapter directory, then fetch the main source:
 ```
+# Step 1: List files to find the main config file
 WebFetch(
-  url="https://raw.githubusercontent.com/refractionPOINT/usp-adapters/master/adapters/{adapter}/client.go",
+  url="https://api.github.com/repos/refractionPOINT/usp-adapters/contents/{adapter}",
+  prompt="List all .go files in this adapter directory"
+)
+
+# Step 2: Fetch the config (usually client.go, but some adapters differ - e.g., sentinelone uses s1.go)
+WebFetch(
+  url="https://raw.githubusercontent.com/refractionPOINT/usp-adapters/master/{adapter}/client.go",
   prompt="Extract all configuration fields from the Config struct"
 )
 ```
@@ -189,7 +196,7 @@ Task(
   model="haiku",
   prompt="Execute LimaCharlie API call:
     - Function: get_external_adapter  # or get_cloud_sensor
-    - Parameters: {\"oid\": \"<org-id>\", \"name\": \"<adapter-name>\"}
+    - Parameters: {\"oid\": \"<org-id>\", \"adapter_name\": \"<adapter-name>\"}  # use sensor_name for get_cloud_sensor
     - Return: RAW"
 )
 ```
@@ -303,9 +310,8 @@ Task(
     - Function: set_external_adapter
     - Parameters: {
         \"oid\": \"<org-id>\",
-        \"name\": \"<adapter-name>\",
-        \"adapter_type\": \"syslog|webhook|...\",
-        \"config\": {<full-configuration>}
+        \"adapter_name\": \"<adapter-name>\",
+        \"adapter_config\": {<full-configuration-including-adapter_type>}
       }
     - Return: RAW"
 )
@@ -320,8 +326,8 @@ Task(
     - Function: set_cloud_sensor
     - Parameters: {
         \"oid\": \"<org-id>\",
-        \"name\": \"<sensor-name>\",
-        \"config\": {<full-configuration>}
+        \"sensor_name\": \"<sensor-name>\",
+        \"sensor_config\": {<full-configuration>}
       }
     - Return: RAW"
 )
@@ -393,7 +399,7 @@ Task(
   model="haiku",
   prompt="Execute LimaCharlie API call:
     - Function: get_external_adapter
-    - Parameters: {\"oid\": \"<org-id>\", \"name\": \"<adapter-name>\"}
+    - Parameters: {\"oid\": \"<org-id>\", \"adapter_name\": \"<adapter-name>\"}
     - Return: RAW"
 )
 ```
@@ -517,9 +523,9 @@ Task(
        - Function: set_external_adapter
        - Parameters: {
            \"oid\": \"<oid>\",
-           \"name\": \"firewall-syslog\",
-           \"adapter_type\": \"syslog\",
-           \"config\": {
+           \"adapter_name\": \"firewall-syslog\",
+           \"adapter_config\": {
+             \"adapter_type\": \"syslog\",
              \"port\": 514,
              \"is_udp\": true,
              \"client_options\": {
@@ -583,7 +589,7 @@ Task(
      model="haiku",
      prompt="Execute LimaCharlie API call:
        - Function: get_cloud_sensor
-       - Parameters: {\"oid\": \"<oid>\", \"name\": \"azure-event-hub\"}
+       - Parameters: {\"oid\": \"<oid>\", \"sensor_name\": \"azure-event-hub\"}
        - Return: RAW"
    )
    ```
