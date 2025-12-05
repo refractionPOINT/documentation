@@ -9,7 +9,7 @@ Create a new output configuration to export data to external systems.
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | name | string | Yes | Unique output name |
 | module | string | Yes | Output type (syslog, s3, webhook, slack, gcs, elastic, kafka) |
-| type | string | Yes | Data type: event, detect, audit, deployment, artifact |
+| output_type | string | Yes | Data type: event, detect, audit, deployment, artifact |
 
 ### Module-Specific Required Parameters
 
@@ -53,7 +53,7 @@ lc_call_tool(tool_name="add_output", parameters={
   "oid": "c7e8f940-...",
   "name": "prod-syslog",
   "module": "syslog",
-  "type": "event",
+  "output_type": "event",
   "dest_host": "10.0.1.50",
   "dest_port": "514",
   "is_tls": "true"
@@ -66,7 +66,7 @@ lc_call_tool(tool_name="add_output", parameters={
   "oid": "c7e8f940-...",
   "name": "detection-archive",
   "module": "s3",
-  "type": "detect",
+  "output_type": "detect",
   "bucket": "lc-detections",
   "region_name": "us-west-2",
   "tag": "production"
@@ -79,7 +79,7 @@ lc_call_tool(tool_name="add_output", parameters={
   "oid": "c7e8f940-...",
   "name": "alert-webhook",
   "module": "webhook",
-  "type": "detect",
+  "output_type": "detect",
   "dest_host": "https://api.example.com/alerts",
   "auth_header_name": "X-API-Key",
   "auth_header_value": "[secret:webhook-api-key]"

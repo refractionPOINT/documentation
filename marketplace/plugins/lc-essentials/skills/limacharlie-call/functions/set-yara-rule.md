@@ -12,10 +12,8 @@ Create or update a YARA rule for malware detection and file scanning.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Rule source name |
+| rule_name | string | Yes | Rule source name |
 | rule_content | string | Yes | Valid YARA rule source code |
-| tags | array | No | Sensor tags to apply rule to (empty = all) |
-| platforms | array | No | Target platforms: windows, linux, macos |
 
 ## Returns
 
@@ -30,7 +28,7 @@ Empty response indicates success. Rule is immediately active.
 ```
 lc_call_tool(tool_name="set_yara_rule", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "ransomware_detection",
+  "rule_name": "ransomware_detection",
   "rule_content": "rule ransomware_behavior {\n  meta:\n    author = \"security-team\"\n  strings:\n    $encrypt = \"CryptEncrypt\" nocase\n    $ransom = \"YOUR FILES HAVE BEEN ENCRYPTED\" nocase\n  condition:\n    $encrypt and $ransom\n}"
 })
 ```

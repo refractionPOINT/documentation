@@ -26,7 +26,7 @@ This skill retrieves the complete schema definition for a specific event type. I
 
 Before calling this skill, gather:
 
-- **event_type**: Event type name (e.g., 'DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS')
+- **name**: Event type name (e.g., 'DNS_REQUEST', 'PROCESS_START', 'NETWORK_CONNECTIONS')
 
 The event type name should match LimaCharlie's event type naming convention (usually UPPERCASE_WITH_UNDERSCORES).
 
@@ -46,7 +46,7 @@ Use the `lc_call_tool` MCP tool from the `limacharlie` server:
 mcp__limacharlie__lc_call_tool(
   tool_name="get_event_schema",
   parameters={
-    "event_type": "[event-type-name]"
+    "name": "[event-type-name]"
   }
 )
 ```
@@ -54,7 +54,7 @@ mcp__limacharlie__lc_call_tool(
 **API Details:**
 - Tool: `get_event_schema`
 - Required parameters:
-  - `event_type`: Event type name (e.g., "DNS_REQUEST")
+  - `name`: Event type name (e.g., "DNS_REQUEST")
 
 ### Step 3: Handle the Response
 
@@ -107,7 +107,7 @@ Steps:
 mcp__limacharlie__lc_call_tool(
   tool_name="get_event_schema",
   parameters={
-    "event_type": "DNS_REQUEST"
+    "name": "DNS_REQUEST"
   }
 )
 ```

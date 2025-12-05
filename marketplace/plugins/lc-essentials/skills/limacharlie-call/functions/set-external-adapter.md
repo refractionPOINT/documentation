@@ -33,9 +33,9 @@ Before calling this skill, gather:
 
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **name**: Name for the external adapter (required, alphanumeric with hyphens/underscores)
+- **adapter_name**: Name for the external adapter (required, alphanumeric with hyphens/underscores)
 - **adapter_type**: Type of adapter (required: syslog, webhook, api, custom)
-- **config**: Complete configuration object (required, structure varies by adapter type)
+- **adapter_config**: Complete configuration object (required, structure varies by adapter type)
 
 The config typically includes:
 - **Connection parameters**: Port, protocol, URL, etc. (varies by type)
@@ -70,9 +70,9 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_external_adapter",
   parameters={
     "oid": "[organization-id]",
-    "name": "[adapter-name]",
+    "adapter_name": "[adapter-name]",
     "adapter_type": "syslog",
-    "config": {
+    "adapter_config": {
       "listen_port": 514,
       "protocol": "udp",
       "parsing_rules": {
@@ -92,9 +92,9 @@ mcp__limacharlie__lc_call_tool(
 - Tool Name: `set_external_adapter`
 - Required Parameters:
   - `oid`: Organization ID
-  - `name`: Name for the external adapter
+  - `adapter_name`: Name for the external adapter
   - `adapter_type`: Type of adapter (syslog, webhook, api, custom)
-  - `config`: Configuration object with adapter-specific settings
+  - `adapter_config`: Configuration object with adapter-specific settings
 
 ### Step 3: Handle the Response
 
@@ -149,9 +149,9 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_external_adapter",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "firewall-syslog",
+    "adapter_name": "firewall-syslog",
     "adapter_type": "syslog",
-    "config": {
+    "adapter_config": {
       "listen_port": 514,
       "protocol": "udp",
       "parsing_rules": {
@@ -226,9 +226,9 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_external_adapter",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "monitoring-webhook",
+    "adapter_name": "monitoring-webhook",
     "adapter_type": "webhook",
-    "config": {
+    "adapter_config": {
       "endpoint_url": "/webhook/monitoring",
       "auth_token": "secret-token-123",
       "parsing_rules": {

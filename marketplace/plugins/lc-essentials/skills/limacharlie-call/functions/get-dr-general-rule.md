@@ -7,7 +7,7 @@ Retrieve a specific custom D&R rule by name from the general namespace.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Rule name (case-sensitive, exact match) |
+| rule_name | string | Yes | Rule name (case-sensitive, exact match) |
 
 ## Returns
 
@@ -37,7 +37,7 @@ Retrieve a specific custom D&R rule by name from the general namespace.
 ```
 lc_call_tool(tool_name="get_dr_general_rule", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "detect-suspicious-powershell"
+  "rule_name": "detect-suspicious-powershell"
 })
 ```
 

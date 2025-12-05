@@ -30,8 +30,8 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID
-- **name**: Name for the saved query
-- **query**: The LCQL query string to save
+- **query_name**: Name for the saved query
+- **lcql_query**: The LCQL query string to save
 
 Optional:
 - **description**: Description of what the query does
@@ -57,8 +57,8 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="set_saved_query",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "suspicious-dns",
-    "query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
+    "query_name": "suspicious-dns",
+    "lcql_query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
     "description": "Find DNS requests to Russian domains",
     "tags": ["threat-hunting", "dns"],
     "enabled": true
@@ -70,8 +70,8 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - Tool name: `set_saved_query`
 - Parameters:
   - `oid`: Organization ID (required)
-  - `name`: Name for the saved query (required)
-  - `query`: The LCQL query string (required)
+  - `query_name`: Name for the saved query (required)
+  - `lcql_query`: The LCQL query string (required)
   - `description`: Optional description
   - `tags`: Optional array of tags
   - `enabled`: Optional boolean (default true)

@@ -9,7 +9,7 @@ Scan a process's memory using YARA rules to detect malware patterns.
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | sid | UUID | Yes | Sensor ID (must be online) |
 | pid | integer | Yes | Process ID to scan |
-| rules | string | Yes | Full YARA rule content |
+| rule | string | Yes | Full YARA rule content |
 
 ## Returns
 
@@ -45,7 +45,7 @@ lc_call_tool(tool_name="yara_scan_process", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
   "sid": "abc-123-def-456",
   "pid": 1234,
-  "rules": "rule CobaltStrike { strings: $a = \"beacon\" condition: $a }"
+  "rule": "rule CobaltStrike { strings: $a = \"beacon\" condition: $a }"
 })
 ```
 

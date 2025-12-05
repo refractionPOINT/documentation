@@ -7,7 +7,7 @@ Permanently delete a D&R rule from the managed namespace.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Rule name (case-sensitive, exact match) |
+| rule_name | string | Yes | Rule name (case-sensitive, exact match) |
 
 ## Returns
 
@@ -22,7 +22,7 @@ Empty response indicates success.
 ```
 lc_call_tool(tool_name="delete_dr_managed_rule", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "old_lateral_movement"
+  "rule_name": "old_lateral_movement"
 })
 ```
 

@@ -7,7 +7,7 @@ Permanently delete a lookup table. Deletion is immediate and cannot be undone.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Lookup table name (case-sensitive) |
+| lookup_name | string | Yes | Lookup table name (case-sensitive) |
 
 ## Returns
 
@@ -22,7 +22,7 @@ Empty response indicates success.
 ```
 lc_call_tool(tool_name="delete_lookup", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "old-threat-ips"
+  "lookup_name": "old-threat-ips"
 })
 ```
 

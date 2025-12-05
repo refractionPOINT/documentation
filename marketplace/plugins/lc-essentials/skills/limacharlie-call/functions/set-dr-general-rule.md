@@ -15,10 +15,8 @@ Create or update a custom D&R rule in the general namespace.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Rule name (alphanumeric, hyphens, underscores) |
-| detect | object | Yes | Detection logic (use AI generation) |
-| respond | array | Yes | Response actions (use AI generation) |
-| is_enabled | boolean | No | Active status (default: true) |
+| rule_name | string | Yes | Rule name (alphanumeric, hyphens, underscores) |
+| rule_content | object | Yes | Rule content containing `detect` and optionally `respond` |
 
 ## Returns
 
@@ -33,14 +31,16 @@ Empty response indicates success. Rule is immediately active.
 ```
 lc_call_tool(tool_name="set_dr_general_rule", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "detect-encoded-powershell",
-  "detect": {
-    "event": "NEW_PROCESS",
-    "op": "contains",
-    "path": "event/COMMAND_LINE",
-    "value": "powershell -enc"
-  },
-  "respond": [{"action": "report", "name": "encoded_powershell"}]
+  "rule_name": "detect-encoded-powershell",
+  "rule_content": {
+    "detect": {
+      "event": "NEW_PROCESS",
+      "op": "contains",
+      "path": "event/COMMAND_LINE",
+      "value": "powershell -enc"
+    },
+    "respond": [{"action": "report", "name": "encoded_powershell"}]
+  }
 })
 ```
 

@@ -9,7 +9,7 @@ Scan multiple processes matching a pattern using YARA rules.
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | sid | UUID | Yes | Sensor ID (must be online) |
 | process_expression | string | Yes | Process name pattern (e.g., "powershell.exe", "*chrome*") |
-| rules | string | Yes | Full YARA rule content |
+| rule | string | Yes | Full YARA rule content |
 
 ## Returns
 
@@ -35,7 +35,7 @@ lc_call_tool(tool_name="yara_scan_memory", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
   "sid": "abc-123-def-456",
   "process_expression": "powershell.exe",
-  "rules": "rule PS_Malware { strings: $encoded = \"encodedCommand\" condition: $encoded }"
+  "rule": "rule PS_Malware { strings: $encoded = \"encodedCommand\" condition: $encoded }"
 })
 ```
 

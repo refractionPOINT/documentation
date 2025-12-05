@@ -29,7 +29,7 @@ Before calling this skill, gather:
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name for the extension configuration (required)
-- **config**: The configuration data object (required, must be valid JSON object)
+- **config_data**: The configuration data object (required, must be valid JSON object)
 
 Optional parameters:
 - **tags**: Array of tags to categorize the configuration
@@ -56,7 +56,7 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "[organization-id]",
     "extension_name": "[extension-name]",
-    "config": {
+    "config_data": {
       "setting1": "value1",
       "setting2": 123
     }
@@ -69,7 +69,7 @@ mcp__limacharlie__lc_call_tool(
 - Required Parameters:
   - `oid`: Organization ID
   - `extension_name`: The name for the extension configuration
-  - `config`: Configuration data object with extension-specific settings
+  - `config_data`: Configuration data object with extension-specific settings
 
 ### Step 3: Handle the Response
 
@@ -130,7 +130,7 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "extension_name": "artifact-collection",
-    "config": {
+    "config_data": {
       "retention_days": 90,
       "max_size_mb": 100,
       "auto_collect": true

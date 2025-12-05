@@ -31,8 +31,8 @@ Before calling this skill, gather:
 
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **name**: Name for the cloud sensor (required, alphanumeric with hyphens/underscores)
-- **config**: Complete configuration object (required, structure varies by sensor type)
+- **sensor_name**: Name for the cloud sensor (required, alphanumeric with hyphens/underscores)
+- **sensor_config**: Complete configuration object (required, structure varies by sensor type)
 
 The config structure depends on the cloud platform or service:
 - **AWS CloudTrail**: aws_region, s3_bucket, role_arn, external_id
@@ -62,8 +62,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_cloud_sensor",
   parameters={
     "oid": "[organization-id]",
-    "name": "[sensor-name]",
-    "config": {
+    "sensor_name": "[sensor-name]",
+    "sensor_config": {
       "sensor_type": "aws_cloudtrail",
       "aws_region": "us-east-1",
       "s3_bucket": "my-cloudtrail-logs",
@@ -78,8 +78,8 @@ mcp__limacharlie__lc_call_tool(
 - Tool Name: `set_cloud_sensor`
 - Required Parameters:
   - `oid`: Organization ID
-  - `name`: Name for the cloud sensor
-  - `config`: Configuration object with sensor-specific settings
+  - `sensor_name`: Name for the cloud sensor
+  - `sensor_config`: Configuration object with sensor-specific settings
 
 ### Step 3: Handle the Response
 
@@ -134,8 +134,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_cloud_sensor",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "prod-aws-cloudtrail",
-    "config": {
+    "sensor_name": "prod-aws-cloudtrail",
+    "sensor_config": {
       "sensor_type": "aws_cloudtrail",
       "aws_region": "us-east-1",
       "s3_bucket": "my-cloudtrail-logs",
@@ -188,8 +188,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_cloud_sensor",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "office365-audit",
-    "config": {
+    "sensor_name": "office365-audit",
+    "sensor_config": {
       "sensor_type": "office365",
       "tenant_id": "abc-123-def",
       "client_id": "client-id-456",

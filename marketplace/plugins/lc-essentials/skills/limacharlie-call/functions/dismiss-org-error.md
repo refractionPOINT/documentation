@@ -29,7 +29,7 @@ Before calling this skill, gather:
 
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required)
-- **error_id**: Error ID of the error to dismiss (required)
+- **component**: Component identifier of the error to dismiss (required)
   - Obtain from get-org-errors skill
 
 ## How to Use
@@ -53,7 +53,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="dismiss_org_error",
   parameters={
     "oid": "[organization-id]",
-    "error_id": "[error-id]"
+    "component": "[component-id]"
   }
 )
 ```
@@ -62,7 +62,7 @@ mcp__limacharlie__lc_call_tool(
 - Tool name: `dismiss_org_error`
 - Required parameters:
   - `oid` (string): Organization ID
-  - `error_id` (string): Error ID to dismiss
+  - `component` (string): Component identifier to dismiss
 
 ### Step 3: Handle the Response
 
@@ -107,7 +107,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="dismiss_org_error",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "error_id": "error-12345"
+    "component": "error-12345"
   }
 )
 ```
@@ -147,7 +147,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="dismiss_org_error",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "error_id": "error-67890"
+    "component": "error-67890"
   }
 )
 ```
