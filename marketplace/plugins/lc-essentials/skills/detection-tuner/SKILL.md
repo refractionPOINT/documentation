@@ -187,7 +187,7 @@ Create FP rules that are **specific enough** to suppress only the benign activit
 
 **Preferred approach - Multiple conditions (AND logic):**
 ```yaml
-data:
+detection:
   op: and
   rules:
     - op: is
@@ -204,7 +204,7 @@ data:
 **Avoid overly broad rules:**
 ```yaml
 # BAD - Too broad, will hide real threats
-data:
+detection:
   op: is
   path: cat
   value: suspicious_process
@@ -347,7 +347,7 @@ Display the complete FP rule with test results:
 
 **Rule Logic:**
 ```yaml
-data:
+detection:
   op: and
   rules:
     - op: is
@@ -395,7 +395,7 @@ parameters:
   oid: [organization-id]
   rule_name: "fp-suspicious-process-sccm-server-20251204"
   rule_content:
-    data:
+    detection:
       op: and
       rules:
         - op: is
@@ -457,7 +457,7 @@ The rule is now filtering detections.
 ### FP Rule Structure
 
 ```yaml
-data:
+detection:
   op: and  # or 'or'
   rules:
     - op: is
