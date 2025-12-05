@@ -2,11 +2,13 @@
 
 ## Overview
 
-**Sub-Agents**: 4 specialized agents for parallel operations:
+**Sub-Agents**: 6 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
 - `sensor-health-reporter`: Check sensor health for a single org
 - `dr-replay-tester`: Test D&R rules via replay for a single org
 - `org-reporter`: Collect comprehensive reporting data for a single org
+- `adapter-doc-researcher`: Research adapter documentation from multiple sources
+- `multi-org-adapter-auditor`: Audit adapters for a single org (parallel execution)
 
 ## What Was Created
 
@@ -92,6 +94,9 @@
 
 #### Testing & Development (1 skill)
 - **test-limacharlie-edr**: Deploy a temporary LimaCharlie EDR agent on the local Linux host for testing. Downloads and runs the LC sensor in a temp directory with automatic cleanup. Requires root/sudo for full system monitoring. Use for testing D&R rules, investigating sensor behavior, or development.
+
+#### Adapter Management (1 skill)
+- **adapter-assistant**: Complete adapter lifecycle assistant for LimaCharlie. Dynamically researches adapter configurations from local docs, GitHub usp-adapters repo, and external product API documentation. Creates, validates, deploys, and troubleshoots External Adapters (cloud-managed), Cloud Sensors (SaaS integrations), and On-prem USP adapters. Handles parsing rules (Grok, regex), field mappings, credential setup, and multi-org auditing. Orchestrates `adapter-doc-researcher` and `multi-org-adapter-auditor` sub-agents for parallel operations.
 
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
