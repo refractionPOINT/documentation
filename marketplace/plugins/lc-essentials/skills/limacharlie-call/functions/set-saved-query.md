@@ -35,8 +35,6 @@ Before calling this skill, gather:
 
 Optional:
 - **description**: Description of what the query does
-- **tags**: Array of tags for organization
-- **enabled**: Boolean (default true)
 
 ## How to Use
 
@@ -59,9 +57,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "query_name": "suspicious-dns",
     "lcql_query": "-24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'",
-    "description": "Find DNS requests to Russian domains",
-    "tags": ["threat-hunting", "dns"],
-    "enabled": true
+    "description": "Find DNS requests to Russian domains"
   }
 )
 ```
@@ -73,8 +69,6 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   - `query_name`: Name for the saved query (required)
   - `lcql_query`: The LCQL query string (required)
   - `description`: Optional description
-  - `tags`: Optional array of tags
-  - `enabled`: Optional boolean (default true)
 
 ### Step 3: Handle Response
 
@@ -93,7 +87,6 @@ Query Saved Successfully!
 
 Name: suspicious-dns
 Description: Find DNS requests to Russian domains
-Tags: threat-hunting, dns
 
 LCQL:
 -24h | * | DNS_REQUEST | event.DOMAIN_NAME ends with '.ru'
@@ -111,10 +104,9 @@ User: "Save this query as 'powershell-encoded'"
 ```
 LCQL: -7d | * | NEW_PROCESS | event.COMMAND_LINE contains 'encodedCommand'
 Description: Detect encoded PowerShell commands
-Tags: threat-hunting, powershell
 ```
 
-Save with name, description, and tags.
+Save with name and description.
 
 ### Example 2: Update existing query
 
@@ -128,7 +120,6 @@ Same tool call with updated LCQL - overwrites existing query.
 - Overwrites existing query with same name
 - LCQL syntax is not validated on save
 - Test query with run-lcql-query before saving
-- Tags help organize query library
 - Description should explain query purpose
 - Consider naming conventions for team queries
 - Can include timeframes in saved queries

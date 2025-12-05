@@ -9,7 +9,6 @@ Create a new installation key for deploying sensors with automatic tag assignmen
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | description | string | Yes | Human-readable description |
 | tags | array | Yes | Tags to automatically apply to sensors using this key |
-| use_public_root_ca | boolean | No | Use public CA for cert validation (default: false) |
 
 ## Returns
 

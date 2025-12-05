@@ -31,11 +31,6 @@ Before calling this skill, gather:
 - **extension_name**: The name for the extension configuration (required)
 - **config_data**: The configuration data object (required, must be valid JSON object)
 
-Optional parameters:
-- **tags**: Array of tags to categorize the configuration
-- **comment**: Description or notes about this configuration
-- **enabled**: Whether the configuration is enabled (defaults to true)
-
 ## How to Use
 
 ### Step 1: Validate Parameters
@@ -163,8 +158,7 @@ Steps:
 
 - **Creating vs Updating**: This operation performs an "upsert" - creates if doesn't exist, updates if it does
 - **Data Structure**: Each extension type has its own expected configuration schema - consult extension documentation
-- **Enabled by Default**: New configurations are enabled by default unless explicitly set to false
-- **Tags**: Use tags for organization and filtering across multiple configurations
+- **Enabled by Default**: New configurations are enabled by default
 - **ETag for Safety**: For advanced use cases, you can use ETags to prevent concurrent modification conflicts
 - **Size Limits**: Very large configurations may hit payload size limits - keep configs reasonable
 - **Validation**: The API may validate configuration structure against extension schema

@@ -34,8 +34,7 @@ Before calling this skill, gather:
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **adapter_name**: Name for the external adapter (required, alphanumeric with hyphens/underscores)
-- **adapter_type**: Type of adapter (required: syslog, webhook, api, custom)
-- **adapter_config**: Complete configuration object (required, structure varies by adapter type)
+- **adapter_config**: Complete configuration object (required, structure varies by adapter type - include adapter type within config)
 
 The config typically includes:
 - **Connection parameters**: Port, protocol, URL, etc. (varies by type)
@@ -53,11 +52,10 @@ The config typically includes:
 Ensure you have:
 1. Valid organization ID (oid)
 2. Unique adapter name (or name of existing adapter to update)
-3. Valid adapter type
-4. Complete adapter configuration with all required fields
-5. Valid parsing rules that match the external data format
-6. Correct connection parameters and credentials
-7. Understanding of the external data source's format and structure
+3. Complete adapter configuration with all required fields (including adapter type within config)
+4. Valid parsing rules that match the external data format
+5. Correct connection parameters and credentials
+6. Understanding of the external data source's format and structure
 
 **Pre-Deployment Validation**: Before deploying, use `validate_usp_mapping` to test your parsing rules against sample data. This ensures correct field extraction before production deployment.
 
@@ -71,8 +69,8 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "[organization-id]",
     "adapter_name": "[adapter-name]",
-    "adapter_type": "syslog",
     "adapter_config": {
+      "type": "syslog",
       "listen_port": 514,
       "protocol": "udp",
       "parsing_rules": {
@@ -93,8 +91,7 @@ mcp__limacharlie__lc_call_tool(
 - Required Parameters:
   - `oid`: Organization ID
   - `adapter_name`: Name for the external adapter
-  - `adapter_type`: Type of adapter (syslog, webhook, api, custom)
-  - `adapter_config`: Configuration object with adapter-specific settings
+  - `adapter_config`: Configuration object with adapter-specific settings (include adapter type within config)
 
 ### Step 3: Handle the Response
 
@@ -150,8 +147,8 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "adapter_name": "firewall-syslog",
-    "adapter_type": "syslog",
     "adapter_config": {
+      "type": "syslog",
       "listen_port": 514,
       "protocol": "udp",
       "parsing_rules": {
@@ -227,8 +224,8 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "adapter_name": "monitoring-webhook",
-    "adapter_type": "webhook",
     "adapter_config": {
+      "type": "webhook",
       "endpoint_url": "/webhook/monitoring",
       "auth_token": "secret-token-123",
       "parsing_rules": {

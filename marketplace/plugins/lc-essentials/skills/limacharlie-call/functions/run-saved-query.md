@@ -99,7 +99,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="get_saved_query",
   parameters={
     "oid": "...",
-    "name": "suspicious-dns"
+    "query_name": "suspicious-dns"
   }
 )
 // Returns: {"data": {"query": "-24h | * | DNS_REQUEST | ..."}}

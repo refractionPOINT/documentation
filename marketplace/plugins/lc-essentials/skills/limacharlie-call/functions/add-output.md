@@ -10,29 +10,25 @@ Create a new output configuration to export data to external systems.
 | name | string | Yes | Unique output name |
 | module | string | Yes | Output type (syslog, s3, webhook, slack, gcs, elastic, kafka) |
 | output_type | string | Yes | Data type: event, detect, audit, deployment, artifact |
+| config | object | No | Module-specific configuration parameters (see below) |
 
-### Module-Specific Required Parameters
+### Config Object Parameters
 
-| Module | Required | Optional |
-|--------|----------|----------|
-| syslog | dest_host | dest_port, is_tls |
-| s3 | bucket | region_name, secret_key |
-| webhook | dest_host (URL) | auth_header_name, auth_header_value |
-| slack | slack_api_token, slack_channel | - |
-| gcs | bucket, key_id | - |
-| elastic | dest_host, username, password | index |
-| kafka | addresses, topic | - |
+The `config` object contains module-specific and filtering parameters:
 
-### Optional Filtering
+**Module-Specific:**
+| Field | Description |
+|-------|-------------|
+| dest_host | Destination host/URL (syslog, webhook, elastic) |
+| bucket | S3/GCS bucket name |
+| username | Username for authentication (elastic) |
+| password | Password for authentication (elastic) |
 
-| Parameter | Description |
-|-----------|-------------|
+**Filtering:**
+| Field | Description |
+|-------|-------------|
 | tag | Filter by sensor tag |
-| tag_black_list | Exclude specific tags |
 | sid | Filter by sensor ID |
-| cat | Filter detections by category |
-| event_white_list | Include specific event types |
-| event_black_list | Exclude specific event types |
 
 ## Returns
 
@@ -54,9 +50,9 @@ lc_call_tool(tool_name="add_output", parameters={
   "name": "prod-syslog",
   "module": "syslog",
   "output_type": "event",
-  "dest_host": "10.0.1.50",
-  "dest_port": "514",
-  "is_tls": "true"
+  "config": {
+    "dest_host": "10.0.1.50"
+  }
 })
 ```
 
@@ -67,22 +63,24 @@ lc_call_tool(tool_name="add_output", parameters={
   "name": "detection-archive",
   "module": "s3",
   "output_type": "detect",
-  "bucket": "lc-detections",
-  "region_name": "us-west-2",
-  "tag": "production"
+  "config": {
+    "bucket": "lc-detections",
+    "tag": "production"
+  }
 })
 ```
 
-**Webhook with auth:**
+**Webhook with filtering:**
 ```
 lc_call_tool(tool_name="add_output", parameters={
   "oid": "c7e8f940-...",
   "name": "alert-webhook",
   "module": "webhook",
   "output_type": "detect",
-  "dest_host": "https://api.example.com/alerts",
-  "auth_header_name": "X-API-Key",
-  "auth_header_value": "[secret:webhook-api-key]"
+  "config": {
+    "dest_host": "https://api.example.com/alerts",
+    "tag": "critical-systems"
+  }
 })
 ```
 
