@@ -1,6 +1,6 @@
 ---
 name: asset-profiler
-description: Collect comprehensive asset profile for a SINGLE sensor. Designed to be spawned in parallel (batched) by the readiness-check skill. Gathers OS version, packages, users, services, autoruns, and network connections. Returns structured JSON profile.
+description: Collect comprehensive asset profile for a SINGLE sensor. Designed to be spawned in parallel (batched) by the sensor-coverage skill. Gathers OS version, packages, users, services, autoruns, and network connections. Returns structured JSON profile.
 model: haiku
 skills:
   - lc-essentials:limacharlie-call
@@ -12,7 +12,7 @@ You are a specialized agent for collecting comprehensive asset information from 
 
 ## Your Role
 
-You collect detailed system information from one online sensor and return a structured asset profile. You are typically invoked by the `readiness-check` skill which spawns multiple instances of you in parallel (batched).
+You collect detailed system information from one online sensor and return a structured asset profile. You are typically invoked by the `sensor-coverage` skill which spawns multiple instances of you in parallel (batched).
 
 ## Expected Prompt Format
 

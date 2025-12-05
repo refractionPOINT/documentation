@@ -311,13 +311,13 @@ Returns validated rules ready for deployment:
 
 **Model**: Claude Haiku (fast and cost-effective)
 
-**Purpose**: Collect comprehensive asset profile for a **single** sensor. Designed to be spawned in parallel (batched) by the `readiness-check` skill in single-org mode.
+**Purpose**: Collect comprehensive asset profile for a **single** sensor. Designed to be spawned in parallel (batched) by the `sensor-coverage` skill in single-org mode.
 
 **When to Use**:
-This agent is **not invoked directly by users**. Instead, it's spawned in parallel (5-10 at a time) by the `readiness-check` skill when users want detailed asset profiling for online sensors.
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (5-10 at a time) by the `sensor-coverage` skill when users want detailed asset profiling for online sensors.
 
 **Architecture Role**:
-- **Parent Skill**: `readiness-check` (single-org mode with asset profiling enabled)
+- **Parent Skill**: `sensor-coverage` (single-org mode with asset profiling enabled)
 - **This Agent**: Profiles ONE sensor (OS, packages, users, services, autoruns, connections)
 - **Parallelization**: Multiple instances run simultaneously, batched by parent skill
 
@@ -352,10 +352,10 @@ Returns structured JSON with asset details:
 **Purpose**: Analyze coverage gaps and calculate risk scores for sensors in a **single** LimaCharlie organization. Receives sensor classification data from the parent skill and returns risk-scored gap analysis with remediation priorities.
 
 **When to Use**:
-This agent is **not invoked directly by users**. Instead, it's spawned by the `readiness-check` skill (single-org mode) after sensor discovery to perform detailed gap analysis.
+This agent is **not invoked directly by users**. Instead, it's spawned by the `sensor-coverage` skill (single-org mode) after sensor discovery to perform detailed gap analysis.
 
 **Architecture Role**:
-- **Parent Skill**: `readiness-check` (single-org mode)
+- **Parent Skill**: `sensor-coverage` (single-org mode)
 - **This Agent**: Performs detailed gap analysis for ONE organization
 - **Separate from profiling**: Runs after sensor classification, provides risk scoring
 
@@ -383,30 +383,31 @@ Returns comprehensive gap analysis:
 **Skills Used**:
 - `lc-essentials:limacharlie-call` - For any additional API calls needed
 
-### org-readiness-reporter
+### org-coverage-reporter
 
 **Model**: Claude Haiku (fast and cost-effective)
 
-**Purpose**: Collect comprehensive readiness data for a **single** LimaCharlie organization. Designed to be spawned in parallel (one instance per org) by the `readiness-check` skill in multi-org mode. Incorporates gap-analyzer logic internally.
+**Purpose**: Collect comprehensive coverage data for a **single** LimaCharlie organization. Designed to be spawned in parallel (one instance per org) by the `sensor-coverage` skill in multi-org mode. Incorporates gap-analyzer logic internally and supports telemetry health checking.
 
 **When to Use**:
-This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one per org) by the `readiness-check` skill when users want fleet-wide readiness assessment across all tenants.
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one per org) by the `sensor-coverage` skill when users want fleet-wide coverage assessment across all tenants.
 
 **Architecture Role**:
-- **Parent Skill**: `readiness-check` (multi-org mode)
-- **This Agent**: Collects readiness data for ONE organization
+- **Parent Skill**: `sensor-coverage` (multi-org mode)
+- **This Agent**: Collects coverage data for ONE organization
 - **Parallelization**: Multiple instances run simultaneously, one per org
-- **Incorporates**: Gap-analyzer logic (risk scoring, classification) built-in
+- **Incorporates**: Gap-analyzer logic (risk scoring, classification) and telemetry health checking built-in
 
 **Expected Input**:
 - Organization name and ID (UUID)
-- Timestamps (NOW, 24H, 7D, 30D as Unix epoch)
+- Timestamps (NOW, 4H, 24H, 7D, 30D as Unix epoch)
 - Stale threshold in days
 - SLA target percentage
+- Telemetry health flag (true/false)
 - Asset profiling flag (true/false)
 
 **Output Format**:
-Returns structured JSON with complete readiness data:
+Returns structured JSON with complete coverage data:
 ```json
 {
   "org_name": "Client ABC",
@@ -437,20 +438,20 @@ Returns structured JSON with complete readiness data:
 
 **Model**: Claude Sonnet (requires intelligence for pattern detection)
 
-**Purpose**: Analyze cross-tenant patterns and detect systemic issues from aggregated readiness data. Receives per-org results from `org-readiness-reporter` agents and identifies platform degradation, coordinated enrollments, SLA compliance patterns, risk concentration, and temporal correlations.
+**Purpose**: Analyze cross-tenant patterns and detect systemic issues from aggregated coverage data. Receives per-org results from `org-coverage-reporter` agents and identifies platform degradation, coordinated enrollments, SLA compliance patterns, risk concentration, silent sensor patterns, and temporal correlations.
 
 **When to Use**:
-This agent is **not invoked directly by users**. Instead, it's spawned by the `readiness-check` skill (multi-org mode) after all `org-readiness-reporter` agents complete, to analyze fleet-wide patterns.
+This agent is **not invoked directly by users**. Instead, it's spawned by the `sensor-coverage` skill (multi-org mode) after all `org-coverage-reporter` agents complete, to analyze fleet-wide patterns.
 
 **Architecture Role**:
-- **Parent Skill**: `readiness-check` (multi-org mode)
+- **Parent Skill**: `sensor-coverage` (multi-org mode)
 - **This Agent**: Analyzes patterns ACROSS all organizations
 - **Runs Once**: After parallel per-org collection completes
-- **Input**: Aggregated results from all org-readiness-reporter agents
+- **Input**: Aggregated results from all org-coverage-reporter agents
 
 **Expected Input**:
 - Configuration (pattern detection thresholds)
-- Per-org results (JSON array from org-readiness-reporter agents)
+- Per-org results (JSON array from org-coverage-reporter agents)
 
 **Output Format**:
 Returns comprehensive fleet analysis:
@@ -481,6 +482,7 @@ Returns comprehensive fleet analysis:
 3. **SLA Compliance Patterns** - Systemic SLA failures
 4. **Risk Concentration** - Critical risks clustered in few orgs
 5. **Temporal Correlation** - Simultaneous outages
+6. **Silent Sensor Patterns** - Online sensors not sending telemetry (concentrated in specific orgs/platforms)
 
 **Skills Used**:
 - None (analyzes provided data, no API calls)
