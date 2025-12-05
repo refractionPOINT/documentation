@@ -202,29 +202,19 @@ Return the complete JSON analysis to the parent skill.
 
 ## Risk Factor Detection Logic
 
+> **Reference Implementation**: See `skills/sensor-coverage/scripts/sensor_classification.py` for full algorithm implementations.
+
 ### Detecting Untagged Sensors
 
-```python
-# Sensor is untagged if tags array is empty or contains only LC system tags
-system_tags = ["lc:", "chrome:", "josh:"]  # Tags auto-applied by LC
-user_tags = [t for t in sensor.tags if not any(t.startswith(s) for s in system_tags)]
-is_untagged = len(user_tags) == 0
-```
+Use `get_user_tags(tags)` to filter out system prefixes (`lc:`, `chrome:`). Sensor is untagged if no user tags remain.
 
 ### Detecting New Sensors (Shadow IT)
 
-```python
-# Parse enroll timestamp and compare to 24h ago
-enroll_time = parse_timestamp(sensor.enroll)
-is_new_24h = (current_time - enroll_time) < 86400
-```
+Use `is_new_sensor(enroll_timestamp, now_timestamp, window_hours=24)` to check if enrolled within detection window.
 
 ### Detecting Isolated Sensors
 
-```python
-# Check for isolation tag or isolated status
-is_isolated = "isolated" in sensor.tags or sensor.get("isolated", False)
-```
+Check for `isolated` tag in sensor tags or `sensor.get("isolated", False)` status field.
 
 ## Output Format
 

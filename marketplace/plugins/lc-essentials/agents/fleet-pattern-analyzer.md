@@ -69,56 +69,19 @@ Analyze for patterns and return structured JSON.
 
 ## Pattern Detection Algorithms
 
+> **Reference Implementation**: See `skills/sensor-coverage/scripts/pattern_detection.py` for full algorithm implementations. The descriptions below explain the logic; the script file contains the executable code.
+
 ### Pattern 1: Platform Health Degradation
 
 Detect if any platform has abnormally high offline rates across the fleet.
 
-**Algorithm**:
-```python
-def detect_platform_degradation(org_results, threshold_pct=10):
-    """
-    Flag platforms where fleet-wide offline rate exceeds threshold.
-    """
-    # Aggregate platform stats across all successful orgs
-    platform_totals = {}
+**Function**: `detect_platform_degradation(org_results, threshold_pct=10)`
 
-    for org in org_results:
-        if org['status'] == 'failed':
-            continue
-        for platform, stats in org.get('platforms', {}).items():
-            if platform not in platform_totals:
-                platform_totals[platform] = {'total': 0, 'offline': 0, 'orgs': []}
-            platform_totals[platform]['total'] += stats['total']
-            platform_totals[platform]['offline'] += stats['offline']
-            if stats['offline'] > 0:
-                platform_totals[platform]['orgs'].append({
-                    'org_name': org['org_name'],
-                    'total': stats['total'],
-                    'offline': stats['offline'],
-                    'offline_pct': stats['offline_pct']
-                })
-
-    # Check each platform against threshold
-    degraded_platforms = []
-    for platform, totals in platform_totals.items():
-        if totals['total'] == 0:
-            continue
-        offline_pct = (totals['offline'] / totals['total']) * 100
-        if offline_pct > threshold_pct:
-            degraded_platforms.append({
-                'platform': platform,
-                'total_sensors': totals['total'],
-                'offline_sensors': totals['offline'],
-                'offline_pct': offline_pct,
-                'threshold_pct': threshold_pct,
-                'affected_orgs': sorted(totals['orgs'],
-                                       key=lambda x: x['offline_pct'],
-                                       reverse=True),
-                'org_count': len(totals['orgs'])
-            })
-
-    return degraded_platforms
-```
+**Logic**:
+1. Aggregate platform stats across all successful orgs
+2. Calculate fleet-wide offline percentage per platform
+3. Flag platforms exceeding threshold (default: 10%)
+4. Sort affected orgs by offline percentage
 
 **Output Format**:
 ```json
@@ -156,89 +119,14 @@ def detect_platform_degradation(org_results, threshold_pct=10):
 
 Detect suspicious enrollment patterns across multiple organizations.
 
-**Algorithm**:
-```python
-def detect_coordinated_enrollment(org_results, min_sensors=5, window_hours=2):
-    """
-    Detect clusters of new sensor enrollments across orgs within time window.
-    """
-    # Aggregate all new sensors with enrollment times
-    all_new_sensors = []
-    for org in org_results:
-        if org['status'] == 'failed':
-            continue
-        for sensor in org.get('new_sensors_24h', []):
-            all_new_sensors.append({
-                'org_name': org['org_name'],
-                'oid': org['oid'],
-                'sid': sensor['sid'],
-                'hostname': sensor['hostname'],
-                'enrolled_at': parse_timestamp(sensor['enrolled_at']),
-                'platform': sensor.get('platform', 'unknown'),
-                'tags': sensor.get('tags', [])
-            })
+**Function**: `detect_coordinated_enrollment(org_results, min_sensors=5, window_hours=2)`
 
-    if len(all_new_sensors) < min_sensors:
-        return []  # Not enough new sensors to form a cluster
-
-    # Sort by enrollment time
-    all_new_sensors.sort(key=lambda x: x['enrolled_at'])
-
-    # Detect time clusters using sliding window
-    window_seconds = window_hours * 3600
-    clusters = []
-
-    i = 0
-    while i < len(all_new_sensors):
-        cluster = [all_new_sensors[i]]
-        j = i + 1
-        while j < len(all_new_sensors):
-            if all_new_sensors[j]['enrolled_at'] - cluster[0]['enrolled_at'] <= window_seconds:
-                cluster.append(all_new_sensors[j])
-                j += 1
-            else:
-                break
-
-        # Check if cluster spans multiple orgs and meets minimum size
-        unique_orgs = set(s['org_name'] for s in cluster)
-        if len(cluster) >= min_sensors and len(unique_orgs) > 1:
-            # Analyze cluster for patterns
-            hostnames = [s['hostname'] for s in cluster]
-            common_pattern = find_hostname_pattern(hostnames)
-
-            clusters.append({
-                'sensors': cluster,
-                'count': len(cluster),
-                'org_count': len(unique_orgs),
-                'orgs': list(unique_orgs),
-                'start_time': cluster[0]['enrolled_at'],
-                'end_time': cluster[-1]['enrolled_at'],
-                'hostname_pattern': common_pattern,
-                'window_hours': window_hours
-            })
-
-        i = j if j > i + 1 else i + 1
-
-    return clusters
-
-def find_hostname_pattern(hostnames):
-    """Find common prefix/suffix patterns in hostnames."""
-    if not hostnames:
-        return None
-
-    # Check for common prefix
-    prefix = os.path.commonprefix(hostnames)
-    if len(prefix) >= 3:
-        return f"{prefix}*"
-
-    # Check for common patterns like test-*, vm-*, etc.
-    patterns = ['test-', 'vm-', 'dev-', 'temp-', 'new-']
-    for pattern in patterns:
-        if sum(1 for h in hostnames if h.lower().startswith(pattern)) > len(hostnames) / 2:
-            return f"{pattern}*"
-
-    return None
-```
+**Logic**:
+1. Aggregate all new sensors from all orgs with enrollment times
+2. Sort by enrollment time
+3. Use sliding window to detect time clusters
+4. Flag clusters spanning multiple orgs that meet minimum size
+5. Detect hostname patterns (test-*, vm-*, etc.) using `find_hostname_pattern()`
 
 **Output Format**:
 ```json
@@ -285,159 +173,36 @@ def find_hostname_pattern(hostnames):
 
 Identify if SLA failures are systemic or concentrated.
 
-**Algorithm**:
-```python
-def analyze_sla_compliance(org_results, alert_threshold_pct=20):
-    """
-    Analyze SLA compliance patterns and identify systemic issues.
-    """
-    successful_orgs = [o for o in org_results if o['status'] != 'failed']
+**Function**: `analyze_sla_compliance(org_results, alert_threshold_pct=20)`
 
-    passing = [o for o in successful_orgs if o['coverage']['sla_status'] == 'PASSING']
-    failing = [o for o in successful_orgs if o['coverage']['sla_status'] == 'FAILING']
-
-    failure_rate = (len(failing) / len(successful_orgs) * 100) if successful_orgs else 0
-
-    # Group failing orgs by characteristics
-    by_size = group_by_size(failing)  # small/medium/large
-    by_platform = group_by_dominant_platform(failing)
-
-    patterns = []
-
-    # Check if failure rate exceeds threshold
-    if failure_rate >= alert_threshold_pct:
-        patterns.append({
-            'pattern_type': 'high_failure_rate',
-            'description': f'{failure_rate:.1f}% of organizations failing SLA',
-            'threshold': alert_threshold_pct,
-            'failing_count': len(failing),
-            'total_count': len(successful_orgs)
-        })
-
-    # Check for size-based patterns
-    for size, orgs in by_size.items():
-        if len(orgs) >= 3:  # Minimum for pattern
-            size_failure_rate = len(orgs) / count_orgs_by_size(successful_orgs, size) * 100
-            if size_failure_rate > failure_rate * 1.5:  # 50% higher than average
-                patterns.append({
-                    'pattern_type': 'size_correlation',
-                    'description': f'{size} organizations disproportionately failing',
-                    'size_category': size,
-                    'failure_rate': size_failure_rate,
-                    'affected_orgs': [o['org_name'] for o in orgs]
-                })
-
-    return {
-        'total_orgs': len(successful_orgs),
-        'passing': len(passing),
-        'failing': len(failing),
-        'failure_rate_pct': failure_rate,
-        'alert_triggered': failure_rate >= alert_threshold_pct,
-        'failing_orgs': sorted(failing, key=lambda x: x['coverage']['coverage_pct']),
-        'patterns': patterns
-    }
-```
+**Logic**:
+1. Separate passing/failing orgs by SLA status
+2. Calculate fleet-wide failure rate
+3. Trigger alert if failure rate exceeds threshold (default: 20%)
+4. Detect size-based patterns (are small/medium/large orgs disproportionately failing?)
 
 ### Pattern 4: Risk Concentration
 
 Detect if critical risks are concentrated in few orgs.
 
-**Algorithm**:
-```python
-def analyze_risk_concentration(org_results):
-    """
-    Check if critical/high risk sensors are concentrated or distributed.
-    """
-    successful_orgs = [o for o in org_results if o['status'] != 'failed']
+**Function**: `analyze_risk_concentration(org_results)`
 
-    # Aggregate risk counts
-    total_critical = sum(o['risk_distribution']['critical'] for o in successful_orgs)
-    total_high = sum(o['risk_distribution']['high'] for o in successful_orgs)
-
-    # Find orgs with critical risks
-    orgs_with_critical = [
-        {
-            'org_name': o['org_name'],
-            'critical_count': o['risk_distribution']['critical'],
-            'high_count': o['risk_distribution']['high'],
-            'total_sensors': o['coverage']['total_sensors']
-        }
-        for o in successful_orgs
-        if o['risk_distribution']['critical'] > 0
-    ]
-
-    # Calculate concentration
-    is_concentrated = False
-    concentration_detail = None
-
-    if total_critical > 0 and len(orgs_with_critical) <= 3:
-        # Critical risks in 3 or fewer orgs = concentrated
-        is_concentrated = True
-        concentration_detail = {
-            'type': 'concentrated',
-            'description': f'{total_critical} critical-risk sensors in only {len(orgs_with_critical)} organizations',
-            'orgs': orgs_with_critical
-        }
-
-    return {
-        'total_critical': total_critical,
-        'total_high': total_high,
-        'orgs_with_critical': len(orgs_with_critical),
-        'is_concentrated': is_concentrated,
-        'concentration_detail': concentration_detail,
-        'critical_orgs': sorted(orgs_with_critical,
-                                key=lambda x: x['critical_count'],
-                                reverse=True)
-    }
-```
+**Logic**:
+1. Aggregate critical and high risk counts across all orgs
+2. Identify orgs with critical-risk sensors
+3. Flag as "concentrated" if critical risks exist in 3 or fewer orgs
 
 ### Pattern 5: Temporal Correlation
 
 Detect if offline events cluster around specific times.
 
-**Algorithm**:
-```python
-def detect_temporal_correlation(org_results):
-    """
-    Check if sensors across orgs went offline at similar times.
-    Note: Limited by available data - requires last_seen timestamps.
-    """
-    # This pattern requires more detailed sensor data
-    # For now, check if multiple orgs have unusual offline spikes
+**Function**: `detect_temporal_correlation(org_results)`
 
-    successful_orgs = [o for o in org_results if o['status'] != 'failed']
-
-    # Calculate average offline rate
-    total_sensors = sum(o['coverage']['total_sensors'] for o in successful_orgs)
-    total_offline = sum(o['coverage']['offline'] for o in successful_orgs)
-    avg_offline_rate = (total_offline / total_sensors * 100) if total_sensors > 0 else 0
-
-    # Find orgs with significantly higher offline rates
-    spike_threshold = avg_offline_rate * 2  # 2x average = spike
-    orgs_with_spikes = [
-        o for o in successful_orgs
-        if o['coverage']['offline'] > 0 and
-           (o['coverage']['offline'] / o['coverage']['total_sensors'] * 100) > spike_threshold
-    ]
-
-    if len(orgs_with_spikes) >= 3:
-        return {
-            'pattern_detected': True,
-            'description': f'{len(orgs_with_spikes)} organizations showing offline spikes (>{spike_threshold:.1f}%)',
-            'avg_offline_rate': avg_offline_rate,
-            'spike_threshold': spike_threshold,
-            'affected_orgs': [
-                {
-                    'org_name': o['org_name'],
-                    'offline_rate': o['coverage']['offline'] / o['coverage']['total_sensors'] * 100,
-                    'offline_count': o['coverage']['offline']
-                }
-                for o in orgs_with_spikes
-            ]
-        }
-
-    return {'pattern_detected': False}
-```
+**Logic**:
+1. Calculate average fleet-wide offline rate
+2. Find orgs with significantly higher offline rates (2x average = spike)
+3. Flag if 3+ orgs show simultaneous spikes (suggests infrastructure issue)
+4. Note: Limited by available data - requires last_seen timestamps
 
 ## Output Format
 

@@ -102,54 +102,34 @@ Returns: `{"sensors": {"<sid>": true, ...}}`
 
 ### Step 3: Classify Sensors
 
+> **Reference Implementation**: See `skills/sensor-coverage/scripts/sensor_classification.py` for full algorithm implementations.
+
 For each sensor, determine:
 
 #### 3.1 Online/Offline Status
 
-```python
-online_sids = set(online_sensors_response.get('sensors', {}).keys())
-is_online = sensor['sid'] in online_sids
-```
+Check if sensor SID is in the online sensors set from `get_online_sensors`.
 
 #### 3.2 Offline Duration Category
 
-Parse the `alive` field and calculate hours offline:
+Parse the `alive` field ("YYYY-MM-DD HH:MM:SS") and calculate hours offline.
 
-```python
-# Parse alive: "2025-12-05 14:22:13"
-alive_dt = datetime.strptime(sensor['alive'], '%Y-%m-%d %H:%M:%S')
-alive_ts = alive_dt.timestamp()
-hours_offline = (NOW - alive_ts) / 3600
+**Categories**: `online`, `recent_24h`, `short_1_7d`, `medium_7_30d`, `critical_30d_plus`
 
-# Categorize
-if is_online:
-    category = "online"
-elif hours_offline < 24:
-    category = "recent_24h"
-elif hours_offline < 168:  # 7 days
-    category = "short_1_7d"
-elif hours_offline < 720:  # 30 days
-    category = "medium_7_30d"
-else:
-    category = "critical_30d_plus"
-```
+Use `classify_offline_duration(hours_offline)` function.
 
 #### 3.3 Platform Identification
 
-Map platform codes to names:
-- `windows` / `268435456` → Windows
-- `linux` / `536870912` → Linux
-- `macos` / `805306368` → macOS
-- `chrome` → Chrome OS
-- Other numeric codes → Check hostname patterns or report as "Unknown"
+Map platform codes to names using `get_platform_name(platform_code)`:
+- `268435456` → windows
+- `536870912` → linux
+- `805306368` → macos
+- `2147483648` → adapter
+- `2415919104` → extension
 
 #### 3.4 New Sensor Detection (Shadow IT)
 
-```python
-# Parse enroll timestamp
-enroll_ts = parse_timestamp(sensor.get('enroll', ''))
-is_new_24h = (NOW - enroll_ts) < 86400  # 24 hours in seconds
-```
+Use `is_new_sensor(enroll_ts, now_ts)` to check if enrolled within 24 hours.
 
 ### Step 4: Calculate Risk Scores
 
@@ -168,13 +148,7 @@ Apply risk scoring formula to each sensor:
 
 #### Untagged Detection
 
-```python
-# System tags to ignore
-system_prefixes = ["lc:", "chrome:"]
-user_tags = [t for t in sensor.get('tags', [])
-             if not any(t.startswith(p) for p in system_prefixes)]
-is_untagged = len(user_tags) == 0
-```
+Use `get_user_tags(tags)` to filter out system prefixes (`lc:`, `chrome:`).
 
 #### Severity Thresholds
 
@@ -187,99 +161,25 @@ is_untagged = len(user_tags) == 0
 
 ### Step 5: Aggregate Statistics
 
-Calculate totals:
+Use `aggregate_statistics(classified_sensors, sla_target)` to calculate:
 
-```python
-# Coverage
-total_sensors = len(all_sensors)
-online_count = len([s for s in all_sensors if s['is_online']])
-offline_count = total_sensors - online_count
-coverage_pct = (online_count / total_sensors * 100) if total_sensors > 0 else 0
-sla_status = "PASSING" if coverage_pct >= sla_target else "FAILING"
-
-# Offline breakdown
-offline_breakdown = {
-    "recent_24h": len([s for s in all_sensors if s['category'] == 'recent_24h']),
-    "short_1_7d": len([s for s in all_sensors if s['category'] == 'short_1_7d']),
-    "medium_7_30d": len([s for s in all_sensors if s['category'] == 'medium_7_30d']),
-    "critical_30d_plus": len([s for s in all_sensors if s['category'] == 'critical_30d_plus'])
-}
-
-# Risk distribution
-risk_distribution = {
-    "critical": len([s for s in all_sensors if s['severity'] == 'critical']),
-    "high": len([s for s in all_sensors if s['severity'] == 'high']),
-    "medium": len([s for s in all_sensors if s['severity'] == 'medium']),
-    "low": len([s for s in all_sensors if s['severity'] == 'low'])
-}
-
-# Platform breakdown
-platforms = {}
-for sensor in all_sensors:
-    plat = sensor['platform_name']
-    if plat not in platforms:
-        platforms[plat] = {"total": 0, "online": 0, "offline": 0}
-    platforms[plat]["total"] += 1
-    if sensor['is_online']:
-        platforms[plat]["online"] += 1
-    else:
-        platforms[plat]["offline"] += 1
-
-for plat in platforms:
-    platforms[plat]["offline_pct"] = (
-        platforms[plat]["offline"] / platforms[plat]["total"] * 100
-    ) if platforms[plat]["total"] > 0 else 0
-
-# Tag breakdown (top tags only)
-tag_counts = {}
-for sensor in all_sensors:
-    for tag in sensor.get('user_tags', []):
-        if tag not in tag_counts:
-            tag_counts[tag] = {"total": 0, "online": 0, "offline": 0}
-        tag_counts[tag]["total"] += 1
-        if sensor['is_online']:
-            tag_counts[tag]["online"] += 1
-        else:
-            tag_counts[tag]["offline"] += 1
-```
+- **Coverage**: total, online, offline, coverage_pct, sla_status
+- **Offline breakdown**: by duration category
+- **Risk distribution**: by severity level
+- **Platform breakdown**: per-platform online/offline counts
+- **Tag breakdown**: per-tag online/offline counts
 
 ### Step 6: Identify Top Issues
 
-Generate human-readable issue summaries:
+Use `generate_top_issues(stats, classified_sensors)` to create priority-ordered list:
 
-```python
-top_issues = []
-
-# Critical offline sensors
-critical_count = offline_breakdown['critical_30d_plus']
-if critical_count > 0:
-    top_issues.append(f"{critical_count} sensor(s) offline 30+ days (critical)")
-
-# Medium offline sensors
-medium_count = offline_breakdown['medium_7_30d']
-if medium_count > 0:
-    top_issues.append(f"{medium_count} sensor(s) offline 7-30 days")
-
-# Short offline sensors
-short_count = offline_breakdown['short_1_7d']
-if short_count > 0:
-    top_issues.append(f"{short_count} sensor(s) offline 1-7 days")
-
-# Untagged sensors
-untagged_count = len([s for s in all_sensors if s['is_untagged']])
-if untagged_count > 0:
-    top_issues.append(f"{untagged_count} untagged sensor(s)")
-
-# New sensors (Shadow IT risk)
-new_count = len([s for s in all_sensors if s['is_new_24h']])
-if new_count > 0:
-    top_issues.append(f"{new_count} new sensor(s) in 24h (Shadow IT risk)")
-
-# SLA failure
-if sla_status == "FAILING":
-    gap = sla_target - coverage_pct
-    top_issues.insert(0, f"SLA FAILING: {coverage_pct:.1f}% coverage (target: {sla_target}%, gap: {gap:.1f}%)")
-```
+1. SLA failure (if applicable)
+2. Critical offline (30+ days)
+3. Medium offline (7-30 days)
+4. Short offline (1-7 days)
+5. Untagged sensors
+6. New sensors (Shadow IT)
+7. Silent sensors (if telemetry health enabled)
 
 ### Step 7: Optional Asset Profiling
 
