@@ -307,6 +307,67 @@ Returns validated rules ready for deployment:
 **Skills Used**:
 - `lc-essentials:limacharlie-call` - For D&R rule generation and validation
 
+### sensor-os-collector
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Collect OS version information from online sensors in a **single** LimaCharlie organization. Designed to be spawned in parallel (one instance per org) by the `sensor-os-inventory` skill.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one instance per org) by the `sensor-os-inventory` skill when users want to:
+- Inventory operating systems across their fleet
+- Get OS version details for compliance auditing
+- Identify sensors by OS version for vulnerability management
+- Create OS distribution reports
+
+**Architecture Role**:
+- **Parent Skill**: `sensor-os-inventory` (orchestrates parallel execution)
+- **This Agent**: Collects OS versions from ONE organization's online sensors
+- **Parallelization**: Multiple instances run simultaneously, one per org
+
+**Expected Input**:
+Receives a prompt specifying:
+- Organization name
+- Organization ID (UUID)
+- Platform filter (optional: windows, linux, macos)
+
+**Output Format**:
+Returns structured OS inventory for its assigned org only:
+```markdown
+### {Org Name}
+
+**Status**: {N} sensors inventoried, {M} sensors failed/offline
+
+**OS Distribution**:
+| OS | Version | Architecture | Count |
+|----|---------|--------------|-------|
+| Windows 10 | 10.0.19045 | x64 | 8 |
+...
+
+**Sensor Details**:
+| Hostname | SID | OS | Version | Build | Architecture |
+|----------|-----|----|---------| ------|--------------|
+| SERVER01 | abc-123 | Windows 10 | 10.0.19045 | 19045 | x64 |
+...
+```
+
+**Key Features**:
+- **Single-Org Focus**: Only collects from the one organization specified in its prompt
+- **Live Sensor Tasks**: Sends `os_version` tasks to online sensors (30s timeout)
+- **Parallel Batching**: Queries multiple sensors in parallel for efficiency
+- **Error Tolerance**: Handles timeouts and offline sensors gracefully
+- **Structured Output**: Returns tabular data for easy aggregation
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For sensor listing and os_version tasks
+
+**How It Works**:
+1. Extracts org ID and optional platform filter from prompt
+2. Gets list of online sensors (with optional platform selector)
+3. Sends `os_version` tasks in parallel batches
+4. Collects responses, tracks timeouts/failures
+5. Returns structured OS inventory for this org only (parent skill aggregates)
+
 ---
 
 ## Agent Architecture

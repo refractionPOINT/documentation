@@ -2,9 +2,10 @@
 
 ## Overview
 
-**Sub-Agents**: 6 specialized agents for parallel operations:
+**Sub-Agents**: 7 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
 - `sensor-health-reporter`: Check sensor health for a single org
+- `sensor-os-collector`: Collect OS versions from online sensors in a single org
 - `dr-replay-tester`: Test D&R rules via replay for a single org
 - `org-reporter`: Collect comprehensive reporting data for a single org
 - `adapter-doc-researcher`: Research adapter documentation from multiple sources
@@ -44,6 +45,9 @@
 
 #### Multi-Tenant Reporting (1 skill)
 - reporting
+
+#### Fleet Inventory (1 skill)
+- **sensor-os-inventory**: Collect OS version information from all online sensors across organizations. Sends live `os_version` tasks to sensors and aggregates results. Use for fleet inventory, compliance auditing, vulnerability management, OS patching priority. Orchestrates `sensor-os-collector` sub-agent for multi-org parallel collection.
 
 #### Event Schemas & Platform Info (6 skills)
 - get-event-schema
