@@ -2,12 +2,18 @@
 name: add-new-skill
 description: Create a new skill for the lc-essentials plugin following best practices and framework conventions. Use when adding LimaCharlie API operations, orchestration workflows, or specialized capabilities to the plugin.
 allowed-tools: Task, Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch, TodoWrite
-argument-hint: "skill-name-in-kebab-case"
+argument-hint: "description of what the skill should do"
 ---
 
 # Add New Skill to lc-essentials Plugin
 
-You are creating a new skill for the **lc-essentials** Claude Code plugin. This skill MUST conform to the established framework patterns and conventions.
+You are creating a new skill for the **lc-essentials** Claude Code plugin based on the user's description below.
+
+## User's Skill Description
+
+**The user wants a skill that:** $ARGUMENTS
+
+Your job is to create a skill that fulfills this description while conforming to the established framework patterns and conventions.
 
 ## Step 1: Research Claude Code Skills Best Practices
 
@@ -221,16 +227,22 @@ After creating the skill:
 1. Add entry to `marketplace/plugins/lc-essentials/SKILLS_SUMMARY.md`
 2. If creating an agent, update `marketplace/plugins/lc-essentials/agents/README.md`
 
-## Skill Name: $ARGUMENTS
+## Your Task
 
-Create a new skill with the name provided above (or ask for a name if not provided).
+Based on the user's description above, create a skill that fulfills their requirements.
 
-**Your task:**
-1. Research Claude Code skills documentation using the claude-code-guide agent
+**Workflow:**
+1. Research Claude Code skills documentation using the `claude-code-guide` agent
 2. Read the plugin framework files listed in Step 2
-3. Ask clarifying questions about the skill's purpose if needed
-4. Create the skill following ALL rules in Step 3
-5. Update documentation files
-6. Report what was created
+3. Analyze the user's description to determine:
+   - What LimaCharlie API functions are needed
+   - Which skill category applies (API Wrapper, Orchestration, or Research)
+   - Whether a dedicated sub-agent is needed
+   - An appropriate skill name (kebab-case)
+4. Ask clarifying questions if the description is ambiguous
+5. Create the skill following ALL rules in Step 3
+6. Create any supporting agents if needed
+7. Update documentation files (SKILLS_SUMMARY.md, agents/README.md if applicable)
+8. Report what was created with a summary of the skill's capabilities
 
 **Remember:** Every rule in Step 3 is CRITICAL. If the skill violates any of these rules, it WILL break the plugin or produce incorrect results.
