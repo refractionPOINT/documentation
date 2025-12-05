@@ -1,10 +1,15 @@
 ---
 name: test-limacharlie-edr
 description: Deploy a temporary LimaCharlie EDR agent on the local Linux or Mac OS host for testing. Downloads and runs the LC sensor in a temp directory with automatic cleanup. Use for testing detection rules, investigating sensor behavior, or development. Requires selecting or creating a LimaCharlie organization first.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, Bash, Read, AskUserQuestion, Skill
+allowed-tools: Task, Bash, Read, AskUserQuestion, Skill
 ---
 
 # Test LimaCharlie EDR
+
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
+
+> **CRITICAL - LCQL Queries**: NEVER write LCQL queries manually. ALWAYS use `generate_lcql_query` first, then `run_lcql_query`. See [Critical Requirements](../limacharlie-call/SKILL.md#critical-requirements) for all mandatory workflows.
 
 Deploy a temporary LimaCharlie EDR sensor on the local Linux or Mac OS host for testing purposes. The sensor runs in the background with automatic cleanup when stopped.
 
@@ -47,9 +52,13 @@ Before starting, ensure you have:
 First, get the list of available organizations:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -60,9 +69,13 @@ This returns your available organizations. Use AskUserQuestion to let the user s
 Check for existing "Test EDR" installation key:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_installation_keys",
-  parameters={"oid": "<SELECTED_ORG_ID>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_installation_keys
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\"}
+    - Return: Look for key with description 'Test EDR' and return its key and iid"
 )
 ```
 
@@ -71,13 +84,13 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 **If not exists**: Create one:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="create_installation_key",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "description": "Test EDR",
-    "tags": ["test-edr", "temporary"]
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: create_installation_key
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"description\": \"Test EDR\", \"tags\": [\"test-edr\", \"temporary\"]}
+    - Return: The key and iid of the created installation key"
 )
 ```
 
@@ -134,12 +147,13 @@ echo "Sensor started in $TEMP_DIR"
 After starting, the sensor should appear in your LimaCharlie organization within a few seconds. Verify by listing sensors with a selector that matches the installation key's `iid` (Installation ID, a UUID):
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "selector": "iid == `<INSTALLATION_KEY_IID>`"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"selector\": \"iid == `<INSTALLATION_KEY_IID>`\"}
+    - Return: RAW"
 )
 ```
 
@@ -178,9 +192,13 @@ The `[l]` bracket trick prevents grep from matching itself in the output.
 
 1. List organizations:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -190,21 +208,25 @@ Response shows: `[{"name": "My Test Org", "oid": "abc123-def456-..."}]`
 
 3. Check for existing installation key:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_installation_keys",
-  parameters={"oid": "abc123-def456-..."}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_installation_keys
+    - Parameters: {\"oid\": \"abc123-def456-...\"}
+    - Return: Look for key with description 'Test EDR' and return its key and iid"
 )
 ```
 
 4. Create installation key if needed:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="create_installation_key",
-  parameters={
-    "oid": "abc123-def456-...",
-    "description": "Test EDR",
-    "tags": ["test-edr", "temporary"]
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: create_installation_key
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"description\": \"Test EDR\", \"tags\": [\"test-edr\", \"temporary\"]}
+    - Return: The key and iid of the created installation key"
 )
 ```
 
@@ -238,12 +260,13 @@ echo "Sensor started in $TEMP_DIR"
 
 6. Verify sensor connection using a selector with the installation key's `iid`:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "abc123-def456-...",
-    "selector": "iid == `<IID_FROM_INSTALLATION_KEY>`"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"selector\": \"iid == `<IID_FROM_INSTALLATION_KEY>`\"}
+    - Return: RAW"
 )
 ```
 
@@ -267,12 +290,13 @@ ps aux | grep "[l]c_sensor" || echo "Sensor stopped"
 
 3. Optionally, delete the sensor from LimaCharlie:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="delete_sensor",
-  parameters={
-    "oid": "abc123-def456-...",
-    "sid": "<SENSOR_ID>"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: delete_sensor
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"sid\": \"<SENSOR_ID>\"}
+    - Return: RAW"
 )
 ```
 

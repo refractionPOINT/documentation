@@ -1,12 +1,19 @@
 ---
 name: test-limacharlie-adapter
 description: Deploy a temporary LimaCharlie Adapter on the local Linux or Mac OS host for testing log ingestion. Downloads the adapter, auto-detects log sources, and streams them to your LimaCharlie organization.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, Bash, Read, AskUserQuestion, Skill
+allowed-tools: Task, Bash, Read, AskUserQuestion, Skill
 ---
 
 # Test LimaCharlie Adapter
 
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
+
+> **CRITICAL - LCQL Queries**: NEVER write LCQL queries manually. ALWAYS use `generate_lcql_query` first, then `run_lcql_query`. See [Critical Requirements](../limacharlie-call/SKILL.md#critical-requirements) for all mandatory workflows.
+
 Deploy a temporary LimaCharlie Adapter on the local Linux or Mac OS host for testing log ingestion. The adapter streams local logs to your LimaCharlie organization in real-time.
+
+This skill includes a **helper script** (`lc-adapter-helper.sh`) that handles all platform detection, downloading, and process management automatically.
 
 ## When to Use
 
@@ -23,8 +30,10 @@ Use this skill when:
 This skill performs a multi-phase deployment:
 
 1. **Phase 1 - Installation Key**: Creates or finds an existing "Test Adapter" installation key in your selected LimaCharlie organization
-2. **Phase 2 - Log Source Detection**: Auto-detects log sources (files on Linux, unified logging on Mac OS)
-3. **Phase 3 - Adapter Deployment**: Downloads the appropriate adapter binary for your platform and runs it with logs piped to stdin
+2. **Phase 2 - Sample Collection & Parsing**: Captures sample logs and invokes the `parsing-helper` skill to generate and validate Grok patterns
+3. **Phase 3 - Adapter Deployment**: Downloads the appropriate adapter binary for your platform and runs it with logs piped to stdin, using the parsing configuration from Phase 2
+4. **Phase 4 - Verification**: Verifies the adapter is connected and appearing as a sensor
+5. **Phase 5 - View Data**: Query and view the parsed ingested data
 
 The adapter:
 - Runs in the background (non-blocking)
@@ -49,9 +58,13 @@ Before starting, ensure you have:
 First, get the list of available organizations:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -62,9 +75,13 @@ This returns your available organizations. Use AskUserQuestion to let the user s
 Check for existing "Test Adapter" installation key:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_installation_keys",
-  parameters={"oid": "<SELECTED_ORG_ID>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_installation_keys
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\"}
+    - Return: Look for key with description 'Test Adapter' and return its iid"
 )
 ```
 
@@ -73,13 +90,13 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 **If not exists**: Create one:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="create_installation_key",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "description": "Test Adapter",
-    "tags": ["test-adapter", "temporary"]
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: create_installation_key
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"description\": \"Test Adapter\", \"tags\": [\"test-adapter\", \"temporary\"]}
+    - Return: The iid of the created key"
 )
 ```
 
@@ -87,130 +104,116 @@ Save the returned `iid` for later phases.
 
 > **IMPORTANT**: For adapters, the `installation_key` parameter is the **IID (UUID format)**, NOT the full base64-encoded key used by EDR sensors.
 
-### Phase 2: Detect Log Source
+### Phase 2: Sample Collection & Parsing Configuration
 
-First, detect the platform:
+Before deploying the adapter, capture sample logs and configure parsing rules. This ensures your logs are properly parsed when they arrive in LimaCharlie.
 
-```bash
-OS_TYPE=$(uname -s)
-echo "Platform: $OS_TYPE"
-```
-
-**For Linux**: Check if `journalctl` is available (preferred), otherwise find log files in `/var/log`:
+**Step 1**: Copy the helper script to `/tmp`:
 
 ```bash
-if command -v journalctl &> /dev/null; then
-  echo "journalctl available - will use journalctl -f for log streaming"
-else
-  # Fall back to file-based detection
-  find /var/log -maxdepth 1 -type f \( -name "*.log" -o -name "syslog" -o -name "messages" -o -name "auth.log" \) -readable -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -5
-fi
+cp marketplace/plugins/lc-essentials/skills/test-limacharlie-adapter/lc-adapter-helper.sh /tmp/ && chmod +x /tmp/lc-adapter-helper.sh
 ```
 
-If `journalctl` is available, it will be used for log streaming (no file selection needed). If not, the command shows the 5 most recently modified log files - pick the most active one (typically `/var/log/syslog` or `/var/log/messages`). Confirm the log source with the user before proceeding.
-
-**For Mac OS**: No file detection needed - uses the unified logging system via `log stream`. The adapter will receive logs directly from macOS's unified logging system.
-
-### Phase 3: Download and Run the Adapter
-
-**Step 1**: Detect platform and create temp directory:
+**Step 2**: Capture sample logs to a file:
 
 ```bash
-OS_TYPE=$(uname -s)
-ARCH=$(uname -m)
-TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lc-adapter-test-XXXXXX")
-HOSTNAME=$(hostname)
-echo "Platform: $OS_TYPE ($ARCH), Temp dir: $TEMP_DIR"
+/tmp/lc-adapter-helper.sh sample 20 > /tmp/lc-adapter-samples.txt
+cat /tmp/lc-adapter-samples.txt
 ```
 
-**Step 2**: Download the appropriate adapter binary:
+**Step 3**: Read the sample file content using the Read tool to have it in context.
+
+**Step 4**: Invoke the parsing-helper skill:
+
+```
+Skill("parsing-helper")
+```
+
+When parsing-helper asks for sample logs, provide the captured samples from `/tmp/lc-adapter-samples.txt` that are already in context. Inform parsing-helper this is for a **One-off/USP Adapter** (local adapter).
+
+The parsing-helper will:
+- Analyze the sample logs
+- Generate appropriate Grok pattern
+- Test the pattern with `validate_usp_mapping`
+- Provide CLI config format for the mapping
+
+**Step 5**: Extract the mapping parameters from parsing-helper output.
+
+The parsing-helper will output mapping parameters like:
+- `--grok '<PATTERN>'`
+- `--event-type '<PATH>'`
+- `--event-time '<PATH>'`
+- `--hostname-path '<PATH>'`
+
+Save these for use in the adapter setup (Phase 3).
+
+### Phase 3: Setup and Start the Adapter (Using Helper Script)
+
+The helper script (already copied in Phase 2) handles platform detection, downloading, and running the adapter.
+
+**Step 1**: Run setup with OID, IID, and mapping config from Phase 2:
 
 ```bash
-if [ "$OS_TYPE" = "Darwin" ]; then
-  if [ "$ARCH" = "arm64" ]; then
-    DOWNLOAD_URL="https://downloads.limacharlie.io/adapter/mac/arm64"
-  else
-    DOWNLOAD_URL="https://downloads.limacharlie.io/adapter/mac/64"
-  fi
-else
-  DOWNLOAD_URL="https://downloads.limacharlie.io/adapter/linux/64"
-fi
-curl -sSL "$DOWNLOAD_URL" -o "$TEMP_DIR/lc_adapter"
-chmod +x "$TEMP_DIR/lc_adapter"
-echo "Adapter downloaded to: $TEMP_DIR"
+/tmp/lc-adapter-helper.sh setup <OID> <IID> \
+  --grok '<GROK_PATTERN_FROM_PARSING_HELPER>' \
+  --event-type '<EVENT_TYPE_PATH>' \
+  --event-time '<EVENT_TIME_PATH>' \
+  --hostname-path '<HOSTNAME_PATH>'
 ```
 
-**Step 3**: Create a launch script and run it in background:
+This command automatically:
+- Detects your platform (Linux/Mac, architecture)
+- Detects log source (journalctl, log files, or unified logging)
+- Creates a temp directory
+- Downloads the correct adapter binary
+- Creates the launch script with parsing configuration
+- Saves configuration for later commands
 
-First, create the launch script based on the platform:
+**Step 2**: Start the adapter:
 
 ```bash
-if [ "$OS_TYPE" = "Darwin" ]; then
-  # Mac: pipe from log stream (unified logging)
-  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
-#!/bin/bash
-log stream --style syslog | $TEMP_DIR/lc_adapter stdin \\
-  client_options.identity.installation_key=<IID> \\
-  client_options.identity.oid=<OID> \\
-  client_options.platform=text \\
-  client_options.sensor_seed_key=test-adapter \\
-  client_options.hostname=$HOSTNAME \\
-  > $TEMP_DIR/adapter.log 2>&1
-SCRIPT
-elif command -v journalctl &> /dev/null; then
-  # Linux with journalctl: pipe from journalctl -f
-  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
-#!/bin/bash
-journalctl -f --no-pager | $TEMP_DIR/lc_adapter stdin \\
-  client_options.identity.installation_key=<IID> \\
-  client_options.identity.oid=<OID> \\
-  client_options.platform=text \\
-  client_options.sensor_seed_key=test-adapter \\
-  client_options.hostname=$HOSTNAME \\
-  > $TEMP_DIR/adapter.log 2>&1
-SCRIPT
-else
-  # Linux without journalctl: fall back to tail -f on log file
-  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
-#!/bin/bash
-tail -f <LOG_FILE_PATH> | $TEMP_DIR/lc_adapter stdin \\
-  client_options.identity.installation_key=<IID> \\
-  client_options.identity.oid=<OID> \\
-  client_options.platform=text \\
-  client_options.sensor_seed_key=test-adapter \\
-  client_options.hostname=$HOSTNAME \\
-  > $TEMP_DIR/adapter.log 2>&1
-SCRIPT
-fi
-chmod +x "$TEMP_DIR/run_adapter.sh"
-echo "Launch script created at $TEMP_DIR/run_adapter.sh"
+/tmp/lc-adapter-helper.sh start
 ```
 
-Then, run the script using the Bash tool with `run_in_background: true`:
+### Helper Script Commands Reference
 
-```
-Bash(command="$TEMP_DIR/run_adapter.sh", run_in_background=true)
-```
+| Command | Description |
+|---------|-------------|
+| `sample [count]` | Capture sample logs (default 20 lines) |
+| `setup <oid> <iid> [--grok ...] [--event-type ...] [--event-time ...] [--hostname-path ...]` | Download adapter and create launch script with optional parsing config |
+| `start` | Start the adapter in background |
+| `stop` | Stop adapter and cleanup all files |
+| `status` | Check if adapter is running |
+| `logs` | Show adapter logs (last 50 lines) |
+| `info` | Show current configuration |
 
-**Important**:
-- **MUST use `run_in_background: true`** - Shell backgrounding (`&`, `nohup`, `setsid`) does NOT work reliably with Claude Code's Bash tool
-- The script approach ensures proper process detachment
-- Does NOT require sudo - the adapter runs as regular user
-- Logs output to `$TEMP_DIR/adapter.log` for debugging
-- Store the `TEMP_DIR` path for cleanup later
-- The adapter process name is `lc_adapter` - use this for stopping
+### Manual Setup (Alternative)
 
-### Verify Adapter Connection
+If you prefer not to use the helper script, you can set up manually with separate commands:
+
+1. **Detect platform**: `uname -s` and `uname -m`
+2. **Create temp dir**: `mktemp -d /tmp/lc-adapter-test-XXXXXX`
+3. **Download adapter**: `curl -sSL "<URL>" -o <TEMP_DIR>/lc_adapter && chmod +x <TEMP_DIR>/lc_adapter`
+4. **Create launch script**: Use Write tool to create `<TEMP_DIR>/run_adapter.sh`
+5. **Run in background**: `Bash(command="<TEMP_DIR>/run_adapter.sh", run_in_background=true)`
+
+**Important for manual setup**:
+- **MUST use `run_in_background: true`** - Shell backgrounding (`&`, `nohup`) does NOT work reliably
+- Does NOT require sudo
+- The adapter process name is `lc_adapter`
+
+### Phase 4: Verify Adapter Connection
 
 After starting, the adapter should appear in your LimaCharlie organization within a few seconds as a sensor. Verify by listing sensors with a selector that matches the installation key's `iid`:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "selector": "iid == `<IID>`"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"selector\": \"iid == `<IID>`\"}
+    - Return: RAW"
 )
 ```
 
@@ -222,29 +225,61 @@ cat "$TEMP_DIR/adapter.log"
 
 Look for `usp-client connected` to confirm successful connection.
 
+### Phase 5: Viewing Ingested Data
+
+After the adapter has been running for a few minutes, query the ingested logs.
+
+**Step 1**: Generate the LCQL query from natural language:
+
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: generate_lcql_query
+    - Parameters: {\"oid\": \"<OID>\", \"query\": \"all events from sensor <SID> in the last 10 minutes\"}
+    - Return: The generated LCQL query string"
+)
+```
+
+**Step 2**: Execute the generated query:
+
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: run_lcql_query
+    - Parameters: {\"oid\": \"<OID>\", \"query\": \"<GENERATED_QUERY_FROM_STEP_1>\", \"limit\": 50}
+    - Return: Return sample TEXT values from the events to show the log format"
+)
+```
+
+Replace `<OID>` with the organization ID and `<SID>` with the sensor ID from the verification step.
+
 ### Stopping and Cleanup
 
-When the user wants to stop the test adapter:
-
-**Single command to stop and clean up** (recommended):
+**Using helper script** (recommended):
 
 ```bash
-pkill -9 -f lc_adapter; pkill -9 -f "journalctl -f"; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf <TEMP_DIR>; echo "Cleanup complete"
+/tmp/lc-adapter-helper.sh stop
 ```
 
-**Important notes**:
-- Use `-9` (SIGKILL) for reliable termination of detached processes
-- Use `;` instead of `&&` - pkill returns non-zero exit codes even on success (e.g., 144 when the signal is delivered)
-- Kill `lc_adapter` AND the log source process (`journalctl -f` or `tail -f` on Linux, `log stream` on Mac)
-- Do NOT use `KillShell` to stop the adapter - always use `pkill`
+This automatically kills all adapter processes and cleans up temp files.
 
-**Verify cleanup succeeded**:
+**Check status**:
 
 ```bash
-ps aux | grep "[l]c_adapter" || echo "Adapter stopped"
+/tmp/lc-adapter-helper.sh status
 ```
 
-The `[l]` bracket trick prevents grep from matching itself in the output.
+**Manual cleanup** (if helper script not available):
+
+```bash
+pkill -9 -f lc_adapter; pkill -9 -f "journalctl -f"; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; echo "Cleanup complete"
+```
+
+Use `;` instead of `&&` since pkill returns non-zero exit codes even on success.
 
 ## Example Usage
 
@@ -256,9 +291,13 @@ The `[l]` bracket trick prevents grep from matching itself in the output.
 
 1. List organizations:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -268,116 +307,88 @@ Response shows: `[{"name": "My Test Org", "oid": "abc123-def456-..."}]`
 
 3. Check for existing installation key:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_installation_keys",
-  parameters={"oid": "abc123-def456-..."}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_installation_keys
+    - Parameters: {\"oid\": \"abc123-def456-...\"}
+    - Return: Look for key with description 'Test Adapter' and return its iid"
 )
 ```
 
 4. Create installation key if needed:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="create_installation_key",
-  parameters={
-    "oid": "abc123-def456-...",
-    "description": "Test Adapter",
-    "tags": ["test-adapter", "temporary"]
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: create_installation_key
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"description\": \"Test Adapter\", \"tags\": [\"test-adapter\", \"temporary\"]}
+    - Return: The iid of the created key"
 )
 ```
 
 Returns: `{"iid": "729b2770-9ae6-4e14-beea-5e42b854adf5", ...}`
 
-5. Detect platform and check log source:
+5. Copy helper script and capture samples:
 ```bash
-OS_TYPE=$(uname -s)
-ARCH=$(uname -m)
-# On Linux, check for journalctl (preferred) or fall back to log files:
-if [ "$OS_TYPE" = "Linux" ]; then
-  if command -v journalctl &> /dev/null; then
-    echo "journalctl available - will use journalctl -f for log streaming"
-  else
-    find /var/log -maxdepth 1 -type f \( -name "*.log" -o -name "syslog" -o -name "messages" -o -name "auth.log" \) -readable -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -5
-  fi
-fi
-# On Mac: uses log stream, no file detection needed
+# Copy helper script from skill directory
+cp marketplace/plugins/lc-essentials/skills/test-limacharlie-adapter/lc-adapter-helper.sh /tmp/ && chmod +x /tmp/lc-adapter-helper.sh
 ```
 
-On Linux with journalctl, no file selection needed. On Linux without journalctl, shows log files - pick the most active one. On Mac, skip this step.
-
-6. Download adapter and create launch script:
 ```bash
-TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lc-adapter-test-XXXXXX")
-HOSTNAME=$(hostname)
-
-if [ "$OS_TYPE" = "Darwin" ]; then
-  if [ "$ARCH" = "arm64" ]; then
-    DOWNLOAD_URL="https://downloads.limacharlie.io/adapter/mac/arm64"
-  else
-    DOWNLOAD_URL="https://downloads.limacharlie.io/adapter/mac/64"
-  fi
-else
-  DOWNLOAD_URL="https://downloads.limacharlie.io/adapter/linux/64"
-fi
-curl -sSL "$DOWNLOAD_URL" -o "$TEMP_DIR/lc_adapter"
-chmod +x "$TEMP_DIR/lc_adapter"
-
-# Create launch script
-if [ "$OS_TYPE" = "Darwin" ]; then
-  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
-#!/bin/bash
-log stream --style syslog | $TEMP_DIR/lc_adapter stdin \\
-  client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \\
-  client_options.identity.oid=abc123-def456-... \\
-  client_options.platform=text \\
-  client_options.sensor_seed_key=test-adapter \\
-  client_options.hostname=$HOSTNAME \\
-  > $TEMP_DIR/adapter.log 2>&1
-SCRIPT
-elif command -v journalctl &> /dev/null; then
-  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
-#!/bin/bash
-journalctl -f --no-pager | $TEMP_DIR/lc_adapter stdin \\
-  client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \\
-  client_options.identity.oid=abc123-def456-... \\
-  client_options.platform=text \\
-  client_options.sensor_seed_key=test-adapter \\
-  client_options.hostname=$HOSTNAME \\
-  > $TEMP_DIR/adapter.log 2>&1
-SCRIPT
-else
-  cat > "$TEMP_DIR/run_adapter.sh" << SCRIPT
-#!/bin/bash
-tail -f /var/log/syslog | $TEMP_DIR/lc_adapter stdin \\
-  client_options.identity.installation_key=729b2770-9ae6-4e14-beea-5e42b854adf5 \\
-  client_options.identity.oid=abc123-def456-... \\
-  client_options.platform=text \\
-  client_options.sensor_seed_key=test-adapter \\
-  client_options.hostname=$HOSTNAME \\
-  > $TEMP_DIR/adapter.log 2>&1
-SCRIPT
-fi
-chmod +x "$TEMP_DIR/run_adapter.sh"
-echo "Launch script created at $TEMP_DIR/run_adapter.sh"
+# Capture sample logs
+/tmp/lc-adapter-helper.sh sample 20 > /tmp/lc-adapter-samples.txt
+cat /tmp/lc-adapter-samples.txt
 ```
 
-Then run the script in background:
+Sample output shows logs like:
 ```
-Bash(command="$TEMP_DIR/run_adapter.sh", run_in_background=true)
+Dec 04 10:30:45 myhost systemd[1]: Started Session 42 of user admin.
+Dec 04 10:30:46 myhost sshd[12345]: Accepted publickey for admin from 192.168.1.50 port 54321 ssh2
 ```
 
-7. Verify adapter connection:
+6. Read the sample file and invoke parsing-helper:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "abc123-def456-...",
-    "selector": "iid == `729b2770-9ae6-4e14-beea-5e42b854adf5`"
-  }
+Skill("parsing-helper")
+```
+
+Parsing-helper analyzes the samples and outputs mapping config:
+- `--grok '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{DATA:service}: %{GREEDYDATA:msg}'`
+- `--event-type service`
+- `--event-time date`
+- `--hostname-path host`
+
+7. Setup adapter with mapping config:
+```bash
+/tmp/lc-adapter-helper.sh setup abc123-def456-... 729b2770-9ae6-4e14-beea-5e42b854adf5 \
+  --grok '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{DATA:service}: %{GREEDYDATA:msg}' \
+  --event-type service \
+  --event-time date \
+  --hostname-path host
+```
+
+Output shows platform detection, download progress, and configuration saved.
+
+8. Start the adapter:
+```bash
+/tmp/lc-adapter-helper.sh start
+```
+
+9. Verify adapter connection:
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"selector\": \"iid == `729b2770-9ae6-4e14-beea-5e42b854adf5`\"}
+    - Return: RAW"
 )
 ```
 
-8. Inform user the adapter is running and how to stop it.
+10. Inform user the adapter is running and how to stop it.
 
 ### Example 2: Stopping the Test Adapter
 
@@ -385,46 +396,45 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 **Steps**:
 
-1. Stop adapter and clean up (single command):
+1. Stop adapter using helper script:
 ```bash
-pkill -9 -f lc_adapter; pkill -9 -f "journalctl -f"; pkill -9 -f "tail -f.*log"; pkill -9 -f "log stream"; rm -rf /tmp/lc-adapter-test-XXXXXX; echo "Cleanup complete"
+/tmp/lc-adapter-helper.sh stop
 ```
 
 2. Verify cleanup:
 ```bash
-ps aux | grep "[l]c_adapter" || echo "Adapter stopped"
+/tmp/lc-adapter-helper.sh status
 ```
 
 3. Optionally, delete the sensor from LimaCharlie:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="delete_sensor",
-  parameters={
-    "oid": "abc123-def456-...",
-    "sid": "<SENSOR_ID>"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: delete_sensor
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"sid\": \"<SENSOR_ID>\"}
+    - Return: RAW"
 )
 ```
 
 ## Additional Notes
 
+- **Helper script**: The included `lc-adapter-helper.sh` handles all platform detection, downloading, and process management automatically
 - **Cross-platform support**: Works on Linux (x64), Mac OS Intel (x64), and Mac OS Apple Silicon (arm64)
 - **No root required**: The adapter runs as a regular user
 - **Log sources differ by platform**:
   - **Linux with journalctl**: Uses `journalctl -f --no-pager` to stream system logs (preferred)
   - **Linux without journalctl**: Falls back to `tail -f` on log files from `/var/log`
   - **Mac OS**: Uses `log stream` to access macOS unified logging (no file selection needed)
-- **Temp directory**: The adapter may create working files, so we use a dedicated temp directory to keep things clean
 - **Automatic tags**: Sensors enrolled with this key get `test-adapter` and `temporary` tags for easy identification
 - **Console visibility**: The adapter appears as a sensor in your LimaCharlie web console at https://app.limacharlie.io
-- **Background execution**: MUST use `run_in_background: true` with the Bash tool - shell backgrounding (`&`, `nohup`, `setsid`) does NOT work reliably with Claude Code
 - **Reusable key**: The "Test Adapter" installation key is reused if it already exists, avoiding duplicate keys
-- **Real-time streaming**: Uses `journalctl -f --no-pager` or `tail -f` (Linux) or `log stream` (Mac) for reliable streaming
-- **Cleanup**: Always clean up when done to avoid orphaned processes and files. Use `;` not `&&` when chaining cleanup commands since pkill returns non-zero exit codes even on success
-- **Debugging**: Check `$TEMP_DIR/adapter.log` if the adapter isn't connecting
+- **Debugging**: Use `/tmp/lc-adapter-helper.sh logs` to view adapter logs
 
 ## Related Skills
 
+- `parsing-helper`: **Used in Phase 2** to generate and validate Grok parsing patterns for your log data
 - `limacharlie-call`: For creating organizations or other API operations
 - `detection-engineering`: For creating D&R rules to test with the adapter
 - `sensor-health`: To check if your test adapter is reporting properly

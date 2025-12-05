@@ -2,14 +2,16 @@
 name: timeline-creation
 description: Create investigation timelines from security events, detections, or LCQL queries. Performs HOLISTIC investigations - not just process trees, but initial access hunting, org-wide scope assessment, lateral movement detection, and full host context. Builds Timeline Hive records documenting findings with events, detections, entities, and analyst notes. Use for incident investigation, threat hunting, alert triage, or building SOC working reports.
 allowed-tools:
-  - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
-  - mcp__plugin_lc-essentials_limacharlie__generate_lcql_query
+  - Task
   - Read
   - Bash
   - Skill
 ---
 
 # Timeline Creation - Holistic Investigation & Documentation
+
+> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
+> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
 
 You are an expert SOC analyst. Your job is to investigate security activity and build timelines that tell the complete story of what happened, enabling analysts to understand scope, make decisions, and take action.
 
