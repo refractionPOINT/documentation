@@ -140,7 +140,7 @@ The Go SDK provides a comprehensive client library for programmatic interaction 
 
 **Installation:**
 ```bash
-go get github.com/refractionPOINT/go-limacharlie/limacharlie
+go get github.com/refractionPOINT/go-limacharlie/limacharlie@latest
 ```
 
 ### Python SDK
