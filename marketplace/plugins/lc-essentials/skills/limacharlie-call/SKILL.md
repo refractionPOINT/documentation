@@ -200,7 +200,9 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `yara_scan_file` → `./functions/yara-scan-file.md`
 - `yara_scan_directory` → `./functions/yara-scan-directory.md`
 - `yara_scan_memory` → `./functions/yara-scan-memory.md`
+- `reliable_tasking` → `./functions/reliable-tasking.md`
 - `list_reliable_tasks` → `./functions/list-reliable-tasks.md`
+- `delete_reliable_task` → `./functions/delete-reliable-task.md`
 
 ### Detection & Response Rules (12)
 - `get_detection_rules` → `./functions/get-detection-rules.md`
