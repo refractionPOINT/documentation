@@ -434,6 +434,54 @@ Returns structured JSON with complete coverage data:
 **Skills Used**:
 - `lc-essentials:limacharlie-call` - For sensor data collection APIs
 
+### sensor-tasking-executor
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Execute sensor tasks (live response commands) on a **single** sensor and return results. Designed for parallel execution by the `sensor-tasking` skill when tasking multiple sensors.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one per sensor) by the `sensor-tasking` skill when users want to:
+- Execute live response commands across multiple sensors
+- Collect data (processes, connections, files) from many sensors in parallel
+- Perform YARA scans across a fleet
+
+**Architecture Role**:
+- **Parent Skill**: `sensor-tasking` (orchestrates parallel execution)
+- **This Agent**: Executes tasks on ONE sensor
+- **Parallelization**: Multiple instances run simultaneously, one per sensor
+
+**Expected Input**:
+- Organization ID (UUID)
+- Sensor ID (UUID)
+- Task name (e.g., `get_processes`, `dir_list`, `os_version`)
+- Optional task parameters
+- Return specification
+
+**Output Format**:
+Returns structured JSON with task results:
+```json
+{
+  "success": true,
+  "sid": "sensor-uuid",
+  "task": "get_processes",
+  "online": true,
+  "data": { ... },
+  "metadata": { "execution_time_ms": 1234 }
+}
+```
+
+**Key Features**:
+- **Online Check**: Verifies sensor is online before tasking
+- **Fast Execution**: Uses Haiku model for quick turnaround
+- **Error Handling**: Returns structured errors for offline sensors or task failures
+- **Parallel-Friendly**: Optimized to run alongside other instances
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For sensor commands and status checks
+
+---
+
 ### fleet-pattern-analyzer
 
 **Model**: Claude Sonnet (requires intelligence for pattern detection)
