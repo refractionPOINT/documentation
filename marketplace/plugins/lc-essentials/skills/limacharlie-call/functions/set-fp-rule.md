@@ -31,6 +31,7 @@ Before calling this skill, gather:
 - **oid**: Organization ID (required for all API calls)
 - **rule_name**: Name for the FP rule (unique identifier)
 - **rule_content**: Object containing a `detection` (or `detect`) key with the filter logic
+- **ttl** (optional): Time-to-live in seconds. Rule auto-deletes after this duration.
 
 ### Filter Logic Structure
 

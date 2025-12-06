@@ -889,6 +889,7 @@ parameters:
 - `lookup-lc-doc` - For LCQL syntax and event schema reference
 - `detection-engineering` - For creating D&R rules based on timeline findings
 - `threat-report-evaluation` - For evaluating threat reports and searching for IOCs
+- `sensor-tasking` - For live response and data collection from sensors during investigation
 
 ## Reference
 

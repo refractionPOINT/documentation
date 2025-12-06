@@ -2,13 +2,14 @@
 
 ## Overview
 
-**Sub-Agents**: 6 specialized agents for parallel operations:
+**Sub-Agents**: 7 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
 - `sensor-health-reporter`: Check sensor health for a single org
 - `dr-replay-tester`: Test D&R rules via replay for a single org
 - `org-reporter`: Collect comprehensive reporting data for a single org
 - `adapter-doc-researcher`: Research adapter documentation from multiple sources
 - `multi-org-adapter-auditor`: Audit adapters for a single org (parallel execution)
+- `sensor-tasking-executor`: Execute sensor tasks on a single sensor (parallel execution)
 
 ## What Was Created
 
@@ -82,6 +83,9 @@
 - delete-sensor
 - reliable-tasking
 - list-reliable-tasks
+
+#### Sensor Tasking & Live Response (1 skill)
+- **sensor-tasking**: Orchestrates sending tasks (commands) to EDR sensors for data collection or actions. Handles offline agents via reliable-tasking with guaranteed delivery. Collects responses via LCQL queries or creates D&R rules for automated response handling. Use for live response, fleet-wide operations, forensic acquisition, or incident response tasking. Orchestrates `sensor-tasking-executor` sub-agent for parallel execution across multiple sensors.
 
 #### Detection Engineering (1 skill)
 - **detection-engineering**: Expert Detection Engineer assistant for end-to-end D&R rule development (understand → research → build → test → deploy). Uses iterative test-refine cycles, integrates with `lookup-lc-doc` for syntax help, and orchestrates `dr-replay-tester` sub-agent for multi-org parallel testing.
