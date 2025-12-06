@@ -80,6 +80,7 @@ Before calling this skill, gather:
   - For FP rules: must include filter/match logic
 
 Optional parameters:
+- **ttl**: Time-to-live in seconds. Rule auto-deletes after this duration.
 - **tags**: Array of tags to categorize the rule
 - **comment**: Description or notes about this rule
 - **enabled**: Whether the rule is enabled (defaults to true)

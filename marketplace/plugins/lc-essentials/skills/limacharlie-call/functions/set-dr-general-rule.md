@@ -17,6 +17,7 @@ Create or update a custom D&R rule in the general namespace.
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | rule_name | string | Yes | Rule name (alphanumeric, hyphens, underscores) |
 | rule_content | object | Yes | Rule content containing `detect` and optionally `respond` |
+| ttl | number | No | Time-to-live in seconds. Rule auto-deletes after this duration. |
 
 ## Returns
 
