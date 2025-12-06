@@ -40,8 +40,8 @@ Example requests:
 
 | Approach | Use When | Pros | Cons |
 |----------|----------|------|------|
-| Direct Task | Single sensor, known online, need immediate response | Fast, response inline | Fails if offline |
-| Reliable Task | Offline sensors, large fleets, can wait | Guaranteed delivery | Response via telemetry |
+| Direct Task | ≤5 online sensors, need immediate response | Fast, response inline | Fails if offline |
+| Reliable Task | >5 sensors, offline sensors, or can wait | Guaranteed delivery | Response via telemetry |
 
 ### Challenge 2: Receiving Responses
 
@@ -57,23 +57,24 @@ Example requests:
 START: User wants to task sensors
     |
     v
-Is it a single sensor that's online?
+Are all targets online AND ≤5 sensors?
     |
-    |--YES--> Use Direct Tasking (inline response)
+    |--YES--> Use Direct Tasking (inline response, parallel execution)
     |
-    |--NO--> Are there many sensors or offline sensors?
+    |--NO--> Use Reliable Tasking (>5 sensors OR any offline)
               |
-              |--YES--> Do you need the response data?
+              v
+       Do you need the response data?
+              |
+              |--NO (action-only like isolate)--> Create Reliable Task, done
+              |
+              |--YES--> Do you need automated handling?
                         |
-                        |--NO (action-only like isolate)--> Create Reliable Task, done
+                        |--NO--> Create Reliable Task, wait 2+ min, then LCQL query
                         |
-                        |--YES--> Do you need automated handling?
-                                  |
-                                  |--NO--> Create Reliable Task, wait 2+ min, then LCQL query
-                                  |
-                                  |--YES--> 1. Create D&R rule with TTL FIRST
-                                            2. THEN create Reliable Task
-                                            (rule must exist before task to avoid missing responses)
+                        |--YES--> 1. Create D&R rule with TTL FIRST
+                                  2. THEN create Reliable Task
+                                  (rule must exist before task to avoid missing responses)
 ```
 
 ## How to Use
@@ -140,9 +141,9 @@ Task(
 > **Or filter returned sensors by platform field** before spawning executor agents.
 > Only spawn executors for sensors where `platform` is in `["windows", "linux", "macos", "chrome"]`.
 
-### Step 3A: Direct Tasking (Single Online Sensor)
+### Step 3A: Direct Tasking (≤5 Online Sensors)
 
-For immediate data collection from online sensors, use direct tasking functions.
+For immediate data collection from a small number of online sensors (up to 5), use direct tasking functions with parallel execution.
 
 **Available Direct Task Functions** (return response inline):
 
@@ -178,9 +179,9 @@ Task(
 )
 ```
 
-### Step 3B: Reliable Tasking (Offline or Fleet)
+### Step 3B: Reliable Tasking (>5 Sensors or Offline)
 
-For offline sensors or fleet-wide operations, use reliable tasking.
+For more than 5 sensors, offline sensors, or fleet-wide operations, use reliable tasking.
 
 > **IMPORTANT: Order of Operations**
 >
