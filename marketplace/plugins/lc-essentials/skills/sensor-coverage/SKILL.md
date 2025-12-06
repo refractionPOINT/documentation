@@ -1162,3 +1162,9 @@ Skill(skill="lc-essentials:detection-engineering")
 - Review installation key assignments
 - Check expected enrollment patterns
 - Adjust new asset threshold if needed
+
+## Related Skills
+
+- `sensor-tasking` - For sending commands to sensors identified with coverage issues
+- `sensor-health` - For checking sensor connectivity and data availability
+- `detection-engineering` - For creating D&R rules for Shadow IT detection

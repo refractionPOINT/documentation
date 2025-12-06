@@ -235,6 +235,11 @@ If an agent fails:
 - **Model**: Always use "haiku" for the sub-agents
 - **Error Tolerance**: Continue with partial results if some orgs fail
 
+## Related Skills
+
+- `sensor-tasking` - For sending commands to sensors (live response, data collection)
+- `sensor-coverage` - For comprehensive asset inventory and coverage gap analysis
+
 ## Related Functions
 
 From `limacharlie-call` skill:
