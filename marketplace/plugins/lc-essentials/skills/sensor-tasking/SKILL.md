@@ -63,18 +63,17 @@ Is it a single sensor that's online?
     |
     |--NO--> Are there many sensors or offline sensors?
               |
-              |--YES--> Use Reliable Tasking
+              |--YES--> Do you need the response data?
                         |
-                        v
-                 Do you need the response data?
-                        |
-                        |--NO (action-only like isolate)--> Done after reliable task
+                        |--NO (action-only like isolate)--> Create Reliable Task, done
                         |
                         |--YES--> Do you need automated handling?
                                   |
-                                  |--NO--> Wait 2+ min, then LCQL query
+                                  |--NO--> Create Reliable Task, wait 2+ min, then LCQL query
                                   |
-                                  |--YES--> Create D&R rule with expiry
+                                  |--YES--> 1. Create D&R rule with TTL FIRST
+                                            2. THEN create Reliable Task
+                                            (rule must exist before task to avoid missing responses)
 ```
 
 ## How to Use
@@ -183,6 +182,12 @@ Task(
 
 For offline sensors or fleet-wide operations, use reliable tasking.
 
+> **IMPORTANT: Order of Operations**
+>
+> If you need automated response handling via D&R rules, you **MUST create the D&R rule FIRST**, before creating the reliable task. This ensures no responses are missed between task creation and rule deployment.
+>
+> Order: **D&R Rule → Reliable Task** (not the other way around)
+
 **Read the function documentation first:**
 ```
 Read: marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/reliable-tasking.md
@@ -271,7 +276,9 @@ Task(
 
 #### Option B: D&R Rule (Automated Handling)
 
-For automated response handling, create a D&R rule that matches the investigation_id:
+For automated response handling, create a D&R rule that matches the investigation_id.
+
+> **CRITICAL**: Create the D&R rule **BEFORE** creating the reliable task. Online sensors may respond within milliseconds - if the rule doesn't exist yet, those responses will be missed.
 
 **Step 1: Generate the detection:**
 
@@ -346,6 +353,10 @@ Task(
     - Return: RAW"
 )
 ```
+
+**Step 5: NOW create the reliable task**
+
+Only after the D&R rule is deployed, create the reliable task (see Step 3B above). The rule will catch all responses as sensors execute the task.
 
 ## Monitoring Reliable Tasks
 
@@ -439,7 +450,28 @@ Response to user:
 User: "Run memory collection on all hosts tagged 'incident-response', I need the data sent to our SIEM"
 
 ```
-# Step 1: Create reliable task
+# Step 1: Create D&R rule FIRST to forward responses to SIEM
+# (Use detection-engineering skill or manual D&R creation)
+# Rule should match: routing/investigation_id contains "ir-memcollect-001"
+# Response should: report to SIEM output
+
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: set_dr_general_rule
+    - Parameters: {
+        \"oid\": \"c7e8f940-...\",
+        \"name\": \"temp-ir-memcollect-handler\",
+        \"detection\": {\"op\": \"contains\", \"path\": \"routing/investigation_id\", \"value\": \"ir-memcollect-001\"},
+        \"response\": [{\"action\": \"report\", \"name\": \"IR_MEMCOLLECT_RESPONSE\", \"to\": \"siem\"}],
+        \"is_enabled\": true,
+        \"ttl\": 172800
+      }
+    - Return: RAW"
+)
+
+# Step 2: THEN create reliable task (rule is now in place to catch responses)
 Task(
   subagent_type="lc-essentials:limacharlie-api-executor",
   model="haiku",
@@ -454,9 +486,6 @@ Task(
       }
     - Return: RAW"
 )
-
-# Step 2: Create D&R rule to forward responses to SIEM
-# (Use detection-engineering skill or manual D&R creation)
 ```
 
 ### Example 4: Quick Data Collection with Inline Response
