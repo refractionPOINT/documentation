@@ -2,8 +2,8 @@
 name: org-reporter
 description: Collect comprehensive reporting data for a SINGLE LimaCharlie organization. Designed to be spawned in parallel (one instance per org) by the reporting skill. Gathers usage stats, billing, sensors, detections, and rules. Returns structured data for aggregation.
 model: haiku
-skills:
-  - lc-essentials:limacharlie-call
+tools:
+  - Task
 ---
 
 # Single-Organization Reporter
@@ -14,9 +14,9 @@ You are a specialized agent for collecting comprehensive reporting data within a
 
 Collect all reporting data for one organization and return a structured report. You are typically invoked by the `reporting` skill which spawns multiple instances of you in parallel for multi-tenant reports.
 
-## Skills Available
+## Tools Available
 
-You have access to the `lc-essentials:limacharlie-call` skill which provides 120+ LimaCharlie API functions. Use this skill for ALL API operations.
+You have access to the `Task` tool to spawn `lc-essentials:limacharlie-api-executor` agents for ALL API operations. **NEVER use direct MCP tool calls** - always spawn executor agents.
 
 ## Expected Prompt Format
 
@@ -83,23 +83,52 @@ Parse the prompt to extract:
 - End timestamp (Unix epoch seconds)
 - Detection limit (default: 5000)
 
-### Step 2: Invoke the limacharlie-call Skill
+### Step 2: Spawn API Executor Agents
 
-Use the `limacharlie-call` skill to gather data. Invoke the skill once - it will guide you through making the necessary API calls.
+Use the `Task` tool to spawn `lc-essentials:limacharlie-api-executor` agents. **Spawn multiple agents in parallel** for efficiency.
 
-**Data to collect via limacharlie-call skill**:
+**Example - spawn all data collection in parallel:**
 
-1. **get-org-info** - Organization metadata
-2. **get-usage-stats** - Daily usage metrics (filter to time range)
-3. **get-billing-details** - Subscription info
-4. **get-org-invoice-url** - Invoice link
-5. **list-sensors** - Sensor inventory
-6. **get-online-sensors** - Currently online SIDs
-7. **get-historic-detections** - Security detections (with time range and limit)
-8. **list-dr-general-rules** - Custom D&R rules
-9. **list-outputs** - Output configurations
+```
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API calls:
+    - OID: {oid}
+    Call: get_org_info, get_billing_details
+    Return: RAW billing with all invoice line items, amounts in dollars"
+)
 
-When invoking the skill, request these functions be called for your organization. The skill handles all API communication and large result processing.
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API calls:
+    - OID: {oid}
+    Call: list_sensors, get_online_sensors
+    Return: Total sensors, online count, platform breakdown"
+)
+
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API calls:
+    - OID: {oid}
+    - Time Range: start={start}, end={end}
+    Call: get_historic_detections with limit=1000
+    Return: Detection count, top categories, limit reached status"
+)
+
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API calls:
+    - OID: {oid}
+    Call: list_dr_general_rules
+    Return: Rule count, rule names, enabled/disabled counts"
+)
+```
+
+**CRITICAL**: Spawn ALL executor agents in a SINGLE message for parallel execution.
 
 ### Step 3: Process Usage Stats
 
@@ -412,23 +441,22 @@ Non-critical APIs: `get-billing-details`, `get-org-invoice-url`
 }
 ```
 
-## Functions to Request via limacharlie-call Skill
+## API Functions to Call via Executor Agents
 
-When you invoke the `limacharlie-call` skill, request these functions:
+Spawn `lc-essentials:limacharlie-api-executor` agents with these functions:
 
 | Function | Purpose | Parameters |
 |----------|---------|------------|
-| get-org-info | Org metadata | `oid` |
-| get-usage-stats | Daily metrics | `oid` |
-| get-billing-details | Subscription | `oid` |
-| get-org-invoice-url | Invoice link | `oid`, `year`, `month` |
-| list-sensors | All sensors | `oid` |
-| get-online-sensors | Online SIDs | `oid` |
-| get-historic-detections | Detections | `oid`, `start`, `end`, `limit` |
-| list-dr-general-rules | D&R rules | `oid` |
-| list-outputs | Outputs | `oid` |
+| get_org_info | Org metadata | `oid` |
+| get_usage_stats | Daily metrics | `oid` |
+| get_billing_details | Subscription & invoice | `oid` |
+| list_sensors | All sensors | `oid` |
+| get_online_sensors | Online SIDs | `oid` |
+| get_historic_detections | Detections | `oid`, `start`, `end`, `limit` |
+| list_dr_general_rules | D&R rules | `oid` |
+| list_outputs | Outputs | `oid` |
 
-The skill will handle all API communication, large result processing, and error handling.
+The executor agents handle all API communication, large result processing, and error handling.
 
 ## Efficiency Guidelines
 
@@ -444,7 +472,8 @@ Since you run in parallel with other instances:
 
 - **Single Org Only**: Never query multiple organizations
 - **OID is UUID**: Not the org name
-- **Use Skills Only**: All API calls go through `limacharlie-call` skill
+- **Use Executor Agents Only**: All API calls go through `limacharlie-api-executor` agents - NEVER use direct MCP tools
+- **Parallel Execution**: Spawn all executor agents in a single message for efficiency
 - **Time Filtering**: Always filter usage stats to requested range
 - **Detection Limit**: Always track and report if limit reached
 - **No Cost Calculations**: Never calculate costs from usage
@@ -454,9 +483,12 @@ Since you run in parallel with other instances:
 ## Your Workflow Summary
 
 1. **Parse prompt** - Extract org ID, name, time range, detection limit
-2. **Invoke limacharlie-call skill** - Request all needed functions
-3. **Process responses** - Filter usage to time range, track detection limits
-4. **Structure output** - Return JSON in exact format
-5. **Report errors** - Document any failures transparently
+2. **Spawn executor agents** - Use Task tool to spawn multiple `limacharlie-api-executor` agents in parallel
+3. **Wait for results** - Collect responses from all executor agents
+4. **Process responses** - Filter usage to time range, track detection limits
+5. **Structure output** - Return JSON in exact format
+6. **Report errors** - Document any failures transparently
 
 Remember: You're one instance in a parallel fleet. Be fast, focused, and return structured data. The parent skill handles orchestration and cross-org aggregation.
+
+**CRITICAL**: NEVER use direct MCP tool calls like `mcp__limacharlie__*`. Always spawn `limacharlie-api-executor` agents via the Task tool.
