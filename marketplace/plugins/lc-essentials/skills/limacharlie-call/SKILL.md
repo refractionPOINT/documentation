@@ -8,56 +8,13 @@ allowed-tools: Task, Read, Bash
 
 Perform any LimaCharlie operation by dynamically loading function references.
 
-## Critical Requirements
+## Prerequisites
 
-### LCQL Queries - NEVER Write Manually
-
-```
-❌ FORBIDDEN: run_lcql_query(query="<anything you wrote>")
-✅ REQUIRED:  generate_lcql_query() → run_lcql_query()
-```
-
-LCQL uses unique pipe-based syntax validated against org-specific schemas. Manual queries WILL fail.
-
-### Organization ID (OID)
-
-The OID is a **UUID** (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), NOT the organization name. Use `list_user_orgs` to get the UUID first.
-
-### Timestamps for Historic Queries
-
-- `get_historic_events` / `get_historic_detections` require **seconds** (10 digits)
-- Detection data contains **milliseconds** (13 digits)
-- **Always divide by 1000** when using timestamps from detection data
-
-### CRITICAL: Calculating Timestamps
-
-**❌ NEVER calculate epoch timestamps manually** - LLMs are fundamentally bad at this and WILL produce wrong values (e.g., outputting 2024 timestamps when meaning 2025).
-
-**✅ ALWAYS use bash `date` commands:**
-```bash
-# Current time (seconds)
-date +%s
-
-# 1 hour ago
-date -d '1 hour ago' +%s
-
-# 7 days ago
-date -d '7 days ago' +%s
-
-# 30 days ago
-date -d '30 days ago' +%s
-
-# Specific date (Jan 15, 2025 00:00 UTC)
-date -d '2025-01-15 00:00:00 UTC' +%s
-```
-
-**Example workflow:**
-```bash
-# User asks for "last 7 days of detections"
-start=$(date -d '7 days ago' +%s)
-end=$(date +%s)
-# Use $start and $end in API calls
-```
+Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md. This covers:
+- Never call MCP tools directly (use Task with limacharlie-api-executor)
+- Never write LCQL queries manually (use generate_lcql_query first)
+- Never calculate timestamps manually (use bash date commands)
+- OID is a UUID, not the org name
 
 ## How to Use
 
