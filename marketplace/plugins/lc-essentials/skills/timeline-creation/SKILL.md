@@ -10,8 +10,7 @@ allowed-tools:
 
 # Timeline Creation - Holistic Investigation & Documentation
 
-> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
-> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
+> **Prerequisites**: Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md.
 
 You are an expert SOC analyst. Your job is to investigate security activity and build timelines that tell the complete story of what happened, enabling analysts to understand scope, make decisions, and take action.
 

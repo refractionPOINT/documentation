@@ -1,0 +1,64 @@
+# Using LimaCharlie
+
+## Required Skill
+
+**ALWAYS load the `lc-essentials:limacharlie-call` skill** before any LimaCharlie API operation. Never call LimaCharlie MCP tools directly.
+
+## Critical Rules
+
+### 1. Never Call MCP Tools Directly
+
+- **WRONG**: `mcp__plugin_lc-essentials_limacharlie__lc_call_tool(...)`
+- **CORRECT**: Use Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`
+
+### 2. Never Write LCQL Queries Manually
+
+LCQL uses unique pipe-based syntax validated against org-specific schemas.
+
+- **ALWAYS**: `generate_lcql_query()` first, then `run_lcql_query()` with the generated query
+- Manual queries WILL fail or produce incorrect results
+
+### 3. Never Generate D&R Rules Manually
+
+Use AI generation tools:
+1. `generate_dr_rule_detection()` - Generate detection YAML
+2. `generate_dr_rule_respond()` - Generate response YAML
+3. `validate_dr_rule_components()` - Validate before deploy
+
+### 4. Never Calculate Timestamps Manually
+
+LLMs consistently produce incorrect timestamp values.
+
+**ALWAYS use bash:**
+```bash
+date +%s                           # Current time (seconds)
+date -d '1 hour ago' +%s           # 1 hour ago
+date -d '7 days ago' +%s           # 7 days ago
+date -d '2025-01-15 00:00:00 UTC' +%s  # Specific date
+```
+
+### 5. OID is UUID, NOT Organization Name
+
+- **WRONG**: `oid: "my-org-name"`
+- **CORRECT**: `oid: "c1ffedc0-ffee-4a1e-b1a5-abc123def456"`
+- Use `list_user_orgs` to map org names to UUIDs
+
+### 6. Timestamp Milliseconds vs Seconds
+
+- Detection/event data: **milliseconds** (13 digits)
+- API parameters (`get_historic_events`, `get_historic_detections`): **seconds** (10 digits)
+- **ALWAYS** divide by 1000 when using detection timestamps for API queries
+
+### 7. Never Fabricate Data
+
+- Only report what APIs return
+- Never estimate, infer, or extrapolate data
+- Show "N/A" or "Data unavailable" for missing fields
+- Never calculate costs (no pricing data in API)
+
+### 8. Spawn Agents in Parallel
+
+When processing multiple organizations or items:
+- Use a SINGLE message with multiple Task calls
+- Do NOT spawn agents sequentially
+- Each agent handles ONE item, parent aggregates results

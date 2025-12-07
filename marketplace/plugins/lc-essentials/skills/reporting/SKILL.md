@@ -11,10 +11,7 @@ allowed-tools:
 
 # LimaCharlie Reporting Skill
 
-> **IMPORTANT**: Never call `mcp__plugin_lc-essentials_limacharlie__lc_call_tool` directly.
-> Always use the Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`.
-
-> **CRITICAL - LCQL Queries**: NEVER write LCQL queries manually. ALWAYS use `generate_lcql_query` first, then `run_lcql_query`. See [Critical Requirements](../limacharlie-call/SKILL.md#critical-requirements) for all mandatory workflows.
+> **Prerequisites**: Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md.
 
 ## Overview
 
