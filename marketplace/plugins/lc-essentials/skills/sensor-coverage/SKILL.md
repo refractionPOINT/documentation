@@ -1061,38 +1061,11 @@ AskUserQuestion(
     "header": "Export",
     "options": [
       {"label": "Markdown", "description": "Human-readable text format"},
-      {"label": "JSON", "description": "Structured data for automation"},
-      {"label": "HTML Dashboard", "description": "Interactive visual dashboard"}
+      {"label": "JSON", "description": "Structured data for automation"}
     ],
     "multiSelect": false
   }]
 )
-```
-
-### HTML Dashboard Export
-
-For visual output, invoke the `graphic-output` skill:
-
-```
-Skill(skill="lc-essentials:graphic-output")
-```
-
-Provide structured data:
-```json
-{
-  "report_type": "sensor_coverage",
-  "title": "Sensor Coverage Report",
-  "mode": "single_org|multi_org",
-  "generated_at": "2025-12-05T16:35:00Z",
-  "coverage_summary": {...},
-  "telemetry_health": {...},
-  "compliance_status": {...},
-  "systemic_issues": [...],
-  "platform_health": {...},
-  "sla_compliance": {...},
-  "per_org_breakdown": [...],
-  "recommendations": [...]
-}
 ```
 
 ---
