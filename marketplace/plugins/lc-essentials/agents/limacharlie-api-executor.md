@@ -156,6 +156,18 @@ Run the analyze script with the `resource_link`:
 bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/..."
 ```
 
+**IMPORTANT: curl auto-decompresses gzip**
+
+When downloading `resource_link` URLs directly (not via the analyze script), curl automatically decompresses gzip data. Do NOT pipe through `gunzip`:
+
+```bash
+# CORRECT - curl handles decompression automatically
+curl -sL "[resource_link_url]" | jq '.'
+
+# WRONG - will fail with "not in gzip format" error
+curl -sL "[resource_link_url]" | gunzip | jq '.'
+```
+
 **What this script does**:
 1. Downloads the JSON file to `/tmp/lc-result-{timestamp}.json`
 2. Outputs the JSON schema to stdout (compact format showing structure)
