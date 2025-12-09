@@ -45,7 +45,7 @@ The Domain Intel service allows you to retrieve intelligence about known domain 
 event: DNS_REQUEST
 op: lookup
 path: event/DOMAIN_NAME
-resource: hive://lookup/pangea-domain-reputation
+resource: lcr://api/pangea-domain-reputation
 ```
 
 ### API Response Data
@@ -72,7 +72,7 @@ The File Intel service enables you to submit a file's hash and get the file's at
 event: NEW_PROCESS
 op: lookup
 path: event/HASH
-resource: hive://lookup/pangea-file-reputation
+resource: lcr://api/pangea-file-reputation
 ```
 
 ### API Response Data
@@ -99,7 +99,7 @@ The IP Intel service allows you to retrieve security information about known IP 
 event: DNS_REQUEST
 op: lookup
 path: routing/ext_ip
-resource: hive://lookup/pangea-ip-reputation
+resource: lcr://api/pangea-ip-reputation
 ```
 
 ### API Response Data
@@ -124,7 +124,7 @@ The URL Intel service allows you to retrieve intelligence about known URLs, givi
 event: HTTP_REQUEST
 op: lookup
 path: event/URL
-resource: hive://lookup/pangea-url-reputation
+resource: lcr://api/pangea-url-reputation
 ```
 
 ### API Response Data
@@ -149,7 +149,7 @@ The User Intel service allows you to check a large repository of breach data to 
 event: USER_OBSERVED
 op: lookup
 path: event/USER_NAME
-resource: hive://lookup/pangea-user-reputation
+resource: lcr://api/pangea-user-reputation
 ```
 
 ### API Response Data
