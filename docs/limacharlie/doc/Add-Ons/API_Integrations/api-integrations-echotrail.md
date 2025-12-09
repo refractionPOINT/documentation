@@ -16,7 +16,7 @@ The following detection and response rule utilizes a file name from a `NEW_PROCE
 event: NEW_PROCESS
 op: lookup
 path: event/FILE_PATH
-resource: hive://lookup/echotrail-insights
+resource: lcr://api/echotrail-insights
 ```
 
 EchoTrail's response data includes the following:
