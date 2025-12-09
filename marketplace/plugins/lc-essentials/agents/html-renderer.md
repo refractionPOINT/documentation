@@ -50,7 +50,7 @@ You are a specialized agent for rendering interactive HTML dashboards from struc
 ✅ ALLOWED (Display Formatting Only):
 - 1234567 → 1,234,567 (thousand separators)
 - 1073741824 → 1 GB (bytes conversion, show original too)
-- 1732108934 → 2025-11-20 14:22:14 UTC (timestamp formatting)
+- <epoch-timestamp> → <YYYY-MM-DD HH:MM:SS> UTC (timestamp formatting)
 - 0.945 → 94.5% (percentage formatting)
 ```
 
@@ -149,31 +149,31 @@ Render HTML dashboard with the following parameters:
 
 Template: mssp-dashboard
 
-Output Path: /tmp/lc-mssp-report-2025-11-27.html
+Output Path: /tmp/lc-<report-type>-<YYYY-MM-DD>.html
 
 Data:
 {
   "metadata": {
-    "generated_at": "2025-11-27T14:32:45Z",
+    "generated_at": "<ISO-8601-timestamp>",
     "time_window": {
-      "start": 1730419200,
-      "end": 1733011199,
-      "start_display": "2025-11-01 00:00:00 UTC",
-      "end_display": "2025-11-30 23:59:59 UTC",
-      "days": 30
+      "start": "<epoch-seconds>",
+      "end": "<epoch-seconds>",
+      "start_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+      "end_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+      "days": "<count>"
     },
     "organizations": {
-      "total": 14,
-      "successful": 12,
-      "failed": 2,
-      "success_rate": 85.7
+      "total": "<count>",
+      "successful": "<count>",
+      "failed": "<count>",
+      "success_rate": "<percentage>"
     }
   },
   "data": {
     "aggregate": { ... },
     "organizations": [ ... ]
   },
-  "warnings": [ "4 organizations hit detection limit" ],
+  "warnings": [ "<warning-messages-if-any>" ],
   "errors": [ ... ]
 }
 
@@ -297,33 +297,32 @@ assert "sample" not in html.lower()
 
 **CRITICAL:** Every rendered report MUST be automatically opened in the user's browser. This is NOT optional.
 
-After writing the HTML file, execute the following:
+After writing the HTML file, start an HTTP server and open the report via localhost. Some browsers block `file://` URLs for security reasons, so HTTP serving is more reliable.
 
+**Start HTTP server (if not already running):**
 ```bash
-# 1. Start HTTP server in /tmp if not already running
-cd /tmp && python3 -m http.server 8765 &
-sleep 1
-
-# 2. Open the report in the default browser
-xdg-open http://localhost:8765/{filename}.html
+# Check if server is already running on port 9876
+lsof -i :9876 || (cd /tmp && python3 -m http.server 9876 &)
 ```
 
-**Platform alternatives:**
+**Open in browser:**
 ```bash
-# Linux (preferred)
-xdg-open http://localhost:8765/report.html
+# Linux
+xdg-open "http://localhost:9876/report-name.html"
 
 # macOS
-open http://localhost:8765/report.html
-
-# ChromeOS/Crostini
-garcon-url-handler "http://localhost:8765/report.html"
+open "http://localhost:9876/report-name.html"
 ```
 
-**Why this step is mandatory:**
-- Users expect to immediately see their report upon generation
-- HTTP server ensures JavaScript/Chart.js render correctly
-- Avoids file:// CORS issues
+**Why HTTP server instead of file:// URLs:**
+- **Browser compatibility**: Some browsers block `file://` URLs for security
+- **Chart.js CDN**: Works reliably when served over HTTP
+- **No CORS issues**: HTTP serving avoids cross-origin restrictions
+- **Consistent behavior**: Works across all browser configurations
+
+**Port selection:**
+- Use port 9876 by default
+- If port is in use, increment: 9877, 9878, etc.
 
 **NEVER skip this step.** Always open the report in the browser after generation.
 
@@ -332,19 +331,19 @@ garcon-url-handler "http://localhost:8765/report.html"
 ```json
 {
   "success": true,
-  "file_path": "/tmp/lc-mssp-report-2025-11-27.html",
-  "file_size_kb": 245,
-  "template_used": "mssp-dashboard",
+  "file_path": "/tmp/lc-<report-type>-<YYYY-MM-DD>.html",
+  "file_size_kb": "<dynamic>",
+  "template_used": "<template-name>",
   "browser_opened": true,
-  "browser_url": "http://localhost:8765/lc-mssp-report-2025-11-27.html",
+  "browser_url": "http://localhost:<port>/lc-<report-type>-<YYYY-MM-DD>.html",
 
   "elements_rendered": {
-    "summary_cards": 4,
-    "charts": 4,
-    "charts_showing_na": 1,
-    "tables": 1,
-    "warnings_displayed": 2,
-    "errors_displayed": 2
+    "summary_cards": "<count>",
+    "charts": "<count>",
+    "charts_showing_na": "<count>",
+    "tables": "<count>",
+    "warnings_displayed": "<count>",
+    "errors_displayed": "<count>"
   },
 
   "data_accuracy": {
@@ -352,13 +351,13 @@ garcon-url-handler "http://localhost:8765/report.html"
     "no_fabrication": true,
     "warnings_propagated": true,
     "provenance_included": true,
-    "missing_data_marked": ["daily_trend"]
+    "missing_data_marked": ["<field-names-if-any>"]
   },
 
   "data_summary": {
-    "organizations_shown": 12,
-    "total_sensors": 2847,
-    "total_detections": 47832
+    "organizations_shown": "<count>",
+    "total_sensors": "<count>",
+    "total_detections": "<count>"
   }
 }
 ```

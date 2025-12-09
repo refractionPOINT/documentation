@@ -83,31 +83,51 @@ AskUserQuestion(
   - Subscription status and billing details
   - Sensor counts for context
 - Aggregate roll-up:
-  - Total cost across all tenants
+  - Total cost across all tenants (only from orgs with billing data)
   - Total sensors across all tenants
   - Average cost per sensor (blended rate)
 
+**CRITICAL: Billing Data Availability**
+
+Organizations may not have billing data available for several reasons:
+- **Missing `billing.ctrl` permission**: API key lacks billing access
+- **No invoice for period**: Organization has no invoice for the requested month/year
+- **API error**: Temporary or permanent API access issue
+
+**NEVER show `$0` for organizations where billing data is unavailable.** This falsely implies zero usage when the actual usage is unknown.
+
+Each tenant in the data structure MUST include:
+```json
+{
+  "name": "<org-name>",
+  "sensors": <count>,
+  "cost": <amount-or-null>,
+  "billing_available": <true|false>,
+  "billing_error": "<error-reason-if-unavailable>",
+  "status": "active|billing_unavailable|draft"
+}
+```
+
 **Visualization** (graphic-output skill):
 - **Executive Summary Roll-Up Cards**:
-  - Total Monthly Billing (all tenants combined)
+  - Total Monthly Billing (only tenants with billing data)
   - Total Sensors (all tenants)
-  - Average Cost/Sensor (blended rate)
-  - Active Tenant Count
+  - Average Cost/Sensor (blended rate from available data)
+  - Active Tenant Count (with billing data available)
 - **Distribution Charts**:
-  - Pie chart: Cost distribution by tenant
+  - Pie chart: Cost distribution by tenant (only those with data)
   - Pie chart: Sensor distribution by tenant
 - **Per-Tenant Breakdown Table**:
   - Organization name
   - Region
   - Sensor count
-  - Monthly cost
-  - Cost per sensor
-  - Percentage of total
-  - Status (active/draft/no usage)
+  - Monthly cost (or "—" if unavailable)
+  - Cost per sensor (or "—" if unavailable)
+  - Percentage of total (or "—" if unavailable)
+  - Status: `Active`, `Billing Unavailable`, `Draft`, or `No Usage`
 - **Detailed SKU Breakdown by Tenant**:
-  - Expandable cards for each tenant
-  - Each SKU line item with name, quantity, amount
-  - Progress bar showing percentage of total cost
+  - Cards for tenants WITH billing data showing SKU line items
+  - Summary card for tenants WITHOUT billing data listing each org and reason
 - **Cost by Category** (if SKUs can be categorized):
   - Bar chart of spending by SKU category
 
@@ -169,17 +189,22 @@ Once the user selects a template:
    - Structure data per the `billing-summary.json` schema
 5. **Generate HTML**: Spawn `html-renderer` agent to create the visualization dashboard
    - For billing reports: Use template `billing-summary`
-6. **Open in Browser**: Automatically open the generated HTML file using `xdg-open` or serve via local HTTP server
+6. **Open in Browser**: Start HTTP server and open the generated HTML file
 
-**Browser Launch Command:**
+**Browser Launch Commands:**
 ```bash
-# Option 1: Direct file open
-xdg-open /tmp/{report-file}.html
+# Start HTTP server in /tmp (if not already running)
+lsof -i :9876 || (cd /tmp && python3 -m http.server 9876 &)
 
-# Option 2: HTTP server (if direct open fails)
-cd /tmp && python3 -m http.server 8765 &
-xdg-open http://localhost:8765/{report-file}.html
+# Open report in browser
+xdg-open "http://localhost:9876/{report-file}.html"  # Linux
+# or: open "http://localhost:9876/{report-file}.html"  # macOS
 ```
+
+**Why HTTP server instead of file:// URLs:**
+- Some browsers block `file://` URLs for security reasons
+- Chart.js CDN loads reliably over HTTP
+- Consistent behavior across all browser configurations
 
 ## Example Conversation Flow
 
@@ -194,5 +219,5 @@ Assistant: [Confirms time range, collects data via reporting skill, generates HT
 
 Assistant: Your MSSP Executive Summary is ready! Opening in browser...
 
-[Browser opens with the report at http://localhost:8765/mssp-executive-summary-2025-12-06.html]
+[Browser opens with the report at http://localhost:<port>/mssp-executive-summary-<YYYY-MM-DD>.html]
 ```

@@ -72,6 +72,37 @@ Billing Period: November 2025 (year: 2025, month: 11)
 
 ### 5. Error Transparency
 - Report all errors with endpoint and error code
+
+### 6. Billing Data Availability (CRITICAL)
+
+**NEVER report `$0` cost when billing data is unavailable.** This falsely implies zero usage.
+
+When billing APIs fail (permission denied, no invoice, API error):
+- Set `billing.available` to `false`
+- Set `billing.error` to the reason (e.g., "Missing billing.ctrl permission", "No invoice for period")
+- Set `billing.invoice_total` to `null` (NOT `0`)
+- Add warning to `warnings` array
+
+**Reasons billing may be unavailable:**
+- `401/403`: Missing `billing.ctrl` permission on API key
+- `400 "no invoice found"`: Organization has no invoice for the requested period
+- `500`: Temporary API error
+
+**Example unavailable billing structure:**
+```json
+{
+  "billing": {
+    "available": false,
+    "error": "Missing billing.ctrl permission",
+    "plan": null,
+    "status": null,
+    "invoice_total": null,
+    "invoice_line_items": []
+  }
+}
+```
+
+**This distinction is critical** because showing `$0` for 23 organizations when only 1 has data implies those organizations have zero usage, which is factually incorrect and misleading.
 - Continue collecting other data on partial failures
 - Never silently skip failed calls
 
@@ -191,84 +222,81 @@ Return JSON in this exact format:
   "oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd",
   "status": "success|partial|failed",
   "time_range": {
-    "start": 1730419200,
-    "end": 1733011199,
-    "start_display": "2025-11-01 00:00:00 UTC",
-    "end_display": "2025-11-30 23:59:59 UTC",
-    "days": 30
+    "start": "<epoch-seconds>",
+    "end": "<epoch-seconds>",
+    "start_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "end_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "days": "<count>"
   },
   "data": {
     "org_info": {
-      "name": "Client ABC",
-      "created": 1672531200,
-      "creator": "user@example.com"
+      "name": "<org-name>",
+      "created": "<epoch-seconds>",
+      "creator": "<email>"
     },
     "usage": {
-      "total_events": 42150000,
-      "total_output_bytes": 134217728000,
-      "total_output_gb": 125.0,
-      "total_evaluations": 1200450,
-      "peak_sensors": 250,
-      "days_with_data": 30
+      "total_events": "<count>",
+      "total_output_bytes": "<bytes>",
+      "total_output_gb": "<gb>",
+      "total_evaluations": "<count>",
+      "peak_sensors": "<count>",
+      "days_with_data": "<count>"
     },
     "billing": {
-      "plan": "enterprise",
-      "status": "active",
-      "next_billing_date": "2025-12-01",
-      "invoice_url": "https://billing.limacharlie.io/...",
-      "invoice_period": "November 2025",
-      "invoice_total": 253.42,
+      "available": "<true|false>",
+      "error": "<error-reason-if-unavailable|null>",
+      "plan": "<plan-type>",
+      "status": "<status>",
+      "next_billing_date": "<YYYY-MM-DD>",
+      "invoice_url": "<url>",
+      "invoice_period": "<month-year>",
+      "invoice_total": "<amount-or-null>",
       "invoice_line_items": [
-        {"name": "10 × LCIO-GENERAL-V2 (at $2.50 / month)", "amount": 25.00, "quantity": 10},
-        {"name": "Data Output - 50 GB", "amount": 7.50, "quantity": 50},
-        {"name": "1-Year Insight Retention", "amount": 220.92, "quantity": 1}
+        {"name": "<sku-description>", "amount": "<amount>", "quantity": "<count>"}
       ]
     },
     "sensors": {
-      "total": 250,
-      "online": 245,
-      "offline": 5,
+      "total": "<count>",
+      "online": "<count>",
+      "offline": "<count>",
       "platforms": {
-        "windows": 150,
-        "linux": 80,
-        "macos": 20
+        "<platform>": "<count>"
       }
     },
     "detections": {
-      "retrieved_count": 5000,
-      "limit_reached": true,
-      "limit_warning": "Retrieved 5,000 detections (limit reached - actual count may be higher)",
+      "retrieved_count": "<count>",
+      "limit_reached": "<true|false>",
+      "limit_warning": "<warning-if-limit-reached>",
       "top_categories": [
-        {"category": "suspicious_process", "count": 1250},
-        {"category": "network_threat", "count": 890}
+        {"category": "<category-name>", "count": "<count>"}
       ]
     },
     "rules": {
-      "total_general": 25,
-      "enabled": 22
+      "total_general": "<count>",
+      "enabled": "<count>"
     },
     "outputs": {
-      "total": 3,
-      "types": ["s3", "syslog", "webhook"]
+      "total": "<count>",
+      "types": ["<output-types>"]
     }
   },
   "errors": [
     {
-      "endpoint": "get-billing-details",
-      "error_code": 403,
-      "error_message": "Forbidden",
-      "impact": "Billing data unavailable"
+      "endpoint": "<api-endpoint>",
+      "error_code": "<http-code>",
+      "error_message": "<message>",
+      "impact": "<description>"
     }
   ],
   "warnings": [
-    "Detection limit reached - actual count may be higher than 5,000"
+    "<warning-messages>"
   ],
   "metadata": {
-    "collection_timestamp": "2025-11-20T14:45:30Z",
-    "detection_limit_used": 5000,
-    "apis_called": 9,
-    "apis_succeeded": 8,
-    "apis_failed": 1
+    "collection_timestamp": "<ISO-8601-timestamp>",
+    "detection_limit_used": "<limit>",
+    "apis_called": "<count>",
+    "apis_succeeded": "<count>",
+    "apis_failed": "<count>"
   }
 }
 ```
@@ -288,58 +316,59 @@ Non-critical APIs: `get-billing-details`, `get-org-invoice-url`
 
 ### Example 1: Full Success
 
+Shows all APIs returning data successfully with no errors or warnings.
+
 ```json
 {
-  "org_name": "production-fleet",
-  "oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd",
+  "org_name": "<org-name>",
+  "oid": "<uuid>",
   "status": "success",
   "time_range": {
-    "start": 1730419200,
-    "end": 1733011199,
-    "start_display": "2025-11-01 00:00:00 UTC",
-    "end_display": "2025-11-30 23:59:59 UTC",
-    "days": 30
+    "start": "<epoch-seconds>",
+    "end": "<epoch-seconds>",
+    "start_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "end_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "days": "<count>"
   },
   "data": {
-    "org_info": {"name": "production-fleet", "created": 1672531200},
+    "org_info": {"name": "<org-name>", "created": "<epoch-seconds>"},
     "usage": {
-      "total_events": 42150000,
-      "total_output_bytes": 134217728000,
-      "total_output_gb": 125.0,
-      "total_evaluations": 1200450,
-      "peak_sensors": 250,
-      "days_with_data": 30
+      "total_events": "<count>",
+      "total_output_bytes": "<bytes>",
+      "total_output_gb": "<gb>",
+      "total_evaluations": "<count>",
+      "peak_sensors": "<count>",
+      "days_with_data": "<count>"
     },
     "billing": {
-      "plan": "enterprise",
+      "plan": "<plan-type>",
       "status": "active",
-      "next_billing_date": "2025-12-01",
-      "invoice_url": "https://billing.limacharlie.io/..."
+      "next_billing_date": "<YYYY-MM-DD>",
+      "invoice_url": "<url>"
     },
     "sensors": {
-      "total": 250,
-      "online": 245,
-      "offline": 5,
-      "platforms": {"windows": 150, "linux": 80, "macos": 20}
+      "total": "<count>",
+      "online": "<count>",
+      "offline": "<count>",
+      "platforms": {"<platform>": "<count>"}
     },
     "detections": {
-      "retrieved_count": 1847,
+      "retrieved_count": "<count>",
       "limit_reached": false,
       "top_categories": [
-        {"category": "suspicious_process", "count": 450},
-        {"category": "network_threat", "count": 320}
+        {"category": "<category>", "count": "<count>"}
       ]
     },
-    "rules": {"total_general": 25, "enabled": 22},
-    "outputs": {"total": 3, "types": ["s3", "syslog", "webhook"]}
+    "rules": {"total_general": "<count>", "enabled": "<count>"},
+    "outputs": {"total": "<count>", "types": ["<output-types>"]}
   },
   "errors": [],
   "warnings": [],
   "metadata": {
-    "collection_timestamp": "2025-11-20T14:45:30Z",
-    "detection_limit_used": 5000,
-    "apis_called": 9,
-    "apis_succeeded": 9,
+    "collection_timestamp": "<ISO-8601-timestamp>",
+    "detection_limit_used": "<limit>",
+    "apis_called": "<count>",
+    "apis_succeeded": "<count>",
     "apis_failed": 0
   }
 }
@@ -347,46 +376,47 @@ Non-critical APIs: `get-billing-details`, `get-org-invoice-url`
 
 ### Example 2: Partial Success (Billing Permission Denied)
 
+Shows billing APIs failing due to permissions, but core data (usage, sensors) still available.
+
 ```json
 {
-  "org_name": "client-xyz",
-  "oid": "c7e8f940-aaaa-bbbb-cccc-ddddeeeeffffggg",
+  "org_name": "<org-name>",
+  "oid": "<uuid>",
   "status": "partial",
   "time_range": {
-    "start": 1730419200,
-    "end": 1733011199,
-    "start_display": "2025-11-01 00:00:00 UTC",
-    "end_display": "2025-11-30 23:59:59 UTC",
-    "days": 30
+    "start": "<epoch-seconds>",
+    "end": "<epoch-seconds>",
+    "start_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "end_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "days": "<count>"
   },
   "data": {
-    "org_info": {"name": "client-xyz", "created": 1680000000},
+    "org_info": {"name": "<org-name>", "created": "<epoch-seconds>"},
     "usage": {
-      "total_events": 8500000,
-      "total_output_bytes": 25769803776,
-      "total_output_gb": 24.0,
-      "total_evaluations": 350000,
-      "peak_sensors": 45,
-      "days_with_data": 30
+      "total_events": "<count>",
+      "total_output_bytes": "<bytes>",
+      "total_output_gb": "<gb>",
+      "total_evaluations": "<count>",
+      "peak_sensors": "<count>",
+      "days_with_data": "<count>"
     },
     "billing": null,
     "sensors": {
-      "total": 45,
-      "online": 42,
-      "offline": 3,
-      "platforms": {"windows": 30, "linux": 15}
+      "total": "<count>",
+      "online": "<count>",
+      "offline": "<count>",
+      "platforms": {"<platform>": "<count>"}
     },
     "detections": {
-      "retrieved_count": 5000,
+      "retrieved_count": "<count>",
       "limit_reached": true,
-      "limit_warning": "Retrieved 5,000 detections (limit reached - actual count may be higher)",
+      "limit_warning": "Retrieved <N> detections (limit reached - actual count may be higher)",
       "top_categories": [
-        {"category": "suspicious_process", "count": 2100},
-        {"category": "malware", "count": 890}
+        {"category": "<category>", "count": "<count>"}
       ]
     },
-    "rules": {"total_general": 12, "enabled": 10},
-    "outputs": {"total": 2, "types": ["s3", "syslog"]}
+    "rules": {"total_general": "<count>", "enabled": "<count>"},
+    "outputs": {"total": "<count>", "types": ["<output-types>"]}
   },
   "errors": [
     {
@@ -403,35 +433,37 @@ Non-critical APIs: `get-billing-details`, `get-org-invoice-url`
     }
   ],
   "warnings": [
-    "Detection limit reached - actual count may be higher than 5,000",
+    "Detection limit reached - actual count may be higher than <limit>",
     "Billing data unavailable due to permission error"
   ],
   "metadata": {
-    "collection_timestamp": "2025-11-20T14:46:15Z",
-    "detection_limit_used": 5000,
-    "apis_called": 9,
-    "apis_succeeded": 7,
-    "apis_failed": 2
+    "collection_timestamp": "<ISO-8601-timestamp>",
+    "detection_limit_used": "<limit>",
+    "apis_called": "<count>",
+    "apis_succeeded": "<count>",
+    "apis_failed": "<count>"
   }
 }
 ```
 
 ### Example 3: Failed (Critical APIs Failed)
 
+Shows critical APIs (usage, sensors) failing - org is marked as failed since meaningful data cannot be provided.
+
 ```json
 {
-  "org_name": "legacy-org",
-  "oid": "deadbeef-1234-5678-abcd-000000000000",
+  "org_name": "<org-name>",
+  "oid": "<uuid>",
   "status": "failed",
   "time_range": {
-    "start": 1730419200,
-    "end": 1733011199,
-    "start_display": "2025-11-01 00:00:00 UTC",
-    "end_display": "2025-11-30 23:59:59 UTC",
-    "days": 30
+    "start": "<epoch-seconds>",
+    "end": "<epoch-seconds>",
+    "start_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "end_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+    "days": "<count>"
   },
   "data": {
-    "org_info": {"name": "legacy-org", "created": 1600000000},
+    "org_info": {"name": "<org-name>", "created": "<epoch-seconds>"},
     "usage": null,
     "billing": null,
     "sensors": null,
@@ -455,11 +487,11 @@ Non-critical APIs: `get-billing-details`, `get-org-invoice-url`
   ],
   "warnings": [],
   "metadata": {
-    "collection_timestamp": "2025-11-20T14:47:00Z",
-    "detection_limit_used": 5000,
-    "apis_called": 9,
-    "apis_succeeded": 1,
-    "apis_failed": 8
+    "collection_timestamp": "<ISO-8601-timestamp>",
+    "detection_limit_used": "<limit>",
+    "apis_called": "<count>",
+    "apis_succeeded": "<count>",
+    "apis_failed": "<count>"
   }
 }
 ```

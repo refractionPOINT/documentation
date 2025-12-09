@@ -66,9 +66,9 @@ Every visualization MUST indicate:
 **Example:**
 ```
 Data Source: reporting skill (org-reporter agents)
-Collected: 2025-11-27 14:32:45 UTC
-Time Window: Nov 1-30, 2025 (30 days)
-Note: 4 organizations hit detection limit - actual counts higher
+Collected: <timestamp> UTC
+Time Window: <start> - <end> (<N> days)
+Note: <N> organizations hit detection limit - actual counts higher
 ```
 
 #### Principle 4: Handle Missing Data Explicitly
@@ -253,26 +253,26 @@ If integrating with the reporting skill, the data structure should include:
 ```json
 {
   "metadata": {
-    "generated_at": "2025-11-27T14:32:45Z",
+    "generated_at": "<ISO-8601-timestamp>",
     "time_window": {
-      "start": 1730419200,
-      "end": 1733011199,
-      "start_display": "2025-11-01 00:00:00 UTC",
-      "end_display": "2025-11-30 23:59:59 UTC",
-      "days": 30
+      "start": "<epoch-seconds>",
+      "end": "<epoch-seconds>",
+      "start_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+      "end_display": "<YYYY-MM-DD HH:MM:SS> UTC",
+      "days": "<count>"
     },
     "organizations": {
-      "total": 14,
-      "successful": 12,
-      "failed": 2,
-      "success_rate": 85.7
+      "total": "<count>",
+      "successful": "<count>",
+      "failed": "<count>",
+      "success_rate": "<percentage>"
     }
   },
   "data": {
     "aggregate": { ... },
     "organizations": [ ... ]
   },
-  "warnings": [ "4 organizations hit detection limit" ],
+  "warnings": [ "<warning-messages-if-any>" ],
   "errors": [ { "org": "...", "error": "..." } ]
 }
 ```
@@ -299,7 +299,7 @@ Task(
 
     Template: mssp-dashboard
 
-    Output Path: /tmp/lc-mssp-report-2025-11-27.html
+    Output Path: /tmp/lc-<report-type>-<YYYY-MM-DD>.html
 
     Data:
     {
@@ -323,33 +323,32 @@ Task(
 
 **CRITICAL:** Every HTML report MUST be automatically opened in the user's browser upon completion. This is NOT optional - it is the expected default behavior for all report generation.
 
-**Execution sequence:**
+**Use HTTP server + xdg-open (Linux) or open (macOS):**
 
 ```bash
-# 1. Start HTTP server in /tmp (required for proper rendering)
-cd /tmp && python3 -m http.server 8765 &
-sleep 1
+# Start HTTP server in /tmp on an available port (run in background)
+cd /tmp && python3 -m http.server 9876 &
 
-# 2. Open the report URL in the default browser
-xdg-open http://localhost:8765/report-name.html
+# Open report in browser
+xdg-open "http://localhost:9876/report-name.html"  # Linux
+# or: open "http://localhost:9876/report-name.html"  # macOS
 ```
 
-**Platform-specific alternatives (if xdg-open fails):**
-```bash
-# Linux with xdg-open (preferred)
-xdg-open http://localhost:8765/report.html
+**Why HTTP server instead of file:// URLs:**
+- **Browser compatibility**: Some browsers block `file://` URLs for security reasons
+- **Chart.js CDN**: Works reliably when served over HTTP
+- **Consistent behavior**: Works across all browser configurations
+- **No CORS issues**: HTTP serving avoids cross-origin restrictions
 
-# macOS
-open http://localhost:8765/report.html
+**Port selection:**
+- Use port 9876 by default (less likely to conflict than 8080)
+- If port is in use, try 9877, 9878, etc.
+- Check with: `lsof -i :9876`
 
-# ChromeOS/Crostini with garcon
-garcon-url-handler "http://localhost:8765/report.html"
-```
-
-**Why HTTP server instead of file://:**
-- JavaScript and Chart.js render correctly
-- No CORS issues with embedded resources
-- Consistent behavior across browsers
+**Process cleanup:**
+- The HTTP server runs in background
+- Kill when done: `pkill -f "python3 -m http.server 9876"`
+- Or leave running for subsequent reports in same session
 
 **NEVER skip this step.** The user expects to see their report immediately after generation.
 
@@ -360,24 +359,24 @@ After the renderer completes and browser is opened, inform the user:
 ```
 Interactive HTML dashboard generated successfully!
 
-File: /tmp/lc-mssp-report-2025-11-27.html
-Size: 245 KB
+File: /tmp/lc-<report-type>-<YYYY-MM-DD>.html
+Size: <size> KB
 
 Data Provenance:
 - Source: reporting skill
-- Collected: 2025-11-27 14:32:45 UTC
-- Time Window: Nov 1-30, 2025 (30 days)
-- Organizations: 12 of 14 successful
+- Collected: <timestamp> UTC
+- Time Window: <start> - <end> (<N> days)
+- Organizations: <successful> of <total> successful
 
 Contents:
-- Executive summary with 4 metric cards
+- Executive summary with <N> metric cards
 - Platform distribution pie chart
 - Organization health bar chart
 - Detection category breakdown
 - Daily detection trend line chart
 - Sortable organization details table
-- 2 warnings displayed (detection limits)
-- 2 failed organizations documented
+- <N> warnings displayed (detection limits)
+- <N> failed organizations documented
 
 Data Accuracy:
 - All visualizations show actual data from source
@@ -609,11 +608,11 @@ Generated HTML files are:
   <h3>Data Provenance</h3>
   <dl>
     <dt>Generated</dt>
-    <dd>2025-11-27 14:32:45 UTC</dd>
+    <dd>{{generated_at}} UTC</dd>
     <dt>Time Window</dt>
-    <dd>Nov 1-30, 2025 (30 days)</dd>
+    <dd>{{time_window_display}} ({{days}} days)</dd>
     <dt>Organizations</dt>
-    <dd>12 of 14 (85.7% success rate)</dd>
+    <dd>{{successful}} of {{total}} ({{success_rate}}% success rate)</dd>
     <dt>Data Source</dt>
     <dd>LimaCharlie API via reporting skill</dd>
   </dl>

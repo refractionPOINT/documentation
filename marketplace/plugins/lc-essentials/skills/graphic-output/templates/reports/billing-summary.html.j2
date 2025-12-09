@@ -203,11 +203,15 @@
         <div class="chart-grid two-column">
             <div class="chart-container">
                 <h3 class="chart-title">Cost Distribution by Tenant</h3>
-                <canvas id="costDistChart"></canvas>
+                <div class="chart-wrapper" style="height: 280px;">
+                    <canvas id="costDistChart"></canvas>
+                </div>
             </div>
             <div class="chart-container">
                 <h3 class="chart-title">Sensor Distribution by Tenant</h3>
-                <canvas id="sensorDistChart"></canvas>
+                <div class="chart-wrapper" style="height: 280px;">
+                    <canvas id="sensorDistChart"></canvas>
+                </div>
             </div>
         </div>
     </section>
@@ -245,27 +249,39 @@
                             {% endif %}
                         </td>
                         <td class="number">{{ tenant.sensors | default(0) | format_number }}</td>
-                        <td class="number cost-highlight">${{ tenant.cost | default(0) | format_number }}</td>
+                        <td class="number cost-highlight">
+                            {% if tenant.billing_available == false or tenant.cost is none %}
+                                <span class="na" title="{{ tenant.billing_error | default('Billing data unavailable') }}">—</span>
+                            {% else %}
+                                ${{ tenant.cost | default(0) | format_number }}
+                            {% endif %}
+                        </td>
                         <td class="number">
-                            {% if tenant.sensors and tenant.sensors > 0 and tenant.cost %}
+                            {% if tenant.billing_available == false or tenant.cost is none %}
+                                <span class="na">—</span>
+                            {% elif tenant.sensors and tenant.sensors > 0 and tenant.cost %}
                                 ${{ (tenant.cost / tenant.sensors) | round(2) }}
                             {% else %}
                                 -
                             {% endif %}
                         </td>
                         <td class="number">
-                            {% if data.rollup.total_cost and data.rollup.total_cost > 0 and tenant.cost %}
+                            {% if tenant.billing_available == false or tenant.cost is none %}
+                                <span class="na">—</span>
+                            {% elif data.rollup.total_cost and data.rollup.total_cost > 0 and tenant.cost %}
                                 {{ ((tenant.cost / data.rollup.total_cost) * 100) | round(1) }}%
                             {% else %}
                                 0%
                             {% endif %}
                         </td>
                         <td>
-                            {% if tenant.status == 'active' %}
+                            {% if tenant.status == 'billing_unavailable' or tenant.billing_available == false %}
+                            <span class="status-badge status-partial" title="{{ tenant.billing_error | default('Could not retrieve billing data') }}">Billing Unavailable</span>
+                            {% elif tenant.status == 'active' %}
                             <span class="status-badge status-success">Active</span>
                             {% elif tenant.status == 'draft' %}
                             <span class="status-badge status-partial">Draft</span>
-                            {% elif tenant.cost == 0 or tenant.sensors == 0 %}
+                            {% elif tenant.cost == 0 and tenant.sensors == 0 %}
                             <span class="status-badge" style="background: #dbeafe; color: #1d4ed8;">No Usage</span>
                             {% else %}
                             <span class="na">{{ tenant.status | default('N/A') }}</span>
@@ -307,6 +323,8 @@
         <h2>Detailed SKU Breakdown by Tenant</h2>
 
         {% for tenant in data.tenants %}
+        {# Only show detailed SKU cards for tenants with billing data available #}
+        {% if tenant.billing_available != false and tenant.cost is not none %}
         <div class="tenant-card" {% if tenant.cost == 0 %}style="opacity: 0.7;"{% endif %}>
             <div class="tenant-header">
                 <div>
@@ -327,7 +345,7 @@
                     <span class="sku-amount">${{ sku.amount | format_number }}</span>
                 </div>
                 {% endfor %}
-            {% elif tenant.cost == 0 %}
+            {% elif tenant.cost == 0 and tenant.sensors == 0 %}
             <div style="text-align: center; padding: 1rem; color: var(--color-text-muted);">
                 No active usage - subscription active but 0 sensors deployed
             </div>
@@ -341,7 +359,31 @@
                 <div class="progress-fill" style="width: {% if data.rollup.total_cost > 0 %}{{ ((tenant.cost | default(0)) / data.rollup.total_cost * 100) | round(1) }}{% else %}0{% endif %}%; background: var(--color-primary);"></div>
             </div>
         </div>
+        {% endif %}
         {% endfor %}
+
+        {# Summary of tenants with unavailable billing data #}
+        {% set unavailable_tenants = data.tenants | selectattr('billing_available', 'equalto', false) | list %}
+        {% if unavailable_tenants | length > 0 %}
+        <div class="tenant-card" style="background: #fef3c7; border-color: #f59e0b;">
+            <div class="tenant-header" style="border-bottom-color: #f59e0b;">
+                <div>
+                    <div class="tenant-name">⚠️ {{ unavailable_tenants | length }} Organizations - Billing Data Unavailable</div>
+                    <div style="font-size: 0.8rem; color: #92400e;">
+                        These organizations have sensors but billing data could not be retrieved
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 0.5rem 0;">
+                {% for tenant in unavailable_tenants %}
+                <div class="sku-row" style="border-bottom-color: #fcd34d;">
+                    <span class="sku-name">{{ tenant.name }} ({{ tenant.sensors | default(0) }} sensors)</span>
+                    <span class="sku-amount" style="color: #92400e;">{{ tenant.billing_error | default('Unavailable') }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </section>
     {% endif %}
 
@@ -401,22 +443,30 @@
 {% block extra_scripts %}
 <script>
     {% if data.tenants and data.tenants | length > 0 %}
+    {# Filter to tenants with billing data for charts #}
+    {% set billable_tenants = data.tenants | selectattr('billing_available', 'equalto', true) | list %}
+    {% if billable_tenants | length > 0 %}
     // Cost Distribution Doughnut Chart
     new Chart(document.getElementById('costDistChart'), {
         type: 'doughnut',
         data: {
-            labels: [{% for t in data.tenants %}'{{ t.name | truncate(20) }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+            labels: [{% for t in billable_tenants %}'{{ t.name | truncate(20) }}'{% if not loop.last %}, {% endif %}{% endfor %}],
             datasets: [{
-                data: [{% for t in data.tenants %}{{ t.cost | default(0) }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                data: [{% for t in billable_tenants %}{{ t.cost if t.cost is not none else 0 }}{% if not loop.last %}, {% endif %}{% endfor %}],
                 backgroundColor: ['#0ea5e9', '#8b5cf6', '#22c55e', '#f59e0b', '#ef4444', '#14b8a6'],
-                borderWidth: 0
+                borderWidth: 2,
+                borderColor: '#ffffff'
             }]
         },
         options: {
             responsive: true,
-            cutout: '55%',
+            maintainAspectRatio: false,
+            cutout: '50%',
             plugins: {
-                legend: { position: 'bottom' },
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 16, usePointStyle: true, pointStyle: 'circle' }
+                },
                 tooltip: {
                     callbacks: { label: (ctx) => ` ${ctx.label}: $${ctx.raw.toLocaleString()}` }
                 }
@@ -428,24 +478,30 @@
     new Chart(document.getElementById('sensorDistChart'), {
         type: 'doughnut',
         data: {
-            labels: [{% for t in data.tenants %}'{{ t.name | truncate(20) }} ({{ t.sensors | default(0) }})'{% if not loop.last %}, {% endif %}{% endfor %}],
+            labels: [{% for t in billable_tenants %}'{{ t.name | truncate(20) }} ({{ t.sensors if t.sensors is not none else 0 }})'{% if not loop.last %}, {% endif %}{% endfor %}],
             datasets: [{
-                data: [{% for t in data.tenants %}{{ t.sensors | default(0) }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                data: [{% for t in billable_tenants %}{{ t.sensors if t.sensors is not none else 0 }}{% if not loop.last %}, {% endif %}{% endfor %}],
                 backgroundColor: ['#0ea5e9', '#22c55e', '#8b5cf6', '#f59e0b', '#ef4444', '#14b8a6'],
-                borderWidth: 0
+                borderWidth: 2,
+                borderColor: '#ffffff'
             }]
         },
         options: {
             responsive: true,
-            cutout: '55%',
+            maintainAspectRatio: false,
+            cutout: '50%',
             plugins: {
-                legend: { position: 'bottom' },
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 16, usePointStyle: true, pointStyle: 'circle' }
+                },
                 tooltip: {
                     callbacks: { label: (ctx) => ` ${ctx.raw} sensors` }
                 }
             }
         }
     });
+    {% endif %}
     {% endif %}
 
     {% if data.categories and data.categories | length > 0 %}
