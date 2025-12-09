@@ -205,6 +205,7 @@ xdg-open "http://localhost:9876/{report-file}.html"  # Linux
 - Some browsers block `file://` URLs for security reasons
 - Chart.js CDN loads reliably over HTTP
 - Consistent behavior across all browser configurations
+- Do NOT use `xdg-open` directly on HTML files as it may open in a text editor instead of a browser depending on system configuration
 
 ## Example Conversation Flow
 
