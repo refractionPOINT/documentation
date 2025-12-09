@@ -21,7 +21,7 @@ The following D&R rule
 event: NEW_PROCESS
 op: lookup
 path: event/HASH
-resource: hive://lookup/hybrid-analysis-overview
+resource: lcr://api/hybrid-analysis-overview
 ```
 
 **Response Data:**
@@ -166,7 +166,7 @@ The Search lookup provides a basic lookup of a hash value. This look accepts one
 event: NEW_PROCESS
 op: lookup
 path: event/HASH
-resource: hive://lookup/hybrid-analysis-search
+resource: lcr://api/hybrid-analysis-search
 ```
 
 **Response Data:**

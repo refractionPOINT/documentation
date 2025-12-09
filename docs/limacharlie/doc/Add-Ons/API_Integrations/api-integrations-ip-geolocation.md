@@ -9,7 +9,7 @@ With the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo) sub
 ```
 event: CONNECTED
 op: lookup
-resource: hive://lookup/ip-geo
+resource: lcr://api/ip-geo
 path: routing/ext_ip
 metadata_rules:
   op: is

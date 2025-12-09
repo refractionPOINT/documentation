@@ -22,7 +22,7 @@ The following is an example rule that pulls domain names from DNS_REQUEST events
 event: DNS_REQUEST
 op: lookup
 path: event/DOMAIN_NAME
-resource: hive://lookup/alphamountain-category
+resource: lcr://api/alphamountain-category
 ```
 
 The data returned is in JSON format, and includes the API response and a threatYeti URL, which is appended by LimaCharlie. For example:

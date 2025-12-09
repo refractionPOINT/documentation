@@ -287,13 +287,13 @@ Looks up a value against a [lookup add-on](https://app.limacharlie.io/add-ons/ca
 event: DNS_REQUEST
 op: lookup
 path: event/DOMAIN_NAME
-resource: hive://lookups/malwaredomains
+resource: hive://lookup/malwaredomains
 case sensitive: false
 ```
 
 This rule will get the `event/DOMAIN_NAME` of a `DNS_REQUEST` event and check if it's a member of the `lookup` named `malwaredomains`. If it is, then the rule is a match.
 
-The value is supplied via the `path` parameter and the lookup is defined in the `resource` parameter. Resources are of the form `hive://lookups/RESOURCE_NAME`. In order to access a lookup, your Organization must be subscribed to it.
+The value is supplied via the `path` parameter and the lookup is defined in the `resource` parameter. Resources are of the form `hive://lookup/RESOURCE_NAME`. In order to access a lookup, your Organization must be subscribed to it.
 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
