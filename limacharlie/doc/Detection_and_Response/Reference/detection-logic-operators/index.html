@@ -2090,11 +2090,11 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>event: DNS_REQUEST
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>op: lookup
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>path: event/DOMAIN_NAME
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>resource: hive://lookups/malwaredomains
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>resource: hive://lookup/malwaredomains
 </span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>case sensitive: false
 </span></code></pre></div>
 <p>This rule will get the <code>event/DOMAIN_NAME</code> of a <code>DNS_REQUEST</code> event and check if it's a member of the <code>lookup</code> named <code>malwaredomains</code>. If it is, then the rule is a match.</p>
-<p>The value is supplied via the <code>path</code> parameter and the lookup is defined in the <code>resource</code> parameter. Resources are of the form <code>hive://lookups/RESOURCE_NAME</code>. In order to access a lookup, your Organization must be subscribed to it.</p>
+<p>The value is supplied via the <code>path</code> parameter and the lookup is defined in the <code>resource</code> parameter. Resources are of the form <code>hive://lookup/RESOURCE_NAME</code>. In order to access a lookup, your Organization must be subscribed to it.</p>
 <p>Supports the <a href="#file-name">file name</a> and <a href="#sub-domain">sub domain</a> transforms.</p>
 <blockquote>
 <p>API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see <a href="https://docs.limacharlie.io/docs/add-ons-api-integrations">Using API-based lookups</a>.</p>
