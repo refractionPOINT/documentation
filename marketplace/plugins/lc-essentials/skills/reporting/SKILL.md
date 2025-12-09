@@ -2,6 +2,7 @@
 name: reporting
 description: Generate comprehensive multi-tenant security and operational reports from LimaCharlie. Provides billing summaries, usage roll-ups, detection trends, sensor health monitoring, and configuration audits across multiple organizations. Supports both per-tenant detailed breakdowns and cross-tenant aggregated roll-ups. Built with strict data accuracy guardrails to prevent fabricated metrics. Supports partial report generation when some organizations fail, with transparent error documentation. Time windows always displayed, detection limits clearly flagged, zero cost calculations.
 allowed-tools:
+  - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
   - Skill
   - Task
   - Read
@@ -711,45 +712,36 @@ if limit_reached:
 
 ### Architecture Overview
 
-This skill uses a **parallel subagent architecture** for efficient multi-tenant data collection:
+This skill uses **direct MCP API access** for efficient, deterministic data collection:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  reporting (this skill)                                │
-│  ├─ Phase 1: Discovery (list orgs via limacharlie-call)     │
+│  reporting (this skill)                                     │
+│  ├─ Phase 1: Discovery (list_user_orgs via direct MCP)      │
 │  ├─ Phase 2: Time range validation                          │
-│  ├─ Phase 3: Spawn parallel agents ────────────────────┐    │
-│  ├─ Phase 4: Aggregate results                         │    │
-│  └─ Phase 5: Generate report                           │    │
-└────────────────────────────────────────────────────────┼────┘
-                                                         │
-    ┌────────────────────────────────────────────────────┘
-    │
-    │  Spawns ONE agent per organization (in parallel)
-    │
-    ▼
-┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
-│org-       │  │org-       │  │org-       │  │org-       │
-│reporter   │  │reporter   │  │reporter   │  │reporter   │
-│  Org 1    │  │  Org 2    │  │  Org 3    │  │  Org N    │
-└─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
-      │              │              │              │
-      │  Each agent collects ALL data for its org:
-      │  - org info, usage, billing, sensors,
-      │  - detections, rules, outputs
-      │              │              │              │
-      └──────────────┴──────┬───────┴──────────────┘
+│  ├─ Phase 3: Collect data per org (direct MCP calls)        │
+│  ├─ Phase 4: Apply deterministic transformations            │
+│  ├─ Phase 5: Aggregate results                              │
+│  └─ Phase 6: Generate report (spawn html-renderer)          │
+└─────────────────────────────────────────────────────────────┘
                             │
+                            │ Direct MCP calls
+                            │ (lc_call_tool)
                             ▼
-                    Structured JSON results
-                    returned to parent skill
+┌─────────────────────────────────────────────────────────────┐
+│  LimaCharlie MCP Server                                     │
+│  - list_user_orgs                                           │
+│  - get_org_invoice_url (per org)                            │
+│  - list_sensors (per org)                                   │
+│  - get_historic_detections (per org)                        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 **Benefits of this architecture:**
-- True parallelism across organizations
-- Each agent handles its own error recovery
-- Reduced context usage in main skill
-- Scalable to 50+ organizations
+- **Deterministic results** - No LLM agent interpretation of data
+- **Explicit transformations** - Currency conversion, rollups defined in skill
+- **Single context** - All logic in one place for debugging
+- **Follows established pattern** - Same as detection-engineering skill
 
 ### Pattern 1: Multi-Tenant MSSP Comprehensive Report
 
@@ -821,41 +813,33 @@ This skill uses a **parallel subagent architecture** for efficient multi-tenant 
 │     - Unix: [start_epoch] to [end_epoch]"         │
 └────────────────────────────────────────────────────┘
 
-┌─ PHASE 3: SPAWN PARALLEL AGENTS ──────────────────┐
-│ 7. Spawn org-reporter agents IN PARALLEL:   │
+┌─ PHASE 3: COLLECT DATA VIA DIRECT MCP CALLS ──────┐
+│ 7. For each organization, call lc_call_tool:      │
 │                                                    │
-│    CRITICAL: Send ALL Task calls in a SINGLE      │
-│    message to achieve true parallelism:           │
-│                                                    │
-│    Task(                                          │
-│      subagent_type="lc-essentials:org-reporter",
-│      model="haiku",                               │
-│      prompt="Collect reporting data for org       │
-│        'Client ABC' (OID: uuid-1)                 │
-│        Time Range:                                │
-│        - Start: 1730419200                        │
-│        - End: 1733011199                          │
-│        Detection Limit: 5000"                     │
+│    # Get billing/invoice data                     │
+│    mcp__...lc_call_tool(                          │
+│      tool_name="get_org_invoice_url",             │
+│      parameters={                                  │
+│        "oid": "<org-uuid>",                       │
+│        "format": "simple_json"                    │
+│      }                                            │
 │    )                                              │
-│    Task(                                          │
-│      subagent_type="lc-essentials:org-reporter",
-│      model="haiku",                               │
-│      prompt="Collect reporting data for org       │
-│        'Client XYZ' (OID: uuid-2)..."             │
+│                                                    │
+│    # Get sensor count                             │
+│    mcp__...lc_call_tool(                          │
+│      tool_name="list_sensors",                    │
+│      parameters={"oid": "<org-uuid>"}             │
 │    )                                              │
-│    ... (one Task per organization)                │
 │                                                    │
-│ 8. Each agent returns structured JSON:           │
-│    {                                              │
-│      "org_name": "...",                           │
-│      "oid": "...",                                │
-│      "status": "success|partial|failed",          │
-│      "data": { usage, billing, sensors, ... },    │
-│      "errors": [...],                             │
-│      "warnings": [...]                            │
-│    }                                              │
+│ 8. For each API response, extract and store:     │
+│    - Invoice line items (SKUs, quantities, costs) │
+│    - Sensor counts and platform breakdown         │
+│    - Any errors (permission denied, etc.)         │
 │                                                    │
-│ 9. Wait for all agents to complete               │
+│ 9. Track status per org:                          │
+│    - "success": All data collected                │
+│    - "partial": Some APIs failed (e.g. billing)   │
+│    - "failed": Critical API failure               │
 └────────────────────────────────────────────────────┘
 
 ┌─ PHASE 4: AGGREGATE RESULTS ──────────────────────┐
@@ -1037,29 +1021,154 @@ Progress Reporting During Execution:
    Generating report structure..."
 ```
 
-### Pattern 2: Billing-Focused Summary Report
+### Pattern 2: Billing Report (Direct API Pattern)
 
 **User Request Examples:**
 - "Billing summary for all customers this month"
-- "Show me subscription status across organizations"
-- "Usage report for invoicing"
+- "Monthly billing report for November 2025"
+- "Generate billing report for invoicing"
 
-**Workflow:**
+**This pattern uses direct MCP calls with MANDATORY transformations.**
+
+#### Step 1: Get Organization List
 ```
-1. Use limacharlie-call skill: list-user-orgs
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="list_user_orgs",
+  parameters={}
+)
+```
 
-2. Spawn org-reporter agents in parallel (same as Pattern 1)
-   - Agents collect ALL data (billing focus is in report generation)
+#### Step 2: Ask User for Billing Period
+```
+AskUserQuestion(
+  questions=[{
+    "question": "Which billing period should I generate the report for?",
+    "header": "Period",
+    "options": [
+      {"label": "Previous month", "description": "Most recent completed billing cycle"},
+      {"label": "Current month", "description": "Current billing period (may be incomplete)"},
+      {"label": "Specific month", "description": "I'll specify the year and month"}
+    ],
+    "multiSelect": false
+  }]
+)
+```
 
-3. Aggregate results focusing on billing data:
-   - Extract only: usage, billing, invoice_url from each agent result
-   - Skip: detections, rules, detailed sensor data
+#### Step 3: Collect Billing Data Per Org
+For EACH organization from step 1:
+```
+mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
+  tool_name="get_org_invoice_url",
+  parameters={
+    "oid": "<org-uuid>",
+    "year": 2025,
+    "month": 11,
+    "format": "simple_json"
+  }
+)
+```
 
-4. Generate Billing-Focused Report:
-   - Usage metrics per org (NO cost calculations)
-   - Subscription status
-   - Invoice links
-   - Billing permission issues flagged
+#### Step 4: Apply MANDATORY Transformations
+
+⚠️ **CRITICAL: These transformations are EXACT and MANDATORY:**
+
+**4.1 Currency Conversion (ALWAYS apply):**
+```
+API returns amounts in CENTS → ALWAYS divide by 100
+
+Example:
+  API: "total": 253420
+  Output: cost = 253420 / 100 = $2,534.20
+
+NEVER show cents directly. ALWAYS convert.
+```
+
+**4.2 Sensor Count Extraction:**
+```
+Sum quantities from invoice line items that represent sensors.
+Look for SKUs containing: "sensor", "endpoint", "agent"
+
+Example:
+  lines = response['upcoming_invoice']['lines']['data']
+  sensors = sum(item['quantity'] for item in lines
+                if 'sensor' in item['description'].lower())
+```
+
+**4.3 Region Detection (from SKU names):**
+```
+Check SKU description for region indicators:
+  - Contains "CANADA" or "CA" → region = "Canada"
+  - Contains "EU" or "EUROPE" → region = "Europe"
+  - Otherwise → region = "US" (default)
+```
+
+**4.4 Roll-up Calculations:**
+```
+ONLY from organizations with successful billing data:
+
+total_cost = sum(tenant.cost for tenant in tenants
+                 if tenant.billing_available)
+
+total_sensors = sum(tenant.sensors for tenant in tenants)
+
+avg_cost_per_sensor = total_cost / total_sensors
+                      if total_sensors > 0 else 0
+```
+
+#### Step 5: Build Output JSON
+Structure output to match this EXACT schema for the billing-summary template:
+
+```json
+{
+  "metadata": {
+    "period": "November 2025",
+    "generated_at": "2025-11-30T12:00:00Z",
+    "tenant_count": 12
+  },
+  "data": {
+    "rollup": {
+      "total_cost": 15234.56,
+      "total_sensors": 1250,
+      "avg_cost_per_sensor": 12.19
+    },
+    "tenants": [
+      {
+        "name": "Client ABC",
+        "oid": "uuid-here",
+        "region": "US",
+        "sensors": 150,
+        "cost": 1823.45,
+        "status": "active",
+        "skus": [
+          {"name": "Endpoint Protection", "quantity": 150, "amount": 1500.00},
+          {"name": "Cloud Storage", "quantity": 100, "amount": 323.45}
+        ]
+      }
+    ]
+  },
+  "warnings": [],
+  "errors": [
+    {
+      "org_name": "Client XYZ",
+      "error_message": "Billing permission denied (403)"
+    }
+  ]
+}
+```
+
+#### Step 6: Render HTML Report
+```
+Task(
+  subagent_type="lc-essentials:html-renderer",
+  prompt="Render billing-summary template with data from /tmp/billing-data.json
+          Output to /tmp/billing-report-november-2025.html"
+)
+```
+
+#### Step 7: Open in Browser
+```bash
+lsof -i :9876 || (cd /tmp && python3 -m http.server 9876 &)
+xdg-open "http://localhost:9876/billing-report-november-2025.html"
 ```
 
 ### Pattern 3: Single Organization Deep Dive
@@ -1069,19 +1178,20 @@ Progress Reporting During Execution:
 - "Complete security analysis for organization XYZ"
 - "Show me everything for [org name]"
 
-**Workflow:**
+**Workflow (Direct MCP Calls):**
 ```
-1. Use limacharlie-call skill: list-user-orgs
-   - Filter to find OID for the specified org name
+1. Get org list and find OID:
+   mcp__...lc_call_tool(tool_name="list_user_orgs", parameters={})
+   → Find OID matching the org name
 
-2. Spawn ONE org-reporter agent for that organization:
-   Task(
-     subagent_type="lc-essentials:org-reporter",
-     model="haiku",
-     prompt="Collect reporting data for org 'Client ABC' (OID: uuid)
-       Time Range: [start] to [end]
-       Detection Limit: 5000"
-   )
+2. Collect all data via direct MCP calls:
+   - get_org_info
+   - get_usage_stats
+   - list_sensors
+   - get_historic_detections (with time range)
+   - list_dr_general_rules
+   - list_outputs
+   - get_org_invoice_url (if billing requested)
 
 3. Generate Detailed Single-Org Report:
    - Full usage breakdown
@@ -1096,7 +1206,7 @@ Progress Reporting During Execution:
 
 AI must validate at these critical points:
 
-### Before Spawning Agents
+### Before Making API Calls
 ```
 ✓ Organization list retrieved successfully
 ✓ Each OID is valid UUID format (not org name)
@@ -1109,13 +1219,14 @@ AI must validate at these critical points:
 ✓ Time range displayed to user before proceeding
 ```
 
-### After Agent Results
+### After API Responses
 ```
-✓ Each agent returned valid JSON structure
-✓ Check agent status: "success", "partial", or "failed"
-✓ Required data fields present in successful results
-✓ Errors array populated for any failures
-✓ Warnings array checked for detection limits, etc.
+✓ Each API response is valid JSON
+✓ Track status per org: "success", "partial", or "failed"
+✓ Required data fields present in successful responses
+✓ Errors documented for any failures (403, 500, etc.)
+✓ Currency values converted from cents to dollars
+✓ Detection limits tracked (count >= limit)
 ```
 
 ### Before Calculations

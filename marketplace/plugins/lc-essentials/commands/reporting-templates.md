@@ -73,22 +73,31 @@ AskUserQuestion(
 
 ### Template 3: Monthly Billing Report
 
-**Purpose**: Usage data for customer invoicing and capacity planning.
+**Purpose**: Comprehensive billing data with roll-up totals and per-tenant SKU breakdown for customer invoicing.
 
-**Data Collection** (reporting skill):
-- List all organizations
-- Per-org: billing details, usage stats (events, outputs, storage)
-- Aggregate: total usage, month-over-month comparison if available
+**Data Collection** (reporting skill - direct MCP calls):
+- List all organizations via `list_user_orgs`
+- Per-org: Invoice data via `get_org_invoice_url` with `format: "simple_json"`
+- Extract: SKU names, quantities, amounts (convert cents to dollars)
+- Calculate roll-ups: total cost, total sensors, avg cost/sensor
+
+**MANDATORY Transformations**:
+- Currency: API returns cents → ALWAYS divide by 100
+- Region detection: Check SKU names for "CANADA", "EU", etc.
+- Roll-up: Sum only from orgs with billing data available
 
 **Visualization** (graphic-output skill):
-- Summary cards: Total events, Total output bytes, Active sensors
-- Bar chart: Usage by organization (top consumers)
-- Table: Full org breakdown with usage columns
-- Pie chart: Usage distribution by org size tier
+- Summary cards: Total Monthly Billing, Total Sensors, Avg Cost/Sensor, Active Tenants
+- Pie chart: Cost distribution by tenant
+- Pie chart: Sensor distribution by tenant
+- Table: Per-tenant breakdown (org, region, sensors, cost, cost/sensor, % of total)
+- SKU cards: Detailed line items per tenant
 
-**Time Range**: Prompt user for billing period (default: previous calendar month).
+**Time Range**: Prompt user for billing period (year and month).
 
 **Output**: `/tmp/billing-report-{month}-{year}.html`
+
+**Template Used**: `billing-summary` (uses billing-summary.html.j2)
 
 ---
 
@@ -119,20 +128,30 @@ AskUserQuestion(
 Once the user selects a template:
 
 1. **Confirm Time Range**: Use `AskUserQuestion` to confirm or customize the time period
+   - For billing reports: Ask for specific billing period (year and month)
 2. **Confirm Scope**: Ask if they want all orgs or a specific subset
-3. **Collect Data**: Spawn `org-reporter` agents in parallel to collect data from each organization
-4. **Generate HTML**: Spawn `html-renderer` agent to create the visualization dashboard
-5. **Open in Browser**: Automatically open the generated HTML file using `xdg-open` or serve via local HTTP server
+3. **Collect Data**: Use direct MCP calls via `lc_call_tool` to collect data from each organization
+   - For billing: `list_user_orgs` then `get_org_invoice_url` per org
+   - Apply MANDATORY transformations (currency conversion, roll-ups)
+4. **Build JSON**: Structure data to match the template's expected schema
+5. **Generate HTML**: Spawn `html-renderer` agent to create the visualization dashboard
+   - For billing reports: Use template `billing-summary`
+6. **Open in Browser**: Start HTTP server and open the generated HTML file
 
-**Browser Launch Command:**
+**Browser Launch Commands:**
 ```bash
-# Option 1: Direct file open
-xdg-open /tmp/{report-file}.html
+# Start HTTP server in /tmp (if not already running)
+lsof -i :9876 || (cd /tmp && python3 -m http.server 9876 &)
 
-# Option 2: HTTP server (if direct open fails)
-cd /tmp && python3 -m http.server 8765 &
-xdg-open http://localhost:8765/{report-file}.html
+# Open report in browser
+xdg-open "http://localhost:9876/{report-file}.html"  # Linux
+# or: open "http://localhost:9876/{report-file}.html"  # macOS
 ```
+
+**Why HTTP server instead of file:// URLs:**
+- Some browsers block `file://` URLs for security reasons
+- Chart.js CDN loads reliably over HTTP
+- Consistent behavior across all browser configurations
 
 ## Example Conversation Flow
 
