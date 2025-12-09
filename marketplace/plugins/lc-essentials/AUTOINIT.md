@@ -63,6 +63,37 @@ When processing multiple organizations or items:
 - Do NOT spawn agents sequentially
 - Each agent handles ONE item, parent aggregates results
 
+## Standard Operating Procedures (SOPs)
+
+Organizations can define SOPs (Standard Operating Procedures) in LimaCharlie that guide how tasks are performed.
+
+### On Conversation Start
+
+At the beginning of every conversation involving LimaCharlie operations:
+
+1. **List all SOPs** using `list_sops` for each organization in scope
+2. **Store in context** the name and description of each SOP
+3. Use this list to identify when an SOP applies to current work
+
+### When Performing Tasks
+
+Before executing any significant operation:
+
+1. **Check SOP relevance**: Compare the current task against stored SOP descriptions
+2. **If a match is found**:
+   - Announce: "Following SOP: [sop-name] - [description]"
+   - Call `get_sop` to retrieve the full SOP content
+   - Follow the procedure defined in the SOP
+3. **If multiple SOPs match**: Announce all matching SOPs and follow each applicable procedure
+
+### Example Workflow
+
+1. User asks to investigate a malware alert
+2. LLM checks stored SOPs: "malware-response" matches (description: "Standard procedure for malware incidents")
+3. LLM announces: "Following SOP: malware-response - Standard procedure for malware incidents"
+4. LLM calls `get_sop` to read the full procedure
+5. LLM follows the documented steps in the SOP
+
 ## Sensor Selector Reference
 
 Sensor selectors use [bexpr](https://github.com/hashicorp/go-bexpr) syntax to filter sensors. Use `*` to match all sensors.
