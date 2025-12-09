@@ -25,6 +25,7 @@ Your prompt will specify:
 - **Organization ID (OID)**: UUID of the organization
 - **Time Range**: Start and end timestamps (Unix epoch seconds)
 - **Detection Limit**: Max detections to retrieve (default: 5000)
+- **Billing Period** (optional): Year and month for invoice data (for billing reports)
 
 **Example Prompt**:
 ```
@@ -35,6 +36,8 @@ Time Range:
 - End: 1733011199 (Nov 30, 2025 23:59:59 UTC)
 
 Detection Limit: 5000
+
+Billing Period: November 2025 (year: 2025, month: 11)
 ```
 
 ## Data Accuracy Guardrails
@@ -82,6 +85,7 @@ Parse the prompt to extract:
 - Start timestamp (Unix epoch seconds)
 - End timestamp (Unix epoch seconds)
 - Detection limit (default: 5000)
+- Billing period year and month (optional, for invoice data)
 
 ### Step 2: Spawn API Executor Agents
 
@@ -96,7 +100,19 @@ Task(
   prompt="Execute LimaCharlie API calls:
     - OID: {oid}
     Call: get_org_info, get_billing_details
-    Return: RAW billing with all invoice line items, amounts in dollars"
+    Return: Org metadata and subscription status"
+)
+
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API calls:
+    - OID: {oid}
+    - Year: {year}
+    - Month: {month}
+    Call: get_org_invoice_url with format='simple_json'
+    Return: Invoice line items with SKU names, amounts (convert cents to dollars by dividing by 100), and quantities.
+    Structure each line item as: {name: 'SKU description', amount: dollars, quantity: number}"
 )
 
 Task(
@@ -199,7 +215,14 @@ Return JSON in this exact format:
       "plan": "enterprise",
       "status": "active",
       "next_billing_date": "2025-12-01",
-      "invoice_url": "https://billing.limacharlie.io/..."
+      "invoice_url": "https://billing.limacharlie.io/...",
+      "invoice_period": "November 2025",
+      "invoice_total": 253.42,
+      "invoice_line_items": [
+        {"name": "10 × LCIO-GENERAL-V2 (at $2.50 / month)", "amount": 25.00, "quantity": 10},
+        {"name": "Data Output - 50 GB", "amount": 7.50, "quantity": 50},
+        {"name": "1-Year Insight Retention", "amount": 220.92, "quantity": 1}
+      ]
     },
     "sensors": {
       "total": 250,
@@ -450,11 +473,14 @@ Spawn `lc-essentials:limacharlie-api-executor` agents with these functions:
 | get_org_info | Org metadata | `oid` |
 | get_usage_stats | Daily metrics | `oid` |
 | get_billing_details | Subscription & invoice | `oid` |
+| get_org_invoice_url | Invoice line items with SKUs | `oid`, `year`, `month`, `format` |
 | list_sensors | All sensors | `oid` |
 | get_online_sensors | Online SIDs | `oid` |
 | get_historic_detections | Detections | `oid`, `start`, `end`, `limit` |
 | list_dr_general_rules | D&R rules | `oid` |
 | list_outputs | Outputs | `oid` |
+
+**Important for Billing Reports**: When a billing period is specified, call `get_org_invoice_url` with `format: "simple_json"` to get detailed SKU line items. The API returns amounts in **cents** - always divide by 100 to convert to dollars.
 
 The executor agents handle all API communication, large result processing, and error handling.
 

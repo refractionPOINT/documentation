@@ -319,27 +319,39 @@ Task(
 )
 ```
 
-### Step 4: Launch in Browser (Default Completion)
+### Step 4: Launch in Browser (MANDATORY)
 
-**IMPORTANT:** When generating any HTML report, always open it in the user's browser as the default completion action.
+**CRITICAL:** Every HTML report MUST be automatically opened in the user's browser upon completion. This is NOT optional - it is the expected default behavior for all report generation.
+
+**Execution sequence:**
 
 ```bash
-# On ChromeOS/Linux with garcon:
-garcon-url-handler "http://localhost:8080/report.html"
+# 1. Start HTTP server in /tmp (required for proper rendering)
+cd /tmp && python3 -m http.server 8765 &
+sleep 1
 
-# Alternative for other systems:
-xdg-open "/tmp/report.html"
-# or
-open "/tmp/report.html"  # macOS
+# 2. Open the report URL in the default browser
+xdg-open http://localhost:8765/report-name.html
 ```
 
-Before opening, ensure an HTTP server is running to serve the file:
+**Platform-specific alternatives (if xdg-open fails):**
 ```bash
-# Start server if not already running
-cd /tmp && python3 -m http.server 8080 --bind 0.0.0.0 &
+# Linux with xdg-open (preferred)
+xdg-open http://localhost:8765/report.html
+
+# macOS
+open http://localhost:8765/report.html
+
+# ChromeOS/Crostini with garcon
+garcon-url-handler "http://localhost:8765/report.html"
 ```
 
-This ensures the user immediately sees their report without manual steps.
+**Why HTTP server instead of file://:**
+- JavaScript and Chart.js render correctly
+- No CORS issues with embedded resources
+- Consistent behavior across browsers
+
+**NEVER skip this step.** The user expects to see their report immediately after generation.
 
 ### Step 5: Return Results to User
 

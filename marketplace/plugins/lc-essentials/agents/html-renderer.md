@@ -293,7 +293,41 @@ assert "placeholder" not in html.lower()
 assert "sample" not in html.lower()
 ```
 
-### Step 6: Return Summary with Accuracy Confirmation
+### Step 6: Open Report in Browser (MANDATORY)
+
+**CRITICAL:** Every rendered report MUST be automatically opened in the user's browser. This is NOT optional.
+
+After writing the HTML file, execute the following:
+
+```bash
+# 1. Start HTTP server in /tmp if not already running
+cd /tmp && python3 -m http.server 8765 &
+sleep 1
+
+# 2. Open the report in the default browser
+xdg-open http://localhost:8765/{filename}.html
+```
+
+**Platform alternatives:**
+```bash
+# Linux (preferred)
+xdg-open http://localhost:8765/report.html
+
+# macOS
+open http://localhost:8765/report.html
+
+# ChromeOS/Crostini
+garcon-url-handler "http://localhost:8765/report.html"
+```
+
+**Why this step is mandatory:**
+- Users expect to immediately see their report upon generation
+- HTTP server ensures JavaScript/Chart.js render correctly
+- Avoids file:// CORS issues
+
+**NEVER skip this step.** Always open the report in the browser after generation.
+
+### Step 7: Return Summary with Accuracy Confirmation
 
 ```json
 {
@@ -301,6 +335,8 @@ assert "sample" not in html.lower()
   "file_path": "/tmp/lc-mssp-report-2025-11-27.html",
   "file_size_kb": 245,
   "template_used": "mssp-dashboard",
+  "browser_opened": true,
+  "browser_url": "http://localhost:8765/lc-mssp-report-2025-11-27.html",
 
   "elements_rendered": {
     "summary_cards": 4,
