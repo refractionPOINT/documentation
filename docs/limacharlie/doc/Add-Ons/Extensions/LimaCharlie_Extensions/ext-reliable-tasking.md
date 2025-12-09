@@ -89,6 +89,33 @@ This returns all pending reliable tasks for the organization. The response inclu
 
 **Note:** The current API returns all tasks regardless of selector. If you need to filter tasks by sensor characteristics, retrieve all tasks and filter the results based on the `sensor_selector` field in each task object.
 
+#### **Remove a Task (Untask)**
+
+```
+curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
+--header 'Authorization: Bearer $JWT' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data 'oid=$YOUR_OID&action=untask&data={"task_id":"TASK_ID_HERE"}'
+```
+
+Removes a pending reliable task from the queue, preventing it from being sent to any additional sensors. This is useful when you need to cancel a task that hasn't been fully executed yet.
+
+**Required Parameters:**
+
+* `task_id`: The unique identifier of the task to remove. You can obtain task IDs by using the `list` action.
+
+**Example:**
+
+Remove a specific task:
+```
+curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
+--header 'Authorization: Bearer $JWT' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data 'oid=$YOUR_OID&action=untask&data={"task_id":"abc-123-def-456"}'
+```
+
+**Note:** Untasking only prevents the task from being sent to sensors that haven't received it yet. If a sensor has already received and executed the task, untasking will not reverse or cancel that execution.
+
 ## Capturing Task Responses
 
 If you're using reliable tasks to issue commands across your sensors, you're probably going to want to view or act on the responses from these commands as well.
