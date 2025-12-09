@@ -485,6 +485,18 @@ The `resource_link` URL:
 - Includes GCP authentication tokens in the URL parameters
 - Can be downloaded directly with tools like `curl` or `WebFetch`
 
+**IMPORTANT: curl auto-decompresses gzip**
+
+Although the URL ends in `.json.gz`, `curl` with `-L` flag automatically decompresses the content. Do NOT pipe through `gunzip`:
+
+```bash
+# CORRECT - curl handles decompression automatically
+curl -sL "[resource_link_url]" | jq '.'
+
+# WRONG - will fail with "not in gzip format" error
+curl -sL "[resource_link_url]" | gunzip | jq '.'
+```
+
 ### Autonomous Handling by Sub-Agent
 
 When you delegate to the `limacharlie-api-executor` agent with a Return specification, the agent:

@@ -89,7 +89,7 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `list_lookups` / `set_lookup` / `query_lookup` - Lookups
 - `list_payloads` / `create_payload` / `get_payload` / `delete_payload` - Payloads
 
-## Available Functions (133)
+## Available Functions (136)
 
 ### Organization Management (8)
 - `list_user_orgs` → `./functions/list-user-orgs.md`
@@ -218,6 +218,11 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `delete_extension_config` → `./functions/delete-extension-config.md`
 - `subscribe_to_extension` → `./functions/subscribe-to-extension.md`
 - `unsubscribe_from_extension` → `./functions/unsubscribe-from-extension.md`
+
+### Velociraptor DFIR (3)
+- `list_velociraptor_artifacts` → `./functions/list-velociraptor-artifacts.md`
+- `show_velociraptor_artifact` → `./functions/show-velociraptor-artifact.md`
+- `collect_velociraptor_artifact` → `./functions/collect-velociraptor-artifact.md`
 
 ### YARA Rules (4)
 - `list_yara_rules` → `./functions/list-yara-rules.md`

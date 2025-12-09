@@ -165,6 +165,11 @@
 - subscribe-to-extension
 - unsubscribe-from-extension
 
+#### Velociraptor DFIR (3 skills)
+- list-velociraptor-artifacts
+- show-velociraptor-artifact
+- collect-velociraptor-artifact
+
 #### Configuration: Playbooks (4 skills)
 - list-playbooks
 - get-playbook
