@@ -480,8 +480,6 @@ Returns structured JSON with task results:
 **Skills Used**:
 - `lc-essentials:limacharlie-call` - For sensor commands and status checks
 
----
-
 ### fleet-pattern-analyzer
 
 **Model**: Claude Sonnet (requires intelligence for pattern detection)
@@ -534,6 +532,94 @@ Returns comprehensive fleet analysis:
 
 **Skills Used**:
 - None (analyzes provided data, no API calls)
+
+### fleet-dashboard-collector
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Collect comprehensive fleet metrics from a **single** LimaCharlie organization. Designed to be spawned in parallel by the `fleet-dashboard` skill for multi-org dashboard generation.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel (one instance per org) by the `fleet-dashboard` skill when users want to:
+- Generate interactive HTML dashboards showing fleet status
+- Get consolidated visibility across all organizations
+- Identify configuration gaps and anomalies
+- Assess security posture across the fleet
+
+**Architecture Role**:
+- **Parent Skill**: `fleet-dashboard` (orchestrates parallel execution and dashboard generation)
+- **This Agent**: Collects ALL metrics for ONE organization
+- **Parallelization**: Multiple instances run simultaneously, one per org
+- **HTML Rendering**: Parent skill invokes `html-renderer` agent with aggregated data
+
+**Expected Input**:
+Receives a prompt specifying:
+- Organization name and ID (UUID)
+- Time window for detection metrics (default: 24 hours)
+
+**Output Format**:
+Returns structured JSON with comprehensive metrics:
+```json
+{
+  "success": true,
+  "org_name": "TPS Reporting Solutions",
+  "oid": "aac9c41d-e0a3-4e7e-88b8-33936ab93238",
+  "collection_timestamp": "2025-12-05T14:30:22Z",
+  "time_window_hours": 24,
+  "sensors": {
+    "total": 60,
+    "online": 25,
+    "offline": 35,
+    "online_percentage": 41.7,
+    "platforms": {"Windows": 3, "Linux": 8, "Adapters": 39}
+  },
+  "detections": {
+    "total": 5000,
+    "limit_reached": true,
+    "detection_rate_per_hour": 208.3,
+    "top_categories": [...]
+  },
+  "configuration": {
+    "dr_rules": 68,
+    "outputs": 37,
+    "adapters": {"total": 3, "enabled": 3, "health_percentage": 100.0}
+  },
+  "health": {
+    "sensor_health_score": 41.7,
+    "detection_activity_score": 100.0,
+    "configuration_score": 100.0,
+    "overall_health_score": 74.2
+  },
+  "errors": [],
+  "warnings": ["Detection limit (5000) reached - actual count may be higher"]
+}
+```
+
+**Key Features**:
+- **Single-Org Focus**: Only collects data for the one organization specified
+- **Comprehensive Metrics**: Sensors, detections, D&R rules, outputs, adapters
+- **Health Scoring**: Calculates health scores (0-100) across multiple dimensions
+- **Error Tolerance**: Continues with partial data on non-critical failures
+- **Fast Execution**: Target <5 seconds per organization
+- **Detection Limit Tracking**: Flags when 5000 detection limit is reached
+
+**Metrics Collected**:
+1. **Sensor Metrics**: Total count, online/offline breakdown, platform distribution
+2. **Detection Metrics**: Volume, top 5 categories, detection rate per hour
+3. **Configuration Metrics**: D&R rules, outputs, adapters (with health percentage)
+4. **Health Scores**: Sensor health, detection activity, configuration, overall
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For all API operations (sensors, detections, rules, outputs, adapters)
+
+**How It Works**:
+1. Extracts org ID, name, and time window from prompt
+2. Collects sensor data (list-sensors, get-online-sensors)
+3. Collects detection data (get-historic-detections with time window)
+4. Collects configuration data (list-dr-general-rules, list-outputs, list-external-adapters)
+5. Calculates health scores across multiple dimensions
+6. Returns structured JSON for aggregation by parent skill
+7. Parent skill uses aggregated data to invoke `html-renderer` for dashboard
 
 ---
 

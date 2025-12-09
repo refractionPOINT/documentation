@@ -1,6 +1,6 @@
 # LimaCharlie Essentials Plugin
 
-Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 123 comprehensive skills covering core operations, historical data, forensics, detection rules, threat intelligence analysis, MSSP multi-tenant reporting, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
+Essential LimaCharlie skills for API access, sensor management, detection engineering, and security operations. Includes 124 comprehensive skills covering core operations, historical data, forensics, detection rules, threat intelligence analysis, MSSP multi-tenant reporting, fleet dashboards, configuration management, and administration. Includes a specialized script for efficiently analyzing large API result sets.
 
 ## Important: Organization ID (OID) Requirements
 
@@ -47,7 +47,7 @@ Always verify the sensor type before attempting system-level queries. EDR sensor
 
 ## What It Does
 
-This plugin provides 123 comprehensive skills:
+This plugin provides 124 comprehensive skills:
 
 ### Skills Organized by Category
 
@@ -86,6 +86,7 @@ This plugin provides 123 comprehensive skills:
 
 ### MSSP & Multi-Tenant Reporting
 - **MSSP Reporting**: Generate comprehensive multi-tenant security and operational reports across 50+ customer organizations. Includes billing summaries, usage analytics, detection trends, sensor health monitoring, and configuration audits with strict data accuracy guardrails. Supports partial report generation when organizations fail, with transparent error documentation.
+- **Fleet Dashboard**: Generate interactive HTML dashboards showing fleet status across all organizations. Spawns parallel agents for fast data collection, provides sensor inventory, detection trends, health scores, and anomaly detection. Identifies orgs with configuration gaps, excessive detections, or poor sensor uptime. Exportable dashboards with charts and tables.
 
 ### Configuration & Integrations
 - **Extensions**: List, get, create, update, delete extension configs
@@ -156,6 +157,81 @@ The **sensor-health** skill orchestrates parallel sensor health checks across mu
 - Sequential approach: ~30-60 seconds for 12 orgs
 - Parallel approach: ~5-10 seconds for 12 orgs
 - Scales efficiently to dozens of organizations
+
+### Fleet Dashboard
+
+The **fleet-dashboard** skill generates comprehensive, interactive HTML dashboards showing fleet status, sensor health, detection trends, and anomalies across **all** LimaCharlie organizations.
+
+**Architecture:**
+- **Skill**: `fleet-dashboard` - Orchestrates data collection and dashboard generation
+- **Agent**: `fleet-dashboard-collector` - Collects metrics from a single organization (spawned in parallel, one per org)
+- **HTML Renderer**: `html-renderer` - Generates interactive dashboard with charts
+- **Models**: Sonnet (orchestration/analysis), Haiku (data collection)
+
+**How It Works:**
+1. Skill gets list of user's organizations
+2. Skill spawns one `fleet-dashboard-collector` agent per org **in parallel**
+3. Each agent collects sensors, detections, rules, outputs, and adapters data
+4. Skill aggregates results and calculates fleet-wide metrics
+5. Skill detects anomalies (missing configs, excessive detections, poor uptime)
+6. Skill invokes `html-renderer` to generate interactive dashboard
+7. Dashboard saved as HTML file with charts, tables, and export options
+
+**Key Features:**
+- **Multi-Org Visibility**: Consolidated view across all organizations
+- **Health Scoring**: Automated health scores (0-100) per organization
+- **Anomaly Detection**: Identifies critical issues requiring attention
+- **Interactive Dashboard**: Sortable tables, filterable views, charts
+- **Fast Execution**: Parallel agents complete in 10-15 seconds for 10+ orgs
+- **Exportable**: HTML, JSON, and CSV export options
+
+**Metrics Collected:**
+- Sensor inventory (total, online, offline, by platform)
+- Detection volume and top categories
+- D&R rule counts
+- Output configurations
+- Adapter status
+- Health scores and anomalies
+
+**Anomaly Detection:**
+- 🔴 **Critical**: No sensors, no rules, no outputs, >80% sensors offline
+- 🟡 **Warning**: Zero detections, >50% offline, excessive detections, <5 rules
+- 🔵 **Info**: Small deployment, single platform, new organization
+
+**Example Usage:**
+```
+"Generate a fleet dashboard for all my organizations"
+→ Spawns N parallel agents (one per org)
+→ Collects comprehensive metrics
+→ Generates interactive HTML dashboard
+→ Saves to fleet-dashboard-<timestamp>.html
+→ Execution time: ~10-15 seconds for 10 orgs
+
+"Show me fleet status with detection data from the last 7 days"
+→ Custom time window (168 hours)
+→ Adjusts detection metrics accordingly
+→ Generates weekly trend analysis
+```
+
+**Dashboard Components:**
+- Executive summary (total orgs, sensors, detections, health score)
+- Organization comparison table (sortable by any column)
+- Sensor distribution charts (pie/bar charts by platform)
+- Detection volume trends (bar charts by org)
+- Anomaly alerts (grouped by severity)
+- Actionable recommendations
+
+**Performance:**
+- 10 organizations: ~10-15 seconds (vs. ~60-90 seconds sequential)
+- 50 organizations: ~20-30 seconds (vs. ~300-450 seconds sequential)
+- 100 organizations: ~30-40 seconds (vs. ~600-900 seconds sequential)
+
+**Use Cases:**
+- MSSP executive reporting
+- Multi-org security posture assessment
+- Configuration gap analysis
+- Detection tuning prioritization
+- Sensor coverage validation
 
 ## Usage Examples
 
