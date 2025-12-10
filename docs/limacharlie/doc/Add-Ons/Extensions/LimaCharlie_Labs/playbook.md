@@ -126,6 +126,57 @@ def playbook(sdk, data):
   }
 ```
 
+#### Example playbook with custom detection category
+
+When a playbook generates a detection, you can customize the detection category name that appears in the UI by setting the `cat` field at the top level of the return dictionary. This is particularly useful when you want detections from different playbooks to have descriptive names instead of the generic "playbook-detection".
+
+The following example checks if a server sensor has missed a check-in and creates a detection with a custom category name:
+
+```python
+import limacharlie
+
+def playbook(sdk, data):
+  if not sdk:
+    return {"error": "LC API key required"}
+
+  # Check for sensors that haven't checked in recently
+  import time
+  current_time = time.time()
+  threshold = 3600  # 1 hour in seconds
+
+  missing_sensors = []
+  for sensor in sdk.sensors():
+    info = sensor.getInfo()
+    last_seen = info.get('last_seen', 0)
+    if (current_time - last_seen) > threshold:
+      missing_sensors.append({
+        "sid": info['sid'],
+        "hostname": info.get('hostname', 'unknown')
+      })
+
+  if missing_sensors:
+    # Return a detection with a custom category name
+    # The 'cat' field MUST be at the top level, not inside 'detection'
+    return {
+      "detection": {
+        "summary": f"Found {len(missing_sensors)} sensors missing check-in",
+        "missing_sensors": missing_sensors
+      },
+      "cat": "Server-Sensor-Missing-Check-In"
+    }
+
+  # No issues found
+  return {
+    "data": {"status": "all sensors checked in"}
+  }
+```
+
+**Important:** The `cat` field must be placed at the **top level** of the return dictionary, alongside `detection`, not inside it. When this playbook creates a detection, it will appear in the Detections UI with the category name "Server-Sensor-Missing-Check-In" instead of the default "playbook-detection".
+
+**Without `cat`:** Detection appears as "playbook-detection → ext_playbook"
+
+**With `cat`:** Detection appears as "Server-Sensor-Missing-Check-In → ext_playbook"
+
 ### Execution environment
 
 Playbooks contents are cached for short periods of time ( on the order of 10 seconds ) in the cloud.
