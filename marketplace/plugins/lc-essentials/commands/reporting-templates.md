@@ -16,10 +16,7 @@ AskUserQuestion(
     "question": "Which report template would you like to generate?",
     "header": "Template",
     "options": [
-      {"label": "Billing Report", "description": "Invoice details, SKU breakdown, and cost analysis for a billing period"},
-      {"label": "MSSP Executive Summary", "description": "High-level metrics across all customers: sensor counts, detection volumes, SLA status"},
-      {"label": "Customer Health Dashboard", "description": "Per-org health scores, offline sensors, detection trends with drill-down"},
-      {"label": "Detection Analytics", "description": "Security activity breakdown: top categories, trends, alert volumes by org"}
+      {"label": "Billing Report", "description": "Invoice details, SKU breakdown, and cost analysis for a billing period"}
     ],
     "multiSelect": false
   }]
@@ -28,7 +25,7 @@ AskUserQuestion(
 
 ## Template Definitions
 
-### Template 1: Billing Report
+### Billing Report
 
 **Purpose**: Comprehensive billing data with roll-up totals and per-tenant SKU breakdown for customer invoicing.
 
@@ -96,78 +93,12 @@ Each tenant in the data structure MUST include:
 
 ---
 
-### Template 2: MSSP Executive Summary
-
-**Purpose**: High-level overview for MSSP leadership - quick health check across all customers.
-
-**Data Collection** (reporting skill):
-- List all organizations
-- Per-org: sensor count (online/offline), detection count (7 days), SLA status
-- Aggregate totals across fleet
-
-**Visualization** (graphic-output skill):
-- Summary cards: Total sensors, Total detections, Fleet coverage %, Orgs passing SLA
-- Pie chart: Platform distribution (Windows/Linux/macOS)
-- Bar chart: Top 10 orgs by detection volume
-- Table: All orgs with health indicators (green/yellow/red)
-
-**Time Range**: Default last 7 days, prompt user to confirm.
-
-**Output**: `/tmp/mssp-executive-summary-{date}.html`
-
----
-
-### Template 3: Customer Health Dashboard
-
-**Purpose**: Operational dashboard for SOC teams - identify customers needing attention.
-
-**Data Collection** (reporting skill):
-- List all organizations
-- Per-org: sensor inventory with online/offline status, detection counts by category
-- Identify: offline sensors >24h, orgs below SLA, detection spikes
-
-**Visualization** (graphic-output skill):
-- Health gauge: Fleet-wide coverage percentage
-- Heatmap: Org health matrix (rows=orgs, columns=metrics, color=status)
-- Bar chart: Offline sensors by org
-- Line chart: Detection trend (daily, last 7 days) if data available
-- Alert list: Orgs requiring immediate attention
-
-**Time Range**: Default last 7 days, prompt user to confirm.
-
-**Output**: `/tmp/customer-health-dashboard-{date}.html`
-
----
-
-### Template 4: Detection Analytics
-
-**Purpose**: Security activity analysis for threat intelligence and tuning.
-
-**Data Collection** (reporting skill):
-- List all organizations
-- Per-org: detections by category, top detection rules triggered
-- Aggregate: fleet-wide detection categories, rule effectiveness
-
-**Visualization** (graphic-output skill):
-- Summary cards: Total detections, Unique categories, Orgs with alerts
-- Pie chart: Detection categories (top 10)
-- Bar chart: Detections by organization
-- Table: Top triggered rules with counts
-- Warning banner: Detection limits reached (if applicable)
-
-**Time Range**: Default last 30 days, prompt user to confirm.
-
-**Output**: `/tmp/detection-analytics-{date}.html`
-
----
-
 ## Execution Flow
 
 Once the user selects a template:
 
 1. **Confirm Time Range**: Use `AskUserQuestion` to confirm or customize the time period
 
-   **For Billing Reports** - ALWAYS ask for the billing period first:
    ```
    AskUserQuestion(
      questions=[{
@@ -210,30 +141,14 @@ Once the user selects a template:
    ```
    Note: For months May-December, present a second question with remaining months.
 
-   **For Other Reports** (MSSP Summary, Health Dashboard, Detection Analytics):
-   ```
-   AskUserQuestion(
-     questions=[{
-       "question": "What time range should I use for this report?",
-       "header": "Time Range",
-       "options": [
-         {"label": "Last 7 days", "description": "Past week of activity (Recommended)"},
-         {"label": "Last 30 days", "description": "Past month of activity"},
-         {"label": "Custom range", "description": "I'll specify exact dates"}
-       ],
-       "multiSelect": false
-     }]
-   )
-   ```
-
 2. **Confirm Scope**: Ask if they want all orgs or a specific subset
 3. **Collect Data**: Spawn `org-reporter` agents in parallel to collect data from each organization
-   - For billing reports: Include billing period (year, month) in the prompt so agents call `get_org_invoice_url` with `format: "simple_json"`
+   - Include billing period (year, month) in the prompt so agents call `get_org_invoice_url` with `format: "simple_json"`
 4. **Aggregate Results**:
-   - For billing reports: Calculate roll-up totals (total cost, total sensors, avg cost/sensor)
+   - Calculate roll-up totals (total cost, total sensors, avg cost/sensor)
    - Structure data per the `billing-summary.json` schema
 5. **Generate HTML**: Spawn `html-renderer` agent to create the visualization dashboard
-   - For billing reports: Use template `billing-summary`
+   - Use template `billing-summary`
 6. **Open in Browser**: Start HTTP server and open the generated HTML file
 
 **Browser Launch Commands:**
@@ -256,10 +171,6 @@ xdg-open "http://localhost:9876/{report-file}.html"  # Linux
 
 ```
 User: /lc-essentials:reporting-templates
-Assistant: [Presents template menu with 4 options: Billing Report, MSSP Executive Summary, Customer Health Dashboard, Detection Analytics]
-
-User: Billing Report
-
 Assistant: [Asks about billing period: Current month, Last month (Recommended), or Custom date range]
 
 User: Last month
