@@ -56,6 +56,7 @@ lc_call_tool(tool_name="list_artifacts", parameters={
 | file | Collected files/executables |
 | registry | Registry hive exports |
 | event_log | Windows event log exports |
+| velociraptor | Velociraptor forensic collections (ZIP files) |
 
 ## Notes
 

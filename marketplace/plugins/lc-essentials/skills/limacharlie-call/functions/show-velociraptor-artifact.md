@@ -20,10 +20,8 @@ Display the YAML definition of a specific Velociraptor artifact. Use this to und
 ## Example
 
 ```
-lc_call_tool(tool_name="extension_request", parameters={
+lc_call_tool(tool_name="show_velociraptor_artifact", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "extension_name": "ext-velociraptor",
-  "action": "show",
   "artifact_name": "Windows.System.Drivers"
 })
 ```

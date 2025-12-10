@@ -30,10 +30,8 @@ Initiate Velociraptor artifact collection from one or more endpoints. Deploys Ve
 ### Collect single artifact from one sensor
 
 ```
-lc_call_tool(tool_name="extension_request", parameters={
+lc_call_tool(tool_name="collect_velociraptor_artifact", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "extension_name": "ext-velociraptor",
-  "action": "collect",
   "artifact_list": ["Windows.System.Drivers"],
   "sid": "sensor-uuid-here"
 })
@@ -42,10 +40,8 @@ lc_call_tool(tool_name="extension_request", parameters={
 ### Collect multiple artifacts from all Windows sensors
 
 ```
-lc_call_tool(tool_name="extension_request", parameters={
+lc_call_tool(tool_name="collect_velociraptor_artifact", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "extension_name": "ext-velociraptor",
-  "action": "collect",
   "artifact_list": ["Windows.System.Drivers", "Windows.EventLogs.Security"],
   "sensor_selector": "plat == windows"
 })
@@ -54,10 +50,8 @@ lc_call_tool(tool_name="extension_request", parameters={
 ### Collect with custom arguments
 
 ```
-lc_call_tool(tool_name="extension_request", parameters={
+lc_call_tool(tool_name="collect_velociraptor_artifact", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "extension_name": "ext-velociraptor",
-  "action": "collect",
   "artifact_list": ["Windows.System.Drivers"],
   "sid": "sensor-uuid-here",
   "args": "DriverPathRegex=.*malware.*"
@@ -67,10 +61,8 @@ lc_call_tool(tool_name="extension_request", parameters={
 ### Collect with custom artifact definition
 
 ```
-lc_call_tool(tool_name="extension_request", parameters={
+lc_call_tool(tool_name="collect_velociraptor_artifact", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "extension_name": "ext-velociraptor",
-  "action": "collect",
   "custom_artifact": "name: Custom.Investigation\ndescription: Custom artifact\nsources:\n  - query: SELECT * FROM info()",
   "sid": "sensor-uuid-here"
 })

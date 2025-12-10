@@ -30,10 +30,8 @@ List all available Velociraptor artifacts for DFIR collection, including both bu
 ## Example
 
 ```
-lc_call_tool(tool_name="extension_request", parameters={
-  "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "extension_name": "ext-velociraptor",
-  "action": "list"
+lc_call_tool(tool_name="list_velociraptor_artifacts", parameters={
+  "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
 })
 ```
 
