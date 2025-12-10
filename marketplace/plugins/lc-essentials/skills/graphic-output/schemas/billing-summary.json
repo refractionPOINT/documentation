@@ -7,71 +7,120 @@
   "properties": {
     "metadata": {
       "type": "object",
+      "description": "Report metadata - when and how data was collected",
       "required": ["generated_at", "period"],
       "properties": {
         "generated_at": {
           "type": "string",
-          "description": "ISO 8601 timestamp when data was collected"
+          "description": "ISO 8601 timestamp when data was collected",
+          "examples": ["2025-12-10T14:32:45Z"]
         },
         "period": {
           "type": "string",
-          "description": "Billing period (e.g., 'November 2025')"
+          "description": "Billing period in human-readable format",
+          "examples": ["November 2025", "December 2025"]
         },
         "tenant_count": {
           "type": "integer",
-          "description": "Number of tenants with billing data"
+          "description": "Number of tenants with billing data retrieved",
+          "examples": [24, 50, 100]
         }
       }
     },
     "data": {
       "type": "object",
+      "description": "Report data containing rollup totals and per-tenant details",
       "required": ["rollup", "tenants"],
       "properties": {
         "rollup": {
           "type": "object",
-          "description": "Aggregate totals across all tenants",
+          "description": "Aggregate totals across all tenants - displayed in summary cards at top of report",
           "required": ["total_cost", "total_sensors"],
           "properties": {
             "total_cost": {
               "type": "number",
-              "description": "Total monthly cost across all tenants"
+              "description": "Total monthly cost in USD across all tenants (sum of all tenant costs)",
+              "examples": [12500.00, 45000.00, 125000.00]
             },
             "total_sensors": {
               "type": "integer",
-              "description": "Total sensors across all tenants"
+              "description": "Total sensor count across all tenants (sum of all tenant sensors)",
+              "examples": [203, 1500, 5000]
             },
             "avg_cost_per_sensor": {
               "type": "number",
-              "description": "Average cost per sensor (blended rate)"
+              "description": "Average cost per sensor (total_cost / total_sensors) - blended rate",
+              "examples": [61.58, 30.00, 25.00]
             }
           }
         },
         "tenants": {
           "type": "array",
-          "description": "Per-tenant billing details",
+          "description": "Per-tenant billing details - each item represents one organization",
           "items": {
             "type": "object",
             "required": ["name", "oid"],
             "properties": {
-              "name": { "type": "string" },
-              "oid": { "type": "string", "format": "uuid" },
-              "region": { "type": "string" },
-              "sensors": { "type": "integer" },
-              "cost": { "type": "number" },
+              "name": {
+                "type": "string",
+                "description": "Organization display name",
+                "examples": ["Acme Corp", "TPS Reporting Solutions", "Client ABC Production"]
+              },
+              "oid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Organization ID (UUID)",
+                "examples": ["cdadbaa4-265d-4549-9686-990731ee4091"]
+              },
+              "region": {
+                "type": "string",
+                "description": "Geographic region or data center location (optional)",
+                "examples": ["us-east", "eu-west", "apac"]
+              },
+              "sensors": {
+                "type": "integer",
+                "description": "Total sensor count for this tenant",
+                "examples": [21, 50, 250]
+              },
+              "cost": {
+                "type": "number",
+                "description": "Total monthly cost in USD for this tenant",
+                "examples": [1250.00, 5000.00, 25000.00]
+              },
               "status": {
                 "type": "string",
-                "enum": ["active", "draft", "no_usage", "error"]
+                "description": "Billing status for this tenant",
+                "enum": ["active", "draft", "no_usage", "error"],
+                "examples": ["active"]
               },
               "skus": {
                 "type": "array",
-                "description": "SKU line items",
+                "description": "Individual SKU line items from the invoice",
                 "items": {
                   "type": "object",
                   "required": ["name", "amount"],
                   "properties": {
-                    "name": { "type": "string" },
-                    "amount": { "type": "number" },
-                    "quantity": { "type": ["string", "number"] }
+                    "name": {
+                      "type": "string",
+                      "description": "SKU name/description from invoice",
+                      "examples": [
+                        "Sensor License - Windows",
+                        "Sensor License - Linux",
+                        "Data Output (GB)",
+                        "D&R Rule Evaluations",
+                        "Artifact Storage (GB)"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "description": "Cost in USD for this SKU (converted from cents: API value / 100)",
+                      "examples": [1000.00, 250.00, 500.00]
+                    },
+                    "quantity": {
+                      "type": ["string", "number"],
+                      "description": "Quantity or usage amount for this SKU",
+                      "examples": [21, "50 GB", "1,000,000 evals", 100]
+                    }
                   }
                 }
               }
@@ -80,13 +129,21 @@
         },
         "categories": {
           "type": "array",
-          "description": "Cost breakdown by category (optional)",
+          "description": "Cost breakdown by category for chart visualization (optional - aggregate SKUs by type)",
           "items": {
             "type": "object",
             "required": ["name", "amount"],
             "properties": {
-              "name": { "type": "string" },
-              "amount": { "type": "number" }
+              "name": {
+                "type": "string",
+                "description": "Category name (grouped SKU type)",
+                "examples": ["Sensor Licenses", "Data Output", "Storage", "Evaluations"]
+              },
+              "amount": {
+                "type": "number",
+                "description": "Total cost in USD for this category across all tenants",
+                "examples": [8500.00, 4000.00, 1500.00]
+              }
             }
           }
         }
@@ -94,17 +151,93 @@
     },
     "warnings": {
       "type": "array",
-      "items": { "type": "string" }
+      "description": "Data collection warnings - displayed in yellow alert box",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        ["12 organizations missing billing.ctrl permission", "Usage stats unavailable for 5 orgs"]
+      ]
     },
     "errors": {
       "type": "array",
+      "description": "Per-organization errors - displayed in collapsible error section",
       "items": {
         "type": "object",
         "properties": {
-          "org_name": { "type": "string" },
-          "error_message": { "type": "string" }
+          "org_name": {
+            "type": "string",
+            "description": "Name of the organization that failed",
+            "examples": ["Client XYZ", "Test Org"]
+          },
+          "oid": {
+            "type": "string",
+            "description": "Organization ID (UUID)",
+            "examples": ["abc123-def456-..."]
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Error description",
+            "examples": ["Permission denied: missing billing.ctrl", "API timeout", "Invalid response"]
+          }
         }
       }
     }
-  }
+  },
+  "examples": [
+    {
+      "metadata": {
+        "generated_at": "2025-12-10T14:32:45Z",
+        "period": "November 2025",
+        "tenant_count": 24
+      },
+      "data": {
+        "rollup": {
+          "total_cost": 12500.00,
+          "total_sensors": 203,
+          "avg_cost_per_sensor": 61.58
+        },
+        "tenants": [
+          {
+            "name": "TPS Reporting Solutions",
+            "oid": "aac9c41d-e0a3-4e7e-88b8-33936ab93238",
+            "region": "us-east",
+            "sensors": 21,
+            "cost": 1250.00,
+            "status": "active",
+            "skus": [
+              {"name": "Sensor License - Windows", "amount": 800.00, "quantity": 16},
+              {"name": "Sensor License - Linux", "amount": 250.00, "quantity": 5},
+              {"name": "Data Output (GB)", "amount": 200.00, "quantity": "40 GB"}
+            ]
+          },
+          {
+            "name": "lc-infrastructure",
+            "oid": "efedcf87-318c-4c15-9f52-482606491223",
+            "sensors": 17,
+            "cost": 850.00,
+            "status": "active",
+            "skus": [
+              {"name": "Sensor License - Linux", "amount": 850.00, "quantity": 17}
+            ]
+          }
+        ],
+        "categories": [
+          {"name": "Sensor Licenses", "amount": 10000.00},
+          {"name": "Data Output", "amount": 2000.00},
+          {"name": "Storage", "amount": 500.00}
+        ]
+      },
+      "warnings": [
+        "12 organizations returned permission denied for billing data"
+      ],
+      "errors": [
+        {
+          "org_name": "github-integration-test",
+          "oid": "ddcc6630-20d1-4fd6-b16c-245c58a6d58e",
+          "error_message": "Permission denied: missing billing.ctrl permission"
+        }
+      ]
+    }
+  ]
 }

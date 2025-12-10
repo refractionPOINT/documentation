@@ -16,10 +16,7 @@ AskUserQuestion(
     "question": "Which report template would you like to generate?",
     "header": "Template",
     "options": [
-      {"label": "MSSP Executive Summary", "description": "High-level metrics across all customers: sensor counts, detection volumes, SLA status"},
-      {"label": "Customer Health Dashboard", "description": "Per-org health scores, offline sensors, detection trends with drill-down"},
-      {"label": "Monthly Billing Report", "description": "Usage statistics and billing data for customer invoicing"},
-      {"label": "Detection Analytics", "description": "Security activity breakdown: top categories, trends, alert volumes by org"}
+      {"label": "Monthly Billing Report", "description": "Usage statistics and billing data for customer invoicing with roll-up totals"}
     ],
     "multiSelect": false
   }]
@@ -28,89 +25,53 @@ AskUserQuestion(
 
 ## Template Definitions
 
-### Template 1: MSSP Executive Summary
+### Template: Monthly Billing Report
 
-**Purpose**: High-level overview for MSSP leadership - quick health check across all customers.
-
-**Data Collection** (reporting skill):
-- List all organizations
-- Per-org: sensor count (online/offline), detection count (7 days), SLA status
-- Aggregate totals across fleet
-
-**Visualization** (graphic-output skill):
-- Summary cards: Total sensors, Total detections, Fleet coverage %, Orgs passing SLA
-- Pie chart: Platform distribution (Windows/Linux/macOS)
-- Bar chart: Top 10 orgs by detection volume
-- Table: All orgs with health indicators (green/yellow/red)
-
-**Time Range**: Default last 7 days, prompt user to confirm.
-
-**Output**: `/tmp/mssp-executive-summary-{date}.html`
-
----
-
-### Template 2: Customer Health Dashboard
-
-**Purpose**: Operational dashboard for SOC teams - identify customers needing attention.
+**Purpose**: Comprehensive billing data with roll-up totals and per-tenant SKU breakdown for customer invoicing.
 
 **Data Collection** (reporting skill):
 - List all organizations
-- Per-org: sensor inventory with online/offline status, detection counts by category
-- Identify: offline sensors >24h, orgs below SLA, detection spikes
+- Per-org:
+  - Invoice line items via `get_org_invoice_url` with `format: "simple_json"`
+  - SKU names, quantities, and amounts (converted from cents to dollars)
+  - Subscription status and billing details
+  - Sensor counts for context
+- Aggregate roll-up:
+  - Total cost across all tenants
+  - Total sensors across all tenants
+  - Average cost per sensor (blended rate)
 
 **Visualization** (graphic-output skill):
-- Health gauge: Fleet-wide coverage percentage
-- Heatmap: Org health matrix (rows=orgs, columns=metrics, color=status)
-- Bar chart: Offline sensors by org
-- Line chart: Detection trend (daily, last 7 days) if data available
-- Alert list: Orgs requiring immediate attention
+- **Executive Summary Roll-Up Cards**:
+  - Total Monthly Billing (all tenants combined)
+  - Total Sensors (all tenants)
+  - Average Cost/Sensor (blended rate)
+  - Active Tenant Count
+- **Distribution Charts**:
+  - Pie chart: Cost distribution by tenant
+  - Pie chart: Sensor distribution by tenant
+- **Per-Tenant Breakdown Table**:
+  - Organization name
+  - Region
+  - Sensor count
+  - Monthly cost
+  - Cost per sensor
+  - Percentage of total
+  - Status (active/draft/no usage)
+- **Detailed SKU Breakdown by Tenant**:
+  - Expandable cards for each tenant
+  - Each SKU line item with name, quantity, amount
+  - Progress bar showing percentage of total cost
+- **Cost by Category** (if SKUs can be categorized):
+  - Bar chart of spending by SKU category
 
-**Time Range**: Default last 7 days, prompt user to confirm.
-
-**Output**: `/tmp/customer-health-dashboard-{date}.html`
-
----
-
-### Template 3: Monthly Billing Report
-
-**Purpose**: Usage data for customer invoicing and capacity planning.
-
-**Data Collection** (reporting skill):
-- List all organizations
-- Per-org: billing details, usage stats (events, outputs, storage)
-- Aggregate: total usage, month-over-month comparison if available
-
-**Visualization** (graphic-output skill):
-- Summary cards: Total events, Total output bytes, Active sensors
-- Bar chart: Usage by organization (top consumers)
-- Table: Full org breakdown with usage columns
-- Pie chart: Usage distribution by org size tier
-
-**Time Range**: Prompt user for billing period (default: previous calendar month).
+**Time Range**: Prompt user for billing period (year and month). This is passed to `get_org_invoice_url` to retrieve the correct invoice.
 
 **Output**: `/tmp/billing-report-{month}-{year}.html`
 
----
+**Template Used**: `billing-summary` (uses billing-summary.html.j2)
 
-### Template 4: Detection Analytics
-
-**Purpose**: Security activity analysis for threat intelligence and tuning.
-
-**Data Collection** (reporting skill):
-- List all organizations
-- Per-org: detections by category, top detection rules triggered
-- Aggregate: fleet-wide detection categories, rule effectiveness
-
-**Visualization** (graphic-output skill):
-- Summary cards: Total detections, Unique categories, Orgs with alerts
-- Pie chart: Detection categories (top 10)
-- Bar chart: Detections by organization
-- Table: Top triggered rules with counts
-- Warning banner: Detection limits reached (if applicable)
-
-**Time Range**: Default last 30 days, prompt user to confirm.
-
-**Output**: `/tmp/detection-analytics-{date}.html`
+**JSON Schema**: `billing-summary.json`
 
 ---
 
@@ -118,11 +79,30 @@ AskUserQuestion(
 
 Once the user selects a template:
 
-1. **Confirm Time Range**: Use `AskUserQuestion` to confirm or customize the time period
+1. **Confirm Billing Period**: Use `AskUserQuestion` to get the billing period
+   ```
+   AskUserQuestion(
+     questions=[{
+       "question": "Which billing period should I generate the report for?",
+       "header": "Period",
+       "options": [
+         {"label": "Previous month", "description": "Most recent completed billing cycle"},
+         {"label": "Current month", "description": "Current billing period (may be incomplete)"},
+         {"label": "Specific month", "description": "I'll specify the year and month"}
+       ],
+       "multiSelect": false
+     }]
+   )
+   ```
 2. **Confirm Scope**: Ask if they want all orgs or a specific subset
 3. **Collect Data**: Spawn `org-reporter` agents in parallel to collect data from each organization
-4. **Generate HTML**: Spawn `html-renderer` agent to create the visualization dashboard
-5. **Open in Browser**: Automatically open the generated HTML file using `xdg-open` or serve via local HTTP server
+   - Include billing period (year, month) in the prompt so agents call `get_org_invoice_url` with `format: "simple_json"`
+4. **Aggregate Results**:
+   - Calculate roll-up totals (total cost, total sensors, avg cost/sensor)
+   - Structure data per the `billing-summary.json` schema
+5. **Generate HTML**: Spawn `html-renderer` agent to create the visualization dashboard
+   - Use template `billing-summary`
+6. **Open in Browser**: Automatically open the generated HTML file
 
 **Browser Launch Command:**
 ```bash
@@ -138,14 +118,3 @@ xdg-open http://localhost:8765/{report-file}.html
 
 ```
 User: /lc-essentials:reporting-templates
-
-Assistant: [Presents template menu]
-
-User: MSSP Executive Summary
-
-Assistant: [Confirms time range, collects data via reporting skill, generates HTML via graphic-output skill]
-
-Assistant: Your MSSP Executive Summary is ready! Opening in browser...
-
-[Browser opens with the report at http://localhost:8765/mssp-executive-summary-2025-12-06.html]
-```
