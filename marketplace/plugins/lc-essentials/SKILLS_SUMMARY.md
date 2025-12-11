@@ -2,12 +2,14 @@
 
 ## Overview
 
-**Sub-Agents**: 5 specialized agents for parallel operations:
+**Sub-Agents**: 8 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
 - `sensor-health-reporter`: Check sensor health for a single org
 - `dr-replay-tester`: Test D&R rules via replay for a single org
 - `org-reporter`: Collect comprehensive reporting data for a single org
-- `sensor-tasking-executor`: Execute sensor tasks for a single sensor
+- `adapter-doc-researcher`: Research adapter documentation from multiple sources
+- `multi-org-adapter-auditor`: Audit adapters for a single org (parallel execution)
+- `sensor-tasking-executor`: Execute sensor tasks on a single sensor (parallel execution)
 
 ## What Was Created
 
@@ -82,6 +84,9 @@
 - reliable-tasking
 - list-reliable-tasks
 
+#### Sensor Tasking & Live Response (1 skill)
+- **sensor-tasking**: Orchestrates sending tasks (commands) to EDR sensors for data collection or actions. Handles offline agents via reliable-tasking with guaranteed delivery. Collects responses via LCQL queries or creates D&R rules for automated response handling. Use for live response, fleet-wide operations, forensic acquisition, or incident response tasking. Orchestrates `sensor-tasking-executor` sub-agent for parallel execution across multiple sensors.
+
 #### Detection Engineering (1 skill)
 - **detection-engineering**: Expert Detection Engineer assistant for end-to-end D&R rule development (understand → research → build → test → deploy). Uses iterative test-refine cycles, integrates with `lookup-lc-doc` for syntax help, and orchestrates `dr-replay-tester` sub-agent for multi-org parallel testing.
 
@@ -97,6 +102,9 @@
 #### Fleet Operations (2 skills)
 - **fleet-payload-tasking**: Deploy payloads and shell commands fleet-wide using reliable tasking. Execute scripts, collect data, or run commands across all endpoints with automatic handling of offline sensors. Use for vulnerability scanning, data collection, software inventory, compliance checks, or any fleet-wide operation.
 - **sensor-tasking**: Send tasks (commands) to EDR sensors to gather data or take action. Handles offline agents via reliable-tasking, collects responses via LCQL queries, and creates D&R rules for automated response handling. Use for live response, data collection, forensic acquisition, or fleet-wide operations.
+
+#### Adapter Management (1 skill)
+- **adapter-assistant**: Complete adapter lifecycle assistant for LimaCharlie. Dynamically researches adapter configurations from local docs, GitHub usp-adapters repo, and external product API documentation. Creates, validates, deploys, and troubleshoots External Adapters (cloud-managed), Cloud Sensors (SaaS integrations), and On-prem USP adapters. Handles parsing rules (Grok, regex), field mappings, credential setup, and multi-org auditing. Orchestrates `adapter-doc-researcher` and `multi-org-adapter-auditor` sub-agents for parallel operations.
 
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
@@ -160,6 +168,11 @@
 - delete-extension-config
 - subscribe-to-extension
 - unsubscribe-from-extension
+
+#### Velociraptor DFIR (3 skills)
+- list-velociraptor-artifacts
+- show-velociraptor-artifact
+- collect-velociraptor-artifact
 
 #### Configuration: Playbooks (4 skills)
 - list-playbooks

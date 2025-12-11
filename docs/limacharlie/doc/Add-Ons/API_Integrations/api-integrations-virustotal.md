@@ -12,7 +12,7 @@ With the `vt` add-on subscribed and a VirusTotal API Key configured in the Integ
 event: CODE_IDENTITY
 op: lookup
 path: event/HASH
-resource: hive://lookup/vt
+resource: lcr://api/vt
 metadata_rules:
   op: is greater than
   value: 1

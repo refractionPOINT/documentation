@@ -25,6 +25,26 @@ A small number of skills operate at the user-level or global level and **do not 
 
 All other 119 skills require a valid, specific organization ID.
 
+## Important: EDR Agent Platform Limitation
+
+**⚠️ LimaCharlie EDR Agents Only Run on Windows, Linux, macOS, and Chrome OS**
+
+LimaCharlie EDR agents provide full system inspection capabilities (processes, registry, file system, network connections, etc.) but are **only available on Windows, Linux, macOS, and Chrome OS platforms**.
+
+**Do NOT attempt to query system-level information from non-EDR sensors:**
+- Cloud sensors (Azure, AWS, GCP, Office 365, etc.) - Log ingestion only
+- External adapters (webhook receivers, syslog, API integrations) - Log ingestion only
+- USP adapters (on-premises log forwarders) - Log ingestion only
+
+These non-EDR sensors only provide **log ingestion capabilities** and cannot respond to system inspection commands like:
+- Get running processes
+- Query Windows registry
+- List file system contents
+- Show network connections
+- Scan memory with YARA
+
+Always verify the sensor type before attempting system-level queries. EDR sensors will have platforms like `windows`, `linux`, `macos`, or `chrome`, while non-EDR sensors will show platform types related to their cloud service or adapter type.
+
 ## What It Does
 
 This plugin provides 123 comprehensive skills:

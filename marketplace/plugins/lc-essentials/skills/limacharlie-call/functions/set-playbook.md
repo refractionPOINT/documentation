@@ -43,8 +43,8 @@ Creates or updates an automation playbook in the LimaCharlie Hive system. The pl
 **WARNING**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use `list_user_orgs` first.
 
 - **oid**: Organization ID (UUID)
-- **name**: Name for the playbook
-- **content**: Playbook workflow definition object containing:
+- **playbook_name**: Name for the playbook
+- **playbook_data**: Playbook workflow definition object containing:
   - `steps`: Array of actions to execute
   - `trigger`: What triggers the playbook
   - `filter`: Optional conditional logic
@@ -66,8 +66,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_playbook",
   parameters={
     "oid": "[organization-id]",
-    "name": "[playbook-name]",
-    "content": {
+    "playbook_name": "[playbook-name]",
+    "playbook_data": {
       "steps": [...],
       "trigger": "detection",
       "filter": "...",
@@ -81,8 +81,8 @@ mcp__limacharlie__lc_call_tool(
 - Tool: `set_playbook`
 - Required parameters:
   - `oid`: Organization ID
-  - `name`: Name for the playbook
-  - `content`: Playbook workflow definition
+  - `playbook_name`: Name for the playbook
+  - `playbook_data`: Playbook workflow definition
 
 ### Step 2: Handle the Response
 
@@ -120,8 +120,8 @@ mcp__limacharlie__lc_call_tool(
   tool_name="set_playbook",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "critical-auto-isolation",
-    "content": {
+    "playbook_name": "critical-auto-isolation",
+    "playbook_data": {
       "steps": [
         {"action": "isolate_sensor"},
         {"action": "create_case", "params": {"priority": "high"}}

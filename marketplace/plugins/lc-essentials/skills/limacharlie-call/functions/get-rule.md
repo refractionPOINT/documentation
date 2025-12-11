@@ -31,7 +31,7 @@ Before calling this skill, gather:
 - **oid**: Organization ID (required for all API calls)
 - **hive_name**: The name of the Hive containing the rule (required)
   - Common values: `dr-general`, `fp`
-- **name**: The name of the rule to retrieve (required)
+- **rule_name**: The name of the rule to retrieve (required)
 
 ## How to Use
 
@@ -52,7 +52,7 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "[organization-id]",
     "hive_name": "[hive-name]",
-    "name": "[rule-name]"
+    "rule_name": "[rule-name]"
   }
 )
 ```
@@ -62,7 +62,7 @@ mcp__limacharlie__lc_call_tool(
 - Required parameters:
   - `oid`: Organization ID
   - `hive_name`: Name of the Hive (e.g., "dr-general", "fp")
-  - `name`: Name of the rule to retrieve
+  - `rule_name`: Name of the rule to retrieve
 
 ### Step 3: Handle the Response
 
@@ -137,7 +137,7 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "hive_name": "dr-general",
-    "name": "suspicious-dns"
+    "rule_name": "suspicious-dns"
   }
 )
 ```
@@ -167,7 +167,7 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "hive_name": "fp",
-    "name": "chrome-update-fp"
+    "rule_name": "chrome-update-fp"
   }
 )
 ```

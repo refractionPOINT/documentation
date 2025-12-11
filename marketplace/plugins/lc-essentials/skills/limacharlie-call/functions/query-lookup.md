@@ -7,7 +7,7 @@ Query a specific key in a lookup table to test before using in D&R rules.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Lookup table name |
+| lookup_name | string | Yes | Lookup table name |
 | key | string | Yes | Key to search for |
 
 ## Returns
@@ -36,7 +36,7 @@ Query a specific key in a lookup table to test before using in D&R rules.
 ```
 lc_call_tool(tool_name="query_lookup", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "malicious-ips",
+  "lookup_name": "malicious-ips",
   "key": "192.0.2.1"
 })
 ```

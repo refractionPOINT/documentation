@@ -30,7 +30,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID
-- **name**: Name of the saved query to delete
+- **query_name**: Name of the saved query to delete
 
 ## How to Use
 
@@ -42,7 +42,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="get_saved_query",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "old-query"
+    "query_name": "old-query"
   }
 )
 ```
@@ -54,7 +54,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="delete_saved_query",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "old-query"
+    "query_name": "old-query"
   }
 )
 ```
@@ -63,7 +63,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - Tool name: `delete_saved_query`
 - Parameters:
   - `oid`: Organization ID (required)
-  - `name`: Name of the saved query to delete (required)
+  - `query_name`: Name of the saved query to delete (required)
 
 ### Step 3: Handle Response
 

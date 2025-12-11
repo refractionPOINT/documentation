@@ -7,7 +7,7 @@ Create a new API key with optional permission restrictions.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | Description for the key |
+| key_name | string | Yes | Description for the key |
 | permissions | array | Yes | Permissions to grant (empty = full access) |
 
 ## Common Permissions
@@ -37,7 +37,7 @@ Create a new API key with optional permission restrictions.
 ```
 lc_call_tool(tool_name="create_api_key", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "SIEM Integration Key",
+  "key_name": "SIEM Integration Key",
   "permissions": []
 })
 ```
@@ -46,7 +46,7 @@ lc_call_tool(tool_name="create_api_key", parameters={
 ```
 lc_call_tool(tool_name="create_api_key", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "Read-Only Access",
+  "key_name": "Read-Only Access",
   "permissions": ["sensor.get", "sensor.list", "insight.evt.get"]
 })
 ```

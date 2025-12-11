@@ -30,7 +30,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID
-- **iocs**: JSON array of IOC objects with `type` and `value` fields
+- **iocs**: JSON string containing array of IOC objects with `type` and `value` fields (must be a string, not an array)
 - **info_type**: "summary" or "locations"
 
 ## How to Use
@@ -48,18 +48,14 @@ Format IOCs as JSON array:
 
 ### Step 2: Call the Tool
 
+**Note:** The `iocs` parameter must be a JSON string, not a native array.
+
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
   tool_name="batch_search_iocs",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "iocs": [
-      {"type": "file_hash", "value": "abc123..."},
-      {"type": "file_hash", "value": "def456..."},
-      {"type": "domain", "value": "evil.com"},
-      {"type": "domain", "value": "malware.net"},
-      {"type": "ip", "value": "203.0.113.50"}
-    ],
+    "iocs": "[{\"type\": \"file_hash\", \"value\": \"abc123...\"}, {\"type\": \"file_hash\", \"value\": \"def456...\"}, {\"type\": \"domain\", \"value\": \"evil.com\"}, {\"type\": \"domain\", \"value\": \"malware.net\"}, {\"type\": \"ip\", \"value\": \"203.0.113.50\"}]",
     "info_type": "summary"
   }
 )
@@ -69,7 +65,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 - Tool name: `batch_search_iocs`
 - Parameters:
   - `oid`: Organization ID (required)
-  - `iocs`: JSON array of IOC objects (required)
+  - `iocs`: JSON string containing array of IOC objects (required)
   - `info_type`: "summary" or "locations" (required)
 
 ### Step 3: Handle Response

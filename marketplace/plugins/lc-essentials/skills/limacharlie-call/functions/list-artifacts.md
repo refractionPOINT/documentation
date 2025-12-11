@@ -8,7 +8,7 @@ List collected artifacts and forensic data from sensors.
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
 | sid | string | No | Filter by sensor ID |
-| type | string | No | Filter by artifact type (memory_dump, pcap, file, registry) |
+| artifact_type | string | No | Filter by artifact type (memory_dump, pcap, file, registry) |
 | start | integer | No | Start timestamp (Unix seconds) |
 | end | integer | No | End timestamp (Unix seconds) |
 
@@ -42,7 +42,7 @@ List collected artifacts and forensic data from sensors.
 ```
 lc_call_tool(tool_name="list_artifacts", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "type": "memory_dump",
+  "artifact_type": "memory_dump",
   "start": 1672444800
 })
 ```
@@ -56,6 +56,7 @@ lc_call_tool(tool_name="list_artifacts", parameters={
 | file | Collected files/executables |
 | registry | Registry hive exports |
 | event_log | Windows event log exports |
+| velociraptor | Velociraptor forensic collections (ZIP files) |
 
 ## Notes
 

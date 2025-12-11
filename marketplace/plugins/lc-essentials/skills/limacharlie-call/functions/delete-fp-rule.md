@@ -28,7 +28,7 @@ Before calling this skill, gather:
 
 **⚠️ IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
-- **name**: Name of the FP rule to delete (must be exact match)
+- **rule_name**: Name of the FP rule to delete (must be exact match)
 
 ## How to Use
 
@@ -48,7 +48,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="delete_fp_rule",
   parameters={
     "oid": "[organization-id]",
-    "name": "[rule-name]"
+    "rule_name": "[rule-name]"
   }
 )
 ```
@@ -57,7 +57,7 @@ mcp__limacharlie__lc_call_tool(
 - Tool: `delete_fp_rule`
 - Required parameters:
   - `oid`: Organization ID
-  - `name`: FP rule name to delete
+  - `rule_name`: FP rule name to delete
 
 ### Step 3: Handle the Response
 
@@ -101,7 +101,7 @@ mcp__limacharlie__lc_call_tool(
   tool_name="delete_fp_rule",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "name": "filter_dev_activity"
+    "rule_name": "filter_dev_activity"
   }
 )
 ```

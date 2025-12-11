@@ -1,12 +1,14 @@
 ---
 name: test-limacharlie-edr
-description: Deploy a temporary LimaCharlie EDR agent on the local Linux host for testing. Downloads and runs the LC sensor in a temp directory with automatic cleanup. Use for testing detection rules, investigating sensor behavior, or development. Requires selecting or creating a LimaCharlie organization first.
-allowed-tools: mcp__plugin_lc-essentials_limacharlie__lc_call_tool, Bash, Read, AskUserQuestion, Skill
+description: Deploy a temporary LimaCharlie EDR agent on the local Linux or Mac OS host for testing. Downloads and runs the LC sensor in a temp directory with automatic cleanup. Use for testing detection rules, investigating sensor behavior, or development. Requires selecting or creating a LimaCharlie organization first.
+allowed-tools: Task, Bash, Read, AskUserQuestion, Skill
 ---
 
 # Test LimaCharlie EDR
 
-Deploy a temporary LimaCharlie EDR sensor on the local Linux host for testing purposes. The sensor runs in the background with automatic cleanup when stopped.
+> **Prerequisites**: Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md.
+
+Deploy a temporary LimaCharlie EDR sensor on the local Linux or Mac OS host for testing purposes. The sensor runs in the background with automatic cleanup when stopped.
 
 ## When to Use
 
@@ -23,7 +25,7 @@ Use this skill when:
 This skill performs a two-phase deployment:
 
 1. **Phase 1 - Installation Key**: Creates or finds an existing "Test EDR" installation key in your selected LimaCharlie organization
-2. **Phase 2 - Sensor Deployment**: Downloads the Linux EDR agent to a temporary directory and runs it in the background as root
+2. **Phase 2 - Sensor Deployment**: Downloads the appropriate EDR agent for your platform (Linux or Mac OS) to a temporary directory and runs it in the background as root
 
 The sensor:
 - Runs in the background (non-blocking)
@@ -36,7 +38,7 @@ The sensor:
 Before starting, ensure you have:
 
 - **LimaCharlie organization**: Select from your available orgs or create a new one
-- **Linux 64-bit host**: This skill downloads the Linux x64 sensor
+- **Linux or Mac OS host**: Supports Linux x64, Mac Intel (x64), and Mac Apple Silicon (arm64)
 - **Internet access**: Required to download the sensor binary
 - **Root/sudo access**: The sensor needs elevated privileges for proper monitoring
 
@@ -47,9 +49,13 @@ Before starting, ensure you have:
 First, get the list of available organizations:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -60,9 +66,13 @@ This returns your available organizations. Use AskUserQuestion to let the user s
 Check for existing "Test EDR" installation key:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_installation_keys",
-  parameters={"oid": "<SELECTED_ORG_ID>"}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_installation_keys
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\"}
+    - Return: Look for key with description 'Test EDR' and return its key and iid"
 )
 ```
 
@@ -71,13 +81,13 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 **If not exists**: Create one:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="create_installation_key",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "description": "Test EDR",
-    "tags": ["test-edr", "temporary"]
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: create_installation_key
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"description\": \"Test EDR\", \"tags\": [\"test-edr\", \"temporary\"]}
+    - Return: The key and iid of the created installation key"
 )
 ```
 
@@ -85,24 +95,47 @@ Save the returned `key` value for the next phase.
 
 ### Phase 2: Download and Run the EDR
 
-**Step 1**: Create a temp directory and download the sensor:
+**Step 1**: Detect platform and create temp directory:
 
 ```bash
-TEMP_DIR=$(mktemp -d -t lc-edr-test-XXXXXX)
-curl -sSL https://downloads.limacharlie.io/sensor/linux/64 -o "$TEMP_DIR/lc_sensor"
+OS_TYPE=$(uname -s)
+ARCH=$(uname -m)
+TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lc-edr-test-XXXXXX")
+echo "Platform: $OS_TYPE ($ARCH), Temp dir: $TEMP_DIR"
+```
+
+**Step 2**: Download the appropriate sensor binary:
+
+```bash
+if [ "$OS_TYPE" = "Darwin" ]; then
+  if [ "$ARCH" = "arm64" ]; then
+    DOWNLOAD_URL="https://downloads.limacharlie.io/sensor/mac/arm64"
+  else
+    DOWNLOAD_URL="https://downloads.limacharlie.io/sensor/mac/64"
+  fi
+else
+  DOWNLOAD_URL="https://downloads.limacharlie.io/sensor/linux/64"
+fi
+curl -sSL "$DOWNLOAD_URL" -o "$TEMP_DIR/lc_sensor"
 chmod +x "$TEMP_DIR/lc_sensor"
 echo "Sensor downloaded to: $TEMP_DIR"
 ```
 
-**Step 2**: Run the sensor in background (as root):
+**Step 3**: Run the sensor in background (as root):
 
 ```bash
-sudo setsid "$TEMP_DIR/lc_sensor" -d <INSTALLATION_KEY> > /dev/null 2>&1 &
+if [ "$OS_TYPE" = "Darwin" ]; then
+  sudo nohup "$TEMP_DIR/lc_sensor" -d <INSTALLATION_KEY> > /dev/null 2>&1 &
+else
+  sudo setsid "$TEMP_DIR/lc_sensor" -d <INSTALLATION_KEY> > /dev/null 2>&1 &
+fi
 echo "Sensor started in $TEMP_DIR"
 ```
 
 **Important**:
-- Uses `setsid` to create a new session and fully detach from the terminal (prevents Claude Code from hanging)
+- **Linux** uses `setsid` to create a new session and fully detach from the terminal
+- **Mac OS** uses `nohup` which achieves similar process detachment
+- Both approaches prevent Claude Code from hanging while waiting for the process
 - Store the `TEMP_DIR` path for cleanup later
 - The sensor process name is `lc_sensor` - use this for stopping
 
@@ -111,12 +144,13 @@ echo "Sensor started in $TEMP_DIR"
 After starting, the sensor should appear in your LimaCharlie organization within a few seconds. Verify by listing sensors with a selector that matches the installation key's `iid` (Installation ID, a UUID):
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "<SELECTED_ORG_ID>",
-    "selector": "iid == `<INSTALLATION_KEY_IID>`"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"<SELECTED_ORG_ID>\", \"selector\": \"iid == `<INSTALLATION_KEY_IID>`\"}
+    - Return: RAW"
 )
 ```
 
@@ -126,19 +160,24 @@ Replace `<INSTALLATION_KEY_IID>` with the `iid` UUID from the installation key u
 
 When the user wants to stop the test EDR:
 
-**Step 1**: Kill the sensor process by name:
+**Single command to stop and clean up** (recommended):
 
 ```bash
-sudo pkill -f lc_sensor
+sudo pkill -9 -f lc_sensor; sudo rm -rf <TEMP_DIR>; echo "Cleanup complete"
 ```
 
-**Step 2**: Clean up the temp directory:
+**Important notes**:
+- Use `-9` (SIGKILL) for reliable termination of detached processes
+- Use `;` instead of `&&` - pkill returns non-zero exit codes even on success (e.g., 144 when the signal is delivered)
+- Do NOT use `KillShell` to stop the sensor - always use `pkill`
+
+**Verify cleanup succeeded**:
 
 ```bash
-sudo rm -rf <TEMP_DIR>
+ps aux | grep "[l]c_sensor" || echo "Sensor stopped"
 ```
 
-**Important**: Do NOT use `KillShell` to stop the sensor - this can kill the parent shell process unexpectedly. Always use `pkill` to terminate the sensor process directly.
+The `[l]` bracket trick prevents grep from matching itself in the output.
 
 ## Example Usage
 
@@ -150,9 +189,13 @@ sudo rm -rf <TEMP_DIR>
 
 1. List organizations:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -162,21 +205,25 @@ Response shows: `[{"name": "My Test Org", "oid": "abc123-def456-..."}]`
 
 3. Check for existing installation key:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_installation_keys",
-  parameters={"oid": "abc123-def456-..."}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_installation_keys
+    - Parameters: {\"oid\": \"abc123-def456-...\"}
+    - Return: Look for key with description 'Test EDR' and return its key and iid"
 )
 ```
 
 4. Create installation key if needed:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="create_installation_key",
-  parameters={
-    "oid": "abc123-def456-...",
-    "description": "Test EDR",
-    "tags": ["test-edr", "temporary"]
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: create_installation_key
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"description\": \"Test EDR\", \"tags\": [\"test-edr\", \"temporary\"]}
+    - Return: The key and iid of the created installation key"
 )
 ```
 
@@ -184,21 +231,39 @@ Returns: `{"iid": "test-edr", "key": "abc123:def456:..."}`
 
 5. Download and run sensor:
 ```bash
-TEMP_DIR=$(mktemp -d -t lc-edr-test-XXXXXX)
-curl -sSL https://downloads.limacharlie.io/sensor/linux/64 -o "$TEMP_DIR/lc_sensor"
+OS_TYPE=$(uname -s)
+ARCH=$(uname -m)
+TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/lc-edr-test-XXXXXX")
+
+if [ "$OS_TYPE" = "Darwin" ]; then
+  if [ "$ARCH" = "arm64" ]; then
+    DOWNLOAD_URL="https://downloads.limacharlie.io/sensor/mac/arm64"
+  else
+    DOWNLOAD_URL="https://downloads.limacharlie.io/sensor/mac/64"
+  fi
+else
+  DOWNLOAD_URL="https://downloads.limacharlie.io/sensor/linux/64"
+fi
+curl -sSL "$DOWNLOAD_URL" -o "$TEMP_DIR/lc_sensor"
 chmod +x "$TEMP_DIR/lc_sensor"
-sudo setsid "$TEMP_DIR/lc_sensor" -d "abc123:def456:..." > /dev/null 2>&1 &
+
+if [ "$OS_TYPE" = "Darwin" ]; then
+  sudo nohup "$TEMP_DIR/lc_sensor" -d "abc123:def456:..." > /dev/null 2>&1 &
+else
+  sudo setsid "$TEMP_DIR/lc_sensor" -d "abc123:def456:..." > /dev/null 2>&1 &
+fi
 echo "Sensor started in $TEMP_DIR"
 ```
 
 6. Verify sensor connection using a selector with the installation key's `iid`:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_sensors",
-  parameters={
-    "oid": "abc123-def456-...",
-    "selector": "iid == `<IID_FROM_INSTALLATION_KEY>`"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_sensors
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"selector\": \"iid == `<IID_FROM_INSTALLATION_KEY>`\"}
+    - Return: RAW"
 )
 ```
 
@@ -210,36 +275,39 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 **Steps**:
 
-1. Kill the sensor process:
+1. Stop sensor and clean up (single command):
 ```bash
-sudo pkill -f lc_sensor
+sudo pkill -9 -f lc_sensor; sudo rm -rf /tmp/lc-edr-test-XXXXXX; echo "Cleanup complete"
 ```
 
-2. Clean up:
+2. Verify cleanup:
 ```bash
-sudo rm -rf /tmp/lc-edr-test-XXXXXX
+ps aux | grep "[l]c_sensor" || echo "Sensor stopped"
 ```
 
 3. Optionally, delete the sensor from LimaCharlie:
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="delete_sensor",
-  parameters={
-    "oid": "abc123-def456-...",
-    "sid": "<SENSOR_ID>"
-  }
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: delete_sensor
+    - Parameters: {\"oid\": \"abc123-def456-...\", \"sid\": \"<SENSOR_ID>\"}
+    - Return: RAW"
 )
 ```
 
 ## Additional Notes
 
+- **Cross-platform support**: Works on Linux (x64), Mac OS Intel (x64), and Mac OS Apple Silicon (arm64)
 - **Root privileges required**: The sensor needs sudo/root to properly monitor system calls, processes, files, and network activity
+- **Mac OS permissions**: On Mac OS, the sensor may require granting permissions in System Preferences > Privacy & Security (Full Disk Access, Input Monitoring) for full functionality
 - **Temp directory**: The sensor creates working files, so we use a dedicated temp directory to keep things clean
 - **Automatic tags**: Sensors enrolled with this key get `test-edr` and `temporary` tags for easy identification
 - **Console visibility**: The sensor appears in your LimaCharlie web console at https://app.limacharlie.io
 - **Background execution**: The sensor runs in background, so you can continue working while it monitors
 - **Reusable key**: The "Test EDR" installation key is reused if it already exists, avoiding duplicate keys
-- **Cleanup**: Always clean up when done to avoid orphaned processes and files
+- **Cleanup**: Always clean up when done to avoid orphaned processes and files. Use `;` not `&&` when chaining cleanup commands since pkill returns non-zero exit codes even on success
 
 ## Related Skills
 

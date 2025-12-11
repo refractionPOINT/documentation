@@ -7,7 +7,7 @@ Permanently delete a YARA rule source from the organization.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | oid | UUID | Yes | Organization ID ([Core Concepts](../../../CALLING_API.md#core-concepts)) |
-| name | string | Yes | YARA rule source name (case-sensitive) |
+| rule_name | string | Yes | YARA rule source name (case-sensitive) |
 
 ## Returns
 
@@ -22,7 +22,7 @@ Empty response indicates success.
 ```
 lc_call_tool(tool_name="delete_yara_rule", parameters={
   "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-  "name": "old_malware_signatures"
+  "rule_name": "old_malware_signatures"
 })
 ```
 

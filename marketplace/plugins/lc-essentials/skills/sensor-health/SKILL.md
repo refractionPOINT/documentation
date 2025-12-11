@@ -6,6 +6,8 @@ allowed-tools: Task, Read, Bash
 
 # Sensor Health Reporting Skill
 
+> **Prerequisites**: Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md.
+
 This skill orchestrates parallel sensor health checks across multiple LimaCharlie organizations for fast, comprehensive fleet reporting.
 
 ## When to Use
@@ -42,9 +44,13 @@ Identify the key parameters:
 Use the LimaCharlie API to get the user's organizations:
 
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_user_orgs",
-  parameters={}
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
 )
 ```
 
@@ -103,7 +109,14 @@ one_hour_ago=$(date -d '1 hour ago' +%s)
 
 **Step 2**: Get org list
 ```
-mcp__plugin_lc-essentials_limacharlie__lc_call_tool(tool_name="list_user_orgs", parameters={})
+Task(
+  subagent_type="lc-essentials:limacharlie-api-executor",
+  model="haiku",
+  prompt="Execute LimaCharlie API call:
+    - Function: list_user_orgs
+    - Parameters: {}
+    - Return: RAW"
+)
 ```
 
 **Step 3**: Spawn parallel agents (example with 3 orgs)
@@ -218,6 +231,11 @@ If an agent fails:
 - **Time Limits**: Data availability checks must be <30 days
 - **Model**: Always use "haiku" for the sub-agents
 - **Error Tolerance**: Continue with partial results if some orgs fail
+
+## Related Skills
+
+- `sensor-tasking` - For sending commands to sensors (live response, data collection)
+- `sensor-coverage` - For comprehensive asset inventory and coverage gap analysis
 
 ## Related Functions
 

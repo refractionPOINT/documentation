@@ -11,6 +11,8 @@ allowed-tools:
 
 # LimaCharlie Reporting Skill
 
+> **Prerequisites**: Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md.
+
 ## Overview
 
 This skill enables AI-assisted generation of comprehensive security and operational reports across LimaCharlie organizations. It provides structured access to billing data, usage statistics, detection summaries, sensor health, and configuration audits. Supports both per-tenant detailed reports and cross-tenant aggregated roll-ups.

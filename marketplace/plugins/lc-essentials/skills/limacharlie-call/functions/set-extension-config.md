@@ -29,12 +29,7 @@ Before calling this skill, gather:
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 - **oid**: Organization ID (required for all API calls)
 - **extension_name**: The name for the extension configuration (required)
-- **config**: The configuration data object (required, must be valid JSON object)
-
-Optional parameters:
-- **tags**: Array of tags to categorize the configuration
-- **comment**: Description or notes about this configuration
-- **enabled**: Whether the configuration is enabled (defaults to true)
+- **config_data**: The configuration data object (required, must be valid JSON object)
 
 ## How to Use
 
@@ -56,7 +51,7 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "[organization-id]",
     "extension_name": "[extension-name]",
-    "config": {
+    "config_data": {
       "setting1": "value1",
       "setting2": 123
     }
@@ -69,7 +64,7 @@ mcp__limacharlie__lc_call_tool(
 - Required Parameters:
   - `oid`: Organization ID
   - `extension_name`: The name for the extension configuration
-  - `config`: Configuration data object with extension-specific settings
+  - `config_data`: Configuration data object with extension-specific settings
 
 ### Step 3: Handle the Response
 
@@ -130,7 +125,7 @@ mcp__limacharlie__lc_call_tool(
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
     "extension_name": "artifact-collection",
-    "config": {
+    "config_data": {
       "retention_days": 90,
       "max_size_mb": 100,
       "auto_collect": true
@@ -163,8 +158,7 @@ Steps:
 
 - **Creating vs Updating**: This operation performs an "upsert" - creates if doesn't exist, updates if it does
 - **Data Structure**: Each extension type has its own expected configuration schema - consult extension documentation
-- **Enabled by Default**: New configurations are enabled by default unless explicitly set to false
-- **Tags**: Use tags for organization and filtering across multiple configurations
+- **Enabled by Default**: New configurations are enabled by default
 - **ETag for Safety**: For advanced use cases, you can use ETags to prevent concurrent modification conflicts
 - **Size Limits**: Very large configurations may hit payload size limits - keep configs reasonable
 - **Validation**: The API may validate configuration structure against extension schema
