@@ -307,6 +307,57 @@ Returns validated rules ready for deployment:
 **Skills Used**:
 - `lc-essentials:limacharlie-call` - For D&R rule generation and validation
 
+### sensor-tasking-executor
+
+**Model**: Claude Haiku (fast and cost-effective)
+
+**Purpose**: Execute sensor tasks (live response commands) on a single sensor and return results. Designed for parallel execution by the `sensor-tasking` and `fleet-payload-tasking` skills.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel by parent skills when users want to:
+- Execute commands on specific sensors
+- Collect data from endpoints (OS version, packages, services, etc.)
+- Run live response operations across the fleet
+
+**Architecture Role**:
+- **Parent Skills**: `sensor-tasking`, `fleet-payload-tasking`
+- **This Agent**: Executes tasks on ONE sensor
+- **Parallelization**: Multiple instances run simultaneously, one per sensor
+
+**Expected Input**:
+- Organization ID (UUID)
+- Sensor ID (UUID)
+- Task command (e.g., `os_version`, `os_packages`, `os_shell <command>`)
+- Timeout (optional)
+
+**Output Format**:
+Returns task results for its assigned sensor:
+```markdown
+### {Hostname}
+
+**Status**: Success | Failed | Timeout
+**Sensor**: {sensor-id}
+**Task**: {task-command}
+**Result**: {JSON or formatted output}
+```
+
+**Key Features**:
+- **Single-Sensor Focus**: Only executes tasks on the one sensor specified
+- **Online Verification**: Checks sensor is online before tasking
+- **Fast Execution**: Uses Haiku model for quick turnaround
+- **Result Formatting**: Parses and formats task responses
+- **Designed for Parallelism**: Optimized to run alongside other instances
+
+**Tools Used**:
+- `lc_call_tool` - For sensor tasking and status checks
+
+**How It Works**:
+1. Extracts org ID, sensor ID, and task from prompt
+2. Verifies sensor is online
+3. Sends task to sensor
+4. Waits for response or timeout
+5. Formats and returns results (parent skill aggregates)
+
 ---
 
 ## Agent Architecture

@@ -2,11 +2,12 @@
 
 ## Overview
 
-**Sub-Agents**: 4 specialized agents for parallel operations:
+**Sub-Agents**: 5 specialized agents for parallel operations:
 - `limacharlie-api-executor`: Execute single API operations
 - `sensor-health-reporter`: Check sensor health for a single org
 - `dr-replay-tester`: Test D&R rules via replay for a single org
 - `org-reporter`: Collect comprehensive reporting data for a single org
+- `sensor-tasking-executor`: Execute sensor tasks for a single sensor
 
 ## What Was Created
 
@@ -92,6 +93,10 @@
 
 #### Testing & Development (1 skill)
 - **test-limacharlie-edr**: Deploy a temporary LimaCharlie EDR agent on the local Linux host for testing. Downloads and runs the LC sensor in a temp directory with automatic cleanup. Requires root/sudo for full system monitoring. Use for testing D&R rules, investigating sensor behavior, or development.
+
+#### Fleet Operations (2 skills)
+- **fleet-payload-tasking**: Deploy payloads and shell commands fleet-wide using reliable tasking. Execute scripts, collect data, or run commands across all endpoints with automatic handling of offline sensors. Use for vulnerability scanning, data collection, software inventory, compliance checks, or any fleet-wide operation.
+- **sensor-tasking**: Send tasks (commands) to EDR sensors to gather data or take action. Handles offline agents via reliable-tasking, collects responses via LCQL queries, and creates D&R rules for automated response handling. Use for live response, data collection, forensic acquisition, or fleet-wide operations.
 
 #### Detection & Response Rules (19 skills)
 - get-detection-rules
