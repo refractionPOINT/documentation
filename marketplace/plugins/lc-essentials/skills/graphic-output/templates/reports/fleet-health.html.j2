@@ -1,0 +1,495 @@
+{#
+  Fleet Health Dashboard Template
+
+  Displays sensor health, platform distribution, and detection activity across organizations.
+
+  DATA ACCURACY GUARDRAILS:
+  - This template ONLY displays data provided in the context
+  - Missing data shows "N/A" or "Data unavailable"
+  - All warnings are displayed in a dedicated section
+  - No data is fabricated, estimated, or interpolated
+  - Health percentages calculated only from provided online/total counts
+#}
+{% extends 'base.html.j2' %}
+
+{% block title %}Fleet Health Dashboard - {{ metadata.time_window.days | default(7) }} Day Overview{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #0284c7, #0ea5e9);
+        color: #fff;
+        border-radius: var(--radius-lg);
+        margin-bottom: 1.5rem;
+    }
+    .logo { display: flex; align-items: center; gap: 0.75rem; }
+    .logo svg { width: 48px; height: 48px; }
+    .logo span { font-size: 1.5rem; font-weight: 700; }
+    .meta { display: flex; gap: 2rem; font-size: 0.875rem; opacity: 0.9; }
+    .meta dt { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+    .meta dd { font-weight: 600; margin-top: 0.25rem; }
+
+    .health-gauge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .health-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+    .health-value.healthy { color: var(--color-success); }
+    .health-value.warning { color: var(--color-warning); }
+    .health-value.critical { color: var(--color-danger); }
+
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    .status-dot.healthy { background: var(--color-success); }
+    .status-dot.warning { background: var(--color-warning); }
+    .status-dot.critical { background: var(--color-danger); }
+    .status-dot.error { background: var(--color-text-muted); }
+
+    .limit-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.5rem;
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: var(--radius-sm);
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .org-card {
+        padding: 1rem;
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--radius-md);
+        margin-bottom: 0.75rem;
+    }
+    .org-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .org-name { font-weight: 600; }
+    .org-metrics {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+    }
+    .org-metric { display: flex; align-items: center; gap: 0.25rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+    {# ================================================================
+       REPORT HEADER
+       ================================================================ #}
+    <header class="header">
+        <div class="logo">
+            <svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255,255,255,0.2)"/><path d="M24 8c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zm0 28c-6.6 0-12-5.4-12-12s5.4-12 12-12 12 5.4 12 12-5.4 12-12 12z" fill="white"/><path d="M24 16v8l6 6" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+            <span>LimaCharlie</span>
+        </div>
+        <div>
+            <h1>Fleet Health Dashboard</h1>
+            <dl class="meta">
+                <div><dt>Time Window</dt><dd>{{ metadata.time_window.days | default(7) }} days</dd></div>
+                <div><dt>Generated</dt><dd>{{ metadata.generated_at | default('N/A') }}</dd></div>
+                <div><dt>Organizations</dt><dd>
+                    {% if metadata.organizations %}
+                        {{ metadata.organizations.successful | default(0) }} of {{ metadata.organizations.total | default(0) }}
+                    {% else %}
+                        {{ data.organizations | length if data.organizations else 'N/A' }}
+                    {% endif %}
+                </dd></div>
+            </dl>
+        </div>
+    </header>
+
+    {# ================================================================
+       DETECTION LIMIT WARNING (if applicable)
+       ================================================================ #}
+    {% if data.rollup.detection_limit_reached %}
+    <div class="alert-banner alert-banner-warning">
+        <div class="alert-banner-title">
+            <span>&#9888;</span> Detection Limit Reached
+        </div>
+        <p>
+            {{ data.rollup.orgs_at_limit | default('Some') }} organization(s) hit the 5,000 detection limit.
+            Actual detection counts may be higher than shown.
+        </p>
+    </div>
+    {% endif %}
+
+    {# ================================================================
+       EXECUTIVE SUMMARY
+       GUARDRAIL: All values come directly from data.rollup
+       ================================================================ #}
+    <section class="dashboard-section" aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Executive Summary</h2>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="card-icon blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <path d="M8 21h8M12 17v4"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">
+                        {% if data.rollup.total_sensors is defined %}
+                            {{ data.rollup.total_sensors | default(0) }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Total Sensors</span>
+                    <span class="card-subvalue">Across all organizations</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" style="color: var(--color-success);">
+                        {% if data.rollup.online_sensors is defined %}
+                            {{ data.rollup.online_sensors | default(0) }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Online Sensors</span>
+                    <span class="card-subvalue">Currently reporting</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon {% if data.rollup.health_percent is defined and data.rollup.health_percent >= 90 %}green{% elif data.rollup.health_percent is defined and data.rollup.health_percent >= 70 %}amber{% else %}red{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value health-value {% if data.rollup.health_percent is defined and data.rollup.health_percent >= 90 %}healthy{% elif data.rollup.health_percent is defined and data.rollup.health_percent >= 70 %}warning{% else %}critical{% endif %}">
+                        {% if data.rollup.health_percent is defined %}
+                            {{ data.rollup.health_percent | round(1) }}%
+                        {% elif data.rollup.online_sensors is defined and data.rollup.total_sensors is defined and data.rollup.total_sensors > 0 %}
+                            {{ ((data.rollup.online_sensors / data.rollup.total_sensors) * 100) | round(1) }}%
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Fleet Health</span>
+                    <span class="card-subvalue">Online / Total</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">
+                        {% if data.rollup.total_detections is defined %}
+                            {{ data.rollup.total_detections | default(0) }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Total Detections</span>
+                    <span class="card-subvalue">Last {{ metadata.time_window.days | default(7) }} days</span>
+                    {% if data.rollup.detection_limit_reached %}
+                    <div class="card-warning">
+                        &#9888; {{ data.rollup.orgs_at_limit | default('Some') }} org(s) at limit
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# ================================================================
+       DISTRIBUTION CHARTS
+       ================================================================ #}
+    <section class="dashboard-section">
+        <h2>Platform & Organization Distribution</h2>
+        <div class="chart-grid two-column">
+            <div class="chart-container">
+                <h3 class="chart-title">Platform Distribution</h3>
+                <p class="chart-subtitle">Sensors by operating system</p>
+                {% if data.platforms and data.platforms | length > 0 %}
+                <div class="chart-wrapper">
+                    <canvas id="platformChart"></canvas>
+                </div>
+                {% else %}
+                <div class="chart-unavailable">
+                    <span class="icon">&#128202;</span>
+                    <p>Platform data not available</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Organization Health</h3>
+                <p class="chart-subtitle">Health status by organization</p>
+                {% if data.organizations and data.organizations | length > 0 %}
+                <div class="chart-wrapper">
+                    <canvas id="orgHealthChart"></canvas>
+                </div>
+                {% else %}
+                <div class="chart-unavailable">
+                    <span class="icon">&#128202;</span>
+                    <p>Organization data not available</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {# ================================================================
+       TOP DETECTION CATEGORIES
+       ================================================================ #}
+    {% if data.top_categories and data.top_categories | length > 0 %}
+    <section class="dashboard-section">
+        <h2>Top Detection Categories</h2>
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       TOP ORGANIZATIONS BY DETECTIONS
+       ================================================================ #}
+    {% if data.top_orgs_by_detections and data.top_orgs_by_detections | length > 0 %}
+    <section class="dashboard-section">
+        <h2>Top Organizations by Detection Volume</h2>
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="topOrgsChart"></canvas>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       PER-ORGANIZATION TABLE
+       ================================================================ #}
+    <section class="dashboard-section">
+        <h2>Organization Details</h2>
+
+        {% if data.organizations and data.organizations | length > 0 %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Organization</th>
+                        <th class="number">Sensors</th>
+                        <th class="number">Online</th>
+                        <th class="number">Offline</th>
+                        <th class="number">Health</th>
+                        <th class="number">Detections</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for org in data.organizations %}
+                    <tr>
+                        <td><strong>{{ org.name | default('N/A') }}</strong></td>
+                        <td class="number">{{ org.sensors_total | default(0) }}</td>
+                        <td class="number" style="color: var(--color-success);">{{ org.sensors_online | default(0) }}</td>
+                        <td class="number" style="color: var(--color-danger);">{{ org.sensors_offline | default(0) }}</td>
+                        <td class="number">
+                            {% if org.health is defined %}
+                                <span class="health-value {% if org.health >= 90 %}healthy{% elif org.health >= 70 %}warning{% else %}critical{% endif %}" style="font-size: 1rem;">
+                                    {{ org.health | round(1) }}%
+                                </span>
+                            {% else %}
+                                <span class="na">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td class="number">
+                            {% if org.detections is not none %}
+                                {{ org.detections }}
+                                {% if org.detection_limit_reached %}
+                                    <span class="limit-badge">LIMIT</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="na">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if org.status == 'healthy' %}
+                            <span class="status-badge status-success"><span class="status-dot healthy"></span>Healthy</span>
+                            {% elif org.status == 'warning' %}
+                            <span class="status-badge status-partial"><span class="status-dot warning"></span>Warning</span>
+                            {% elif org.status == 'critical' %}
+                            <span class="status-badge status-failed"><span class="status-dot critical"></span>Critical</span>
+                            {% else %}
+                            <span class="status-badge"><span class="status-dot error"></span>{{ org.status | default('Unknown') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>Total ({{ data.organizations | length }} orgs)</strong></td>
+                        <td class="number"><strong>{{ data.rollup.total_sensors | default(0) }}</strong></td>
+                        <td class="number"><strong style="color: var(--color-success);">{{ data.rollup.online_sensors | default(0) }}</strong></td>
+                        <td class="number"><strong style="color: var(--color-danger);">{{ data.rollup.offline_sensors | default(0) }}</strong></td>
+                        <td class="number">
+                            {% if data.rollup.health_percent is defined %}
+                            <strong>{{ data.rollup.health_percent | round(1) }}%</strong>
+                            {% endif %}
+                        </td>
+                        <td class="number"><strong>{{ data.rollup.total_detections | default(0) }}</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <div class="chart-unavailable">
+            <span class="icon">&#128203;</span>
+            <p>No organization data available</p>
+        </div>
+        {% endif %}
+    </section>
+
+    {# ================================================================
+       WARNINGS AND ERRORS
+       ================================================================ #}
+    {% if warnings or errors %}
+    <section class="dashboard-section warnings-section">
+        <h2>Data Limitations & Warnings</h2>
+
+        {% if warnings %}
+        <div class="warning-list">
+            {% for warning in warnings %}
+            <div class="warning-item">
+                <span class="warning-icon">&#9888;</span>
+                <span>{{ warning }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if errors %}
+        <div class="error-list">
+            <h3>Organizations With Errors</h3>
+            {% for error in errors %}
+            <div class="error-item">
+                <strong>{{ error.org_name | default('Unknown') }}</strong>
+                <p>{{ error.error_message | default('Data collection failed') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       DATA PROVENANCE FOOTER
+       ================================================================ #}
+    <footer class="data-provenance">
+        <h3>Data Provenance</h3>
+        <dl class="provenance-list">
+            <div>
+                <dt>Generated</dt>
+                <dd>{{ metadata.generated_at | default('N/A') }}</dd>
+            </div>
+            <div>
+                <dt>Time Window</dt>
+                <dd>{{ metadata.time_window.start_display | default('N/A') }} to {{ metadata.time_window.end_display | default('N/A') }}</dd>
+            </div>
+            <div>
+                <dt>Organizations</dt>
+                <dd>
+                    {% if metadata.organizations %}
+                        {{ metadata.organizations.successful | default(0) }} of {{ metadata.organizations.total | default(0) }}
+                        ({{ metadata.organizations.success_rate | default(0) | round(1) }}% success)
+                    {% else %}
+                        {{ data.organizations | length if data.organizations else 'N/A' }}
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Data Source</dt>
+                <dd>LimaCharlie API</dd>
+            </div>
+        </dl>
+        <div class="accuracy-statement">
+            <p><strong>Data Accuracy:</strong> All values shown are from actual API responses.
+            No data has been estimated, interpolated, or fabricated.
+            Health percentages calculated as online/total sensors.</p>
+        </div>
+    </footer>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    {% if data.platforms and data.platforms | length > 0 %}
+    // Platform Distribution Donut Chart
+    LC.charts.pie(
+        [{% for p in data.platforms %}{ label: '{{ p.name }}', value: {{ p.count }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'platformChart', donut: true }
+    );
+    {% endif %}
+
+    {% if data.organizations and data.organizations | length > 0 %}
+    // Organization Health Bar Chart
+    LC.charts.bar(
+        [{% for org in data.organizations | sort(attribute='health', reverse=true) %}{ label: '{{ org.name | truncate(15) }}', value: {{ org.health | default(0) }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'orgHealthChart', horizontal: true, max: 100, suffix: '%' }
+    );
+    {% endif %}
+
+    {% if data.top_categories and data.top_categories | length > 0 %}
+    // Top Categories Bar Chart
+    LC.charts.bar(
+        [{% for cat in data.top_categories %}{ label: '{{ cat.label }}', value: {{ cat.value }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'categoriesChart', horizontal: true, multiColor: true }
+    );
+    {% endif %}
+
+    {% if data.top_orgs_by_detections and data.top_orgs_by_detections | length > 0 %}
+    // Top Orgs by Detections Bar Chart
+    LC.charts.bar(
+        [{% for org in data.top_orgs_by_detections %}{ label: '{{ org.name | truncate(15) }}{% if org.limit_reached %} *{% endif %}', value: {{ org.value }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'topOrgsChart', horizontal: true }
+    );
+    {% endif %}
+</script>
+{% endblock %}

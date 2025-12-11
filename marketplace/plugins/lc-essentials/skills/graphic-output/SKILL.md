@@ -192,9 +192,12 @@ This skill:
 
 | Template | Description | Best For |
 |----------|-------------|----------|
+| `billing-summary` | Multi-tenant billing roll-up with per-tenant breakdown, SKU details, cost distribution charts | Billing/cost analysis |
+| `fleet-health` | Sensor health, platform distribution, detection activity across organizations | MSSP fleet monitoring |
+| `detection-analytics` | Detection volume, categories, severity breakdown, and trends across tenants | Detection analysis |
+| `customer-health` | Comprehensive customer health combining sensor coverage, detection activity, and health metrics | Customer success tracking |
 | `mssp-dashboard` | Multi-tenant overview with aggregate metrics, org table, charts | MSSP/multi-org reports |
 | `security-overview` | Single-org comprehensive security report with platform breakdown, MITRE coverage, detection timeline, rules inventory | Individual org deep-dive |
-| `billing-summary` | Multi-tenant billing roll-up with per-tenant breakdown, SKU details, cost distribution charts | Billing/cost analysis |
 | `custom-report` | **Component-based flexible reports** - build any report by specifying which components to include | Ad-hoc/custom reports |
 
 **Note:** Use `custom-report` when none of the predefined templates fit your needs. It supports composable components that can be arranged in any order.
@@ -281,11 +284,13 @@ If integrating with the reporting skill, the data structure should include:
 
 Choose the appropriate template based on data type:
 
-- **Multi-org data** → `mssp-dashboard`
-- **Single org data** → `org-detail`
-- **Health-focused** → `sensor-health`
-- **Detection-focused** → `detection-summary`
 - **Billing/usage** → `billing-summary`
+- **Fleet health (sensors/detections)** → `fleet-health`
+- **Detection analysis** → `detection-analytics`
+- **Customer success** → `customer-health`
+- **Multi-org data** → `mssp-dashboard`
+- **Single org data** → `security-overview`
+- **Custom/flexible** → `custom-report`
 
 ### Step 3: Spawn HTML Renderer
 
@@ -480,6 +485,184 @@ errors                                   # Array of error objects
 - All `warnings` displayed prominently
 - No data fabrication under any circumstances
 
+### Fleet Health (`fleet-health`)
+
+**Purpose:** Sensor health, platform distribution, and detection activity across multiple organizations for MSSP fleet monitoring.
+
+**Visualizations:**
+- Summary cards (total sensors, online sensors, fleet health %, total detections)
+- Platform distribution donut chart
+- Organization health horizontal bar chart
+- Top detection categories bar chart
+- Top organizations by detection volume
+- Per-organization sortable table with health status
+- Detection limit warnings prominently displayed
+- Warnings and errors section
+
+**Required Data Fields:**
+```
+metadata.generated_at                    # When data was collected
+metadata.time_window.start_display       # Time range start
+metadata.time_window.end_display         # Time range end
+metadata.time_window.days                # Number of days in window
+
+data.rollup.total_sensors                # Total sensor count
+data.rollup.online_sensors               # Online sensor count
+```
+
+**Optional Data Fields (shown if present, "N/A" if missing):**
+```
+metadata.organizations.total             # Total org count
+metadata.organizations.successful        # Successful org count
+metadata.organizations.success_rate      # Success percentage
+
+data.rollup.offline_sensors              # Offline sensor count
+data.rollup.health_percent               # Fleet health percentage
+data.rollup.total_detections             # Total detections
+data.rollup.detection_limit_reached      # Boolean limit flag
+data.rollup.orgs_at_limit                # Count of orgs at limit
+
+data.platforms[]                         # Platform breakdown array
+data.organizations[]                     # Per-org details array
+data.top_categories[]                    # Top detection categories
+data.top_orgs_by_detections[]           # Top orgs by detection volume
+
+warnings                                 # Array of warning strings
+errors                                   # Array of error objects
+```
+
+**Guardrail Behavior:**
+- If `health_percent` missing but online/total provided: Calculates as online/total * 100
+- If `platforms` empty: Shows "Platform data not available"
+- Detection limit warning banner shown if `detection_limit_reached` is true
+- All orgs at limit marked with "LIMIT" badge in table
+
+### Detection Analytics (`detection-analytics`)
+
+**Purpose:** Detection volume, categories, severity breakdown, and trends across multiple tenants for security analysis.
+
+**Visualizations:**
+- Summary cards (total detections, tenants with detections, tenants at limit, critical severity count)
+- Aggregate severity distribution bar (critical/high/medium/low/info)
+- Top detection categories bar chart
+- Top tenants by detection volume
+- Per-tenant table with severity breakdown and categories
+- Detection limit warnings prominently displayed
+
+**Required Data Fields:**
+```
+metadata.generated_at                    # When data was collected
+metadata.time_window.start_display       # Time range start
+metadata.time_window.end_display         # Time range end
+metadata.time_window.days                # Number of days in window
+
+data.tenants[]                           # Per-tenant detection data
+data.tenants[].name                      # Tenant name
+data.tenants[].oid                       # Tenant OID
+data.tenants[].status                    # success/error/no_detections
+```
+
+**Optional Data Fields (shown if present, "N/A" if missing):**
+```
+metadata.scope                           # single/all
+metadata.tenant_count                    # Total tenant count
+
+data.tenants[].detection_count           # Detection count
+data.tenants[].limit_reached             # Boolean limit flag
+data.tenants[].categories[]              # Category breakdown
+data.tenants[].severities                # Severity breakdown object
+data.tenants[].top_hosts[]               # Top hosts by detections
+
+data.rollup.total_detections             # Aggregate detection count
+data.rollup.total_tenants                # Total tenants
+data.rollup.tenants_with_detections      # Tenants with detections
+data.rollup.tenants_at_limit             # Tenants at limit
+data.rollup.severities                   # Aggregate severity breakdown
+
+data.top_categories[]                    # Top categories across all
+data.top_tenants[]                       # Top tenants by volume
+
+warnings                                 # Array of warning strings
+errors                                   # Array of error objects
+```
+
+**Guardrail Behavior:**
+- Detection limit warning banner shown if any tenant at limit
+- Tenants at limit marked with "LIMIT" badge
+- Severity bars only shown if severity data available
+- Critical severity count highlighted in red
+
+### Customer Health (`customer-health`)
+
+**Purpose:** Comprehensive customer health combining sensor coverage, detection activity, and health metrics for customer success tracking.
+
+**Visualizations:**
+- Attention required banner (critical/warning items summary)
+- Summary cards (customers, sensors, fleet health, detections)
+- Customer health distribution grid (healthy/warning/critical/inactive counts)
+- Health distribution donut chart
+- Platform distribution donut chart
+- Top detection categories bar chart
+- Per-customer table with health score, sensors, detections, attention items
+- Customers needing attention section with expanded cards
+- Warnings and errors section
+
+**Required Data Fields:**
+```
+metadata.generated_at                    # When data was collected
+metadata.time_window.start_display       # Time range start
+metadata.time_window.end_display         # Time range end
+metadata.time_window.days                # Number of days in window
+
+data.rollup.total_customers              # Total customer count
+data.rollup.total_sensors                # Total sensor count
+
+data.customers[]                         # Per-customer details
+data.customers[].name                    # Customer name
+data.customers[].oid                     # Customer OID
+data.customers[].health_status           # healthy/warning/critical/inactive/error
+```
+
+**Optional Data Fields (shown if present, "N/A" if missing):**
+```
+metadata.organizations.total             # Total org count
+metadata.organizations.successful        # Successful org count
+metadata.organizations.success_rate      # Success percentage
+
+data.rollup.online_sensors               # Online sensors
+data.rollup.offline_sensors              # Offline sensors
+data.rollup.fleet_health_percent         # Fleet health %
+data.rollup.total_detections             # Total detections
+data.rollup.customers_healthy            # Healthy customer count
+data.rollup.customers_warning            # Warning customer count
+data.rollup.customers_critical           # Critical customer count
+data.rollup.customers_inactive           # Inactive customer count
+
+data.health_distribution                 # Health distribution percentages
+data.platforms[]                         # Platform breakdown
+data.customers[].health_score            # Numeric health score
+data.customers[].sensors                 # Sensor metrics object
+data.customers[].detections              # Detection metrics object
+data.customers[].attention_items[]       # Attention items array
+
+data.attention_summary                   # Overall attention summary
+data.attention_summary.critical_items    # Critical item count
+data.attention_summary.warning_items     # Warning item count
+data.attention_summary.customers_needing_attention[]
+
+data.top_detection_categories[]          # Top categories across all
+
+warnings                                 # Array of warning strings
+errors                                   # Array of error objects
+```
+
+**Guardrail Behavior:**
+- Attention banner shown if any critical or warning items exist
+- Customers needing attention highlighted with colored border
+- Health scores color-coded (green ≥90%, amber 70-89%, red <70%)
+- Rows with attention items have amber background
+- All attention badges shown per customer
+
 ## Chart Behavior with Missing Data
 
 ### Pie Chart
@@ -628,16 +811,22 @@ skills/graphic-output/
 ├── templates/
 │   ├── base.html.j2                   # Base template with CSS, Chart.js utilities
 │   └── reports/
+│       ├── billing-summary.html.j2    # Multi-tenant billing report
+│       ├── fleet-health.html.j2       # Fleet health dashboard
+│       ├── detection-analytics.html.j2 # Detection analytics dashboard
+│       ├── customer-health.html.j2    # Customer health dashboard
 │       ├── mssp-dashboard.html.j2     # Multi-tenant MSSP dashboard
 │       ├── security-overview.html.j2  # Single-org security report
-│       ├── billing-summary.html.j2    # Multi-tenant billing report
 │       └── custom-report.html.j2      # Component-based flexible reports
 ├── static/
 │   └── js/
 │       └── lc-charts.js               # Chart.js utility functions
 └── schemas/
+    ├── billing-summary.json           # Schema for billing-summary data
+    ├── fleet-health.json              # Schema for fleet-health data
+    ├── detection-analytics.json       # Schema for detection-analytics data
+    ├── customer-health.json           # Schema for customer-health data
     ├── mssp-report.json               # Schema for mssp-dashboard data
     ├── security-overview.json         # Schema for security-overview data
-    ├── billing-summary.json           # Schema for billing-summary data
     └── custom-report.json             # Schema for custom-report components
 ```

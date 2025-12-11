@@ -1,0 +1,343 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Fleet Health Dashboard Data",
+  "description": "Schema for data input to the fleet-health template. Visualizes sensor health, platform distribution, and detection activity across multiple organizations. All values must come from actual LimaCharlie API responses - no fabrication allowed.",
+  "type": "object",
+  "required": ["metadata", "data"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "description": "Report metadata - when and how data was collected",
+      "required": ["generated_at", "time_window"],
+      "properties": {
+        "generated_at": {
+          "type": "string",
+          "description": "ISO 8601 timestamp when data was collected",
+          "examples": ["2025-12-10T14:32:45Z"]
+        },
+        "time_window": {
+          "type": "object",
+          "description": "Time range for detection data",
+          "required": ["start_display", "end_display", "days"],
+          "properties": {
+            "start": {
+              "type": "integer",
+              "description": "Start timestamp in Unix epoch seconds"
+            },
+            "end": {
+              "type": "integer",
+              "description": "End timestamp in Unix epoch seconds"
+            },
+            "start_display": {
+              "type": "string",
+              "description": "Human-readable start time",
+              "examples": ["2025-12-03 00:00:00 UTC"]
+            },
+            "end_display": {
+              "type": "string",
+              "description": "Human-readable end time",
+              "examples": ["2025-12-10 23:59:59 UTC"]
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days in the time window",
+              "examples": [7, 14, 30]
+            }
+          }
+        },
+        "organizations": {
+          "type": "object",
+          "description": "Organization processing summary",
+          "properties": {
+            "total": {
+              "type": "integer",
+              "description": "Total number of organizations attempted"
+            },
+            "successful": {
+              "type": "integer",
+              "description": "Number of organizations successfully processed"
+            },
+            "failed": {
+              "type": "integer",
+              "description": "Number of organizations that failed data collection"
+            },
+            "success_rate": {
+              "type": "number",
+              "description": "Percentage of organizations successfully processed"
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "Report data containing rollup totals and per-organization details",
+      "required": ["rollup"],
+      "properties": {
+        "rollup": {
+          "type": "object",
+          "description": "Aggregate totals across all organizations - displayed in summary cards",
+          "required": ["total_sensors", "online_sensors"],
+          "properties": {
+            "total_sensors": {
+              "type": "integer",
+              "description": "Total sensor count across all organizations",
+              "examples": [1500, 5000]
+            },
+            "online_sensors": {
+              "type": "integer",
+              "description": "Number of sensors currently online",
+              "examples": [1350, 4500]
+            },
+            "offline_sensors": {
+              "type": "integer",
+              "description": "Number of sensors currently offline (total - online)",
+              "examples": [150, 500]
+            },
+            "health_percent": {
+              "type": "number",
+              "description": "Fleet-wide health percentage (online/total * 100)",
+              "examples": [90.0, 95.5]
+            },
+            "total_detections": {
+              "type": "integer",
+              "description": "Total detections across all organizations in time window",
+              "examples": [12500, 50000]
+            },
+            "detection_limit_reached": {
+              "type": "boolean",
+              "description": "Whether any organization hit the 5000 detection limit"
+            },
+            "orgs_at_limit": {
+              "type": "integer",
+              "description": "Number of organizations that hit the detection limit"
+            }
+          }
+        },
+        "platforms": {
+          "type": "array",
+          "description": "Sensor count breakdown by platform - displayed as donut chart",
+          "items": {
+            "type": "object",
+            "required": ["name", "count"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Platform name (Windows, Linux, macOS, Chrome, USP Adapter, etc.)",
+                "examples": ["Windows", "Linux", "macOS"]
+              },
+              "count": {
+                "type": "integer",
+                "description": "Number of sensors on this platform"
+              },
+              "percent": {
+                "type": "number",
+                "description": "Percentage of total sensors"
+              }
+            }
+          }
+        },
+        "organizations": {
+          "type": "array",
+          "description": "Per-organization health details - displayed in sortable table",
+          "items": {
+            "type": "object",
+            "required": ["name", "oid"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Organization display name",
+                "examples": ["Acme Corp", "TPS Reporting Solutions"]
+              },
+              "oid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Organization ID"
+              },
+              "sensors_total": {
+                "type": "integer",
+                "description": "Total sensor count for this organization"
+              },
+              "sensors_online": {
+                "type": "integer",
+                "description": "Online sensor count"
+              },
+              "sensors_offline": {
+                "type": "integer",
+                "description": "Offline sensor count"
+              },
+              "health": {
+                "type": "number",
+                "description": "Health percentage (0-100)"
+              },
+              "detections": {
+                "type": ["integer", "null"],
+                "description": "Detection count in time window (null if data unavailable)"
+              },
+              "detection_limit_reached": {
+                "type": "boolean",
+                "description": "Whether this org hit the 5000 detection limit"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["healthy", "warning", "critical", "error"],
+                "description": "Health status: healthy (>=90%), warning (70-89%), critical (<70%), error (no data)"
+              }
+            }
+          }
+        },
+        "top_categories": {
+          "type": "array",
+          "description": "Top detection categories across all organizations - displayed as bar chart",
+          "items": {
+            "type": "object",
+            "required": ["label", "value"],
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "Detection category name (from source_rule or cat field)"
+              },
+              "value": {
+                "type": "integer",
+                "description": "Total detection count for this category"
+              }
+            }
+          }
+        },
+        "top_orgs_by_detections": {
+          "type": "array",
+          "description": "Top organizations by detection volume - displayed as horizontal bar chart",
+          "items": {
+            "type": "object",
+            "required": ["name", "value"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Organization name"
+              },
+              "value": {
+                "type": "integer",
+                "description": "Detection count"
+              },
+              "limit_reached": {
+                "type": "boolean",
+                "description": "Whether this org hit the detection limit"
+              }
+            }
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Data collection warnings - displayed in yellow alert box",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        ["4 organizations hit the 5000 detection limit", "Detection counts are approximate for 2 orgs"]
+      ]
+    },
+    "errors": {
+      "type": "array",
+      "description": "Per-organization errors - displayed in collapsible error section",
+      "items": {
+        "type": "object",
+        "properties": {
+          "org_name": {
+            "type": "string",
+            "description": "Name of the organization that failed"
+          },
+          "oid": {
+            "type": "string",
+            "description": "Organization ID (UUID)"
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Error description"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "metadata": {
+        "generated_at": "2025-12-10T14:32:45Z",
+        "time_window": {
+          "start": 1733270400,
+          "end": 1733875199,
+          "start_display": "2025-12-03 00:00:00 UTC",
+          "end_display": "2025-12-10 23:59:59 UTC",
+          "days": 7
+        },
+        "organizations": {
+          "total": 24,
+          "successful": 22,
+          "failed": 2,
+          "success_rate": 91.7
+        }
+      },
+      "data": {
+        "rollup": {
+          "total_sensors": 1500,
+          "online_sensors": 1350,
+          "offline_sensors": 150,
+          "health_percent": 90.0,
+          "total_detections": 12500,
+          "detection_limit_reached": true,
+          "orgs_at_limit": 3
+        },
+        "platforms": [
+          {"name": "Windows", "count": 850, "percent": 56.7},
+          {"name": "Linux", "count": 400, "percent": 26.7},
+          {"name": "macOS", "count": 150, "percent": 10.0},
+          {"name": "USP Adapter", "count": 100, "percent": 6.6}
+        ],
+        "organizations": [
+          {
+            "name": "TPS Reporting Solutions",
+            "oid": "aac9c41d-e0a3-4e7e-88b8-33936ab93238",
+            "sensors_total": 150,
+            "sensors_online": 142,
+            "sensors_offline": 8,
+            "health": 94.7,
+            "detections": 1250,
+            "detection_limit_reached": false,
+            "status": "healthy"
+          },
+          {
+            "name": "Acme Corp",
+            "oid": "cdadbaa4-265d-4549-9686-990731ee4091",
+            "sensors_total": 200,
+            "sensors_online": 150,
+            "sensors_offline": 50,
+            "health": 75.0,
+            "detections": 5000,
+            "detection_limit_reached": true,
+            "status": "warning"
+          }
+        ],
+        "top_categories": [
+          {"label": "SENSITIVE_PROCESS_ACCESS", "value": 3500},
+          {"label": "NEW_PROCESS", "value": 2800},
+          {"label": "NETWORK_CONNECTIONS", "value": 1500}
+        ],
+        "top_orgs_by_detections": [
+          {"name": "Acme Corp", "value": 5000, "limit_reached": true},
+          {"name": "GlobalTech", "value": 3200, "limit_reached": false}
+        ]
+      },
+      "warnings": [
+        "3 organizations hit the 5000 detection limit - actual counts may be higher"
+      ],
+      "errors": [
+        {
+          "org_name": "Test Org",
+          "oid": "ddcc6630-20d1-4fd6-b16c-245c58a6d58e",
+          "error_message": "Permission denied: missing sensor.list permission"
+        }
+      ]
+    }
+  ]
+}

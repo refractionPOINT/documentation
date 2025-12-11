@@ -122,7 +122,7 @@
                 </div>
                 <div class="card-content">
                     <span class="card-value" style="color: var(--color-success);">
-                        {% if data.rollup.total_cost is defined %}
+                        {% if data.rollup and data.rollup.total_cost is defined %}
                             ${{ data.rollup.total_cost | format_number }}
                         {% else %}
                             <span class="na">N/A</span>
@@ -136,44 +136,41 @@
             <div class="summary-card">
                 <div class="card-icon blue">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="3" width="20" height="14" rx="2"/>
-                        <path d="M8 21h8M12 17v4"/>
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-value">
-                        {% if data.rollup.total_sensors is defined %}
-                            {{ data.rollup.total_sensors | format_number }}
+                        {% if data.rollup.successful_count is defined %}
+                            {{ data.rollup.successful_count }}
                         {% else %}
-                            <span class="na">N/A</span>
+                            {{ data.tenants | selectattr('status', 'equalto', 'success') | list | length }}
                         {% endif %}
                     </span>
-                    <span class="card-label">Total Sensors</span>
-                    <span class="card-subvalue">Across {{ data.tenants | length }} organizations</span>
+                    <span class="card-label">Successful</span>
+                    <span class="card-subvalue">Organizations with billing data</span>
                 </div>
             </div>
 
             <div class="summary-card">
-                <div class="card-icon purple">
+                <div class="card-icon red">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                        <circle cx="8.5" cy="7" r="4"/>
-                        <line x1="20" y1="8" x2="20" y2="14"/>
-                        <line x1="23" y1="11" x2="17" y2="11"/>
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
                     </svg>
                 </div>
                 <div class="card-content">
                     <span class="card-value">
-                        {% if data.rollup.avg_cost_per_sensor is defined %}
-                            ${{ data.rollup.avg_cost_per_sensor | round(2) }}
-                        {% elif data.rollup.total_cost is defined and data.rollup.total_sensors is defined and data.rollup.total_sensors > 0 %}
-                            ${{ (data.rollup.total_cost / data.rollup.total_sensors) | round(2) }}
+                        {% if data.rollup.failed_count is defined %}
+                            {{ data.rollup.failed_count }}
                         {% else %}
-                            <span class="na">N/A</span>
+                            {{ data.tenants | rejectattr('status', 'equalto', 'success') | list | length }}
                         {% endif %}
                     </span>
-                    <span class="card-label">Avg Cost/Sensor</span>
-                    <span class="card-subvalue">Blended rate</span>
+                    <span class="card-label">Failed/No Invoice</span>
+                    <span class="card-subvalue">Organizations without data</span>
                 </div>
             </div>
 
@@ -199,15 +196,15 @@
        ================================================================ #}
     {% if data.tenants and data.tenants | length > 0 %}
     <section class="dashboard-section">
-        <h2>Cost & Sensor Distribution</h2>
+        <h2>Cost Distribution</h2>
         <div class="chart-grid two-column">
             <div class="chart-container">
                 <h3 class="chart-title">Cost Distribution by Tenant</h3>
                 <canvas id="costDistChart"></canvas>
             </div>
             <div class="chart-container">
-                <h3 class="chart-title">Sensor Distribution by Tenant</h3>
-                <canvas id="sensorDistChart"></canvas>
+                <h3 class="chart-title">Status Breakdown</h3>
+                <canvas id="statusDistChart"></canvas>
             </div>
         </div>
     </section>
@@ -225,10 +222,7 @@
                 <thead>
                     <tr>
                         <th>Organization</th>
-                        <th>Region</th>
-                        <th class="number">Sensors</th>
                         <th class="number">Monthly Cost</th>
-                        <th class="number">Cost/Sensor</th>
                         <th class="number">% of Total</th>
                         <th>Status</th>
                     </tr>
@@ -237,36 +231,23 @@
                     {% for tenant in data.tenants %}
                     <tr>
                         <td><strong>{{ tenant.name | default('N/A') }}</strong></td>
-                        <td>
-                            {% if tenant.region %}
-                            <span class="badge-region" style="background: #dbeafe; color: #1d4ed8;">{{ tenant.region }}</span>
-                            {% else %}
-                            <span class="na">N/A</span>
-                            {% endif %}
-                        </td>
-                        <td class="number">{{ tenant.sensors | default(0) | format_number }}</td>
                         <td class="number cost-highlight">${{ tenant.cost | default(0) | format_number }}</td>
                         <td class="number">
-                            {% if tenant.sensors and tenant.sensors > 0 and tenant.cost %}
-                                ${{ (tenant.cost / tenant.sensors) | round(2) }}
+                            {% if data.rollup and data.rollup.total_cost and data.rollup.total_cost > 0 and tenant.cost %}
+                                {{ ((tenant.cost / data.rollup.total_cost) * 100) | round(1) }}%
                             {% else %}
                                 -
                             {% endif %}
                         </td>
-                        <td class="number">
-                            {% if data.rollup.total_cost and data.rollup.total_cost > 0 and tenant.cost %}
-                                {{ ((tenant.cost / data.rollup.total_cost) * 100) | round(1) }}%
-                            {% else %}
-                                0%
-                            {% endif %}
-                        </td>
                         <td>
-                            {% if tenant.status == 'active' %}
-                            <span class="status-badge status-success">Active</span>
-                            {% elif tenant.status == 'draft' %}
-                            <span class="status-badge status-partial">Draft</span>
-                            {% elif tenant.cost == 0 or tenant.sensors == 0 %}
-                            <span class="status-badge" style="background: #dbeafe; color: #1d4ed8;">No Usage</span>
+                            {% if tenant.status == 'success' %}
+                            <span class="status-badge status-success">Success</span>
+                            {% elif tenant.status == 'error' %}
+                            <span class="status-badge status-failed">Error</span>
+                            {% elif tenant.status == 'no_invoice' %}
+                            <span class="status-badge" style="background: #dbeafe; color: #1d4ed8;">No Invoice</span>
+                            {% elif tenant.cost == 0 %}
+                            <span class="status-badge" style="background: #f3f4f6; color: #6b7280;">No Usage</span>
                             {% else %}
                             <span class="na">{{ tenant.status | default('N/A') }}</span>
                             {% endif %}
@@ -277,15 +258,8 @@
                 <tfoot>
                     <tr>
                         <td><strong>Total ({{ data.tenants | length }} tenants)</strong></td>
-                        <td></td>
-                        <td class="number"><strong>{{ data.rollup.total_sensors | default(0) | format_number }}</strong></td>
-                        <td class="number"><strong style="color: var(--color-success);">${{ data.rollup.total_cost | default(0) | format_number }}</strong></td>
-                        <td class="number">
-                            {% if data.rollup.avg_cost_per_sensor is defined %}
-                            <strong>${{ data.rollup.avg_cost_per_sensor | round(2) }}</strong>
-                            {% endif %}
-                        </td>
-                        <td class="number"><strong>100%</strong></td>
+                        <td class="number"><strong style="color: var(--color-success);">${{ (data.rollup.total_cost if data.rollup and data.rollup.total_cost else 0) | format_number }}</strong></td>
+                        <td class="number"><strong>{% if data.rollup and data.rollup.total_cost %}100%{% else %}-{% endif %}</strong></td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -312,7 +286,7 @@
                 <div>
                     <div class="tenant-name">{{ tenant.name }}</div>
                     <div style="font-size: 0.8rem; color: var(--color-text-muted);">
-                        {{ tenant.sensors | default(0) }} sensors | {{ tenant.region | default('Unknown') }} region
+                        {{ tenant.skus | length if tenant.skus else 0 }} line items | {{ tenant.currency | default('usd') | upper }}
                     </div>
                 </div>
                 <div class="tenant-cost" {% if tenant.cost == 0 %}style="color: var(--color-text-muted);"{% endif %}>
@@ -323,13 +297,13 @@
             {% if tenant.skus and tenant.skus | length > 0 %}
                 {% for sku in tenant.skus %}
                 <div class="sku-row">
-                    <span class="sku-name">{{ sku.name }}{% if sku.quantity %} ({{ sku.quantity }}){% endif %}</span>
+                    <span class="sku-name">{{ sku.description }}{% if sku.quantity %} ({{ sku.quantity }}){% endif %}</span>
                     <span class="sku-amount">${{ sku.amount | format_number }}</span>
                 </div>
                 {% endfor %}
             {% elif tenant.cost == 0 %}
             <div style="text-align: center; padding: 1rem; color: var(--color-text-muted);">
-                No active usage - subscription active but 0 sensors deployed
+                No billable usage this period
             </div>
             {% else %}
             <div style="text-align: center; padding: 1rem; color: var(--color-text-muted);">
@@ -338,7 +312,7 @@
             {% endif %}
 
             <div class="progress-bar">
-                <div class="progress-fill" style="width: {% if data.rollup.total_cost > 0 %}{{ ((tenant.cost | default(0)) / data.rollup.total_cost * 100) | round(1) }}{% else %}0{% endif %}%; background: var(--color-primary);"></div>
+                <div class="progress-fill" style="width: {% if data.rollup and data.rollup.total_cost and data.rollup.total_cost > 0 %}{{ ((tenant.cost | default(0)) / data.rollup.total_cost * 100) | round(1) }}{% else %}0{% endif %}%; background: var(--color-primary);"></div>
             </div>
         </div>
         {% endfor %}
@@ -424,14 +398,18 @@
         }
     });
 
-    // Sensor Distribution Doughnut Chart
-    new Chart(document.getElementById('sensorDistChart'), {
+    // Status Distribution Doughnut Chart
+    {# Count tenants by status #}
+    {% set success_count = data.tenants | selectattr('status', 'equalto', 'success') | list | length %}
+    {% set error_count = data.tenants | selectattr('status', 'equalto', 'error') | list | length %}
+    {% set no_invoice_count = data.tenants | selectattr('status', 'equalto', 'no_invoice') | list | length %}
+    new Chart(document.getElementById('statusDistChart'), {
         type: 'doughnut',
         data: {
-            labels: [{% for t in data.tenants %}'{{ t.name | truncate(20) }} ({{ t.sensors | default(0) }})'{% if not loop.last %}, {% endif %}{% endfor %}],
+            labels: ['Success ({{ success_count }})', 'Error ({{ error_count }})', 'No Invoice ({{ no_invoice_count }})'],
             datasets: [{
-                data: [{% for t in data.tenants %}{{ t.sensors | default(0) }}{% if not loop.last %}, {% endif %}{% endfor %}],
-                backgroundColor: ['#0ea5e9', '#22c55e', '#8b5cf6', '#f59e0b', '#ef4444', '#14b8a6'],
+                data: [{{ success_count }}, {{ error_count }}, {{ no_invoice_count }}],
+                backgroundColor: ['#22c55e', '#ef4444', '#94a3b8'],
                 borderWidth: 0
             }]
         },
@@ -441,7 +419,7 @@
             plugins: {
                 legend: { position: 'bottom' },
                 tooltip: {
-                    callbacks: { label: (ctx) => ` ${ctx.raw} sensors` }
+                    callbacks: { label: (ctx) => ` ${ctx.raw} organizations` }
                 }
             }
         }
