@@ -1,0 +1,654 @@
+{#
+  Customer Health Dashboard Template
+
+  Displays comprehensive customer health combining sensor coverage, detection activity,
+  and health metrics for customer success tracking.
+
+  DATA ACCURACY GUARDRAILS:
+  - This template ONLY displays data provided in the context
+  - Missing data shows "N/A" or "Data unavailable"
+  - All warnings and attention items are displayed prominently
+  - No data is fabricated, estimated, or interpolated
+  - Health scores calculated only from provided sensor counts
+#}
+{% extends 'base.html.j2' %}
+
+{% block title %}Customer Health Report - {{ metadata.time_window.days | default(30) }} Day Overview{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #0d9488, #14b8a6);
+        color: #fff;
+        border-radius: var(--radius-lg);
+        margin-bottom: 1.5rem;
+    }
+    .logo { display: flex; align-items: center; gap: 0.75rem; }
+    .logo svg { width: 48px; height: 48px; }
+    .logo span { font-size: 1.5rem; font-weight: 700; }
+    .meta { display: flex; gap: 2rem; font-size: 0.875rem; opacity: 0.9; }
+    .meta dt { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+    .meta dd { font-weight: 600; margin-top: 0.25rem; }
+
+    .health-status-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    .health-status-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        text-align: center;
+    }
+    .health-status-item.healthy { background: #dcfce7; color: #15803d; }
+    .health-status-item.warning { background: #fef3c7; color: #b45309; }
+    .health-status-item.critical { background: #fee2e2; color: #b91c1c; }
+    .health-status-item.inactive { background: #f3f4f6; color: #6b7280; }
+    .health-status-count { font-size: 2rem; font-weight: 700; }
+    .health-status-label { font-size: 0.8rem; font-weight: 500; margin-top: 0.25rem; }
+    .health-status-percent { font-size: 0.75rem; opacity: 0.8; }
+
+    .attention-banner {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        border: 1px solid #fecaca;
+        border-radius: var(--radius-lg);
+        margin-bottom: 1.5rem;
+    }
+    .attention-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: #b91c1c;
+        margin-bottom: 0.75rem;
+    }
+    .attention-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .attention-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: white;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+    }
+    .attention-item.critical { border-left: 3px solid #dc2626; }
+    .attention-item.warning { border-left: 3px solid #f59e0b; }
+
+    .customer-card {
+        padding: 1.25rem;
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--radius-lg);
+        margin-bottom: 1rem;
+        transition: box-shadow 0.2s ease;
+    }
+    .customer-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+    .customer-card.needs-attention {
+        border-left: 4px solid #f59e0b;
+    }
+    .customer-card.critical {
+        border-left: 4px solid #dc2626;
+    }
+    .customer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    .customer-name { font-size: 1.125rem; font-weight: 600; }
+    .customer-score {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    .score-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+    .score-value.healthy { color: var(--color-success); }
+    .score-value.warning { color: var(--color-warning); }
+    .score-value.critical { color: var(--color-danger); }
+    .score-label { font-size: 0.75rem; color: var(--color-text-muted); }
+
+    .customer-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        padding: 1rem 0;
+        border-top: 1px solid var(--color-border-light);
+        border-bottom: 1px solid var(--color-border-light);
+    }
+    .customer-metric {
+        text-align: center;
+    }
+    .metric-value { font-size: 1.25rem; font-weight: 600; }
+    .metric-label { font-size: 0.75rem; color: var(--color-text-muted); }
+
+    .attention-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    .attention-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    .attention-badge.critical { background: #fee2e2; color: #b91c1c; }
+    .attention-badge.warning { background: #fef3c7; color: #b45309; }
+    .attention-badge.info { background: #dbeafe; color: #1d4ed8; }
+
+    .limit-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.5rem;
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: var(--radius-sm);
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    .status-dot.healthy { background: var(--color-success); }
+    .status-dot.warning { background: var(--color-warning); }
+    .status-dot.critical { background: var(--color-danger); }
+    .status-dot.inactive { background: var(--color-text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+    {# ================================================================
+       REPORT HEADER
+       ================================================================ #}
+    <header class="header">
+        <div class="logo">
+            <svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255,255,255,0.2)"/><path d="M24 8c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16z" stroke="white" stroke-width="3" fill="none"/><path d="M24 16v8l5 5" stroke="white" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="24" r="3" fill="white"/></svg>
+            <span>LimaCharlie</span>
+        </div>
+        <div>
+            <h1>Customer Health Report</h1>
+            <dl class="meta">
+                <div><dt>Time Window</dt><dd>{{ metadata.time_window.days | default(30) }} days</dd></div>
+                <div><dt>Generated</dt><dd>{{ metadata.generated_at | default('N/A') }}</dd></div>
+                <div><dt>Customers</dt><dd>
+                    {% if metadata.organizations %}
+                        {{ metadata.organizations.successful | default(0) }} of {{ metadata.organizations.total | default(0) }}
+                    {% else %}
+                        {{ data.customers | length if data.customers else 'N/A' }}
+                    {% endif %}
+                </dd></div>
+            </dl>
+        </div>
+    </header>
+
+    {# ================================================================
+       ATTENTION REQUIRED BANNER
+       ================================================================ #}
+    {% if data.attention_summary and (data.attention_summary.critical_items or data.attention_summary.warning_items) %}
+    <div class="attention-banner">
+        <div class="attention-title">
+            <span>&#128680;</span> Attention Required
+        </div>
+        <div class="attention-list">
+            {% if data.attention_summary.critical_items %}
+            <div class="attention-item critical">
+                <strong>{{ data.attention_summary.critical_items }}</strong> critical issues
+            </div>
+            {% endif %}
+            {% if data.attention_summary.warning_items %}
+            <div class="attention-item warning">
+                <strong>{{ data.attention_summary.warning_items }}</strong> warnings
+            </div>
+            {% endif %}
+            {% if data.attention_summary.customers_needing_attention %}
+            <div class="attention-item">
+                <strong>{{ data.attention_summary.customers_needing_attention | length }}</strong> customers need attention
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# ================================================================
+       EXECUTIVE SUMMARY
+       ================================================================ #}
+    <section class="dashboard-section" aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Executive Summary</h2>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="card-icon blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">
+                        {% if data.rollup and data.rollup.total_customers is defined %}
+                            {{ data.rollup.total_customers }}
+                        {% else %}
+                            {{ data.customers | length if data.customers else 'N/A' }}
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Total Customers</span>
+                    <span class="card-subvalue">Active organizations</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <path d="M8 21h8M12 17v4"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">
+                        {% if data.rollup and data.rollup.total_sensors is defined %}
+                            {{ data.rollup.total_sensors }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Total Sensors</span>
+                    <span class="card-subvalue">
+                        {{ data.rollup.online_sensors | default(0) if data.rollup else 0 }} online
+                    </span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon {% if data.rollup and data.rollup.fleet_health_percent and data.rollup.fleet_health_percent >= 90 %}green{% elif data.rollup and data.rollup.fleet_health_percent and data.rollup.fleet_health_percent >= 70 %}amber{% else %}red{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">
+                        {% if data.rollup and data.rollup.fleet_health_percent is defined %}
+                            {{ data.rollup.fleet_health_percent | round(1) }}%
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Fleet Health</span>
+                    <span class="card-subvalue">Average across all customers</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">
+                        {% if data.rollup and data.rollup.total_detections is defined %}
+                            {{ data.rollup.total_detections }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Total Detections</span>
+                    <span class="card-subvalue">Last {{ metadata.time_window.days | default(30) }} days</span>
+                </div>
+            </div>
+        </div>
+
+        {# Customer Health Distribution #}
+        {% if data.rollup and (data.rollup.customers_healthy is defined or data.rollup.customers_warning is defined) %}
+        <div class="health-status-grid" style="margin-top: 1.5rem;">
+            <div class="health-status-item healthy">
+                <span class="health-status-count">{{ data.rollup.customers_healthy | default(0) }}</span>
+                <span class="health-status-label">Healthy</span>
+                {% if data.health_distribution and data.health_distribution.healthy is defined %}
+                <span class="health-status-percent">{{ data.health_distribution.healthy | round(1) }}%</span>
+                {% endif %}
+            </div>
+            <div class="health-status-item warning">
+                <span class="health-status-count">{{ data.rollup.customers_warning | default(0) }}</span>
+                <span class="health-status-label">Warning</span>
+                {% if data.health_distribution and data.health_distribution.warning is defined %}
+                <span class="health-status-percent">{{ data.health_distribution.warning | round(1) }}%</span>
+                {% endif %}
+            </div>
+            <div class="health-status-item critical">
+                <span class="health-status-count">{{ data.rollup.customers_critical | default(0) }}</span>
+                <span class="health-status-label">Critical</span>
+                {% if data.health_distribution and data.health_distribution.critical is defined %}
+                <span class="health-status-percent">{{ data.health_distribution.critical | round(1) }}%</span>
+                {% endif %}
+            </div>
+            <div class="health-status-item inactive">
+                <span class="health-status-count">{{ data.rollup.customers_inactive | default(0) }}</span>
+                <span class="health-status-label">Inactive</span>
+                {% if data.health_distribution and data.health_distribution.inactive is defined %}
+                <span class="health-status-percent">{{ data.health_distribution.inactive | round(1) }}%</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    {# ================================================================
+       DISTRIBUTION CHARTS
+       ================================================================ #}
+    <section class="dashboard-section">
+        <h2>Health & Platform Distribution</h2>
+        <div class="chart-grid two-column">
+            <div class="chart-container">
+                <h3 class="chart-title">Customer Health Distribution</h3>
+                <p class="chart-subtitle">Breakdown by health status</p>
+                {% if data.health_distribution %}
+                <div class="chart-wrapper">
+                    <canvas id="healthDistChart"></canvas>
+                </div>
+                {% else %}
+                <div class="chart-unavailable">
+                    <span class="icon">&#128202;</span>
+                    <p>Health distribution data not available</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="chart-container">
+                <h3 class="chart-title">Platform Distribution</h3>
+                <p class="chart-subtitle">Sensors by operating system</p>
+                {% if data.platforms and data.platforms | length > 0 %}
+                <div class="chart-wrapper">
+                    <canvas id="platformChart"></canvas>
+                </div>
+                {% else %}
+                <div class="chart-unavailable">
+                    <span class="icon">&#128202;</span>
+                    <p>Platform data not available</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {# ================================================================
+       TOP DETECTION CATEGORIES
+       ================================================================ #}
+    {% if data.top_detection_categories and data.top_detection_categories | length > 0 %}
+    <section class="dashboard-section">
+        <h2>Top Detection Categories</h2>
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       CUSTOMER TABLE
+       ================================================================ #}
+    <section class="dashboard-section">
+        <h2>Customer Details</h2>
+
+        {% if data.customers and data.customers | length > 0 %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th class="number">Health</th>
+                        <th class="number">Sensors</th>
+                        <th class="number">Online</th>
+                        <th class="number">Offline</th>
+                        <th class="number">Detections</th>
+                        <th>Attention</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in data.customers | sort(attribute='health_score', reverse=true) if customer.health_score is defined else data.customers %}
+                    <tr {% if customer.attention_items and customer.attention_items | length > 0 %}style="background: #fffbeb;"{% endif %}>
+                        <td><strong>{{ customer.name | default('N/A') }}</strong></td>
+                        <td class="number">
+                            {% if customer.health_score is defined %}
+                            <span class="score-value {% if customer.health_score >= 90 %}healthy{% elif customer.health_score >= 70 %}warning{% else %}critical{% endif %}" style="font-size: 1rem;">
+                                {{ customer.health_score | round(1) }}%
+                            </span>
+                            {% else %}
+                            <span class="na">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td class="number">{{ customer.sensors.total | default(0) if customer.sensors else 0 }}</td>
+                        <td class="number" style="color: var(--color-success);">{{ customer.sensors.online | default(0) if customer.sensors else 0 }}</td>
+                        <td class="number" style="color: var(--color-danger);">{{ customer.sensors.offline | default(0) if customer.sensors else 0 }}</td>
+                        <td class="number">
+                            {% if customer.detections and customer.detections.total is not none %}
+                                {{ customer.detections.total }}
+                                {% if customer.detections.limit_reached %}
+                                <span class="limit-badge">LIMIT</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="na">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.attention_items and customer.attention_items | length > 0 %}
+                                {% set critical_count = customer.attention_items | selectattr('severity', 'equalto', 'critical') | list | length %}
+                                {% set warning_count = customer.attention_items | selectattr('severity', 'equalto', 'warning') | list | length %}
+                                {% if critical_count > 0 %}
+                                <span class="attention-badge critical">{{ critical_count }} critical</span>
+                                {% endif %}
+                                {% if warning_count > 0 %}
+                                <span class="attention-badge warning">{{ warning_count }} warning</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: var(--color-success);">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.health_status == 'healthy' %}
+                            <span class="status-badge status-success"><span class="status-dot healthy"></span>Healthy</span>
+                            {% elif customer.health_status == 'warning' %}
+                            <span class="status-badge status-partial"><span class="status-dot warning"></span>Warning</span>
+                            {% elif customer.health_status == 'critical' %}
+                            <span class="status-badge status-failed"><span class="status-dot critical"></span>Critical</span>
+                            {% elif customer.health_status == 'inactive' %}
+                            <span class="status-badge"><span class="status-dot inactive"></span>Inactive</span>
+                            {% else %}
+                            <span class="na">{{ customer.health_status | default('Unknown') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>Total ({{ data.customers | length }} customers)</strong></td>
+                        <td class="number">
+                            {% if data.rollup and data.rollup.fleet_health_percent is defined %}
+                            <strong>{{ data.rollup.fleet_health_percent | round(1) }}%</strong>
+                            {% endif %}
+                        </td>
+                        <td class="number"><strong>{{ data.rollup.total_sensors | default(0) if data.rollup else 0 }}</strong></td>
+                        <td class="number"><strong style="color: var(--color-success);">{{ data.rollup.online_sensors | default(0) if data.rollup else 0 }}</strong></td>
+                        <td class="number"><strong style="color: var(--color-danger);">{{ data.rollup.offline_sensors | default(0) if data.rollup else 0 }}</strong></td>
+                        <td class="number"><strong>{{ data.rollup.total_detections | default(0) if data.rollup else 0 }}</strong></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <div class="chart-unavailable">
+            <span class="icon">&#128203;</span>
+            <p>No customer data available</p>
+        </div>
+        {% endif %}
+    </section>
+
+    {# ================================================================
+       CUSTOMERS NEEDING ATTENTION (Expanded Cards)
+       ================================================================ #}
+    {% if data.attention_summary and data.attention_summary.customers_needing_attention and data.attention_summary.customers_needing_attention | length > 0 %}
+    <section class="dashboard-section" style="background: #fffbeb; border-color: #fbbf24;">
+        <h2>&#9888; Customers Needing Attention</h2>
+
+        {% for cust in data.attention_summary.customers_needing_attention %}
+        <div class="customer-card {% if cust.issues and 'critical' in cust.issues | join(' ') | lower %}critical{% else %}needs-attention{% endif %}">
+            <div class="customer-header">
+                <div class="customer-name">{{ cust.name }}</div>
+            </div>
+            {% if cust.issues %}
+            <div class="attention-badges">
+                {% for issue in cust.issues %}
+                <span class="attention-badge {% if 'critical' in issue | lower or 'offline' in issue | lower %}critical{% else %}warning{% endif %}">
+                    {{ issue }}
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       WARNINGS AND ERRORS
+       ================================================================ #}
+    {% if warnings or errors %}
+    <section class="dashboard-section warnings-section">
+        <h2>Data Limitations & Warnings</h2>
+
+        {% if warnings %}
+        <div class="warning-list">
+            {% for warning in warnings %}
+            <div class="warning-item">
+                <span class="warning-icon">&#9888;</span>
+                <span>{{ warning }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if errors %}
+        <div class="error-list">
+            <h3>Customers With Errors</h3>
+            {% for error in errors %}
+            <div class="error-item">
+                <strong>{{ error.org_name | default('Unknown') }}</strong>
+                <p>{{ error.error_message | default('Data collection failed') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       DATA PROVENANCE FOOTER
+       ================================================================ #}
+    <footer class="data-provenance">
+        <h3>Data Provenance</h3>
+        <dl class="provenance-list">
+            <div>
+                <dt>Generated</dt>
+                <dd>{{ metadata.generated_at | default('N/A') }}</dd>
+            </div>
+            <div>
+                <dt>Time Window</dt>
+                <dd>{{ metadata.time_window.start_display | default('N/A') }} to {{ metadata.time_window.end_display | default('N/A') }}</dd>
+            </div>
+            <div>
+                <dt>Customers</dt>
+                <dd>
+                    {% if metadata.organizations %}
+                        {{ metadata.organizations.successful | default(0) }} of {{ metadata.organizations.total | default(0) }}
+                        ({{ metadata.organizations.success_rate | default(0) | round(1) }}% success)
+                    {% else %}
+                        {{ data.customers | length if data.customers else 'N/A' }}
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Data Source</dt>
+                <dd>LimaCharlie API</dd>
+            </div>
+        </dl>
+        <div class="accuracy-statement">
+            <p><strong>Data Accuracy:</strong> All values shown are from actual API responses.
+            Health scores are calculated as online/total sensors per customer.
+            No data has been estimated, interpolated, or fabricated.</p>
+        </div>
+    </footer>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    {% if data.health_distribution %}
+    // Health Distribution Donut Chart
+    LC.charts.pie(
+        [
+            {% if data.rollup.customers_healthy %}{ label: 'Healthy', value: {{ data.rollup.customers_healthy }} },{% endif %}
+            {% if data.rollup.customers_warning %}{ label: 'Warning', value: {{ data.rollup.customers_warning }} },{% endif %}
+            {% if data.rollup.customers_critical %}{ label: 'Critical', value: {{ data.rollup.customers_critical }} },{% endif %}
+            {% if data.rollup.customers_inactive %}{ label: 'Inactive', value: {{ data.rollup.customers_inactive }} }{% endif %}
+        ].filter(d => d.value > 0),
+        { id: 'healthDistChart', donut: true }
+    );
+    {% endif %}
+
+    {% if data.platforms and data.platforms | length > 0 %}
+    // Platform Distribution Donut Chart
+    LC.charts.pie(
+        [{% for p in data.platforms %}{ label: '{{ p.name }}', value: {{ p.count }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'platformChart', donut: true }
+    );
+    {% endif %}
+
+    {% if data.top_detection_categories and data.top_detection_categories | length > 0 %}
+    // Top Categories Bar Chart
+    LC.charts.bar(
+        [{% for cat in data.top_detection_categories %}{ label: '{{ cat.name | truncate(25) }}', value: {{ cat.count }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'categoriesChart', horizontal: true, multiColor: true }
+    );
+    {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,492 @@
+{#
+  Detection Analytics Dashboard Template
+
+  Displays detection volume, categories, severity breakdown, and trends across tenants.
+
+  DATA ACCURACY GUARDRAILS:
+  - This template ONLY displays data provided in the context
+  - Missing data shows "N/A" or "Data unavailable"
+  - All warnings are displayed in a dedicated section
+  - No data is fabricated, estimated, or interpolated
+  - Detection limit warnings are prominently displayed
+#}
+{% extends 'base.html.j2' %}
+
+{% block title %}Detection Analytics - {{ metadata.time_window.days | default(7) }} Day Analysis{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+        color: #fff;
+        border-radius: var(--radius-lg);
+        margin-bottom: 1.5rem;
+    }
+    .logo { display: flex; align-items: center; gap: 0.75rem; }
+    .logo svg { width: 48px; height: 48px; }
+    .logo span { font-size: 1.5rem; font-weight: 700; }
+    .meta { display: flex; gap: 2rem; font-size: 0.875rem; opacity: 0.9; }
+    .meta dt { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; }
+    .meta dd { font-weight: 600; margin-top: 0.25rem; }
+
+    .severity-bar {
+        display: flex;
+        height: 24px;
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+    .severity-segment {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #fff;
+        min-width: 2rem;
+        transition: flex 0.3s ease;
+    }
+    .severity-critical { background: #dc2626; }
+    .severity-high { background: #ea580c; }
+    .severity-medium { background: #f59e0b; }
+    .severity-low { background: #65a30d; }
+    .severity-info { background: #0ea5e9; }
+
+    .limit-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.5rem;
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: var(--radius-sm);
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .severity-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+        font-size: 0.8rem;
+    }
+    .severity-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .severity-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+    }
+
+    .tenant-card {
+        padding: 1.25rem;
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--radius-lg);
+        margin-bottom: 1rem;
+    }
+    .tenant-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .tenant-name { font-size: 1.125rem; font-weight: 600; }
+    .tenant-count { font-size: 1.5rem; font-weight: 700; color: var(--color-purple); }
+
+    .category-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        background: var(--color-bg-tertiary);
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        margin: 0.25rem;
+    }
+    .category-count {
+        margin-left: 0.5rem;
+        font-weight: 600;
+        color: var(--color-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+    {# ================================================================
+       REPORT HEADER
+       ================================================================ #}
+    <header class="header">
+        <div class="logo">
+            <svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255,255,255,0.2)"/><path d="M12 36V20l12-8 12 8v16" stroke="white" stroke-width="3" fill="none"/><circle cx="24" cy="28" r="4" fill="white"/><path d="M24 20v4" stroke="white" stroke-width="2"/></svg>
+            <span>LimaCharlie</span>
+        </div>
+        <div>
+            <h1>Detection Analytics</h1>
+            <dl class="meta">
+                <div><dt>Time Window</dt><dd>{{ metadata.time_window.days | default(7) }} days</dd></div>
+                <div><dt>Generated</dt><dd>{{ metadata.generated_at | default('N/A') }}</dd></div>
+                <div><dt>Tenants</dt><dd>{{ metadata.tenant_count | default(data.tenants | length if data.tenants else 'N/A') }}</dd></div>
+            </dl>
+        </div>
+    </header>
+
+    {# ================================================================
+       DETECTION LIMIT WARNING (if applicable)
+       ================================================================ #}
+    {% if data.rollup and data.rollup.tenants_at_limit and data.rollup.tenants_at_limit > 0 %}
+    <div class="alert-banner alert-banner-warning">
+        <div class="alert-banner-title">
+            <span>&#9888;</span> Detection Limit Reached
+        </div>
+        <p>
+            {{ data.rollup.tenants_at_limit }} tenant(s) hit the 5,000 detection limit.
+            Actual detection counts may be higher than shown. Tenants at limit are marked with a badge.
+        </p>
+    </div>
+    {% endif %}
+
+    {# ================================================================
+       EXECUTIVE SUMMARY
+       GUARDRAIL: All values come directly from data.rollup
+       ================================================================ #}
+    <section class="dashboard-section" aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Executive Summary</h2>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="card-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" style="color: var(--color-purple);">
+                        {% if data.rollup and data.rollup.total_detections is defined %}
+                            {{ data.rollup.total_detections | default(0) }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Total Detections</span>
+                    <span class="card-subvalue">Last {{ metadata.time_window.days | default(7) }} days</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value">
+                        {% if data.rollup and data.rollup.tenants_with_detections is defined %}
+                            {{ data.rollup.tenants_with_detections }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Tenants with Detections</span>
+                    <span class="card-subvalue">
+                        of {{ data.rollup.total_tenants | default(data.tenants | length if data.tenants else 'N/A') }} total
+                    </span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" style="color: var(--color-warning);">
+                        {% if data.rollup and data.rollup.tenants_at_limit is defined %}
+                            {{ data.rollup.tenants_at_limit }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Tenants at Limit</span>
+                    <span class="card-subvalue">Hit 5,000 detection cap</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-icon red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" style="color: var(--color-danger);">
+                        {% if data.rollup and data.rollup.severities and data.rollup.severities.critical is defined %}
+                            {{ data.rollup.severities.critical }}
+                        {% else %}
+                            <span class="na">N/A</span>
+                        {% endif %}
+                    </span>
+                    <span class="card-label">Critical Severity</span>
+                    <span class="card-subvalue">Requires attention</span>
+                </div>
+            </div>
+        </div>
+
+        {# Severity Breakdown Bar #}
+        {% if data.rollup and data.rollup.severities %}
+        {% set sev = data.rollup.severities %}
+        {% set total_sev = (sev.critical | default(0)) + (sev.high | default(0)) + (sev.medium | default(0)) + (sev.low | default(0)) + (sev.info | default(0)) %}
+        {% if total_sev > 0 %}
+        <div style="margin-top: 1.5rem;">
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Severity Distribution (All Tenants)</h3>
+            <div class="severity-bar">
+                {% if sev.critical and sev.critical > 0 %}
+                <div class="severity-segment severity-critical" style="flex: {{ sev.critical }};">{{ sev.critical }}</div>
+                {% endif %}
+                {% if sev.high and sev.high > 0 %}
+                <div class="severity-segment severity-high" style="flex: {{ sev.high }};">{{ sev.high }}</div>
+                {% endif %}
+                {% if sev.medium and sev.medium > 0 %}
+                <div class="severity-segment severity-medium" style="flex: {{ sev.medium }};">{{ sev.medium }}</div>
+                {% endif %}
+                {% if sev.low and sev.low > 0 %}
+                <div class="severity-segment severity-low" style="flex: {{ sev.low }};">{{ sev.low }}</div>
+                {% endif %}
+                {% if sev.info and sev.info > 0 %}
+                <div class="severity-segment severity-info" style="flex: {{ sev.info }};">{{ sev.info }}</div>
+                {% endif %}
+            </div>
+            <div class="severity-legend">
+                <div class="severity-legend-item"><div class="severity-dot severity-critical"></div>Critical ({{ sev.critical | default(0) }})</div>
+                <div class="severity-legend-item"><div class="severity-dot severity-high"></div>High ({{ sev.high | default(0) }})</div>
+                <div class="severity-legend-item"><div class="severity-dot severity-medium"></div>Medium ({{ sev.medium | default(0) }})</div>
+                <div class="severity-legend-item"><div class="severity-dot severity-low"></div>Low ({{ sev.low | default(0) }})</div>
+                <div class="severity-legend-item"><div class="severity-dot severity-info"></div>Info ({{ sev.info | default(0) }})</div>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+    </section>
+
+    {# ================================================================
+       TOP DETECTION CATEGORIES
+       ================================================================ #}
+    {% if data.top_categories and data.top_categories | length > 0 %}
+    <section class="dashboard-section">
+        <h2>Top Detection Categories</h2>
+        <p class="chart-subtitle">Most common detection types across all tenants</p>
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="categoriesChart"></canvas>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       TOP TENANTS BY DETECTION VOLUME
+       ================================================================ #}
+    {% if data.top_tenants and data.top_tenants | length > 0 %}
+    <section class="dashboard-section">
+        <h2>Top Tenants by Detection Volume</h2>
+        <p class="chart-subtitle">Organizations with highest detection counts</p>
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="topTenantsChart"></canvas>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       PER-TENANT TABLE
+       ================================================================ #}
+    <section class="dashboard-section">
+        <h2>Tenant Detection Details</h2>
+
+        {% if data.tenants and data.tenants | length > 0 %}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tenant</th>
+                        <th class="number">Detections</th>
+                        <th class="number">Critical</th>
+                        <th class="number">High</th>
+                        <th class="number">Medium</th>
+                        <th>Top Categories</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tenant in data.tenants %}
+                    <tr>
+                        <td><strong>{{ tenant.name | default('N/A') }}</strong></td>
+                        <td class="number">
+                            {{ tenant.detection_count | default(0) }}
+                            {% if tenant.limit_reached %}
+                            <span class="limit-badge">LIMIT</span>
+                            {% endif %}
+                        </td>
+                        <td class="number" {% if tenant.severities and tenant.severities.critical and tenant.severities.critical > 0 %}style="color: var(--color-danger); font-weight: 600;"{% endif %}>
+                            {{ tenant.severities.critical | default(0) if tenant.severities else 'N/A' }}
+                        </td>
+                        <td class="number" {% if tenant.severities and tenant.severities.high and tenant.severities.high > 0 %}style="color: #ea580c; font-weight: 600;"{% endif %}>
+                            {{ tenant.severities.high | default(0) if tenant.severities else 'N/A' }}
+                        </td>
+                        <td class="number">
+                            {{ tenant.severities.medium | default(0) if tenant.severities else 'N/A' }}
+                        </td>
+                        <td>
+                            {% if tenant.categories and tenant.categories | length > 0 %}
+                                {% for cat in tenant.categories[:3] %}
+                                <span class="category-pill">{{ cat.name | truncate(20) }}<span class="category-count">{{ cat.count }}</span></span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="na">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if tenant.status == 'success' %}
+                            <span class="status-badge status-success">Success</span>
+                            {% elif tenant.status == 'no_detections' %}
+                            <span class="status-badge status-primary">No Detections</span>
+                            {% elif tenant.status == 'error' %}
+                            <span class="status-badge status-failed">Error</span>
+                            {% else %}
+                            <span class="na">{{ tenant.status | default('N/A') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>Total ({{ data.tenants | length }} tenants)</strong></td>
+                        <td class="number"><strong>{{ data.rollup.total_detections | default(0) if data.rollup else 0 }}</strong></td>
+                        <td class="number"><strong style="color: var(--color-danger);">{{ data.rollup.severities.critical | default(0) if data.rollup and data.rollup.severities else 0 }}</strong></td>
+                        <td class="number"><strong>{{ data.rollup.severities.high | default(0) if data.rollup and data.rollup.severities else 0 }}</strong></td>
+                        <td class="number"><strong>{{ data.rollup.severities.medium | default(0) if data.rollup and data.rollup.severities else 0 }}</strong></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <div class="chart-unavailable">
+            <span class="icon">&#128203;</span>
+            <p>No tenant detection data available</p>
+        </div>
+        {% endif %}
+    </section>
+
+    {# ================================================================
+       WARNINGS AND ERRORS
+       ================================================================ #}
+    {% if warnings or errors %}
+    <section class="dashboard-section warnings-section">
+        <h2>Data Limitations & Warnings</h2>
+
+        {% if warnings %}
+        <div class="warning-list">
+            {% for warning in warnings %}
+            <div class="warning-item">
+                <span class="warning-icon">&#9888;</span>
+                <span>{{ warning }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if errors %}
+        <div class="error-list">
+            <h3>Tenants With Errors</h3>
+            {% for error in errors %}
+            <div class="error-item">
+                <strong>{{ error.org_name | default('Unknown') }}</strong>
+                <p>{{ error.error_message | default('Data collection failed') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       DATA PROVENANCE FOOTER
+       ================================================================ #}
+    <footer class="data-provenance">
+        <h3>Data Provenance</h3>
+        <dl class="provenance-list">
+            <div>
+                <dt>Generated</dt>
+                <dd>{{ metadata.generated_at | default('N/A') }}</dd>
+            </div>
+            <div>
+                <dt>Time Window</dt>
+                <dd>{{ metadata.time_window.start_display | default('N/A') }} to {{ metadata.time_window.end_display | default('N/A') }}</dd>
+            </div>
+            <div>
+                <dt>Tenants</dt>
+                <dd>
+                    {% if data.rollup %}
+                        {{ data.rollup.successful_count | default(0) }} successful, {{ data.rollup.failed_count | default(0) }} failed
+                    {% else %}
+                        {{ data.tenants | length if data.tenants else 'N/A' }}
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Data Source</dt>
+                <dd>LimaCharlie Detection API</dd>
+            </div>
+        </dl>
+        <div class="accuracy-statement">
+            <p><strong>Data Accuracy:</strong> All detection counts are from actual API responses.
+            Organizations that hit the 5,000 detection limit are flagged.
+            No data has been estimated, interpolated, or fabricated.</p>
+        </div>
+    </footer>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    {% if data.top_categories and data.top_categories | length > 0 %}
+    // Top Categories Bar Chart
+    LC.charts.bar(
+        [{% for cat in data.top_categories %}{ label: '{{ cat.name | truncate(25) }}', value: {{ cat.count }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'categoriesChart', horizontal: true, multiColor: true }
+    );
+    {% endif %}
+
+    {% if data.top_tenants and data.top_tenants | length > 0 %}
+    // Top Tenants Bar Chart
+    LC.charts.bar(
+        [{% for t in data.top_tenants %}{ label: '{{ t.name | truncate(15) }}{% if t.limit_reached %} *{% endif %}', value: {{ t.count }} }{% if not loop.last %}, {% endif %}{% endfor %}],
+        { id: 'topTenantsChart', horizontal: true }
+    );
+    {% endif %}
+</script>
+{% endblock %}

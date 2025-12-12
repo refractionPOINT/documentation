@@ -1,0 +1,545 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Customer Health Dashboard Data",
+  "description": "Schema for data input to the customer-health template. Visualizes comprehensive customer health combining sensor coverage, detection activity, and health metrics for customer success tracking. All values must come from actual LimaCharlie API responses - no fabrication allowed.",
+  "type": "object",
+  "required": ["metadata", "data"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "description": "Report metadata - when and how data was collected",
+      "required": ["generated_at", "time_window"],
+      "properties": {
+        "generated_at": {
+          "type": "string",
+          "description": "ISO 8601 timestamp when data was collected",
+          "examples": ["2025-12-10T14:32:45Z"]
+        },
+        "time_window": {
+          "type": "object",
+          "description": "Time range for detection and activity data",
+          "required": ["start_display", "end_display", "days"],
+          "properties": {
+            "start": {
+              "type": "integer",
+              "description": "Start timestamp in Unix epoch seconds"
+            },
+            "end": {
+              "type": "integer",
+              "description": "End timestamp in Unix epoch seconds"
+            },
+            "start_display": {
+              "type": "string",
+              "description": "Human-readable start time",
+              "examples": ["2025-11-10 00:00:00 UTC"]
+            },
+            "end_display": {
+              "type": "string",
+              "description": "Human-readable end time",
+              "examples": ["2025-12-10 23:59:59 UTC"]
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days in the time window",
+              "examples": [7, 14, 30]
+            }
+          }
+        },
+        "organizations": {
+          "type": "object",
+          "description": "Organization processing summary",
+          "properties": {
+            "total": {
+              "type": "integer",
+              "description": "Total number of organizations attempted"
+            },
+            "successful": {
+              "type": "integer",
+              "description": "Number of organizations successfully processed"
+            },
+            "failed": {
+              "type": "integer",
+              "description": "Number of organizations that failed data collection"
+            },
+            "success_rate": {
+              "type": "number",
+              "description": "Percentage of organizations successfully processed"
+            }
+          }
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "Report data containing customer health metrics",
+      "required": ["rollup", "customers"],
+      "properties": {
+        "rollup": {
+          "type": "object",
+          "description": "Fleet-wide summary metrics - displayed in summary cards",
+          "required": ["total_customers", "total_sensors"],
+          "properties": {
+            "total_customers": {
+              "type": "integer",
+              "description": "Total number of customer organizations"
+            },
+            "total_sensors": {
+              "type": "integer",
+              "description": "Total sensor count across all customers"
+            },
+            "online_sensors": {
+              "type": "integer",
+              "description": "Number of sensors currently online"
+            },
+            "offline_sensors": {
+              "type": "integer",
+              "description": "Number of sensors currently offline"
+            },
+            "fleet_health_percent": {
+              "type": "number",
+              "description": "Fleet-wide health percentage (online/total * 100)"
+            },
+            "total_detections": {
+              "type": "integer",
+              "description": "Total detections across all customers in time window"
+            },
+            "customers_healthy": {
+              "type": "integer",
+              "description": "Number of customers with healthy status (>=90% sensors online)"
+            },
+            "customers_warning": {
+              "type": "integer",
+              "description": "Number of customers with warning status (70-89% online)"
+            },
+            "customers_critical": {
+              "type": "integer",
+              "description": "Number of customers with critical status (<70% online)"
+            },
+            "customers_inactive": {
+              "type": "integer",
+              "description": "Number of customers with no sensors or no activity"
+            }
+          }
+        },
+        "health_distribution": {
+          "type": "object",
+          "description": "Distribution of customer health statuses - displayed as donut chart",
+          "properties": {
+            "healthy": {
+              "type": "number",
+              "description": "Percentage of customers with healthy status"
+            },
+            "warning": {
+              "type": "number",
+              "description": "Percentage of customers with warning status"
+            },
+            "critical": {
+              "type": "number",
+              "description": "Percentage of customers with critical status"
+            },
+            "inactive": {
+              "type": "number",
+              "description": "Percentage of customers with inactive status"
+            }
+          }
+        },
+        "platforms": {
+          "type": "array",
+          "description": "Sensor count breakdown by platform across all customers",
+          "items": {
+            "type": "object",
+            "required": ["name", "count"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Platform name (Windows, Linux, macOS, Chrome, USP Adapter, etc.)"
+              },
+              "count": {
+                "type": "integer",
+                "description": "Number of sensors on this platform"
+              },
+              "percent": {
+                "type": "number",
+                "description": "Percentage of total sensors"
+              }
+            }
+          }
+        },
+        "customers": {
+          "type": "array",
+          "description": "Per-customer health details - displayed in sortable table with expandable details",
+          "items": {
+            "type": "object",
+            "required": ["name", "oid", "health_status"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Customer organization name"
+              },
+              "oid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Organization ID"
+              },
+              "health_status": {
+                "type": "string",
+                "enum": ["healthy", "warning", "critical", "inactive", "error"],
+                "description": "Overall health status"
+              },
+              "health_score": {
+                "type": "number",
+                "description": "Numeric health score (0-100) based on sensor uptime"
+              },
+              "sensors": {
+                "type": "object",
+                "description": "Sensor metrics for this customer",
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "description": "Total sensor count"
+                  },
+                  "online": {
+                    "type": "integer",
+                    "description": "Online sensor count"
+                  },
+                  "offline": {
+                    "type": "integer",
+                    "description": "Offline sensor count"
+                  },
+                  "offline_24h": {
+                    "type": "integer",
+                    "description": "Sensors offline for less than 24 hours"
+                  },
+                  "offline_7d": {
+                    "type": "integer",
+                    "description": "Sensors offline for 1-7 days"
+                  },
+                  "offline_30d": {
+                    "type": "integer",
+                    "description": "Sensors offline for more than 7 days"
+                  }
+                }
+              },
+              "detections": {
+                "type": "object",
+                "description": "Detection metrics for this customer",
+                "properties": {
+                  "total": {
+                    "type": ["integer", "null"],
+                    "description": "Total detections in time window (null if unavailable)"
+                  },
+                  "limit_reached": {
+                    "type": "boolean",
+                    "description": "Whether the 5000 detection limit was hit"
+                  },
+                  "severities": {
+                    "type": "object",
+                    "description": "Breakdown by severity level",
+                    "properties": {
+                      "critical": {"type": "integer"},
+                      "high": {"type": "integer"},
+                      "medium": {"type": "integer"},
+                      "low": {"type": "integer"},
+                      "info": {"type": "integer"}
+                    }
+                  },
+                  "top_categories": {
+                    "type": "array",
+                    "description": "Top 5 detection categories for this customer",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {"type": "string"},
+                        "count": {"type": "integer"}
+                      }
+                    }
+                  }
+                }
+              },
+              "platforms": {
+                "type": "array",
+                "description": "Sensor breakdown by platform for this customer",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {"type": "string"},
+                    "count": {"type": "integer"}
+                  }
+                }
+              },
+              "last_activity": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp of most recent sensor activity"
+              },
+              "attention_items": {
+                "type": "array",
+                "description": "Items requiring attention for this customer - displayed as badges/alerts",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["offline_sensors", "high_severity_detections", "stale_sensors", "no_recent_detections", "detection_limit"],
+                      "description": "Type of attention item"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "enum": ["info", "warning", "critical"],
+                      "description": "Severity of the attention item"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable description"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Count associated with this item"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "attention_summary": {
+          "type": "object",
+          "description": "Summary of items requiring attention across all customers - displayed as alert section",
+          "properties": {
+            "critical_items": {
+              "type": "integer",
+              "description": "Total critical attention items"
+            },
+            "warning_items": {
+              "type": "integer",
+              "description": "Total warning attention items"
+            },
+            "customers_needing_attention": {
+              "type": "array",
+              "description": "List of customers with critical issues",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "oid": {"type": "string"},
+                  "issues": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "top_detection_categories": {
+          "type": "array",
+          "description": "Top detection categories across all customers - displayed as bar chart",
+          "items": {
+            "type": "object",
+            "required": ["name", "count"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Detection category name"
+              },
+              "count": {
+                "type": "integer",
+                "description": "Total count across all customers"
+              },
+              "customer_count": {
+                "type": "integer",
+                "description": "Number of customers with this detection type"
+              }
+            }
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Data collection warnings - displayed prominently in alert box",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        ["Detection data limited to 5000 per organization", "3 customers have sensors offline > 30 days"]
+      ]
+    },
+    "errors": {
+      "type": "array",
+      "description": "Per-customer errors - displayed in collapsible error section",
+      "items": {
+        "type": "object",
+        "properties": {
+          "org_name": {
+            "type": "string",
+            "description": "Name of the organization that failed"
+          },
+          "oid": {
+            "type": "string",
+            "description": "Organization ID (UUID)"
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Error description"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "metadata": {
+        "generated_at": "2025-12-10T14:32:45Z",
+        "time_window": {
+          "start": 1731196800,
+          "end": 1733875199,
+          "start_display": "2025-11-10 00:00:00 UTC",
+          "end_display": "2025-12-10 23:59:59 UTC",
+          "days": 30
+        },
+        "organizations": {
+          "total": 24,
+          "successful": 22,
+          "failed": 2,
+          "success_rate": 91.7
+        }
+      },
+      "data": {
+        "rollup": {
+          "total_customers": 24,
+          "total_sensors": 1500,
+          "online_sensors": 1350,
+          "offline_sensors": 150,
+          "fleet_health_percent": 90.0,
+          "total_detections": 45000,
+          "customers_healthy": 18,
+          "customers_warning": 4,
+          "customers_critical": 1,
+          "customers_inactive": 1
+        },
+        "health_distribution": {
+          "healthy": 75.0,
+          "warning": 16.7,
+          "critical": 4.2,
+          "inactive": 4.2
+        },
+        "platforms": [
+          {"name": "Windows", "count": 850, "percent": 56.7},
+          {"name": "Linux", "count": 400, "percent": 26.7},
+          {"name": "macOS", "count": 150, "percent": 10.0},
+          {"name": "USP Adapter", "count": 100, "percent": 6.6}
+        ],
+        "customers": [
+          {
+            "name": "TPS Reporting Solutions",
+            "oid": "aac9c41d-e0a3-4e7e-88b8-33936ab93238",
+            "health_status": "healthy",
+            "health_score": 94.7,
+            "sensors": {
+              "total": 150,
+              "online": 142,
+              "offline": 8,
+              "offline_24h": 5,
+              "offline_7d": 2,
+              "offline_30d": 1
+            },
+            "detections": {
+              "total": 1250,
+              "limit_reached": false,
+              "severities": {
+                "critical": 5,
+                "high": 45,
+                "medium": 200,
+                "low": 500,
+                "info": 500
+              },
+              "top_categories": [
+                {"name": "SENSITIVE_PROCESS_ACCESS", "count": 500},
+                {"name": "NEW_PROCESS", "count": 350}
+              ]
+            },
+            "platforms": [
+              {"name": "Windows", "count": 100},
+              {"name": "Linux", "count": 50}
+            ],
+            "last_activity": "2025-12-10T14:30:00Z",
+            "attention_items": []
+          },
+          {
+            "name": "Acme Corp",
+            "oid": "cdadbaa4-265d-4549-9686-990731ee4091",
+            "health_status": "warning",
+            "health_score": 75.0,
+            "sensors": {
+              "total": 200,
+              "online": 150,
+              "offline": 50,
+              "offline_24h": 10,
+              "offline_7d": 25,
+              "offline_30d": 15
+            },
+            "detections": {
+              "total": 5000,
+              "limit_reached": true,
+              "severities": {
+                "critical": 25,
+                "high": 175,
+                "medium": 800,
+                "low": 2000,
+                "info": 2000
+              }
+            },
+            "attention_items": [
+              {
+                "type": "offline_sensors",
+                "severity": "warning",
+                "message": "50 sensors offline",
+                "count": 50
+              },
+              {
+                "type": "stale_sensors",
+                "severity": "critical",
+                "message": "15 sensors offline > 30 days",
+                "count": 15
+              },
+              {
+                "type": "detection_limit",
+                "severity": "warning",
+                "message": "Hit 5000 detection limit",
+                "count": 5000
+              }
+            ]
+          }
+        ],
+        "attention_summary": {
+          "critical_items": 3,
+          "warning_items": 8,
+          "customers_needing_attention": [
+            {
+              "name": "Acme Corp",
+              "oid": "cdadbaa4-265d-4549-9686-990731ee4091",
+              "issues": ["50 sensors offline", "15 stale sensors", "Detection limit reached"]
+            }
+          ]
+        },
+        "top_detection_categories": [
+          {"name": "NEW_PROCESS", "count": 15000, "customer_count": 22},
+          {"name": "SENSITIVE_PROCESS_ACCESS", "count": 8500, "customer_count": 18},
+          {"name": "DNS_REQUEST", "count": 6000, "customer_count": 15}
+        ]
+      },
+      "warnings": [
+        "Detection data limited to 5000 per organization",
+        "3 customers have sensors offline > 30 days"
+      ],
+      "errors": [
+        {
+          "org_name": "Test Org",
+          "oid": "ddcc6630-20d1-4fd6-b16c-245c58a6d58e",
+          "error_message": "Permission denied: missing sensor.list permission"
+        }
+      ]
+    }
+  ]
+}

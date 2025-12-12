@@ -1,92 +1,139 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Multi-Tenant Billing Summary Data",
-  "description": "Schema for data input to the billing-summary template. All values must come from actual LimaCharlie billing API responses - no fabrication allowed.",
+  "title": "Billing Summary Visualization Data",
+  "description": "Schema for data input to the billing-summary template. Accepts output from the reporting skill's billing-report template. All values must come from actual LimaCharlie billing API responses - no fabrication allowed.",
   "type": "object",
   "required": ["metadata", "data"],
   "properties": {
     "metadata": {
       "type": "object",
+      "description": "Report metadata - when and how data was collected",
       "required": ["generated_at", "period"],
       "properties": {
         "generated_at": {
           "type": "string",
-          "description": "ISO 8601 timestamp when data was collected"
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when data was collected",
+          "examples": ["2025-12-10T14:32:45Z"]
         },
         "period": {
           "type": "string",
-          "description": "Billing period (e.g., 'November 2025')"
+          "description": "Billing period in human-readable format",
+          "examples": ["November 2025", "December 2025"]
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["single", "all"],
+          "description": "Report scope"
         },
         "tenant_count": {
           "type": "integer",
-          "description": "Number of tenants with billing data"
+          "description": "Number of tenants with billing data retrieved",
+          "examples": [24, 50, 100]
         }
       }
     },
     "data": {
       "type": "object",
-      "required": ["rollup", "tenants"],
+      "description": "Report data containing per-tenant details and optional rollup",
+      "required": ["tenants"],
       "properties": {
-        "rollup": {
-          "type": "object",
-          "description": "Aggregate totals across all tenants",
-          "required": ["total_cost", "total_sensors"],
-          "properties": {
-            "total_cost": {
-              "type": "number",
-              "description": "Total monthly cost across all tenants"
-            },
-            "total_sensors": {
-              "type": "integer",
-              "description": "Total sensors across all tenants"
-            },
-            "avg_cost_per_sensor": {
-              "type": "number",
-              "description": "Average cost per sensor (blended rate)"
-            }
-          }
-        },
         "tenants": {
           "type": "array",
-          "description": "Per-tenant billing details",
+          "description": "Per-tenant billing details - each item represents one organization",
           "items": {
             "type": "object",
-            "required": ["name", "oid"],
+            "required": ["name", "oid", "status"],
             "properties": {
-              "name": { "type": "string" },
-              "oid": { "type": "string", "format": "uuid" },
-              "region": { "type": "string" },
-              "sensors": { "type": "integer" },
-              "cost": { "type": "number" },
+              "name": {
+                "type": "string",
+                "description": "Organization display name",
+                "examples": ["Acme Corp", "TPS Reporting Solutions"]
+              },
+              "oid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Organization ID (UUID)",
+                "examples": ["cdadbaa4-265d-4549-9686-990731ee4091"]
+              },
               "status": {
                 "type": "string",
-                "enum": ["active", "draft", "no_usage", "error"]
+                "description": "Data collection status",
+                "enum": ["success", "error", "no_invoice"],
+                "examples": ["success"]
+              },
+              "cost": {
+                "type": "number",
+                "description": "Total invoice amount in dollars (converted from cents)",
+                "examples": [1250.00, 5000.00, 25000.00]
+              },
+              "currency": {
+                "type": "string",
+                "default": "usd",
+                "description": "Currency code"
               },
               "skus": {
                 "type": "array",
-                "description": "SKU line items",
+                "description": "Invoice line items",
                 "items": {
                   "type": "object",
-                  "required": ["name", "amount"],
+                  "required": ["description", "amount"],
                   "properties": {
-                    "name": { "type": "string" },
-                    "amount": { "type": "number" },
-                    "quantity": { "type": ["string", "number"] }
+                    "description": {
+                      "type": "string",
+                      "description": "Line item description (SKU name)",
+                      "examples": [
+                        "Sensor License - Windows",
+                        "Sensor License - Linux",
+                        "Data Output (GB)"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "description": "Amount in dollars",
+                      "examples": [1000.00, 250.00, 500.00]
+                    },
+                    "quantity": {
+                      "type": ["string", "number"],
+                      "description": "Quantity or usage amount for this SKU",
+                      "examples": [21, "50 GB", "1,000,000 evals", 100]
+                    }
                   }
                 }
+              },
+              "invoice_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "PDF download URL (expires)"
+              },
+              "error_message": {
+                "type": "string",
+                "description": "Error details if status=error"
               }
             }
           }
         },
-        "categories": {
-          "type": "array",
-          "description": "Cost breakdown by category (optional)",
-          "items": {
-            "type": "object",
-            "required": ["name", "amount"],
-            "properties": {
-              "name": { "type": "string" },
-              "amount": { "type": "number" }
+        "rollup": {
+          "type": "object",
+          "description": "Aggregate totals across all tenants (optional, only when scope=all)",
+          "properties": {
+            "total_cost": {
+              "type": "number",
+              "description": "Sum of all tenant costs in dollars",
+              "examples": [12500.00, 45000.00]
+            },
+            "total_tenants": {
+              "type": "integer",
+              "description": "Total number of tenants processed",
+              "examples": [24, 50]
+            },
+            "successful_count": {
+              "type": "integer",
+              "description": "Tenants with successful data retrieval"
+            },
+            "failed_count": {
+              "type": "integer",
+              "description": "Tenants that failed or had no invoice"
             }
           }
         }
@@ -94,17 +141,94 @@
     },
     "warnings": {
       "type": "array",
-      "items": { "type": "string" }
+      "description": "Data collection warnings - displayed in yellow alert box",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        ["12 organizations missing billing.ctrl permission", "Usage stats unavailable for 5 orgs"]
+      ]
     },
     "errors": {
       "type": "array",
+      "description": "Per-organization errors - displayed in collapsible error section",
       "items": {
         "type": "object",
         "properties": {
-          "org_name": { "type": "string" },
-          "error_message": { "type": "string" }
+          "org_name": {
+            "type": "string",
+            "description": "Name of the organization that failed",
+            "examples": ["Client XYZ", "Test Org"]
+          },
+          "oid": {
+            "type": "string",
+            "description": "Organization ID (UUID)",
+            "examples": ["abc123-def456-..."]
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Error description",
+            "examples": ["Permission denied: missing billing.ctrl", "API timeout"]
+          }
         }
       }
     }
-  }
+  },
+  "examples": [
+    {
+      "metadata": {
+        "generated_at": "2025-12-10T14:32:45Z",
+        "period": "November 2025",
+        "scope": "all",
+        "tenant_count": 24
+      },
+      "data": {
+        "tenants": [
+          {
+            "name": "TPS Reporting Solutions",
+            "oid": "aac9c41d-e0a3-4e7e-88b8-33936ab93238",
+            "status": "success",
+            "cost": 1250.00,
+            "currency": "usd",
+            "skus": [
+              {"description": "Sensor License - Windows", "amount": 800.00, "quantity": 16},
+              {"description": "Sensor License - Linux", "amount": 250.00, "quantity": 5},
+              {"description": "Data Output (GB)", "amount": 200.00, "quantity": "40 GB"}
+            ]
+          },
+          {
+            "name": "lc-infrastructure",
+            "oid": "efedcf87-318c-4c15-9f52-482606491223",
+            "status": "success",
+            "cost": 850.00,
+            "skus": [
+              {"description": "Sensor License - Linux", "amount": 850.00, "quantity": 17}
+            ]
+          },
+          {
+            "name": "Test Org",
+            "oid": "ddcc6630-20d1-4fd6-b16c-245c58a6d58e",
+            "status": "error",
+            "error_message": "Permission denied: missing billing.ctrl"
+          }
+        ],
+        "rollup": {
+          "total_cost": 2100.00,
+          "total_tenants": 3,
+          "successful_count": 2,
+          "failed_count": 1
+        }
+      },
+      "warnings": [
+        "1 organization returned permission denied for billing data"
+      ],
+      "errors": [
+        {
+          "org_name": "Test Org",
+          "oid": "ddcc6630-20d1-4fd6-b16c-245c58a6d58e",
+          "error_message": "Permission denied: missing billing.ctrl permission"
+        }
+      ]
+    }
+  ]
 }

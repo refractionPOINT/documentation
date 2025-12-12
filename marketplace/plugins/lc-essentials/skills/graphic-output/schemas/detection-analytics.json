@@ -1,0 +1,392 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Detection Analytics Dashboard Data",
+  "description": "Schema for data input to the detection-analytics template. Visualizes detection volume, categories, severity breakdown, and trends across tenants. All values must come from actual LimaCharlie API responses - no fabrication allowed.",
+  "type": "object",
+  "required": ["metadata", "data"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "description": "Report metadata - when and how data was collected",
+      "required": ["generated_at", "time_window"],
+      "properties": {
+        "generated_at": {
+          "type": "string",
+          "description": "ISO 8601 timestamp when data was collected",
+          "examples": ["2025-12-10T14:32:45Z"]
+        },
+        "time_window": {
+          "type": "object",
+          "description": "Time range for detection data",
+          "required": ["start_display", "end_display", "days"],
+          "properties": {
+            "start": {
+              "type": "integer",
+              "description": "Start timestamp in Unix epoch seconds"
+            },
+            "end": {
+              "type": "integer",
+              "description": "End timestamp in Unix epoch seconds"
+            },
+            "start_display": {
+              "type": "string",
+              "description": "Human-readable start time",
+              "examples": ["2025-12-03 00:00:00 UTC"]
+            },
+            "end_display": {
+              "type": "string",
+              "description": "Human-readable end time",
+              "examples": ["2025-12-10 23:59:59 UTC"]
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days in the time window",
+              "examples": [7, 14, 30]
+            }
+          }
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["single", "all"],
+          "description": "Report scope"
+        },
+        "tenant_count": {
+          "type": "integer",
+          "description": "Number of tenants in report (when scope=all)"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "description": "Report data containing detection analytics",
+      "required": ["tenants"],
+      "properties": {
+        "tenants": {
+          "type": "array",
+          "description": "Per-tenant detection data - displayed in sortable table with expandable details",
+          "items": {
+            "type": "object",
+            "required": ["name", "oid", "status"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Organization name"
+              },
+              "oid": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Organization ID"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["success", "error", "no_detections"],
+                "description": "Data collection status"
+              },
+              "detection_count": {
+                "type": "integer",
+                "description": "Total detections in time window"
+              },
+              "limit_reached": {
+                "type": "boolean",
+                "description": "Whether the 5000 detection limit was hit"
+              },
+              "categories": {
+                "type": "array",
+                "description": "Detection breakdown by category/rule",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "count"],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Category or rule name"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of detections in this category"
+                    },
+                    "percent": {
+                      "type": "number",
+                      "description": "Percentage of tenant's total detections"
+                    }
+                  }
+                }
+              },
+              "severities": {
+                "type": "object",
+                "description": "Detection breakdown by severity - displayed as stacked bar",
+                "properties": {
+                  "critical": {
+                    "type": "integer",
+                    "description": "Critical severity count"
+                  },
+                  "high": {
+                    "type": "integer",
+                    "description": "High severity count"
+                  },
+                  "medium": {
+                    "type": "integer",
+                    "description": "Medium severity count"
+                  },
+                  "low": {
+                    "type": "integer",
+                    "description": "Low severity count"
+                  },
+                  "info": {
+                    "type": "integer",
+                    "description": "Informational severity count"
+                  }
+                }
+              },
+              "top_hosts": {
+                "type": "array",
+                "description": "Hosts with most detections",
+                "items": {
+                  "type": "object",
+                  "required": ["hostname", "count"],
+                  "properties": {
+                    "hostname": {
+                      "type": "string",
+                      "description": "Host name"
+                    },
+                    "sid": {
+                      "type": "string",
+                      "description": "Sensor ID"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Detection count for this host"
+                    }
+                  }
+                }
+              },
+              "error_message": {
+                "type": "string",
+                "description": "Error details if status=error"
+              }
+            }
+          }
+        },
+        "rollup": {
+          "type": "object",
+          "description": "Aggregate totals across all tenants - displayed in summary cards",
+          "properties": {
+            "total_detections": {
+              "type": "integer",
+              "description": "Sum of all detections across tenants"
+            },
+            "total_tenants": {
+              "type": "integer",
+              "description": "Total number of tenants processed"
+            },
+            "tenants_with_detections": {
+              "type": "integer",
+              "description": "Tenants that had at least one detection"
+            },
+            "tenants_at_limit": {
+              "type": "integer",
+              "description": "Tenants that hit the 5000 detection limit"
+            },
+            "successful_count": {
+              "type": "integer",
+              "description": "Tenants with successful data retrieval"
+            },
+            "failed_count": {
+              "type": "integer",
+              "description": "Tenants that failed data retrieval"
+            },
+            "severities": {
+              "type": "object",
+              "description": "Aggregate severity breakdown across all tenants",
+              "properties": {
+                "critical": {"type": "integer"},
+                "high": {"type": "integer"},
+                "medium": {"type": "integer"},
+                "low": {"type": "integer"},
+                "info": {"type": "integer"}
+              }
+            }
+          }
+        },
+        "top_categories": {
+          "type": "array",
+          "description": "Top detection categories across all tenants - displayed as bar chart",
+          "items": {
+            "type": "object",
+            "required": ["name", "count"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Category or rule name"
+              },
+              "count": {
+                "type": "integer",
+                "description": "Total count across all tenants"
+              },
+              "tenant_count": {
+                "type": "integer",
+                "description": "Number of tenants with this detection type"
+              }
+            }
+          }
+        },
+        "top_tenants": {
+          "type": "array",
+          "description": "Tenants ranked by detection volume - displayed as horizontal bar chart",
+          "items": {
+            "type": "object",
+            "required": ["name", "count"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Tenant name"
+              },
+              "oid": {
+                "type": "string",
+                "description": "Organization ID"
+              },
+              "count": {
+                "type": "integer",
+                "description": "Detection count"
+              },
+              "limit_reached": {
+                "type": "boolean",
+                "description": "Whether limit was hit"
+              }
+            }
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Data collection warnings - displayed prominently in alert box",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        ["5 tenants hit the 5000 detection limit", "Severity data unavailable for 3 tenants"]
+      ]
+    },
+    "errors": {
+      "type": "array",
+      "description": "Per-tenant errors - displayed in collapsible error section",
+      "items": {
+        "type": "object",
+        "properties": {
+          "org_name": {
+            "type": "string",
+            "description": "Name of the organization that failed"
+          },
+          "oid": {
+            "type": "string",
+            "description": "Organization ID (UUID)"
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Error description"
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "metadata": {
+        "generated_at": "2025-12-10T14:32:45Z",
+        "time_window": {
+          "start": 1733270400,
+          "end": 1733875199,
+          "start_display": "2025-12-03 00:00:00 UTC",
+          "end_display": "2025-12-10 23:59:59 UTC",
+          "days": 7
+        },
+        "scope": "all",
+        "tenant_count": 24
+      },
+      "data": {
+        "tenants": [
+          {
+            "name": "TPS Reporting Solutions",
+            "oid": "aac9c41d-e0a3-4e7e-88b8-33936ab93238",
+            "status": "success",
+            "detection_count": 1250,
+            "limit_reached": false,
+            "categories": [
+              {"name": "SENSITIVE_PROCESS_ACCESS", "count": 500, "percent": 40.0},
+              {"name": "NEW_PROCESS", "count": 350, "percent": 28.0},
+              {"name": "NETWORK_CONNECTIONS", "count": 200, "percent": 16.0}
+            ],
+            "severities": {
+              "critical": 5,
+              "high": 45,
+              "medium": 200,
+              "low": 500,
+              "info": 500
+            },
+            "top_hosts": [
+              {"hostname": "WORKSTATION-01", "sid": "abc123", "count": 150},
+              {"hostname": "SERVER-DC01", "sid": "def456", "count": 120}
+            ]
+          },
+          {
+            "name": "Acme Corp",
+            "oid": "cdadbaa4-265d-4549-9686-990731ee4091",
+            "status": "success",
+            "detection_count": 5000,
+            "limit_reached": true,
+            "categories": [
+              {"name": "NEW_PROCESS", "count": 2500, "percent": 50.0},
+              {"name": "DNS_REQUEST", "count": 1500, "percent": 30.0}
+            ],
+            "severities": {
+              "critical": 25,
+              "high": 175,
+              "medium": 800,
+              "low": 2000,
+              "info": 2000
+            }
+          }
+        ],
+        "rollup": {
+          "total_detections": 45000,
+          "total_tenants": 24,
+          "tenants_with_detections": 20,
+          "tenants_at_limit": 5,
+          "successful_count": 22,
+          "failed_count": 2,
+          "severities": {
+            "critical": 150,
+            "high": 1200,
+            "medium": 8000,
+            "low": 18000,
+            "info": 17650
+          }
+        },
+        "top_categories": [
+          {"name": "NEW_PROCESS", "count": 15000, "tenant_count": 22},
+          {"name": "SENSITIVE_PROCESS_ACCESS", "count": 8500, "tenant_count": 18},
+          {"name": "DNS_REQUEST", "count": 6000, "tenant_count": 15},
+          {"name": "NETWORK_CONNECTIONS", "count": 5500, "tenant_count": 20},
+          {"name": "FILE_CREATE", "count": 4000, "tenant_count": 19}
+        ],
+        "top_tenants": [
+          {"name": "GlobalTech Industries", "oid": "abc123", "count": 5000, "limit_reached": true},
+          {"name": "Acme Corp", "oid": "def456", "count": 5000, "limit_reached": true},
+          {"name": "Nexus Systems", "oid": "ghi789", "count": 4200, "limit_reached": false}
+        ]
+      },
+      "warnings": [
+        "5 tenants hit the 5000 detection limit - actual counts may be higher",
+        "Severity data based on detection metadata where available"
+      ],
+      "errors": [
+        {
+          "org_name": "Test Org",
+          "oid": "ddcc6630-20d1-4fd6-b16c-245c58a6d58e",
+          "error_message": "Permission denied: missing insight.det.get permission"
+        }
+      ]
+    }
+  ]
+}
