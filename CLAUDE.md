@@ -1,5 +1,30 @@
 # Using LimaCharlie
 
+## Session Start Checklist (MANDATORY)
+
+**STOP. Before answering ANY LimaCharlie-related question, complete ALL steps below:**
+
+1. **Load the skill**: Invoke `lc-essentials:limacharlie-call` skill
+2. **Get org IDs**: Call `list_user_orgs` to map org names to UUIDs
+3. **Initialize each org** - spawn these calls IN PARALLEL for efficiency:
+   - `list_sops` - store name+description index (ignore errors)
+   - `get_cloud_sensor(oid, "live-ai-activity")` - check if live dashboard exists
+   - `get_org_urls` - get the hooks domain
+   - `who_am_i` - get API identity for posting
+
+4. **After parallel calls complete**, for each org where `live-ai-activity` sensor exists:
+   - Extract secret from `data.webhook.secret`
+   - Construct webhook URL: `https://{hooks}/{oid}/live-ai-activity/{secret}`
+   - Store URL and ident for the session
+
+**CRITICAL: Do NOT answer the user's question until steps 1-4 are FULLY complete.** The webhook URL must be ready BEFORE you do any work, so activity can be posted immediately after task completion.
+
+### Why This Matters
+
+If you skip `get_org_urls` or `who_am_i` during setup, you won't have the webhook URL ready when you complete a task, and you'll either forget to post or have to make extra API calls later.
+
+---
+
 ## Required Skill
 
 **ALWAYS load the `lc-essentials:limacharlie-call` skill** before any LimaCharlie API operation. Never call LimaCharlie MCP tools directly.
@@ -145,3 +170,124 @@ plat == linux and hostname contains "web" # Linux with "web" in hostname
 plat == windows and not isolated          # Non-isolated Windows
 ext_plat == windows                       # Carbon Black/Crowdstrike reporting Windows endpoints
 ```
+
+## Live Activity Dashboard
+
+Claude Code sessions can report activity summaries to LimaCharlie for visibility into AI operations. This is opt-out: if the infrastructure exists, summaries are posted automatically.
+
+### On Conversation Start (Check Dashboard Availability)
+
+At session start, after loading SOPs, check if the live dashboard is configured:
+
+1. **Generate a session ID** using `uuidgen` - this identifies all activity from this session:
+   ```bash
+   uuidgen
+   ```
+   Store the result as `session_id` for the entire session.
+
+2. **Get your API identity** using `who_am_i` - store the `ident` field for posting:
+   ```
+   Function: who_am_i
+   Parameters: {"oid": "<org-uuid>"}
+   ```
+
+3. For each organization in scope, attempt to retrieve the cloud sensor `live-ai-activity`:
+   ```
+   Function: get_cloud_sensor
+   Parameters: {"oid": "<org-uuid>", "sensor_name": "live-ai-activity"}
+   ```
+
+4. **If the sensor exists and is enabled:**
+   - Extract the secret from `data.webhook.secret`
+   - Get the hooks domain using `get_org_urls`
+   - Construct the webhook URL: `https://{hooks}/{oid}/live-ai-activity/{secret}`
+   - Store the URL, ident, and session_id internally for this session
+
+5. **If the sensor doesn't exist or you lack permissions:**
+   - Silently disable activity posting for that org (don't error or warn)
+   - Continue with normal operations
+
+### When to Post Activity Summaries
+
+Post summaries at **two key moments**:
+
+1. **Before starting** a significant task - what you're about to do
+2. **After completing** the task - the results and outcome
+
+Use your judgment to post when:
+- Starting a non-trivial task (feature, bug fix, refactor, investigation)
+- Completing a task with concrete results
+- The user's focus shifts to a different area of work
+- A meaningful milestone is reached in multi-step work
+
+**Do NOT post for:**
+- Minor edits or single-line changes
+- Research/exploration without concrete outcomes
+- Every tool call or file read
+- Trivial operations
+
+### How to Post
+
+Spawn the `lc-essentials:live-activity-poster` sub-agent **in the background** (fire-and-forget):
+
+```
+Task tool with:
+  subagent_type="lc-essentials:live-activity-poster"
+  run_in_background=true
+
+Prompt:
+Post activity summary to LimaCharlie webhook.
+
+Webhook URL: <stored-webhook-url>
+Ident: <stored-ident-from-who_am_i>  (omit if who_am_i unavailable)
+Session ID: <stored-session_id-from-uuidgen>
+
+Summary:
+<Markdown-formatted summary, max 8 lines>
+```
+
+**Important**: Always use `run_in_background: true` - the main session should not block waiting for the post to complete.
+
+**Payload format**: `{"summary":"<markdown text>", "ident":"<api-identity>", "session_id":"<uuid>"}` (ident optional)
+
+**Summary format**: Use Markdown with headers, bullet lists, inline code for file paths. Maximum 8 lines.
+
+**Example summaries:**
+
+*Before starting:*
+```markdown
+## Starting: Auth Middleware
+Adding JWT validation to `auth/middleware.go`.
+- Token refresh logic
+- Session management
+```
+
+*After completing:*
+```markdown
+## Completed: Auth Middleware
+Implemented JWT validation in `auth/middleware.go`.
+- Added token refresh logic
+- Session management working
+```
+
+*Before starting:*
+```markdown
+## Starting: Bug Investigation
+Investigating connection pool race condition in `db/pool.go`.
+```
+
+*After completing:*
+```markdown
+## Fixed: Connection Pool
+Resolved race condition in `db/pool.go`.
+- Added mutex synchronization
+- Verified with concurrent tests
+```
+
+### Error Handling
+
+- **Posting fails**: Log internally but don't interrupt main work
+- **Webhook not configured**: Skip posting silently
+- **Permission errors**: Skip posting for that org
+
+The live dashboard is optional infrastructure - never let posting issues affect the user's work.
