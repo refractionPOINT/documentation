@@ -49,11 +49,18 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `list_user_orgs` - Get OID from org name (no parameters needed)
 
 ### Sensor Management
-- `list_sensors` - List all sensors with filtering
-- `get_sensor_info` - Detailed sensor info
-- `is_online` / `get_online_sensors` - Check online status
+- `list_sensors` - **Primary function** for finding sensors. Supports `selector` (bexpr filter) and `online_only` parameters. Use this to find sensors by platform, hostname, tags, etc.
+- `get_sensor_info` - Detailed info for a single sensor (when you already have the SID)
+- `is_online` - Check if a specific sensor is online
+- `get_online_sensors` - Returns only SIDs of online sensors (no filtering). Use `list_sensors` with `online_only: true` instead when you need to filter by platform/hostname/tags
 - `add_tag` / `remove_tag` - Sensor tagging
 - `isolate_network` / `rejoin_network` - Network isolation
+
+**Finding sensors by platform:** Always use `list_sensors` with a selector:
+```
+list_sensors(oid, selector="plat == windows", online_only=true)
+```
+Do NOT use `get_online_sensors` + loop through `get_sensor_info`—that wastes API calls.
 
 ### Threat Hunting
 
