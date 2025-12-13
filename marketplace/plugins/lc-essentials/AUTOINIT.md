@@ -179,10 +179,11 @@ Claude Code sessions can report activity summaries to LimaCharlie for visibility
 
 At session start, after loading SOPs, check if the live dashboard is configured:
 
-1. **Generate a session ID** using `uuidgen` - this identifies all activity from this session:
+1. **Generate a session ID** - this identifies all activity from this session:
    ```bash
-   uuidgen
+   cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen
    ```
+   This tries the Linux kernel's UUID generator first (faster), falling back to `uuidgen` on macOS or if `/proc` is unavailable.
    Store the result as `session_id` for the entire session.
 
 2. **Get your API identity** using `who_am_i` - store the `ident` field for posting:
