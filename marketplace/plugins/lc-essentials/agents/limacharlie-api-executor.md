@@ -153,7 +153,7 @@ API returns a reference to download:
 Run the analyze script with the `resource_link`:
 
 ```bash
-bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/..."
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "https://storage.googleapis.com/..."
 ```
 
 **IMPORTANT: curl auto-decompresses gzip**
@@ -303,7 +303,7 @@ Execute LimaCharlie API call:
 1. Parse prompt: function=`list_sensors`, Return=extraction instructions
 2. Call MCP tool
 3. Receive `resource_link` response
-4. Run `bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "<url>"`
+4. Run `bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "<url>"`
 5. Review schema: `{"sensors":[{"sid":"string","hostname":"string","platform":"number",...}],"count":"number"}`
 6. Extract counts per Return instructions:
    ```bash
