@@ -445,7 +445,7 @@ If API returns `resource_link` instead of inline data:
 **REQUIRED Workflow for resource_link:**
 ```bash
 # Step 1: Download and analyze schema (MANDATORY - do not skip)
-bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/..."
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "https://storage.googleapis.com/..."
 
 # Output shows schema and file path:
 # (stdout) {"sensors": {"sensor-id": {"sid": "string", "hostname": "string", ...}}}

@@ -159,7 +159,7 @@ These sensors are connected but not generating events...
 When `list_user_orgs` returns a `resource_link`:
 
 ```bash
-bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "<resource_link>"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "<resource_link>"
 jq -r '.orgs[] | "\(.oid)|\(.name)"' /tmp/lc-result-*.json
 ```
 
