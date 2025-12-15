@@ -13,7 +13,7 @@ The following example would execute in response to AWS telemetry that 1) met cer
   extension action: run
   extension name: ext-cloud-cli
   extension request:
-    cloud: '{{ "aws" }}'
+    tool: '{{ "aws" }}'
     command_tokens:
       - ec2
       - stop-instances

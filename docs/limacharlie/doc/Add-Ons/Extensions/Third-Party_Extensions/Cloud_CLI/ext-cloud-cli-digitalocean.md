@@ -13,7 +13,7 @@ The following example of a response action will enumerate a list of compute drop
   extension action: run
   extension name: ext-cloud-cli
   extension request:
-    cloud: '{{ "doctl" }}'
+    tool: '{{ "doctl" }}'
     command_line: '{{ "compute droplet list" }}'
     credentials: '{{ "hive://secret/secret-name" }}'
 ```

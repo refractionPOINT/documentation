@@ -117,11 +117,11 @@ Comments can be added to events, detections, and entities.
 
 The timeline hive requires the following permissions:
 
-* `query.get` - Read timeline records
-* `query.set` - Create/update timeline records
-* `query.del` - Delete timeline records
-* `query.get.mtd` - Read timeline metadata
-* `query.set.mtd` - Modify timeline metadata
+* `timeline.get` - Read timeline records
+* `timeline.set` - Create/update timeline records
+* `timeline.del` - Delete timeline records
+* `timeline.get.mtd` - Read timeline metadata
+* `timeline.set.mtd` - Modify timeline metadata
 
 ## Command-Line Usage
 
