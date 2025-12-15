@@ -13,7 +13,7 @@ The following example stops the specified GCP compute instance.
   extension action: run
   extension name: ext-cloud-cli
   extension request:
-    cloud: '{{ "gcloud" }}'
+    tool: '{{ "gcloud" }}'
     command_tokens:
       - compute
       - instances
