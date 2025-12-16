@@ -20,6 +20,7 @@ Your prompt will specify:
 - **Function Name**: The LimaCharlie API function to call (snake_case)
 - **Parameters**: Dictionary of parameters for the function
 - **Return** (required): What data the caller wants back from the API response
+- **Script path** (required): Path to `analyze-lc-result.sh` for handling large results (provided by parent skill)
 
 ### Return Field Options
 
@@ -150,11 +151,11 @@ API returns a reference to download:
 
 #### Step 4a: Download and Analyze Schema
 
-Run the analyze script with the `resource_link`. The script is at `scripts/analyze-lc-result.sh` in the plugin root. From the limacharlie-call skill's base directory, use `../../scripts/analyze-lc-result.sh`:
+Run the analyze script with the `resource_link`. The script path is provided in your prompt by the parent skill (look for "Script path: ..."):
 
 ```bash
-# Path: {skill_base_directory}/../../scripts/analyze-lc-result.sh
-bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "https://storage.googleapis.com/..."
+# Use the script path from your prompt
+bash "{script_path_from_prompt}" "https://storage.googleapis.com/..."
 ```
 
 **IMPORTANT: curl auto-decompresses gzip**
@@ -298,13 +299,14 @@ Execute LimaCharlie API call:
 - Function: list_sensors
 - Parameters: {"oid": "8cbe27f4-bfa1-4afb-ba19-138cd51389cd"}
 - Return: Count of total sensors and breakdown by platform
+- Script path: /home/user/.claude/plugins/cache/lc-marketplace/lc-essentials/1.0.0/scripts/analyze-lc-result.sh
 ```
 
 **Your Actions**:
-1. Parse prompt: function=`list_sensors`, Return=extraction instructions
+1. Parse prompt: function=`list_sensors`, Return=extraction instructions, Script path=`/path/to/scripts/analyze-lc-result.sh`
 2. Call MCP tool
 3. Receive `resource_link` response
-4. Run `bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "<url>"`
+4. Run `bash "{script_path_from_prompt}" "<url>"` (using the script path from your prompt)
 5. Review schema: `{"sensors":[{"sid":"string","hostname":"string","platform":"number",...}],"count":"number"}`
 6. Extract counts per Return instructions:
    ```bash
