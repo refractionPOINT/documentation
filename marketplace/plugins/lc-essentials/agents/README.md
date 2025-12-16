@@ -537,6 +537,81 @@ Returns comprehensive fleet analysis:
 
 ---
 
+### fp-pattern-investigator
+
+**Model**: Claude Sonnet (thorough security analysis)
+
+**Purpose**: Conduct a **thorough cybersecurity investigation** of a single FP pattern to determine if it's truly a false positive or might be a real threat. Designed to be spawned in parallel (one instance per pattern) by the `fp-pattern-finder` skill.
+
+**When to Use**:
+This agent is **not invoked directly by users**. Instead, it's spawned in parallel by the `fp-pattern-finder` skill after deterministic pattern detection, to validate each pattern before presenting to the user.
+
+**Architecture Role**:
+- **Parent Skill**: `fp-pattern-finder` (orchestrates parallel execution)
+- **This Agent**: Investigates ONE detected FP pattern with full analyst capabilities
+- **Parallelization**: Multiple instances run simultaneously, one per pattern
+
+**Expected Input**:
+Receives a prompt specifying:
+- Organization name and ID (UUID)
+- Pattern data (type, category, identifier, count, sample detection IDs)
+
+**Output Format**:
+Returns structured JSON with comprehensive investigation findings:
+```json
+{
+  "pattern_id": "single_host_concentration-00313-NIX-penguin",
+  "verdict": "likely_fp|needs_review|not_fp",
+  "confidence": "high|medium|low",
+  "reasoning": "Thorough investigation confirms this is Go build/test activity...",
+  "key_findings": [
+    "All executions from /tmp/go-build* paths",
+    "Host tagged 'chromebook', 'max' - developer workstation",
+    "No other detections on host in past 7 days",
+    "Process trees show expected go test -> test2json chain"
+  ],
+  "risk_factors": [],
+  "technical_evidence": {
+    "samples_analyzed": 3,
+    "sensor_info": { "hostname": "penguin", "tags": ["chromebook", "max"] },
+    "additional_investigation": {
+      "other_detections_on_host": 0,
+      "related_events_checked": "LCQL query for network activity...",
+      "process_tree_analysis": "Parent chain: go test -> test2json"
+    }
+  },
+  "fp_rule_hints": { ... }
+}
+```
+
+**Key Features**:
+- **Advanced Analyst Mindset**: Investigates like an experienced security analyst, not a checklist
+- **Full Investigative Capabilities**: Uses LCQL queries, process trees, IOC searches, timeline analysis
+- **Thorough Context Gathering**: Examines related detections, network activity, and process ancestry
+- **Evidence-Driven**: Follows investigative leads based on findings
+- **Conservative Verdicts**: Uses `needs_review` when uncertain
+
+**Investigation Approach**:
+Rather than following a rigid checklist, adapts investigation based on findings:
+- Examines sample detections for key attributes
+- Builds sensor context (tags, hostname, purpose)
+- Follows investigative leads (suspicious hashes → IOC search, unusual parents → process tree)
+- Looks for consistency (FP indicator) vs. variance (threat indicator)
+- Checks for related activity (other detections, network connections, persistence)
+
+**Skills Used**:
+- `lc-essentials:limacharlie-call` - For all LimaCharlie API operations (120+ functions)
+
+**How It Works**:
+1. Extracts pattern data from prompt
+2. Examines sample detections in detail
+3. Builds comprehensive sensor/host context
+4. Conducts additional investigation based on findings (LCQL queries, IOC searches, process trees)
+5. Analyzes patterns across samples (consistency vs. variance)
+6. Returns detailed verdict with full technical evidence
+
+---
+
 ## Agent Architecture
 
 All agents follow Claude Code best practices:

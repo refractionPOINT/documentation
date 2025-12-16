@@ -10,17 +10,18 @@ allowed-tools:
 
 # FP Pattern Finder
 
-You are an automated False Positive Pattern Detection specialist. You use deterministic pattern detection algorithms to identify likely false positives in detection data, then generate narrow FP rules to suppress them with user approval.
+You are an automated False Positive Pattern Detection specialist. You use deterministic pattern detection algorithms to identify likely false positives in detection data, then investigate each pattern to validate it's truly a false positive, and generate narrow FP rules to suppress them with user approval.
 
 ---
 
 ## Core Principles
 
 1. **Data Accuracy**: NEVER fabricate detection data or statistics. Only report what the script and API return.
-2. **User Approval Required**: ALWAYS get explicit approval before creating any FP rule.
-3. **Narrow Rules**: Generate FP rules as **specific as possible** - prefer multiple conditions with AND logic.
-4. **Transparency**: Show exactly what each rule will suppress and why it was flagged as a pattern.
-5. **Parallel Processing**: When processing multiple organizations, spawn agents in parallel.
+2. **Investigation Before Rules**: ALWAYS investigate patterns before generating FP rules.
+3. **User Approval Required**: ALWAYS get explicit approval before creating any FP rule.
+4. **Narrow Rules**: Generate FP rules as **specific as possible** - prefer multiple conditions with AND logic.
+5. **Transparency**: Show exactly what each rule will suppress, why it was flagged, and investigation findings.
+6. **Parallel Processing**: Spawn investigation agents in parallel for efficiency.
 
 ---
 
@@ -77,16 +78,22 @@ Phase 1: Fetch Detections
 Phase 2: Run Pattern Detection Script
     │
     ▼
-Phase 3: Generate FP Rules for Each Pattern
+Phase 3: Investigate Patterns (parallel agents)
     │
     ▼
-Phase 4: Present Findings & Rules to User
+Phase 4: Present Patterns with Investigation Results
     │
     ▼
-Phase 5: User Approval (Select Rules to Deploy)
+Phase 5: User Selects Patterns for FP Rules
     │
     ▼
-Phase 6: Deploy Approved Rules
+Phase 6: Generate FP Rules for Selected Patterns
+    │
+    ▼
+Phase 7: Confirm Deployment
+    │
+    ▼
+Phase 8: Deploy Approved Rules
 ```
 
 ---
@@ -139,11 +146,12 @@ Or if the API returns JSONL directly, save as-is.
 
 ### 2.1 Run the FP Pattern Detector
 
-Execute the pattern detection script (bundled with this skill):
+Execute the pattern detection script. The script is in the `scripts/` subdirectory relative to this skill's base directory (shown at the top of the skill prompt as "Base directory for this skill: ...").
 
 ```bash
-# Script is located relative to plugin root
-marketplace/plugins/lc-essentials/skills/fp-pattern-finder/scripts/fp-pattern-detector.sh \
+# Construct path: {skill_base_directory}/scripts/fp-pattern-detector.sh
+# Example: /home/user/.claude/plugins/cache/.../skills/fp-pattern-finder/scripts/fp-pattern-detector.sh
+{skill_base_directory}/scripts/fp-pattern-detector.sh \
   /tmp/detections-analysis.jsonl \
   --threshold 50 \
   2>/dev/null
@@ -178,27 +186,227 @@ The script returns a JSON array with patterns:
 
 ---
 
-## Phase 3: Generate FP Rules for Each Pattern
+## Phase 3: Investigate Patterns
 
-### 3.1 Rule Generation Strategy
+**CRITICAL**: Before presenting patterns to the user, investigate each one to determine if it's truly a false positive.
 
-For each detected pattern, generate the **narrowest possible** FP rule:
+### 3.1 Spawn Parallel Investigators
 
-| Pattern Type | FP Rule Strategy |
-|--------------|------------------|
-| `single_host_concentration` | Match category + hostname |
-| `identical_cmdline` | Match category + command-line substring |
-| `service_account` | Match category + user name |
-| `noisy_sensor` | Match category + sensor ID |
-| `same_hash` | Match category + file hash |
-| `tagged_infrastructure` | Match category + tag |
-| `hostname_convention` | Match category + hostname pattern |
-| `admin_tool_path` | Match category + file path pattern |
-| `dev_environment` | Match category + file path pattern |
+For each detected pattern (excluding the "summary" entry), spawn an `fp-pattern-investigator` agent. **Spawn ALL agents in a SINGLE message** for parallel execution.
 
-### 3.2 FP Rule Templates
+```
+Task: fp-pattern-investigator
+Prompt:
+  Investigate FP pattern in organization '[org_name]' (OID: [oid])
 
-**Single Host Concentration:**
+  Pattern:
+  {
+    "pattern": "single_host_concentration",
+    "category": "00313-NIX-Execution_From_Tmp",
+    "dominant_host": "penguin",
+    "host_count": 14,
+    "total_count": 20,
+    "concentration_pct": 70,
+    "sample_ids": ["det-001", "det-002", "det-003"]
+  }
+```
+
+### 3.2 Collect Investigation Results
+
+Each investigator returns a JSON object with:
+- `verdict`: `likely_fp`, `needs_review`, or `not_fp`
+- `confidence`: `high`, `medium`, or `low`
+- `reasoning`: Why this verdict was reached
+- `key_findings`: List of evidence points
+- `risk_factors`: Any concerns identified
+
+### 3.3 Handle Investigation Failures
+
+If an investigator fails or times out:
+- Mark the pattern as `needs_review`
+- Add error to the pattern's data
+- Continue with remaining patterns
+
+---
+
+## Phase 4: Present Patterns with Investigation Results
+
+### 4.1 Summary Table
+
+Present the analysis summary with investigation verdicts:
+
+```markdown
+## FP Pattern Analysis Results
+
+**Organization**: [org_name]
+**Time Window**: [start_date] to [end_date] ([N] days)
+**Total Detections Analyzed**: [N]
+**Patterns Detected**: [N]
+
+### Pattern Investigation Summary
+
+| # | Pattern | Category | Identifier | Count | Verdict | Confidence |
+|---|---------|----------|------------|-------|---------|------------|
+| 1 | single_host | Execution_From_Tmp | penguin | 20 | Likely FP | High |
+| 2 | noisy_sensor | SecureAnnex | ext-secureannex | 24 | Likely FP | High |
+| 3 | network_dest | suspicious domain | coursestack.io | 12 | Needs Review | Medium |
+| 4 | single_host | FIM Hit | penguin | 15 | Likely FP | High |
+```
+
+### 4.2 Detailed Findings Per Pattern
+
+For each pattern, show the investigation results:
+
+```markdown
+---
+
+### Pattern #1: Execution_From_Tmp on penguin
+
+**Verdict**: Likely FP (High Confidence)
+
+**Investigation Findings**:
+- All 20 executions are from `/tmp/go-build*` paths - Go compiler temp directories
+- Host is tagged `chromebook`, `max` - appears to be a developer workstation
+- Parent processes are all `go` or `test` binaries
+- No suspicious network connections or persistence attempts detected
+
+**Risk Factors**: None identified
+
+**Detection Count**: 20 (28% of total)
+
+---
+
+### Pattern #2: SecureAnnex alerts on ext-secureannex
+
+**Verdict**: Likely FP (High Confidence)
+
+**Investigation Findings**:
+- Sensor hostname `ext-secureannex` is an extension adapter sensor
+- Tagged `ext:ext-secureannex`, `lc:system` - infrastructure sensor
+- All detections are Chrome extension risk assessments from expected scanning activity
+- This is the SecureAnnex extension analyzer doing its job
+
+**Risk Factors**: None identified
+
+**Detection Count**: 24 (34% of total)
+
+---
+
+### Pattern #3: suspicious limacharlie domain
+
+**Verdict**: Needs Review (Medium Confidence)
+
+**Investigation Findings**:
+- Domain `limacharlie.coursestack.io` appears to be a training platform
+- Multiple employee devices connecting to this domain
+- No obvious malicious indicators in the connections
+
+**Risk Factors**:
+- Cannot confirm domain ownership/legitimacy via automated check
+- Recommend manual verification that this is an authorized training platform
+
+**Detection Count**: 12 (17% of total)
+```
+
+### 4.3 Group by Verdict
+
+Organize patterns into sections:
+1. **Likely FP** - Safe to suppress
+2. **Needs Review** - Requires human judgment
+3. **Not FP** - Should NOT be suppressed (show warning)
+
+---
+
+## Phase 5: User Selects Patterns for FP Rules
+
+### 5.1 Ask for Selection
+
+Use `AskUserQuestion` with multi-select to let the user choose which patterns to create FP rules for:
+
+```
+Which patterns would you like to create FP rules for?
+
+Options (multi-select):
+[ ] Pattern #1: Execution_From_Tmp on penguin (Likely FP)
+[ ] Pattern #2: SecureAnnex on ext-secureannex (Likely FP)
+[ ] Pattern #3: suspicious domain coursestack.io (Needs Review)
+[ ] Pattern #4: FIM Hit on penguin (Likely FP)
+[ ] None - cancel without creating rules
+```
+
+### 5.2 Warn on Risky Selections
+
+If user selects a pattern with verdict `not_fp` or `needs_review`, show a warning:
+
+```
+WARNING: You selected Pattern #3 which has verdict "Needs Review".
+The investigation could not confirm this is a false positive.
+
+Are you sure you want to create an FP rule for this pattern?
+```
+
+---
+
+## Phase 6: Generate FP Rules for Selected Patterns
+
+### 6.1 CRITICAL: Narrow Rules Only - Avoid False Negatives
+
+**NEVER create blanket rules that match only on `cat` (category).**
+
+A rule that matches just the category will suppress ALL detections of that type, including real threats. This creates **false negatives** which are worse than false positives.
+
+**Every FP rule MUST include at least TWO conditions:**
+- Category + hostname
+- Category + file path pattern
+- Category + command-line substring
+- Category + sensor ID
+- Category + user name
+
+**Prefer THREE conditions when investigation identifies specific patterns.**
+
+**BAD (too broad - will cause false negatives):**
+```yaml
+# NEVER DO THIS
+detection:
+  op: is
+  path: cat
+  value: "00313-NIX-Execution_From_Tmp"
+```
+
+**GOOD (narrow - only suppresses the specific FP pattern):**
+```yaml
+detection:
+  op: and
+  rules:
+    - op: is
+      path: cat
+      value: "00313-NIX-Execution_From_Tmp"
+    - op: is
+      path: routing/hostname
+      value: penguin
+    - op: contains
+      path: detect/event/FILE_PATH
+      value: "/tmp/go-build"
+```
+
+### 6.2 Use Investigation Hints
+
+The `fp-pattern-investigator` returns `fp_rule_hints` with recommended conditions. **Use these hints** to build the narrowest possible rule:
+
+```json
+"fp_rule_hints": {
+  "recommended_conditions": [
+    {"path": "cat", "op": "is", "value": "00313-NIX-Execution_From_Tmp"},
+    {"path": "routing/hostname", "op": "is", "value": "penguin"},
+    {"path": "detect/event/FILE_PATH", "op": "contains", "value": "/tmp/go-build"}
+  ],
+  "narrowest_identifier": "/tmp/go-build"
+}
+```
+
+### 6.3 Rule Templates (Minimum 2 Conditions)
+
+**Single Host + File Path Pattern:**
 ```yaml
 detection:
   op: and
@@ -209,9 +417,12 @@ detection:
     - op: is
       path: routing/hostname
       value: "[hostname]"
+    - op: contains
+      path: detect/event/FILE_PATH
+      value: "[path-pattern]"
 ```
 
-**Identical Command-Line:**
+**Single Host + Command-Line Pattern:**
 ```yaml
 detection:
   op: and
@@ -219,38 +430,15 @@ detection:
     - op: is
       path: cat
       value: "[category]"
+    - op: is
+      path: routing/hostname
+      value: "[hostname]"
     - op: contains
       path: detect/event/COMMAND_LINE
-      value: "[command-line-substring]"
+      value: "[cmdline-pattern]"
 ```
 
-**Service Account:**
-```yaml
-detection:
-  op: and
-  rules:
-    - op: is
-      path: cat
-      value: "[category]"
-    - op: is
-      path: detect/event/USER_NAME
-      value: "[user-name]"
-```
-
-**Same Hash:**
-```yaml
-detection:
-  op: and
-  rules:
-    - op: is
-      path: cat
-      value: "[category]"
-    - op: is
-      path: detect/event/HASH
-      value: "[hash]"
-```
-
-**Noisy Sensor:**
+**Noisy Sensor + Event Type:**
 ```yaml
 detection:
   op: and
@@ -263,7 +451,7 @@ detection:
       value: "[sensor-id]"
 ```
 
-**Tagged Infrastructure:**
+**Network Destination:**
 ```yaml
 detection:
   op: and
@@ -271,12 +459,44 @@ detection:
     - op: is
       path: cat
       value: "[category]"
-    - op: contains
-      path: routing/tags
-      value: "[tag]"
+    - op: is
+      path: detect/event/DOMAIN_NAME
+      value: "[exact-domain]"
 ```
 
-### 3.3 Rule Naming Convention
+**Same Hash + Host:**
+```yaml
+detection:
+  op: and
+  rules:
+    - op: is
+      path: cat
+      value: "[category]"
+    - op: is
+      path: routing/hostname
+      value: "[hostname]"
+    - op: is
+      path: detect/event/HASH
+      value: "[hash]"
+```
+
+**Service Account + Host:**
+```yaml
+detection:
+  op: and
+  rules:
+    - op: is
+      path: cat
+      value: "[category]"
+    - op: is
+      path: routing/hostname
+      value: "[hostname]"
+    - op: is
+      path: detect/event/USER_NAME
+      value: "[user-name]"
+```
+
+### 6.4 Rule Naming Convention
 
 ```
 fp-auto-[pattern-type]-[identifier]-[YYYYMMDD]
@@ -287,7 +507,7 @@ Examples:
 - `fp-auto-cmdline-wmiprvse-secured-20251210`
 - `fp-auto-svcacct-system-20251210`
 
-### 3.4 Validate Each Rule
+### 6.5 Validate Each Rule
 
 Before presenting to user, validate the rule syntax:
 
@@ -303,93 +523,78 @@ Prompt:
 
 ---
 
-## Phase 4: Present Findings & Rules to User
+## Phase 7: Confirm Deployment
 
-### 4.1 Summary Table
+### 7.1 Show Generated Rules
 
-Present the analysis summary:
+Present all generated rules for final review:
 
-```
-## FP Pattern Analysis Results
+```markdown
+## Proposed FP Rules
 
-**Organization**: [org_name]
-**Time Window**: [start_date] to [end_date] ([N] days)
-**Total Detections Analyzed**: [N]
-**Patterns Detected**: [N]
+### Rule #1: fp-auto-host-penguin-gobuild-20251215
 
-### Detected Patterns
+**For Pattern**: Execution_From_Tmp on penguin
+**Investigation Verdict**: Likely FP (High)
 
-| # | Pattern Type | Category | Key Identifier | Count | Impact |
-|---|--------------|----------|----------------|-------|--------|
-| 1 | single_host_concentration | spam | demo-win-2016 | 181,607 | 89.8% |
-| 2 | identical_cmdline | spam | wmiprvse.exe -secured | 575 | 0.3% |
-| 3 | service_account | proc-older-than-10s | NT AUTHORITY\SYSTEM | 528 | 0.3% |
-...
-```
-
-### 4.2 Proposed FP Rules
-
-For each pattern, show the proposed rule:
-
-```
-### Proposed FP Rule #1: fp-auto-host-demo-win-2016-20251210
-
-**Pattern**: Single Host Concentration
-**Reason**: 98.7% of "spam" detections (181,607 of 184,081) from host "demo-win-2016"
-
-**Rule Logic:**
 ```yaml
 detection:
   op: and
   rules:
     - op: is
       path: cat
-      value: spam
+      value: "00313-NIX-Execution_From_Tmp"
     - op: is
       path: routing/hostname
-      value: demo-win-2016.c.lc-demo-infra.internal.
+      value: penguin
+    - op: contains
+      path: detect/event/FILE_PATH
+      value: "/tmp/go-build"
 ```
 
-**Validation**: ✓ Valid
-
-**Sample Detections** (that would be suppressed):
-- det-001: spam from demo-win-2016 at 2025-12-10T10:30:00Z
-- det-002: spam from demo-win-2016 at 2025-12-10T10:31:00Z
-...
-```
+**Validation**: Valid
+**Note**: 3 conditions ensure only Go build activity on penguin is suppressed.
 
 ---
 
-## Phase 5: User Approval
+### Rule #2: fp-auto-sensor-secureannex-20251215
 
-### 5.1 Ask for Selection
+**For Pattern**: SecureAnnex on ext-secureannex
+**Investigation Verdict**: Likely FP (High)
 
-Use `AskUserQuestion` to let the user select which rules to deploy:
+```yaml
+detection:
+  op: and
+  rules:
+    - op: starts with
+      path: cat
+      value: "SecureAnnex"
+    - op: is
+      path: routing/sid
+      value: "54cd8807-fd6b-431b-ba43-4d1aa9bf4aa8"
+```
+
+**Validation**: Valid
+**Note**: Sensor ID (sid) is highly specific - 2 conditions sufficient for sensor-based rules.
+```
+
+### 7.2 Ask for Deployment Confirmation
 
 ```
-Which FP rules would you like to deploy?
+Ready to deploy [N] FP rules?
 
 Options:
-1. Deploy ALL proposed rules ([N] rules)
-2. Select specific rules to deploy
-3. Review rules in more detail first
-4. Cancel - do not deploy any rules
+1. Deploy all rules
+2. Cancel - do not deploy
 ```
-
-### 5.2 Handle Selection
-
-- **Deploy All**: Proceed to Phase 6 with all rules
-- **Select Specific**: Present multi-select of rule names
-- **Review**: Show detailed breakdown of each rule with sample detections
-- **Cancel**: End workflow without deployment
 
 **NEVER deploy without explicit user approval.**
 
 ---
 
-## Phase 6: Deploy Approved Rules
+## Phase 8: Deploy Approved Rules
 
-### 6.1 Deploy Each Rule
+### 8.1 Deploy Each Rule
 
 For each approved rule, spawn a `limacharlie-api-executor` agent:
 
@@ -405,18 +610,17 @@ Prompt:
   Return: Confirmation of deployment
 ```
 
-### 6.2 Confirm Deployment
+### 8.2 Confirm Deployment
 
-```
+```markdown
 ## FP Rules Deployed Successfully
 
 | Rule Name | Status |
 |-----------|--------|
-| fp-auto-host-demo-win-2016-20251210 | ✓ Deployed |
-| fp-auto-cmdline-wmiprvse-20251210 | ✓ Deployed |
-| fp-auto-svcacct-system-20251210 | ✓ Deployed |
+| fp-auto-host-penguin-20251215 | Deployed |
+| fp-auto-sensor-secureannex-20251215 | Deployed |
 
-**Total Rules Deployed**: 3
+**Total Rules Deployed**: 2
 
 **Recommended Next Steps**:
 1. Monitor detection volume over the next 24-48 hours
@@ -438,13 +642,17 @@ Prompt:
 4. Saves detections to temp file
 5. Runs `fp-pattern-detector.sh` script
 6. Parses JSON output, identifies 8 patterns
-7. Generates 8 FP rules (narrowest possible)
-8. Validates each rule
-9. Presents summary table and proposed rules
-10. Uses `AskUserQuestion` to get user selection
-11. User selects "Deploy ALL"
-12. Spawns parallel agents to deploy all 8 rules
-13. Confirms deployment success
+7. **Spawns 8 `fp-pattern-investigator` agents in parallel**
+8. **Collects investigation results (verdicts, findings)**
+9. Presents summary table with investigation verdicts
+10. Shows detailed findings for each pattern
+11. **Uses `AskUserQuestion` (multi-select) for user to select patterns**
+12. Generates FP rules for selected patterns only
+13. Validates each rule
+14. **Uses `AskUserQuestion` for deployment confirmation**
+15. User confirms deployment
+16. Spawns parallel agents to deploy rules
+17. Confirms deployment success
 
 ---
 
@@ -474,18 +682,23 @@ Prompt:
 - Focus on specific categories first
 - Prioritize patterns by count/impact
 
+### Investigation Timeout
+
+- Investigator agents have a default timeout
+- If investigation fails, pattern is marked as `needs_review`
+- User can still select it for FP rules with manual approval
+
 ---
 
 ## Script Location
 
-The FP pattern detection script is bundled with this skill at:
-```
-marketplace/plugins/lc-essentials/skills/fp-pattern-finder/scripts/fp-pattern-detector.sh
-```
+The FP pattern detection script is bundled with this skill in the `scripts/` subdirectory. The skill's base directory is provided at the top of the skill prompt.
+
+**Path:** `{skill_base_directory}/scripts/fp-pattern-detector.sh`
 
 **Usage:**
 ```bash
-./scripts/fp-pattern-detector.sh <detections.jsonl> [--threshold N] [--host-pct N] [--sample-size N]
+{skill_base_directory}/scripts/fp-pattern-detector.sh <detections.jsonl> [--threshold N] [--host-pct N] [--sample-size N]
 ```
 
 **Output**: JSON array to stdout, logs to stderr

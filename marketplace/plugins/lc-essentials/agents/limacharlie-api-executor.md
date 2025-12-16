@@ -150,10 +150,11 @@ API returns a reference to download:
 
 #### Step 4a: Download and Analyze Schema
 
-Run the analyze script with the `resource_link`:
+Run the analyze script with the `resource_link`. The script is at `scripts/analyze-lc-result.sh` in the plugin root. From the limacharlie-call skill's base directory, use `../../scripts/analyze-lc-result.sh`:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "https://storage.googleapis.com/..."
+# Path: {skill_base_directory}/../../scripts/analyze-lc-result.sh
+bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "https://storage.googleapis.com/..."
 ```
 
 **IMPORTANT: curl auto-decompresses gzip**
@@ -303,7 +304,7 @@ Execute LimaCharlie API call:
 1. Parse prompt: function=`list_sensors`, Return=extraction instructions
 2. Call MCP tool
 3. Receive `resource_link` response
-4. Run `bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "<url>"`
+4. Run `bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "<url>"`
 5. Review schema: `{"sensors":[{"sid":"string","hostname":"string","platform":"number",...}],"count":"number"}`
 6. Extract counts per Return instructions:
    ```bash
