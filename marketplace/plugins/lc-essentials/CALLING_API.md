@@ -525,10 +525,14 @@ If you need to manually process large results (not recommended), follow this wor
 
 **You MUST run the analyze script first. DO NOT skip this step.**
 
-Run the analyze script with the `resource_link` URL directly:
+Run the analyze script with the `resource_link` URL directly. The script is at `scripts/analyze-lc-result.sh` in the plugin root directory.
+
+**Finding the script path**: The skill's base directory is shown at the top of the skill prompt. From any skill directory (`{plugin_root}/skills/{skill-name}/`), the plugin root is `../..`. So the script path is: `{skill_base_directory}/../../scripts/analyze-lc-result.sh`
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "https://storage.googleapis.com/lc-tmp-mcp-export/..."
+# Example: if skill base directory is /path/to/plugin/skills/limacharlie-call
+# Then the script is at /path/to/plugin/scripts/analyze-lc-result.sh
+bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "https://storage.googleapis.com/lc-tmp-mcp-export/..."
 ```
 
 Replace the URL with the actual `resource_link` value from the tool response.

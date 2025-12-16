@@ -156,10 +156,11 @@ These sensors are connected but not generating events...
 
 ## Handling Large Result Sets
 
-When `list_user_orgs` returns a `resource_link`:
+When `list_user_orgs` returns a `resource_link`, use the analyze script from the plugin root. From this skill's base directory (shown at the top of the skill prompt), the script is at `../../scripts/analyze-lc-result.sh`:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "<resource_link>"
+# Path: {skill_base_directory}/../../scripts/analyze-lc-result.sh
+bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "<resource_link>"
 jq -r '.orgs[] | "\(.oid)|\(.name)"' /tmp/lc-result-*.json
 ```
 

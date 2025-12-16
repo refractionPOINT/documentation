@@ -443,9 +443,13 @@ If API returns `resource_link` instead of inline data:
 ```
 
 **REQUIRED Workflow for resource_link:**
+
+The analyze script is at `scripts/analyze-lc-result.sh` in the plugin root. From this skill's base directory (shown at the top of the skill prompt), the path is `../../scripts/analyze-lc-result.sh`.
+
 ```bash
 # Step 1: Download and analyze schema (MANDATORY - do not skip)
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/analyze-lc-result.sh" "https://storage.googleapis.com/..."
+# Path: {skill_base_directory}/../../scripts/analyze-lc-result.sh
+bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "https://storage.googleapis.com/..."
 
 # Output shows schema and file path:
 # (stdout) {"sensors": {"sensor-id": {"sid": "string", "hostname": "string", ...}}}

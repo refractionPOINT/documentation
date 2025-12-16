@@ -27,7 +27,8 @@ Task(
   prompt="Execute LimaCharlie API call:
     - Function: <function-name>
     - Parameters: {<params>}
-    - Return: RAW | <what data you need>"
+    - Return: RAW | <what data you need>
+    - Script path: {skill_base_directory}/../../scripts/analyze-lc-result.sh"
 )
 ```
 
@@ -35,12 +36,14 @@ Task(
 - `RAW` → Complete API response
 - `<instructions>` → Extract specific data (e.g., "Count of sensors", "Only hostnames")
 
+**Script path is REQUIRED:** The agent needs this path to handle large API results. Skills have access to `{skill_base_directory}` (shown at the top of this prompt), which resolves to the plugin scripts.
+
 ### Parallel Calls
 
 Spawn multiple agents in a single message:
 ```
-Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
-Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="... Script path: {skill_base_directory}/../../scripts/analyze-lc-result.sh")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="... Script path: {skill_base_directory}/../../scripts/analyze-lc-result.sh")
 ```
 
 ## Functions by Use Case
