@@ -11,6 +11,8 @@ allowed-tools: Task, AskUserQuestion, Skill, Read, Bash
 
 A guided workflow for creating, testing, and deploying Grok parsing configurations for LimaCharlie adapters. This skill helps you customize how log data is parsed and normalized as it's ingested into LimaCharlie.
 
+> ⚠️ **TIMEZONE NOTE**: Patterns like `SYSLOGTIMESTAMP` (`Dec 16 17:50:04`) lack timezone info. LimaCharlie assumes UTC. This skill automatically detects timezone mismatches by comparing parsed times to current UTC.
+
 ## When to Use
 
 Use this skill when:
@@ -247,6 +249,57 @@ client_options:
     sensor_hostname_path: "host"
 ```
 
+### Phase 4.5: Automatic Timestamp Timezone Check
+
+> **REQUIRED**: After validation, MUST perform this sanity check for patterns without explicit timezone.
+
+**Applies when Grok pattern uses:**
+- `%{SYSLOGTIMESTAMP}` - e.g., `Dec 16 17:50:04`
+- `%{DATESTAMP}` - e.g., `12-16-24 17:50:04`
+- `%{TIMESTAMP_ISO8601}` without `Z` or offset - e.g., `2024-12-16 17:50:04`
+
+**Automatic Detection Steps:**
+
+1. After `validate_usp_mapping` returns, extract the `event_time` from results (epoch milliseconds)
+
+2. Get current UTC epoch:
+```bash
+date -u +%s
+```
+
+3. Calculate the offset:
+```bash
+# Example: event_time=1734357004000 (milliseconds)
+# current_utc=$(date -u +%s)
+# offset_hours=$(( (current_utc - event_time/1000) / 3600 ))
+```
+
+4. **If offset is 4-12 hours**: The logs are likely in a local timezone (US timezones are UTC-5 to UTC-8)
+
+   **Automatically warn the user:**
+   > ⚠️ **Timezone Warning**: The parsed event_time appears to be ~[X] hours behind current UTC time. This suggests your log timestamps are in local time (e.g., Pacific Time), not UTC.
+   >
+   > LimaCharlie interprets all timestamps without timezone info as UTC. Your events will appear [X] hours in the past.
+   >
+   > **Solutions** (choose one):
+   >
+   > **Option 1 - Specify timezone in mapping** (recommended):
+   > Add `event_time_timezone` to your mapping configuration:
+   > ```yaml
+   > mapping:
+   >   event_time_path: "timestamp"
+   >   event_time_timezone: "America/New_York"  # Use your local timezone
+   > ```
+   > Valid timezone names: `America/New_York`, `America/Los_Angeles`, `Europe/London`, `Asia/Tokyo`, etc.
+   >
+   > **Option 2 - Configure log source to emit UTC**:
+   > - rsyslog: Add `$ActionFileDefaultTemplate RSYSLOG_FileFormat` to rsyslog.conf
+   > - systemd-journald: Already uses UTC by default
+
+5. **If user chooses Option 1**: Add `event_time_timezone` to the mapping configuration before deployment.
+
+6. Continue with deployment (user can address later if needed)
+
 ### Phase 5: Validate & Apply
 
 **Step 1: Validate the parsing configuration**
@@ -282,8 +335,18 @@ Task(
 
 Show the parsed events to the user:
 - Verify all expected fields are extracted
-- Check timestamp parsing
 - Confirm event type assignment
+
+**Automatic Timezone Sanity Check:**
+
+If the Grok pattern uses `SYSLOGTIMESTAMP`, `DATESTAMP`, or `TIMESTAMP_ISO8601` without explicit timezone:
+
+1. Get current UTC: `current_utc=$(date -u +%s)`
+2. Extract `event_time` from validation result (milliseconds)
+3. Calculate offset: `offset_hours=$(( (current_utc - event_time/1000) / 3600 ))`
+4. **If offset is 4-12 hours**, display warning:
+
+   "⚠️ **Timezone Mismatch Detected**: Parsed time is ~[offset] hours behind UTC. Your logs appear to be in local time. Events will be timestamped incorrectly in LimaCharlie. Consider configuring your log source to use UTC."
 
 **Step 3: Iterate if needed**
 
@@ -532,6 +595,23 @@ Use `/` as separator for nested JSON navigation:
 
 The `event_type_path` supports template strings for dynamic event type assignment based on event content.
 
+### Timestamp Timezone Handling
+
+LimaCharlie assumes UTC for timestamps that don't include explicit timezone information.
+
+**Formats with explicit timezone (safe):**
+- ISO 8601 with `Z`: `2024-01-15T12:30:45Z`
+- ISO 8601 with offset: `2024-01-15T12:30:45-08:00`
+- RFC 3339: `2024-01-15T12:30:45.000-08:00`
+
+**Formats without timezone (assumed UTC):**
+- Syslog: `Jan 15 12:30:45`
+- Simple datetime: `2024-01-15 12:30:45`
+
+**Recommendation**: Configure log sources to emit UTC timestamps when possible. For syslog on Linux:
+- rsyslog: Use `$ActionFileDefaultTemplate RSYSLOG_FileFormat` in rsyslog.conf
+- journald: Timestamps are already in UTC by default
+
 ### Common Issues
 
 1. **Pattern not matching**: Ensure special characters are escaped (e.g., `\[` for literal brackets)
@@ -552,6 +632,12 @@ The `event_type_path` supports template strings for dynamic event type assignmen
    - `Jan 15 12:30:45` → Use `%{SYSLOGTIMESTAMP}`
 
 5. **Not recognizing unparsed events**: If you see `event_type: "unknown_event"` with only a `text` field, that means parsing is not configured - the `text` field contains the raw log data that needs a Grok pattern.
+
+6. **Timezone assumptions for timestamps without timezone info**:
+   - `SYSLOGTIMESTAMP`, `DATESTAMP`, and `TIMESTAMP_ISO8601` without `Z` or offset don't include timezone
+   - LimaCharlie assumes UTC for all such timestamps
+   - If logs are in local time (e.g., Pacific Time), events will appear 7-8 hours in the future
+   - **Solution**: Configure log source to emit UTC timestamps, or verify with user that times appear correct
 
 ### Indexing Support
 

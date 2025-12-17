@@ -144,6 +144,7 @@ The following configurations allow you to customize the way data is ingested by 
 * `client_options.mapping.hostname`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
 * `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
 * `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
+* `client_options.mapping.event_time_timezone`: specifies the timezone for parsing timestamps that don't include timezone information. Uses IANA timezone names (e.g., `America/New_York`, `Europe/London`, `UTC`). If not specified, timestamps without timezone info are treated as UTC.
 * `client_options.mapping.rename_only`: *deprecated*
 * `client_options.mapping.mappings`: *deprecated*
 * `client_options.mapping.transform`: a Transform to apply to events.
@@ -217,6 +218,32 @@ client_options:
   "bytes": "78"
 }
 ```
+
+##### Timezone Handling
+
+Many log sources emit timestamps without timezone information (e.g., `2024-01-01 12:00:00` or `Jan 15 14:30:22`). By default, LimaCharlie interprets these as UTC. If your logs use local time, you can specify the timezone using `event_time_timezone`:
+
+```yaml
+client_options:
+  mapping:
+    parsing_grok:
+      message: '%{SYSLOGTIMESTAMP:timestamp} %{HOSTNAME:host} %{GREEDYDATA:message}'
+    event_time_path: "timestamp"
+    event_time_timezone: "America/New_York"
+```
+
+The timezone must be a valid [IANA timezone name](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). Common examples:
+
+| Timezone | Description |
+|----------|-------------|
+| `America/New_York` | US Eastern Time |
+| `America/Los_Angeles` | US Pacific Time |
+| `Europe/London` | UK Time |
+| `Europe/Paris` | Central European Time |
+| `Asia/Tokyo` | Japan Standard Time |
+| `UTC` | Coordinated Universal Time |
+
+> **Note:** Unix epoch timestamps (e.g., `1704067200`) are timezone-agnostic and are not affected by this setting.
 
 #### Regular Expressions
 
