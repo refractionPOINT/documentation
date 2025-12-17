@@ -33,8 +33,8 @@ PLUGIN_MCP="$PROJECT_ROOT/marketplace/plugins/lc-essentials/.mcp.json"
 if [ -f "$PLUGIN_MCP" ]; then
     MCP_COUNT=$(grep -o '"mcpServers"' "$PLUGIN_MCP" | wc -l)
     if [ $MCP_COUNT -gt 0 ]; then
-        # Extract server names using grep and sed
-        MCP_SERVERS=$(grep -oP '"\K[^"]+(?="\s*:\s*\{)' "$PLUGIN_MCP" | grep -v "mcpServers" | head -5)
+        # Extract server names using grep and sed (exclude mcpServers and headers)
+        MCP_SERVERS=$(grep -oP '"\K[^"]+(?="\s*:\s*\{)' "$PLUGIN_MCP" | grep -v "mcpServers" | grep -v "^headers$" | head -5)
         if [ -n "$MCP_SERVERS" ]; then
             STATUS_LINES="${STATUS_LINES}\u001b[32m    ✓ MCP Servers:\u001b[0m\n"
             while IFS= read -r server; do
@@ -52,8 +52,8 @@ if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
         while IFS= read -r plugin; do
             # Strip @marketplace suffix for display and folder lookup
             PLUGIN_BASE=$(echo "$plugin" | sed 's/@.*//')
-            # Format plugin name nicely
-            PLUGIN_NAME=$(echo "$PLUGIN_BASE" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+            # Format plugin name nicely (handle "lc" as "LC")
+            PLUGIN_NAME=$(echo "$PLUGIN_BASE" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++){if($i=="lc")$i="LC";else sub(/./,toupper(substr($i,1,1)),$i)}}1')
             STATUS_LINES="${STATUS_LINES}\u001b[32m       • $PLUGIN_NAME\u001b[0m\n"
 
             # Check if this plugin has skills
@@ -122,7 +122,7 @@ fi
 # Output banner
 cat <<EOF
 {
-  "systemMessage": "\n\u001b[34m╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\u001b[0m\n\n\u001b[34m  ██╗         ██████╗       ███████╗███████╗ ██████╗ ██████╗ ██████╗ ███████╗\u001b[0m\n\u001b[34m  ██║        ██╔════╝       ██╔════╝██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝\u001b[0m\n\u001b[34m  ██║        ██║            ███████╗█████╗  ██║     ██║   ██║██████╔╝███████╗\u001b[0m\n\u001b[34m  ██║        ██║            ╚════██║██╔══╝  ██║     ██║   ██║██╔═══╝ ╚════██║\u001b[0m\n\u001b[34m  ███████╗   ╚██████╗       ███████║███████╗╚██████╗╚██████╔╝██║     ███████║\u001b[0m\n\u001b[34m  ╚══════╝    ╚═════╝       ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚══════╝\u001b[0m\n\n\u001b[35m  Welcome to the Agentic SecOps Workspace.\u001b[0m\n\n${MAIN_MESSAGE}\u001b[34m╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\u001b[0m\n"
+  "systemMessage": "\n\u001b[34m╔════════════════════════════════════════════════════════════════════════════════════════════════════╗\u001b[0m\n\n\u001b[34m  ██╗     ██╗███╗   ███╗ █████╗  ██████╗██╗  ██╗ █████╗ ██████╗ ██╗     ██╗███████╗\u001b[0m\n\u001b[34m  ██║     ██║████╗ ████║██╔══██╗██╔════╝██║  ██║██╔══██╗██╔══██╗██║     ██║██╔════╝\u001b[0m\n\u001b[34m  ██║     ██║██╔████╔██║███████║██║     ███████║███████║██████╔╝██║     ██║█████╗  \u001b[0m\n\u001b[34m  ██║     ██║██║╚██╔╝██║██╔══██║██║     ██╔══██║██╔══██║██╔══██╗██║     ██║██╔══╝  \u001b[0m\n\u001b[34m  ███████╗██║██║ ╚═╝ ██║██║  ██║╚██████╗██║  ██║██║  ██║██║  ██║███████╗██║███████╗\u001b[0m\n\u001b[34m  ╚══════╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝\u001b[0m\n\n\u001b[35m  Welcome to the Agentic SecOps Workspace.\u001b[0m\n\n${MAIN_MESSAGE}\u001b[34m╚════════════════════════════════════════════════════════════════════════════════════════════════════╝\u001b[0m\n"
 }
 EOF
 
