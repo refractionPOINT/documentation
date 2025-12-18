@@ -41,7 +41,8 @@ date -d '2025-01-15 00:00:00 UTC' +%s  # Specific date
 
 - **WRONG**: `oid: "my-org-name"`
 - **CORRECT**: `oid: "c1ffedc0-ffee-4a1e-b1a5-abc123def456"`
-- Use `list_user_orgs` to map org names to UUIDs
+- Use `get_org_oid_by_name` to convert a single org name to OID (cached, efficient)
+- Use `list_user_orgs` to list all accessible orgs with their OIDs
 
 ### 6. Timestamp Milliseconds vs Seconds
 

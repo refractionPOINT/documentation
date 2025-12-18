@@ -49,7 +49,8 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="... Script 
 ## Functions by Use Case
 
 ### Getting Started
-- `list_user_orgs` - Get OID from org name (no parameters needed)
+- `get_org_oid_by_name` - Convert org name to OID (preferred for single lookups)
+- `list_user_orgs` - List all accessible orgs with OIDs (use when listing multiple orgs)
 
 ### Sensor Management
 - `list_sensors` - **Primary function** for finding sensors. Supports `selector` (bexpr filter) and `online_only` parameters. Use this to find sensors by platform, hostname, tags, etc.
@@ -99,10 +100,11 @@ Do NOT use `get_online_sensors` + loop through `get_sensor_info`—that wastes A
 - `list_lookups` / `set_lookup` / `query_lookup` - Lookups
 - `list_payloads` / `create_payload` / `get_payload` / `delete_payload` - Payloads
 
-## Available Functions (136)
+## Available Functions (137)
 
-### Organization Management (8)
+### Organization Management (9)
 - `list_user_orgs` → `./functions/list-user-orgs.md`
+- `get_org_oid_by_name` → `./functions/get-org-oid-by-name.md`
 - `get_org_info` → `./functions/get-org-info.md`
 - `create_org` → `./functions/create-org.md`
 - `get_org_errors` → `./functions/get-org-errors.md`
