@@ -105,6 +105,7 @@ cmd_setup() {
         echo "  --grok <pattern>        - Grok parsing pattern"
         echo "  --event-type <path>     - Field path for event type"
         echo "  --event-time <path>     - Field path for event timestamp"
+        echo "  --event-time-tz <tz>    - Timezone for timestamps (e.g., America/Los_Angeles)"
         echo "  --hostname-path <path>  - Field path for hostname"
         exit 1
     fi
@@ -117,6 +118,7 @@ cmd_setup() {
     GROK_PATTERN=""
     EVENT_TYPE_PATH=""
     EVENT_TIME_PATH=""
+    EVENT_TIME_TZ=""
     HOSTNAME_PATH=""
 
     while [ $# -gt 0 ]; do
@@ -131,6 +133,10 @@ cmd_setup() {
                 ;;
             --event-time)
                 EVENT_TIME_PATH="$2"
+                shift 2
+                ;;
+            --event-time-tz)
+                EVENT_TIME_TZ="$2"
                 shift 2
                 ;;
             --hostname-path)
@@ -170,6 +176,9 @@ cmd_setup() {
         fi
         if [ -n "$EVENT_TIME_PATH" ]; then
             MAPPING_ARGS="$MAPPING_ARGS client_options.mapping.event_time_path=$EVENT_TIME_PATH"
+        fi
+        if [ -n "$EVENT_TIME_TZ" ]; then
+            MAPPING_ARGS="$MAPPING_ARGS client_options.mapping.event_time_timezone=$EVENT_TIME_TZ"
         fi
         if [ -n "$HOSTNAME_PATH" ]; then
             MAPPING_ARGS="$MAPPING_ARGS client_options.mapping.sensor_hostname_path=$HOSTNAME_PATH"
@@ -251,6 +260,13 @@ cmd_stop() {
             rm -rf "$ADAPTER_DIR"
         fi
         rm -f "$CONFIG_FILE"
+        rmdir "$CONFIG_DIR" 2>/dev/null || true
+    fi
+
+    # Clean up the helper script itself if running from /tmp
+    if [[ "$0" == /tmp/lc-adapter-helper.sh ]]; then
+        log_info "Removing helper script from /tmp..."
+        rm -f /tmp/lc-adapter-helper.sh
     fi
 
     log_info "Adapter stopped and cleaned up"
@@ -368,6 +384,7 @@ case "${1:-help}" in
         echo "  --grok <pattern>        - Grok parsing pattern"
         echo "  --event-type <path>     - Field path for event type"
         echo "  --event-time <path>     - Field path for event timestamp"
+        echo "  --event-time-tz <tz>    - Timezone for timestamps (e.g., America/Los_Angeles)"
         echo "  --hostname-path <path>  - Field path for hostname"
         echo ""
         echo "Example (basic):"
@@ -377,7 +394,7 @@ case "${1:-help}" in
         echo ""
         echo "Example (with parsing):"
         echo "  $0 setup <oid> <iid> --grok '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{GREEDYDATA:msg}' \\"
-        echo "      --event-type host --event-time date --hostname-path host"
+        echo "      --event-type host --event-time date --event-time-tz America/Los_Angeles --hostname-path host"
         ;;
     *)
         log_error "Unknown command: $1"

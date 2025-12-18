@@ -11,6 +11,8 @@ allowed-tools: Task, Bash, Read, AskUserQuestion, Skill
 
 > **CRITICAL - LCQL Queries**: NEVER write LCQL queries manually. ALWAYS use `generate_lcql_query` first, then `run_lcql_query`. See [Critical Requirements](../limacharlie-call/SKILL.md#critical-requirements) for all mandatory workflows.
 
+> **CRITICAL - Parsing Configuration**: You MUST ALWAYS invoke the `parsing-helper` skill in Phase 2. NEVER skip this step or write Grok patterns manually. The parsing-helper ensures correct field extraction AND identifies when `event_time_timezone` is required (e.g., for timestamps like `SYSLOGTIMESTAMP` that lack timezone info). Skipping this step will result in incorrect event timestamps.
+
 Deploy a temporary LimaCharlie Adapter on the local Linux or Mac OS host for testing log ingestion. The adapter streams local logs to your LimaCharlie organization in real-time.
 
 This skill includes a **helper script** (`lc-adapter-helper.sh`) that handles all platform detection, downloading, and process management automatically.
@@ -104,7 +106,9 @@ Save the returned `iid` for later phases.
 
 > **IMPORTANT**: For adapters, the `installation_key` parameter is the **IID (UUID format)**, NOT the full base64-encoded key used by EDR sensors.
 
-### Phase 2: Sample Collection & Parsing Configuration
+### Phase 2: Sample Collection & Parsing Configuration (MANDATORY)
+
+> **DO NOT SKIP THIS PHASE.** You MUST use the `parsing-helper` skill to generate parsing configuration. Never write Grok patterns manually - the parsing-helper will identify timezone requirements and other critical settings.
 
 Before deploying the adapter, capture sample logs and configure parsing rules. This ensures your logs are properly parsed when they arrive in LimaCharlie.
 
@@ -143,6 +147,7 @@ The parsing-helper will output mapping parameters like:
 - `--grok '<PATTERN>'`
 - `--event-type '<PATH>'`
 - `--event-time '<PATH>'`
+- `--event-time-tz '<TIMEZONE>'` (when timestamp format lacks timezone info)
 - `--hostname-path '<PATH>'`
 
 Save these for use in the adapter setup (Phase 3).
@@ -158,8 +163,11 @@ The helper script (already copied in Phase 2) handles platform detection, downlo
   --grok '<GROK_PATTERN_FROM_PARSING_HELPER>' \
   --event-type '<EVENT_TYPE_PATH>' \
   --event-time '<EVENT_TIME_PATH>' \
+  --event-time-tz '<TIMEZONE>' \
   --hostname-path '<HOSTNAME_PATH>'
 ```
+
+> **Note**: Include `--event-time-tz` when the parsing-helper indicates it's needed (e.g., for SYSLOGTIMESTAMP which lacks timezone info).
 
 This command automatically:
 - Detects your platform (Linux/Mac, architecture)
@@ -180,7 +188,7 @@ This command automatically:
 | Command | Description |
 |---------|-------------|
 | `sample [count]` | Capture sample logs (default 20 lines) |
-| `setup <oid> <iid> [--grok ...] [--event-type ...] [--event-time ...] [--hostname-path ...]` | Download adapter and create launch script with optional parsing config |
+| `setup <oid> <iid> [--grok ...] [--event-type ...] [--event-time ...] [--event-time-tz ...] [--hostname-path ...]` | Download adapter and create launch script with parsing config |
 | `start` | Start the adapter in background |
 | `stop` | Stop adapter and cleanup all files |
 | `status` | Check if adapter is running |
@@ -358,6 +366,7 @@ Parsing-helper analyzes the samples and outputs mapping config:
 - `--grok '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{DATA:service}: %{GREEDYDATA:msg}'`
 - `--event-type service`
 - `--event-time date`
+- `--event-time-tz America/New_York` (because SYSLOGTIMESTAMP lacks timezone)
 - `--hostname-path host`
 
 7. Setup adapter with mapping config:
@@ -366,6 +375,7 @@ Parsing-helper analyzes the samples and outputs mapping config:
   --grok '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{DATA:service}: %{GREEDYDATA:msg}' \
   --event-type service \
   --event-time date \
+  --event-time-tz America/New_York \
   --hostname-path host
 ```
 
