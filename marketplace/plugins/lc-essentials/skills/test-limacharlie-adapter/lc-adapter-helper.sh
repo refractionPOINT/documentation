@@ -260,6 +260,13 @@ cmd_stop() {
             rm -rf "$ADAPTER_DIR"
         fi
         rm -f "$CONFIG_FILE"
+        rmdir "$CONFIG_DIR" 2>/dev/null || true
+    fi
+
+    # Clean up the helper script itself if running from /tmp
+    if [[ "$0" == /tmp/lc-adapter-helper.sh ]]; then
+        log_info "Removing helper script from /tmp..."
+        rm -f /tmp/lc-adapter-helper.sh
     fi
 
     log_info "Adapter stopped and cleaned up"
