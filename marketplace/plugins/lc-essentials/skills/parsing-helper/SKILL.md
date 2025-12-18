@@ -281,24 +281,11 @@ date -u +%s
    >
    > LimaCharlie interprets all timestamps without timezone info as UTC. Your events will appear [X] hours in the past.
    >
-   > **Solutions** (choose one):
-   >
-   > **Option 1 - Specify timezone in mapping** (recommended):
-   > Add `event_time_timezone` to your mapping configuration:
-   > ```yaml
-   > mapping:
-   >   event_time_path: "timestamp"
-   >   event_time_timezone: "America/New_York"  # Use your local timezone
-   > ```
-   > Valid timezone names: `America/New_York`, `America/Los_Angeles`, `Europe/London`, `Asia/Tokyo`, etc.
-   >
-   > **Option 2 - Configure log source to emit UTC**:
+   > **Recommendation**: Configure your log source to emit UTC timestamps:
    > - rsyslog: Add `$ActionFileDefaultTemplate RSYSLOG_FileFormat` to rsyslog.conf
    > - systemd-journald: Already uses UTC by default
 
-5. **If user chooses Option 1**: Add `event_time_timezone` to the mapping configuration before deployment.
-
-6. Continue with deployment (user can address later if needed)
+5. Continue with deployment even if warning is shown (user can address later)
 
 ### Phase 5: Validate & Apply
 
@@ -417,6 +404,7 @@ file:
         message: '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{WORD:service}\[%{INT:pid}\]: %{GREEDYDATA:message}'
       event_type_path: "service"
       event_time_path: "date"
+      event_time_timezone: "America/New_York"  # Required for SYSLOGTIMESTAMP (no timezone in pattern)
       sensor_hostname_path: "host"
   file_path: "/var/log/messages"
 ```
@@ -431,8 +419,20 @@ file:
   "client_options.mapping.parsing_grok.message=%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{WORD:service}\[%{INT:pid}\]: %{GREEDYDATA:message}" \
   client_options.mapping.event_type_path=service \
   client_options.mapping.event_time_path=date \
+  client_options.mapping.event_time_timezone=America/New_York \
   client_options.mapping.sensor_hostname_path=host \
   file_path=/var/log/messages
+```
+
+> **IMPORTANT**: The `event_time_timezone` is REQUIRED when using `SYSLOGTIMESTAMP`, `DATESTAMP`, or `TIMESTAMP_ISO8601` without explicit timezone info. Without it, LimaCharlie assumes UTC and timestamps will be incorrect.
+
+**When outputting CLI config for `test-limacharlie-adapter` skill, use this format:**
+```
+--grok '<PATTERN>'
+--event-type <PATH>
+--event-time <PATH>
+--event-time-tz <TIMEZONE>  # Include when timestamp pattern lacks timezone
+--hostname-path <PATH>
 ```
 
 ## Example Usage
@@ -458,7 +458,17 @@ mapping:
     message: '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{WORD:service}\[%{INT:pid}\]: %{GREEDYDATA:message}'
   event_type_path: "service"
   event_time_path: "date"
+  event_time_timezone: "America/New_York"  # Required - SYSLOGTIMESTAMP has no timezone
   sensor_hostname_path: "host"
+```
+
+**CLI options for test-limacharlie-adapter:**
+```
+--grok '%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{WORD:service}\[%{INT:pid}\]: %{GREEDYDATA:message}'
+--event-type service
+--event-time date
+--event-time-tz America/New_York
+--hostname-path host
 ```
 
 **Validation result:**
