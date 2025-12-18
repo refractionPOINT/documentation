@@ -27,7 +27,8 @@ Task(
   prompt="Execute LimaCharlie API call:
     - Function: <function-name>
     - Parameters: {<params>}
-    - Return: RAW | <what data you need>"
+    - Return: RAW | <what data you need>
+    - Script path: {skill_base_directory}/../../scripts/analyze-lc-result.sh"
 )
 ```
 
@@ -35,25 +36,35 @@ Task(
 - `RAW` → Complete API response
 - `<instructions>` → Extract specific data (e.g., "Count of sensors", "Only hostnames")
 
+**Script path is REQUIRED:** The agent needs this path to handle large API results. Skills have access to `{skill_base_directory}` (shown at the top of this prompt), which resolves to the plugin scripts.
+
 ### Parallel Calls
 
 Spawn multiple agents in a single message:
 ```
-Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
-Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="... Script path: {skill_base_directory}/../../scripts/analyze-lc-result.sh")
+Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="... Script path: {skill_base_directory}/../../scripts/analyze-lc-result.sh")
 ```
 
 ## Functions by Use Case
 
 ### Getting Started
-- `list_user_orgs` - Get OID from org name (no parameters needed)
+- `get_org_oid_by_name` - Convert org name to OID (preferred for single lookups)
+- `list_user_orgs` - List all accessible orgs with OIDs (use when listing multiple orgs)
 
 ### Sensor Management
-- `list_sensors` - List all sensors with filtering
-- `get_sensor_info` - Detailed sensor info
-- `is_online` / `get_online_sensors` - Check online status
+- `list_sensors` - **Primary function** for finding sensors. Supports `selector` (bexpr filter) and `online_only` parameters. Use this to find sensors by platform, hostname, tags, etc.
+- `get_sensor_info` - Detailed info for a single sensor (when you already have the SID)
+- `is_online` - Check if a specific sensor is online
+- `get_online_sensors` - Returns only SIDs of online sensors (no filtering). Use `list_sensors` with `online_only: true` instead when you need to filter by platform/hostname/tags
 - `add_tag` / `remove_tag` - Sensor tagging
 - `isolate_network` / `rejoin_network` - Network isolation
+
+**Finding sensors by platform:** Always use `list_sensors` with a selector:
+```
+list_sensors(oid, selector="plat == windows", online_only=true)
+```
+Do NOT use `get_online_sensors` + loop through `get_sensor_info`—that wastes API calls.
 
 ### Threat Hunting
 
@@ -89,10 +100,11 @@ Task(subagent_type="lc-essentials:limacharlie-api-executor", prompt="...")
 - `list_lookups` / `set_lookup` / `query_lookup` - Lookups
 - `list_payloads` / `create_payload` / `get_payload` / `delete_payload` - Payloads
 
-## Available Functions (136)
+## Available Functions (137)
 
-### Organization Management (8)
+### Organization Management (9)
 - `list_user_orgs` → `./functions/list-user-orgs.md`
+- `get_org_oid_by_name` → `./functions/get-org-oid-by-name.md`
 - `get_org_info` → `./functions/get-org-info.md`
 - `create_org` → `./functions/create-org.md`
 - `get_org_errors` → `./functions/get-org-errors.md`

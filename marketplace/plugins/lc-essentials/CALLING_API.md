@@ -32,8 +32,9 @@ LimaCharlie Platform
 
 The OID is a **UUID** (e.g., `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name.
 
-- Use `list_user_orgs` to get the OID from an org name
-- All functions require OID except: `list_user_orgs`, `create_org`, `get_platform_names`
+- Use `get_org_oid_by_name` to convert a single org name to OID (cached, efficient)
+- Use `list_user_orgs` to get all accessible orgs with their OIDs
+- All functions require OID except: `list_user_orgs`, `get_org_oid_by_name`, `create_org`, `get_platform_names`
 
 ### LCQL Query Generation
 
@@ -219,6 +220,7 @@ Errors are returned with an `error` field:
 - `get_mitre_report` - Get MITRE ATT&CK report
 
 ### Platform Admin Profile
+- `get_org_oid_by_name` - Convert org name to OID
 - `get_org_info` - Get organization info
 - `get_usage_stats` - Get usage statistics
 - `get_billing_details` - Get billing details
@@ -525,10 +527,14 @@ If you need to manually process large results (not recommended), follow this wor
 
 **You MUST run the analyze script first. DO NOT skip this step.**
 
-Run the analyze script with the `resource_link` URL directly:
+Run the analyze script with the `resource_link` URL directly. The script is at `scripts/analyze-lc-result.sh` in the plugin root directory.
+
+**Finding the script path**: The skill's base directory is shown at the top of the skill prompt. From any skill directory (`{plugin_root}/skills/{skill-name}/`), the plugin root is `../..`. So the script path is: `{skill_base_directory}/../../scripts/analyze-lc-result.sh`
 
 ```bash
-bash ./marketplace/plugins/lc-essentials/scripts/analyze-lc-result.sh "https://storage.googleapis.com/lc-tmp-mcp-export/..."
+# Example: if skill base directory is /path/to/plugin/skills/limacharlie-call
+# Then the script is at /path/to/plugin/scripts/analyze-lc-result.sh
+bash "{skill_base_directory}/../../scripts/analyze-lc-result.sh" "https://storage.googleapis.com/lc-tmp-mcp-export/..."
 ```
 
 Replace the URL with the actual `resource_link` value from the tool response.

@@ -94,6 +94,7 @@ sensor_type: "syslog"
         sensor_hostname_path: "hostname"
         event_type_path: "tag"
         event_time_path: "timestamp"
+        event_time_timezone: "America/New_York"  # Required if logs use local time (SYSLOGTIMESTAMP has no timezone)
     # Optional syslog-specific configuration
     is_udp: false                               # TCP (default) vs UDP
     write_timeout_sec: 30                       # Write timeout

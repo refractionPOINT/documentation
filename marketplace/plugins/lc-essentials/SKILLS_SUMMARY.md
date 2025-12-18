@@ -87,8 +87,9 @@
 #### Sensor Tasking & Live Response (1 skill)
 - **sensor-tasking**: Orchestrates sending tasks (commands) to EDR sensors for data collection or actions. Handles offline agents via reliable-tasking with guaranteed delivery. Collects responses via LCQL queries or creates D&R rules for automated response handling. Use for live response, fleet-wide operations, forensic acquisition, or incident response tasking. Orchestrates `sensor-tasking-executor` sub-agent for parallel execution across multiple sensors.
 
-#### Detection Engineering (1 skill)
+#### Detection Engineering (2 skills)
 - **detection-engineering**: Expert Detection Engineer assistant for end-to-end D&R rule development (understand → research → build → test → deploy). Uses iterative test-refine cycles, integrates with `lookup-lc-doc` for syntax help, and orchestrates `dr-replay-tester` sub-agent for multi-org parallel testing.
+- **fp-pattern-finder**: Automatically detect false positive patterns in detections using deterministic analysis. Fetches historic detections, runs pattern detection script to identify noisy patterns (single-host concentration, identical command-lines, service accounts, same hash, temporal periodicity, etc.), generates narrow FP rules for each pattern, and presents for user approval before deployment. Use for bulk FP tuning and automated alert fatigue reduction.
 
 #### Timeline Creation & Investigation (1 skill)
 - **timeline-creation**: Automated SOC analyst that creates investigation timelines from security events, detections, or LCQL queries. Autonomously investigates related activity (parent/child processes, network connections, file operations), extracts IOCs, and builds Timeline Hive records for SOC working reports.

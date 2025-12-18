@@ -47,18 +47,25 @@ Before calling this skill, gather:
 **Mapping Configuration Structure:**
 ```
 {
-  "parsing": {
-    "fmt": "regex" | "json" | "cef" | "syslog" | ...,
-    "re": "regex pattern with named groups",  // for regex fmt
-    "fields": {...},  // field extraction rules
-    ...
+  "parsing_re": "regex pattern with named groups",    // for regex parsing
+  "parsing_grok": {                                   // for Grok parsing
+    "message": "%{PATTERN:field}..."
   },
-  "mappings": {
-    "source_field": "event.target_field",
-    ...
-  }
+  "event_type_path": "field/path",                   // field to use as event type
+  "event_time_path": "field/path",                   // field to use as timestamp
+  "event_time_timezone": "America/New_York",         // timezone for timestamps without TZ info (optional)
+  "sensor_hostname_path": "field/path",              // field to use as sensor hostname
+  "sensor_key_path": "field/path",                   // field for unique sensor ID
+  "transform": {...},                                // optional transform to apply
+  "drop_fields": ["field1", "field2"]                // fields to drop
 }
 ```
+
+**Timezone Handling:**
+- `event_time_timezone`: Specifies the timezone for parsing timestamps that don't include timezone information
+- Uses IANA timezone names (e.g., `America/New_York`, `Europe/London`, `Asia/Tokyo`, `UTC`)
+- If not specified, timestamps without timezone info are treated as UTC
+- Unix epoch timestamps are not affected by this setting (they are inherently timezone-agnostic)
 
 ## How to Use
 

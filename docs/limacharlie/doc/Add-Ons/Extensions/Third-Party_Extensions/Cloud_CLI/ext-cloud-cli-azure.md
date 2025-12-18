@@ -13,7 +13,7 @@ The following example returns a list of virtual machines and their respective de
   extension action: run
   extension name: ext-cloud-cli
   extension request:
-    cloud: '{{ "az" }}'
+    tool: '{{ "az" }}'
     command_line: '{{ "vm list" }}'
     credentials: '{{ "hive://secret/secret-name" }}'
 ```

@@ -38,10 +38,6 @@ theme:
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.tracking
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.sections
-    - navigation.expand
     - navigation.path
     - navigation.indexes
     - navigation.top
@@ -49,8 +45,7 @@ theme:
 
     # Table of contents
     - toc.follow
-    - toc.integrate
-
+    
     # Search
     - search.suggest
     - search.highlight
@@ -192,8 +187,10 @@ nav:
     - Go SDK: go-sdk/README.md
     - Python SDK: python-sdk/README.md
 
+  - Tutorials:
+    - limacharlie/doc/Tutorials/index.md
+
   - FAQ:
     - limacharlie/doc/FAQ/index.md
 
-  - Tutorials:
-    - limacharlie/doc/Tutorials/index.md
+  

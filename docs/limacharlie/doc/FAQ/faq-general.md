@@ -16,7 +16,7 @@ The LimaCharlie global infrastructure is built on the Google Cloud Platform (GCP
 
 When you set up an Organization for the first time, you can select the Data Residency Region of your choice:
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/new org.png)
+![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/new%20org.png)
 
 This provides you with the benefit of being able to select which GCP region you want your data in, and have assurance that it will always be processed in this location and never moved outside. This can be important for data residency requirements as it relates to regulatory compliance. For example, if you want to keep all of your information in the US, you can simply select the US region and know that your data will be both processed and stored there.
 
