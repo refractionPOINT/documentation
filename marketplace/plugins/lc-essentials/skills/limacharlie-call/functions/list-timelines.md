@@ -21,7 +21,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves all timeline records from LimaCharlie's Timeline Hive for the specified organization. It returns timeline names along with their metadata (status, tags, creation info).
+This skill retrieves all timeline records from LimaCharlie's Investigation Hive for the specified organization. It returns timeline names along with their metadata (status, tags, creation info).
 
 ## Required Information
 
@@ -175,5 +175,5 @@ Steps:
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
-- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
+- **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
 - **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`

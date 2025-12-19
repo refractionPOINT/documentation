@@ -1,7 +1,7 @@
 
 # Delete Timeline
 
-Delete a timeline from LimaCharlie's Timeline Hive.
+Delete a timeline from LimaCharlie's Investigation Hive.
 
 ## When to Use
 
@@ -19,7 +19,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill permanently deletes a timeline record from LimaCharlie's Timeline Hive. This action cannot be undone - the timeline and all its data (events, detections, entities, notes) will be permanently removed.
+This skill permanently deletes a timeline record from LimaCharlie's Investigation Hive. This action cannot be undone - the timeline and all its data (events, detections, entities, notes) will be permanently removed.
 
 ## Required Information
 
@@ -141,5 +141,5 @@ Steps:
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
-- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
+- **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
 - **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`

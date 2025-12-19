@@ -1,16 +1,16 @@
-# Config Hive: Timeline
+# Config Hive: Investigation
 
-Timelines are investigation records used during cybersecurity incident response to organize events, detections, and entities of interest. They enable analysts to track investigation progress, add annotations, and document findings throughout an incident.
+Investigations are records used during cybersecurity incident response to organize events, detections, and entities of interest. They enable analysts to track investigation progress, add annotations, and document findings throughout an incident.
 
 ## Format
 
-Timeline records store references to events and detections (by ID), along with entities, notes, and investigation metadata. The maximum record size is 5MB.
+Investigation records store references to events and detections (by ID), along with entities, notes, and investigation metadata. The maximum record size is 5MB.
 
 ### Root Fields
 
 | Field | Type | Required | Max Length | Description |
 |-------|------|----------|-----------|-------------|
-| `name` | string | Yes | 256 | Human-readable timeline name |
+| `name` | string | Yes | 256 | Human-readable investigation name |
 | `description` | string | No | 4096 | Detailed description of the investigation |
 | `status` | string | No | - | Investigation status (see enum below) |
 | `priority` | string | No | - | Priority level (see enum below) |
@@ -115,28 +115,28 @@ Comments can be added to events, detections, and entities.
 
 ## Permissions
 
-The timeline hive requires the following permissions:
+The investigation hive requires the following permissions:
 
-* `timeline.get` - Read timeline records
-* `timeline.set` - Create/update timeline records
-* `timeline.del` - Delete timeline records
-* `timeline.get.mtd` - Read timeline metadata
-* `timeline.set.mtd` - Modify timeline metadata
+* `investigation.get` - Read investigation records
+* `investigation.set` - Create/update investigation records
+* `investigation.del` - Delete investigation records
+* `investigation.get.mtd` - Read investigation metadata
+* `investigation.set.mtd` - Modify investigation metadata
 
 ## Command-Line Usage
 
 ```bash
-# Create a timeline from a JSON file
-limacharlie hive set timeline --key investigation-2024-001 --data timeline.json
+# Create an investigation from a JSON file
+limacharlie hive set investigation --key investigation-2024-001 --data investigation.json
 
-# Get a timeline
-limacharlie hive get timeline --key investigation-2024-001
+# Get an investigation
+limacharlie hive get investigation --key investigation-2024-001
 
-# Delete a timeline
-limacharlie hive del timeline --key investigation-2024-001
+# Delete an investigation
+limacharlie hive del investigation --key investigation-2024-001
 
-# List all timelines
-limacharlie hive list timeline
+# List all investigations
+limacharlie hive list investigation
 ```
 
 ## Usage
@@ -145,7 +145,7 @@ limacharlie hive list timeline
 
 ```yaml
 hives:
-  timeline:
+  investigation:
     ransomware-investigation:
       data:
         name: "Ransomware Investigation 2024-001"
@@ -248,9 +248,9 @@ hives:
 
 ## Best Practices
 
-For opinionated guidance on tagging events and detections for SOC investigations, including MITRE ATT&CK mapping and attack chain visualization, see the [Timeline Investigation Guide](../../Getting_Started/Use_Cases/timeline-investigation-guide.md).
+For opinionated guidance on tagging events and detections for SOC investigations, including MITRE ATT&CK mapping and attack chain visualization, see the [Investigation Guide](../../Getting_Started/Use_Cases/investigation-guide.md).
 
 ## Related
 
-* [Timeline Investigation Guide](../../Getting_Started/Use_Cases/timeline-investigation-guide.md) - Best practices for tagging and documenting investigations
-* [expand_timeline](../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md) - Hydrate timeline with full event/detection data
+* [Investigation Guide](../../Getting_Started/Use_Cases/investigation-guide.md) - Best practices for tagging and documenting investigations
+* [expand_timeline](../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md) - Hydrate investigation with full event/detection data

@@ -1086,11 +1086,11 @@ Skill(skill="lc-essentials:sensor-health")
 Skill(skill="lc-essentials:reporting")
 ```
 
-### timeline-creation
+### investigation-creation
 **Use when**: Investigating specific problematic sensors.
 
 ```
-Skill(skill="lc-essentials:timeline-creation")
+Skill(skill="lc-essentials:investigation-creation")
 ```
 
 ### detection-engineering

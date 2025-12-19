@@ -1,6 +1,6 @@
 ---
-name: timeline-creation
-description: Create investigation timelines from security events, detections, or LCQL queries. Performs HOLISTIC investigations - not just process trees, but initial access hunting, org-wide scope assessment, lateral movement detection, and full host context. Builds Timeline Hive records documenting findings with events, detections, entities, and analyst notes. Use for incident investigation, threat hunting, alert triage, or building SOC working reports.
+name: investigation-creation
+description: Create investigation timelines from security events, detections, or LCQL queries. Performs HOLISTIC investigations - not just process trees, but initial access hunting, org-wide scope assessment, lateral movement detection, and full host context. Builds Investigation Hive records documenting findings with events, detections, entities, and analyst notes. Use for incident investigation, threat hunting, alert triage, or building SOC working reports.
 allowed-tools:
   - Task
   - Read
@@ -8,7 +8,7 @@ allowed-tools:
   - Skill
 ---
 
-# Timeline Creation - Holistic Investigation & Documentation
+# Investigation Creation - Holistic Investigation & Documentation
 
 > **Prerequisites**: Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md.
 
@@ -792,7 +792,7 @@ When you can confidently identify techniques, apply tags:
 
 For MITRE reference, fetch from: `https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json`
 
-See [Timeline Investigation Guide](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md) for complete tag format reference.
+See [Investigation Guide](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/investigation-guide.md) for complete tag format reference.
 
 ---
 
@@ -892,10 +892,10 @@ parameters:
 
 ## Reference
 
-- **Timeline Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
-- **Timeline JSON Schema**: The authoritative schema defining valid fields, types, and enums is at `legion_config_hive/hives/schemas/timeline.schema.json`
+- **Investigation Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
+- **Investigation JSON Schema**: The authoritative schema defining valid fields, types, and enums is at `legion_config_hive/hives/schemas/investigation.schema.json`
 - **expand_timeline function**: [Expand Timeline](../limacharlie-call/functions/expand-timeline.md)
-- **Timeline Investigation Guide**: [Investigation Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md)
+- **Investigation Guide**: [Investigation Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/investigation-guide.md)
 
 ## Schema Quick Reference
 

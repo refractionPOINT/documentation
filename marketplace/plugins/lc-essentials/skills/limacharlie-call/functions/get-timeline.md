@@ -1,7 +1,7 @@
 
 # Get Timeline
 
-Retrieve a specific timeline from LimaCharlie's Timeline Hive by name.
+Retrieve a specific timeline from LimaCharlie's Investigation Hive by name.
 
 ## When to Use
 
@@ -20,7 +20,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill retrieves a timeline record from LimaCharlie's Timeline Hive by its name. It returns the complete timeline data including events, detections, entities, notes, and metadata.
+This skill retrieves a timeline record from LimaCharlie's Investigation Hive by its name. It returns the complete timeline data including events, detections, entities, notes, and metadata.
 
 ## Required Information
 
@@ -184,5 +184,5 @@ Then merge the returned data with new findings and call `set_timeline`.
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
-- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
+- **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
 - **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`

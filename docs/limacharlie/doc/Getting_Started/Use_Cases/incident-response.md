@@ -18,4 +18,4 @@ LimaCharlie provides incident response teams with a powerful, centralized soluti
 
 #### Related Resources
 
-* [Timeline Investigation Guide](./timeline-investigation-guide.md) - Best practices for documenting investigations with MITRE ATT&CK mapping and standardized tagging
+* [Investigation Guide](./investigation-guide.md) - Best practices for documenting investigations with MITRE ATT&CK mapping and standardized tagging

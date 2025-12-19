@@ -1,7 +1,7 @@
 
 # Set Timeline
 
-Create or update a timeline in LimaCharlie's Timeline Hive. Timelines are investigation records used during cybersecurity incident response to organize events, detections, and entities of interest.
+Create or update a timeline in LimaCharlie's Investigation Hive. Timelines are investigation records used during cybersecurity incident response to organize events, detections, and entities of interest.
 
 ## When to Use
 
@@ -22,7 +22,7 @@ Common scenarios:
 
 ## What This Skill Does
 
-This skill creates or updates a timeline record in LimaCharlie's Timeline Hive. Timelines store references to events (by atom), detections (by ID), entities (IOCs), and investigation notes. If a timeline with the same name exists, it will be replaced with the new data.
+This skill creates or updates a timeline record in LimaCharlie's Investigation Hive. Timelines store references to events (by atom), detections (by ID), entities (IOCs), and investigation notes. If a timeline with the same name exists, it will be replaced with the new data.
 
 ## Required Information
 
@@ -36,7 +36,7 @@ Before calling this skill, gather:
 
 ## Timeline Data Structure
 
-For the complete schema reference, see [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md).
+For the complete schema reference, see [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md).
 
 ### Root Fields
 
@@ -286,6 +286,6 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
-- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
-- **Timeline Investigation Guide**: [Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md)
+- **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
+- **Investigation Guide**: [Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/investigation-guide.md)
 - **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`
