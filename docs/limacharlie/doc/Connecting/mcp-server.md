@@ -32,17 +32,45 @@ Used when deploying as a public service:
 
 ### For HTTP Mode
 
-The server requires authentication headers:
+The server supports multiple authentication methods. All methods support multi-organization access where the OID is specified per tool call.
 
-1. **Authorization header** in one of these formats:
+#### OAuth Authentication
 
-* `Authorization: Bearer <jwt>` (OID must be in x-lc-oid header)
-* `Authorization: Bearer <jwt>:<oid>` (combined format)
-* `Authorization: Bearer <api_key>:<oid>` (API key with OID)
+Use the built-in OAuth flow with Google or Microsoft identity providers:
 
-2. **x-lc-oid header** (if not included in Authorization):
+* Initiate authentication at `/authorize`
+* Exchange code for tokens at `/token`
+* Use `Authorization: Bearer <access_token>` header with MCP requests
+* Tokens can be revoked at `/revoke`
 
-* `x-lc-oid: <organization_id>`
+#### X-LC-UID + X-LC-API-KEY Headers
+
+For direct API key authentication without OAuth:
+
+* `X-LC-UID`: Your user identifier (email format supported, 3-128 characters)
+* `X-LC-API-KEY`: Your LimaCharlie API key (minimum 16 characters)
+
+Both headers are required together.
+
+#### Bearer Token (JWT Passthrough)
+
+For API gateway or service-to-service communication:
+
+* `Authorization: Bearer <limacharlie_jwt>`
+* JWT must be a valid LimaCharlie JWT token
+
+### Meta-Tool Filtering Headers
+
+Control which tools can be called via the `lc_call_tool` meta-tool:
+
+* `X-LC-ALLOW-META-TOOLS`: Comma-separated list of tool names to ALLOW
+* `X-LC-DENY-META-TOOLS`: Comma-separated list of tool names to DENY
+
+**Precedence rules:**
+
+* If ALLOW list is set, only those tools can be called via `lc_call_tool`
+* If ALLOW list is empty and DENY list is set, those tools are blocked
+* ALLOW list takes precedence over DENY list
 
 ### For STDIO Mode
 
@@ -150,10 +178,21 @@ The `run_lcql_query` tool supports:
 
 ### HTTP Service Usage
 
+Using X-LC-UID + X-LC-API-KEY headers:
+
 ```
 claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp \
---header "Authorization: Bearer API_KEY:OID" \
---header "x-lc-oid: OID"
+  --header "X-LC-UID: user@example.com" \
+  --header "X-LC-API-KEY: your-api-key"
+```
+
+With meta-tool filtering to restrict available tools:
+
+```
+claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp \
+  --header "X-LC-UID: user@example.com" \
+  --header "X-LC-API-KEY: your-api-key" \
+  --header "X-LC-ALLOW-META-TOOLS: get_sensor_info,get_processes,list_sensors"
 ```
 
 ## Environment Variables
@@ -171,5 +210,5 @@ claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp \
 
 * The server is stateless when running in HTTP mode
 * HTTP mode uses JSON responses (not Server-Sent Events)
-* No OAuth flow is used - authentication is via bearer tokens only
+* OAuth authentication is supported with Google and Microsoft identity providers
 * If you encounter missing capabilities, contact https://community.limacharlie.com for quick additions
