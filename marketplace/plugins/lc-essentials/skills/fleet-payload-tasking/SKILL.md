@@ -6,18 +6,16 @@ allowed-tools:
   - Read
   - Bash
   - Write
+  - Skill
   - AskUserQuestion
   - mcp__plugin_lc-essentials_limacharlie__lc_call_tool
-  - mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_detection
-  - mcp__plugin_lc-essentials_limacharlie__generate_dr_rule_respond
-  - mcp__plugin_lc-essentials_limacharlie__validate_dr_rule_components
 ---
 
 # Fleet Payload Tasking Skill
 
 Deploy payloads (scripts) or shell commands to all endpoints in an organization using reliable tasking. Handles offline sensors automatically - tasks queue and execute when sensors come online.
 
-> **TODO**: Move payload generation, D&R rule creation, and result collection logic into sub-agents for better parallelization and reduced context usage. The main skill should orchestrate sub-agents rather than executing all steps directly.
+> **Architecture Note**: This skill focuses on payload preparation and upload. It delegates the reliable tasking workflow (D&R rules, task deployment, response collection) to the `sensor-tasking` skill to avoid duplication and ensure correct order of operations.
 
 ## When to Use
 
@@ -113,6 +111,17 @@ For complex operations, upload a payload script first:
 | **Cross-Platform** | Linux, macOS, Windows support |
 | **Scalable** | Works across thousands of endpoints |
 
+## Platform Requirements
+
+> **WARNING**: Only EDR platforms support tasking.
+>
+> **Taskable platforms:** `windows`, `linux`, `macos`, `chrome`
+>
+> Cloud sensors, adapters, and USP log sources will fail with `UNSUPPORTED_FOR_PLATFORM`.
+
+When using sensor selectors, always filter by taskable platforms to avoid errors:
+- `plat == windows` or `plat == linux` or `plat == macos`
+
 ## Shell Command Workflow (Recommended for Simple Tasks)
 
 ### Step 1: Select Organization
@@ -137,75 +146,36 @@ os_shell echo '{"scan_id":"scan-001","hostname":"'$(hostname)'","results":[' && 
   echo ']}'
 ```
 
-### Step 3: Deploy via Reliable Tasking
+### Step 3: Deploy and Collect Results (Delegate to sensor-tasking)
+
+> **IMPORTANT**: The `sensor-tasking` skill handles the complete deployment workflow:
+> - Creates D&R rule for response collection (BEFORE task deployment)
+> - Deploys via reliable tasking
+> - Collects and formats results
+
+Use the `sensor-tasking` skill with your prepared shell command:
 
 ```
-lc_call_tool(
-  tool_name="reliable_tasking",
-  parameters={
-    "oid": "[org-id]",
-    "task": "os_shell echo '{\"scan_id\":\"scan-001\",\"hostname\":\"'$(hostname)'\",\"bash\":\"'$(/bin/bash --version | head -1)'\"}'",
-    "selector": "plat == macos",
-    "context": "bash-scan-001",
-    "ttl": 3600
-  }
-)
+Skill(lc-essentials:sensor-tasking)
+
+Provide to sensor-tasking:
+- Task command: os_shell echo '{"scan_id":"scan-001",...}'
+- Selector: plat == macos (or your target selector)
+- Context: bash-scan-001 (for response collection)
+- TTL: 3600 (or desired expiration)
 ```
 
-### Step 4: Create D&R Rule to Capture Results
+The sensor-tasking skill will:
+1. Create a D&R rule to capture RECEIPT events with your context
+2. Deploy the reliable task to matching sensors
+3. Collect responses via LCQL query
+4. Return aggregated results
 
-```
-lc_call_tool(
-  tool_name="set_dr_general_rule",
-  parameters={
-    "oid": "[org-id]",
-    "rule_name": "shell-scan-collector",
-    "rule_content": {
-      "detect": {
-        "event": "RECEIPT",
-        "op": "contains",
-        "path": "event/STDOUT",
-        "value": "scan-001"
-      },
-      "respond": [
-        {
-          "action": "report",
-          "name": "shell-scan-result"
-        }
-      ]
-    }
-  }
-)
-```
-
-### Step 5: Query Results
-
-Use LCQL or check detections:
-
-```
-lc_call_tool(
-  tool_name="run_lcql_query",
-  parameters={
-    "oid": "[org-id]",
-    "query": "event_type = 'RECEIPT' AND event/STDOUT contains 'scan-001'",
-    "limit": 100
-  }
-)
-```
-
-Or check generated detections:
-
-```
-lc_call_tool(
-  tool_name="get_historic_detections",
-  parameters={
-    "oid": "[org-id]",
-    "start": [timestamp],
-    "end": [timestamp],
-    "limit": 100
-  }
-)
-```
+See the **sensor-tasking** skill documentation for:
+- D&R rule creation workflow
+- Response collection via LCQL
+- Monitoring task progress
+- Result aggregation patterns
 
 ## Payload Script Workflow (For Complex Operations)
 
@@ -258,74 +228,47 @@ lc_call_tool(
 )
 ```
 
-### Step 3: Create D&R Rule for File Collection
+### Step 3: Deploy and Collect Results (Delegate to sensor-tasking)
+
+> **IMPORTANT**: The `sensor-tasking` skill handles the complete deployment workflow:
+> - Creates D&R rule for response collection (BEFORE task deployment)
+> - Deploys via reliable tasking
+> - Collects and formats results
+
+Use the `sensor-tasking` skill with your uploaded payload:
 
 ```
-lc_call_tool(
-  tool_name="set_dr_general_rule",
-  parameters={
-    "oid": "[org-id]",
-    "rule_name": "payload-collector",
-    "rule_content": {
-      "detect": {
-        "event": "RECEIPT",
-        "op": "matches",
-        "path": "event/STDOUT",
-        "re": "/tmp/lc-fleet-scan[.-][A-Za-z0-9]+\\.json"
-      },
-      "respond": [
-        {
-          "action": "task",
-          "command": "file_get {{ .event.STDOUT | trim }}",
-          "investigation": "scan-001"
-        },
-        {
-          "action": "report",
-          "name": "payload-result"
-        }
-      ]
-    }
-  }
-)
+Skill(lc-essentials:sensor-tasking)
+
+Provide to sensor-tasking:
+- Task command: run --payload-name my-payload.sh --arguments 'scan-001'
+- Selector: plat == linux (or your target selector)
+- Context: scan-001 (for response collection)
+- TTL: 604800 (1 week, or desired expiration)
 ```
 
-### Step 4: Deploy Task
+The sensor-tasking skill will:
+1. Create a D&R rule to capture RECEIPT events and trigger file_get
+2. Deploy the reliable task to matching sensors
+3. Collect artifacts from sensor responses
+4. Return aggregated results
 
-```
-lc_call_tool(
-  tool_name="reliable_tasking",
-  parameters={
-    "oid": "[org-id]",
-    "task": "run --payload-name my-payload.sh --arguments 'scan-001'",
-    "selector": "plat == linux",
-    "context": "scan-001",
-    "ttl": 604800
-  }
-)
-```
+**Note**: For payload-based collection, you may want a D&R rule that:
+- Matches the file path pattern in STDOUT
+- Triggers `file_get` to retrieve the result file
+- Stores results as artifacts
 
-### Step 5: Collect Artifacts
-
-```
-lc_call_tool(
-  tool_name="list_artifacts",
-  parameters={
-    "oid": "[org-id]",
-    "start": [scan-start-timestamp],
-    "end": [now-timestamp]
-  }
-)
-```
+See the **sensor-tasking** skill documentation for advanced D&R rule patterns.
 
 ## Sensor Selectors
 
 | Selector | Example | Description |
 |----------|---------|-------------|
-| All sensors | (empty) | Every sensor in org |
+| All sensors | `*` | Every sensor in org |
 | By platform | `plat == windows` | Only Windows sensors |
-| By tag | `tag == production` | Sensors with specific tag |
-| Combined | `plat == linux AND tag == webserver` | Multiple criteria |
-| By hostname | `hostname == server1.example.com` | Specific host |
+| By tag | `"production" in tags` | Sensors with specific tag |
+| Combined | `plat == linux and "webserver" in tags` | Multiple criteria |
+| By hostname | `hostname == "server1.example.com"` | Specific host |
 
 ## Monitoring Task Progress
 
@@ -352,27 +295,24 @@ Shows:
 
 ## Cleanup
 
-After operation completion:
+### Payload Cleanup (This Skill)
+
+If you uploaded a payload, delete it after the operation:
 
 ```
-# Delete D&R rule
-lc_call_tool(
-  tool_name="delete_dr_general_rule",
-  parameters={"oid": "[org-id]", "rule_name": "shell-scan-collector"}
-)
-
-# Delete payload (if used)
 lc_call_tool(
   tool_name="delete_payload",
   parameters={"oid": "[org-id]", "name": "my-payload.sh"}
 )
-
-# Delete reliable task
-lc_call_tool(
-  tool_name="delete_reliable_task",
-  parameters={"oid": "[org-id]", "task_id": "[task-id]", "selector": "*"}
-)
 ```
+
+### D&R Rule and Task Cleanup (sensor-tasking)
+
+The `sensor-tasking` skill handles cleanup for:
+- D&R rules created for response collection
+- Reliable tasks
+
+See the **sensor-tasking** skill documentation for cleanup workflows.
 
 ## Security Considerations
 
@@ -384,7 +324,7 @@ lc_call_tool(
 
 ## Related Skills
 
-- `sensor-coverage` - Fleet inventory and health
-- `sensor-tasking` - Direct sensor commands
-- `detection-engineering` - Create D&R rules
-- `limacharlie-call` - Low-level API access
+- **sensor-tasking** - **REQUIRED for deployment.** Handles reliable tasking, D&R rules for response collection, and result retrieval. Use this skill for the execution workflow after preparing your payload/command here.
+- `sensor-coverage` - Fleet inventory and health before tasking
+- `detection-engineering` - Create custom D&R rules for advanced scenarios
+- `limacharlie-call` - Low-level API access for payload management
