@@ -1,27 +1,27 @@
 
-# List Timelines
+# List Investigations
 
-List all timelines in a LimaCharlie organization.
+List all investigations in a LimaCharlie organization.
 
 ## When to Use
 
 Use this skill when the user needs to:
-- See all investigation timelines in the organization
-- Find a specific timeline by browsing available timelines
+- See all investigations in the organization
+- Find a specific investigation by browsing available investigations
 - Get an overview of ongoing and completed investigations
-- Audit timeline usage across the organization
-- Find timelines by tags
+- Audit investigation usage across the organization
+- Find investigations by tags
 
 Common scenarios:
-- "Show me all timelines in this organization"
-- "List all investigation timelines"
-- "What timelines do we have?"
-- "Find timelines tagged with 'ransomware'"
+- "Show me all investigations in this organization"
+- "List all investigations"
+- "What investigations do we have?"
+- "Find investigations tagged with 'ransomware'"
 - "Show me all active investigations"
 
 ## What This Skill Does
 
-This skill retrieves all timeline records from LimaCharlie's Investigation Hive for the specified organization. It returns timeline names along with their metadata (status, tags, creation info).
+This skill retrieves all investigation records from LimaCharlie's Investigation Hive for the specified organization. It returns investigation names along with their metadata (status, tags, creation info).
 
 ## Required Information
 
@@ -44,7 +44,7 @@ Use the `lc_call_tool` MCP tool:
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_timelines",
+  tool_name="list_investigations",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
   }
@@ -52,7 +52,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 ```
 
 **Tool Details:**
-- Tool name: `list_timelines`
+- Tool name: `list_investigations`
 - Parameters:
   - `oid`: Organization ID (required)
 
@@ -61,7 +61,7 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 The tool returns:
 ```json
 {
-  "timelines": {
+  "investigations": {
     "incident-2024-001": {
       "data": {
         "name": "Ransomware Investigation",
@@ -88,9 +88,9 @@ The tool returns:
 ```
 
 **Success:**
-- Returns all timelines with their data and metadata
-- Count indicates total number of timelines
-- Each timeline includes status, priority, tags, and audit info
+- Returns all investigations with their data and metadata
+- Count indicates total number of investigations
+- Each investigation includes status, priority, tags, and audit info
 
 **Common Errors:**
 - **403 Forbidden**: Insufficient permissions
@@ -99,14 +99,14 @@ The tool returns:
 ### Step 4: Format the Response
 
 Present the result to the user:
-- Show total count of timelines
-- List timelines with key info (name, status, priority)
+- Show total count of investigations
+- List investigations with key info (name, status, priority)
 - Group by status if helpful (in_progress, closed, etc.)
 - Show tags for filtering
 
 **Example output:**
 ```
-Found 5 timelines in organization:
+Found 5 investigations in organization:
 
 IN PROGRESS (2):
 1. ransomware-server01-2024
@@ -126,54 +126,54 @@ CLOSED (3):
    Status: closed_false_positive | Priority: low
    Closed: 2024-01-10
 
-5. test-timeline
+5. test-investigation
    Status: closed_true_positive | Priority: informational
    Closed: 2024-01-05
 ```
 
 ## Example Usage
 
-### Example 1: List all timelines
+### Example 1: List all investigations
 
-User request: "Show me all investigation timelines"
+User request: "Show me all investigations"
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="list_timelines",
+  tool_name="list_investigations",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab"
   }
 )
 ```
 
-### Example 2: Find specific timeline
+### Example 2: Find specific investigation
 
-User request: "I'm looking for the ransomware investigation timeline"
+User request: "I'm looking for the ransomware investigation"
 
 Steps:
-1. List all timelines
+1. List all investigations
 2. Filter results for ransomware-related names or tags
-3. Present matching timelines
+3. Present matching investigations
 
 ## Additional Notes
 
-- Returns all timelines regardless of status
+- Returns all investigations regardless of status
 - Filter results client-side by status, priority, or tags
-- Timeline data in list is the same as stored (not expanded)
-- Use `get_timeline` for a single timeline with full data
-- Use `expand_timeline` to hydrate with full event/detection data
-- Related skills: `get_timeline` to retrieve one, `set_timeline` to create/update, `delete_timeline` to remove
+- Investigation data in list is the same as stored (not expanded)
+- Use `get_investigation` for a single investigation with full data
+- Use `expand_investigation` to hydrate with full event/detection data
+- Related skills: `get_investigation` to retrieve one, `set_investigation` to create/update, `delete_investigation` to remove
 
 ## Related Functions
 
-- `get_timeline` - Get a specific timeline by name
-- `set_timeline` - Create or update a timeline
-- `delete_timeline` - Delete a timeline
-- `expand_timeline` - Hydrate timeline with full event/detection data
+- `get_investigation` - Get a specific investigation by name
+- `set_investigation` - Create or update an investigation
+- `delete_investigation` - Delete an investigation
+- `expand_investigation` - Hydrate investigation with full event/detection data
 
 ## Reference
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
 - **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
-- **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`
+- **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/investigations.go`

@@ -100,7 +100,7 @@ Do NOT use `get_online_sensors` + loop through `get_sensor_info`—that wastes A
 - `list_lookups` / `set_lookup` / `query_lookup` - Lookups
 - `list_payloads` / `create_payload` / `get_payload` / `delete_payload` - Payloads
 
-## Available Functions (137)
+## Available Functions (142)
 
 ### Organization Management (9)
 - `list_user_orgs` → `./functions/list-user-orgs.md`
@@ -276,6 +276,13 @@ Do NOT use `get_online_sensors` + loop through `get_sensor_info`—that wastes A
 - `get_detection` - Get one by ID: `(oid, detection_id)` → `./functions/get-detection.md`
 - `get_event_by_atom` → `./functions/get-event-by-atom.md`
 - `get_atom_children` → `./functions/get-atom-children.md`
+
+### Investigations (5)
+- `list_investigations` → `./functions/list-investigations.md`
+- `get_investigation` → `./functions/get-investigation.md`
+- `set_investigation` → `./functions/set-investigation.md`
+- `delete_investigation` → `./functions/delete-investigation.md`
+- `expand_investigation` → `./functions/expand-investigation.md`
 
 ### AI-Powered Generation (6)
 - `generate_lcql_query` → `./functions/generate-lcql-query.md`
