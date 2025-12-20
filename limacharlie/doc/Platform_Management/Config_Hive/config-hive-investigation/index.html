@@ -12,7 +12,7 @@
         <meta name="author" content="refractionPOINT">
       
       
-        <link rel="canonical" href="https://refractionpoint.github.io/documentation/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline/">
+        <link rel="canonical" href="https://refractionpoint.github.io/documentation/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Config Hive: Timeline - LimaCharlie Documentation</title>
+        <title>Config Hive: Investigation - LimaCharlie Documentation</title>
       
     
     
@@ -153,7 +153,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#config-hive-timeline" class="md-skip">
+        <a href="#config-hive-investigation" class="md-skip">
           Skip to content
         </a>
       
@@ -188,7 +188,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Config Hive: Timeline
+              Config Hive: Investigation
             
           </span>
         </div>
@@ -1745,10 +1745,10 @@
   
 
 
-<h1 id="config-hive-timeline">Config Hive: Timeline<a class="headerlink" href="#config-hive-timeline" title="Anchor link to this section">&para;</a></h1>
-<p>Timelines are investigation records used during cybersecurity incident response to organize events, detections, and entities of interest. They enable analysts to track investigation progress, add annotations, and document findings throughout an incident.</p>
+<h1 id="config-hive-investigation">Config Hive: Investigation<a class="headerlink" href="#config-hive-investigation" title="Anchor link to this section">&para;</a></h1>
+<p>Investigations are records used during cybersecurity incident response to organize events, detections, and entities of interest. They enable analysts to track investigation progress, add annotations, and document findings throughout an incident.</p>
 <h2 id="format">Format<a class="headerlink" href="#format" title="Anchor link to this section">&para;</a></h2>
-<p>Timeline records store references to events and detections (by ID), along with entities, notes, and investigation metadata. The maximum record size is 5MB.</p>
+<p>Investigation records store references to events and detections (by ID), along with entities, notes, and investigation metadata. The maximum record size is 5MB.</p>
 <h3 id="root-fields">Root Fields<a class="headerlink" href="#root-fields" title="Anchor link to this section">&para;</a></h3>
 <table>
 <thead>
@@ -1766,7 +1766,7 @@
 <td>string</td>
 <td>Yes</td>
 <td>256</td>
-<td>Human-readable timeline name</td>
+<td>Human-readable investigation name</td>
 </tr>
 <tr>
 <td><code>description</code></td>
@@ -2164,31 +2164,31 @@
 <p><strong>Note Type:</strong>
 <code>observation</code>, <code>hypothesis</code>, <code>finding</code>, <code>conclusion</code>, <code>action_item</code>, <code>question</code></p>
 <h2 id="permissions">Permissions<a class="headerlink" href="#permissions" title="Anchor link to this section">&para;</a></h2>
-<p>The timeline hive requires the following permissions:</p>
+<p>The investigation hive requires the following permissions:</p>
 <ul>
-<li><code>timeline.get</code> - Read timeline records</li>
-<li><code>timeline.set</code> - Create/update timeline records</li>
-<li><code>timeline.del</code> - Delete timeline records</li>
-<li><code>timeline.get.mtd</code> - Read timeline metadata</li>
-<li><code>timeline.set.mtd</code> - Modify timeline metadata</li>
+<li><code>investigation.get</code> - Read investigation records</li>
+<li><code>investigation.set</code> - Create/update investigation records</li>
+<li><code>investigation.del</code> - Delete investigation records</li>
+<li><code>investigation.get.mtd</code> - Read investigation metadata</li>
+<li><code>investigation.set.mtd</code> - Modify investigation metadata</li>
 </ul>
 <h2 id="command-line-usage">Command-Line Usage<a class="headerlink" href="#command-line-usage" title="Anchor link to this section">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Create a timeline from a JSON file</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>timeline<span class="w"> </span>--key<span class="w"> </span>investigation-2024-001<span class="w"> </span>--data<span class="w"> </span>timeline.json
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Create an investigation from a JSON file</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>investigation<span class="w"> </span>--key<span class="w"> </span>investigation-2024-001<span class="w"> </span>--data<span class="w"> </span>investigation.json
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Get a timeline</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>get<span class="w"> </span>timeline<span class="w"> </span>--key<span class="w"> </span>investigation-2024-001
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Get an investigation</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>get<span class="w"> </span>investigation<span class="w"> </span>--key<span class="w"> </span>investigation-2024-001
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Delete a timeline</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>del<span class="w"> </span>timeline<span class="w"> </span>--key<span class="w"> </span>investigation-2024-001
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Delete an investigation</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>del<span class="w"> </span>investigation<span class="w"> </span>--key<span class="w"> </span>investigation-2024-001
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># List all timelines</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>list<span class="w"> </span>timeline
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># List all investigations</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>list<span class="w"> </span>investigation
 </span></code></pre></div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Anchor link to this section">&para;</a></h2>
 <h3 id="infrastructure-as-code">Infrastructure as Code<a class="headerlink" href="#infrastructure-as-code" title="Anchor link to this section">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">hives</span><span class="p">:</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">timeline</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">investigation</span><span class="p">:</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">ransomware-investigation</span><span class="p">:</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">data</span><span class="p">:</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Ransomware</span><span class="nv"> </span><span class="s">Investigation</span><span class="nv"> </span><span class="s">2024-001&quot;</span>
@@ -2286,11 +2286,11 @@
 </span><span id="__span-2-65"><a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a><span class="p">}</span>
 </span></code></pre></div>
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Anchor link to this section">&para;</a></h2>
-<p>For opinionated guidance on tagging events and detections for SOC investigations, including MITRE ATT&amp;CK mapping and attack chain visualization, see the <a href="../../../Getting_Started/Use_Cases/timeline-investigation-guide/">Timeline Investigation Guide</a>.</p>
+<p>For opinionated guidance on tagging events and detections for SOC investigations, including MITRE ATT&amp;CK mapping and attack chain visualization, see the <a href="../../../Getting_Started/Use_Cases/investigation-guide/">Investigation Guide</a>.</p>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Anchor link to this section">&para;</a></h2>
 <ul>
-<li><a href="../../../Getting_Started/Use_Cases/timeline-investigation-guide/">Timeline Investigation Guide</a> - Best practices for tagging and documenting investigations</li>
-<li><a href="../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md">expand_timeline</a> - Hydrate timeline with full event/detection data</li>
+<li><a href="../../../Getting_Started/Use_Cases/investigation-guide/">Investigation Guide</a> - Best practices for tagging and documenting investigations</li>
+<li><a href="../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md">expand_timeline</a> - Hydrate investigation with full event/detection data</li>
 </ul>
 
 
