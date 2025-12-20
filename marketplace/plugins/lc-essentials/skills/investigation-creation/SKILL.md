@@ -176,6 +176,92 @@ curl -sS "[resource_link_url]" | gunzip | jq '.'
 
 ---
 
+## CRITICAL: Comprehensive Event Collection
+
+**The investigation record must include ALL relevant events discovered during investigation - not just the "key" ones.**
+
+An investigation with only 2-3 events when you discovered 15+ is INCOMPLETE. Future analysts need the full picture.
+
+### Mandatory Event Collection Checklist
+
+Before saving an investigation, verify you have included:
+
+**From the initial/primary host:**
+- [ ] The triggering event (detection source)
+- [ ] All malicious process executions (NEW_PROCESS)
+- [ ] Parent processes in the attack chain
+- [ ] Child processes spawned by malicious activity
+- [ ] CODE_IDENTITY events (file verification, signatures)
+- [ ] TERMINATE_PROCESS events (shows process lifecycle)
+- [ ] Network connection events showing C2 or lateral movement
+- [ ] File creation/modification events related to the attack
+- [ ] Any investigated events marked benign (with explanation)
+
+**From EACH additional affected host (when multi-host compromise detected):**
+- [ ] The initial malicious process execution on that host
+- [ ] C2 beacon processes
+- [ ] Sample network connection events showing C2 activity
+- [ ] Any unique activity not seen on other hosts
+
+**Detections:**
+- [ ] The triggering detection
+- [ ] All related detections on primary host (same attack chain)
+- [ ] Representative detections from each additional affected host
+- [ ] Different detection types (not just 60 identical C2 alerts - include a sample + note the count)
+
+### What Goes Wrong Without This
+
+When you only include 3 events from a 12-event attack chain:
+- Future analysts can't understand the full attack flow
+- Related events aren't linked to the investigation
+- Timeline reconstruction is impossible
+- The investigation appears incomplete and unprofessional
+
+### Multi-Host Investigations
+
+**When IOC search reveals multiple affected hosts, you MUST:**
+
+1. **Get key events from EACH host** - not just the first one
+   - Query for malicious processes on each sensor
+   - Get the attack chain events from each
+
+2. **Tag events by host** - use tags like `host:hostname` to distinguish
+
+3. **Include sample C2/network events from each host** - shows the scope
+
+4. **Document the spread timeline** - when was each host compromised?
+
+### Example: What Complete Looks Like
+
+**Bad (incomplete):**
+```json
+{
+  "events": [
+    {"atom": "abc...", "relevance": "Malicious svchost.exe"},
+    {"atom": "def...", "relevance": "rundll32 beacon"}
+  ]
+}
+```
+
+**Good (comprehensive):**
+```json
+{
+  "events": [
+    {"atom": "abc...", "relevance": "MALICIOUS: Fake svchost.exe execution", "tags": ["host:desktop-001", "phase:execution"]},
+    {"atom": "def...", "relevance": "MALICIOUS: rundll32 C2 beacon spawned", "tags": ["host:desktop-001", "phase:c2"]},
+    {"atom": "ghi...", "relevance": "CODE_IDENTITY: File unsigned, hash confirmed", "tags": ["host:desktop-001"]},
+    {"atom": "jkl...", "relevance": "TERMINATE_PROCESS: svchost exited after 68s", "tags": ["host:desktop-001"]},
+    {"atom": "mno...", "relevance": "NETWORK_CONNECTIONS: C2 beacon to 1.2.3.4:80", "tags": ["host:desktop-001", "phase:c2"]},
+    {"atom": "pqr...", "relevance": "BENIGN: services.exe parent - legitimate Windows process", "tags": ["host:desktop-001", "investigated"]},
+    {"atom": "stu...", "relevance": "MALICIOUS: Fake svchost.exe on SECOND HOST", "tags": ["host:server-002", "phase:execution"]},
+    {"atom": "vwx...", "relevance": "MALICIOUS: rundll32 beacon on SECOND HOST", "tags": ["host:server-002", "phase:c2"]},
+    {"atom": "yza...", "relevance": "SUSPICIOUS: Inbound RDP - possible initial access", "tags": ["host:desktop-001", "phase:initial-access"]}
+  ]
+}
+```
+
+---
+
 ## Required Information
 
 Before starting, gather from the user:
@@ -214,6 +300,20 @@ A complete investigation includes:
 - **All affected entities** with verdicts and provenance (how you discovered them)
 - **MITRE ATT&CK tags** where you can confidently identify techniques (recommended, not mandatory)
 - **Acknowledged unknowns** - what couldn't be determined and why
+- **Comprehensive event collection** - see the "Comprehensive Event Collection" section above
+
+### Event Count Sanity Check
+
+As you investigate, mentally track how many distinct events you've examined. A typical malware investigation might involve:
+- 2-5 process execution events (malware + children)
+- 1-3 file events (CODE_IDENTITY, FILE_CREATE)
+- 1-2 process lifecycle events (TERMINATE_PROCESS)
+- 5-20 network events (C2 beaconing, lateral movement checks)
+- Plus events from additional affected hosts
+
+**If your final investigation has fewer events than you examined, you're missing events.**
+
+For multi-host compromises, expect to multiply these numbers by the number of affected hosts (for key events, not all 60 C2 detections).
 
 ---
 
@@ -864,12 +964,40 @@ Summarize for the user:
 7. **Confidence level**: How certain are you?
 8. **Gaps**: What couldn't you determine?
 
+### Pre-Save Verification Checklist
+
+**STOP - Before saving, verify your investigation is complete:**
+
+**Event Coverage:**
+- [ ] Included ALL event types discovered (not just NEW_PROCESS - also CODE_IDENTITY, TERMINATE_PROCESS, NETWORK_CONNECTIONS, etc.)
+- [ ] Included events from ALL affected hosts (not just the first one)
+- [ ] Included parent/child process chain events
+- [ ] Included benign events that were investigated (with explanations)
+- [ ] Each event has a detailed `relevance` explanation
+- [ ] Events are tagged with `host:hostname` for multi-host investigations
+
+**Detection Coverage:**
+- [ ] Included the triggering detection
+- [ ] Included related detections (different rule types, not 60 duplicates)
+- [ ] Included representative detections from each affected host
+
+**Entity/IOC Coverage:**
+- [ ] All file hashes (SHA256, MD5, SHA1 if available)
+- [ ] All C2 IPs/domains
+- [ ] All affected hosts as entities
+- [ ] All suspicious external IPs (potential initial access)
+- [ ] File paths and process names
+
+**Count Check:**
+If you discovered 10+ events during investigation but only have 3 in the record, GO BACK and add the rest.
+
 ### Get User Confirmation
 
 Always confirm with user before saving:
 1. Investigation name is acceptable
 2. Findings are complete
-3. Ready to save
+3. Event/detection count looks reasonable for the incident scope
+4. Ready to save
 
 ### Save Investigation
 
