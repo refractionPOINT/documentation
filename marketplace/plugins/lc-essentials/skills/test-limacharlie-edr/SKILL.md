@@ -314,4 +314,4 @@ Task(
 - `limacharlie-call`: For creating organizations or other API operations
 - `detection-engineering`: For creating D&R rules to test with the sensor
 - `sensor-health`: To check if your test sensor is reporting properly
-- `timeline-creation`: To investigate events from your test sensor
+- `investigation-creation`: To investigate events from your test sensor

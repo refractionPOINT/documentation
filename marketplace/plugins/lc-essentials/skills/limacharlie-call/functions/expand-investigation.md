@@ -1,34 +1,34 @@
 
-# Expand Timeline
+# Expand Investigation
 
-Expand a timeline by fetching full event and detection data for all references, transforming a lightweight timeline with atom/detection IDs into a fully hydrated timeline with complete event and detection details.
+Expand an investigation by fetching full event and detection data for all references, transforming a lightweight investigation with atom/detection IDs into a fully hydrated investigation with complete event and detection details.
 
 ## When to Use
 
 Use this skill when the user needs to:
-- Get full event details for events referenced in a timeline
-- Retrieve complete detection data for detections in a timeline
-- Export a timeline with all associated data
-- Review an investigation timeline with full context
-- Generate reports from timeline data
+- Get full event details for events referenced in an investigation
+- Retrieve complete detection data for detections in an investigation
+- Export an investigation with all associated data
+- Review an investigation with full context
+- Generate reports from investigation data
 - Analyze events and detections in an investigation
 
 Common scenarios:
-- "Expand the timeline to show full event details"
-- "Get the complete data for all events in my investigation timeline"
-- "Fetch full detection information for this timeline"
-- "Hydrate timeline 'ransomware-incident-2024' with event data"
-- "Show me the expanded timeline with all event and detection details"
+- "Expand the investigation to show full event details"
+- "Get the complete data for all events in my investigation"
+- "Fetch full detection information for this investigation"
+- "Hydrate investigation 'ransomware-incident-2024' with event data"
+- "Show me the expanded investigation with all event and detection details"
 
 ## What This Skill Does
 
-This skill expands a timeline by:
-1. Taking either a timeline object or the name of a stored timeline
+This skill expands an investigation by:
+1. Taking either an investigation object or the name of a stored investigation
 2. Fetching full event data for each event reference (using atom IDs)
 3. Fetching complete detection data for each detection reference
-4. Returning the timeline with all data hydrated
+4. Returning the investigation with all data hydrated
 
-Timelines are investigation records that reference events and detections by ID. This function resolves those references to provide complete data.
+Investigations are records that reference events and detections by ID. This function resolves those references to provide complete data.
 
 ## Required Information
 
@@ -38,16 +38,16 @@ Before calling this skill, gather:
 - **oid**: Organization ID (required)
 
 One of the following (mutually exclusive):
-- **timeline**: A timeline object to expand directly
-- **timeline_name**: Name of a timeline stored in Hive to fetch and expand
+- **investigation**: An investigation object to expand directly
+- **investigation_name**: Name of an investigation stored in Hive to fetch and expand
 
-## Timeline Structure
+## Investigation Structure
 
-For the complete timeline schema reference, see [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md).
+For the complete investigation schema reference, see [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md).
 
-Timelines can contain:
-- **name**: Timeline name (required, max 256 chars)
-- **description**: Timeline description (max 4096 chars)
+Investigations can contain:
+- **name**: Investigation name (required, max 256 chars)
+- **description**: Investigation description (max 4096 chars)
 - **status**: Investigation status (new, in_progress, pending_review, escalated, closed_false_positive, closed_true_positive)
 - **priority**: Priority level (critical, high, medium, low, informational)
 - **events**: Array of event references with atom, sid, tags, comments, relevance, verdict
@@ -63,30 +63,30 @@ Timelines can contain:
 
 Ensure you have:
 1. Valid organization ID (oid)
-2. Either a timeline object OR a timeline name (not both)
+2. Either an investigation object OR an investigation name (not both)
 
 ### Step 2: Call the Tool
 
 Use the `lc_call_tool` MCP tool:
 
-**Option A: Expand a stored timeline by name**
+**Option A: Expand a stored investigation by name**
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="expand_timeline",
+  tool_name="expand_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "ransomware-investigation-2024"
+    "investigation_name": "ransomware-investigation-2024"
   }
 )
 ```
 
-**Option B: Expand a timeline object directly**
+**Option B: Expand an investigation object directly**
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="expand_timeline",
+  tool_name="expand_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline": {
+    "investigation": {
       "name": "My Investigation",
       "events": [
         {"atom": "abc123", "sid": "sensor-001"}
@@ -100,15 +100,15 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 ```
 
 **Tool Details:**
-- Tool name: `expand_timeline`
+- Tool name: `expand_investigation`
 - Parameters:
   - `oid`: Organization ID (required)
-  - `timeline_name`: Name of stored timeline (mutually exclusive with timeline)
-  - `timeline`: Timeline object to expand (mutually exclusive with timeline_name)
+  - `investigation_name`: Name of stored investigation (mutually exclusive with investigation)
+  - `investigation`: Investigation object to expand (mutually exclusive with investigation_name)
 
 ### Step 3: Handle the Response
 
-The tool returns an expanded timeline with full event and detection data:
+The tool returns an expanded investigation with full event and detection data:
 
 ```json
 {
@@ -157,18 +157,18 @@ The tool returns an expanded timeline with full event and detection data:
 ```
 
 **Success:**
-- Returns timeline with full event data hydrated for all event references
+- Returns investigation with full event data hydrated for all event references
 - Detections include complete detection data with event context and metadata
-- All other timeline fields (entities, notes, summary, etc.) preserved
+- All other investigation fields (entities, notes, summary, etc.) preserved
 
 **Common Errors:**
-- **400 Bad Request**: Both timeline and timeline_name provided, or neither provided
+- **400 Bad Request**: Both investigation and investigation_name provided, or neither provided
 - **403 Forbidden**: Insufficient permissions
-- **404 Not Found**: Timeline name not found in Hive
+- **404 Not Found**: Investigation name not found in Hive
 
 ### Step 4: Format the Response
 
-Present the expanded timeline to the user:
+Present the expanded investigation to the user:
 - Show event details with timestamps, command lines, file paths
 - Display detection context with rule names and severity
 - Highlight high-priority or malicious items
@@ -176,7 +176,7 @@ Present the expanded timeline to the user:
 
 **Example output:**
 ```
-Expanded Timeline: ransomware-investigation-2024
+Expanded Investigation: ransomware-investigation-2024
 Status: in_progress | Priority: critical
 
 EVENTS (3):
@@ -204,30 +204,30 @@ ENTITIES (1):
 
 ## Example Usage
 
-### Example 1: Expand stored timeline
+### Example 1: Expand stored investigation
 
-User: "Show me the full details for timeline 'incident-2024-01-20'"
+User: "Show me the full details for investigation 'incident-2024-01-20'"
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="expand_timeline",
+  tool_name="expand_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "incident-2024-01-20"
+    "investigation_name": "incident-2024-01-20"
   }
 )
 ```
 
-### Example 2: Expand timeline object
+### Example 2: Expand investigation object
 
-User: "Get full event data for these timeline events"
+User: "Get full event data for these investigation events"
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="expand_timeline",
+  tool_name="expand_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline": {
+    "investigation": {
       "name": "Quick Investigation",
       "events": [
         {"atom": "event-atom-1", "sid": "sensor-001"},
@@ -240,10 +240,10 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 ## Additional Notes
 
-- Timelines store references (atoms, detection IDs), not full event data
+- Investigations store references (atoms, detection IDs), not full event data
 - Expanding hydrates all references with complete data
-- Use `timeline_name` for stored timelines in Hive
-- Use `timeline` object for ad-hoc expansion of timeline data
+- Use `investigation_name` for stored investigations in Hive
+- Use `investigation` object for ad-hoc expansion of investigation data
 - Parameters are mutually exclusive - provide one or the other
 - Event data includes full telemetry from the sensor
 - Detection data includes rule metadata and matched event context
@@ -258,6 +258,6 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 
 See [CALLING_API.md](../../../CALLING_API.md) for details on using `lc_call_tool`.
 
-- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
-- **MCP Implementation**: `../lc-mcp-server/internal/tools/historical/timeline.go`
-- **Hive Schema**: `../legion_config_hive/hives/def_timeline.go`
+- **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
+- **MCP Implementation**: `../lc-mcp-server/internal/tools/historical/investigation.go`
+- **Hive Schema**: `../legion_config_hive/hives/def_investigation.go`

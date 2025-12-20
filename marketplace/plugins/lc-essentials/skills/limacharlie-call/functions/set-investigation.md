@@ -1,28 +1,28 @@
 
-# Set Timeline
+# Set Investigation
 
-Create or update a timeline in LimaCharlie's Timeline Hive. Timelines are investigation records used during cybersecurity incident response to organize events, detections, and entities of interest.
+Create or update an investigation in LimaCharlie's Investigation Hive. Investigations are records used during cybersecurity incident response to organize events, detections, and entities of interest.
 
 ## When to Use
 
 Use this skill when the user needs to:
-- Create a new investigation timeline
+- Create a new investigation
 - Save findings from an incident investigation
 - Document events, detections, and IOCs in a structured format
-- Update an existing timeline with new findings
+- Update an existing investigation with new findings
 - Record investigation notes and action items
-- Build a forensic timeline for incident response
+- Build a forensic investigation for incident response
 
 Common scenarios:
-- "Create a timeline for this ransomware investigation"
-- "Save these findings to a timeline called 'phishing-incident-2024'"
-- "Update the timeline with these new IOCs"
-- "Document this investigation in a timeline"
-- "Add these events to the incident timeline"
+- "Create an investigation for this ransomware incident"
+- "Save these findings to an investigation called 'phishing-incident-2024'"
+- "Update the investigation with these new IOCs"
+- "Document this investigation"
+- "Add these events to the incident investigation"
 
 ## What This Skill Does
 
-This skill creates or updates a timeline record in LimaCharlie's Timeline Hive. Timelines store references to events (by atom), detections (by ID), entities (IOCs), and investigation notes. If a timeline with the same name exists, it will be replaced with the new data.
+This skill creates or updates an investigation record in LimaCharlie's Investigation Hive. Investigations store references to events (by atom), detections (by ID), entities (IOCs), and investigation notes. If an investigation with the same name exists, it will be replaced with the new data.
 
 ## Required Information
 
@@ -31,18 +31,18 @@ Before calling this skill, gather:
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 
 - **oid**: Organization ID (required)
-- **timeline_name**: Name for the timeline (alphanumeric, hyphens, underscores, max 256 chars)
-- **timeline_data**: Timeline data object (see structure below)
+- **investigation_name**: Name for the investigation (alphanumeric, hyphens, underscores, max 256 chars)
+- **investigation_data**: Investigation data object (see structure below)
 
-## Timeline Data Structure
+## Investigation Data Structure
 
-For the complete schema reference, see [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md).
+For the complete schema reference, see [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md).
 
 ### Root Fields
 
 | Field | Type | Required | Max Length | Description |
 |-------|------|----------|-----------|-------------|
-| `name` | string | Yes | 256 | Human-readable timeline name |
+| `name` | string | Yes | 256 | Human-readable investigation name |
 | `description` | string | No | 4096 | Detailed description of the investigation |
 | `status` | string | No | - | Investigation status (see enum below) |
 | `priority` | string | No | - | Priority level (see enum below) |
@@ -103,8 +103,8 @@ For the complete schema reference, see [Config Hive: Timeline](../../../../../do
 
 Ensure you have:
 1. Valid organization ID (oid)
-2. Descriptive timeline name
-3. Valid timeline data structure
+2. Descriptive investigation name
+3. Valid investigation data structure
 
 ### Step 2: Call the Tool
 
@@ -112,11 +112,11 @@ Use the `lc_call_tool` MCP tool:
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="set_timeline",
+  tool_name="set_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "incident-2024-001",
-    "timeline_data": {
+    "investigation_name": "incident-2024-001",
+    "investigation_data": {
       "name": "Ransomware Investigation 2024-001",
       "description": "Investigating ransomware activity on DESKTOP-001",
       "status": "in_progress",
@@ -132,11 +132,11 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 ```
 
 **Tool Details:**
-- Tool name: `set_timeline`
+- Tool name: `set_investigation`
 - Parameters:
   - `oid`: Organization ID (required)
-  - `timeline_name`: Name for the timeline (required)
-  - `timeline_data`: Timeline data object (required)
+  - `investigation_name`: Name for the investigation (required)
+  - `investigation_data`: Investigation data object (required)
 
 ### Step 3: Handle the Response
 
@@ -144,13 +144,13 @@ The tool returns:
 ```json
 {
   "success": true,
-  "message": "Successfully created/updated timeline 'incident-2024-001'"
+  "message": "Successfully created/updated investigation 'incident-2024-001'"
 }
 ```
 
 **Success:**
-- Timeline is created/updated and immediately available
-- Can be retrieved with `get_timeline` or `expand_timeline`
+- Investigation is created/updated and immediately available
+- Can be retrieved with `get_investigation` or `expand_investigation`
 - If updating, old data is completely replaced
 
 **Common Errors:**
@@ -161,23 +161,23 @@ The tool returns:
 ### Step 4: Format the Response
 
 Present the result to the user:
-- Confirm timeline creation/update
+- Confirm investigation creation/update
 - Summarize what was saved (event count, detection count, entity count)
 - Provide next steps (expand, review, share)
 
 ## Example Usage
 
-### Example 1: Create incident timeline
+### Example 1: Create incident investigation
 
-User request: "Create a timeline for this incident investigation"
+User request: "Create an investigation for this incident"
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="set_timeline",
+  tool_name="set_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "cobalt-strike-incident-2024",
-    "timeline_data": {
+    "investigation_name": "cobalt-strike-incident-2024",
+    "investigation_data": {
       "name": "Cobalt Strike C2 Incident",
       "description": "Active Cobalt Strike beacon detected communicating with C2 server",
       "status": "in_progress",
@@ -228,21 +228,21 @@ Expected response:
 ```json
 {
   "success": true,
-  "message": "Successfully created/updated timeline 'cobalt-strike-incident-2024'"
+  "message": "Successfully created/updated investigation 'cobalt-strike-incident-2024'"
 }
 ```
 
-### Example 2: Update existing timeline
+### Example 2: Update existing investigation
 
-User request: "Add these new findings to the incident timeline"
+User request: "Add these new findings to the incident investigation"
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="set_timeline",
+  tool_name="set_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "existing-incident",
-    "timeline_data": {
+    "investigation_name": "existing-incident",
+    "investigation_data": {
       "name": "Updated Investigation",
       "status": "pending_review",
       "priority": "high",
@@ -262,30 +262,30 @@ mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
 )
 ```
 
-**Note**: Setting a timeline completely replaces the existing data. To add to an existing timeline, first retrieve it with `get_timeline`, merge with new data, then set the combined result.
+**Note**: Setting an investigation completely replaces the existing data. To add to an existing investigation, first retrieve it with `get_investigation`, merge with new data, then set the combined result.
 
 ## Additional Notes
 
-- Setting a timeline completely replaces any existing data with that name
-- To add entries without replacing: get existing with `get_timeline` -> merge -> set combined
+- Setting an investigation completely replaces any existing data with that name
+- To add entries without replacing: get existing with `get_investigation` -> merge -> set combined
 - Maximum record size is 5MB
-- Timeline names should be descriptive (e.g., `ransomware-server01-2024-01-20`)
+- Investigation names should be descriptive (e.g., `ransomware-server01-2024-01-20`)
 - Use tags on events and detections for categorization (MITRE ATT&CK, attack phase, etc.)
 - Notes support different types for structured documentation
-- Use `expand_timeline` to hydrate a saved timeline with full event/detection data
-- Related skills: `list_timelines` to see all, `get_timeline` to retrieve, `delete_timeline` to remove, `expand_timeline` to hydrate
+- Use `expand_investigation` to hydrate a saved investigation with full event/detection data
+- Related skills: `list_investigations` to see all, `get_investigation` to retrieve, `delete_investigation` to remove, `expand_investigation` to hydrate
 
 ## Related Functions
 
-- `list_timelines` - List all timelines in the organization
-- `get_timeline` - Get a specific timeline by name
-- `delete_timeline` - Delete a timeline
-- `expand_timeline` - Hydrate timeline with full event/detection data
+- `list_investigations` - List all investigations in the organization
+- `get_investigation` - Get a specific investigation by name
+- `delete_investigation` - Delete an investigation
+- `expand_investigation` - Hydrate investigation with full event/detection data
 
 ## Reference
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
-- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
-- **Timeline Investigation Guide**: [Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md)
-- **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`
+- **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
+- **Investigation Guide**: [Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/investigation-guide.md)
+- **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/investigations.go`

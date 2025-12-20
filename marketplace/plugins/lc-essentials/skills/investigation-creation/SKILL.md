@@ -1,6 +1,6 @@
 ---
-name: timeline-creation
-description: Create investigation timelines from security events, detections, or LCQL queries. Performs HOLISTIC investigations - not just process trees, but initial access hunting, org-wide scope assessment, lateral movement detection, and full host context. Builds Timeline Hive records documenting findings with events, detections, entities, and analyst notes. Use for incident investigation, threat hunting, alert triage, or building SOC working reports.
+name: investigation-creation
+description: Create investigations from security events, detections, or LCQL queries. Performs HOLISTIC investigations - not just process trees, but initial access hunting, org-wide scope assessment, lateral movement detection, and full host context. Builds Investigation Hive records documenting findings with events, detections, entities, and analyst notes. Use for incident investigation, threat hunting, alert triage, or building SOC working reports.
 allowed-tools:
   - Task
   - Read
@@ -8,11 +8,11 @@ allowed-tools:
   - Skill
 ---
 
-# Timeline Creation - Holistic Investigation & Documentation
+# Investigation Creation - Holistic Investigation & Documentation
 
 > **Prerequisites**: Run `/init-lc` to load LimaCharlie guidelines into your CLAUDE.md.
 
-You are an expert SOC analyst. Your job is to investigate security activity and build timelines that tell the complete story of what happened, enabling analysts to understand scope, make decisions, and take action.
+You are an expert SOC analyst. Your job is to investigate security activity and build investigations that tell the complete story of what happened, enabling analysts to understand scope, make decisions, and take action.
 
 You investigate like a seasoned analyst with years of experience - you follow the evidence wherever it leads, not a checklist.
 
@@ -164,15 +164,101 @@ curl -sS "[resource_link_url]" | gunzip | jq '.'
 
 2. **Never Fabricate**: Only include events, detections, and entities actually found in the data. Every claim must be backed by evidence.
 
-3. **Document as You Go**: Record findings with clear relevance explanations. Add to the timeline continuously, not just at the end.
+3. **Document as You Go**: Record findings with clear relevance explanations. Add to the investigation continuously, not just at the end.
 
 4. **Document Your Investigation Process**: Use notes to record what you searched for, what you found (or didn't find), and your reasoning. This creates an audit trail of the investigation itself, not just the results.
 
-5. **Be Inclusive with Events**: Add events to the timeline even if they turn out to be benign. If you investigated an event because it looked suspicious, include it with a `benign` verdict and explain why it was cleared. This documents the investigation scope and prevents re-investigation of the same events.
+5. **Be Inclusive with Events**: Add events to the investigation even if they turn out to be benign. If you investigated an event because it looked suspicious, include it with a `benign` verdict and explain why it was cleared. This documents the investigation scope and prevents re-investigation of the same events.
 
 6. **Story Completion**: You're done when you can tell the complete story, not when you've checked all boxes.
 
-7. **User Confirmation**: Always present findings and get confirmation before saving the timeline.
+7. **User Confirmation**: Always present findings and get confirmation before saving the investigation.
+
+---
+
+## CRITICAL: Comprehensive Event Collection
+
+**The investigation record must include ALL relevant events discovered during investigation - not just the "key" ones.**
+
+An investigation with only 2-3 events when you discovered 15+ is INCOMPLETE. Future analysts need the full picture.
+
+### Mandatory Event Collection Checklist
+
+Before saving an investigation, verify you have included:
+
+**From the initial/primary host:**
+- [ ] The triggering event (detection source)
+- [ ] All malicious process executions (NEW_PROCESS)
+- [ ] Parent processes in the attack chain
+- [ ] Child processes spawned by malicious activity
+- [ ] CODE_IDENTITY events (file verification, signatures)
+- [ ] TERMINATE_PROCESS events (shows process lifecycle)
+- [ ] Network connection events showing C2 or lateral movement
+- [ ] File creation/modification events related to the attack
+- [ ] Any investigated events marked benign (with explanation)
+
+**From EACH additional affected host (when multi-host compromise detected):**
+- [ ] The initial malicious process execution on that host
+- [ ] C2 beacon processes
+- [ ] Sample network connection events showing C2 activity
+- [ ] Any unique activity not seen on other hosts
+
+**Detections:**
+- [ ] The triggering detection
+- [ ] All related detections on primary host (same attack chain)
+- [ ] Representative detections from each additional affected host
+- [ ] Different detection types (not just 60 identical C2 alerts - include a sample + note the count)
+
+### What Goes Wrong Without This
+
+When you only include 3 events from a 12-event attack chain:
+- Future analysts can't understand the full attack flow
+- Related events aren't linked to the investigation
+- Timeline reconstruction is impossible
+- The investigation appears incomplete and unprofessional
+
+### Multi-Host Investigations
+
+**When IOC search reveals multiple affected hosts, you MUST:**
+
+1. **Get key events from EACH host** - not just the first one
+   - Query for malicious processes on each sensor
+   - Get the attack chain events from each
+
+2. **Tag events by host** - use tags like `host:hostname` to distinguish
+
+3. **Include sample C2/network events from each host** - shows the scope
+
+4. **Document the spread timeline** - when was each host compromised?
+
+### Example: What Complete Looks Like
+
+**Bad (incomplete):**
+```json
+{
+  "events": [
+    {"atom": "abc...", "relevance": "Malicious svchost.exe"},
+    {"atom": "def...", "relevance": "rundll32 beacon"}
+  ]
+}
+```
+
+**Good (comprehensive):**
+```json
+{
+  "events": [
+    {"atom": "abc...", "relevance": "MALICIOUS: Fake svchost.exe execution", "tags": ["host:desktop-001", "phase:execution"]},
+    {"atom": "def...", "relevance": "MALICIOUS: rundll32 C2 beacon spawned", "tags": ["host:desktop-001", "phase:c2"]},
+    {"atom": "ghi...", "relevance": "CODE_IDENTITY: File unsigned, hash confirmed", "tags": ["host:desktop-001"]},
+    {"atom": "jkl...", "relevance": "TERMINATE_PROCESS: svchost exited after 68s", "tags": ["host:desktop-001"]},
+    {"atom": "mno...", "relevance": "NETWORK_CONNECTIONS: C2 beacon to 1.2.3.4:80", "tags": ["host:desktop-001", "phase:c2"]},
+    {"atom": "pqr...", "relevance": "BENIGN: services.exe parent - legitimate Windows process", "tags": ["host:desktop-001", "investigated"]},
+    {"atom": "stu...", "relevance": "MALICIOUS: Fake svchost.exe on SECOND HOST", "tags": ["host:server-002", "phase:execution"]},
+    {"atom": "vwx...", "relevance": "MALICIOUS: rundll32 beacon on SECOND HOST", "tags": ["host:server-002", "phase:c2"]},
+    {"atom": "yza...", "relevance": "SUSPICIOUS: Inbound RDP - possible initial access", "tags": ["host:desktop-001", "phase:initial-access"]}
+  ]
+}
+```
 
 ---
 
@@ -191,7 +277,7 @@ That's it. Everything else, you discover.
 
 ---
 
-## What a Complete Timeline Looks Like
+## What a Complete Investigation Looks Like
 
 ### Completeness Criteria
 
@@ -204,16 +290,30 @@ Your investigation is complete when you can answer these questions:
 5. **Current State**: Is the threat contained or ongoing?
 6. **Evidence**: Is every claim backed by specific events?
 
-If you cannot answer a question, document it as an acknowledged unknown in the timeline.
+If you cannot answer a question, document it as an acknowledged unknown in the investigation.
 
 ### Required Elements
 
-A complete timeline includes:
+A complete investigation includes:
 
 - **Attack chain** with timing markers (`timing:first-observed`, `timing:pivot-point`)
 - **All affected entities** with verdicts and provenance (how you discovered them)
 - **MITRE ATT&CK tags** where you can confidently identify techniques (recommended, not mandatory)
 - **Acknowledged unknowns** - what couldn't be determined and why
+- **Comprehensive event collection** - see the "Comprehensive Event Collection" section above
+
+### Event Count Sanity Check
+
+As you investigate, mentally track how many distinct events you've examined. A typical malware investigation might involve:
+- 2-5 process execution events (malware + children)
+- 1-3 file events (CODE_IDENTITY, FILE_CREATE)
+- 1-2 process lifecycle events (TERMINATE_PROCESS)
+- 5-20 network events (C2 beaconing, lateral movement checks)
+- Plus events from additional affected hosts
+
+**If your final investigation has fewer events than you examined, you're missing events.**
+
+For multi-host compromises, expect to multiply these numbers by the number of affected hosts (for key events, not all 60 C2 detections).
 
 ---
 
@@ -248,7 +348,7 @@ ASSESS what you learned
     - What new questions does this raise?
     |
     v
-DOCUMENT your finding (add to timeline)
+DOCUMENT your finding (add to investigation)
     |
     v
 DECIDE: Is the story complete?
@@ -441,7 +541,7 @@ parameters:
 
 **CRITICAL**: Process tree analysis is just the beginning. A complete investigation must explore ALL of these dimensions. Skipping any of them leaves blind spots that could miss the full scope of an incident.
 
-**YOU MUST EXECUTE ALL PHASES** - not just recommend them. Each phase requires running actual queries and documenting findings (or documenting that nothing was found). Your timeline is incomplete if you haven't:
+**YOU MUST EXECUTE ALL PHASES** - not just recommend them. Each phase requires running actual queries and documenting findings (or documenting that nothing was found). Your investigation is incomplete if you haven't:
 1. Hunted for initial access
 2. Checked host context (other detections, persistence, credentials)
 3. Searched org-wide for the same IOCs
@@ -567,7 +667,7 @@ Don't stop at the suspicious process - trace backwards to find the entry point.
 
 **What to Document**:
 - List of all affected hosts
-- Timeline of when each was compromised (if determinable)
+- Timestamps of when each was compromised (if determinable)
 - Common IOCs across hosts
 - scope:single-host or scope:multi-host or scope:domain-wide
 
@@ -575,7 +675,7 @@ Don't stop at the suspicious process - trace backwards to find the entry point.
 
 **The Question**: Did the attacker move between systems? Where did they come from? Where did they go?
 
-**THIS PHASE IS MANDATORY** - You MUST execute these queries and include the results in your timeline. Do NOT just recommend "check for lateral movement" - actually DO IT and document what you find (or document that you found no evidence of lateral movement).
+**THIS PHASE IS MANDATORY** - You MUST execute these queries and include the results in your investigation. Do NOT just recommend "check for lateral movement" - actually DO IT and document what you find (or document that you found no evidence of lateral movement).
 
 **Investigation Steps**:
 1. **Check for inbound connections to this host**:
@@ -600,7 +700,7 @@ Don't stop at the suspicious process - trace backwards to find the entry point.
    - If this host was laterally accessed, find the source host
    - If this host laterally moved to others, identify all targets
 
-**What to Document** (REQUIRED - include in timeline even if negative):
+**What to Document** (REQUIRED - include in investigation even if negative):
 - Source of lateral movement (if not patient zero)
 - Systems this host laterally accessed
 - Techniques used for lateral movement
@@ -623,17 +723,17 @@ After completing all phases, you should be able to answer:
 | **Current State** | Is it contained or ongoing? | Recent activity checked |
 | **Unknowns** | What couldn't you determine? | Documented as `question` notes |
 
-If you cannot answer a question, document it explicitly as an unknown in your timeline notes using `type: "question"`.
+If you cannot answer a question, document it explicitly as an unknown in your investigation notes using `type: "question"`.
 
 ---
 
-## Documenting the Timeline
+## Documenting the Investigation
 
-Build the timeline as you go. Don't wait until the end.
+Build the investigation as you go. Don't wait until the end.
 
 ### Document Your Investigation Process
 
-**Use notes liberally to document your investigation journey.** The timeline should tell the story of both:
+**Use notes liberally to document your investigation journey.** The investigation should tell the story of both:
 1. What happened (the attack/incident)
 2. How you investigated it (your process)
 
@@ -660,7 +760,7 @@ This documentation is valuable because:
 
 ### Event Records
 
-**Be inclusive** - add events to the timeline if you investigated them, regardless of verdict. Include:
+**Be inclusive** - add events to the investigation if you investigated them, regardless of verdict. Include:
 - Malicious events (confirmed threats)
 - Suspicious events (require further review)
 - Benign events that you investigated but cleared (explain why in relevance field)
@@ -694,7 +794,7 @@ For each IOC or entity of interest:
 }
 ```
 
-**Valid Entity Types (from timeline.schema.json)**
+**Valid Entity Types (from investigation.schema.json)**
 
 | Entity Type | How to Extract | Example |
 |-------------|----------------|---------|
@@ -718,7 +818,7 @@ For each IOC or entity of interest:
 | `benign` | Known-good, cleared by investigation, legitimate activity |
 | `unknown` | Insufficient context, requires further analysis |
 
-**Important**: `benign` is a valuable verdict, not a reason to exclude an event. If you investigated something because it looked suspicious but determined it was legitimate, add it to the timeline with verdict `benign` and explain your reasoning in the `relevance` field. This documents what was checked and prevents future analysts from re-investigating the same activity.
+**Important**: `benign` is a valuable verdict, not a reason to exclude an event. If you investigated something because it looked suspicious but determined it was legitimate, add it to the investigation with verdict `benign` and explain your reasoning in the `relevance` field. This documents what was checked and prevents future analysts from re-investigating the same activity.
 
 **Example benign event:**
 ```json
@@ -752,7 +852,7 @@ The `timestamp` field should be the **current time in milliseconds** (Unix epoch
 
 To get the current timestamp in milliseconds, use: `date +%s%3N` (bash) or `Date.now()` (JavaScript).
 
-**IMPORTANT: Valid Note Types (from timeline.schema.json)**
+**IMPORTANT: Valid Note Types (from investigation.schema.json)**
 
 | Type | When to Use | Example |
 |------|-------------|---------|
@@ -792,17 +892,17 @@ When you can confidently identify techniques, apply tags:
 
 For MITRE reference, fetch from: `https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json`
 
-See [Timeline Investigation Guide](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md) for complete tag format reference.
+See [Investigation Guide](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/investigation-guide.md) for complete tag format reference.
 
 ---
 
-## Timeline Record Structure
+## Investigation Record Structure
 
-The complete timeline record:
+The complete investigation record:
 
 ```json
 {
-  "name": "[timeline_name]",
+  "name": "[investigation_name]",
   "description": "Investigation starting from [starting_point_description]",
   "status": "in_progress",
   "priority": "[critical|high|medium|low|informational]",
@@ -829,7 +929,7 @@ The complete timeline record:
 | `low` | Minor anomalies, informational findings |
 | `informational` | Clean investigation, no threats found |
 
-### Timeline Naming
+### Investigation Naming
 
 If user doesn't provide a name, auto-generate:
 `[threat-indicator]-[hostname]-[date]`
@@ -856,7 +956,7 @@ You know you're done when:
 
 Summarize for the user:
 1. **What happened**: The attack narrative
-2. **When**: Timeline of key events
+2. **When**: Sequence of key events
 3. **What was affected**: Systems, users, data
 4. **Current state**: Ongoing? Contained?
 5. **Key findings**: Evidence that tells the story
@@ -864,21 +964,49 @@ Summarize for the user:
 7. **Confidence level**: How certain are you?
 8. **Gaps**: What couldn't you determine?
 
+### Pre-Save Verification Checklist
+
+**STOP - Before saving, verify your investigation is complete:**
+
+**Event Coverage:**
+- [ ] Included ALL event types discovered (not just NEW_PROCESS - also CODE_IDENTITY, TERMINATE_PROCESS, NETWORK_CONNECTIONS, etc.)
+- [ ] Included events from ALL affected hosts (not just the first one)
+- [ ] Included parent/child process chain events
+- [ ] Included benign events that were investigated (with explanations)
+- [ ] Each event has a detailed `relevance` explanation
+- [ ] Events are tagged with `host:hostname` for multi-host investigations
+
+**Detection Coverage:**
+- [ ] Included the triggering detection
+- [ ] Included related detections (different rule types, not 60 duplicates)
+- [ ] Included representative detections from each affected host
+
+**Entity/IOC Coverage:**
+- [ ] All file hashes (SHA256, MD5, SHA1 if available)
+- [ ] All C2 IPs/domains
+- [ ] All affected hosts as entities
+- [ ] All suspicious external IPs (potential initial access)
+- [ ] File paths and process names
+
+**Count Check:**
+If you discovered 10+ events during investigation but only have 3 in the record, GO BACK and add the rest.
+
 ### Get User Confirmation
 
 Always confirm with user before saving:
-1. Timeline name is acceptable
+1. Investigation name is acceptable
 2. Findings are complete
-3. Ready to save
+3. Event/detection count looks reasonable for the incident scope
+4. Ready to save
 
-### Save Timeline
+### Save Investigation
 
 ```
-tool: set_timeline
+tool: set_investigation
 parameters:
   oid: [oid]
-  timeline_name: [timeline_name]
-  timeline_data: [timeline_record]
+  investigation_name: [investigation_name]
+  investigation_data: [investigation_record]
 ```
 
 ---
@@ -886,16 +1014,16 @@ parameters:
 ## Related Skills
 
 - `lookup-lc-doc` - For LCQL syntax and event schema reference
-- `detection-engineering` - For creating D&R rules based on timeline findings
+- `detection-engineering` - For creating D&R rules based on investigation findings
 - `threat-report-evaluation` - For evaluating threat reports and searching for IOCs
 - `sensor-tasking` - For live response and data collection from sensors during investigation
 
 ## Reference
 
-- **Timeline Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
-- **Timeline JSON Schema**: The authoritative schema defining valid fields, types, and enums is at `legion_config_hive/hives/schemas/timeline.schema.json`
-- **expand_timeline function**: [Expand Timeline](../limacharlie-call/functions/expand-timeline.md)
-- **Timeline Investigation Guide**: [Investigation Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/timeline-investigation-guide.md)
+- **Investigation Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
+- **Investigation JSON Schema**: The authoritative schema defining valid fields, types, and enums is at `legion_config_hive/hives/schemas/investigation.schema.json`
+- **expand_investigation function**: [Expand Investigation](../limacharlie-call/functions/expand-investigation.md)
+- **Investigation Guide**: [Investigation Best Practices](../../../../../docs/limacharlie/doc/Getting_Started/Use_Cases/investigation-guide.md)
 
 ## Schema Quick Reference
 

@@ -1,26 +1,26 @@
 
-# Get Timeline
+# Get Investigation
 
-Retrieve a specific timeline from LimaCharlie's Timeline Hive by name.
+Retrieve a specific investigation from LimaCharlie's Investigation Hive by name.
 
 ## When to Use
 
 Use this skill when the user needs to:
-- Retrieve a saved investigation timeline
-- Review timeline data before updating
+- Retrieve a saved investigation
+- Review investigation data before updating
 - Check the current state of an investigation
-- Export timeline data for reporting
-- Merge new findings with existing timeline data
+- Export investigation data for reporting
+- Merge new findings with existing investigation data
 
 Common scenarios:
-- "Get the timeline for incident-2024-001"
-- "Show me the ransomware investigation timeline"
+- "Get the investigation for incident-2024-001"
+- "Show me the ransomware investigation"
 - "Retrieve the current state of this investigation"
-- "What's in the timeline named 'phishing-attack'?"
+- "What's in the investigation named 'phishing-attack'?"
 
 ## What This Skill Does
 
-This skill retrieves a timeline record from LimaCharlie's Timeline Hive by its name. It returns the complete timeline data including events, detections, entities, notes, and metadata.
+This skill retrieves an investigation record from LimaCharlie's Investigation Hive by its name. It returns the complete investigation data including events, detections, entities, notes, and metadata.
 
 ## Required Information
 
@@ -29,7 +29,7 @@ Before calling this skill, gather:
 **IMPORTANT**: The Organization ID (OID) is a UUID (like `c1ffedc0-ffee-4a1e-b1a5-abc123def456`), **NOT** the organization name. If you don't have the OID, use the `list_user_orgs` skill first to get the OID from the organization name.
 
 - **oid**: Organization ID (required)
-- **timeline_name**: Name of the timeline to retrieve (required)
+- **investigation_name**: Name of the investigation to retrieve (required)
 
 ## How to Use
 
@@ -37,7 +37,7 @@ Before calling this skill, gather:
 
 Ensure you have:
 1. Valid organization ID (oid)
-2. Exact timeline name
+2. Exact investigation name
 
 ### Step 2: Call the Tool
 
@@ -45,26 +45,26 @@ Use the `lc_call_tool` MCP tool:
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_timeline",
+  tool_name="get_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "incident-2024-001"
+    "investigation_name": "incident-2024-001"
   }
 )
 ```
 
 **Tool Details:**
-- Tool name: `get_timeline`
+- Tool name: `get_investigation`
 - Parameters:
   - `oid`: Organization ID (required)
-  - `timeline_name`: Name of the timeline to retrieve (required)
+  - `investigation_name`: Name of the investigation to retrieve (required)
 
 ### Step 3: Handle the Response
 
 The tool returns:
 ```json
 {
-  "timeline": {
+  "investigation": {
     "name": "incident-2024-001",
     "data": {
       "name": "Ransomware Investigation",
@@ -92,19 +92,19 @@ The tool returns:
 ```
 
 **Success:**
-- Returns complete timeline with data and metadata
+- Returns complete investigation with data and metadata
 - Includes creation and modification timestamps
-- Shows who created and last modified the timeline
+- Shows who created and last modified the investigation
 
 **Common Errors:**
-- **404 Not Found**: Timeline with the specified name does not exist
+- **404 Not Found**: Investigation with the specified name does not exist
 - **403 Forbidden**: Insufficient permissions
 - **400 Bad Request**: Invalid parameters
 
 ### Step 4: Format the Response
 
 Present the result to the user:
-- Display timeline name and status
+- Display investigation name and status
 - Show summary if available
 - List event, detection, and entity counts
 - Show investigation notes
@@ -112,7 +112,7 @@ Present the result to the user:
 
 **Example output:**
 ```
-Timeline: incident-2024-001
+Investigation: incident-2024-001
 Status: in_progress | Priority: critical
 
 Summary: Ransomware attack detected on DESKTOP-001. Initial access via phishing.
@@ -129,60 +129,60 @@ Last Modified: 2024-01-21 by analyst@example.com
 
 ## Example Usage
 
-### Example 1: Retrieve investigation timeline
+### Example 1: Retrieve investigation
 
-User request: "Get the timeline for the ransomware investigation"
+User request: "Get the investigation for the ransomware incident"
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_timeline",
+  tool_name="get_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "ransomware-investigation-2024"
+    "investigation_name": "ransomware-investigation-2024"
   }
 )
 ```
 
-### Example 2: Get timeline before updating
+### Example 2: Get investigation before updating
 
-User request: "I need to add new findings to the existing timeline"
+User request: "I need to add new findings to the existing investigation"
 
 Steps:
-1. Get the existing timeline
+1. Get the existing investigation
 2. Merge new data with existing
-3. Use `set_timeline` to save combined data
+3. Use `set_investigation` to save combined data
 
 ```
 mcp__plugin_lc-essentials_limacharlie__lc_call_tool(
-  tool_name="get_timeline",
+  tool_name="get_investigation",
   parameters={
     "oid": "c7e8f940-1234-5678-abcd-1234567890ab",
-    "timeline_name": "existing-incident"
+    "investigation_name": "existing-incident"
   }
 )
 ```
 
-Then merge the returned data with new findings and call `set_timeline`.
+Then merge the returned data with new findings and call `set_investigation`.
 
 ## Additional Notes
 
-- Timeline names are case-sensitive
-- Use `list_timelines` first if you don't know the exact name
+- Investigation names are case-sensitive
+- Use `list_investigations` first if you don't know the exact name
 - The returned data contains references (atoms, detection IDs), not full event data
-- Use `expand_timeline` to get full event and detection data hydrated
+- Use `expand_investigation` to get full event and detection data hydrated
 - Metadata shows audit trail (who created/modified and when)
-- Related skills: `list_timelines` to find timelines, `set_timeline` to update, `expand_timeline` to hydrate
+- Related skills: `list_investigations` to find investigations, `set_investigation` to update, `expand_investigation` to hydrate
 
 ## Related Functions
 
-- `list_timelines` - List all timelines in the organization
-- `set_timeline` - Create or update a timeline
-- `delete_timeline` - Delete a timeline
-- `expand_timeline` - Hydrate timeline with full event/detection data
+- `list_investigations` - List all investigations in the organization
+- `set_investigation` - Create or update an investigation
+- `delete_investigation` - Delete an investigation
+- `expand_investigation` - Hydrate investigation with full event/detection data
 
 ## Reference
 
 For more details on using `lc_call_tool`, see [CALLING_API.md](../../../CALLING_API.md).
 
-- **Config Hive Documentation**: [Config Hive: Timeline](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-timeline.md)
-- **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/timelines.go`
+- **Config Hive Documentation**: [Config Hive: Investigation](../../../../../docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md)
+- **MCP Implementation**: `../lc-mcp-server/internal/tools/hive/investigations.go`

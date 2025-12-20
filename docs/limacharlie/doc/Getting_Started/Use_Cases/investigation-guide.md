@@ -1,6 +1,6 @@
-# Timeline Investigation Guide
+# Investigation Guide
 
-This guide provides opinionated best practices for SOC analysts using LimaCharlie Timelines to document and encode security investigations. By following these conventions, you enable attack chain visualization, cross-timeline analysis, and consistent reporting.
+This guide provides opinionated best practices for SOC analysts using LimaCharlie Investigations to document and encode security investigations. By following these conventions, you enable attack chain visualization, cross-investigation analysis, and consistent reporting.
 
 ## Tag Format Specification
 
@@ -369,6 +369,6 @@ Consistent tagging enables searching across multiple investigations:
 
 ## Related Documentation
 
-- [Config Hive: Timeline](../../Platform_Management/Config_Hive/config-hive-timeline.md) - Timeline schema reference
-- [Timeline Creation Skill](../../../../../marketplace/plugins/lc-essentials/skills/timeline-creation/SKILL.md) - Automated timeline creation
+- [Config Hive: Investigation](../../Platform_Management/Config_Hive/config-hive-investigation.md) - Investigation schema reference
+- [Investigation Creation Skill](../../../../../marketplace/plugins/lc-essentials/skills/investigation-creation/SKILL.md) - Automated investigation creation
 - [expand_timeline function](../../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md) - Hydrate timeline with full event data
