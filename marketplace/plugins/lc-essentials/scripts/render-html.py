@@ -76,6 +76,20 @@ def validate_no_fabrication(data: dict, template: str) -> list:
             'data.tenants',
             'data.rollup',
         ],
+        'fleet-health': [
+            'metadata.generated_at',
+            'data.rollup',
+            'data.organizations',
+        ],
+        'detection-analytics': [
+            'metadata.generated_at',
+            'data.tenants',
+        ],
+        'customer-health': [
+            'metadata.generated_at',
+            'data.rollup',
+            'data.customers',
+        ],
     }
 
     missing = []
@@ -386,6 +400,9 @@ def determine_title(template: str, metadata: dict) -> str:
         'sensor-health': 'Sensor Health Report',
         'detection-summary': 'Detection Summary',
         'billing-summary': 'Billing Summary',
+        'fleet-health': 'Fleet Health Dashboard',
+        'detection-analytics': 'Detection Analytics',
+        'customer-health': 'Customer Health Report',
     }
 
     base_title = titles.get(template, 'LimaCharlie Report')
@@ -436,7 +453,7 @@ Examples:
     parser.add_argument(
         '--template', '-t',
         required=True,
-        choices=['mssp-dashboard', 'org-detail', 'sensor-health', 'detection-summary', 'billing-summary'],
+        choices=['mssp-dashboard', 'org-detail', 'sensor-health', 'detection-summary', 'billing-summary', 'fleet-health', 'detection-analytics', 'customer-health'],
         help='Template to render'
     )
 

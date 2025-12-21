@@ -93,6 +93,250 @@
         color: var(--color-text-secondary);
     }
     .org-metric { display: flex; align-items: center; gap: 0.25rem; }
+
+    /* Expandable detail sections */
+    .detail-expansion {
+        margin-top: 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+    .detail-summary {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: var(--color-bg);
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        user-select: none;
+    }
+    .detail-summary:hover {
+        background: var(--color-border);
+    }
+    .detail-toggle-icon {
+        font-size: 0.7rem;
+        transition: transform 0.2s ease;
+    }
+    details[open] .detail-toggle-icon {
+        transform: rotate(90deg);
+    }
+    .detail-content {
+        padding: 1rem;
+        background: var(--color-card);
+    }
+    .detail-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .detail-item {
+        padding: 0.75rem;
+        background: var(--color-bg);
+        border-radius: var(--radius-sm);
+        border-left: 3px solid var(--color-primary);
+    }
+    .detail-item.limit-reached {
+        border-left-color: var(--color-warning);
+        background: #fffbeb;
+    }
+    .detail-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .detail-item-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .detail-item-value {
+        font-weight: 700;
+        color: var(--color-primary);
+    }
+    .detail-item-bar {
+        height: 6px;
+        background: var(--color-border);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+    .detail-item-fill {
+        height: 100%;
+        background: var(--color-primary);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+    .detail-item-meta {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+    }
+
+    /* Severity badges and fills */
+    .severity-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.375rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        margin-left: 0.5rem;
+    }
+    .severity-badge.severity-critical { background: #fef2f2; color: #991b1b; }
+    .severity-badge.severity-high { background: #fff7ed; color: #9a3412; }
+    .severity-badge.severity-medium { background: #fefce8; color: #854d0e; }
+    .severity-badge.severity-low { background: #f0fdf4; color: #166534; }
+    .severity-badge.severity-info { background: #eff6ff; color: #1e40af; }
+
+    .detail-item.severity-critical { border-left-color: #dc2626; }
+    .detail-item.severity-high { border-left-color: #ea580c; }
+    .detail-item.severity-medium { border-left-color: #ca8a04; }
+    .detail-item.severity-low { border-left-color: #16a34a; }
+    .detail-item.severity-info { border-left-color: #2563eb; }
+
+    .detail-item-fill.severity-fill-critical { background: #dc2626; }
+    .detail-item-fill.severity-fill-high { background: #ea580c; }
+    .detail-item-fill.severity-fill-medium { background: #ca8a04; }
+    .detail-item-fill.severity-fill-low { background: #16a34a; }
+    .detail-item-fill.severity-fill-info { background: #2563eb; }
+
+    /* Organization expandable cards */
+    .org-expandable-card {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+    }
+    .org-expandable-card.status-critical {
+        border-left: 4px solid var(--color-danger);
+    }
+    .org-expandable-card.status-warning {
+        border-left: 4px solid var(--color-warning);
+    }
+    .org-expandable-card.status-healthy {
+        border-left: 4px solid var(--color-success);
+    }
+    .org-expandable-card.status-limited {
+        border-left: 4px solid #f59e0b;
+        background: #fffbeb;
+    }
+    .org-card-summary {
+        display: grid;
+        grid-template-columns: 2fr repeat(5, 1fr) auto;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+        cursor: pointer;
+        background: var(--color-card);
+    }
+    .org-card-summary:hover {
+        background: var(--color-bg-secondary);
+    }
+    .org-card-name {
+        font-weight: 600;
+    }
+    .org-card-metric {
+        text-align: center;
+    }
+    .org-card-metric-value {
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    .org-card-metric-label {
+        font-size: 0.7rem;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+    }
+    .org-card-toggle {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        transition: transform 0.2s;
+    }
+    details[open] .org-card-toggle {
+        transform: rotate(90deg);
+    }
+    .org-card-details {
+        padding: 1rem;
+        background: var(--color-bg);
+        border-top: 1px solid var(--color-border);
+    }
+    .org-detail-section {
+        margin-bottom: 1rem;
+    }
+    .org-detail-section:last-child {
+        margin-bottom: 0;
+    }
+    .org-detail-section h4 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+    .platform-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.5rem;
+    }
+    .platform-item {
+        padding: 0.5rem;
+        background: var(--color-card);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-border-light);
+    }
+    .platform-name {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+    }
+    .platform-stats {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+    }
+    .offline-sensor-list, .detection-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+    }
+    .offline-sensor-item, .detection-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        background: var(--color-card);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-border-light);
+        font-size: 0.85rem;
+    }
+    .offline-sensor-item {
+        border-left: 3px solid var(--color-danger);
+    }
+    .sensor-hostname {
+        font-weight: 500;
+    }
+    .sensor-meta {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+    }
+    .detection-name {
+        font-weight: 500;
+    }
+    .detection-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .detection-count {
+        font-weight: 600;
+        color: var(--color-primary);
+    }
 </style>
 {% endblock %}
 
@@ -256,12 +500,30 @@
                 {% endif %}
             </div>
 
-            <div class="chart-container">
+            <div class="chart-container" style="padding: 1rem;">
                 <h3 class="chart-title">Organization Health</h3>
                 <p class="chart-subtitle">Health status by organization</p>
-                {% if data.organizations and data.organizations | length > 0 %}
-                <div class="chart-wrapper">
-                    <canvas id="orgHealthChart"></canvas>
+                {% set orgs_with_health = data.organizations | selectattr('health', 'defined') | selectattr('health', 'ne', none) | list %}
+                {% if orgs_with_health | length > 0 %}
+                <div class="detail-list" style="max-height: 320px; overflow-y: auto;">
+                    {% for org in orgs_with_health | sort(attribute='health', reverse=true) %}
+                    <div class="detail-item" style="margin-bottom: 0.5rem; border-left-color: {% if org.health >= 90 %}var(--color-success){% elif org.health >= 70 %}var(--color-warning){% else %}var(--color-danger){% endif %};">
+                        <div class="detail-item-header">
+                            <span class="detail-item-name" style="font-size: 0.85rem;">{{ org.name }}</span>
+                            <span class="detail-item-value health-value {% if org.health >= 90 %}healthy{% elif org.health >= 70 %}warning{% else %}critical{% endif %}" style="font-size: 0.85rem;">{{ org.health | round(1) }}%</span>
+                        </div>
+                        <div class="detail-item-bar" style="height: 4px;">
+                            <div class="detail-item-fill" style="width: {{ org.health }}%; background: {% if org.health >= 90 %}var(--color-success){% elif org.health >= 70 %}var(--color-warning){% else %}var(--color-danger){% endif %};"></div>
+                        </div>
+                        <div class="detail-item-meta" style="margin-top: 0.25rem;">
+                            <span>{{ org.sensors_online | default(0) }}/{{ org.sensors_total | default(0) }} online</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% elif data.organizations | length > 0 %}
+                <div style="padding: 1rem; text-align: center; color: var(--color-text-muted);">
+                    <p>Health data unavailable (limited permissions)</p>
                 </div>
                 {% else %}
                 <div class="chart-unavailable">
@@ -274,109 +536,333 @@
     </section>
 
     {# ================================================================
-       TOP DETECTION CATEGORIES
+       TOP DETECTION CATEGORIES - List Only
        ================================================================ #}
     {% if data.top_categories and data.top_categories | length > 0 %}
+    {% set total_category_detections = data.top_categories | sum(attribute='value') %}
     <section class="dashboard-section">
         <h2>Top Detection Categories</h2>
-        <div class="chart-container">
-            <div class="chart-wrapper">
-                <canvas id="categoriesChart"></canvas>
+        <p class="chart-subtitle" style="margin-bottom: 1rem;">{{ total_category_detections }} total detections across {{ data.top_categories | length }} categories</p>
+        <div class="detail-list">
+            {% for cat in data.top_categories %}
+            <div class="detail-item severity-{{ cat.severity | default('info') }}">
+                <div class="detail-item-header">
+                    <span class="detail-item-name">
+                        {{ cat.label }}
+                        {% if cat.severity %}
+                        <span class="severity-badge severity-{{ cat.severity }}">{{ cat.severity | upper }}</span>
+                        {% endif %}
+                    </span>
+                    <span class="detail-item-value">{{ cat.value }} detections</span>
+                </div>
+                <div class="detail-item-bar">
+                    <div class="detail-item-fill severity-fill-{{ cat.severity | default('info') }}" style="width: {{ (cat.value / (data.top_categories[0].value or 1) * 100) | round(1) }}%;"></div>
+                </div>
+                <div class="detail-item-meta">
+                    {% if total_category_detections > 0 %}
+                    <span>{{ ((cat.value / total_category_detections) * 100) | round(1) }}% of total</span>
+                    {% endif %}
+                    {% if cat.affected_orgs %}
+                    <span>• {{ cat.affected_orgs }} org{{ 's' if cat.affected_orgs != 1 else '' }}</span>
+                    {% endif %}
+                    {% if cat.affected_hosts %}
+                    <span>• {{ cat.affected_hosts }} host{{ 's' if cat.affected_hosts != 1 else '' }}</span>
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
         </div>
     </section>
     {% endif %}
 
     {# ================================================================
-       TOP ORGANIZATIONS BY DETECTIONS
+       TOP ORGANIZATIONS BY DETECTIONS - List Only
        ================================================================ #}
     {% if data.top_orgs_by_detections and data.top_orgs_by_detections | length > 0 %}
+    {% set total_org_detections = data.top_orgs_by_detections | sum(attribute='value') %}
     <section class="dashboard-section">
-        <h2>Top Organizations by Detection Volume</h2>
-        <div class="chart-container">
-            <div class="chart-wrapper">
-                <canvas id="topOrgsChart"></canvas>
+        <h2>Organizations by Detection Volume</h2>
+        <p class="chart-subtitle" style="margin-bottom: 1rem;">{{ data.top_orgs_by_detections | length }} organizations with detections</p>
+        <div class="detail-list">
+            {% for org in data.top_orgs_by_detections %}
+            <div class="detail-item {% if org.limit_reached %}limit-reached{% endif %}">
+                <div class="detail-item-header">
+                    <span class="detail-item-name">
+                        {{ org.name }}
+                        {% if org.limit_reached %}
+                        <span class="limit-badge">LIMIT</span>
+                        {% endif %}
+                    </span>
+                    <span class="detail-item-value">{{ org.value }} detections</span>
+                </div>
+                <div class="detail-item-bar">
+                    <div class="detail-item-fill" style="width: {{ (org.value / (data.top_orgs_by_detections[0].value or 1) * 100) | round(1) }}%;"></div>
+                </div>
+                <div class="detail-item-meta">
+                    {% if org.sensors %}
+                    <span>{{ org.sensors }} sensors</span>
+                    {% endif %}
+                    {% if org.top_category %}
+                    <span>• Top: {{ org.top_category }}</span>
+                    {% endif %}
+                    {% if total_org_detections > 0 and org.value > 0 %}
+                    <span>• {{ ((org.value / total_org_detections) * 100) | round(1) }}% of total</span>
+                    {% endif %}
+                    {% if org.limit_reached %}
+                    <span style="color: var(--color-warning);">• Actual count may be higher</span>
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
         </div>
     </section>
     {% endif %}
 
     {# ================================================================
-       PER-ORGANIZATION TABLE
+       OFFLINE SENSORS SUMMARY
+       ================================================================ #}
+    {% if data.offline_summary and data.offline_summary.total_offline > 0 %}
+    <section class="dashboard-section">
+        <h2>Offline Sensors Analysis</h2>
+
+        <div class="summary-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="summary-card">
+                <div class="card-icon red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" style="color: var(--color-danger);">{{ data.offline_summary.total_offline }}</span>
+                    <span class="card-label">Total Offline</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon amber">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" style="color: var(--color-warning);">{{ data.offline_summary.offline_7_plus_days | default(0) }}</span>
+                    <span class="card-label">Offline 7+ Days</span>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon red">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-value" style="color: var(--color-danger);">{{ data.offline_summary.offline_30_plus_days | default(0) }}</span>
+                    <span class="card-label">Offline 30+ Days</span>
+                </div>
+            </div>
+        </div>
+
+        {% if data.offline_summary.by_platform %}
+        <details class="detail-expansion" open>
+            <summary class="detail-summary">
+                <span class="detail-toggle-icon">▶</span>
+                Offline by platform
+            </summary>
+            <div class="detail-content">
+                <div class="detail-list">
+                    {% for plat in data.offline_summary.by_platform %}
+                    <div class="detail-item">
+                        <div class="detail-item-header">
+                            <span class="detail-item-name">{{ plat.platform }}</span>
+                            <span class="detail-item-value">{{ plat.count }} offline</span>
+                        </div>
+                        <div class="detail-item-bar">
+                            <div class="detail-item-fill" style="width: {{ (plat.count / data.offline_summary.total_offline * 100) | round(1) }}%; background: var(--color-danger);"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </details>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {# ================================================================
+       PER-ORGANIZATION EXPANDABLE CARDS
        ================================================================ #}
     <section class="dashboard-section">
         <h2>Organization Details</h2>
+        <p style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 1rem;">
+            Click any organization to expand and see detailed platform breakdown, offline sensors, and detection information.
+        </p>
 
         {% if data.organizations and data.organizations | length > 0 %}
-        <div class="table-container">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Organization</th>
-                        <th class="number">Sensors</th>
-                        <th class="number">Online</th>
-                        <th class="number">Offline</th>
-                        <th class="number">Health</th>
-                        <th class="number">Detections</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for org in data.organizations %}
-                    <tr>
-                        <td><strong>{{ org.name | default('N/A') }}</strong></td>
-                        <td class="number">{{ org.sensors_total | default(0) }}</td>
-                        <td class="number" style="color: var(--color-success);">{{ org.sensors_online | default(0) }}</td>
-                        <td class="number" style="color: var(--color-danger);">{{ org.sensors_offline | default(0) }}</td>
-                        <td class="number">
-                            {% if org.health is defined %}
-                                <span class="health-value {% if org.health >= 90 %}healthy{% elif org.health >= 70 %}warning{% else %}critical{% endif %}" style="font-size: 1rem;">
-                                    {{ org.health | round(1) }}%
-                                </span>
-                            {% else %}
-                                <span class="na">N/A</span>
-                            {% endif %}
-                        </td>
-                        <td class="number">
-                            {% if org.detections is not none %}
-                                {{ org.detections }}
-                                {% if org.detection_limit_reached %}
-                                    <span class="limit-badge">LIMIT</span>
+
+        {# Summary row header #}
+        <div style="display: grid; grid-template-columns: 2fr repeat(5, 1fr) auto; gap: 1rem; padding: 0.5rem 1rem; font-size: 0.7rem; text-transform: uppercase; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border); margin-bottom: 0.5rem;">
+            <div>Organization</div>
+            <div style="text-align: center;">Sensors</div>
+            <div style="text-align: center;">Online</div>
+            <div style="text-align: center;">Offline</div>
+            <div style="text-align: center;">Health</div>
+            <div style="text-align: center;">Detections</div>
+            <div style="width: 1.5rem;"></div>
+        </div>
+
+        {% for org in data.organizations | sort(attribute='sensors_total', reverse=true) %}
+        <details class="org-expandable-card {% if org.status == 'limited_access' %}status-limited{% elif org.status == 'critical' %}status-critical{% elif org.status == 'warning' %}status-warning{% elif org.status == 'healthy' %}status-healthy{% endif %}">
+            <summary class="org-card-summary">
+                <div class="org-card-name">
+                    {{ org.name | default('N/A') }}
+                    {% if org.status == 'limited_access' %}
+                    <span style="font-size: 0.75rem; color: #92400e; font-weight: normal;">⚠️ Limited</span>
+                    {% endif %}
+                </div>
+                <div class="org-card-metric">
+                    <div class="org-card-metric-value">{{ org.sensors_total | default(0) }}{% if org.status == 'limited_access' %}*{% endif %}</div>
+                    <div class="org-card-metric-label">Sensors</div>
+                </div>
+                <div class="org-card-metric">
+                    <div class="org-card-metric-value" style="color: var(--color-success);">
+                        {% if org.status == 'limited_access' %}—{% else %}{{ org.sensors_online | default(0) }}{% endif %}
+                    </div>
+                    <div class="org-card-metric-label">Online</div>
+                </div>
+                <div class="org-card-metric">
+                    <div class="org-card-metric-value" style="color: var(--color-danger);">
+                        {% if org.status == 'limited_access' %}—{% else %}{{ org.sensors_offline | default(0) }}{% endif %}
+                    </div>
+                    <div class="org-card-metric-label">Offline</div>
+                </div>
+                <div class="org-card-metric">
+                    <div class="org-card-metric-value {% if org.health is defined and org.health is not none and org.health >= 90 %}healthy{% elif org.health is defined and org.health is not none and org.health >= 70 %}warning{% elif org.health is defined and org.health is not none %}critical{% endif %}">
+                        {% if org.status == 'limited_access' %}—{% elif org.health is defined and org.health is not none %}{{ org.health | round(1) }}%{% else %}N/A{% endif %}
+                    </div>
+                    <div class="org-card-metric-label">Health</div>
+                </div>
+                <div class="org-card-metric">
+                    <div class="org-card-metric-value">
+                        {% if org.status == 'limited_access' %}—
+                        {% elif org.detections is not none %}{{ org.detections }}{% if org.detection_limit_reached %}<span class="limit-badge" style="margin-left: 0.25rem; font-size: 0.6rem;">!</span>{% endif %}
+                        {% else %}N/A{% endif %}
+                    </div>
+                    <div class="org-card-metric-label">Detections</div>
+                </div>
+                <span class="org-card-toggle">▶</span>
+            </summary>
+            <div class="org-card-details">
+                {% if org.status == 'limited_access' %}
+                <div class="org-detail-section">
+                    <div style="padding: 1rem; background: #fffbeb; border-radius: var(--radius-sm); color: #92400e;">
+                        <strong>⚠️ Limited Access</strong>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">
+                            {% if org.status_reason %}{{ org.status_reason }}{% else %}Some data is unavailable due to permission restrictions.{% endif %}
+                        </p>
+                        {% if org.platforms and org.platforms | length > 0 %}
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">Platform counts are available but online/offline status cannot be determined.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Platform Breakdown #}
+                {% if org.platforms and org.platforms | length > 0 %}
+                <div class="org-detail-section">
+                    <h4>Platform Breakdown</h4>
+                    <div class="platform-grid">
+                        {% for plat in org.platforms %}
+                        <div class="platform-item">
+                            <div class="platform-name">{{ plat.name }}</div>
+                            <div class="platform-stats">
+                                <span>{{ plat.count }} total</span>
+                                {% if plat.online is defined %}
+                                <span style="color: var(--color-success);">{{ plat.online }} online</span>
                                 {% endif %}
-                            {% else %}
-                                <span class="na">N/A</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if org.status == 'healthy' %}
-                            <span class="status-badge status-success"><span class="status-dot healthy"></span>Healthy</span>
-                            {% elif org.status == 'warning' %}
-                            <span class="status-badge status-partial"><span class="status-dot warning"></span>Warning</span>
-                            {% elif org.status == 'critical' %}
-                            <span class="status-badge status-failed"><span class="status-dot critical"></span>Critical</span>
-                            {% else %}
-                            <span class="status-badge"><span class="status-dot error"></span>{{ org.status | default('Unknown') }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td><strong>Total ({{ data.organizations | length }} orgs)</strong></td>
-                        <td class="number"><strong>{{ data.rollup.total_sensors | default(0) }}</strong></td>
-                        <td class="number"><strong style="color: var(--color-success);">{{ data.rollup.online_sensors | default(0) }}</strong></td>
-                        <td class="number"><strong style="color: var(--color-danger);">{{ data.rollup.offline_sensors | default(0) }}</strong></td>
-                        <td class="number">
-                            {% if data.rollup.health_percent is defined %}
-                            <strong>{{ data.rollup.health_percent | round(1) }}%</strong>
-                            {% endif %}
-                        </td>
-                        <td class="number"><strong>{{ data.rollup.total_detections | default(0) }}</strong></td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+                                {% if plat.offline is defined and plat.offline > 0 %}
+                                <span style="color: var(--color-danger);">{{ plat.offline }} offline</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Top Detections #}
+                {% if org.top_detections and org.top_detections | length > 0 %}
+                <div class="org-detail-section">
+                    <h4>Top Detections</h4>
+                    <div class="detection-list">
+                        {% for det in org.top_detections %}
+                        <div class="detection-item">
+                            <div>
+                                <span class="detection-name">{{ det.name }}</span>
+                                {% if det.severity %}
+                                <span class="severity-badge severity-{{ det.severity }}">{{ det.severity | upper }}</span>
+                                {% endif %}
+                                {% if det.host %}
+                                <span class="sensor-meta" style="margin-left: 0.5rem;">on {{ det.host }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="detection-meta">
+                                <span class="detection-count">{{ det.count }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Top Offline Sensors #}
+                {% if org.top_offline_sensors and org.top_offline_sensors | length > 0 %}
+                <div class="org-detail-section">
+                    <h4>Offline Sensors (Top {{ org.top_offline_sensors | length }})</h4>
+                    <div class="offline-sensor-list">
+                        {% for sensor in org.top_offline_sensors %}
+                        <div class="offline-sensor-item">
+                            <div>
+                                <span class="sensor-hostname">{{ sensor.hostname }}</span>
+                                <span class="sensor-meta"> • {{ sensor.platform }}</span>
+                            </div>
+                            <div class="sensor-meta">
+                                {% if sensor.days_offline %}
+                                <span style="color: {% if sensor.days_offline >= 7 %}var(--color-danger){% else %}var(--color-warning){% endif %};">
+                                    {{ sensor.days_offline }} day{{ 's' if sensor.days_offline != 1 else '' }} offline
+                                </span>
+                                {% elif sensor.last_seen %}
+                                <span>Last: {{ sensor.last_seen }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# No additional details #}
+                {% if not org.platforms and not org.top_detections and not org.top_offline_sensors and org.status != 'limited_access' %}
+                <div style="padding: 1rem; text-align: center; color: var(--color-text-muted);">
+                    <p>No additional detail data available for this organization.</p>
+                </div>
+                {% endif %}
+            </div>
+        </details>
+        {% endfor %}
+
+        {# Summary footer #}
+        <div style="display: grid; grid-template-columns: 2fr repeat(5, 1fr) auto; gap: 1rem; padding: 1rem; background: var(--color-bg-secondary); border-radius: var(--radius-md); margin-top: 0.5rem; font-weight: 600;">
+            <div>Total ({{ data.organizations | length }} orgs)</div>
+            <div style="text-align: center;">{{ data.rollup.total_sensors | default(0) }}</div>
+            <div style="text-align: center; color: var(--color-success);">{{ data.rollup.online_sensors | default(0) }}</div>
+            <div style="text-align: center; color: var(--color-danger);">{{ data.rollup.offline_sensors | default(0) }}</div>
+            <div style="text-align: center;">{% if data.rollup.health_percent is defined %}{{ data.rollup.health_percent | round(1) }}%{% endif %}</div>
+            <div style="text-align: center;">{{ data.rollup.total_detections | default(0) }}</div>
+            <div style="width: 1.5rem;"></div>
         </div>
         {% else %}
         <div class="chart-unavailable">
@@ -468,28 +954,6 @@
     );
     {% endif %}
 
-    {% if data.organizations and data.organizations | length > 0 %}
-    // Organization Health Bar Chart
-    LC.charts.bar(
-        [{% for org in data.organizations | sort(attribute='health', reverse=true) %}{ label: '{{ org.name | truncate(15) }}', value: {{ org.health | default(0) }} }{% if not loop.last %}, {% endif %}{% endfor %}],
-        { id: 'orgHealthChart', horizontal: true, max: 100, suffix: '%' }
-    );
-    {% endif %}
 
-    {% if data.top_categories and data.top_categories | length > 0 %}
-    // Top Categories Bar Chart
-    LC.charts.bar(
-        [{% for cat in data.top_categories %}{ label: '{{ cat.label }}', value: {{ cat.value }} }{% if not loop.last %}, {% endif %}{% endfor %}],
-        { id: 'categoriesChart', horizontal: true, multiColor: true }
-    );
-    {% endif %}
-
-    {% if data.top_orgs_by_detections and data.top_orgs_by_detections | length > 0 %}
-    // Top Orgs by Detections Bar Chart
-    LC.charts.bar(
-        [{% for org in data.top_orgs_by_detections %}{ label: '{{ org.name | truncate(15) }}{% if org.limit_reached %} *{% endif %}', value: {{ org.value }} }{% if not loop.last %}, {% endif %}{% endfor %}],
-        { id: 'topOrgsChart', horizontal: true }
-    );
-    {% endif %}
 </script>
 {% endblock %}
