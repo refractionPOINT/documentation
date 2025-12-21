@@ -416,4 +416,4 @@ The grok pattern successfully handles all common auth.log patterns:
 
 - LimaCharlie USP Adapter: `docs/limacharlie/doc/Sensors/Adapters/adapter-usage.md`
 - Syslog Adapter: `docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-syslog.md`
-- Validation Function: `marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/validate-usp-mapping.md`
+- Validation Function: [validate-usp-mapping](https://github.com/refractionPOINT/lc-ai/blob/master/plugins/lc-essentials/skills/limacharlie-call/functions/validate-usp-mapping.md)

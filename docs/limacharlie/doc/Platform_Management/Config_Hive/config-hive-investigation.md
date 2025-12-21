@@ -253,4 +253,4 @@ For opinionated guidance on tagging events and detections for SOC investigations
 ## Related
 
 * [Investigation Guide](../../Getting_Started/Use_Cases/investigation-guide.md) - Best practices for tagging and documenting investigations
-* [expand_timeline](../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md) - Hydrate investigation with full event/detection data
+* [expand_investigation](https://github.com/refractionPOINT/lc-ai/blob/master/plugins/lc-essentials/skills/limacharlie-call/functions/expand-investigation.md) - Hydrate investigation with full event/detection data

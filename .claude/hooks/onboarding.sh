@@ -28,9 +28,13 @@ if [ "$LC_MCP_CONFIGURED" = false ]; then
     SETUP_REQUIRED=true
 fi
 
-# Check MCP servers from installed plugin
-PLUGIN_MCP="$PROJECT_ROOT/marketplace/plugins/lc-essentials/.mcp.json"
-if [ -f "$PLUGIN_MCP" ]; then
+# Check MCP servers from installed plugin (look in Claude's plugin cache)
+PLUGIN_CACHE_DIR="$HOME/.claude/plugins/cache"
+PLUGIN_MCP=""
+if [ -d "$PLUGIN_CACHE_DIR" ]; then
+    PLUGIN_MCP=$(find "$PLUGIN_CACHE_DIR" -path "*lc-essentials*/.mcp.json" 2>/dev/null | head -1)
+fi
+if [ -n "$PLUGIN_MCP" ] && [ -f "$PLUGIN_MCP" ]; then
     MCP_COUNT=$(grep -o '"mcpServers"' "$PLUGIN_MCP" | wc -l)
     if [ $MCP_COUNT -gt 0 ]; then
         # Extract server names using grep and sed (exclude mcpServers and headers)
@@ -56,10 +60,13 @@ if [ -f "$PROJECT_ROOT/.claude/settings.json" ]; then
             PLUGIN_NAME=$(echo "$PLUGIN_BASE" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++){if($i=="lc")$i="LC";else sub(/./,toupper(substr($i,1,1)),$i)}}1')
             STATUS_LINES="${STATUS_LINES}\u001b[32m       • $PLUGIN_NAME\u001b[0m\n"
 
-            # Check if this plugin has skills
+            # Check if this plugin has skills (look in Claude's plugin cache)
             PLUGIN_DIR_NAME="$PLUGIN_BASE"
-            PLUGIN_SKILLS_DIR="$PROJECT_ROOT/marketplace/plugins/$PLUGIN_DIR_NAME/skills"
-            if [ -d "$PLUGIN_SKILLS_DIR" ]; then
+            PLUGIN_SKILLS_DIR=""
+            if [ -d "$PLUGIN_CACHE_DIR" ]; then
+                PLUGIN_SKILLS_DIR=$(find "$PLUGIN_CACHE_DIR" -path "*$PLUGIN_DIR_NAME*/skills" -type d 2>/dev/null | head -1)
+            fi
+            if [ -n "$PLUGIN_SKILLS_DIR" ] && [ -d "$PLUGIN_SKILLS_DIR" ]; then
                 SKILL_COUNT=$(ls "$PLUGIN_SKILLS_DIR" 2>/dev/null | wc -l)
                 if [ $SKILL_COUNT -gt 0 ]; then
                     STATUS_LINES="${STATUS_LINES}\u001b[36m         └─ $SKILL_COUNT specialized skills available\u001b[0m\n"

@@ -370,5 +370,5 @@ Consistent tagging enables searching across multiple investigations:
 ## Related Documentation
 
 - [Config Hive: Investigation](../../Platform_Management/Config_Hive/config-hive-investigation.md) - Investigation schema reference
-- [Investigation Creation Skill](../../../../../marketplace/plugins/lc-essentials/skills/investigation-creation/SKILL.md) - Automated investigation creation
-- [expand_timeline function](../../../../../marketplace/plugins/lc-essentials/skills/limacharlie-call/functions/expand-timeline.md) - Hydrate timeline with full event data
+- [Investigation Creation Skill](https://github.com/refractionPOINT/lc-ai/blob/master/plugins/lc-essentials/skills/investigation-creation/SKILL.md) - Automated investigation creation
+- [expand_investigation function](https://github.com/refractionPOINT/lc-ai/blob/master/plugins/lc-essentials/skills/limacharlie-call/functions/expand-investigation.md) - Hydrate investigation with full event data

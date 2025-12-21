@@ -17,8 +17,8 @@
   "extraKnownMarketplaces": {
     "lc-marketplace": {
       "source": {
-        "source": "directory",
-        "path": "marketplace/"
+        "source": "git",
+        "url": "https://github.com/refractionPOINT/lc-ai"
       }
     }
   }

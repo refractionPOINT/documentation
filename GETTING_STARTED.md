@@ -14,27 +14,20 @@ curl -fsSL https://claude.ai/install.sh | bash
 irm https://claude.ai/install.ps1 | iex
 ```
 
-## Step 2: Clone This Repository
-
-```bash
-git clone https://github.com/refractionPOINT/documentation.git
-cd documentation
-```
-
-## Step 3: Install the Marketplace
+## Step 2: Install the LimaCharlie Marketplace
 
 From within Claude Code, run:
 ```
-/plugin marketplace add ./marketplace
+/plugin marketplace add https://github.com/refractionPOINT/lc-ai
 ```
 
-## Step 4: Install the lc-essentials Plugin
+## Step 3: Install the lc-essentials Plugin
 
 ```
-/plugin install lc-essentials@limacharlie-marketplace
+/plugin install lc-essentials@lc-marketplace
 ```
 
-## Step 5: Authenticate with LimaCharlie
+## Step 4: Authenticate with LimaCharlie
 
 The plugin uses OAuth for secure authentication. Run the following command in Claude Code:
 
@@ -56,4 +49,4 @@ The plugin provides 121 skills for LimaCharlie operations including:
 - LCQL queries and historical data analysis
 - AI-powered query and rule generation
 
-See `marketplace/plugins/lc-essentials/README.md` for full documentation.
+See the [lc-ai repository](https://github.com/refractionPOINT/lc-ai) for full plugin documentation.
