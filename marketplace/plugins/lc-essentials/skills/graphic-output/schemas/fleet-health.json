@@ -55,11 +55,15 @@
             },
             "successful": {
               "type": "integer",
-              "description": "Number of organizations successfully processed"
+              "description": "Number of organizations with full data access"
+            },
+            "limited_access": {
+              "type": "integer",
+              "description": "Number of organizations with limited permissions (partial data)"
             },
             "failed": {
               "type": "integer",
-              "description": "Number of organizations that failed data collection"
+              "description": "Number of organizations that failed data collection completely"
             },
             "success_rate": {
               "type": "number",
@@ -180,15 +184,61 @@
               },
               "status": {
                 "type": "string",
-                "enum": ["healthy", "warning", "critical", "error"],
-                "description": "Health status: healthy (>=90%), warning (70-89%), critical (<70%), error (no data)"
+                "enum": ["healthy", "warning", "critical", "limited_access", "error"],
+                "description": "Health status: healthy (>=90%), warning (70-89%), critical (<70%), limited_access (missing permissions), error (no data)"
+              },
+              "status_reason": {
+                "type": "string",
+                "description": "Explanation for limited_access or error status"
+              },
+              "platforms": {
+                "type": "array",
+                "description": "Per-organization platform breakdown with online/offline counts",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "count"],
+                  "properties": {
+                    "name": { "type": "string", "description": "Platform name" },
+                    "count": { "type": "integer", "description": "Total sensors on this platform" },
+                    "online": { "type": "integer", "description": "Online sensors (optional if limited_access)" },
+                    "offline": { "type": "integer", "description": "Offline sensors (optional if limited_access)" }
+                  }
+                }
+              },
+              "top_detections": {
+                "type": "array",
+                "description": "Top detections for this organization",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "count"],
+                  "properties": {
+                    "name": { "type": "string", "description": "Detection rule/category name" },
+                    "count": { "type": "integer", "description": "Number of times detected" },
+                    "severity": { "type": "string", "enum": ["critical", "high", "medium", "low", "info"] },
+                    "host": { "type": "string", "description": "Primary affected host" }
+                  }
+                }
+              },
+              "top_offline_sensors": {
+                "type": "array",
+                "description": "Top offline sensors for this organization",
+                "items": {
+                  "type": "object",
+                  "required": ["hostname", "platform"],
+                  "properties": {
+                    "hostname": { "type": "string", "description": "Sensor hostname" },
+                    "platform": { "type": "string", "description": "Sensor platform" },
+                    "last_seen": { "type": "string", "description": "Last seen timestamp (display format)" },
+                    "days_offline": { "type": "integer", "description": "Days since last seen" }
+                  }
+                }
               }
             }
           }
         },
         "top_categories": {
           "type": "array",
-          "description": "Top detection categories across all organizations - displayed as bar chart",
+          "description": "Top detection categories across all organizations - displayed as list with severity",
           "items": {
             "type": "object",
             "required": ["label", "value"],
@@ -200,13 +250,26 @@
               "value": {
                 "type": "integer",
                 "description": "Total detection count for this category"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["critical", "high", "medium", "low", "info"],
+                "description": "Severity level of this detection category"
+              },
+              "affected_orgs": {
+                "type": "integer",
+                "description": "Number of organizations with this detection"
+              },
+              "affected_hosts": {
+                "type": "integer",
+                "description": "Number of unique hosts with this detection"
               }
             }
           }
         },
         "top_orgs_by_detections": {
           "type": "array",
-          "description": "Top organizations by detection volume - displayed as horizontal bar chart",
+          "description": "Top organizations by detection volume - displayed as list",
           "items": {
             "type": "object",
             "required": ["name", "value"],
@@ -222,6 +285,44 @@
               "limit_reached": {
                 "type": "boolean",
                 "description": "Whether this org hit the detection limit"
+              },
+              "top_category": {
+                "type": ["string", "null"],
+                "description": "Most common detection category for this org"
+              },
+              "sensors": {
+                "type": "integer",
+                "description": "Total sensor count for this org"
+              }
+            }
+          }
+        },
+        "offline_summary": {
+          "type": "object",
+          "description": "Summary of offline sensors across all organizations",
+          "properties": {
+            "total_offline": {
+              "type": "integer",
+              "description": "Total number of offline sensors"
+            },
+            "offline_7_plus_days": {
+              "type": "integer",
+              "description": "Sensors offline for 7 or more days"
+            },
+            "offline_30_plus_days": {
+              "type": "integer",
+              "description": "Sensors offline for 30 or more days"
+            },
+            "by_platform": {
+              "type": "array",
+              "description": "Offline sensor counts by platform",
+              "items": {
+                "type": "object",
+                "required": ["platform", "count"],
+                "properties": {
+                  "platform": { "type": "string" },
+                  "count": { "type": "integer" }
+                }
               }
             }
           }
@@ -273,7 +374,8 @@
         },
         "organizations": {
           "total": 24,
-          "successful": 22,
+          "successful": 20,
+          "limited_access": 2,
           "failed": 2,
           "success_rate": 91.7
         }
@@ -304,7 +406,17 @@
             "health": 94.7,
             "detections": 1250,
             "detection_limit_reached": false,
-            "status": "healthy"
+            "status": "healthy",
+            "platforms": [
+              {"name": "Windows", "count": 100, "online": 95, "offline": 5},
+              {"name": "Linux", "count": 50, "online": 47, "offline": 3}
+            ],
+            "top_detections": [
+              {"name": "Suspicious Process", "count": 5, "severity": "medium", "host": "workstation-01"}
+            ],
+            "top_offline_sensors": [
+              {"hostname": "laptop-042", "platform": "windows", "last_seen": "2025-12-08 10:00 UTC", "days_offline": 2}
+            ]
           },
           {
             "name": "Acme Corp",
@@ -315,21 +427,58 @@
             "health": 75.0,
             "detections": 5000,
             "detection_limit_reached": true,
-            "status": "warning"
+            "status": "warning",
+            "platforms": [
+              {"name": "Windows", "count": 180, "online": 140, "offline": 40},
+              {"name": "macOS", "count": 20, "online": 10, "offline": 10}
+            ],
+            "top_detections": [
+              {"name": "Network Scan Detected", "count": 150, "severity": "high", "host": "server-db-01"}
+            ],
+            "top_offline_sensors": [
+              {"hostname": "remote-laptop-001", "platform": "windows", "last_seen": "2025-12-01 08:00 UTC", "days_offline": 9}
+            ]
+          },
+          {
+            "name": "Limited Corp",
+            "oid": "eecc6630-20d1-4fd6-b16c-245c58a6d58e",
+            "sensors_total": 500,
+            "sensors_online": null,
+            "sensors_offline": null,
+            "health": null,
+            "detections": null,
+            "detection_limit_reached": false,
+            "status": "limited_access",
+            "status_reason": "Sensor online/offline status not available - may require sensor.list.* permission",
+            "platforms": [
+              {"name": "Windows", "count": 400},
+              {"name": "Linux", "count": 100}
+            ]
           }
         ],
         "top_categories": [
-          {"label": "SENSITIVE_PROCESS_ACCESS", "value": 3500},
-          {"label": "NEW_PROCESS", "value": 2800},
-          {"label": "NETWORK_CONNECTIONS", "value": 1500}
+          {"label": "SENSITIVE_PROCESS_ACCESS", "value": 3500, "severity": "high", "affected_orgs": 8, "affected_hosts": 45},
+          {"label": "NEW_PROCESS", "value": 2800, "severity": "info", "affected_orgs": 15, "affected_hosts": 120},
+          {"label": "NETWORK_CONNECTIONS", "value": 1500, "severity": "medium", "affected_orgs": 5, "affected_hosts": 22}
         ],
         "top_orgs_by_detections": [
-          {"name": "Acme Corp", "value": 5000, "limit_reached": true},
-          {"name": "GlobalTech", "value": 3200, "limit_reached": false}
-        ]
+          {"name": "Acme Corp", "value": 5000, "limit_reached": true, "top_category": "Network Scan Detected", "sensors": 200},
+          {"name": "GlobalTech", "value": 3200, "limit_reached": false, "top_category": "NEW_PROCESS", "sensors": 150}
+        ],
+        "offline_summary": {
+          "total_offline": 150,
+          "offline_7_plus_days": 25,
+          "offline_30_plus_days": 5,
+          "by_platform": [
+            {"platform": "Windows", "count": 100},
+            {"platform": "Linux", "count": 30},
+            {"platform": "macOS", "count": 20}
+          ]
+        }
       },
       "warnings": [
-        "3 organizations hit the 5000 detection limit - actual counts may be higher"
+        "3 organizations hit the 5000 detection limit - actual counts may be higher",
+        "2 organizations have limited access permissions - sensor health data unavailable"
       ],
       "errors": [
         {
