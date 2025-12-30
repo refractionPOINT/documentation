@@ -441,7 +441,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for customer in data.customers | sort(attribute='health_score', reverse=true) if customer.health_score is defined else data.customers %}
+                    {% for customer in data.customers | sort(attribute='health_score', reverse=true) %}
                     <tr {% if customer.attention_items and customer.attention_items | length > 0 %}style="background: #fffbeb;"{% endif %}>
                         <td><strong>{{ customer.name | default('N/A') }}</strong></td>
                         <td class="number">
