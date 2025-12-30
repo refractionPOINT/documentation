@@ -324,31 +324,9 @@ Task(
 )
 ```
 
-### Step 4: Launch in Browser (Default Completion)
+### Step 4: Return Results to User
 
-**IMPORTANT:** When generating any HTML report, always open it in the user's browser as the default completion action.
-
-```bash
-# On ChromeOS/Linux with garcon:
-garcon-url-handler "http://localhost:8080/report.html"
-
-# Alternative for other systems:
-xdg-open "/tmp/report.html"
-# or
-open "/tmp/report.html"  # macOS
-```
-
-Before opening, ensure an HTTP server is running to serve the file:
-```bash
-# Start server if not already running
-cd /tmp && python3 -m http.server 8080 --bind 0.0.0.0 &
-```
-
-This ensures the user immediately sees their report without manual steps.
-
-### Step 5: Return Results to User
-
-After the renderer completes and browser is opened, inform the user:
+After the renderer completes, inform the user:
 
 ```
 Interactive HTML dashboard generated successfully!
