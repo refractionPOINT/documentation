@@ -49,12 +49,16 @@ Choose the correct download for your system architecture:
 | 32-bit (x86) | [https://downloads.limacharlie.io/sensor/windows/32](https://downloads.limacharlie.io/sensor/windows/32) |
 | ARM64 | [https://downloads.limacharlie.io/sensor/windows/arm64](https://downloads.limacharlie.io/sensor/windows/arm64) |
 
+> **Note:** ARM64 Windows devices currently use the x64 sensor running under emulation.
+
 ### MSI Installer Downloads
 
 | Architecture | Download Link |
 |--------------|---------------|
 | 64-bit (x64) | [https://downloads.limacharlie.io/sensor/windows/msi64](https://downloads.limacharlie.io/sensor/windows/msi64) |
 | 32-bit (x86) | [https://downloads.limacharlie.io/sensor/windows/msi32](https://downloads.limacharlie.io/sensor/windows/msi32) |
+
+> **Note about downloaded filenames:** The downloaded file will have a versioned name like `hcp_win_x64_release_4.33.23.exe`. You can rename it to `rphcp.exe` for convenience, or use the original filename in commands.
 
 > **How do I know which architecture I need?**
 >
@@ -142,6 +146,8 @@ Options explained:
 
 This script automates the download and installation process. It detects your system architecture and downloads the correct installer.
 
+> **Note:** This script requires PowerShell 3.0 or later. Windows 7 and Server 2008 R2 ship with PowerShell 2.0 by default; you may need to install [Windows Management Framework 3.0+](https://www.microsoft.com/en-us/download/details.aspx?id=34595) first.
+
 Save this script as `Install-LimaCharlie.ps1`:
 
 ```powershell
@@ -175,16 +181,20 @@ Write-Host "Detected architecture: $Arch" -ForegroundColor Cyan
 
 # Set download URL and local path
 $InstallerUrl = "https://downloads.limacharlie.io/sensor/windows/$Arch"
+$TempDownload = Join-Path $env:TEMP "lc_sensor_download.exe"
 $InstallerPath = Join-Path $env:TEMP "rphcp.exe"
 
-# Download the installer
+# Download the installer (filename from server varies, so we normalize it)
 Write-Host "Downloading LimaCharlie sensor..." -ForegroundColor Cyan
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri $InstallerUrl -OutFile $InstallerPath -UseBasicParsing
+    Invoke-WebRequest -Uri $InstallerUrl -OutFile $TempDownload -UseBasicParsing
+    # Rename to consistent filename
+    Move-Item -Path $TempDownload -Destination $InstallerPath -Force
     Write-Host "Download complete." -ForegroundColor Green
 } catch {
     Write-Host "Error downloading installer: $_" -ForegroundColor Red
+    Remove-Item $TempDownload -Force -ErrorAction SilentlyContinue
     exit 1
 }
 
