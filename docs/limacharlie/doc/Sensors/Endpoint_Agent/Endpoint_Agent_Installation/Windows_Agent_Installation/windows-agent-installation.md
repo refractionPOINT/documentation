@@ -73,6 +73,7 @@ When running the installer from the command line, you can use the following opti
 | `-r` | Uninstall the service |
 | `-c` | Uninstall the service and delete identity files (clean uninstall) |
 | `-V` | Display the sensor version |
+| `-v` | Enable verbose logging output |
 | `-H` | Verify sensor health and installation |
 | `-h` | Display help message |
 
@@ -123,19 +124,19 @@ MSI installers are ideal for enterprise deployment using tools like Group Policy
 For automated deployments, use the following command in an elevated Command Prompt or PowerShell:
 
 ```
-msiexec /i "path\to\installer.msi" /qn WRAPPED_ARGUMENTS="-i YOUR_INSTALLATION_KEY_GOES_HERE"
+msiexec /i "path\to\installer.msi" /qn INSTALLATIONKEY="YOUR_INSTALLATION_KEY_GOES_HERE"
 ```
 
 Example with a specific MSI:
 
 ```
-msiexec /i "C:\Downloads\hcp_win_x64.msi" /qn WRAPPED_ARGUMENTS="-i YOUR_INSTALLATION_KEY_GOES_HERE"
+msiexec /i "C:\Downloads\hcp_win_x64.msi" /qn INSTALLATIONKEY="YOUR_INSTALLATION_KEY_GOES_HERE"
 ```
 
 Options explained:
 - `/i` - Install the package
 - `/qn` - Quiet mode with no user interface
-- `WRAPPED_ARGUMENTS` - Passes arguments to the sensor executable
+- `INSTALLATIONKEY` - The LimaCharlie installation key for enrollment
 
 ### Method 3: PowerShell Script (Automated)
 
@@ -160,11 +161,14 @@ param(
     [string]$InstallationKey
 )
 
-# Determine system architecture
-$Arch = if ([Environment]::Is64BitOperatingSystem) {
-    if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "arm64" } else { "64" }
-} else {
-    "32"
+# Determine system architecture using WMI for accurate detection
+$CpuArch = (Get-CimInstance -ClassName Win32_Processor).Architecture
+# Architecture values: 0 = x86, 9 = x64, 12 = ARM64
+$Arch = switch ($CpuArch) {
+    0  { "32" }
+    9  { "64" }
+    12 { "arm64" }
+    default { if ([Environment]::Is64BitOperatingSystem) { "64" } else { "32" } }
 }
 
 Write-Host "Detected architecture: $Arch" -ForegroundColor Cyan
