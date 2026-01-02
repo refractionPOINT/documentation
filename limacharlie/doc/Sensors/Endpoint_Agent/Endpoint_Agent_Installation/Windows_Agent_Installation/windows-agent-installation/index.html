@@ -12,7 +12,7 @@
         <meta name="author" content="refractionPOINT">
       
       
-        <link rel="canonical" href="https://refractionpoint.github.io/documentation/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Windows_Agent_Installation/building-a-custom-msi-installer-for-windows/">
+        <link rel="canonical" href="https://refractionpoint.github.io/documentation/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Windows_Agent_Installation/windows-agent-installation/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Building a custom MSI installer for Windows - LimaCharlie Documentation</title>
+        <title>Windows Agent Installation - LimaCharlie Documentation</title>
       
     
     
@@ -153,7 +153,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#building-a-custom-msi-installer-for-windows" class="md-skip">
+        <a href="#windows-agent-installation" class="md-skip">
           Skip to content
         </a>
       
@@ -188,7 +188,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Building a custom MSI installer for Windows
+              Windows Agent Installation
             
           </span>
         </div>
@@ -1541,6 +1541,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#supported-windows-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Windows Versions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1552,10 +1563,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#instructions" class="md-nav__link">
+  <a href="#getting-your-installation-key" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Instructions
+        Getting Your Installation Key
       
     </span>
   </a>
@@ -1563,10 +1574,315 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#experience-when-running-the-msi" class="md-nav__link">
+  <a href="#downloading-the-sensor" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Experience when running the MSI
+        Downloading the Sensor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Downloading the Sensor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executable-exe-downloads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable (EXE) Downloads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#msi-installer-downloads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MSI Installer Downloads
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-Line Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-executable-exe-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Executable (EXE) Installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-msi-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: MSI Installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-3-powershell-script-automated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 3: PowerShell Script (Automated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifying-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifying Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verifying Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#windows-services-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows Services GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#powershell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PowerShell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-prompt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Prompt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limacharlie-web-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LimaCharlie Web Application
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access-denied-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        "Access Denied" Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-mismatch-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Mismatch Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#antivirus-blocking-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antivirus Blocking Installation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#firewall-blocking-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall Blocking Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-key-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation Key Errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-wont-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Won't Start
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uninstallation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uninstallation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Uninstallation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-the-executable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the Executable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-msi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the MSI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-limacharlie-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using LimaCharlie Console
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
       
     </span>
   </a>
@@ -1601,103 +1917,370 @@
   
 
 
-<h1 id="building-a-custom-msi-installer-for-windows">Building a custom MSI installer for Windows<a class="headerlink" href="#building-a-custom-msi-installer-for-windows" title="Anchor link to this section">&para;</a></h1>
-<blockquote>
-<p><strong>Looking for basic installation instructions?</strong> See the <a href="../windows-agent-installation/">Windows Agent Installation</a> guide for standard EXE and MSI installation methods.</p>
-</blockquote>
-<p>You can white label the LimaCharlie installer for Windows by using an MSI wrapper. By going through this process you can not only brand the installer to show your name / details, but you can also make installation of the Sensor easier for end users. We have provided instructions below on how to use a 3<sup>rd</sup> party tool called <a href="https://www.exemsi.com/">exemsi</a>.</p>
+<h1 id="windows-agent-installation">Windows Agent Installation<a class="headerlink" href="#windows-agent-installation" title="Anchor link to this section">&para;</a></h1>
+<p>This guide walks you through installing the LimaCharlie Endpoint Detection and Response (EDR) sensor on Windows systems. The sensor provides deep visibility into your Windows endpoints, enabling real-time threat detection and response.</p>
+<h2 id="supported-windows-versions">Supported Windows Versions<a class="headerlink" href="#supported-windows-versions" title="Anchor link to this section">&para;</a></h2>
+<p><strong>Desktop:</strong>
+- Windows 7, 8, 8.1, 10, 11</p>
+<p><strong>Server:</strong>
+- Windows Server 2008 R2, 2012, 2012 R2, 2016, 2019, 2022</p>
+<p><strong>Architectures:</strong>
+- x64 (64-bit) - Most common
+- x86 (32-bit) - Legacy systems
+- ARM64 - Windows on ARM devices</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Anchor link to this section">&para;</a></h2>
+<p>Before installing the LimaCharlie sensor, ensure you have:</p>
 <ol>
-<li>An MSI wrapper application, such as the exemsi application referenced in the instructions below</li>
-<li>A digital code signing certificate (optional, but highly recommended)</li>
+<li><strong>Administrator privileges</strong> on the Windows system</li>
+<li><strong>An Installation Key</strong> from your LimaCharlie organization</li>
+<li><strong>Network access</strong> to LimaCharlie cloud services (outbound HTTPS on port 443)</li>
 </ol>
-<p>Without a digital code signing certificate the installer will show a warning that it is from an unknown publisher.</p>
-<p><img alt="UAC Signed" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/uac-signed.png" />
-- vs -
-<img alt="UAC Warning" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/uac-warning.png" /></p>
-<h2 id="instructions">Instructions<a class="headerlink" href="#instructions" title="Anchor link to this section">&para;</a></h2>
+<h2 id="getting-your-installation-key">Getting Your Installation Key<a class="headerlink" href="#getting-your-installation-key" title="Anchor link to this section">&para;</a></h2>
+<p>An Installation Key is required to enroll your sensor with the LimaCharlie cloud. To obtain your key:</p>
 <ol>
-<li>Download the <a href="https://downloads.limacharlie.io/sensor/windows/64">LimaCharlie sensor EXE</a></li>
-<li>Download the <a href="https://exemsi.com">MSI Wrapper application from exemsi.com</a></li>
-<li>Install the exemsi application on your computer</li>
-<li>Launch the exemsi application and go through the EXE to MSI Converter Wizard steps as shown below:</li>
+<li>Log in to the <a href="https://app.limacharlie.io">LimaCharlie web application</a></li>
+<li>Select your organization</li>
+<li>Navigate to <strong>Sensors</strong> &gt; <strong>Installation Keys</strong> in the left sidebar</li>
+<li>Copy an existing key, or create a new one by clicking <strong>Create Installation Key</strong></li>
+<li>Keep this key ready - you'll need it during installation</li>
 </ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_1_-_First_screen_after_launch.png" /></p>
+<p>For more details on managing keys, see <a href="../../installation-keys.md">Installation Keys</a>.</p>
+<blockquote>
+<p><strong>Tip:</strong> Installation keys can have tags associated with them. When a sensor enrolls using a key with tags, those tags are automatically applied to the sensor.</p>
+</blockquote>
+<h2 id="downloading-the-sensor">Downloading the Sensor<a class="headerlink" href="#downloading-the-sensor" title="Anchor link to this section">&para;</a></h2>
+<p>Choose the correct download for your system architecture:</p>
+<h3 id="executable-exe-downloads">Executable (EXE) Downloads<a class="headerlink" href="#executable-exe-downloads" title="Anchor link to this section">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>Download Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>64-bit (x64)</td>
+<td><a href="https://downloads.limacharlie.io/sensor/windows/64">https://downloads.limacharlie.io/sensor/windows/64</a></td>
+</tr>
+<tr>
+<td>32-bit (x86)</td>
+<td><a href="https://downloads.limacharlie.io/sensor/windows/32">https://downloads.limacharlie.io/sensor/windows/32</a></td>
+</tr>
+<tr>
+<td>ARM64</td>
+<td><a href="https://downloads.limacharlie.io/sensor/windows/arm64">https://downloads.limacharlie.io/sensor/windows/arm64</a></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> ARM64 Windows devices currently use the x64 sensor running under emulation.</p>
+</blockquote>
+<h3 id="msi-installer-downloads">MSI Installer Downloads<a class="headerlink" href="#msi-installer-downloads" title="Anchor link to this section">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>Download Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>64-bit (x64)</td>
+<td><a href="https://downloads.limacharlie.io/sensor/windows/msi64">https://downloads.limacharlie.io/sensor/windows/msi64</a></td>
+</tr>
+<tr>
+<td>32-bit (x86)</td>
+<td><a href="https://downloads.limacharlie.io/sensor/windows/msi32">https://downloads.limacharlie.io/sensor/windows/msi32</a></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note about downloaded filenames:</strong> The downloaded file will have a versioned name like <code>hcp_win_x64_release_4.33.23.exe</code>. You can rename it to <code>rphcp.exe</code> for convenience, or use the original filename in commands.</p>
+<p><strong>How do I know which architecture I need?</strong></p>
+<p>On Windows 10/11: Go to <strong>Settings</strong> &gt; <strong>System</strong> &gt; <strong>About</strong> and look at <strong>System type</strong>.</p>
+<p>On older Windows: Right-click <strong>Computer</strong> &gt; <strong>Properties</strong> and check the <strong>System type</strong>.</p>
+</blockquote>
+<h2 id="command-line-options">Command-Line Options<a class="headerlink" href="#command-line-options" title="Anchor link to this section">&para;</a></h2>
+<p>When running the installer from the command line, you can use the following options:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i &lt;KEY&gt;</code></td>
+<td>Install as a Windows service with the specified installation key</td>
+</tr>
+<tr>
+<td><code>-d &lt;KEY&gt;</code></td>
+<td>Run with installation key (temporary, no permanent installation)</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>Uninstall the service</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>Uninstall the service and delete identity files (clean uninstall)</td>
+</tr>
+<tr>
+<td><code>-V</code></td>
+<td>Display the sensor version</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>Enable verbose logging output</td>
+</tr>
+<tr>
+<td><code>-H</code></td>
+<td>Verify sensor health and installation</td>
+</tr>
+<tr>
+<td><code>-h</code></td>
+<td>Display help message</td>
+</tr>
+</tbody>
+</table>
+<h2 id="installation-methods">Installation Methods<a class="headerlink" href="#installation-methods" title="Anchor link to this section">&para;</a></h2>
+<h3 id="method-1-executable-exe-installation">Method 1: Executable (EXE) Installation<a class="headerlink" href="#method-1-executable-exe-installation" title="Anchor link to this section">&para;</a></h3>
+<p>This method is recommended for installing on individual systems.</p>
+<p><strong>Step 1:</strong> Download the appropriate EXE for your architecture (see download links above).</p>
+<p><strong>Step 2:</strong> Open <strong>Command Prompt</strong> or <strong>PowerShell</strong> as Administrator.</p>
+<blockquote>
+<p>To run as Administrator: Right-click Command Prompt or PowerShell and select <strong>Run as administrator</strong>.</p>
+</blockquote>
+<p><strong>Step 3:</strong> Navigate to the folder where you downloaded the installer:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cd C:\Users\YourUsername\Downloads
+</span></code></pre></div>
+<p><strong>Step 4:</strong> Run the installer with your Installation Key:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>rphcp.exe -i YOUR_INSTALLATION_KEY_GOES_HERE
+</span></code></pre></div>
+<p>Replace <code>YOUR_INSTALLATION_KEY_GOES_HERE</code> with the actual key you copied from the LimaCharlie web application.</p>
+<p><strong>Step 5:</strong> Wait for the installation to complete. You should see output indicating successful installation and service start.</p>
+<p>The sensor is now installed and running as a Windows service. It will start automatically when Windows boots.</p>
+<h3 id="method-2-msi-installation">Method 2: MSI Installation<a class="headerlink" href="#method-2-msi-installation" title="Anchor link to this section">&para;</a></h3>
+<p>MSI installers are ideal for enterprise deployment using tools like Group Policy, SCCM, or Intune.</p>
+<h4 id="interactive-installation">Interactive Installation<a class="headerlink" href="#interactive-installation" title="Anchor link to this section">&para;</a></h4>
 <ol>
-<li>
-<p>Select the executable</p>
-</li>
-<li>
-<p>Set the <code>Setup executable input file name</code> to be the LimaCharlie EXE that you'd downloaded</p>
-</li>
-<li>Optionally, specify a MSI output file name of your choosing (e.g. Acme_Installer.msi)</li>
-<li>Set the MSI platform architecture to match the executable (i.e. x86 for 32-bit, and x64 for 64-bit)</li>
+<li>Download the appropriate MSI for your architecture</li>
+<li>Double-click the MSI file to launch the installer</li>
+<li>Follow the installation prompts</li>
 </ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_2_-__Select_the_executable.png" /></p>
+<blockquote>
+<p><strong>Note:</strong> The MSI installation will require you to provide the Installation Key. Ensure you have it ready.</p>
+</blockquote>
+<h4 id="silent-installation-command-line">Silent Installation (Command Line)<a class="headerlink" href="#silent-installation-command-line" title="Anchor link to this section">&para;</a></h4>
+<p>For automated deployments, use the following command in an elevated Command Prompt or PowerShell:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>msiexec /i &quot;path\to\installer.msi&quot; /qn INSTALLATIONKEY=&quot;YOUR_INSTALLATION_KEY_GOES_HERE&quot;
+</span></code></pre></div>
+<p>Example with a specific MSI:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>msiexec /i &quot;C:\Downloads\hcp_win_x64.msi&quot; /qn INSTALLATIONKEY=&quot;YOUR_INSTALLATION_KEY_GOES_HERE&quot;
+</span></code></pre></div>
+<p>Options explained:
+- <code>/i</code> - Install the package
+- <code>/qn</code> - Quiet mode with no user interface
+- <code>INSTALLATIONKEY</code> - The LimaCharlie installation key for enrollment</p>
+<h3 id="method-3-powershell-script-automated">Method 3: PowerShell Script (Automated)<a class="headerlink" href="#method-3-powershell-script-automated" title="Anchor link to this section">&para;</a></h3>
+<p>This script automates the download and installation process. It detects your system architecture and downloads the correct installer.</p>
+<blockquote>
+<p><strong>Note:</strong> This script requires PowerShell 3.0 or later. Windows 7 and Server 2008 R2 ship with PowerShell 2.0 by default; you may need to install <a href="https://www.microsoft.com/en-us/download/details.aspx?id=34595">Windows Management Framework 3.0+</a> first.</p>
+</blockquote>
+<p>Save this script as <code>Install-LimaCharlie.ps1</code>:</p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c">#Requires -RunAsAdministrator</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="cm">&lt;#</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="sd">.SYNOPSIS</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="cm">    Downloads and installs the LimaCharlie sensor.</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="sd">.DESCRIPTION</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="cm">    This script detects the system architecture, downloads the appropriate</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="cm">    LimaCharlie sensor installer, and installs it as a Windows service.</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="sd">.PARAMETER</span><span class="cm"> InstallationKey</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="cm">    The LimaCharlie installation key for enrollment.</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="cm">#&gt;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="k">param</span><span class="p">(</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="p">[</span><span class="k">Parameter</span><span class="p">(</span><span class="k">Mandatory</span><span class="p">=</span><span class="nv">$true</span><span class="p">)]</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="no">[string]</span><span class="nv">$InstallationKey</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="p">)</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="c"># Determine system architecture using WMI for accurate detection</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="nv">$CpuArch</span> <span class="p">=</span> <span class="p">(</span><span class="nb">Get-CimInstance</span> <span class="n">-ClassName</span> <span class="n">Win32_Processor</span><span class="p">).</span><span class="n">Architecture</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="c"># Architecture values: 0 = x86, 9 = x64, 12 = ARM64</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="nv">$Arch</span> <span class="p">=</span> <span class="k">switch</span> <span class="p">(</span><span class="nv">$CpuArch</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    <span class="n">0</span>  <span class="p">{</span> <span class="s2">&quot;32&quot;</span> <span class="p">}</span>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    <span class="n">9</span>  <span class="p">{</span> <span class="s2">&quot;64&quot;</span> <span class="p">}</span>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>    <span class="n">12</span> <span class="p">{</span> <span class="s2">&quot;arm64&quot;</span> <span class="p">}</span>
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    <span class="k">default</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="no">[Environment]</span><span class="p">::</span><span class="n">Is64BitOperatingSystem</span><span class="p">)</span> <span class="p">{</span> <span class="s2">&quot;64&quot;</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="s2">&quot;32&quot;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="p">}</span>
+</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>
+</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="nb">Write-Host</span> <span class="s2">&quot;Detected architecture: $Arch&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Cyan</span>
+</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>
+</span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="c"># Set download URL and local path</span>
+</span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="nv">$InstallerUrl</span> <span class="p">=</span> <span class="s2">&quot;https://downloads.limacharlie.io/sensor/windows/$Arch&quot;</span>
+</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="nv">$TempDownload</span> <span class="p">=</span> <span class="nb">Join-Path</span> <span class="nv">$env:TEMP</span> <span class="s2">&quot;lc_sensor_download.exe&quot;</span>
+</span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="nv">$InstallerPath</span> <span class="p">=</span> <span class="nb">Join-Path</span> <span class="nv">$env:TEMP</span> <span class="s2">&quot;rphcp.exe&quot;</span>
+</span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>
+</span><span id="__span-4-34"><a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="c"># Download the installer (filename from server varies, so we normalize it)</span>
+</span><span id="__span-4-35"><a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="nb">Write-Host</span> <span class="s2">&quot;Downloading LimaCharlie sensor...&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Cyan</span>
+</span><span id="__span-4-36"><a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="k">try</span> <span class="p">{</span>
+</span><span id="__span-4-37"><a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>    <span class="no">[Net.ServicePointManager]</span><span class="p">::</span><span class="n">SecurityProtocol</span> <span class="p">=</span> <span class="no">[Net.SecurityProtocolType]</span><span class="p">::</span><span class="n">Tls12</span>
+</span><span id="__span-4-38"><a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>    <span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="nv">$InstallerUrl</span> <span class="n">-OutFile</span> <span class="nv">$TempDownload</span> <span class="n">-UseBasicParsing</span>
+</span><span id="__span-4-39"><a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>    <span class="c"># Rename to consistent filename</span>
+</span><span id="__span-4-40"><a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>    <span class="nb">Move-Item</span> <span class="n">-Path</span> <span class="nv">$TempDownload</span> <span class="n">-Destination</span> <span class="nv">$InstallerPath</span> <span class="n">-Force</span>
+</span><span id="__span-4-41"><a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;Download complete.&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Green</span>
+</span><span id="__span-4-42"><a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+</span><span id="__span-4-43"><a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;Error downloading installer: $_&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Red</span>
+</span><span id="__span-4-44"><a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a>    <span class="nb">Remove-Item</span> <span class="nv">$TempDownload</span> <span class="n">-Force</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span><span id="__span-4-45"><a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>    <span class="n">exit</span> <span class="n">1</span>
+</span><span id="__span-4-46"><a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a><span class="p">}</span>
+</span><span id="__span-4-47"><a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a>
+</span><span id="__span-4-48"><a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="c"># Install the sensor</span>
+</span><span id="__span-4-49"><a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a><span class="nb">Write-Host</span> <span class="s2">&quot;Installing LimaCharlie sensor...&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Cyan</span>
+</span><span id="__span-4-50"><a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a><span class="k">try</span> <span class="p">{</span>
+</span><span id="__span-4-51"><a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a>    <span class="nv">$process</span> <span class="p">=</span> <span class="nb">Start-Process</span> <span class="n">-FilePath</span> <span class="nv">$InstallerPath</span> <span class="n">-ArgumentList</span> <span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="nv">$InstallationKey</span> <span class="n">-Wait</span> <span class="n">-PassThru</span> <span class="n">-NoNewWindow</span>
+</span><span id="__span-4-52"><a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a>    <span class="k">if</span> <span class="p">(</span><span class="nv">$process</span><span class="p">.</span><span class="n">ExitCode</span> <span class="o">-eq</span> <span class="n">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-4-53"><a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a>        <span class="nb">Write-Host</span> <span class="s2">&quot;Installation successful!&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Green</span>
+</span><span id="__span-4-54"><a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span id="__span-4-55"><a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a>        <span class="nb">Write-Host</span> <span class="s2">&quot;Installation may have encountered issues. Exit code: </span><span class="p">$(</span><span class="nv">$process</span><span class="p">.</span><span class="n">ExitCode</span><span class="p">)</span><span class="s2">&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Yellow</span>
+</span><span id="__span-4-56"><a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a>    <span class="p">}</span>
+</span><span id="__span-4-57"><a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a><span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+</span><span id="__span-4-58"><a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;Error during installation: $_&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Red</span>
+</span><span id="__span-4-59"><a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a>    <span class="n">exit</span> <span class="n">1</span>
+</span><span id="__span-4-60"><a id="__codelineno-4-60" name="__codelineno-4-60" href="#__codelineno-4-60"></a><span class="p">}</span>
+</span><span id="__span-4-61"><a id="__codelineno-4-61" name="__codelineno-4-61" href="#__codelineno-4-61"></a>
+</span><span id="__span-4-62"><a id="__codelineno-4-62" name="__codelineno-4-62" href="#__codelineno-4-62"></a><span class="c"># Verify installation</span>
+</span><span id="__span-4-63"><a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a><span class="nb">Write-Host</span> <span class="s2">&quot;Verifying installation...&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Cyan</span>
+</span><span id="__span-4-64"><a id="__codelineno-4-64" name="__codelineno-4-64" href="#__codelineno-4-64"></a><span class="nv">$service</span> <span class="p">=</span> <span class="nb">Get-Service</span> <span class="n">-Name</span> <span class="s2">&quot;rphcpsvc&quot;</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span><span id="__span-4-65"><a id="__codelineno-4-65" name="__codelineno-4-65" href="#__codelineno-4-65"></a><span class="k">if</span> <span class="p">(</span><span class="nv">$service</span> <span class="o">-and</span> <span class="nv">$service</span><span class="p">.</span><span class="n">Status</span> <span class="o">-eq</span> <span class="s2">&quot;Running&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-4-66"><a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;LimaCharlie sensor is installed and running.&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Green</span>
+</span><span id="__span-4-67"><a id="__codelineno-4-67" name="__codelineno-4-67" href="#__codelineno-4-67"></a><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span id="__span-4-68"><a id="__codelineno-4-68" name="__codelineno-4-68" href="#__codelineno-4-68"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;Warning: Service may not be running. Please check manually.&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Yellow</span>
+</span><span id="__span-4-69"><a id="__codelineno-4-69" name="__codelineno-4-69" href="#__codelineno-4-69"></a><span class="p">}</span>
+</span><span id="__span-4-70"><a id="__codelineno-4-70" name="__codelineno-4-70" href="#__codelineno-4-70"></a>
+</span><span id="__span-4-71"><a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a><span class="c"># Clean up</span>
+</span><span id="__span-4-72"><a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a><span class="nb">Remove-Item</span> <span class="nv">$InstallerPath</span> <span class="n">-Force</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span></code></pre></div>
+<p><strong>To run the script:</strong></p>
 <ol>
-<li>Set the visibility in Apps &amp; features</li>
+<li>Open PowerShell as Administrator</li>
+<li>If you haven't already, allow script execution:
+   <div class="language-powershell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">Set-ExecutionPolicy</span> <span class="n">-ExecutionPolicy</span> <span class="n">RemoteSigned</span> <span class="n">-Scope</span> <span class="n">CurrentUser</span>
+</span></code></pre></div></li>
+<li>Run the script with your Installation Key:
+   <div class="language-powershell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">.\</span><span class="nb">Install-LimaCharlie</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-InstallationKey</span> <span class="s2">&quot;YOUR_INSTALLATION_KEY_GOES_HERE&quot;</span>
+</span></code></pre></div></li>
 </ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_3_-_Visibility_in_Apps_&amp;_features.png" /></p>
+<h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Anchor link to this section">&para;</a></h2>
+<p>After installation, verify that the sensor is running correctly using any of these methods:</p>
+<h3 id="windows-services-gui">Windows Services GUI<a class="headerlink" href="#windows-services-gui" title="Anchor link to this section">&para;</a></h3>
 <ol>
-<li>Set the Security and User Context</li>
+<li>Press <code>Win + R</code>, type <code>services.msc</code>, and press Enter</li>
+<li>Scroll down to find <strong>LimaCharlie</strong> in the list</li>
+<li>Verify that the <strong>Status</strong> is <strong>Running</strong> and <strong>Startup Type</strong> is <strong>Automatic</strong></li>
 </ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_4_-_Security_and_User_Context.png" /></p>
+<h3 id="powershell">PowerShell<a class="headerlink" href="#powershell" title="Anchor link to this section">&para;</a></h3>
+<p>Run this command to check the service status:</p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">Get-Service</span> <span class="n">rphcpsvc</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">Name</span><span class="p">,</span> <span class="n">Status</span><span class="p">,</span> <span class="n">StartType</span>
+</span></code></pre></div>
+<p>Expected output:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Name     Status StartType
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>----     ------ ---------
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>rphcpsvc Running Automatic
+</span></code></pre></div></p>
+<h3 id="command-prompt">Command Prompt<a class="headerlink" href="#command-prompt" title="Anchor link to this section">&para;</a></h3>
+<p>Run this command:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sc query rphcpsvc
+</span></code></pre></div>
+<p>Look for <code>STATE : 4  RUNNING</code> in the output.</p>
+<h3 id="verification-script">Verification Script<a class="headerlink" href="#verification-script" title="Anchor link to this section">&para;</a></h3>
+<p>Save and run this PowerShell script for a quick status check:</p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c"># Verify LimaCharlie installation</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">$service</span> <span class="p">=</span> <span class="nb">Get-Service</span> <span class="n">-Name</span> <span class="s2">&quot;rphcpsvc&quot;</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">if</span> <span class="p">(</span><span class="nv">$null</span> <span class="o">-eq</span> <span class="nv">$service</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;LimaCharlie sensor is NOT installed.&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Red</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="p">}</span> <span class="k">elseif</span> <span class="p">(</span><span class="nv">$service</span><span class="p">.</span><span class="n">Status</span> <span class="o">-eq</span> <span class="s2">&quot;Running&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;LimaCharlie sensor is installed and running.&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Green</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;  Service Name: </span><span class="p">$(</span><span class="nv">$service</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span><span class="s2">&quot;</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;  Display Name: </span><span class="p">$(</span><span class="nv">$service</span><span class="p">.</span><span class="n">DisplayName</span><span class="p">)</span><span class="s2">&quot;</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;  Start Type:   </span><span class="p">$(</span><span class="nv">$service</span><span class="p">.</span><span class="n">StartType</span><span class="p">)</span><span class="s2">&quot;</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;LimaCharlie sensor is installed but NOT running.&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Yellow</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;  Current Status: </span><span class="p">$(</span><span class="nv">$service</span><span class="p">.</span><span class="n">Status</span><span class="p">)</span><span class="s2">&quot;</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="limacharlie-web-application">LimaCharlie Web Application<a class="headerlink" href="#limacharlie-web-application" title="Anchor link to this section">&para;</a></h3>
 <ol>
-<li>
-<p>Specify Application IDs</p>
-</li>
-<li>
-<p>In the Upgrade Code section, click the "Create New" button next to generate a code. This will be used to allow uninstallation.</p>
-</li>
+<li>Log in to <a href="https://app.limacharlie.io">app.limacharlie.io</a></li>
+<li>Navigate to <strong>Sensors</strong> in the left sidebar</li>
+<li>Your newly installed sensor should appear in the list within a few minutes</li>
 </ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_5_-_Application_Ids.png" /></p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Anchor link to this section">&para;</a></h2>
+<h3 id="access-denied-error">"Access Denied" Error<a class="headerlink" href="#access-denied-error" title="Anchor link to this section">&para;</a></h3>
+<p><strong>Cause:</strong> The installer must be run with Administrator privileges.</p>
+<p><strong>Solution:</strong> Right-click Command Prompt or PowerShell and select <strong>Run as administrator</strong> before running the installer.</p>
+<h3 id="architecture-mismatch-error">Architecture Mismatch Error<a class="headerlink" href="#architecture-mismatch-error" title="Anchor link to this section">&para;</a></h3>
+<p><strong>Cause:</strong> Using a 32-bit installer on a 64-bit system (or vice versa).</p>
+<p><strong>Solution:</strong> Download and use the correct installer for your system architecture. The sensor will display an error message indicating the mismatch.</p>
+<h3 id="antivirus-blocking-installation">Antivirus Blocking Installation<a class="headerlink" href="#antivirus-blocking-installation" title="Anchor link to this section">&para;</a></h3>
+<p><strong>Cause:</strong> Some antivirus software may flag the sensor installer.</p>
+<p><strong>Solution:</strong>
+1. Temporarily disable your antivirus during installation, OR
+2. Add an exclusion for <code>rphcp.exe</code> and <code>C:\Windows\System32\rphcp.exe</code>
+3. Contact your antivirus vendor if issues persist</p>
+<h3 id="firewall-blocking-connection">Firewall Blocking Connection<a class="headerlink" href="#firewall-blocking-connection" title="Anchor link to this section">&para;</a></h3>
+<p><strong>Cause:</strong> The sensor cannot reach LimaCharlie cloud services.</p>
+<p><strong>Solution:</strong> Ensure outbound HTTPS (port 443) traffic is allowed to:
+- <code>*.limacharlie.io</code></p>
+<h3 id="installation-key-errors">Installation Key Errors<a class="headerlink" href="#installation-key-errors" title="Anchor link to this section">&para;</a></h3>
+<p><strong>Cause:</strong> The installation key is invalid, expired, or incorrectly copied.</p>
+<p><strong>Solution:</strong>
+1. Verify the key in the LimaCharlie web application
+2. Ensure you copied the entire key without extra spaces
+3. Check that the key hasn't been revoked or expired</p>
+<h3 id="service-wont-start">Service Won't Start<a class="headerlink" href="#service-wont-start" title="Anchor link to this section">&para;</a></h3>
+<p><strong>Cause:</strong> Various issues including file permission problems or system configuration.</p>
+<p><strong>Solution:</strong>
+1. Check Windows Event Viewer (Application and System logs) for errors
+2. Ensure the system meets minimum requirements
+3. Try reinstalling with the <code>-c</code> flag first to clean up, then install fresh</p>
+<h2 id="uninstallation">Uninstallation<a class="headerlink" href="#uninstallation" title="Anchor link to this section">&para;</a></h2>
+<h3 id="using-the-executable">Using the Executable<a class="headerlink" href="#using-the-executable" title="Anchor link to this section">&para;</a></h3>
+<p>Run the installer with the clean uninstall flag:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>rphcp.exe -c
+</span></code></pre></div>
+<p>This removes the service and deletes all identity files.</p>
+<p>To uninstall but keep identity files (for potential reinstallation):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>rphcp.exe -r
+</span></code></pre></div>
+<h3 id="using-the-msi">Using the MSI<a class="headerlink" href="#using-the-msi" title="Anchor link to this section">&para;</a></h3>
 <ol>
-<li>
-<p>Specify Properties (optional: customize options here to have the installer show your brand)</p>
-</li>
-<li>
-<p>You can change the drop-down menu of each line item from "Executable" to "Manual" in order to set your own values for the Product Name, Manufacturer, Version, Comments, and Product icon</p>
-</li>
+<li>Open <strong>Control Panel</strong> &gt; <strong>Programs</strong> &gt; <strong>Programs and Features</strong></li>
+<li>Find <strong>LimaCharlie</strong> in the list</li>
+<li>Click <strong>Uninstall</strong></li>
 </ol>
-<p><em>Original</em></p>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_6a_-_Properties_-_Defaults.png" /></p>
-<p><em>Customized</em></p>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_6b_-_Properties_-_Customized.png" /></p>
+<p>Or via command line:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>msiexec /x &quot;path\to\installer.msi&quot; /qn
+</span></code></pre></div>
+<h3 id="using-limacharlie-console">Using LimaCharlie Console<a class="headerlink" href="#using-limacharlie-console" title="Anchor link to this section">&para;</a></h3>
+<p>You can remotely uninstall the sensor from the LimaCharlie web application:</p>
 <ol>
-<li>Specify More Properties (optional)</li>
+<li>Navigate to the sensor in the Sensors list</li>
+<li>Open the <strong>Console</strong> tab</li>
+<li>Run the command: <code>uninstall</code></li>
 </ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_7_-_More_properties.png" /></p>
-<ol>
-<li>
-<p>Specify Parameters</p>
-</li>
-<li>
-<p>In the "Install arguments" box, enter "-i", add a space and then enter your <a href="../../manage_keys.md">installation key</a></p>
-</li>
-<li>-i YOUR_INSTALLATION_KEY_GOES_HERE</li>
-</ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_8b_-_Parameters_-_filled.png" /></p>
-<p>To provide the option to uninstall, set the Uninstall argument to "-c" (note that you do not need to specify your Installation Key for uninstallation).</p>
-<ol>
-<li>Actions</li>
-</ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_9_-_Actions.png" /></p>
-<ol>
-<li>Summary</li>
-</ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_10_-_Summary.png" /></p>
-<ol>
-<li>Status</li>
-</ol>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_11_-_Status.png" /></p>
-<p>Once you have created the MSI package you should sign it using your digital signature. You can <a href="https://www.exemsi.com/documentation/sign-your-msi/">learn more about signing the MSI on the exemsi website</a>.</p>
-<h2 id="experience-when-running-the-msi">Experience when running the MSI<a class="headerlink" href="#experience-when-running-the-msi" title="Anchor link to this section">&para;</a></h2>
-<p>When installing the application using the MSI you'll see your application name in the title bar.</p>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Installation.png" /></p>
-<p>When inspecting the properties of the MSI you'll see the details you'd specified.</p>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/Created_MSI_Properties-Details.png" /></p>
-<p>In the Apps &amp; Features section of Windows, you'll see the application listed under your name.</p>
-<p><img alt="exemsi" src="https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/Shown_in_Control_Panel_-_Apps_and_Features.png" /></p>
+<p>For MSI installations, use: <code>uninstall --msi</code></p>
+<p>For more uninstallation options, see <a href="../endpoint-agent-uninstallation.md">Endpoint Agent Uninstallation</a>.</p>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Anchor link to this section">&para;</a></h2>
+<p>Now that your sensor is installed, you can:</p>
+<ul>
+<li><a href="../../../../Detection_and_Response/detection-and-response-rules.md">Configure Detection &amp; Response rules</a> to detect threats</li>
+<li><a href="../Endpoint_Agent_Commands/reference-endpoint-agent-commands.md">Explore Sensor Commands</a> to interact with your endpoints</li>
+<li><a href="../building-a-custom-msi-installer-for-windows/">Build a Custom MSI</a> with your branding for enterprise deployment</li>
+<li><a href="../../Enterprise-Wide_Agent_Deployment/agent-deployment-microsoft-intune/">Deploy via Microsoft Intune</a> for large-scale rollout</li>
+</ul>
 
 
 
