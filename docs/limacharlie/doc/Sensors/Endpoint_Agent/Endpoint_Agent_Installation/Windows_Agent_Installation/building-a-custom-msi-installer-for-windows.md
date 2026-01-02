@@ -1,5 +1,7 @@
 # Building a custom MSI installer for Windows
 
+> **Looking for basic installation instructions?** See the [Windows Agent Installation](windows-agent-installation.md) guide for standard EXE and MSI installation methods.
+
 You can white label the LimaCharlie installer for Windows by using an MSI wrapper. By going through this process you can not only brand the installer to show your name / details, but you can also make installation of the Sensor easier for end users. We have provided instructions below on how to use a 3rd party tool called [exemsi](https://www.exemsi.com/).
 
 ## Prerequisites
