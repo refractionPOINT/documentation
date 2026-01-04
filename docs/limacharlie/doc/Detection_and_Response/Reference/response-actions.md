@@ -393,7 +393,7 @@ respond:
       and provide a detailed incident report.
     anthropic_secret: hive://secret/anthropic-key
     lc_api_key_secret: hive://secret/lc-api-key
-    idempotent_key: "{{ .detect.detect_id }}"
+    idempotent_key: "{{ .routing.event_id }}"
     data:
       hostname: "{{ .routing.hostname }}"
       process: "{{ .event.FILE_PATH }}"
