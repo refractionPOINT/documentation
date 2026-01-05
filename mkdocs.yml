@@ -164,6 +164,13 @@ nav:
     - Examples: limacharlie/doc/Detection_and_Response/detection-and-response-examples.md
     - Alternate Targets: limacharlie/doc/Detection_and_Response/detection-on-alternate-targets.md
 
+  - AI Sessions:
+    - limacharlie/doc/AI_Sessions/index.md
+    - D&R-Driven Sessions: limacharlie/doc/AI_Sessions/dr-sessions.md
+    - User Sessions: limacharlie/doc/AI_Sessions/user-sessions.md
+    - API Reference: limacharlie/doc/AI_Sessions/api-reference.md
+    - TypeScript SDK: limacharlie/doc/AI_Sessions/sdk.md
+
   - Events & Telemetry:
     - limacharlie/doc/Events/index.md
     - Telemetry: limacharlie/doc/Telemetry/index.md
