@@ -123,6 +123,7 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
     model: claude-sonnet-4-20250514
     max_turns: 50
     max_budget_usd: 5.0
+    one_shot: true  # Complete initial task then terminate
     ttl_seconds: 1800
 
     # Environment variables
@@ -149,6 +150,7 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
 | `model` | string | Claude model to use (e.g., `claude-sonnet-4-20250514`) |
 | `max_turns` | integer | Maximum conversation turns before auto-termination |
 | `max_budget_usd` | float | Maximum spend limit in USD |
+| `one_shot` | boolean | When `true`, session completes all work for the initial prompt (including tools, skills, and subagents) then terminates automatically. Recommended for D&R-triggered sessions. Default: `false` |
 | `ttl_seconds` | integer | Maximum session lifetime in seconds |
 | `environment` | map | Environment variables. Values can use `hive://secret/` |
 | `mcp_servers` | map | MCP server configurations (see below) |

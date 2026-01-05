@@ -373,6 +373,7 @@ This action launches a fully-managed Claude Code session that can investigate ev
 | `data` | Extract event fields to include in the prompt as JSON. |
 | `profile` | Inline session configuration (tools, model, limits, MCP servers). |
 | `profile_name` | Reference a saved profile by name. |
+| `profile.one_shot` | When `true`, session completes initial prompt work then terminates. Recommended for automated sessions. |
 
 #### Example: Automated Detection Investigation
 
@@ -405,6 +406,7 @@ respond:
         - Grep
       max_turns: 50
       max_budget_usd: 5.0
+      one_shot: true
       mcp_servers:
         limacharlie:
           type: http
