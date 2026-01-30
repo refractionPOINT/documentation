@@ -357,11 +357,19 @@ cidr: 10.16.1.0/24
 ### is private address
 
 The `is private address` checks if an IP address at the path is a private address
- as defined by [RFC 1918](https://en.wikipedia.org/wiki/Private_network).
+as defined by [RFC 1918](https://en.wikipedia.org/wiki/Private_network).
+
+Matches addresses in these ranges:
+
+- `10.0.0.0/8`
+- `172.16.0.0/12`
+- `192.168.0.0/16`
+
+Note: This operator does **not** match loopback (`127.0.0.0/8`) or link-local (`169.254.0.0/16`) addresses. Use the `cidr` operator if you need to match those specifically.
 
 Example rule:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: is private address
 path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
@@ -369,12 +377,21 @@ path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
 
 ### is public address
 
-The `is public address` checks if an IP address at the path is a public address
- as defined by [RFC 1918](https://en.wikipedia.org/wiki/Private_network).
+The `is public address` checks if an IP address at the path is a publicly routable address.
+
+The following address ranges are **excluded** (will NOT match as public):
+
+| Range | Description |
+|-------|-------------|
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` | Private addresses ([RFC 1918](https://en.wikipedia.org/wiki/Private_network)) |
+| `127.0.0.0/8` | Loopback addresses |
+| `169.254.0.0/16` | Link-local addresses |
+
+Note: Multicast addresses (`224.0.0.0/4`) are considered public as they can traverse the internet.
 
 Example rule:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: is public address
 path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
