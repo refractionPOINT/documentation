@@ -356,27 +356,149 @@ cidr: 10.16.1.0/24
 
 ### is private address
 
-The `is private address` checks if an IP address at the path is a private address
- as defined by [RFC 1918](https://en.wikipedia.org/wiki/Private_network).
+The `is private address` operator checks if an IP address at the path is a private/non-routable address. Supports both IPv4 and IPv6.
+
+**IPv4 ranges matched:**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `10.0.0.0/8` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `172.16.0.0/12` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `192.168.0.0/16` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `100.64.0.0/10` | CGNAT/Shared Address Space | [RFC 6598](https://datatracker.ietf.org/doc/html/rfc6598) |
+
+**IPv6 ranges matched:**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `fc00::/7` | Unique Local Address (ULA) | [RFC 4193](https://datatracker.ietf.org/doc/html/rfc4193) |
+
+Note: This operator does **not** match loopback (`127.0.0.0/8`, `::1`) or link-local (`169.254.0.0/16`, `fe80::/10`) addresses. Use `cidr` if you need to match those specifically.
 
 Example rule:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: is private address
 path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
 ```
 
-### is public address
+### is private ipv4 address
 
-The `is public address` checks if an IP address at the path is a public address
- as defined by [RFC 1918](https://en.wikipedia.org/wiki/Private_network).
+The `is private ipv4 address` operator checks if an IP address at the path is a private IPv4 address. Returns false for IPv6 addresses.
+
+**Ranges matched:**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `10.0.0.0/8` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `172.16.0.0/12` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `192.168.0.0/16` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `100.64.0.0/10` | CGNAT/Shared Address Space | [RFC 6598](https://datatracker.ietf.org/doc/html/rfc6598) |
 
 Example rule:
 
+```yaml
+event: NETWORK_CONNECTIONS
+op: is private ipv4 address
+path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
 ```
+
+### is private ipv6 address
+
+The `is private ipv6 address` operator checks if an IP address at the path is a private IPv6 address (ULA). Returns false for IPv4 addresses.
+
+**Ranges matched:**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `fc00::/7` | Unique Local Address (ULA) | [RFC 4193](https://datatracker.ietf.org/doc/html/rfc4193) |
+
+Example rule:
+
+```yaml
+event: NETWORK_CONNECTIONS
+op: is private ipv6 address
+path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
+```
+
+### is public address
+
+The `is public address` operator checks if an IP address at the path is a publicly routable unicast address. Supports both IPv4 and IPv6.
+
+**IPv4 ranges excluded (will NOT match as public):**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `100.64.0.0/10` | CGNAT/Shared Address Space | [RFC 6598](https://datatracker.ietf.org/doc/html/rfc6598) |
+| `127.0.0.0/8` | Loopback | [RFC 1122](https://datatracker.ietf.org/doc/html/rfc1122) |
+| `169.254.0.0/16` | Link-Local | [RFC 3927](https://datatracker.ietf.org/doc/html/rfc3927) |
+| `224.0.0.0/4` | Multicast | [RFC 5771](https://datatracker.ietf.org/doc/html/rfc5771) |
+| `0.0.0.0` | Unspecified | [RFC 1122](https://datatracker.ietf.org/doc/html/rfc1122) |
+
+**IPv6 ranges excluded (will NOT match as public):**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `fc00::/7` | Unique Local Address (ULA) | [RFC 4193](https://datatracker.ietf.org/doc/html/rfc4193) |
+| `::1` | Loopback | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+| `fe80::/10` | Link-Local | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+| `ff00::/8` | Multicast | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+| `fec0::/10` | Site-Local (deprecated) | [RFC 3879](https://datatracker.ietf.org/doc/html/rfc3879) |
+| `::` | Unspecified | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+
+Example rule:
+
+```yaml
 event: NETWORK_CONNECTIONS
 op: is public address
+path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
+```
+
+### is public ipv4 address
+
+The `is public ipv4 address` operator checks if an IP address at the path is a publicly routable IPv4 address. Returns false for IPv6 addresses.
+
+**Ranges excluded (will NOT match as public):**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` | Private | [RFC 1918](https://datatracker.ietf.org/doc/html/rfc1918) |
+| `100.64.0.0/10` | CGNAT/Shared Address Space | [RFC 6598](https://datatracker.ietf.org/doc/html/rfc6598) |
+| `127.0.0.0/8` | Loopback | [RFC 1122](https://datatracker.ietf.org/doc/html/rfc1122) |
+| `169.254.0.0/16` | Link-Local | [RFC 3927](https://datatracker.ietf.org/doc/html/rfc3927) |
+| `224.0.0.0/4` | Multicast | [RFC 5771](https://datatracker.ietf.org/doc/html/rfc5771) |
+| `0.0.0.0` | Unspecified | [RFC 1122](https://datatracker.ietf.org/doc/html/rfc1122) |
+
+Example rule:
+
+```yaml
+event: NETWORK_CONNECTIONS
+op: is public ipv4 address
+path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
+```
+
+### is public ipv6 address
+
+The `is public ipv6 address` operator checks if an IP address at the path is a publicly routable IPv6 address. Returns false for IPv4 addresses.
+
+**Ranges excluded (will NOT match as public):**
+
+| Range | Description | RFC |
+|-------|-------------|-----|
+| `fc00::/7` | Unique Local Address (ULA) | [RFC 4193](https://datatracker.ietf.org/doc/html/rfc4193) |
+| `::1` | Loopback | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+| `fe80::/10` | Link-Local | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+| `ff00::/8` | Multicast | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+| `fec0::/10` | Site-Local (deprecated) | [RFC 3879](https://datatracker.ietf.org/doc/html/rfc3879) |
+| `::` | Unspecified | [RFC 4291](https://datatracker.ietf.org/doc/html/rfc4291) |
+
+Example rule:
+
+```yaml
+event: NETWORK_CONNECTIONS
+op: is public ipv6 address
 path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
 ```
 
