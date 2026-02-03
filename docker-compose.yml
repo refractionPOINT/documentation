@@ -1,0 +1,28 @@
+# Docker Compose for local documentation development
+# Usage: docker-compose up
+# Access: http://localhost:8000
+
+version: '3.8'
+
+services:
+  docs:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount docs and config for live reload during development
+      - ./docs:/docs/docs:ro
+      - ./mkdocs.yml:/docs/mkdocs.yml:ro
+      - ./requirements.txt:/docs/requirements.txt:ro
+    command: mkdocs serve --dev-addr=0.0.0.0:8000
+
+  # Build-only service for generating static site
+  build:
+    build: .
+    volumes:
+      - ./docs:/docs/docs:ro
+      - ./mkdocs.yml:/docs/mkdocs.yml:ro
+      - ./site:/docs/site
+    command: mkdocs build
+    profiles:
+      - build

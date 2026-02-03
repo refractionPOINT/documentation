@@ -42,10 +42,12 @@ theme:
     - navigation.indexes
     - navigation.top
     - navigation.footer
+    - navigation.tabs           # Top-level tabs for main sections
+    - navigation.sections       # Expandable sections in sidebar
 
     # Table of contents
     - toc.follow
-    
+
     # Search
     - search.suggest
     - search.highlight
@@ -75,6 +77,11 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
       lang: en
+  # Enable cross-references across pages
+  - autorefs
+  # Generate "Related pages" suggestions
+  - tags:
+      tags_file: tags.md
 
 markdown_extensions:
   # Python Markdown
@@ -107,7 +114,10 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.smartsymbols
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      base_path: docs
+      auto_append:
+        - includes/glossary.md
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -143,54 +153,342 @@ extra_css:
 
 copyright: Copyright &copy; 2018-2025 refractionPOINT - Licensed under Apache 2.0
 
+# =============================================================================
+# PROPOSED NAVIGATION STRUCTURE
+# Organized by user journey: New Users → Daily Operations → Advanced Topics
+# =============================================================================
+
 nav:
   - Home: index.md
 
+  # -------------------------------------------------------------------------
+  # GETTING STARTED - New user onboarding (primary audience)
+  # -------------------------------------------------------------------------
   - Getting Started:
-    - limacharlie/doc/Getting_Started/index.md
-    - What is LimaCharlie?: limacharlie/doc/Getting_Started/what-is-limacharlie.md
-    - Quickstart: limacharlie/doc/Getting_Started/quickstart.md
-    - Core Concepts: limacharlie/doc/Getting_Started/limacharlie-core-concepts.md
+    - 1-getting-started/index.md
+    - What is LimaCharlie?: 1-getting-started/what-is-limacharlie.md
+    - Quickstart Guide: 1-getting-started/quickstart.md
+    - Core Concepts: 1-getting-started/core-concepts.md
+    - Use Cases:
+      - 1-getting-started/use-cases/index.md
+      - EDR & Endpoint Security: 1-getting-started/use-cases/endpoint-detection-and-response.md
+      - Cloud Security: 1-getting-started/use-cases/cloud-security.md
+      - SIEM Alternative: 1-getting-started/use-cases/cost-effective-siem.md
+      - MSSP & MDR: 1-getting-started/use-cases/service-providers.md
+      - Incident Response: 1-getting-started/use-cases/incident-response.md
+      - Threat Hunting: 1-getting-started/use-cases/threat-hunting.md
+      - DevSecOps: 1-getting-started/use-cases/security-monitoring-devops.md
 
+  # -------------------------------------------------------------------------
+  # SENSORS & DEPLOYMENT - Platform-specific installation
+  # -------------------------------------------------------------------------
   - Sensors:
-    - limacharlie/doc/Sensors/index.md
-    - Installation Keys: limacharlie/doc/Sensors/installation-keys.md
-    - Sensor Connectivity: limacharlie/doc/Sensors/sensor-connectivity.md
-    - Sensor Tags: limacharlie/doc/Sensors/sensor-tags.md
+    - 2-sensors-deployment/index.md
+    - Installation Keys: 2-sensors-deployment/installation-keys.md
+    - Sensor Connectivity: 2-sensors-deployment/connectivity.md
+    - Sensor Tags: 2-sensors-deployment/tags.md
 
+    - Endpoint Agents:
+      - 2-sensors-deployment/endpoint-agents/index.md
+      - Windows:
+        - 2-sensors-deployment/endpoint-agents/windows/index.md
+        - Installation: 2-sensors-deployment/endpoint-agents/windows/installation.md
+        - Custom MSI Builder: 2-sensors-deployment/endpoint-agents/windows/custom-msi.md
+        - Intune Deployment: 2-sensors-deployment/endpoint-agents/windows/intune.md
+      - macOS:
+        - 2-sensors-deployment/endpoint-agents/macos/index.md
+        - Installation (Sequoia+): 2-sensors-deployment/endpoint-agents/macos/installation-latest.md
+        - Installation (Older): 2-sensors-deployment/endpoint-agents/macos/installation-legacy.md
+        - MDM Profiles: 2-sensors-deployment/endpoint-agents/macos/mdm-profiles.md
+        - Jamf Deployment: 2-sensors-deployment/endpoint-agents/macos/jamf.md
+        - Intune Deployment: 2-sensors-deployment/endpoint-agents/macos/intune.md
+      - Linux:
+        - 2-sensors-deployment/endpoint-agents/linux/index.md
+        - Installation: 2-sensors-deployment/endpoint-agents/linux/installation.md
+        - Container Clusters: 2-sensors-deployment/endpoint-agents/linux/containers.md
+        - Docker: 2-sensors-deployment/endpoint-agents/linux/docker.md
+      - Chrome: 2-sensors-deployment/endpoint-agents/chrome/installation.md
+      - Edge: 2-sensors-deployment/endpoint-agents/edge/installation.md
+
+    - Adapters (Log Ingestion):
+      - 2-sensors-deployment/adapters/index.md
+      - Deployment Options: 2-sensors-deployment/adapters/deployment.md
+      - Adapters as a Service: 2-sensors-deployment/adapters/saas.md
+      - Usage & Configuration: 2-sensors-deployment/adapters/usage.md
+      - Adapter Types:
+        - Cloud Providers:
+          - AWS CloudTrail: 2-sensors-deployment/adapters/types/aws-cloudtrail.md
+          - AWS GuardDuty: 2-sensors-deployment/adapters/types/aws-guardduty.md
+          - AWS S3: 2-sensors-deployment/adapters/types/s3.md
+          - AWS SQS: 2-sensors-deployment/adapters/types/sqs.md
+          - Azure Event Hub: 2-sensors-deployment/adapters/types/azure-event-hub.md
+          - Azure Monitor: 2-sensors-deployment/adapters/types/azure-monitor.md
+          - GCP Pub/Sub: 2-sensors-deployment/adapters/types/gcp-pubsub.md
+          - GCP Storage: 2-sensors-deployment/adapters/types/gcp-storage.md
+        - Identity & Access:
+          - Okta: 2-sensors-deployment/adapters/types/okta.md
+          - Microsoft Entra ID: 2-sensors-deployment/adapters/types/entra-id.md
+          - Duo: 2-sensors-deployment/adapters/types/duo.md
+          - 1Password: 2-sensors-deployment/adapters/types/1password.md
+        - Security Tools:
+          - CrowdStrike Falcon: 2-sensors-deployment/adapters/types/crowdstrike.md
+          - Microsoft Defender: 2-sensors-deployment/adapters/types/defender.md
+          - SentinelOne: 2-sensors-deployment/adapters/types/sentinelone.md
+          - Sophos: 2-sensors-deployment/adapters/types/sophos.md
+          - Carbon Black: 2-sensors-deployment/adapters/types/carbon-black.md
+        - Collaboration:
+          - Microsoft 365: 2-sensors-deployment/adapters/types/microsoft-365.md
+          - Slack Audit: 2-sensors-deployment/adapters/types/slack.md
+          - Google Workspace: 2-sensors-deployment/adapters/types/google-workspace.md
+        - Generic:
+          - Syslog: 2-sensors-deployment/adapters/types/syslog.md
+          - JSON: 2-sensors-deployment/adapters/types/json.md
+          - File: 2-sensors-deployment/adapters/types/file.md
+          - Windows Event Logs: 2-sensors-deployment/adapters/types/windows-event-log.md
+
+    - Fleet Management:
+      - 2-sensors-deployment/fleet/index.md
+      - Version Management: 2-sensors-deployment/fleet/versioning.md
+      - Enterprise Deployment: 2-sensors-deployment/fleet/enterprise.md
+      - VDI & Templates: 2-sensors-deployment/fleet/vdi.md
+      - Uninstallation: 2-sensors-deployment/fleet/uninstallation.md
+      - Troubleshooting: 2-sensors-deployment/fleet/troubleshooting.md
+
+  # -------------------------------------------------------------------------
+  # DETECTION & RESPONSE - D&R rules and response actions
+  # -------------------------------------------------------------------------
   - Detection & Response:
-    - limacharlie/doc/Detection_and_Response/index.md
-    - Overview: limacharlie/doc/Detection_and_Response/detection-and-response-rules.md
-    - Examples: limacharlie/doc/Detection_and_Response/detection-and-response-examples.md
-    - Alternate Targets: limacharlie/doc/Detection_and_Response/detection-on-alternate-targets.md
+    - 3-detection-response/index.md
+    - D&R Rules Overview: 3-detection-response/overview.md
+    - Writing Rules: 3-detection-response/writing-rules.md
+    - Testing Rules: 3-detection-response/testing-rules.md
+    - Response Actions: 3-detection-response/response-actions.md
+    - False Positive Rules: 3-detection-response/false-positives.md
+    - Stateful Detection: 3-detection-response/stateful-rules.md
+    - Unit Testing: 3-detection-response/unit-tests.md
+    - Replay (Historical): 3-detection-response/replay.md
 
-  - Events & Telemetry:
-    - limacharlie/doc/Events/index.md
-    - Telemetry: limacharlie/doc/Telemetry/index.md
+    - Examples Library:
+      - 3-detection-response/examples/index.md
+      - Common Patterns: 3-detection-response/examples/common-patterns.md
+      - Threat Feed Integration: 3-detection-response/examples/threat-feeds.md
 
-  - Outputs:
-    - limacharlie/doc/Outputs/index.md
+    - Managed Rulesets:
+      - 3-detection-response/managed/index.md
+      - Community Rules: 3-detection-response/managed/community-rules.md
+      - Sigma Converter: 3-detection-response/managed/sigma.md
+      - SOC Prime: 3-detection-response/managed/soc-prime.md
+      - Soteria EDR: 3-detection-response/managed/soteria-edr.md
+      - Soteria AWS: 3-detection-response/managed/soteria-aws.md
+      - Soteria M365: 3-detection-response/managed/soteria-m365.md
 
-  - Add-Ons:
-    - limacharlie/doc/Add-Ons/index.md
-    - API Integrations: limacharlie/doc/Add-Ons/API_Integrations/index.md
-    - Extensions: limacharlie/doc/Add-Ons/Extensions/index.md
+  # -------------------------------------------------------------------------
+  # DATA & QUERIES - LCQL, events, investigation
+  # -------------------------------------------------------------------------
+  - Data & Queries:
+    - 4-data-queries/index.md
+    - LCQL Query Language: 4-data-queries/lcql.md
+    - LCQL Examples: 4-data-queries/lcql-examples.md
+    - Query Console UI: 4-data-queries/console-ui.md
+    - CLI Queries: 4-data-queries/cli.md
 
-  - Platform Management:
-    - limacharlie/doc/Platform_Management/index.md
+    - Events:
+      - 4-data-queries/events/index.md
+      - Event Schemas: 4-data-queries/events/schemas.md
+      - EDR Events: 4-data-queries/events/edr-events.md
+      - Platform Events: 4-data-queries/events/platform-events.md
+      - Schedule Events: 4-data-queries/events/schedule-events.md
+      - Sysmon Comparison: 4-data-queries/events/sysmon-comparison.md
 
-  - Query Console:
-    - limacharlie/doc/Query_Console/index.md
+    - Template Strings: 4-data-queries/template-strings.md
 
-  - SDK Documentation:
-    - sdk/index.md
-    - Go SDK: go-sdk/README.md
-    - Python SDK: python-sdk/README.md
+  # -------------------------------------------------------------------------
+  # INTEGRATIONS - Outputs, extensions, APIs
+  # -------------------------------------------------------------------------
+  - Integrations:
+    - 5-integrations/index.md
 
+    - Outputs (Data Export):
+      - 5-integrations/outputs/index.md
+      - Stream Structures: 5-integrations/outputs/stream-structures.md
+      - Allowlisting: 5-integrations/outputs/allowlisting.md
+      - Billing: 5-integrations/outputs/billing.md
+      - Testing: 5-integrations/outputs/testing.md
+      - Destinations:
+        - Amazon S3: 5-integrations/outputs/destinations/amazon-s3.md
+        - Apache Kafka: 5-integrations/outputs/destinations/kafka.md
+        - Azure Event Hub: 5-integrations/outputs/destinations/azure-event-hub.md
+        - Azure Blob: 5-integrations/outputs/destinations/azure-blob.md
+        - Elastic: 5-integrations/outputs/destinations/elastic.md
+        - Google BigQuery: 5-integrations/outputs/destinations/bigquery.md
+        - Google Pub/Sub: 5-integrations/outputs/destinations/gcp-pubsub.md
+        - Google Cloud Storage: 5-integrations/outputs/destinations/gcs.md
+        - OpenSearch: 5-integrations/outputs/destinations/opensearch.md
+        - Splunk: 5-integrations/outputs/destinations/splunk.md
+        - Syslog: 5-integrations/outputs/destinations/syslog.md
+        - Webhook: 5-integrations/outputs/destinations/webhook.md
+        - Webhook Bulk: 5-integrations/outputs/destinations/webhook-bulk.md
+        - Slack: 5-integrations/outputs/destinations/slack.md
+        - Email (SMTP): 5-integrations/outputs/destinations/smtp.md
+        - SCP: 5-integrations/outputs/destinations/scp.md
+        - SFTP: 5-integrations/outputs/destinations/sftp.md
+        - Tines: 5-integrations/outputs/destinations/tines.md
+        - Humio: 5-integrations/outputs/destinations/humio.md
+
+    - Extensions:
+      - 5-integrations/extensions/index.md
+      - Using Extensions: 5-integrations/extensions/using.md
+      - LimaCharlie Extensions:
+        - Artifact Collection: 5-integrations/extensions/lc/artifact.md
+        - Memory Dumper: 5-integrations/extensions/lc/dumper.md
+        - Endpoint Protection: 5-integrations/extensions/lc/epp.md
+        - Exfil Watch: 5-integrations/extensions/lc/exfil.md
+        - Git Sync (IaC): 5-integrations/extensions/lc/git-sync.md
+        - Infrastructure: 5-integrations/extensions/lc/infrastructure.md
+        - Integrity Monitor: 5-integrations/extensions/lc/integrity.md
+        - Lookup Manager: 5-integrations/extensions/lc/lookup-manager.md
+        - Reliable Tasking: 5-integrations/extensions/lc/reliable-tasking.md
+        - Sensor Cull: 5-integrations/extensions/lc/sensor-cull.md
+        - Usage Alerts: 5-integrations/extensions/lc/usage-alerts.md
+        - YARA Manager: 5-integrations/extensions/lc/yara-manager.md
+        - Payload Manager: 5-integrations/extensions/lc/payload-manager.md
+        - CLI: 5-integrations/extensions/lc/cli.md
+        - Binary Library: 5-integrations/extensions/lc/binlib.md
+      - Third-Party Extensions:
+        - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
+        - YARA: 5-integrations/extensions/third-party/yara.md
+        - Zeek: 5-integrations/extensions/third-party/zeek.md
+        - Strelka: 5-integrations/extensions/third-party/strelka.md
+        - Hayabusa: 5-integrations/extensions/third-party/hayabusa.md
+        - Plaso: 5-integrations/extensions/third-party/plaso.md
+        - Atomic Red Team: 5-integrations/extensions/third-party/atomic-red-team.md
+        - PagerDuty: 5-integrations/extensions/third-party/pagerduty.md
+        - Twilio: 5-integrations/extensions/third-party/twilio.md
+        - OTX: 5-integrations/extensions/third-party/otx.md
+      - Cloud CLI Extensions:
+        - AWS CLI: 5-integrations/extensions/cloud-cli/aws.md
+        - Azure CLI: 5-integrations/extensions/cloud-cli/azure.md
+        - GCP CLI: 5-integrations/extensions/cloud-cli/gcp.md
+        - Okta CLI: 5-integrations/extensions/cloud-cli/okta.md
+        - GitHub CLI: 5-integrations/extensions/cloud-cli/github.md
+        - 1Password CLI: 5-integrations/extensions/cloud-cli/1password.md
+
+    - API Integrations:
+      - 5-integrations/api/index.md
+      - VirusTotal: 5-integrations/api/virustotal.md
+      - GreyNoise: 5-integrations/api/greynoise.md
+      - Hybrid Analysis: 5-integrations/api/hybrid-analysis.md
+      - EchoTrail: 5-integrations/api/echotrail.md
+      - AlphaMountain: 5-integrations/api/alphamountain.md
+      - IP Geolocation: 5-integrations/api/ip-geolocation.md
+      - Pangea: 5-integrations/api/pangea.md
+
+    - LimaCharlie Labs:
+      - 5-integrations/labs/index.md
+      - AI Agent Engine: 5-integrations/labs/ai-agent.md
+      - Playbooks: 5-integrations/labs/playbooks.md
+
+  # -------------------------------------------------------------------------
+  # DEVELOPER GUIDE - SDKs, API, building extensions
+  # -------------------------------------------------------------------------
+  - Developer Guide:
+    - 6-developer-guide/index.md
+    - MCP Server: 6-developer-guide/mcp-server.md
+
+    - SDKs:
+      - 6-developer-guide/sdks/index.md
+      - Python SDK: 6-developer-guide/sdks/python.md
+      - Go SDK: 6-developer-guide/sdks/go.md
+
+    - Building Extensions:
+      - 6-developer-guide/extensions/index.md
+      - Getting Started: 6-developer-guide/extensions/building.md
+      - User Interface: 6-developer-guide/extensions/ui.md
+      - Schema & Data Types: 6-developer-guide/extensions/schema.md
+      - Developer Grant Program: 6-developer-guide/extensions/grant-program.md
+
+    - Infrastructure as Code:
+      - 6-developer-guide/iac/index.md
+      - Git Sync: 6-developer-guide/iac/git-sync.md
+
+  # -------------------------------------------------------------------------
+  # ADMINISTRATION - Org management, access control, billing
+  # -------------------------------------------------------------------------
+  - Administration:
+    - 7-administration/index.md
+
+    - Access Control:
+      - 7-administration/access/index.md
+      - User Management: 7-administration/access/users.md
+      - API Keys: 7-administration/access/api-keys.md
+      - Single Sign-On: 7-administration/access/sso.md
+      - Permissions Reference: 7-administration/access/permissions.md
+
+    - Organization Management:
+      - 7-administration/org/index.md
+      - Config Hive: 7-administration/org/config-hive.md
+      - Secrets: 7-administration/org/secrets.md
+      - Lookups: 7-administration/org/lookups.md
+      - YARA Rules: 7-administration/org/yara.md
+      - Cloud Sensors: 7-administration/org/cloud-sensors.md
+      - Investigations: 7-administration/org/investigations.md
+
+    - Billing:
+      - 7-administration/billing/index.md
+      - Billing Options: 7-administration/billing/options.md
+      - Custom Plans: 7-administration/billing/custom-plans.md
+
+  # -------------------------------------------------------------------------
+  # REFERENCE - Technical reference material
+  # -------------------------------------------------------------------------
+  - Reference:
+    - 8-reference/index.md
+    - Detection Operators: 8-reference/detection-operators.md
+    - Response Actions: 8-reference/response-actions.md
+    - Endpoint Commands: 8-reference/endpoint-commands.md
+    - Error Codes: 8-reference/error-codes.md
+    - Sensor Selectors: 8-reference/sensor-selectors.md
+    - ID Schema: 8-reference/id-schema.md
+    - Log Collection Guide: 8-reference/log-collection.md
+    - Auth Resource Locator: 8-reference/auth-resource-locator.md
+
+    - FAQ:
+      - 8-reference/faq/index.md
+      - General: 8-reference/faq/general.md
+      - Account Management: 8-reference/faq/account.md
+      - Billing: 8-reference/faq/billing.md
+      - Invoices: 8-reference/faq/invoices.md
+      - Privacy: 8-reference/faq/privacy.md
+      - Sensor Installation: 8-reference/faq/sensor-installation.md
+      - Sensor Removal: 8-reference/faq/sensor-removal.md
+      - D&R Rules: 8-reference/faq/dr-rules.md
+      - Troubleshooting: 8-reference/faq/troubleshooting.md
+
+  # -------------------------------------------------------------------------
+  # TUTORIALS - Step-by-step guides (cross-linked from relevant sections)
+  # -------------------------------------------------------------------------
   - Tutorials:
-    - limacharlie/doc/Tutorials/index.md
-
-  - FAQ:
-    - limacharlie/doc/FAQ/index.md
-
-  
+    - 8-reference/tutorials/index.md
+    - Getting Started:
+      - Your First Detection Rule: 8-reference/tutorials/first-detection-rule.md
+      - Investigation Workflow: 8-reference/tutorials/investigation-guide.md
+    - Telemetry:
+      - Ingest Windows Event Logs: 8-reference/tutorials/telemetry/windows-event-logs.md
+      - Ingest Sysmon Logs: 8-reference/tutorials/telemetry/sysmon-logs.md
+      - Ingest macOS Unified Logs: 8-reference/tutorials/telemetry/macos-unified-logs.md
+      - Ingest Linux Audit Logs: 8-reference/tutorials/telemetry/linux-audit-logs.md
+      - Ingest Defender Logs: 8-reference/tutorials/telemetry/defender-logs.md
+    - Integrations:
+      - VirusTotal Integration: 8-reference/tutorials/5-integrations/virustotal.md
+      - Webhook Adapter: 8-reference/tutorials/5-integrations/webhook-adapter.md
+      - Google Cloud Logs: 8-reference/tutorials/5-integrations/gcp-logs.md
+      - Cloud External Sources: 8-reference/tutorials/5-integrations/cloud-sources.md
+    - Reporting:
+      - BigQuery & Looker Studio: 8-reference/tutorials/reporting/bigquery-looker.md
+      - Hayabusa to BigQuery: 8-reference/tutorials/reporting/hayabusa-bigquery.md
+      - Velociraptor to BigQuery: 8-reference/tutorials/reporting/velociraptor-bigquery.md
+    - Advanced:
+      - Purple Teaming: 8-reference/tutorials/advanced/purple-teaming.md
+      - Table Top Exercises: 8-reference/tutorials/advanced/tabletop.md
+      - Non-Responding Sensors: 8-reference/tutorials/advanced/non-responding-sensors.md
+      - Test New Sensor Versions: 8-reference/tutorials/advanced/test-sensor-version.md
