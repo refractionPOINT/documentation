@@ -27,7 +27,7 @@ The payload is retrieved by the endpoint agent over HTTPS to the Ingestion API D
 
 Creating and getting Payloads is done asynchronously. The relevant REST APIs will return specific signed URLs instead of the actual Payload. In the case of a retrieving an existing payload, simply doing an HTTP GET using the returned URL will download the payload content. When creating a Payload the returned URL should be used in an HTTP PUT using the URL like:
 
-```
+```bash
 curl -X PUT "THE-SIGNED-URL-HERE" -H "Content-Type: application/octet-stream" --upload-file your-file.exe
 ```
 

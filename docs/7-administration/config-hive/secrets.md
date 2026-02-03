@@ -10,7 +10,7 @@ Watch the video below to learn more about hive secrets, or continue reading belo
 
 A secret record in `hive` has a very basic format:
 
-```
+```json
 {
     "secret": "data"
 }
@@ -69,7 +69,7 @@ $ limacharlie hive set secret --key my-secret --data my-secret --data-key secret
 
 You should get a confirmation that the secret was created, including metadata of the secret and associated OID:
 
-```
+```json
 {
     "guid": "3a7a2865-a439-4d1a-8f50-b9a6d833075c",
     "hive": {

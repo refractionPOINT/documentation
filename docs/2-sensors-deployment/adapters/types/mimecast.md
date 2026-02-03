@@ -24,7 +24,7 @@ Adapter Type: `mimecast`
 
 Adapter downloads can be found [here](../deployment.md).
 
-```
+```bash
 chmod +x /path/to/lc_adapter
 
 /path/to/lc_adapter mimecast client_options.identity.installation_key=$INSTALLATION_KEY \
@@ -38,7 +38,7 @@ client_id=$CLIENT_ID client_secret=$CLIENT_SECRET
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Mimecast Specific Docs: https://docs.limacharlie.io/docs/adapter-types-mimecast
 # For cloud sensor deployment, store credentials as hive secrets:
 

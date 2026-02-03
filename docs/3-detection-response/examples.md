@@ -14,7 +14,7 @@ Check out this video that shows you the power of leveraging community resources 
 
 Note that through limacharlie.io, in order to provide an easier to edit format, the same rule configuration is used but is in YAML format instead. For example:
 
-```
+```yaml
 # Detection
 op: ends with
 event: NEW_PROCESS
@@ -33,7 +33,7 @@ value: .scr
 
 Simple WanaCry detection and mitigation rule:
 
-```
+```yaml
 # Detection
 op: ends with
 event: NEW_PROCESS
@@ -56,7 +56,7 @@ case sensitive: false
 
 Tag any Sensor where the CEO logs in with "vip".
 
-```
+```yaml
 # Detection
 op: is
 event: USER_OBSERVED
@@ -73,7 +73,7 @@ case sensitive: false
 
 The following example looks for connections to/from `sshd` involving a non-RFC1918 IP Address. Be mindful that this is only looking for network connections, not actual logons, so this could be noisy on an internet-facing system but still indicative of an exposed service.
 
-```
+```yaml
 # Detection
 event: NETWORK_CONNECTIONS
 op: and
@@ -96,7 +96,7 @@ The `report` uses [Go Templates](../4-data-queries/template-strings.md) to inclu
 
 Similar to the above SSH example, this example looks for RDP connections from an external IP address. Be mindful that this is only looking for network connections, not actual logons, so this could be noisy on an internet-facing system but still indicative of an exposed service.
 
-```
+```yaml
 # Detection
 event: NETWORK_CONNECTIONS
 op: and
@@ -123,7 +123,7 @@ The `report` uses [Go Templates](../4-data-queries/template-strings.md) to inclu
 
 ### Suspicious Windows Executable Names
 
-```
+```yaml
 # Detection
 event: CODE_IDENTITY
 op: matches
@@ -140,7 +140,7 @@ re: .*((\\.txt)|(\\.doc.?)|(\\.ppt.?)|(\\.xls.?)|(\\.zip)|(\\.rar)|(\\.rtf)|(\\.
 
 Turn off the sending of a specific event to the cloud. Useful to limit some verbose data sources when not needed.
 
-```
+```yaml
 # Detection
 event: CONNECTED
 op: is platform
@@ -155,7 +155,7 @@ name: windows
 
 A simple example of looking for a specific Event ID in WEL events.
 
-```
+```yaml
 # Detection
 event: WEL
 op: and
@@ -177,7 +177,7 @@ rules:
 An example demonstrating nested boolean logic. This detection looks specifically for the following conditions:
  ((`4697` OR `7045`) in the `System` log) OR (`4698` in the `Security` log)
 
-```
+```yaml
 # Detection
 event: WEL
 op: or
@@ -211,7 +211,7 @@ rules:
 
 Make sure the File Integrity Monitoring of some directories is enabled whenever Windows sensors connect.
 
-```
+```yaml
 # Detection
 event: CONNECTED
 op: is platform
@@ -224,7 +224,7 @@ name: windows
 
 Similar example for a Linux web server.
 
-```
+```yaml
 # Detection
 event: CONNECTED
 op: is platform
@@ -239,7 +239,7 @@ name: linux
 
 Adding a FIM pattern with `fim_add` by itself will only cause `FIM_HIT` events to be generated on the affected system's timeline. To know that we have positive hits on a FIM rule, we want to capture the relevant event and generate a proper Detection.
 
-```
+```yaml
 # Detection
 event: FIM_HIT
 op: exists
@@ -262,7 +262,7 @@ Here are a few examples of using D&R rules to initiate automatic YARA scans on a
 
 This  example looks for `NEW_PROCESS` events that meet certain criteria, then initiates a YARA scan against the offending process ID in memory. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](#yara-detections) rule.
 
-```
+```yaml
 # Detection
 event: NEW_PROCESS
 op: and
@@ -297,7 +297,7 @@ Notice the use of `suppression` to prevent the same `PROCESS_ID` from being scan
 
 This  example looks for `NEW_DOCUMENT` events that meet certain criteria, then initiates a YARA scan against the offending file path. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](#yara-detections) rule.
 
-```
+```yaml
 # Detection
 event: NEW_DOCUMENT
 op: and
@@ -336,7 +336,7 @@ Running a YARA scan by itself only sends a `YARA_DETECTION` event to the affecte
 
 #### YARA Detection On-Disk (file)
 
-```
+```yaml
 # Detection
 event: YARA_DETECTION
 op: and
@@ -357,7 +357,7 @@ rules:
 
 #### YARA Detection In-Memory (process)
 
-```
+```yaml
 # Detection
 event: YARA_DETECTION
 op: and
@@ -381,7 +381,7 @@ Both rules will generate a Detection report and add a tag to the system which th
 
 Look for references to private URLs in proxy logs.
 
-```
+```yaml
 # Detection
 target: artifact
 op: contains
@@ -399,7 +399,7 @@ Sometimes users install a sensor on a VM image by mistake. This means every time
 
 We can use these events to deduplicate. This example targets Windows clones.
 
-```
+```yaml
 # Detection
 target: deployment
 event: sensor_clone

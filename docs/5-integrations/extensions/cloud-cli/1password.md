@@ -12,7 +12,7 @@ Please note that some 1Password functionality is limited to 1Password Business. 
 
 Returns a list of all items the account has read access to by default.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

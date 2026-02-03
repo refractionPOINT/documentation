@@ -17,7 +17,7 @@ Adapter Type: `pubsub`
 
 This example assumes that the Adapter is running from a host that has [default credentials](https://cloud.google.com/docs/authentication/production) (via the `GOOGLE_APPLICATION_CREDENTIALS` environment variable) setup. If it's not the case you will need to use `service_account_creds` to provide the contents of the JSON credentials of the GCP Service Account to use.
 
-```
+```bash
 ./lc_adapter pubsub client_options.identity.installation_key=f5eaaaad-575a-498e-bfc2-5f83e249a646 \
     client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
     client_options.platform=gcp \
@@ -39,7 +39,7 @@ Here's the breakdown of the above example:
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Google Cloud Pub/Sub Specific Docs: https://docs.limacharlie.io/docs/adapter-types-google-cloud-pubsub
 
 sensor_type: "pubsub"

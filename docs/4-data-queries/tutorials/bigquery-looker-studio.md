@@ -50,7 +50,7 @@ Within the `Advanced Options`, we'll need to provide the following details:
 
 * Custom Transform - we don't want to include *all* the details from the `NETWORK_CONNECTIONS` event. For this output, we are interested in processes making network connections and the users associated with them. Thus, we'll apply the following transform to pare this down:
 
-```
+```json
 {
   "hostname": "routing.hostname",
   "command_line": "event.COMMAND_LINE",

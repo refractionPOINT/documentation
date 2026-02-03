@@ -69,7 +69,7 @@ For instance, assume all of the configurations for this org were unique to this 
 
 Notice that all configurations for this org are contained within the org's own directory. In this case, the `index.yaml` would simply contain references to the relative path of this org's configuration files. See below for an example of the contents of `index.yaml` for this use case.
 
-```
+```yaml
 version: 3
 include:
     - extensions.yaml
@@ -109,7 +109,7 @@ Now, assume you have a global rule set you want to apply across many orgs. You c
 
 The corresponding `index.yaml` at each org level would look similar to the following
 
-```
+```yaml
 version: 3
 include:
     - ../../hives/yara.yaml

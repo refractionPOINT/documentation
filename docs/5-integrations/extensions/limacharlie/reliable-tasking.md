@@ -24,7 +24,7 @@ The following REST API actions can be sent to interact with the Reliable Tasking
 
 #### **Create a Task**
 
-```
+```powershell
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -53,7 +53,7 @@ For more details on sensor selector syntax and available fields (`sid`, `plat`, 
 **Additional Examples:**
 
 Target a specific sensor:
-```
+```python
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -61,7 +61,7 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 ```
 
 Target all Linux servers with a specific tag:
-```
+```python
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -69,7 +69,7 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 ```
 
 Target all sensors (no selector):
-```
+```python
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -78,7 +78,7 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 
 #### **List Tasks**
 
-```
+```python
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -99,7 +99,7 @@ The above example cURL command has a `context` of `version` so the below D&R rul
 
 #### Example detect block:
 
-```
+```yaml
 op: contains
 event: RECEIPT
 path: routing/investigation_id
@@ -108,7 +108,7 @@ value: version
 
 #### Example respond block:
 
-```
+```yaml
 - action: output
   name: tasks-output         # Send responses to the specified output
 - action: report
@@ -123,7 +123,7 @@ The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives yo
 
 Command line to preview Reliable Tasking rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-reliable-tasking
 ```
 
@@ -133,6 +133,6 @@ To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-
 
 Command line to execute reliable tasking rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-reliable-tasking --no-dry-run
 ```

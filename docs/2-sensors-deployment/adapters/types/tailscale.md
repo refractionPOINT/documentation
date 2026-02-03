@@ -18,7 +18,7 @@ The following steps are modified from the generic Webhook Adapter creation doc, 
 
 Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details. The following configuration has been provided to configure a Webhook Adapter for ingesting Tailscale events:
 
-```
+```json
 {
     "sensor_type": "webhook",
     "webhook": {

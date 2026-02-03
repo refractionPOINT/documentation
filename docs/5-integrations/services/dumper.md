@@ -17,7 +17,7 @@ Upon submission of a request, the extension will perform a full memory dump of a
 
 Dumper requests can also be made via D&R rules. Here is is example of a D&R rule action that makes a request to Dumper:
 
-```
+```yaml
 - action: extension request
   extension name: ext-dumper
   extension action: request_dump

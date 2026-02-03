@@ -8,7 +8,7 @@ This extension makes use of DigitalOcean's official CLI tool, which can be found
 
 The following example of a response action will enumerate a list of compute droplets within a DigitalOcean instance.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

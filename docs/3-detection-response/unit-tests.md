@@ -8,7 +8,7 @@ A D&R rule record can optionally contain unit tests. These tests describe events
 
 A typical D&R rule looks like:
 
-```
+```json
 {
   "detect": {...},
   "respond": [
@@ -26,7 +26,7 @@ The `match` and `non_match` both have the same format: they contain a list of li
 
 Here's an example:
 
-```
+```json
 {
   "tests": {
     "match": [
@@ -44,7 +44,7 @@ Here's an example:
 
 ### Example
 
-```
+```yaml
 version: 3
 hives:
     dr-general:

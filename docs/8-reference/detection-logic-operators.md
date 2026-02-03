@@ -12,7 +12,7 @@ The standard logical boolean operations to combine other logical operations. Tak
 
 Example:
 
-```
+```yaml
 op: or
 rules:
   - ...rule1...
@@ -28,7 +28,7 @@ Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
 Example rule:
 
-```
+```yaml
 event: NEW_PROCESS
 op: is
 path: event/PARENT/PROCESS_ID
@@ -41,7 +41,7 @@ Tests if any elements exist at the given path (regardless of its value).
 
 Example rule:
 
-```
+```yaml
 event: NEW_PROCESS
 op: exists
 path: event/PARENT
@@ -51,7 +51,7 @@ The `exists` operator also supports an optional `truthy` parameter. When `true`,
 
 The rule:
 
-```
+```yaml
 op: exists
 path: some/path
 truthy: true
@@ -59,7 +59,7 @@ truthy: true
 
 applied to:
 
-```
+```json
 {
   "some": {
     "path": ""
@@ -80,7 +80,7 @@ Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
 Example rule:
 
-```
+```yaml
 event: NEW_PROCESS
 op: contains
 path: event/COMMAND_LINE
@@ -111,7 +111,7 @@ Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
 Example:
 
-```
+```yaml
 event: FILE_TYPE_ACCESSED
 op: matches
 path: event/FILE_PATH
@@ -125,7 +125,7 @@ The `not` operator inverts the result of its rule. For example, when applied to 
 
 Example:
 
-```
+```yaml
 event: NEW_PROCESS
 op: is
 not: true
@@ -149,7 +149,7 @@ Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
 Example:
 
-```
+```yaml
 event: DNS_REQUEST
 op: string distance
 path: event/DOMAIN_NAME
@@ -163,7 +163,7 @@ This would match `onephotom.com` and `0nephotom.com` but NOT `0neph0tom.com`.
 
 Using the [file name](#file-name) transform to apply to a file name in a path:
 
-```
+```yaml
 event: NEW_PROCESS
 op: string distance
 path: event/FILE_PATH
@@ -182,7 +182,7 @@ All of these operators take no additional arguments, they simply match if the re
 
 Example:
 
-```
+```yaml
 op: is 64 bit
 ```
 
@@ -268,7 +268,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 
 Example:
 
-```
+```yaml
 op: is platform
 name: 1password
 ```
@@ -283,7 +283,7 @@ Determines if the Tag supplied in the `tag` parameter is already associated with
 
 Looks up a value against a [lookup add-on](https://app.limacharlie.io/add-ons/category/lookup) (a.k.a. resource) such as a threat feed.
 
-```
+```yaml
 event: DNS_REQUEST
 op: lookup
 path: event/DOMAIN_NAME
@@ -307,7 +307,7 @@ In some cases, you may want to limit the scope of the matching and the `path` yo
 
 This comes in as very useful for example when you want to test multiple values of a connection in a `NETWORK_CONNECTIONS` event but always on a per-connection. If you  were to do a rule like:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: and
 rules:
@@ -325,7 +325,7 @@ The solution is to use the `scope` operator. The `path` in the operator will bec
 
 Example:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: scope
 path: event/NETWORK_ACTIVITY/
@@ -347,7 +347,7 @@ The `cidr` checks if an IP address at the path is contained within a given
 
 Example rule:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: cidr
 path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
@@ -361,7 +361,7 @@ The `is private address` checks if an IP address at the path is a private addres
 
 Example rule:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: is private address
 path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
@@ -374,7 +374,7 @@ The `is public address` checks if an IP address at the path is a public address
 
 Example rule:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: is public address
 path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
@@ -409,7 +409,7 @@ Test if a value in event at the `"path": <>` parameter, assumed to be either a s
 
 Example rule:
 
-```
+```yaml
 event: login-attempt
 op: is older than
 path: routing/event_time
@@ -424,7 +424,7 @@ All operators support an optional parameter named `times`. When specified, it mu
 
 Here's an example rule that matches a Chrome process starting between 11PM and 5AM, Monday through Friday, Pacific Time:
 
-```
+```yaml
 event: NEW_PROCESS
 op: ends with
 path: event/FILE_PATH

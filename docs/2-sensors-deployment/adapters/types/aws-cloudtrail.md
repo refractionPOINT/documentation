@@ -37,7 +37,7 @@ If collecting CloudTrail logs via an S3 bucket, you will need the following para
 
 The following sample configuration can be used to create an S3 CLI Adapter for AWS CloudTrail events:
 
-```
+```yaml
 s3:
   client_options:
     hostname: aws-cloudtrail-logs
@@ -62,7 +62,7 @@ If collecting CloudTrail logs via an SQS queue, you will need the following para
 
 The following sample configuration can be used to create an SQS CLI Adapter for AWS CloudTrail events:
 
-```
+```yaml
 sqs:
   client_options:
     hostname: aws-cloudtrail-logs

@@ -8,7 +8,7 @@ You can use Client Options to declare your client/org, or you can use environmen
 * `LC_API_KEY`: your LC API KEY
 * `LC_UID`: optional, your user ID
 
-```
+```python
 package main
 
 import (
@@ -30,7 +30,7 @@ func main() {
 
 **Using Client Options:**
 
-```
+```python
 package main
 
 import (
@@ -54,7 +54,7 @@ func main() {
 
 #### Examples
 
-```
+```python
 package main
 
 import (
@@ -162,7 +162,7 @@ The Python library is a simple abstraction to the [LimaCharlie.io REST API](http
 
 The library and the CLI is available as a Python package on PyPi (<https://pypi.org/project/limacharlie/>). It can be installed using pip as shown below.
 
-```
+```bash
 pip install limacharlie
 ```
 
@@ -170,7 +170,7 @@ pip install limacharlie
 
 In addition to the PyPi distribution we also offer a pre-built Docker image on DockerHub (<https://hub.docker.com/r/refractionpoint/limacharlie>).
 
-```
+```bash
 docker run refractionpoint/limacharlie:latest whoami
 
 # Using a specific version (Docker image tag matches the library version)
@@ -193,13 +193,13 @@ The login interface supports named environments, or a default one used when no e
 
 To list available environments:
 
-```
+```bash
 limacharlie use
 ```
 
 Setting a given environment in the current shell session can be done like this:
 
-```
+```bash
 limacharlie use my-dev-org
 ```
 
@@ -217,7 +217,7 @@ You can authenticate the `Manager` using an `oid` (and optionally a `uid`), alon
 
 #### Importing
 
-```
+```python
 import limacharlie
 
 YARA_SIG = 'https://raw.githubusercontent.com/Yara-Rules/rules/master/Malicious_Documents/Maldoc_PDF.yar'
@@ -247,7 +247,7 @@ Note that the SDK uses the `gevent` package which sometimes has issues with othe
  packages that operate at a low level in python. For example, Jupyter notebooks
  may see freezing on importing `limacharlie` and require a tweak to load:
 
-```
+```json
 {
  "display_name": "IPython 2 w/gevent",
  "language": "python",
@@ -303,7 +303,7 @@ The `Artifacts` is a helpful class to upload artifacts to LimaCharlie without go
 
 The `Extensions` can be used to subscribe to and manage extensions within your org.
 
-```
+```python
 import limacharlie
 from limacharlie import Extension
 
@@ -365,7 +365,7 @@ Many of the objects available as part of the LimaCharlie Python SDK also support
 
 [LimaCharlie Query Language (LCQL)](../4-data-queries/lcql-examples.md) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie.
 
-```
+```bash
 limacharlie query --help
 ```
 
@@ -377,7 +377,7 @@ ARLs can be used in the [YARA manager](../5-integrations/extensions/limacharlie/
 
 Testing an ARL before applying it somewhere can be helpful to shake out access or authentication errors beforehand. You can test an ARL and see what files are fetched, and their contents, by running the following command:
 
-```
+```powershell
 limacharlie get-arl -a [github,Yara-Rules/rules/email]
 ```
 
@@ -386,7 +386,7 @@ limacharlie get-arl -a [github,Yara-Rules/rules/email]
 Listens on interface `1.2.3.4`, port `9424` for incoming connections from LimaCharlie.io.
  Receives only events from hosts tagged with `fh_test`.
 
-```
+```python
 python -m limacharlie.Firehose 1.2.3.4:9424 event -n firehose_test -t fh_test --oid c82e5c17-d519-4ef5-a4ac-caa4a95d31ca
 ```
 
@@ -396,7 +396,7 @@ Behaves similarly to the Firehose, but instead of listening from an internet acc
 
 It is MUCH more convenient for short term ad-hoc outputs, but it is less reliable than a Firehose for very large amounts of data.
 
-```
+```python
 python -m limacharlie.Spout event --oid c82e5c17-d519-4ef5-a4ac-caa4a95d31ca
 ```
 
@@ -406,7 +406,7 @@ The `fetch` command will get a list of the Detection & Response rules in your
  organization and will write them to the config file specified or the default
  config file `lc_conf.yaml` in YAML format.
 
-```
+```bash
 limacharlie configs fetch --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca`
 ```
 
@@ -419,7 +419,7 @@ The `--config` allows you to specify an alternate config file and the `--api-key
  you to specify a file on disk where the API should be read from (otherwise, of if `-` is
  specified as a file, the API Key is read from STDIN).
 
-```
+```bash
 limacharlie configs push --dry-run --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca --config /path/to/template.yaml --all --ignore-inaccessible
 ```
 
@@ -435,13 +435,13 @@ To understand better the config format, do a `fetch` from your organization. Not
 
 Used to perform Organization-wide checks for specific indicators of compromise. Available as a custom API `SpotCheck` object or as a module from the command line. Supports many types of IoCs like file names, directories, registry keys, file hashes and YARA signatures.
 
-```
+```python
 python -m limacharlie.SpotCheck --no-macos --no-linux --tags vip --file c:\\evil.exe`
 ```
 
 For detailed usage:
 
-```
+```python
 python -m limacharlie.SpotCheck --help
 ```
 
@@ -449,7 +449,7 @@ python -m limacharlie.SpotCheck --help
 
 Shortcut utility to perform IOC searches across all locally configured organizations.
 
-```
+```bash
 limacharlie search --help
 ```
 
@@ -457,7 +457,7 @@ limacharlie search --help
 
 Shortcut utility to manage extensions.
 
-```
+```bash
 limacharlie extension --help
 ```
 
@@ -465,7 +465,7 @@ limacharlie extension --help
 
 Shortcut utility to upload and retrieve Artifacts within LimaCharlie with just the CLI (no agent).
 
-```
+```bash
 limacharlie artifacts --help
 ```
 
@@ -473,7 +473,7 @@ limacharlie artifacts --help
 
 Shortcut utility to download Artifact Collection in LimaCharlie locally.
 
-```
+```bash
 limacharlie artifacts get_original --help
 ```
 
@@ -481,7 +481,7 @@ limacharlie artifacts get_original --help
 
 Shortcut utility to perform [Replay](../5-integrations/services/replay.md) jobs from the CLI.
 
-```
+```bash
 limacharlie replay --help
 ```
 
@@ -489,7 +489,7 @@ limacharlie replay --help
 
 Shortcut utility to manage Detection and Response rules over the CLI.
 
-```
+```bash
 limacharlie dr --help
 ```
 
@@ -497,7 +497,7 @@ limacharlie dr --help
 
 Print out to STDOUT events or detections matching the parameter.
 
-```
+```bash
 limacharlie events --help
 limacharlie detections --help
 ```
@@ -506,7 +506,7 @@ limacharlie detections --help
 
 Print out all basic sensor information for all sensors matching the [selector](../8-reference/sensor-selector-expressions.md).
 
-```
+```bash
 limacharlie sensors --selector 'plat == windows'
 ```
 
@@ -518,25 +518,25 @@ Keep in mind that this actions operates in the user context which means you need
 
 Invite a single user:
 
-```
+```bash
 limacharlie users invite --email=user1@example.com
 ```
 
 Invite multiple users:
 
-```
+```bash
 limacharlie users invite --email=user1@example.com,user2@example.com,user3@example.com
 ```
 
 Invite multiple users from new line delimited entries in a text file:
 
-```
+```bash
 cat users_to_invite.txt
 user1@example.com
 user2@example.com
 user3@example.com
 ```
 
-```
+```bash
 limacharlie users invite --file=users_to_invite.txt
 ```

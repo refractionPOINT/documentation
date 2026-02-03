@@ -14,7 +14,7 @@ Example  rule that processes all Artifacts ingested with the type `zeek-extract`
 
 **Detect:**
 
-```
+```yaml
 event: ingest
 op: is
 path: routing/log_type
@@ -24,7 +24,7 @@ value: zeek-extract
 
 **Respond:**
 
-```
+```yaml
 - action: extension request
   extension action: run_on
   extension name: ext-strelka
@@ -38,7 +38,7 @@ If you use the LimaCharlie [Zeek](zeek.md) extension, a good use case would be t
 
 **Detect:**
 
-```
+```yaml
 op: exists
 event: ingest
 artifact type: pcap
@@ -48,7 +48,7 @@ target: artifact_event
 
 **Respond:**
 
-```
+```yaml
 - action: extension request
   extension action: run_on
   extension name: ext-zeek

@@ -22,7 +22,7 @@ Lookup data can be ingested by specifying one of the following root keys indicat
 
 ### Infrastructure as Code
 
-```
+```yaml
 hives:
     lookup:                             # Example lookup in the lookup hive
         example-lookup:
@@ -77,7 +77,7 @@ If your lookups change frequently and you wish to keep them up to date, LimaChar
 
 ## Example Lookup
 
-```
+```json
 {
   "lookup_data": {
     "c:\\windows\\system32\\ping.exe": {
@@ -94,7 +94,7 @@ If your lookups change frequently and you wish to keep them up to date, LimaChar
 
 or
 
-```
+```json
 {
   "newline_content": "lvalue1\nlvalue2\nlvalue3"
 }

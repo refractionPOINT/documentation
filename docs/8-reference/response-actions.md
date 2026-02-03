@@ -16,7 +16,7 @@ In some cases, you may want to limit the number of times a specific Action is ex
 
 A suppression descriptor can be added to an Action like:
 
-```
+```yaml
 - action: report
   name: evil-process-detected
   suppression:
@@ -44,7 +44,7 @@ The other way to use suppression is using the `min_count` parameter. When set, t
 
 Here's an example of this:
 
-```
+```yaml
 - action: report
   name: high-alerts
   suppression:
@@ -67,7 +67,7 @@ This is useful for things like billing alerts, where we set a threshold activati
 
 Here's an example of this:
 
-```
+```yaml
 detect:
     event: billing_record
     op: is
@@ -98,7 +98,7 @@ Actions allow you to specify "what" happens after a detection is found.
 
 ### add tag, remove tag
 
-```
+```yaml
 - action: add tag
   tag: vip
   entire_device: false # defaults to false
@@ -117,7 +117,7 @@ This can be used as a mechanism to synchronize and operate changes across an ent
 
 For example, this would apply the `full_pcap` to all sensors on the device for 5 minutes:
 
-```
+```yaml
 - action: add tag
   tag: full_pcap
   ttl: 300
@@ -128,7 +128,7 @@ For example, this would apply the `full_pcap` to all sensors on the device for 5
 
 Add or remove a value from the variables associated with a sensor.
 
-```
+```yaml
 - action: add var
   name: my-variable
   value: <<event/VOLUME_PATH>>
@@ -141,7 +141,7 @@ The `add var` action can optionally take a `ttl` parameter that is a number of s
 
 Perform an asynchronous request to an extension the Organization is subscribed to.
 
-```
+```yaml
 - action: extension request
   extension name: dumper # name of the extension
   extension action: dump # action to trigger
@@ -196,7 +196,7 @@ The `name` parameter is the name of the Output.
 
 Example:
 
-```
+```yaml
 - action: output
   name: my-output
 ```
@@ -211,7 +211,7 @@ Removes the isolation status of a sensor that had it set using `isolate network`
 
 ### report
 
-```
+```yaml
 - action: report
   name: my-detection-name
   publish: true # defaults to true
@@ -248,7 +248,7 @@ The `metadata` parameter, if set, can include any data. It will be added to the 
 
 ### task
 
-```
+```yaml
 - action: task
   command: history_dump
   investigation: susp-process-inv
@@ -266,7 +266,7 @@ The `command` parameter supports [string templates](../4-data-queries/template-t
 
 Un-deletes a sensor that was previously deleted.
 
-```
+```yaml
 detect:
     target: deployment
     event: deleted_sensor
@@ -294,14 +294,14 @@ The `duration` parameter supports two types of values:
 
 Example:
 
-```
+```yaml
 - action: wait
   duration: 10s
 ```
 
 and
 
-```
+```yaml
 - action: wait
   duration: 5
 ```
@@ -310,7 +310,7 @@ and
 
 Adds a tag to a Hive record. This can be used to mark some Hive records like D&R rules automatically.
 
-```
+```yaml
 - action: add hive tag
   hive name: dr-general
   record name: my-rule
@@ -319,7 +319,7 @@ Adds a tag to a Hive record. This can be used to mark some Hive records like D&R
 
 Unless the rule is not expected to hit often, you likely want to couple this with a `suppression` statement to avoid doing a lot of tagging of the same rules like:
 
-```
+```yaml
 - action: add hive tag
   hive name: dr-general
   record name: my-rule
@@ -337,7 +337,7 @@ Unless the rule is not expected to hit often, you likely want to couple this wit
 
 Removes a tag from a Hive record.
 
-```
+```yaml
 - action: remove hive tag
   hive name: dr-general
   record name: my-rule

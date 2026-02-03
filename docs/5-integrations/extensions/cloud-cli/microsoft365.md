@@ -8,7 +8,7 @@ This extension makes use of the PnP Microsoft 365 CLI, which can be found [here]
 
 The following example disables the user account with the provided user ID.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

@@ -11,7 +11,7 @@ You can mass deploy the LimaCharlie Sensor for ChromeOS with Google Workspace an
 5. Set the "Installation Policy" to "Force install".
 6. Set the "Policy for extensions" value as follows:
 
-```
+```json
 {
     "installation_key": {
         "Value": "\"KEY\""

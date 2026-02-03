@@ -56,7 +56,7 @@ Issue a `POST` to `/{sid}/tags` REST endpoint
 
 In detection and response rules. To achieve this, in the response part of the detection & response rule, specify the add tag action. For example, to tag a device as DESKTOP, you would say:
 
-```
+```yaml
 - action: add tag
 tag: DESKTOP
 ```

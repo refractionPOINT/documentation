@@ -80,7 +80,7 @@ The following REST API actions can be sent to interact with the Integrity extens
 
 **List Rules**
 
-```
+```json
 {
   "action": "list_rules"
 }
@@ -88,7 +88,7 @@ The following REST API actions can be sent to interact with the Integrity extens
 
 **Add Rule**
 
-```
+```json
 {
   "action": "add_rule",
   "name": "linux-root-ssh-configs",
@@ -107,7 +107,7 @@ The following REST API actions can be sent to interact with the Integrity extens
 
 **Remove Rule**
 
-```
+```json
 {
   "action": "remove_rule",
   "name": "linux-ssh-configs"

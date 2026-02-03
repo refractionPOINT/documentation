@@ -8,7 +8,7 @@ This extension makes use of the GitHub CLI, which can be found [here](https://cl
 
 The following example returns a list of GitHub organizations.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

@@ -19,7 +19,7 @@ The following fields are required for configuration:
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Kubernetes Pods Specific Docs: https://docs.limacharlie.io/docs/adapter-types-k8s-pods
 
 sensor_type: "k8_pods"
@@ -41,7 +41,7 @@ k8s_pods:
 
 An example Daemon Set configuration for Kubernetes:
 
-```
+```yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:

@@ -14,7 +14,7 @@ The list of all available schemas can get retrieved by doing a `GET` to `api.lim
 
 The returned data looks like:
 
-```
+```json
 {
   "event_types": [
     "evt:New-ExchangeAssistanceConfig",
@@ -50,7 +50,7 @@ Retrieving a specific schema definition can be done by doing a `GET` on `api.lim
 
 The returned data looks like:
 
-```
+```json
 {
   "schema": {
     "elements": [
@@ -93,7 +93,7 @@ The prefix is one of:
 
 The value is a path within the JSON. For example, the schema above would represent the following event:
 
-```
+```json
 {
   "event": {
     "CNAME": "cs9.wac.phicdn.net",

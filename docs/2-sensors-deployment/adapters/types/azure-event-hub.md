@@ -72,7 +72,7 @@ LimaCharlie offers several helpers within the webapp that allow you to ingest Mi
 
 The following example configures a binary Adapter to collect Microsoft Defender data from an Azure Event Hub:
 
-```
+```bash
 ./lc_adapter azure_event_hub client_options.identity.installation_key=<INSTALLATION_KEY> \
 client_options.identity.oid=<OID> \
 client_options.platform=msdefender \
@@ -83,7 +83,7 @@ client_options.hostname=<HOSTNAME> \
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Azure Event Hub Specific Docs: https://docs.limacharlie.io/docs/adapter-types-azure-event-hub
 
 sensor_type: "azure_event_hub"

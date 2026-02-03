@@ -26,7 +26,7 @@ The returned data from the API contains the following:
 * `num_events`: the number of events that were replayed.
 * `eval_time`: the number of seconds it took to replay the data.
 
-```
+```json
 {
   "error": "",        // if an error occured.
   "stats": {
@@ -64,7 +64,7 @@ limacharlie-replay --entire-org --start 1555359000 --end 1556568600 --rule-name 
 If specifying a rule as content with the `--rule-content`, the format should be
  in `JSON` or `YAML` like:
 
-```
+```yaml
 detect:
   event: DNS_REQUEST
   op: is
@@ -90,7 +90,7 @@ Authentication to this API works with the same JWTs as the main limacharlie.io A
 
 For this example, we will use the experimental datacenter's URL:
 
-```
+```python
 https://0651b4f82df0a29c.replay.limacharlie.io/
 ```
 
@@ -98,7 +98,7 @@ The API mainly works on a per-sensor basis, on a limited amount of time. Replayi
 
 To query Replay, do a `POST` with a `Content-Type` header of `application-json` and with a JSON body like:
 
-```
+```json
 {
   "oid": "",             // OID this query relates to
   "rule_source": {       // rule source information (use one of "rule_name" or "rule")

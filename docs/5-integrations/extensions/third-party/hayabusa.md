@@ -16,7 +16,7 @@ When enabled, you may configure the response of a D&R rule to run a Hayabusa ana
 
 **Detect:**
 
-```
+```yaml
 event: ingest
 op: exists
 path: /
@@ -26,7 +26,7 @@ artifact type: wel
 
 **Respond:**
 
-```
+```yaml
 - action: extension request
   extension action: generate
   extension name: ext-hayabusa
@@ -41,7 +41,7 @@ Note that the only required field here is the `artifact_id`. The other values su
 
 ## Results
 
-```
+```bash
 hayabusa update-rules
 
 hayabusa csv-timeline -f /path/to/your/artifact --RFC-3339 -p timesketch-$profile --min-level $min_rule_level --no-wizard --quiet -o $artifact_id.csv -U
@@ -91,7 +91,7 @@ Configure a D&R rule to look for these events upon ingestion, and then trigger t
 
 **Detect:**
 
-```
+```yaml
 op: and
 target: artifact_event
 rules:
@@ -106,7 +106,7 @@ rules:
 
 **Respond:**
 
-```
+```yaml
 - action: extension request
   extension action: generate
   extension name: ext-hayabusa
@@ -125,7 +125,7 @@ Assuming you want Hayabusa detections of a certain `Level` or severity sent dire
 
 **Detect:**
 
-```
+```yaml
 event: hayabusa_event
 op: and
 rules:
@@ -139,7 +139,7 @@ rules:
 
 **Respond:**
 
-```
+```yaml
 - action: report
   name: >-
     Hayabusa - {{ .event.results.Level }} - {{ .event.results.message }}
@@ -147,7 +147,7 @@ rules:
 
 The resulting detection would look something like this:
 
-```
+```json
 {
   "action": "report",
   "data": {

@@ -43,7 +43,7 @@ BigQuery dataset containing Velociraptor hunt results:
 
             1. **Custom Transform**: paste in this JSON
 
-               ```
+               ```json
                {
                "sid": "event.sid",
                "job_id": "event.job_id",
@@ -65,7 +65,7 @@ BigQuery dataset containing Velociraptor hunt results:
          ```
       2. Response
 
-         ```
+         ```yaml
          - action: output
            name: bigquery-tailored # must match the output name you created earlier
          - action: report

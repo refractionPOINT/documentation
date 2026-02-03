@@ -56,7 +56,7 @@ The first step of deploying this way is to create a new External Adapter record.
 
 The content of an external adapter is exactly the same as a traditional [adapter configuration](usage.md) in YAML. It describes what you want your external adapter to do, like collect from file, operate as a syslog server etc. For example:
 
-```
+```yaml
 sensor_type: syslog
 syslog:
   client_options:
@@ -81,7 +81,7 @@ This `GUID` is a shared secret value you will use in the deployed adapter to ref
 
 Now that the configuration of the adapter is ready, you can deploy the adapter on-prem according to the [normal process](usage.md). The only difference is that instead of running it with the full configuration locally, you can run it with the `cloud` collection method like this:
 
-```
+```bash
 ./lc_adapter cloud conf_guid=XXXXXXXXXXXXXXXXXXXXx oid=YYYYYYYYYYYYYYYYYYY
 ```
 

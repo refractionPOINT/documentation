@@ -23,13 +23,11 @@ Show me all the GitHub branch protection override (force pushing to repo without
 
 which could result in:
 
-```
 | actor    |   count | repo                               |
 |----------|---------|------------------------------------|
 | mXXXXXXa |      11 | acmeCorpCodeRep/customers          |
 | aXXXXXXb |      11 | acmeCorpCodeRep/analysis           |
 | cXXXXXXd |       3 | acmeCorpCodeRep/devops             |
-```
 
 ## Network Telemetry
 
@@ -43,12 +41,10 @@ Show me all domains resolved by Windows hosts that contain "google" in the last 
 
 which could result in:
 
-```
 |   count | domain                     |
 |---------|----------------------------|
 |      14 | logging.googleapis.com     |
 |      36 | logging-alv.googleapis.com |
-```
 
 ### Domain Prevalence
 
@@ -58,12 +54,10 @@ Show me all domains resolved by Windows hosts that contain "google" in the last 
 
 which could result in:
 
-```
 |   count | domain                     |
 |---------|----------------------------|
 |       4 | logging.googleapis.com     |
 |       3 | logging-alv.googleapis.com |
-```
 
 ## Process Activity
 

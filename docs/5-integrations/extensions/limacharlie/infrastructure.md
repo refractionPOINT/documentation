@@ -36,7 +36,7 @@ Within the Infrastructure As Code module, you can:
 
 The REST interface for the Infrastructure extension mimics the CLI tool. The following REST API actions can be sent to interact with the Infrastructure extension:
 
-```
+```json
 {
   "params": {
     "sync_artifacts": {

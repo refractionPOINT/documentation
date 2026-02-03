@@ -65,7 +65,7 @@ Note: there is a functional difference between an 'object' and 'record' data typ
 **Single Objects**
  Plain objects allow for nested fields, and are visually indifferent from if the nested fields were flattened to begin with. They also allow for extra context to be wrapped in the parent object's description.
 
-```
+```text
 table: {
   is_list: false,
   data_type: "object",
@@ -79,7 +79,7 @@ table: {
 **Lists of Objects**
  Lists of objects display as tables and allow for a more complex and scalable data structure. Simply enable `is_list` on a base object.
 
-```
+```text
 table: {
   is_list: true,
   data_type: "object",
@@ -93,7 +93,7 @@ table: {
 **Record Type**
  Records are inherently lists of a key-value pair, where the value is the defined object, and the key may vary. Record types require a key to be defined in the nested object details, and also supports additional fields for the nested element's name and description.
 
-```
+```text
 table: {
   is_list: true,
   data_type: "object",

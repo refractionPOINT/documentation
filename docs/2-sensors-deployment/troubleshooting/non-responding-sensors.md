@@ -6,7 +6,7 @@ A common request is to alert an administrator if a Sensor that normally forwards
 
 ## Example Playbook Code
 
-```
+```python
 import limacharlie
 import time
 

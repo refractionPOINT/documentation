@@ -35,7 +35,7 @@ To install a LimaCharlie adapter as a service on a Linux system with systemd, yo
 
 Download one of the [adapter binaries](deployment.md) and apply the necessary permissions:
 
-```
+```bash
 wget -O /path/to/adapter-directory/lc-adapter $ADAPTER_BINARY_URL
 chmod +x /path/to/adapter-directory/lc-adapter
 ```
@@ -44,7 +44,7 @@ chmod +x /path/to/adapter-directory/lc-adapter
 
 You will replace `$ADAPTER_COMMAND` in the service file with your actual adapter command below.
 
-```
+```bash
 [Unit]
 Description=LC Adapter Name
 After=network.target
@@ -73,7 +73,7 @@ Your adapter command may differ depending on your use case--this is an example o
 
 #### Enable and Start the Service
 
-```
+```bash
 sudo systemctl enable lc-adapter-name
 sudo systemctl start lc-adapter-name
 sudo systemctl status lc-adapter-name
@@ -89,7 +89,7 @@ To remove a Windows LimaCharlie Adapter service, use the `-remove:<service_name>
 
 If your service is running with a systemd script, you can disable and remove it with the following:
 
-```
+```bash
 sudo systemctl stop lc-adapter-name
 sudo systemctl disable lc-adapter-name
 sudo rm /etc/systemd/system/lc-adapter-name.service

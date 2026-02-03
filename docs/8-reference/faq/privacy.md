@@ -16,7 +16,7 @@ Core sensor telemetry is collected and presented in JSON format.
 
 *Example telemetry:*
 
-```
+```json
 {
   "event": {
     "COMMAND_LINE": "C:\\WINDOWS\\system32\\svchost.exe -k NetworkService -p",

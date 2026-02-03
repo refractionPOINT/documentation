@@ -37,7 +37,7 @@ You can submit a file or URL to the REnigma extension for processing in one of 2
       ```
    2. Respond
 
-      ```
+      ```yaml
       - action: "extension request"
         extension name: "ext-renigma"
         extension action: "upload_file"

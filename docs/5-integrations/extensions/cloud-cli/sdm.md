@@ -8,7 +8,7 @@ More information about the StrongDM CLI can be found [here](https://www.strongdm
 
 The following response action returns a list of all users in your Organization.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

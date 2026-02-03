@@ -2,7 +2,7 @@
 
 This example shows collecting Windows Event Logs (`wel`) from a Windows box natively (and therefore is only available using the Windows Adapter). This is useful for cases where you'd like to collect WEL without running the LimaCharlie Windows Agent.
 
-```
+```bash
 ./lc_adapter wel client_options.identity.installation_key=e9a3bcdf-efa2-47ae-b6df-579a02f3a54d `
     client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd `
     client_options.sensor_seed_key=domain-controller1 `

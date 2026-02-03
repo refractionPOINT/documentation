@@ -8,7 +8,7 @@ Webhook adapters are created by enabling a webhook through the `cloud_sensor` Hi
 
 Webhook adapters can be created either through the webapp, API, or CLI. Before creation, let's look at the basic webhook configuration and values necessary to build the adapter.
 
-```
+```json
 {
     "sensor_type": "webhook",
     "webhook": {
@@ -41,7 +41,7 @@ Webhook adapters can be created either through the webapp, API, or CLI. Before c
 
 When the above configuration is provided to LimaCharlie, a webhook adapter will appear and be available for webhook event ingestion. Here's an example of creating the above record through the LimaCharlie CLI:
 
-```
+```bash
 echo '{"sensor_type": "webhook", "webhook": {"secret": "some-secret-value-hard-to-predict", "signature_secret": "", "signature_header": "", "signature_scheme": "", "client_options": {"hostname": "<any_name>", "identity": {"oid": "<oid>", "installation_key": "<installation_key>"}, "platform": "json", "sensor_seed_key": "test-webhook"}}}' | limacharlie hive set cloud_sensor --key my-webhook --data -
 ```
 
@@ -50,7 +50,7 @@ After creating the webhook, you will be provided with a geo-dependent URL, respe
 * REST API: [getOrgURLs](https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls)
 * Python SDK:
 
-```
+```python
 python3 -c "import limacharlie; print(limacharlie.Manager().getOrgURLs()['hooks'])"
 ```
 
@@ -78,7 +78,7 @@ When sending data via POST requests to the URL, the body of your request is expe
   + `[{"some":"data"},{"some":"data"}]`
 * Newline separated JSON objects like:
 
-```
+```json
 {"some":"data"}
 {"some":"data"}
 {"some":"data"}

@@ -21,7 +21,7 @@ MITRE ATT&CK tags should be validated against the authoritative MITRE STIX data 
 
 **Fetching Valid Values at Runtime:**
 
-```
+```yaml
 URL: https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json
 
 Parsing:

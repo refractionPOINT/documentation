@@ -42,7 +42,7 @@ To apply YARA rules to scan an endpoint (or set of endpoints), you must select t
 
 If you want to trigger a Yara scan as a response to one of your detections, you can configure an extension request in the respond block of a rule. A Yara scan request can be executed with a blank selector OR Sensor ID. However, one of them must be specified.
 
-```
+```yaml
 - action: extension request
   extension action: scan
   extension name: ext-yara
@@ -61,7 +61,7 @@ The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives yo
 
 Command line to preview Yara rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-yara
 ```
 
@@ -71,6 +71,6 @@ To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-
 
 Command line to execute Yara rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-yara --no-dry-run
 ```

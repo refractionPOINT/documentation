@@ -24,37 +24,37 @@ The Installation Key is required by the installer via the `debconf` configuratio
 
 **Installing interactively:**
 
-```
+```python
 sudo dpkg -i limacharlie.deb
 ```
 
 or
 
-```
+```python
 sudo apt install ./limacharlie.deb
 ```
 
 **Uninstalling interactively:**
 
-```
+```bash
 sudo dpkg -r limacharlie
 ```
 
 or
 
-```
+```bash
 sudo apt remove limacharlie
 ```
 
 **Installing and setting the installation key programmatically with dpkg:**
 
-```
+```powershell
 echo "limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE" | sudo debconf-set-selections && sudo dpkg -i limacharlie.deb
 ```
 
 **Installing and setting the installation key programmatically with apt:**
 
-```
+```powershell
 echo "limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE" | sudo debconf-set-selections && sudo apt install ./limacharlie.deb -y
 ```
 
@@ -67,7 +67,7 @@ Debian packages are offered for the various architectures the Linux sensor suppo
 
 For non-Debian systems, download the installer using the following command:
 
-```
+```python
 wget https://downloads.limacharlie.io/sensor/linux/64 -O /tmp/lc_sensor
 ```
 
@@ -84,7 +84,7 @@ This means you can wrap the executable using the specific service management tec
 A common methodology for Linux is to use `init.d`, if this is sufficient for your needs, see this [sample install script](https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh).
 You can invoke it like this:
 
-```
+```bash
 sudo chmod +x ./lc_linux_installer.sh
 sudo ./lc_linux_installer.sh <PATH_TO_LC_SENSOR> <YOUR_INSTALLATION_KEY>
 ```
@@ -108,7 +108,7 @@ Linux agent uninstallation depends on how the sensor was installed. For example,
 
 The `uninstall` command does not work for Linux systems. However, there is a chained command that can be run from the Sensor Console:
 
-```
+```powershell
  run --shell-command "service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs"
 ```
 
@@ -118,6 +118,6 @@ The above command removes LimaCharlie and associated files from the system when 
 
 If the sensor was originally installed with the .deb file, this option is the cleanest uninstall method.
 
-```
+```bash
 apt remove limacharlie
 ```

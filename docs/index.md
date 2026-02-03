@@ -16,7 +16,7 @@ LimaCharlie is the **SecOps Cloud Platform** delivering security operations for 
 
     New to LimaCharlie? Start here to learn the basics and get up and running quickly.
 
-    [:octicons-arrow-right-24: Quickstart Guide](limacharlie/doc/Getting_Started/quickstart.md)
+    [:octicons-arrow-right-24: Quickstart Guide](1-getting-started/quickstart.md)
 
 -   :material-shield-check:{ .lg .middle } __Detection & Response__
 
@@ -24,39 +24,55 @@ LimaCharlie is the **SecOps Cloud Platform** delivering security operations for 
 
     Build custom detection logic with automated response actions to protect your infrastructure.
 
-    [:octicons-arrow-right-24: Detection Rules](limacharlie/doc/Detection_and_Response/detection-and-response-rules.md)
+    [:octicons-arrow-right-24: Detection Rules](3-detection-response/index.md)
 
--   :material-chip:{ .lg .middle } __Sensors__
+-   :material-chip:{ .lg .middle } __Sensors & Deployment__
 
     ---
 
-    Deploy sensors across Windows, Linux, macOS, Chrome, and more platforms.
+    Deploy sensors across Windows, Linux, macOS, Chrome, and configure log adapters.
 
-    [:octicons-arrow-right-24: Sensor Documentation](limacharlie/doc/Sensors/index.md)
+    [:octicons-arrow-right-24: Sensor Documentation](2-sensors-deployment/index.md)
 
--   :material-code-braces:{ .lg .middle } __SDK Documentation__
+-   :material-database-search:{ .lg .middle } __Data & Queries__
+
+    ---
+
+    Query your security data with LCQL, explore events, and investigate incidents.
+
+    [:octicons-arrow-right-24: Query Console](4-data-queries/index.md)
+
+-   :material-connection:{ .lg .middle } __Integrations__
+
+    ---
+
+    Connect outputs to SIEMs, enable extensions, and integrate with third-party tools.
+
+    [:octicons-arrow-right-24: Browse Integrations](5-integrations/index.md)
+
+-   :material-code-braces:{ .lg .middle } __Developer Guide__
 
     ---
 
     Programmatic access via Go and Python SDKs for complete platform automation.
 
-    [:octicons-arrow-right-24: Go SDK](go-sdk/README.md) · [:octicons-arrow-right-24: Python SDK](python-sdk/README.md)
+    [:octicons-arrow-right-24: SDKs & APIs](6-developer-guide/index.md)
 
--   :material-puzzle:{ .lg .middle } __Add-Ons & Extensions__
-
-    ---
-
-    Expand capabilities with API integrations, extensions, and third-party tools.
-
-    [:octicons-arrow-right-24: Browse Add-Ons](limacharlie/doc/Add-Ons/index.md)
-
--   :material-cloud-sync:{ .lg .middle } __Outputs__
+-   :material-cog:{ .lg .middle } __Administration__
 
     ---
 
-    Stream your telemetry to SIEM platforms, webhooks, and cloud services.
+    Manage organizations, users, access control, and billing.
 
-    [:octicons-arrow-right-24: Configure Outputs](limacharlie/doc/Outputs/index.md)
+    [:octicons-arrow-right-24: Admin Guide](7-administration/index.md)
+
+-   :material-book-open-variant:{ .lg .middle } __Reference__
+
+    ---
+
+    Technical reference for operators, commands, event schemas, and FAQ.
+
+    [:octicons-arrow-right-24: Reference Docs](8-reference/index.md)
 
 </div>
 
@@ -85,7 +101,7 @@ LimaCharlie is the **SecOps Cloud Platform** delivering security operations for 
 
 This documentation is open source and available on [GitHub](https://github.com/refractionPOINT/documentation). It includes:
 
-- **275+ Documentation Pages**: Comprehensive platform documentation
+- **267 Documentation Pages**: Comprehensive platform documentation
 - **SDK References**: Complete Go and Python SDK documentation
 - **Code Examples**: Ready-to-use examples for common tasks
 - **Integration Guides**: Step-by-step tutorials for third-party integrations

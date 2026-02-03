@@ -8,7 +8,7 @@ This extension makes use of Tailscale's native CLI, which can be found [here](ht
 
 Returns the current Tailscale status.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

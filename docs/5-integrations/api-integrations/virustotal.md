@@ -8,7 +8,7 @@ The VirusTotal API key is added via the integrations menu within LimaCharlie.
 
 With the `vt` add-on subscribed and a VirusTotal API Key configured in the Integrations page, VirusTotal can be used as an API-based lookup.
 
-```
+```yaml
 event: CODE_IDENTITY
 op: lookup
 path: event/HASH

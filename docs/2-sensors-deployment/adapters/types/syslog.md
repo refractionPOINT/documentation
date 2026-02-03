@@ -26,7 +26,7 @@ All Adapters have the same common client configuration options, found [here](../
 
 The following example walks through configuring a Docker container as a syslog Adapter.
 
-```
+```bash
 docker run --rm -it -p 1514:1514 refractionpoint/lc-adapter:latest syslog port=1514 \
   client_options.identity.installation_key=e9a3bcdf-efa2-47ae-b6df-579a02f3a54d \
   client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
@@ -74,7 +74,7 @@ Syslog events are typically ingested as `text`, however often have specific stru
 
 The following example config file can be a starting point. However, you might need to modify the regex to match your specific message.
 
-```
+```python
 # Syslog Specific Docs: https://docs.limacharlie.io/docs/adapter-types-syslog
 
 sensor_type: "syslog"

@@ -29,7 +29,7 @@ If collecting GuardDuty logs via an S3 bucket, you will need the following param
 
 The following command will create an Adapter using the (1) Adapter binary and (2) logs stored in an S3 bucket:
 
-```
+```bash
 ./lc_adapter s3 client_options.identity.installation_key=<INSTALLATION_KEY> \
 client_options.identity.oid=<OID> \
 client_options.platform=guard_duty \
@@ -50,7 +50,7 @@ If collecting GuardDuty logs via an SQS queue, you will need the following param
 
 The following command will create an Adapter using the (1) Adapter binary and (2) logs stored in an SQS queue:
 
-```
+```bash
 ./lc_adapter sqs client_options.identity.installation_key=<INSTALLATION_KEY> \
 client_options.identity.oid=<OID> \
 client_options.platform=guard_duty \

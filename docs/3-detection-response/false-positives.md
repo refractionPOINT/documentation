@@ -57,7 +57,7 @@ Clicking the button will pre-populate the details of the event and automatically
 
 Prevent a specific detection:
 
-```
+```yaml
 op: is
 path: cat
 value: my-detect-name
@@ -67,7 +67,7 @@ value: my-detect-name
 
 Ignore any detection that relates to a file name in any path.
 
-```
+```yaml
 op: ends with
 path: detect/event/FILE_PATH
 value: this_is_fine.exe
@@ -77,7 +77,7 @@ value: this_is_fine.exe
 
 Any detection originating from a specific host will be ignored.
 
-```
+```yaml
 op: is
 path: routing/hostname
 value: web-server-2

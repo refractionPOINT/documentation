@@ -34,7 +34,7 @@ It is possible to execute multiple instances of adapters of the same type within
 
 This is achieved by using a configuration file (as described above) with multiple YAML "documents" within like this:
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -93,7 +93,7 @@ All Adapter types support the same `client_options`, plus type-specific configur
 
 Using inline parameters:
 
-```
+```bash
 ./lc-adapter file file_path=/path/to/logs.json \
   client_options.identity.installation_key=<INSTALLATION KEY> \
   client_options.identity.oid=<ORG ID> \
@@ -105,7 +105,7 @@ Using inline parameters:
 
 Using Docker:
 
-```
+```bash
 docker run -d --rm -it -p 4404:4404/udp refractionpoint/lc-adapter syslog \
   client_options.identity.installation_key=<INSTALLATION KEY> \
   client_options.identity.oid=<ORG ID> \
@@ -119,7 +119,7 @@ docker run -d --rm -it -p 4404:4404/udp refractionpoint/lc-adapter syslog \
 
 Using a configuration file:
 
-```
+```bash
 ./lc-adapter file config_file.yaml
 ```
 
@@ -194,7 +194,7 @@ LimaCharlie includes standard Grok patterns for common data types:
 
 **LimaCharlie Configuration to Match Firewall Log:**
 
-```
+```yaml
 client_options:
   mapping:
     parsing_grok:
@@ -205,7 +205,7 @@ client_options:
 
 **Fields Extracted by the Above Configuration:**
 
-```
+```json
 {
   "timestamp": "2024-01-01 12:00:00",
   "action": "ACCEPT",
@@ -293,7 +293,7 @@ which would end up generating:
   "log_name": "http_logs",
   "timestamp": "..."
 }
-```
+```yaml
 
 #### Extraction
 

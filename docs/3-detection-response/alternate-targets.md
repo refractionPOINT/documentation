@@ -24,7 +24,7 @@ The `detection` target supports all of the same operators and actions as regular
 
 ### Example
 
-```
+```python
 # Detection
 target: detection
 op: and
@@ -61,7 +61,7 @@ The `deployment` target supports all of the same operators and actions as regula
 
 ### Example
 
-```
+```yaml
 # Detection
 target: deployment
 event: sensor_clone
@@ -90,7 +90,7 @@ Parsed artifacts can be run through the rule engine as if they were regular `edr
 
 This rule will target parsed `/var/log/auth.log` entries to see if there are are auth failures.
 
-```
+```yaml
 # Detection
 target: artifact
 artifact type: txt
@@ -143,7 +143,7 @@ For unparsed logs, it can be useful to use the `ingest` and `export_complete` li
 
 ### Example
 
-```
+```yaml
 # Detection
 target: artifact_event
 event: export_complete

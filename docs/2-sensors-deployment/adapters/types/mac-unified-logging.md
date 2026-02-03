@@ -21,7 +21,7 @@ All adapters support the same `client_options`, which you should always specify 
 
 Adapter downloads can be found [here](../deployment.md).
 
-```
+```bash
 chmod +x /path/to/lc_adapter
 
 /path/to/lc_adapter mac_unified_logging client_options.identity.installation_key=$INSTALLATION_KEY \
@@ -33,7 +33,7 @@ client_options.hostname=$SENSOR_NAME
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # macOS Unified Logging Specific Docs: https://docs.limacharlie.io/docs/adapter-types-macos-unified-logging
 
 sensor_type: "mac_unified_logging"
@@ -54,7 +54,7 @@ sensor_type: "mac_unified_logging"
 
 If you want this adapter to run as a service, you can run the following script to add a plist file to the endpoint **with your variables replaced**. Please note that this example also has an example predicate, so if you do not wish to use a predicate, remove that line.
 
-```
+```python
 sudo -i
 
 curl https://downloads.limacharlie.io/adapter/mac/64 -o /usr/local/bin/lc_adapter

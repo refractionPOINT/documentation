@@ -21,7 +21,7 @@ Aside from how deep they match, the `with child` and `with descendant` parameter
 
 For example, let's detect a `cmd.exe` process spawning a `calc.exe` process:
 
-```
+```yaml
 # Detect initial event
 event: NEW_PROCESS
 op: ends with
@@ -38,13 +38,13 @@ with child: # Wait for child matching this nested rule
 
 Simply put, this will detect:
 
-```
+```batch
 cmd.exe --> calc.exe
 ```
 
 Because it uses `with child` it will not detect:
 
-```
+```batch
 cmd.exe --> firefox.exe --> calc.exe
 ```
 
@@ -58,7 +58,7 @@ The `with events` parameter functions very similarly to `with child` and `with d
 
 For example, let's detect a scenario where `5` bad login attempts occur within `60` seconds.
 
-```
+```yaml
 event: WEL
 op: is windows
 with events:
@@ -78,7 +78,7 @@ Stateful rules — the rules declared within `with child`, `with descendant` or 
 
 Here's a stateful rule that uses `and` to detect a specific combination of child events:
 
-```
+```yaml
 event: NEW_PROCESS
 op: ends with
 path: event/FILE_PATH
@@ -101,7 +101,7 @@ with child:
 
 The above example is looking for an `outlook.exe` process that spawns a `chrome.exe` process and drops a `.ps1` (powershell) file to disk. Like this:
 
-```
+```text
 outlook.exe
 |--+--> chrome.exe
 |--+--> .ps1 file
@@ -113,7 +113,7 @@ Rules declared using `with child` or `with descendant` also have the ability to 
 
 For example, a rule that matches on Outlook writing 5 new `.ps1` documents within 60 seconds:
 
-```
+```yaml
 event: NEW_PROCESS
 op: ends with
 path: event/FILE_PATH
@@ -135,7 +135,7 @@ A reported detection will include a copy of the event that was detected. When wr
 
 In many cases it's more desirable to get the latest event in the chain instead. For this, there's a `report latest event: true` flag that can be set. Piggy-backing on the earlier example:
 
-```
+```yaml
 # Detection
 event: NEW_PROCESS
 op: ends with
@@ -168,7 +168,7 @@ The event returned in the detection will be either the `chrome.exe` `NEW_PROCESS
 
 Since all operators under the `with child` and `with descentant` are operating in stateful mode (meaning all the nodes don't have to match a single event, but can match over multiple events), sometimes you want a operator and the operators underneath to flip back to stateless mode where they must match a single event. You can achieve this by setting `is stateless: true` in the operator like:
 
-```
+```yaml
 # Detection
 event: NEW_PROCESS
 op: ends with
@@ -206,7 +206,7 @@ Using `report` to report a detection works according to the [Choosing Event to R
 
 Consider the `excel.exe -> cmd.exe` example. The `cmd.exe` event will be referenced inside the response action if using lookbacks (i.e. `<<routing/this>>`). If we wanted to end the `excel.exe` process (and its descendants), we would write a `task` that references the parent of the current event (`cmd.exe`):
 
-```
+```yaml
 - action: task
   command: deny_tree <<routing/parent>>
 ```

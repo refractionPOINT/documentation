@@ -26,7 +26,7 @@ The following steps are modified from the generic webhook adapter creation docum
 
 Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details. The following configuration has been provided to configure a webhook Adapter for ingesting Jira events:
 
-```
+```json
 {
     "sensor_type": "webhook",
     "webhook": {
@@ -97,7 +97,7 @@ By default, issues will be sent as JSON, which is natively accepted by LimaCharl
 
 If configured properly, you should see your Jira events in LimaCharlie. Here's an example event:
 
-```
+```json
 {
   "event": {
     "issue": {

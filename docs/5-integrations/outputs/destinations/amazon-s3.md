@@ -58,7 +58,7 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 
 ### Policy Sample
 
-```
+```json
 {
    "Version": "2012-10-17",
    "Statement": [

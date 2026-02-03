@@ -2,7 +2,7 @@
 
 This example is similar to the Syslog example above, except it uses the CLI Adapter and receives the data from the CLI's STDIN interface. This method is perfect for ingesting arbitrary logs on disk or from other applications locally.
 
-```
+```bash
 ./lc_adapter stdin client_options.identity.installation_key=e9a3bcdf-efa2-47ae-b6df-579a02f3a54d \
       client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
       client_options.platform=text \

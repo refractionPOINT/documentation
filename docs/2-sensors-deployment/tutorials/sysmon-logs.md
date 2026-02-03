@@ -10,7 +10,7 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
    * Please note that the LimaCharlie agent must be restarted in order for Sysmon data to show up in the timeline.
    * Example rule to deploy Sysmon via payloads on Windows systems tagged with `deploy-sysmon`:
 
-     ```
+     ```powershell
      detect:
        events:
          - CONNECTED

@@ -41,7 +41,7 @@ The Domain Intel service allows you to retrieve intelligence about known domain 
 
 ### Rule
 
-```
+```yaml
 event: DNS_REQUEST
 op: lookup
 path: event/DOMAIN_NAME
@@ -50,7 +50,7 @@ resource: lcr://api/pangea-domain-reputation
 
 ### API Response Data
 
-```
+```json
 {
   "api_pangea-domain-reputation": {
     "category": [
@@ -68,7 +68,7 @@ The File Intel service enables you to submit a file's hash and get the file's at
 
 ### D&R Rule
 
-```
+```yaml
 event: NEW_PROCESS
 op: lookup
 path: event/HASH
@@ -77,7 +77,7 @@ resource: lcr://api/pangea-file-reputation
 
 ### API Response Data
 
-```
+```json
 {
   "api_pangea-file-reputation": {
     "category": [
@@ -95,7 +95,7 @@ The IP Intel service allows you to retrieve security information about known IP 
 
 ### D&R Rule
 
-```
+```yaml
 event: DNS_REQUEST
 op: lookup
 path: routing/ext_ip
@@ -104,7 +104,7 @@ resource: lcr://api/pangea-ip-reputation
 
 ### API Response Data
 
-```
+```json
 {
   "api_pangea-ip-reputation": {
     "category": [],
@@ -120,7 +120,7 @@ The URL Intel service allows you to retrieve intelligence about known URLs, givi
 
 ### D&R Rule
 
-```
+```yaml
 event: HTTP_REQUEST
 op: lookup
 path: event/URL
@@ -129,7 +129,7 @@ resource: lcr://api/pangea-url-reputation
 
 ### API Response Data
 
-```
+```json
 {
   "api_pangea-url-reputation": {
     "category": [],
@@ -145,7 +145,7 @@ The User Intel service allows you to check a large repository of breach data to 
 
 ### D&R Rule
 
-```
+```yaml
 event: USER_OBSERVED
 op: lookup
 path: event/USER_NAME
@@ -154,7 +154,7 @@ resource: lcr://api/pangea-user-reputation
 
 ### API Response Data
 
-```
+```json
 {
   "api_pangea-user-reputation": {
     "breach_count": 0,

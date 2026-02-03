@@ -11,7 +11,7 @@ This recipe provides step-by-step instructions for an AI assistant (Claude Code 
 ## Regeneration Steps
 
 ### Step 1: Analyze Current SDK Structure
-```
+```yaml
 Task: Fetch and analyze the Go SDK repository at https://github.com/refractionPOINT/go-limacharlie/
 
 Extract:
@@ -54,7 +54,7 @@ Focus on:
 ```
 
 ### Step 3: Analyze API Integration
-```
+```python
 Task: Fetch the OpenAPI spec from https://api.limacharlie.io/openapi
 
 Map SDK methods to API endpoints:

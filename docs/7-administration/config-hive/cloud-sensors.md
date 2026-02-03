@@ -14,7 +14,7 @@
 
 Hive secrets can be managed from the command-line, via the `limacharlie hive` command. Positional and optional arguments for command-line usage are below:
 
-```
+```yaml
 usage: limacharlie hive [-h] [-k KEY] [-d DATA] [-pk PARTITIONKEY] [--etag ETAG] [--expiry EXPIRY] [--enabled ENABLED] [--tags TAGS] action hive_name
 
 positional arguments:
@@ -37,7 +37,7 @@ options:
 
 ## Example
 
-```
+```json
 {
     "sensor_type": "webhook",
     "webhook": {

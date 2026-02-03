@@ -10,7 +10,7 @@ Select `Subscribe`, which will make the feed available to the respective Organiz
 
 Once subscribed, you can write a D&R rule to detect whenever there is a match to an IP within the threat feed. Navigate to `D&R Rules` within the web application main page, and select `+ New Rule`. Begin your rule with the following template:
 
-```
+```yaml
 event: NETWORK_CONNECTIONS
 op: lookup
 path: event/NETWORK_ACTIVITY/?/IP_ADDRESS
@@ -21,7 +21,7 @@ resource: hive://lookup/crimeware-ips
 
 Configure a lookup based on file hash:
 
-```
+```yaml
 op: lookup
 event: CODE_IDENTITY
 path: event/HASH
@@ -30,7 +30,7 @@ resource: hive://lookup/my-hash-lookup
 
 Configure a lookup based on domain name(s):
 
-```
+```yaml
 op: lookup
 event: DNS_REQUEST
 path: event/DOMAIN_NAME

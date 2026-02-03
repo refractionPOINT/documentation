@@ -63,7 +63,7 @@ While completing the following steps, be sure to add the connection to all 3 dat
 
 **Detect:**
 
-```
+```yaml
 op: exists
 path: cat
 target: detection
@@ -71,7 +71,7 @@ target: detection
 
 **Respond:**
 
-```
+```yaml
 - action: extension request
   extension action: push_detections
   extension name: ext-nims

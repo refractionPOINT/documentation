@@ -55,7 +55,7 @@ BigQuery dataset containing Hayabusa results:
 
                1. Note that this can be any of the fields from the Hayabusa event that you wish to use. **This schema and transform are based on the CSV output using the** `timesketch-verbose` **profile.**
 
-               ```
+               ```json
                {
                "channel": "event.results.Channel",
                "computer": "event.results.Computer",

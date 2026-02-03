@@ -26,7 +26,7 @@ Note that it can take **several minutes** for the plaso generation to complete f
 
 The `ext-plaso` extension runs `psteal` (`log2timeline` + `psort`) against the acquired evidence using the following commands:
 
-1. ```
+1. ```bash
    psteal.py --source /path/to/artifact -o dynamic --storage-file $artifact_id.plaso -w $artifact_id.csv
    ```
 
@@ -35,7 +35,7 @@ Upon running `psteal.py`, a `.plaso` file and a `.csv` file are generated. They 
 * Resulting `.plaso` file contains the raw output of `log2timeline.py`
 * Resulting `.csv` file contains the CSV formatted version of the `.plaso` file contents
 
-2. ```
+2. ```bash
    pinfo.py $artifact_id.plaso -w $artifact_id_pinfo.json --output_format json
    ```
 
@@ -61,7 +61,7 @@ If you use the LimaCharlie [Velociraptor](velociraptor.md) extension, a good use
 
    **Detect:**
 
-   ```
+   ```yaml
    op: and
    target: artifact_event
    rules:
@@ -76,7 +76,7 @@ If you use the LimaCharlie [Velociraptor](velociraptor.md) extension, a good use
 
    **Respond:**
 
-   ```
+   ```yaml
    - action: extension request
      extension action: generate
      extension name: ext-plaso
@@ -99,7 +99,7 @@ If you use the LimaCharlie [Dumper](../limacharlie/dumper.md) extension, a good 
 
    **Detect:**
 
-   ```
+   ```yaml
    op: and
    target: artifact_event
    rules:
@@ -114,7 +114,7 @@ If you use the LimaCharlie [Dumper](../limacharlie/dumper.md) extension, a good 
 
    **Respond:**
 
-   ```
+   ```yaml
    - action: extension request
      extension action: generate
      extension name: ext-plaso

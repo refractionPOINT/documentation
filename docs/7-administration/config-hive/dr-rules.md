@@ -29,7 +29,7 @@ There are three "sub-categories" within detection and response rules contained i
 
 ## Command-Line Usage
 
-```
+```yaml
 usage: limacharlie hive [-h] [-k KEY] [-d DATA] [-pk PARTITIONKEY] [--etag ETAG] [--expiry EXPIRY] [--enabled ENABLED] [--tags TAGS] action hive_name
 
 positional arguments:
@@ -52,7 +52,7 @@ options:
 
 ## Example
 
-```
+```json
 {
   "detect": {
     "event": "WEL",

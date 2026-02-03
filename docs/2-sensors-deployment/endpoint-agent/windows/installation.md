@@ -95,13 +95,13 @@ This method is recommended for installing on individual systems.
 
 **Step 3:** Navigate to the folder where you downloaded the installer:
 
-```
+```bash
 cd C:\Users\YourUsername\Downloads
 ```
 
 **Step 4:** Run the installer with your Installation Key:
 
-```
+```batch
 rphcp.exe -i YOUR_INSTALLATION_KEY_GOES_HERE
 ```
 
@@ -127,13 +127,13 @@ MSI installers are ideal for enterprise deployment using tools like Group Policy
 
 For automated deployments, use the following command in an elevated Command Prompt or PowerShell:
 
-```
+```batch
 msiexec /i "path\to\installer.msi" /qn INSTALLATIONKEY="YOUR_INSTALLATION_KEY_GOES_HERE"
 ```
 
 Example with a specific MSI:
 
-```
+```batch
 msiexec /i "C:\Downloads\hcp_win_x64.msi" /qn INSTALLATIONKEY="YOUR_INSTALLATION_KEY_GOES_HERE"
 ```
 
@@ -290,7 +290,7 @@ if ($null -eq $service) {
     Write-Host "LimaCharlie sensor is installed but NOT running." -ForegroundColor Yellow
     Write-Host "  Current Status: $($service.Status)"
 }
-```
+```python
 
 ### LimaCharlie Web Application
 

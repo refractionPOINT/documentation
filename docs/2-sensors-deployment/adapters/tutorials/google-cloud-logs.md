@@ -126,14 +126,14 @@ Click on the copy-to-clipboard button next to the Adapter Key column. **The valu
 
 First let's download the latest adapter for Linux.
 
-```
+```python
 curl -L https://downloads.limacharlie.io/adapter/linux/64 -o lc_adapter
 chmod +x lc_adapter
 ```
 
 We can confirm the adapter is running as expected:
 
-```
+```bash
 ./lc_adapter
 ```
 
@@ -141,7 +141,7 @@ You should see all the options available to all the collection methods being pri
 
 Now let's run the adapter with all the relevant configurations, replacing the various values necessary.
 
-```
+```bash
 ./lc_adapter pubsub \
 client_options.identity.installation_key=YOUR_INSTALLATION_KEY \
 client_options.identity.oid=YOUR_LC_OID \

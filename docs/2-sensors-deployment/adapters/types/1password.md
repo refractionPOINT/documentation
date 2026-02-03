@@ -33,7 +33,7 @@ After providing an [Installation Key](../../installation-keys.md), provide the r
 
 LimaCharlie IaC Adapter can also be used to ingest 1Password events.
 
-```
+```python
 # 1Password Specific Docs: https://docs.limacharlie.io/docs/adapter-types-1password
 
 sensor_type: "1password"

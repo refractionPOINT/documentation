@@ -2,7 +2,7 @@
 
 This example is similar to the Stdin example above, except it assumes the data being read is JSON, not just text. If your data source is already JSON, it's much simpler to let LimaCharlie do the JSON parsing directly.
 
-```
+```bash
 ./lc_adapter stdin client_options.identity.installation_key=e9a3bcdf-efa2-47ae-b6df-579a02f3a54d \
     client_options.identity.oid=8cbe27f4-bfa1-4afb-ba19-138cd51389cd \
     client_options.platform=json \

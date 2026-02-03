@@ -17,7 +17,7 @@ The Search API accepts a SHA256 value, and provides an extensive overview of a h
 
 The following D&R rule
 
-```
+```yaml
 event: NEW_PROCESS
 op: lookup
 path: event/HASH
@@ -26,7 +26,7 @@ resource: lcr://api/hybrid-analysis-overview
 
 **Response Data:**
 
-```
+```json
 {
   "result": {
     "analysis_start_time": "2023-07-17T18:31:04+00:00",
@@ -162,7 +162,7 @@ The Search lookup provides a basic lookup of a hash value. This look accepts one
 
 **D&R Rule:**
 
-```
+```yaml
 event: NEW_PROCESS
 op: lookup
 path: event/HASH
@@ -171,7 +171,7 @@ resource: lcr://api/hybrid-analysis-search
 
 **Response Data:**
 
-```
+```powershell
 [
   {
     "classification_tags": [],

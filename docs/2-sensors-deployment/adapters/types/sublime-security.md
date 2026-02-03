@@ -16,7 +16,7 @@ Adapter Type: `sublime`
 
 Adapter downloads can be found [here](../deployment.md).
 
-```
+```bash
 chmod +x /path/to/lc_adapter
 
 /path/to/lc_adapter sublime client_options.identity.installation_key=$INSTALLATION_KEY \
@@ -29,7 +29,7 @@ api_key=$API_KEY
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Sublime Security Specific Docs: https://docs.limacharlie.io/docs/adapter-types-sublime-security
 # For cloud sensor deployment, store credentials as hive secrets:
 
@@ -74,7 +74,7 @@ The following steps are modified from the generic Webhook Adapter creation docum
 
 Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details, among other parameters. The following configuration can be modified to easily configure a Webhook Adapter for ingesting Sublime Security events:
 
-```
+```json
 {
     "sensor_type": "webhook",
     "webhook": {

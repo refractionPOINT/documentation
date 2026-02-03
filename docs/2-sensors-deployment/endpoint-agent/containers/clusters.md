@@ -21,7 +21,7 @@ A public version of the container described below is available from dockerhub as
 
 This is a sample `Dockerfile` you may use to run LC within a privileged container as described above:
 
-```
+```python
 # Requires an LC_INSTALLATION_KEY environment variable
 # specifying the installation key value.
 # Requires a HOST_FS environment variable that specifies where
@@ -49,7 +49,7 @@ And this is a sample Kubernetes `deployment` on
 
 a cluster supporting eBPF (kernel > 5.7):
 
-```
+```yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -128,7 +128,7 @@ spec:
 
 a cluster not supporting eBPF (kernel < 5.7):
 
-```
+```yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:

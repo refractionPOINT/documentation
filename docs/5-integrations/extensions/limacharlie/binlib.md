@@ -35,7 +35,7 @@ The `check_hash` operation lets you search to see if a particular hash has been 
 
 Sample Output:
 
-```
+```json
 {
   "data": {
     "found": true,
@@ -58,7 +58,7 @@ The `get_hash_data` operation provides a link to the raw data for the hash of in
 
 Sample Output:
 
-```
+```json
 {
   "data": {
     "download_url": "https://storage.googleapis.com/lc-library-bin/b_2f5d0c...",
@@ -76,7 +76,7 @@ Sample Output:
 
 The `get_hash_metadata` operation obtains the metadata for a hash of interest, including signing details, file type, and additional hashes.
 
-```
+```json
 {
   "data": {
     "found": true,
@@ -135,7 +135,7 @@ The below example Tags the Google Installer with the `google` tag.
 
 Successful tagging yields an `updated` event:
 
-```
+```json
 {
   "data": {
     "found": true,
@@ -172,7 +172,7 @@ Here are some examples of useful rules that could be used to automate interactio
 
 This rule will automatically scan all acquired files in binlib with a Yara rule:
 
-```
+```yaml
 detect:
 
 event: acquired
@@ -194,7 +194,7 @@ respond:
 
 and this rule will alert on matches:
 
-```
+```yaml
 detect:
 
 event: yara_scan

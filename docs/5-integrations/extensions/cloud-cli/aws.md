@@ -8,7 +8,7 @@ This extension makes use of AWS's native CLI tool, which can be found [here](htt
 
 The following example would execute in response to AWS telemetry that 1) met certain criteria and 2) had an `instance_id` for an EC2 instance(s). The following response action would utilize the `.event.instance_id` to stop the corresponding EC2 instances.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

@@ -13,7 +13,7 @@ LimaCharlie offers integrations with two GreyNoise API lookups:
 
 ## IP Context
 
-```
+```json
 {
   "api_greynoise-noise-context": {
     "ip": "35.184.178.65",
@@ -24,7 +24,7 @@ LimaCharlie offers integrations with two GreyNoise API lookups:
 
 ## RIOT IP Lookup
 
-```
+```json
 {
   "ip": "8.8.8.8",
   "noise": false,

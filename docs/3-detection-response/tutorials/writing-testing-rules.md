@@ -106,7 +106,7 @@ In this case, we only care about [CODE_IDENTITY](../../8-reference/edr-events.md
 our rule will use more than one criteria, and those criteria will be AND-ed together because we only
 want to match when they all match.
 
-```
+```yaml
 op: and
 event: CODE_IDENTITY
 rules:
@@ -122,7 +122,7 @@ that will be AND-ed together.
 
 Criteria #1 was to limit to Windows, that's easy:
 
-```
+```yaml
 op: and
 event: CODE_IDENTITY
 rules:
@@ -135,7 +135,7 @@ Next up is criteria #3 and #4. Both of those can be determined using the `FILE_P
 of the structure is simply to open the Historic View, start a new process on that specific host and look for
 the relevant event. If we were to do this on a Windows host, we'd get an example like this one:
 
-```
+```json
 {
     "routing": {
         "parent": "...",
@@ -183,7 +183,7 @@ how to get to a value we want to compare within the event. So `event/FILE_PATH` 
 then get the `FILE_PATH`. The `value` generally represents a value we want to compare to the element found
 in the `path`. How it is compared depends on the operator.
 
-```
+```yaml
 op: and
 event: CODE_IDENTITY
 rules:
@@ -197,7 +197,7 @@ That was easy, but we're missing a critical component! By default, D&R rules ope
 This means that the above node we added will match `.cpl` but will NOT match `.cPl`. To fix this, we just add
 the `case sensitive: false` statement.
 
-```
+```yaml
 op: and
 event: CODE_IDENTITY
 rules:
@@ -213,7 +213,7 @@ Finally, we want to make sure the `event/FILE_PATH` is NOT in the `windows` dire
 a regular expression with a `matches` operator. But in this case, we want to EXCLUDE the paths that include
 the `windows` directory, so we want to "invert" the match. We can do this with the `not: true` statement.
 
-```
+```yaml
 op: and
 event: CODE_IDENTITY
 rules:
@@ -244,7 +244,7 @@ Up until now we focused on the "detection" part of the rule. But a full rule als
 component. So before we proceed, we'll add this structure. For a response, we will use a
 simple `action: report`. The `report` creates a "detection" (alert).
 
-```
+```yaml
 detect:
   op: and
   event: CODE_IDENTITY
@@ -315,7 +315,7 @@ Now we can run our 3 samples against the rule using Replay,
 `limacharlie replay --rule-content T1196.rule --events positive.json` should output a result
 indicating the event matched (by actioning the `report`) like:
 
-```
+```json
 {
   "num_evals": 4,
   "eval_time": 0.00020599365234375,
@@ -331,7 +331,7 @@ indicating the event matched (by actioning the `report`) like:
 `limacharlie replay --rule-content T1196.rule --events negative-1.json` should output a result
 indicating the event did NOT match like:
 
-```
+```json
 {
   "num_evals": 4,
   "eval_time": 0.00011777877807617188,
@@ -357,7 +357,7 @@ Running our rule against the last week of data is simple:
 
 No matches should look like that:
 
-```
+```json
 {
   "num_evals": 67354,
   "eval_time": 1107.2150619029999,

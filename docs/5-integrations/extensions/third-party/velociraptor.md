@@ -51,7 +51,7 @@ Let's say you wanted to automatically fetch new Velociraptor collections and sen
 
 Example D&R rule
 
-```
+```yaml
 # Detection
 op: is
 path: routing/log_type
@@ -82,7 +82,7 @@ If you want to trigger a Velociraptor collection as a response to one of your de
 
 This example will kick off the KAPE files Velociraptor artifact to collect event logs from the system involved in the detection.
 
-```
+```yaml
 - action: extension request
   extension action: collect
   extension name: ext-velociraptor
@@ -104,7 +104,7 @@ The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives yo
 
 Command line to preview Velociraptor rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-velociraptor
 ```
 
@@ -114,6 +114,6 @@ To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-
 
 Command line to execute Velociraptor rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-velociraptor --no-dry-run
 ```

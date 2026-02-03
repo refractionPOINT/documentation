@@ -31,7 +31,7 @@ A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following st
 
 The following configuration can be modified to easily configure a Webhook Adapter for receiving Canarytokens events.
 
-```
+```json
 {
     "sensor_type": "webhook",
     "webhook": {

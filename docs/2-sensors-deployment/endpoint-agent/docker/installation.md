@@ -25,7 +25,7 @@ Additionally, on newer Linux kernel versions (5.7+), the agent leverages **eBPF*
 
 A publicly available Docker image for the LimaCharlie agent is hosted on [Docker Hub](https://hub.docker.com/r/refractionpoint/limacharlie_sensor):
 
-```
+```bash
 docker pull refractionpoint/limacharlie_sensor:latest
 ```
 
@@ -51,7 +51,7 @@ These variables must be configured appropriately to ensure the agent functions a
 
 To run the LimaCharlie agent in a Docker container, use the following command:
 
-```
+```bash
 docker run --privileged --net=host \
   -v /:/rootfs:ro \
   -v /var/run/docker/netns:/netns:ro \
@@ -70,7 +70,7 @@ Ensure that you replace `<your_key>` with your actual LimaCharlie installation k
 
 You can also manage the LimaCharlie agent using Docker Compose. Below is a sample `docker-compose.yml` file:
 
-```
+```yaml
 services:
   lc-sensor:
     image: refractionpoint/limacharlie_sensor:latest
@@ -112,7 +112,7 @@ This setup ensures the agent runs as a privileged container, enabling full visib
 
 If you need to create a custom Docker image incorporating the LimaCharlie agent, you can use the following Dockerfile as a base:
 
-```
+```python
 FROM alpine
 
 RUN mkdir /lc
@@ -126,6 +126,6 @@ CMD ["./lc_sensor", "-d", "-"]
 
 Build the image using:
 
-```
+```bash
 docker build -t my-lc-agent .
 ```

@@ -39,7 +39,7 @@ When invoking a playbook, all you need is the playbook name as defined in Hive. 
 
 Here is an example D&R rule starting a new invocation of a playbook.
 
-```
+```yaml
 - action: extension request
   extension name: ext-playbook
   extension action: run_playbook
@@ -53,7 +53,7 @@ Here is an example D&R rule starting a new invocation of a playbook.
 
 ### Python example
 
-```
+```python
 # Import LC SDK
 import limacharlie
 # Instantiate the SDK with default creds.
@@ -94,7 +94,7 @@ This allows your playbook to return information about its execution, return data
 
 The following is a sample playbook that sends a webhook to an external product with a secret stored in LimaCharlie, and it returns the data as the response from the playbook.
 
-```
+```python
 import limacharlie
 import json
 import urllib.request
@@ -169,7 +169,7 @@ def playbook(sdk, data):
   return {
     "data": {"status": "all sensors checked in"}
   }
-```
+```python
 
 **Important:** The `cat` field must be placed at the **top level** of the return dictionary, alongside `detection`, not inside it. When this playbook creates a detection, it will appear in the Detections UI with the category name "Server-Sensor-Missing-Check-In" instead of the default "playbook-detection".
 

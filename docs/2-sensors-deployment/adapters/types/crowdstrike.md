@@ -24,7 +24,7 @@ Adapter Type: `falconcloud`
 
 Adapter downloads can be found [here](../deployment.md).
 
-```
+```bash
 chmod +x /path/to/lc_adapter
 
 /path/to/lc_adapter falconcloud client_options.identity.installation_key=$INSTALLATION_KEY \
@@ -39,7 +39,7 @@ client_secret=$CLIENT_SECRET
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # CrowdStrike Falcon ("falconcloud") Specific Docs: https://docs.limacharlie.io/docs/adapter-types-crowdstrike
 
 sensor_type: "falconcloud"

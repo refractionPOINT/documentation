@@ -132,7 +132,7 @@ The `run_lcql_query` tool supports:
 
 ### Claude Desktop/Code Configuration (STDIO)
 
-```
+```json
   {
     "mcpServers": {
       "limacharlie": {
@@ -150,7 +150,7 @@ The `run_lcql_query` tool supports:
 
 ### HTTP Service Usage
 
-```
+```python
 claude mcp add --transport http limacharlie https://mcp.limacharlie.io/mcp \
 --header "Authorization: Bearer API_KEY:OID" \
 --header "x-lc-oid: OID"

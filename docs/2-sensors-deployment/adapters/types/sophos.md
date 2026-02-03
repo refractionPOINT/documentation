@@ -36,7 +36,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 
    Response content -- grab the `access_token` from the output:
 
-   ```
+   ```json
    {
       "access_token": "SAVE_THIS_VALUE",
       "errorCode": "success",
@@ -55,7 +55,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 
    Response content -- grab the `id` (`tenant_id`) and `dataRegion` (`url`) from the output. You will need these for your LimaCharlie Sophos adapter configuration.
 
-   ```
+   ```json
    {
        "id": "57ca9a6b-885f-4e36-95ec-290548c26059",
        "idType": "tenant",
@@ -74,7 +74,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Sophos Central Specific Docs: https://docs.limacharlie.io/docs/adapter-types-sophos-central
 # For cloud sensor deployment, store credentials as hive secrets:
 

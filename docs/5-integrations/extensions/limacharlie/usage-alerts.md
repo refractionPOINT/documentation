@@ -22,7 +22,7 @@ If you want it to be added immediately, click on the `Sync Usage Alert Rules` bu
 
 This will create a managed D&R rule on the backend in the `dr-managed` hive and will sync automatically every hour.
 
-```
+```yaml
 hives:
     dr-managed:
         Output data over threshold:
@@ -57,7 +57,7 @@ hives:
 
 If you are managing your organizations via infrastructure as code, you can also configure these rules in the `extension_config` hive.
 
-```
+```yaml
 hives:
     extension_config:
         ext-usage-alerts:

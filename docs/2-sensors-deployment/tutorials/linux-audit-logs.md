@@ -48,7 +48,7 @@ It is also possible to deploy a LimaCharlie [Adapter](../adapters/index.md) poin
 
 **Step 2:** On the system(s) to collect logs from, deploy the adapter. We recommend utilizing a configuration file for adapter testing, to allow for tracking of changes. The following is a sample file that will ingest `auth.log` events as basic text.
 
-```
+```yaml
 file:
   client_options:
     identity:

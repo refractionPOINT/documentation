@@ -22,7 +22,7 @@ Adapter Type: `imap`
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # IMAP Specific Docs: https://docs.limacharlie.io/docs/adapter-types-imap
 
 sensor_type: "imap"
@@ -67,7 +67,7 @@ Documentation for common platforms:
 
 Emails ingested through the IMAP Adapter are in raw format so that detailed header information can be included and analyzed. Below is an example of an email received into LimaCharlie from a Google Workspace mailbox:
 
-```
+```json
 {
     "event": {
         "headers": {

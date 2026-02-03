@@ -23,7 +23,7 @@ Adapter Type: `hubspot`
 
 Adapter downloads can be found [here](../deployment.md).
 
-```
+```bash
 chmod +x /path/to/lc_adapter
 
 /path/to/lc_adapter hubspot client_options.identity.installation_key=$INSTALLATION_KEY \
@@ -37,7 +37,7 @@ access_token=$ACCESS_TOKEN
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 sensor_type: hubspot
   hubspot:
     access_token: "YOUR_HUBSPOT_PRIVATE_APP_ACCESS_TOKEN"

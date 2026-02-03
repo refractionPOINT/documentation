@@ -6,7 +6,7 @@
 
 With the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo) subscribed, it can be used as an API-based lookup.
 
-```
+```yaml
 event: CONNECTED
 op: lookup
 resource: lcr://api/ip-geo
@@ -24,7 +24,7 @@ Step-by-step, this rule will do the following:
 
 The format of the metadata returned is documented [here](https://github.com/maxmind/MaxMind-DB-Reader-python) and looks like this:
 
-```
+```json
 {
   "country": {
     "geoname_id": 2750405,

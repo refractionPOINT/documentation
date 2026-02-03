@@ -18,7 +18,7 @@ The file adapter monitors log files for changes and streams new entries to LimaC
 
 #### Basic Configuration:
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -44,7 +44,7 @@ runs as a syslog server, accepting logs via TCP or UDP. This is useful for centr
 
 #### Basic Configuration:
 
-```
+```yaml
 syslog:
   client_options:
     identity:
@@ -72,7 +72,7 @@ Traditional system logs contain kernel messages, service logs, and general syste
 
 **File Adapter Approach:**
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -90,7 +90,7 @@ file:
 
 **Kernel-specific messages including hardware events, driver messages, and security events.**
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -108,7 +108,7 @@ file:
 
 **Apache Logs (/var/log/httpd/*, /var/log/apache2/*):**
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -125,7 +125,7 @@ file:
 
 **Nginx Logs (/var/log/nginx/*):**
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -144,7 +144,7 @@ file:
 
 Linux audit logs are critical for CIS Controls compliance and security monitoring.
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -166,14 +166,14 @@ Modern logging solution that can output in JSON format for structured parsing.
 
 **Method 1: Pipe to Syslog Adapter**
 
-```
+```bash
 # Stream journalctl to syslog adapter
 journalctl -f -q --output=json | nc localhost 514
 ```
 
 **Method 2: Output to File and Monitor**
 
-```
+```bash
 # Create a systemd service to write journal to file
 sudo tee /etc/systemd/system/journal-export.service << EOF
 [Unit]
@@ -195,7 +195,7 @@ sudo systemctl start journal-export.service
 
 Then monitor the file:
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -214,7 +214,7 @@ file:
 
 For collecting multiple log types simultaneously:
 
-```
+```yaml
 # /var/log/messages
 file:
   client_options:

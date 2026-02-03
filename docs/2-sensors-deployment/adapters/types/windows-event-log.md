@@ -13,7 +13,7 @@ Adapter Type: `wel`
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Windows Event Log (WEL) Specific Docs: https://docs.limacharlie.io/docs/adapter-types-windows-event-log
 
 # Basic Event Sources:

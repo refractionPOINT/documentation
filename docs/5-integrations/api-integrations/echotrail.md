@@ -12,7 +12,7 @@ LimaCharlie has an integration available for EchoTrail's `insights` API lookup, 
 
 The following detection and response rule utilizes a file name from a `NEW_PROCESS` event to query the EchoTrail `insights` API:
 
-```
+```yaml
 event: NEW_PROCESS
 op: lookup
 path: event/FILE_PATH
@@ -21,7 +21,7 @@ resource: lcr://api/echotrail-insights
 
 EchoTrail's response data includes the following:
 
-```
+```json
 {
   "rank": 24,
   "host_prev": "94.4",

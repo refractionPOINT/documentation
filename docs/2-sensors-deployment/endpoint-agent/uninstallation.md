@@ -20,7 +20,7 @@ On Windows, the command defaults to uninstalling the sensor as if installed from
 
 To run the uninstall command against *all* Sensors, a simple loop with the SDK in Python would work:
 
-```
+```python
 import limacharlie
 lc = limacharlie.Manager()
 for sensor in lc.sensors():
@@ -31,7 +31,7 @@ for sensor in lc.sensors():
 
 As an alternative approach, you can also use a Detection & Response (D&R) rule to automatically trigger an uninstall of the LimaCharlie sensor when a sensor connects to the LimaCharlie cloud.  Below is an example of the rule you can use for this purpose. This example is specific to Windows-based endpoints, but can be modified based on your needs:
 
-```
+```yaml
 # Detect
 event: SYNC
 op: is windows

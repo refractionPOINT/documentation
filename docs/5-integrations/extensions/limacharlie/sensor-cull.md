@@ -32,7 +32,7 @@ The following REST API actions can be sent to interact with the Sensor Cull exte
 
 Get the list of existing rules
 
-```
+```json
 {
   "action": "get_rules"
 }
@@ -42,7 +42,7 @@ Get the list of existing rules
 
 Perform an ad-hoc cleanup.
 
-```
+```json
 {
   "action": "run"
 }
@@ -52,7 +52,7 @@ Perform an ad-hoc cleanup.
 
 The following example creates a rule name `my new rule` that applies to all sensors with the `vip` Tag, and cleans them up when they have not connected in 30 days.
 
-```
+```json
 {
   "action": "add_rule",
   "name": "my new rule",
@@ -65,7 +65,7 @@ The following example creates a rule name `my new rule` that applies to all sens
 
 Delete an existing rule by name.
 
-```
+```json
 {
   "action": "del_rule",
   "name": "my new rule"

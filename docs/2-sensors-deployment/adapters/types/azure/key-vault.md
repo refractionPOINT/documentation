@@ -15,7 +15,7 @@ Upon ingestion, the log `category` field is used to define the Event Type.
 
 The following sample event is taken from Microsoft Azure documentation:
 
-```
+```json
 {
         "records":
         [

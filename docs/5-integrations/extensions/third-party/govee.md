@@ -7,7 +7,7 @@ The Govee Extension allows you to trigger color changes on your [supported Govee
 1. Request an API key from Govee by following their instructions [here](https://developer.govee.com/reference/apply-you-govee-api-key)
 2. Get the Device ID (device) and model (sku) of the device you'd like to target by requesting a list of your supported devices from the Govee API:
 
-```
+```bash
 curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --header 'Govee-API-Key: YOUR_GOVEE_API_KEY'
 ```
 
@@ -19,7 +19,7 @@ curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --hea
 
 When enabled, you may configure the response of a D&R rule to trigger a Govee event. Consider the following example response rule:
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-govee
@@ -58,11 +58,11 @@ Note that the only required fields here are the `device_id` and `device_model`. 
 
 **Govee API sample request and response:**
 
-```
+```bash
 curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --header 'Govee-API-Key: YOUR_GOVEE_API_KEY'
 ```
 
-```
+```json
 {
     "code": 200,
     "message": "success",

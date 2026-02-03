@@ -51,7 +51,7 @@ The following configuration file can be used as a starter to monitor IIS web log
 
 *Please customize according to your environment/LimaCharlie organization*
 
-```
+```yaml
 file:
   client_options:
     identity:
@@ -83,7 +83,7 @@ Once the config file is set, you can run the Adapter on Windows with the followi
 
 ## Example Event
 
-```
+```json
 {
     "c-ip": "192.168.1.11",
     "cs-method": "GET",

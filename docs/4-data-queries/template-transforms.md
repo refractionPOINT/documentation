@@ -12,7 +12,7 @@ Template strings in LimaCharlie use the format defined by "text templates" found
 
 The most basic example for a D&R rule customizing the detection name looks like this:
 
-```
+```yaml
 - action: report
   name: Evil executable on {{ .routing.hostname }}
 ```
@@ -32,7 +32,7 @@ Template strings also support some LimaCharlie-specific functions:
 
 The `token` and `anon` functions can be used to partially anonymize data anywhere a template string is supported, for example:
 
-```
+```yaml
 - action: report
   name: 'User {{token .event.USER_NAME }} accessed a website against policy.'
 ```
@@ -56,7 +56,7 @@ Both support template strings, meaning you can add/remove values from the JSON d
 
 For example, if we had the following data:
 
-```
+```json
 { "event":
   "webster" : {
      "a" : 1,
@@ -81,7 +81,7 @@ And we wanted to rename the `d` value to `c` on ingestion, remove the d value, a
 
 The resulting event to be ingested would be:
 
-```
+```json
 { "event":
   "webster" : {
      "a" : 1,
@@ -107,7 +107,7 @@ Key names are the literal key names in the output. Values support one of 3 types
 
 Let's look at an example, let's say this is the Input to our transform:
 
-```
+```json
 {
     "event": {
         "EVENT": {
@@ -188,7 +188,7 @@ Let's look at an example, let's say this is the Input to our transform:
 
 And this is our Transform definition:
 
-```
+```json
 {
     "message": "Interesting event from {{ .routing.hostname }}",  // a format string
     "from":    "{{ \"limacharlie\" }}",                           // a format string with only a literal value
@@ -203,7 +203,7 @@ And this is our Transform definition:
 
 Then the resulting Output would be:
 
-```
+```json
 {
     "dat": {
         "raw": {
@@ -250,7 +250,7 @@ When passing events to an output, you have the option to transform the original 
 
 Let's say you have the following 4625 failed logon and you want to send similar events to an output, but only certain fields.
 
-```
+```json
 {
   "event": {
     "EVENT": {
@@ -293,7 +293,7 @@ Let's say you have the following 4625 failed logon and you want to send similar 
 
 The following Output Transform would extract only the `IpAddress`, `TargetUserName`, `EventID`, and `SystemTime` the event was created. Notice, the newly mapped field names can be whatever you want.
 
-```
+```json
 {
     "Source IP": "event.EVENT.EventData.IpAddress",
     "Username": "event.EVENT.EventData.TargetUserName",
@@ -304,7 +304,7 @@ The following Output Transform would extract only the `IpAddress`, `TargetUserNa
 
 The following example outputs text and specified fields using Template Strings.
 
-```
+```json
 {
   "text": "Failed logon by {{ .event.EVENT.EventData.TargetUserName }} on {{ .routing.hostname }}"
 }
@@ -312,7 +312,7 @@ The following example outputs text and specified fields using Template Strings.
 
 The above example would generate the following output using the provided sample WEL.
 
-```
+```json
 {
   "text": "Failed logon by administrator on win-2016.corp.internal"
 }
@@ -324,7 +324,7 @@ The `custom_transform` in outputs can also be used to output pure text (non-JSON
 
 This is accomplished by specifying a Template String in the `custom_transform` field instead of a Transform. In those cases, when LimaCharlie determines the `custom_transform` string is not a valid Transform, it will interpret it as a Template String like:
 
-```
+```json
 {
     "custom_transform": "{{ .event.text }}"
 }
@@ -332,7 +332,7 @@ This is accomplished by specifying a Template String in the `custom_transform` f
 
 or
 
-```
+```json
 {
     "custom_transform": "some text {{json .event.some_field }}"
 }
@@ -351,7 +351,7 @@ Beyond the built-in modifiers for `gjson` (as seen in their [playground](https:/
 For example:
 The transform:
 
-```
+```json
 {
   "new_ts": "ts|@parsetime:{\"from\":\"2006-01-02 15:04:05\", \"to\":\"Mon, 02 Jan 2006 15:04:05 MST\"}",
   "user": "origin|@extract:{\"re\":\".*@(?P<domain>.+)\"}",
@@ -361,7 +361,7 @@ The transform:
 
 applied to:
 
-```
+```json
 {
   "ts": "2023-05-10 22:35:48",
   "origin": "someuser@gmail.com",
@@ -375,7 +375,7 @@ applied to:
 
 would result in:
 
-```
+```json
 {
   "new_ts": "Wed, 10 May 2023 22:35:48 UTC",
   "user": {

@@ -116,7 +116,7 @@ Generated when an Autorun is changed.
 
 **Platforms:**
 
-```
+```json
 {
   "REGISTRY_KEY": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
   "TIMESTAMP": 1627497894000
@@ -129,7 +129,7 @@ This event is a receipt from the agent that it has received the task sent to it,
 
 **Platforms:**
 
-```
+```json
 {
   "NOTIFICATION_ID": "ADD_EXFIL_EVENT_REQ",
   "NOTIFICATION": {
@@ -156,7 +156,7 @@ The `ONGOING_IDENTITY` event emits code signature information even if not newly 
 
 **Platforms:**
 
-```
+```json
 {
   "MEMORY_SIZE": 0,
   "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\B1B207E5-300E-434F-B4FE-A4816E6551BE\\dismhost.exe",
@@ -177,7 +177,7 @@ This event is generated when a Sensor connects to the cloud.
 
 **Platforms:**
 
-```
+```json
 {
     "HOST_NAME" : "demo-win-2016",
     "IS_SEGREGATED" : 0,
@@ -200,7 +200,7 @@ Response event for the `dir_find_hash` sensor command.
 
 **Sample Event:**
 
-```
+```json
 {
     "DIRECTORY_LIST": [
         {
@@ -242,7 +242,7 @@ Response event for the `dir_list` sensor command. Includes Alternate Data Stream
 
 **Sample Event:**
 
-```
+```json
 {
     "DIRECTORY_LIST": [
         {
@@ -289,7 +289,7 @@ Generated from DNS responses and therefore includes both the requested domain an
 
 **Platforms:**
 
-```
+```json
 {
   "DNS_TYPE": 1,
   "TIMESTAMP": 1456285240,
@@ -304,7 +304,7 @@ Generated when a driver is changed.
 
 **Platforms:**
 
-```
+```json
 {
   "PROCESS_ID": 0,
   "SVC_DISPLAY_NAME": "HbsAcq",
@@ -327,7 +327,7 @@ Generated when a file is created.
 
 **Platforms:**
 
-```
+```json
 {
   "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01tmp.log",
   "TIMESTAMP": 1468335271948
@@ -342,7 +342,7 @@ Response event for the `file_del` sensor command.
 
 **Sample Event:**
 
-```
+```json
 {
   "FILE_PATH": "C:\\test\\test.txt"
 }
@@ -369,7 +369,7 @@ Generated when a file is deleted.
 
 **Platforms:**
 
-```
+```json
 {
   "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Temp\\EBA4E4F0-3020-459E-9E34-D5336E244F05\\api-ms-win-core-processthreads-l1-1-2.dll",
   "TIMESTAMP": 1468335611906
@@ -384,7 +384,7 @@ Response event for the `file_get` sensor command.
 
 **Sample Event:**
 
-```
+```json
 {
   "FILE_CONTENT": "$BASE64_ENCODED_FILE_CONTENTS",
   "FILE_PATH": "C:\\windows\\system32\\svchost.exe",
@@ -400,7 +400,7 @@ Response event for the `file_hash` sensor command.
 
 **Sample Event:**
 
-```
+```json
 {
   "FILE_IS_SIGNED": 1,
   "FILE_PATH": "C:\\Windows\\System32\\svchost.exe",
@@ -423,7 +423,7 @@ Response event for the `file_info` sensor command.
 
 **Sample Event:**
 
-```
+```json
 {
   "ACCESS_TIME": 1686685723546,
   "ATTRIBUTES": 0,
@@ -456,7 +456,7 @@ Generated when a file is modified.
 
 **Platforms:**
 
-```
+```json
 {
   "FILE_PATH": "C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01.log",
   "TIMESTAMP": 1468335272949
@@ -471,7 +471,7 @@ Response event for the `file_mov` sensor command.
 
 **Sample Event:**
 
-```
+```json
 {
   "DESTINATION": "C:\\test\\test.txt.bak",
   "SOURCE": "C:\\test\\test.txt"
@@ -495,7 +495,7 @@ The `RULE_NAME` component is the class of file extension involved:
 
 **Platforms:**
 
-```
+```json
 {
   "PROCESS_ID": 2048,
   "RULE_NAME": 50,
@@ -539,7 +539,7 @@ A file, directory, or registry key being monitored by File & Registry Integrity 
 
 **Platforms:**
 
-```
+```json
 {
   "PROCESS": {
     "MEMORY_USAGE": 25808896,
@@ -564,7 +564,7 @@ Response event for the `fim_get` sensor command. The response will be a JSON lis
 
 **Output:**
 
-```
+```json
 {
   "PATTERNS": [
     0: "/home/*",
@@ -598,7 +598,7 @@ confirm whether a hidden module was detected.
 
 **Sample Event:**
 
-```
+```json
 {
   "ERROR": 0,
   "ERROR_MESSAGE": "done"
@@ -619,7 +619,7 @@ This event is emitted whenever an HTTP request is made.
 
 **Sample Event:**
 
-```
+```json
 {
   "URL": "https://play.google.com/log?authuser=0",
   "IP_ADDRESS": "172.217.2.142",
@@ -638,7 +638,7 @@ Provides HTTP Request headers.
 
 **Sample Event:**
 
-```
+```json
 {
   "HEADERS": [
     {
@@ -661,7 +661,7 @@ Provides HTTP Response headers.
 
 **Sample Event:**
 
-```
+```json
 {
   "HEADERS": [
     {
@@ -768,7 +768,7 @@ Response event for the `mem_handles` sensor command. This event will contain an 
 
 **Sample Event:**
 
-```
+```json
 {
     "HANDLES": [
       {
@@ -795,7 +795,7 @@ Response event for the `mem_map` sensor command. This event will contain an arra
 
 Sample Event:
 
-```
+```json
 {
     "MEMORY_MAP": [
       {
@@ -816,7 +816,7 @@ Response event for the `mem_read` sensor command.
 
 **Sample Event:**
 
-```
+```json
 {
   "MEMORY_DUMP": "TGltYU...",
   "PROCESS_ID": 745
@@ -831,7 +831,7 @@ Response event for the `mem_strings` sensor command. The response will contain t
 
 **Sample Event:**
 
-```
+```json
 {
     "PROCESS_ID" : 745,
     "STRINGSA" : [
@@ -849,7 +849,7 @@ Generated when a module (like DLL on Windows) is loaded in a process.
 
 **Platforms:**
 
-```
+```json
 {
   "MEMORY_SIZE": 241664,
   "PROCESS_ID": 2904,
@@ -868,7 +868,7 @@ Response from a  `netstat` command to list active network sockets.
 
 **Sample Event:**
 
-```
+```json
 {
   "FRIENDLY": 0,
   "NETWORK_ACTIVITY": [
@@ -894,7 +894,7 @@ List of recent network connections performed by a process.
 
 **Platforms:**
 
-```
+```json
 {
   "NETWORK_ACTIVITY": [
     {
@@ -1012,7 +1012,7 @@ The following file patterns are considered "documents":
 
 **Platforms:**
 
-```
+```json
 {
   "FILE_PATH": "C:\\Users\\dev\\Desktop\\evil.exe",
   "TIMESTAMP": 1468335816308,
@@ -1026,7 +1026,7 @@ This event is emitted when a new Named Pipe is created by a process.
 
 **Platforms:**
 
-```
+```json
 {
   "FILE_PATH": "\\Device\\NamedPipe\\LOCAL\\mojo.6380.1072.2134013463507075011",
   "PROCESS_ID": 6380
@@ -1039,7 +1039,7 @@ Generated when a new process starts.
 
 **Platforms:**
 
-```
+```json
 {
   "PARENT": {
     "PARENT_PROCESS_ID": 7076,
@@ -1069,7 +1069,7 @@ In this case, the process id `492` created a thread (with id `9012`) in the proc
 
 **Platforms:**
 
-```
+```json
 {
   "THREAD_ID": 9012,
   "PROCESS_ID": 7944,
@@ -1083,7 +1083,7 @@ Generated when a new TCPv4 connection is established, either inbound or outbound
 
 **Platforms:**
 
-```
+```json
 {
   "PROCESS_ID": 6788,
   "DESTINATION": {
@@ -1111,7 +1111,7 @@ Generated when a new UDPv4 socket "connection" is established, either inbound or
 
 **Platforms:**
 
-```
+```json
 {
   "TIMESTAMP": 1468335452828,
   "PROCESS_ID": 924,
@@ -1132,7 +1132,7 @@ This event is emitted when an existing Named Pipe is opened by a process.
 
 **Platforms:**
 
-```
+```json
 {
   "FILE_PATH": "\\Device\\NamedPipe\\lsass",
   "PROCESS_ID": 2232
@@ -1147,7 +1147,7 @@ Response from an `os_autoruns` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "TIMESTAMP": 1456194620,
   "AUTORUNS": [
@@ -1168,7 +1168,7 @@ Response from an `os_drivers` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "SVCS": [
     {
@@ -1192,7 +1192,7 @@ Response from an `os_kill_process` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "ERROR": 0,
   "PROCESS_ID": 579
@@ -1223,7 +1223,7 @@ Response from an `os_process` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "PROCESSES": [
     {
@@ -1249,7 +1249,7 @@ Response from an `os_services` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "SVCS": [
     {
@@ -1276,7 +1276,7 @@ Response from an `os_users` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "USERS": [
     {
@@ -1294,7 +1294,7 @@ Response from an `os_version` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "BUILD_NUMBER": 20348
 }
@@ -1308,7 +1308,7 @@ Response from a `pcap_ifaces` request.
 
 **Sample Event:**
 
-```
+```json
 {
   "INTERFACE": [
     {
@@ -1325,7 +1325,7 @@ Generated when a process starts. It lists all environment variables associated w
 
 **Platforms:**
 
-```
+```json
 {
   "ENVIRONMENT_VARIABLES": [
     "LANG=en_US.UTF-8",
@@ -1350,7 +1350,7 @@ This event is generated whenever a registry key / value is created on a Windows 
 
 **Platforms:**
 
-```
+```json
 {
   "PROCESS_ID":  764,
   "REGISTRY_KEY":   "\\REGISTRY\\A\\{fddf4643-a007-4086-903e-be998801d0f7}\\Events\\{8fb5d848-23dc-498f-ac61-84b93aac1c33}"
@@ -1363,7 +1363,7 @@ This event is generated whenever a registry key / value is deleted on a Windows 
 
 **Platforms:**
 
-```
+```json
 {
   "PROCESS_ID":  764,
   "REGISTRY_KEY":   "\\REGISTRY\\A\\{fddf4643-a007-4086-903e-be998801d0f7}\\Events\\{8fb5d848-23dc-498f-ac61-84b93aac1c33}"
@@ -1378,7 +1378,7 @@ This event is generated in response to the `reg_list` command to list keys and v
 
 **Sample Event:**
 
-```
+```json
 {
     "REGISTRY_KEY": [
       "ActiveState"
@@ -1406,7 +1406,7 @@ The `SIZE` is the size value used in the original registry write call. The `TYPE
 
 Valid string payload:
 
-```
+```json
 {
   "PROCESS_ID":1820,
   "REGISTRY_KEY":"\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows Defender\\Diagnostics\\LastKnownGoodPlatformLocation",
@@ -1418,7 +1418,7 @@ Valid string payload:
 
 Binary payload:
 
-```
+```json
 {
   "PROCESS_ID": 1700,
   "REGISTRY_KEY": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\HeartBeats\\Default\\LastHeartBeatTime",
@@ -1435,7 +1435,7 @@ Emitted after a sensor is allowed network connectivity again (after it was previ
 
 **Sample Event:**
 
-```
+```json
 {
   "ERROR": 0
 }
@@ -1449,7 +1449,7 @@ The `ACCESS_FLAGS` is the access mask as defined [here](https://docs.microsoft.c
 
 **Platforms:**
 
-```
+```json
 {
   "ACCESS_FLAGS": 136208,
   "PARENT_PROCESS_ID": 6492,
@@ -1465,7 +1465,7 @@ Emitted when a sensor is segregated (isolated) from the network using the `segre
 
 **Sample Event:**
 
-```
+```json
 {
   "ERROR": 0
 }
@@ -1481,7 +1481,7 @@ SENSITIVE\_PROCESS\_ACCESS currently is only emitted for processes accessing `ls
 
 **Platforms:**
 
-```
+```json
 {
   "EVENTS": [
     {
@@ -1504,7 +1504,7 @@ Generated when a Service is changed.
 
 **Platforms:**
 
-```
+```json
 {
   "PROCESS_ID": 0,
   "SVC_TYPE": 32,
@@ -1524,7 +1524,7 @@ Generated when a user logs in via SSH.
 
 **Platforms:**
 
-```
+```json
 {
   "USER_NAME": "root",
   "TIMESTAMP": 1468335816308
@@ -1549,7 +1549,7 @@ Event generated when the sensor shuts down. Note: this event may not be observed
 
 **Sample Event:**
 
-```
+```json
 {
   "SHUTTING_DOWN": {
     "ts": 1455674775
@@ -1563,7 +1563,7 @@ Generated when a user logs out via SSH.
 
 **Platforms:**
 
-```
+```json
 {
   "USER_NAME": "root",
   "TIMESTAMP": 1468335916308
@@ -1584,7 +1584,7 @@ Event generated when the sensor starts.
 
 **Sample Event:**
 
-```
+```json
 {
   "STARTING_UP": {
     "ts": 1455674775
@@ -1598,7 +1598,7 @@ Generated when a process exits.
 
 **Platforms:**
 
-```
+```json
 {
   "PARENT_PROCESS_ID": 5820,
   "TIMESTAMP": 1456285661,
@@ -1610,7 +1610,7 @@ Generated when a process exits.
 
 Generated when a TCPv4 connection terminates.
 
-```
+```json
 {
   "DESTINATION": {
     "IP_ADDRESS": "61.55.252.93",
@@ -1642,7 +1642,7 @@ This event is generated when the sensor detects what looks like a thread injecti
 
 **Platforms:**
 
-```
+```json
 {
   "event": {
     "EVENTS": [
@@ -1784,7 +1784,7 @@ Generated the first time a user is observed on a host.
 
 **Platforms:**
 
-```
+```json
 {
   "TIMESTAMP": 1479241363009,
   "USER_NAME": "root"
@@ -1797,7 +1797,7 @@ This event is generated when a volume is mounted.
 
 **Platforms:**
 
-```
+```json
 {
   "VOLUME_PATH": "E:",
   "DEVICE_NAME": "\\Device\\HarddiskVolume3"
@@ -1810,7 +1810,7 @@ This event is generated when a volume is unmounted.
 
 **Platforms:**
 
-```
+```json
 {
   "VOLUME_PATH": "/Volumes/RECOVERY",
   "VOLUME_NAME": "/dev/disk2s1"
@@ -1823,7 +1823,7 @@ Generated when a YARA scan finds a match.
 
 **Platforms:**
 
-```
+```json
 {
   "RULE_NAME": "malware_detection_rule",
   "FILE_PATH": "C:\\malicious.exe",

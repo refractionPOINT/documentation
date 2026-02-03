@@ -19,7 +19,7 @@ All adapters support the same `client_options`, which you should always specify 
 
 VMWare Carbon Black data can be exported via the API to an S3 bucket, and then ingested with LimaCharlie. The following command utilizes a CLI Adapter to ingest these events
 
-```
+```bash
 ./lc_adapter s3 client_options.identity.installation_key=<INSTALLATION_KEY> \
 client_options.identity.oid=<OID> \
 client_options.platform=carbon_black \

@@ -80,7 +80,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 **List Rules**
 
-```
+```json
 {
   "action": "list_rules"
 }
@@ -90,7 +90,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 **Add Event Collection Rule**
 
-```
+```json
 {
   "action": "add_event_rule",
   "name": "windows-vip",
@@ -109,7 +109,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 **Remove Event Collection Rule**
 
-```
+```json
 {
   "action": "remove_event_rule",
   "name": "windows-vip"
@@ -120,7 +120,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 **Add Watch Rule**
 
-```
+```json
 {
   "action": "add_watch",
   "name": "wininet-loading",
@@ -141,7 +141,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 **Remove Watch Rule**
 
-```
+```json
 {
   "action": "remove_watch",
   "name": "wininet-loading"
@@ -152,7 +152,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 **Add Performance Rule**
 
-```
+```json
 {
   "action": "add_perf_rule",
   "name": "sql-servers",
@@ -167,7 +167,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 **Remove Performance Rule**
 
-```
+```json
 {
   "action": "remove_perf_rule",
   "name": "sql-servers"

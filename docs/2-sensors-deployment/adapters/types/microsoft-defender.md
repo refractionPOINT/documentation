@@ -78,7 +78,7 @@ In the LimaCharlie web app, you can find a Microsoft Defender helper for connect
 
 The following example configuration ingests Microsoft Defender logs from an Azure Event Hub to LimaCharlie.
 
-```
+```bash
 ./lc_adapter azure_event_hub client_options.identity.installation_key=<INSTALLATION_KEY> \
 client_options.identity.oid=<OID> \
 client_options.platform=msdefender \
@@ -89,7 +89,7 @@ client_options.hostname=msdefender \
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Adapter Documentation: https://docs.limacharlie.io/docs/adapter-types
 # For cloud sensor deployment, store credentials as hive secrets:
 

@@ -48,7 +48,7 @@ Review the `/samples/` directory for real-world usage patterns:
 Fetch and analyze the OpenAPI spec:
 ```
 URL: https://api.limacharlie.io/openapi
-```
+```yaml
 Extract:
 - Available endpoints and their purposes
 - Required parameters for each endpoint
@@ -236,7 +236,7 @@ Generate a single comprehensive README.md file that:
 
 To regenerate the documentation, provide this instruction to Claude Code:
 
-```
+```python
 Please regenerate the LimaCharlie Python SDK documentation following the recipe in REGENERATION_RECIPE.md. 
 1. Clone the latest SDK from https://github.com/refractionPOINT/python-limacharlie/
 2. Analyze all core classes and methods

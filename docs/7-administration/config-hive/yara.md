@@ -4,7 +4,7 @@
 
 A yara record in `hive` has a very basic format:
 
-```
+```json
 {
     "rule": "data"
 }
@@ -41,7 +41,7 @@ $ limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
 
 You should get a confirmation that the rule was created, including metadata of the rule associated OID:
 
-```
+```json
 {
   "guid": "d88826b7-d583-4bcc-b7d3-4f450a12e1be",
   "hive": {

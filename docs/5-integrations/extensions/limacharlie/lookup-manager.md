@@ -48,7 +48,7 @@ Give your lookup a name and then use the token you generated with the following 
 
 Example:
 
-```
+```yaml
 hives:
     extension_config:
         ext-lookup-manager:

@@ -21,7 +21,7 @@ Adapter Type: `itglue`
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Adapter Documentation: https://docs.limacharlie.io/docs/adapter-types
 # For Cloud Sensor configurations, use:
 #        token: "hive://secret/itglue-api-token"

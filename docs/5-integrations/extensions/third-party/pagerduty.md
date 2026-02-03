@@ -8,7 +8,7 @@ Some more detailed information is available [here](https://developer.pagerduty.c
 
 #### Trigger Event
 
-```
+```json
 {
   "summary": "Critical credentials theft alert.",
   "source": "limacharlie.io",
@@ -32,7 +32,7 @@ On the PagerDuty side, you need to configure your PagerDuty service to receive t
 
 From this point on, you may use a rule to trigger a PagerDuty event. For example the following rule "response":
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-pagerduty
@@ -54,7 +54,7 @@ The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives yo
 
 Command line to preview PagerDuty rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-pagerduty
 ```
 
@@ -64,7 +64,7 @@ To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-
 
 Command line to execute PagerDuty rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-pagerduty --no-dry-run
 ```
 

@@ -20,7 +20,7 @@ Authentication in Twilio uses two components--a SID and a token. The LimaCharlie
 
 Example Response portion of a  rule that sends a message out via Twilio as the response action:
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-twilio

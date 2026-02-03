@@ -116,7 +116,7 @@ You can find this log data at the following location, based on your platform:
 
 The log data is formatted similarly to the example below:
 
-```
+```json
 {
       "version": "4.33.0",
       "sid": "be8bc53b-36b2-469d-a914-716d629cb2d8",
@@ -146,7 +146,7 @@ You can find the output file at the following location, based on your platform:
 
 The log data is formatted similarly to the example below:
 
-```
+```json
 {
   "system": {
     "memory_total": 25769803776,

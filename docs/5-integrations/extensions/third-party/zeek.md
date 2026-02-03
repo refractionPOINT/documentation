@@ -18,7 +18,7 @@ When enabled, you may configure the response of a D&R rule to run Zeek against a
 
 **Detect:**
 
-```
+```yaml
 artifact type: pcap
 event: ingest
 op: exists
@@ -28,7 +28,7 @@ target: artifact_event
 
 **Respond:**
 
-```
+```yaml
 - action: extension request
   extension action: run_on
   extension name: ext-zeek
@@ -77,7 +77,7 @@ This will trigger the [D&R rule below](#dr-rule).
 
 **Detect:**
 
-```
+```yaml
 artifact type: pcap
 event: ingest
 op: exists
@@ -87,7 +87,7 @@ target: artifact_event
 
 **Respond:**
 
-```
+```yaml
 - action: extension request
   extension action: run_on
   extension name: ext-zeek
@@ -104,7 +104,7 @@ The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives yo
 
 Command line to preview zeek rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-zeek
 ```
 
@@ -114,6 +114,6 @@ To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-
 
 Command line to execute zeek rule conversion:
 
-```
+```bash
 limacharlie extension convert_rules --name ext-zeek --no-dry-run
 ```

@@ -58,7 +58,7 @@ The Extension Schema is the next important piece of building your extension. It 
 
 Here's an example high-level structure of a schema.
 
-```
+```json
 {
   "config_schema": {
     "fields": { ... }

@@ -8,7 +8,7 @@ This extension makes use of Vultr's official CLI tool, which can be found [here]
 
 The following example of a response action will enumerate a list of instance within a Vultr account.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

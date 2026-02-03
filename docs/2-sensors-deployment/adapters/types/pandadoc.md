@@ -23,7 +23,7 @@ Adapter Type: `pandadoc`
 
 Adapter downloads can be found [here](../deployment.md).
 
-```
+```bash
 chmod +x /path/to/lc_adapter
 
 /path/to/lc_adapter pandadoc client_options.identity.installation_key=$INSTALLATION_KEY \
@@ -37,7 +37,7 @@ api_key=$API_KEY
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # PandaDoc Specific Docs: https://docs.limacharlie.io/docs/adapter-types-pandadoc
 # For cloud sensor deployment, store credentials as hive secrets:
 

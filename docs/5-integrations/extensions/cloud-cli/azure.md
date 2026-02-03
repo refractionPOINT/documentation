@@ -8,7 +8,7 @@ This extension makes use of the Azure CLI, which can be found [here](https://lea
 
 The following example returns a list of virtual machines and their respective details in Azure.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli

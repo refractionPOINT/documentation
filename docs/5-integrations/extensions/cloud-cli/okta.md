@@ -8,7 +8,7 @@ This extension makes use of the Okta CLI, which can be found [here](https://cli.
 
 The following example returns a list of registered Okta applications.
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: ext-cloud-cli
@@ -51,7 +51,7 @@ user get 00untroxqpl08VcNC5d7
 
 #### Example Output
 
-```
+```json
 {
   "_links": {
     "deactivate": {
@@ -120,7 +120,7 @@ user list
 
 #### Example Output
 
-```
+```json
 [
   {
     "_links": {

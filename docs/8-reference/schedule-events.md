@@ -26,7 +26,7 @@ Scheduling events are generated for each sensor that meets the following criteri
 
 Scheduling events are not retained as part of the year retention in LimaCharlie. To leverage them, create D&R rules that target the `schedule` target and take the relevant `action` when matched. For example to issue an `os_packages` once per week on Windows hosts:
 
-```
+```yaml
 detect:
   target: schedule
   event: 168h_per_sensor

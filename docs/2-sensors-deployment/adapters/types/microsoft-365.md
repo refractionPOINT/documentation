@@ -38,7 +38,7 @@ Establishing a cloud-to-cloud connector between LimaCharlie and Office 365 requi
 
 ### Infrastructure as Code Deployment
 
-```
+```python
 # Office 365 Management Activity API Specific Docs: https://docs.limacharlie.io/docs/adapter-types-office-365-management-activity-api
 # For cloud sensor deployment, store credentials as hive secrets:
 
@@ -130,14 +130,14 @@ Click `Complete Cloud Installation`, and LimaCharlie will attempt to connect to 
 
 When ingested into LimaCharlie, Office 365 data can be referenced directly in your D&R rules. You could do this via a platform operator:
 
-```
+```yaml
 op: is platform
 name: office365
 ```
 
 We can also reference Office 365 events directly. The following sample rule looks at `FileAccessed` events from anonymous user names, and reports accordingly.
 
-```
+```yaml
 # Detection
 event: FileAccessed
 path: event/UserId

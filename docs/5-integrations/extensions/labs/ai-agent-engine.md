@@ -41,7 +41,7 @@ List all the tools available to be called by the agent along with their categori
 
 Here is an example D&R rule starting a new invocation of a playbook.
 
-```
+```yaml
 - action: extension request
   extension name: ext-ai-agent-engine
   extension action: start_session
@@ -52,7 +52,7 @@ Here is an example D&R rule starting a new invocation of a playbook.
 
 ### Python example
 
-```
+```python
 # Import LC SDK
 import limacharlie
 import json
@@ -77,7 +77,7 @@ for msg in response['data']['responses']:
 
 The following is a sample AI Agent definition that simply aims at summarizing detections.
 
-```
+```json
 {
   "name": "my-agent",
   "description": "Some agent that does something...",

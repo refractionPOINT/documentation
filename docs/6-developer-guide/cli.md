@@ -6,7 +6,7 @@ Repo - <https://github.com/refractionPOINT/python-limacharlie>
 
 You may use a rule to trigger a LimaCharlie CLI event. For example the following rule response actions:
 
-```
+```yaml
 - action: extension request
   extension action: run
   extension name: limacharlie-cli

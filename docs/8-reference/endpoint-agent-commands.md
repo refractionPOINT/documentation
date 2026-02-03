@@ -77,7 +77,7 @@ Retrieve artifacts (pcaps, memory dumps, system files) from a sensor that were p
 **Response Event:** FILE_GET_REP
 
 **Usage Example:**
-```
+```bash
 limacharlie sensor task <SID> artifact_get --payload_id <PAYLOAD_ID>
 ```
 
@@ -97,7 +97,7 @@ List files and directories at a specified path on the endpoint.
 **Response Event:** DIR_LIST_REP
 
 **Usage Example:**
-```
+```bash
 limacharlie sensor task <SID> dir_list --dir_path "C:\\Windows\\System32" --depth 1
 ```
 

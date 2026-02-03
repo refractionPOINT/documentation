@@ -20,7 +20,7 @@ Endpoint: `https://sigma.limacharlie.io/convert/rule`
 * `target`: optional [target](../alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.
    Output Example:
 
-```
+```json
 {
     "rule": "detect:\n  events:\n  - NEW_PROCESS\n  - EXISTING_PROCESS\n  op: and\n  rules:\n  - op: is windows\n  - op: or\n    rules:\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: domainlist\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: trustdmp\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: dcmodes\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: adinfo\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: ' dclist '\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: computer_pwdnotreqd\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: objectcategory=\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: -subnets -f\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: name=\"Domain Admins\"\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: '-sc u:'\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: domainncs\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: dompol\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: ' oudmp '\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: subnetdmp\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: gpodmp\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: fspdmp\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: users_noexpire\n    - case sensitive: false\n      op: contains\n      path: event/COMMAND_LINE\n      value: computers_active\nrespond:\n- action: report\n  metadata:\n    author: Janantha Marasinghe (https://github.com/blueteam0ps)\n    description: AdFind continues to be seen across majority of breaches. It is used\n      to domain trust discovery to plan out subsequent steps in the attack chain.\n    falsepositives:\n    - Admin activity\n    level: high\n    references:\n    - https://thedfirreport.com/2020/05/08/adfind-recon/\n    - https://thedfirreport.com/2021/01/11/trickbot-still-alive-and-well/\n    - https://www.microsoft.com/security/blog/2021/01/20/deep-dive-into-the-solorigate-second-stage-activation-from-sunburst-to-teardrop-and-raindrop/\n    tags:\n    - attack.discovery\n    - attack.t1482\n    - attack.t1018\n  name: AdFind Usage Detection\n\n"
 }
@@ -28,7 +28,7 @@ Endpoint: `https://sigma.limacharlie.io/convert/rule`
 
 CURL Example:
 
-```
+```python
 curl -X POST  https://sigma.limacharlie.io/convert/rule -H 'content-type: application/x-www-form-urlencoded' --data-urlencode "rule@my-rule-file.yaml"
 ```
 
@@ -50,7 +50,7 @@ Endpoint: `https://sigma.limacharlie.io/convert/repo`
 
 Output Example:
 
-```
+```json
 {
     "rules":[
         {
@@ -63,6 +63,6 @@ Output Example:
 
 CURL Example:
 
-```
+```python
 curl -X POST  https://sigma.limacharlie.io/convert/repo -d "repo=https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_ad_find_discovery.yml"
 ```

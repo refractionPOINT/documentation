@@ -12,7 +12,7 @@ Once you have your VirusTotal API key, you can add it in the Organization integr
 
 Once you have entered your API key, you can then create a  rule to perform a lookup of a hash. For example, the following rule will let you know if there is a hit from VirusTotal on a hash with at least two different engines.
 
-```
+```yaml
 path: event/HASH
 op: lookup
 resource: hive://lookup/vt
