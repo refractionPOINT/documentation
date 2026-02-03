@@ -1,53 +1,70 @@
 /* LimaCharlie Custom Branding */
-/* Brand Colors:
-   - Midnight: #00183c (Primary dark)
-   - Maroon Flush: #c32152 (Accent)
-   - White: #ffffff
+/* Brand Colors (from official brand guide):
+   - LC Blue 1 (Dark Navy):     #0D1B2A - backgrounds, headers
+   - LC Blue 2:                 #1B263B - secondary dark
+   - LC Blue 3:                 #415A77 - tertiary
+   - LC Blue 4 (Primary Blue):  #2563EB - main brand color, logo
+   - LC Blue 5:                 #60A5FA - light accent
+   - LC Blue 6:                 #BFDBFE - lightest
+   - LC Pink 1:                 #831843 - dark CTA
+   - LC Pink 2:                 #BE185D - medium CTA
+   - LC Pink 3 (CTA):           #E91E63 - primary CTA/accent
+   - LC White:                  #FFFFFF
 */
 
 :root {
   /* Light mode custom colors */
-  --md-primary-fg-color: #00183c;
-  --md-primary-fg-color--light: #002855;
-  --md-primary-fg-color--dark: #000d21;
+  --md-primary-fg-color: #0D1B2A;
+  --md-primary-fg-color--light: #1B263B;
+  --md-primary-fg-color--dark: #0A1220;
 
-  --md-accent-fg-color: #c32152;
-  --md-accent-fg-color--transparent: #c321521a;
+  /* Primary brand blue for links and highlights */
+  --md-accent-fg-color: #2563EB;
+  --md-accent-fg-color--transparent: #2563EB1a;
+
+  /* CTA pink for buttons */
+  --lc-cta-color: #E91E63;
+  --lc-cta-color--hover: #BE185D;
 
   /* Custom typography scale */
   --md-typeset-font-size: 0.9rem;
 }
 
 [data-md-color-scheme="slate"] {
-  /* Dark mode custom colors */
-  --md-primary-fg-color: #00183c;
-  --md-primary-fg-color--light: #002855;
-  --md-primary-fg-color--dark: #000d21;
+  /* Dark mode - use LC Blue palette for backgrounds */
+  --md-primary-fg-color: #0D1B2A;
+  --md-primary-fg-color--light: #1B263B;
+  --md-primary-fg-color--dark: #0A1220;
 
-  --md-accent-fg-color: #c32152;
-  --md-accent-fg-color--transparent: #c321521a;
+  /* Accent - use bright blue for better dark mode visibility */
+  --md-accent-fg-color: #60A5FA;
+  --md-accent-fg-color--transparent: #60A5FA1a;
 
-  /* Enhanced dark mode backgrounds */
-  --md-default-bg-color: #0a0a0a;
-  --md-default-bg-color--light: #121212;
-  --md-default-bg-color--lighter: #1a1a1a;
-  --md-default-bg-color--lightest: #242424;
+  /* CTA pink */
+  --lc-cta-color: #E91E63;
+  --lc-cta-color--hover: #F472B6;
 
-  /* Code blocks - darker for better contrast */
-  --md-code-bg-color: #0d0d0d;
-  --md-code-fg-color: #e0e0e0;
+  /* Enhanced dark mode backgrounds using LC Blue tones */
+  --md-default-bg-color: #0A1220;
+  --md-default-bg-color--light: #0D1B2A;
+  --md-default-bg-color--lighter: #1B263B;
+  --md-default-bg-color--lightest: #415A77;
 
-  /* Links with accent color */
-  --md-typeset-a-color: #c32152;
+  /* Code blocks - darker navy for better contrast */
+  --md-code-bg-color: #0A1220;
+  --md-code-fg-color: #BFDBFE;
+
+  /* Links with blue accent */
+  --md-typeset-a-color: #60A5FA;
 }
 
-/* Custom heading styles with Syne font */
+/* Custom heading styles */
 h1, h2, h3, h4, h5, h6,
 .md-header__topic,
 .md-nav__title {
-  font-family: "Syne", -apple-system, BlinkMacSystemFont, "Segoe UI", Rubik, sans-serif;
+  font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 /* Enhanced code block styling */
@@ -107,15 +124,15 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .md-button--primary {
-  background-color: var(--md-accent-fg-color);
-  border-color: var(--md-accent-fg-color);
+  background-color: var(--lc-cta-color, #E91E63);
+  border-color: var(--lc-cta-color, #E91E63);
 }
 
 .md-button--primary:hover {
-  background-color: #d63366;
-  border-color: #d63366;
+  background-color: var(--lc-cta-color--hover, #BE185D);
+  border-color: var(--lc-cta-color--hover, #BE185D);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(195, 33, 82, 0.3);
+  box-shadow: 0 4px 8px rgba(233, 30, 99, 0.3);
 }
 
 /* Enhanced hero section for index page */
@@ -123,7 +140,7 @@ h1, h2, h3, h4, h5, h6,
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #c32152 0%, #00183c 100%);
+  background: linear-gradient(135deg, #E91E63 0%, #2563EB 50%, #0D1B2A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
