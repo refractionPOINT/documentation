@@ -1,0 +1,129 @@
+name: Link Checker
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+  workflow_dispatch:
+  schedule:
+    # Run weekly on Sundays at midnight UTC
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install linkchecker
+
+      - name: Build documentation
+        run: mkdocs build
+
+      - name: Start local server
+        run: |
+          cd site
+          python -m http.server 8000 &
+          sleep 3
+
+      - name: Check internal links
+        run: |
+          linkchecker http://localhost:8000 \
+            --check-extern \
+            --ignore-url "^https://app.limacharlie.io" \
+            --ignore-url "^https://community.limacharlie.io" \
+            --ignore-url "^mailto:" \
+            --no-warnings \
+            --output text \
+            2>&1 | tee linkcheck-results.txt
+        continue-on-error: true
+
+      - name: Upload link check results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linkcheck-results
+          path: linkcheck-results.txt
+          retention-days: 7
+
+      - name: Comment on PR with broken links
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = fs.readFileSync('linkcheck-results.txt', 'utf8');
+
+            // Extract broken links
+            const brokenLinks = results.split('\n')
+              .filter(line => line.includes('Error:') || line.includes('broken'))
+              .slice(0, 20)  // Limit to first 20
+              .join('\n');
+
+            if (brokenLinks) {
+              const body = `## ⚠️ Broken Links Detected
+
+              The link checker found some issues:
+
+              \`\`\`
+              ${brokenLinks}
+              \`\`\`
+
+              Please fix these broken links before merging.
+
+              <details>
+              <summary>Full results</summary>
+
+              See the uploaded artifact for complete link check results.
+              </details>`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: body,
+              });
+            }
+
+  check-markdown:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check markdown formatting
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: 'docs/**/*.md'
+          config: |
+            {
+              "default": true,
+              "MD013": false,
+              "MD033": false,
+              "MD041": false
+            }
+        continue-on-error: true

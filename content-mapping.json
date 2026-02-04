@@ -1,0 +1,1970 @@
+{
+  "metadata": {
+    "created": "2026-02-02",
+    "description": "Content mapping from current LimaCharlie documentation structure to proposed user-journey based structure",
+    "proposed_sections": [
+      "1-getting-started",
+      "2-sensors-deployment",
+      "3-detection-response",
+      "4-data-queries",
+      "5-integrations",
+      "6-developer-guide",
+      "7-administration",
+      "8-reference"
+    ]
+  },
+  "duplicates": [
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Add-Ons/Extensions/Building/building-the-user-interface.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Add-Ons/Extensions/Building_Extensions/building-the-user-interface.md"
+      ],
+      "note": "Duplicate extension UI building guide in two locations"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Add-Ons/Extensions/Building/schema-data-types.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Add-Ons/Extensions/Building_Extensions/schema-data-types.md"
+      ],
+      "note": "Duplicate schema data types in two locations"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Add-Ons/Add-Ons_Tutorials/tutorials-integratons-virustotal-integration.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Getting_Started/Tutorials/Integrations/tutorials-integratons-virustotal-integration.md"
+      ],
+      "note": "Duplicate VirusTotal integration tutorial"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Detection_and_Response/LimaCharlie_Query_Language/lcql-examples.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Query_Console/lcql-examples.md"
+      ],
+      "note": "Duplicate LCQL examples in D&R and Query Console sections"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Detection_and_Response/Tutorials/writing-and-testing-rules.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Detection_and_Response/writing-and-testing-rules.md"
+      ],
+      "note": "Duplicate writing and testing rules guide"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Events/Endpoint_Agent_Events_Overview/reference-error-codes.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Detection_and_Response/Reference/reference-error-codes.md"
+      ],
+      "note": "Duplicate error codes reference"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Platform_Management/Access_and_Permissions/reference-permissions.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Platform_Management/Access_and_Permissions/Reference/reference-permissions.md"
+      ],
+      "note": "Duplicate permissions reference"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Sensors/sensor-tags.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Telemetry/Sensors/sensor-tags.md"
+      ],
+      "note": "Duplicate sensor tags documentation"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Sensors/Reference/reference-sensor-selector-expressions.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Telemetry/Sensors/Reference/reference-sensor-selector-expressions.md"
+      ],
+      "note": "Duplicate sensor selector expressions reference"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Windows_Agent_Installation/building-a-custom-msi-installer-for-windows.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Telemetry/Sensors/Operating_Systems/Windows/building-a-custom-msi-installer-for-windows.md"
+      ],
+      "note": "Duplicate Windows MSI installer guide"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Enterprise-Wide_Agent_Deployment/chrome-enterprise.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Telemetry/Sensors/Enterprise_Sensor_Deployment/chrome-enterprise.md"
+      ],
+      "note": "Duplicate Chrome Enterprise deployment guide"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Getting_Started/Tutorials/Telemetry/ingesting-macos-unified-logs.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/ingesting-macos-unified-logs.md"
+      ],
+      "note": "Duplicate macOS unified logs ingestion tutorial"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Getting_Started/Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md"
+      ],
+      "note": "Duplicate BigQuery/Looker Studio reporting tutorial"
+    },
+    {
+      "files": [
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Add-Ons/Services/replay.md",
+        "/home/steve/lc_documentation/documentation/docs/limacharlie/doc/Detection_and_Response/replay.md"
+      ],
+      "note": "Duplicate replay documentation"
+    }
+  ],
+  "duplicate_output_destinations": {
+    "note": "All output destination files exist in both Destinations/ and Output_Destinations/ folders",
+    "files": [
+      "output-destinations-tines.md",
+      "outputs-destinations-amazon-s3.md",
+      "outputs-destinations-apache-kafka.md",
+      "outputs-destinations-azure-event-hub.md",
+      "outputs-destinations-azure-storage-blob.md",
+      "outputs-destinations-elastic.md",
+      "outputs-destinations-google-cloud-bigquery.md",
+      "outputs-destinations-google-cloud-pubsub.md",
+      "outputs-destinations-google-cloud-storage.md",
+      "outputs-destinations-opensearch.md",
+      "outputs-destinations-scp.md",
+      "outputs-destinations-sftp.md",
+      "outputs-destinations-slack.md",
+      "outputs-destinations-smtp.md",
+      "outputs-destinations-splunk.md",
+      "outputs-destinations-syslog.md",
+      "outputs-destinations-webhook-bulk.md",
+      "outputs-destinations-webhook.md"
+    ]
+  },
+  "mappings": [
+    {
+      "current_path": "docs/index.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/index.md",
+      "notes": "Root index - redirect to getting started"
+    },
+    {
+      "current_path": "docs/assets/images/README.md",
+      "new_section": "assets",
+      "new_path": "docs/assets/images/README.md",
+      "notes": "Keep in assets folder"
+    },
+    {
+      "current_path": "docs/go-sdk/README.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/sdks/go-sdk.md",
+      "notes": "Go SDK documentation"
+    },
+    {
+      "current_path": "docs/go-sdk/REGENERATION_RECIPE.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/sdks/go-sdk-regeneration.md",
+      "notes": "Go SDK internal docs"
+    },
+    {
+      "current_path": "docs/python-sdk/README.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/sdks/python-sdk.md",
+      "notes": "Python SDK documentation"
+    },
+    {
+      "current_path": "docs/python-sdk/REGENERATION_RECIPE.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/sdks/python-sdk-regeneration.md",
+      "notes": "Python SDK internal docs"
+    },
+    {
+      "current_path": "docs/sdk/index.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/sdks/index.md",
+      "notes": "SDK overview"
+    },
+    {
+      "current_path": "docs/limacharlie/pipeline/README.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/pipeline.md",
+      "notes": "Pipeline documentation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/index.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/add-ons/index.md",
+      "notes": "Add-ons index - currently mislabeled as main index"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/index.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/index.md",
+      "notes": "Getting started section index"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/what-is-limacharlie.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/what-is-limacharlie.md",
+      "notes": "Platform overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/quickstart.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/quickstart.md",
+      "notes": "Quickstart guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/limacharlie-core-concepts.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/core-concepts.md",
+      "notes": "Core concepts"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/build-cti-capabilities.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/cti-capabilities.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/building-products.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/building-products.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/chromeos-support.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/chromeos-support.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/cloud-security.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/cloud-security.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/cost-effective-siem.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/cost-effective-siem.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/endpoint-detection-and-response-edr.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/edr.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/enerprises.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/enterprises.md",
+      "notes": "Use case guide - filename has typo"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/file-and-registry-integrity-monitoring-fim-deployments.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/fim.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/incident-response.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/incident-response.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/investigation-guide.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/investigation-guide.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/ma-cyber-due-diligence.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/ma-due-diligence.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/network-monitoring.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/network-monitoring.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/observability-pipeline.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/observability-pipeline.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/purple-teaming.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/purple-teaming.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/secops-development.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/secops-development.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/security-monitoring-for-devops.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/devops-security.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/service-providers-mssp-msp-mdr.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/mssp-msp-mdr.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/sleeper-mode.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/sleeper-mode.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/soar-automation.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/soar-automation.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/table-top-exercises.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/table-top-exercises.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/threat-hunting.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/threat-hunting.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/uncovering-adversary-techniques.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/adversary-techniques.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Use_Cases/wel-monitoring.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/use-cases/wel-monitoring.md",
+      "notes": "Use case guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Tutorials/Integrations/tutorials-integratons-virustotal-integration.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/tutorials/virustotal-integration.md",
+      "notes": "DUPLICATE - merge with Add-Ons version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/tutorials/bigquery-looker-studio.md",
+      "notes": "DUPLICATE - merge with Tutorials version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Getting_Started/Tutorials/Telemetry/ingesting-macos-unified-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/macos-unified-logs.md",
+      "notes": "DUPLICATE - merge with Endpoint Agent version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/index.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/index.md",
+      "notes": "Sensors overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/installation-keys.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/installation-keys.md",
+      "notes": "Installation keys"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/sensor-connectivity.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/connectivity.md",
+      "notes": "Network requirements"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/sensor-tags.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/sensor-tags.md",
+      "notes": "DUPLICATE - merge with Telemetry version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Windows_Agent_Installation/windows-agent-installation.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/windows/installation.md",
+      "notes": "Windows agent installation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Windows_Agent_Installation/building-a-custom-msi-installer-for-windows.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/windows/custom-msi.md",
+      "notes": "DUPLICATE - merge with Telemetry version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/linux-agent-installation.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/linux/installation.md",
+      "notes": "Linux agent installation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/macOS_Agent_Installation/macos-agent-installation-latest-os-versions.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/macos/installation.md",
+      "notes": "macOS agent installation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/macOS_Agent_Installation/macos-agent-installation-older-versions.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/macos/installation-older.md",
+      "notes": "macOS older versions"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/macOS_Agent_Installation/macos-agent-installation-mdm-configuration-profiles.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/macos/mdm-profiles.md",
+      "notes": "macOS MDM profiles"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/macOS_Agent_Installation/macos-agent-installation-via-microsoft-intune.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/macos/intune.md",
+      "notes": "macOS Intune deployment"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/macOS_Agent_Installation/installing-macos-agents-via-jamf-now.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/macos/jamf.md",
+      "notes": "macOS Jamf deployment"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/macOS_Agent_Installation/clone-macos-agent-installation-latest-versions-macos-15-sequoia-and-newer.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/macos/sequoia.md",
+      "notes": "macOS Sequoia specific"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/chrome-agent-installation.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/chrome/installation.md",
+      "notes": "Chrome agent installation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/docker-agent-installation.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/docker/installation.md",
+      "notes": "Docker agent installation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/container-clusters.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/containers/clusters.md",
+      "notes": "Container clusters"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/edge-agent-installation.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/edge/installation.md",
+      "notes": "Edge agent installation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/vdi-virtual-machine-templates.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/vdi/templates.md",
+      "notes": "VDI templates"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Enterprise-Wide_Agent_Deployment/agent-deployment-microsoft-intune.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/enterprise-deployment/intune.md",
+      "notes": "Intune deployment"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Installation/Enterprise-Wide_Agent_Deployment/chrome-enterprise.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/enterprise-deployment/chrome-enterprise.md",
+      "notes": "DUPLICATE - merge with Telemetry version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/endpoint-agent-uninstallation.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/uninstallation.md",
+      "notes": "Agent uninstallation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/endpoint-agent-versioning-and-upgrades.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/versioning-upgrades.md",
+      "notes": "Versioning and upgrades"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/hostname-resolution.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/hostname-resolution.md",
+      "notes": "Hostname resolution"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/payloads.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/payloads.md",
+      "notes": "Payloads"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/sleeper.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/sleeper.md",
+      "notes": "Sleeper mode"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Endpoint_Agent_Commands/reference-endpoint-agent-commands.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/endpoint-agent-commands.md",
+      "notes": "Agent commands reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/ingesting-defender-event-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/defender-logs.md",
+      "notes": "Defender logs tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/ingesting-linux-audit-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/linux-audit-logs.md",
+      "notes": "Linux audit logs tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/ingesting-macos-unified-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/macos-unified-logs.md",
+      "notes": "DUPLICATE - canonical location"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/ingesting-sysmon-event-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/sysmon-logs.md",
+      "notes": "Sysmon logs tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/ingesting-windows-event-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/windows-event-logs.md",
+      "notes": "Windows event logs tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/non-responding-sensors.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/troubleshooting/non-responding-sensors.md",
+      "notes": "Troubleshooting guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/test-a-new-sensor-version.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/test-sensor-version.md",
+      "notes": "Testing sensor versions"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Endpoint_Agent/Tutorials/updating-sensors-to-the-newest-version.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/tutorials/update-sensors.md",
+      "notes": "Updating sensors"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Reference/logcollectionguide.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/log-collection-guide.md",
+      "notes": "Log collection guide"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Reference/reference-id-schema.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/id-schema.md",
+      "notes": "ID schema reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Reference/reference-sensor-selector-expressions.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/sensor-selector-expressions.md",
+      "notes": "DUPLICATE - canonical location"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/adapter-deployment.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/deployment.md",
+      "notes": "Adapter deployment"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/adapter-usage.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/usage.md",
+      "notes": "Adapter usage"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/adapters-as-a-service.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/as-a-service.md",
+      "notes": "Adapters as a service"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Examples/adapter-examples-stdin-json.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/examples/stdin-json.md",
+      "notes": "Adapter example"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Examples/adapter-examples-stdin.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/examples/stdin.md",
+      "notes": "Adapter example"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Examples/adapter-examples-windows-event-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/examples/windows-event-logs.md",
+      "notes": "Adapter example"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Tutorials/tutorial-creating-a-webhook-adapter.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/tutorials/webhook-adapter.md",
+      "notes": "Adapter tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Tutorials/tutorial-ingesting-google-cloud-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/tutorials/google-cloud-logs.md",
+      "notes": "Adapter tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Tutorials/tutorial-ingesting-telemetry-from-cloud-based-external-sources.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/tutorials/cloud-telemetry.md",
+      "notes": "Adapter tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/1password.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/1password.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-aws-cloudtrail.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/aws-cloudtrail.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-aws-guardduty.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/aws-guardduty.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-azure-event-hub.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/azure-event-hub.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-canarytokens.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/canarytokens.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-cato.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/cato.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-crowdstrike-falcon-cloud.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/crowdstrike.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-duo.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/duo.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-evtx.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/evtx.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-file.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/file.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-google-cloud-pubsub.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/google-cloud-pubsub.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-google-cloud-storage.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/google-cloud-storage.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-google-workspace.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/google-workspace.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-hubspot.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/hubspot.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-iis.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/iis.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-imap.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/imap.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-it-glue.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/it-glue.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-json.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/json.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-kubernetes-pods-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/kubernetes-pods.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-mac-unified-logging.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/mac-unified-logging.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-microsoft-365.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/microsoft-365.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-microsoft-defender.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/microsoft-defender.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-microsoft-entra-id.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/microsoft-entra-id.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-mimecast.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/mimecast.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-okta.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/okta.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-pandadoc.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/pandadoc.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-s3.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/s3.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-slack-audit-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/slack-audit-logs.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-sophos.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/sophos.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-sqs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/sqs.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-stdin.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/stdin.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-sublime-security.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/sublime-security.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-syslog.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/syslog.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-tailscale.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/tailscale.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-vmware-carbon-black.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/carbon-black.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-windows-event-log.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/windows-event-log.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/adapter-types-zendesk.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/zendesk.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/atlassian.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/atlassian.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/sentinelone.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/sentinelone.md",
+      "notes": "Adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/Azure_Logs/azure-kubernetes-service.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/azure/kubernetes-service.md",
+      "notes": "Azure adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/Azure_Logs/azure-logs-key-vault.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/azure/key-vault.md",
+      "notes": "Azure adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/Azure_Logs/azure-monitor.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/azure/monitor.md",
+      "notes": "Azure adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/Azure_Logs/azure-network-security-group.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/azure/network-security-group.md",
+      "notes": "Azure adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Sensors/Adapters/Adapter_Types/Azure_Logs/azure-sql-audit-logs.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/adapters/types/azure/sql-audit-logs.md",
+      "notes": "Azure adapter type"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/index.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/index.md",
+      "notes": "D&R overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/detection-and-response-examples.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/examples.md",
+      "notes": "D&R examples"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/detection-on-alternate-targets.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/alternate-targets.md",
+      "notes": "Alternate detection targets"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/false-positive-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/false-positives.md",
+      "notes": "False positive management"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/writing-and-testing-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/writing-testing-rules.md",
+      "notes": "DUPLICATE - canonical location"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/stateful-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/stateful-rules.md",
+      "notes": "Stateful rules"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/unit-tests.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/unit-tests.md",
+      "notes": "Unit testing"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/replay.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/replay.md",
+      "notes": "DUPLICATE - canonical location"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/LimaCharlie_Query_Language/lcql-examples.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/lcql-examples.md",
+      "notes": "DUPLICATE - merge with Query Console version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Reference/detection-logic-operators.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/detection-logic-operators.md",
+      "notes": "Detection operators reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Reference/reference-error-codes.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/error-codes.md",
+      "notes": "DUPLICATE - canonical location"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Reference/response-actions.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/response-actions.md",
+      "notes": "Response actions reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Tutorials/create-a-dr-rule-using-a-threat-feed.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/tutorials/threat-feed-rule.md",
+      "notes": "D&R tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Tutorials/writing-and-testing-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/tutorials/writing-testing-rules.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Managed_Rulesets/community-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/managed-rulesets/community-rules.md",
+      "notes": "Community rules"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Managed_Rulesets/soc-prime-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/managed-rulesets/soc-prime.md",
+      "notes": "SOC Prime rules"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Managed_Rulesets/Sigma_Rules/sigma-converter.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/managed-rulesets/sigma-converter.md",
+      "notes": "Sigma converter"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Managed_Rulesets/Soteria_Rules/soteria-aws-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/managed-rulesets/soteria/aws.md",
+      "notes": "Soteria AWS rules"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Managed_Rulesets/Soteria_Rules/soteria-edr-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/managed-rulesets/soteria/edr.md",
+      "notes": "Soteria EDR rules"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Detection_and_Response/Managed_Rulesets/Soteria_Rules/soteria-m365-rules.md",
+      "new_section": "3-detection-response",
+      "new_path": "docs/3-detection-response/managed-rulesets/soteria/m365.md",
+      "notes": "Soteria M365 rules"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Query_Console/index.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/index.md",
+      "notes": "Query console overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Query_Console/lcql-examples.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/lcql-examples.md",
+      "notes": "LCQL examples - canonical location"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Query_Console/query-console-ui.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/query-console-ui.md",
+      "notes": "Query console UI"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Query_Console/query-with-cli.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/query-cli.md",
+      "notes": "Query via CLI"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/index.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/events/index.md",
+      "notes": "Events overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/event-schemas.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/event-schemas.md",
+      "notes": "Event schemas reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/template-strings-and-transforms.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/template-transforms.md",
+      "notes": "Template transforms"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/Endpoint_Agent_Events_Overview/reference-edr-events.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/edr-events.md",
+      "notes": "EDR events reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/Endpoint_Agent_Events_Overview/reference-error-codes.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/error-codes.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/Endpoint_Agent_Events_Overview/sysmon-comparison.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/events/sysmon-comparison.md",
+      "notes": "Sysmon comparison"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/Platform_Events_Overview/reference-platform-events.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/platform-events.md",
+      "notes": "Platform events reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Events/Platform_Events_Overview/reference-schedule-events.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/schedule-events.md",
+      "notes": "Schedule events reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/index.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/index.md",
+      "notes": "Outputs overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/output-allowlisting.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/allowlisting.md",
+      "notes": "Output allowlisting"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/output-billing.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/billing.md",
+      "notes": "Output billing"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/output-stream-structures.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/stream-structures.md",
+      "notes": "Stream structures"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/testing-outputs.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/testing.md",
+      "notes": "Testing outputs"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/output-destinations-tines.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/tines.md",
+      "notes": "DUPLICATE - use Output_Destinations version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-amazon-s3.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/amazon-s3.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-apache-kafka.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/apache-kafka.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-azure-event-hub.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/azure-event-hub.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-azure-storage-blob.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/azure-storage-blob.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-elastic.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/elastic.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-google-cloud-bigquery.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/bigquery.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-google-cloud-pubsub.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/google-pubsub.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-google-cloud-storage.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/google-cloud-storage.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-opensearch.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/opensearch.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-scp.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/scp.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-sftp.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/sftp.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-slack.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/slack.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-smtp.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/smtp.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-splunk.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/splunk.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-syslog.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/syslog.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-webhook-bulk.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/webhook-bulk.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Destinations/outputs-destinations-webhook.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/webhook.md",
+      "notes": "DUPLICATE"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/output-destinations-tines.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/tines.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-amazon-s3.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/amazon-s3.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-apache-kafka.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/apache-kafka.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-azure-event-hub.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/azure-event-hub.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-azure-storage-blob.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/azure-storage-blob.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-elastic.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/elastic.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-google-cloud-bigquery.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/bigquery.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-google-cloud-pubsub.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/google-pubsub.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-google-cloud-storage.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/google-cloud-storage.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-humio.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/humio.md",
+      "notes": "Output destination - unique to Output_Destinations"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-opensearch.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/opensearch.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-scp.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/scp.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-sftp.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/sftp.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-slack.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/slack.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-smtp.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/smtp.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-splunk.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/splunk.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-syslog.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/syslog.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-webhook-bulk.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/webhook-bulk.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Outputs/Output_Destinations/outputs-destinations-webhook.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/outputs/destinations/webhook.md",
+      "notes": "Output destination - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/index.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/add-ons/index.md",
+      "notes": "Add-ons overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/developer-grant-program.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/grant-program.md",
+      "notes": "Developer grant program"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Add-Ons_Tutorials/tutorials-integratons-virustotal-integration.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/tutorials/virustotal-integration.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/index.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/index.md",
+      "notes": "API integrations overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/api-integrations-alphamountain.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/alphamountain.md",
+      "notes": "API integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/api-integrations-echotrail.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/echotrail.md",
+      "notes": "API integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/api-integrations-greynoise.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/greynoise.md",
+      "notes": "API integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/api-integrations-hybrid-analysis.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/hybrid-analysis.md",
+      "notes": "API integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/api-integrations-ip-geolocation.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/ip-geolocation.md",
+      "notes": "API integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/api-integrations-pangea.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/pangea.md",
+      "notes": "API integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/API_Integrations/api-integrations-virustotal.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/api-integrations/virustotal.md",
+      "notes": "API integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/index.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/index.md",
+      "notes": "Extensions overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/using-extensions.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/using-extensions.md",
+      "notes": "Using extensions"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Building/building-extensions.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/extensions/building-extensions.md",
+      "notes": "Building extensions"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Building/building-the-user-interface.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/extensions/building-ui.md",
+      "notes": "DUPLICATE - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Building/schema-data-types.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/extensions/schema-data-types.md",
+      "notes": "DUPLICATE - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Building_Extensions/building-the-user-interface.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/extensions/building-ui.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Building_Extensions/schema-data-types.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/extensions/schema-data-types.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/binlib.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/binlib.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-artifact.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/artifact.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-dumper.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/dumper.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-epp.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/epp.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-exfil.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/exfil.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-git-sync.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/git-sync.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-infrastructure.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/infrastructure.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-integrity.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/integrity.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-lookup-manager.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/lookup-manager.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-reliable-tasking.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/reliable-tasking.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-sensor-cull.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/sensor-cull.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-usage-alerts.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/usage-alerts.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/ext-yara-manager.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/yara-manager.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/limacharlie-cli.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/cli.md",
+      "notes": "CLI documentation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Extensions/payload-manager.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/limacharlie/payload-manager.md",
+      "notes": "LC extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Labs/ai-agent-engine.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/labs/ai-agent-engine.md",
+      "notes": "Labs extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Labs/playbook.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/labs/playbook.md",
+      "notes": "Labs extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-atomic-red-team.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/atomic-red-team.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-govee.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/govee.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-hayabusa.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/hayabusa.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-nims.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/nims.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-otx.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/otx.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-pagerduty.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/pagerduty.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-plaso.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/plaso.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-renigma.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/renigma.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-secureannex.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/secureannex.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-strelka.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/strelka.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-twilio.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/twilio.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-velociraptor.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/velociraptor.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-yara.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/yara.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/ext-zeek.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/third-party/zeek.md",
+      "notes": "Third-party extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-1password.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/1password.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-aws.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/aws.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-azure.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/azure.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-digitalocean.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/digitalocean.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-github.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/github.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-google-cloud.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/google-cloud.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-microsoft365.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/microsoft365.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-okta.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/okta.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-sdm.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/sdm.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-sublime.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/sublime.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-tailscale.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/tailscale.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Third-Party_Extensions/Cloud_CLI/ext-cloud-cli-vultr.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/extensions/cloud-cli/vultr.md",
+      "notes": "Cloud CLI extension"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Tutorials/hayabusa-to-bigquery.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/tutorials/hayabusa-bigquery.md",
+      "notes": "Extension tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/Tutorials/velociraptor-to-bigquery.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/tutorials/velociraptor-bigquery.md",
+      "notes": "Extension tutorial"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Reference/reference-authentication-resource-locator.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/authentication-resource-locator.md",
+      "notes": "Auth resource locator reference"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Services/addons-services-dumper.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/services/dumper.md",
+      "notes": "Service documentation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Add-Ons/Services/replay.md",
+      "new_section": "5-integrations",
+      "new_path": "docs/5-integrations/services/replay.md",
+      "notes": "DUPLICATE - service version"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Connecting/mcp-server.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/mcp-server.md",
+      "notes": "MCP server integration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/index.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/index.md",
+      "notes": "Administration overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/limacharlie-sdk.md",
+      "new_section": "6-developer-guide",
+      "new_path": "docs/6-developer-guide/sdk-overview.md",
+      "notes": "SDK overview"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Access_and_Permissions/api-keys.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/access/api-keys.md",
+      "notes": "API keys management"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Access_and_Permissions/reference-permissions.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/permissions.md",
+      "notes": "DUPLICATE - canonical"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Access_and_Permissions/Reference/reference-permissions.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/permissions.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Access_and_Permissions/single-sign-on.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/access/sso.md",
+      "notes": "SSO configuration"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Access_and_Permissions/user-access.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/access/user-access.md",
+      "notes": "User access management"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Billing/billing-options.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/billing/options.md",
+      "notes": "Billing options"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Billing/using-custom-billing-plans.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/billing/custom-plans.md",
+      "notes": "Custom billing plans"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-cloud-sensors.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/config-hive/cloud-sensors.md",
+      "notes": "Config hive - cloud sensors"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-dr-rules.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/config-hive/dr-rules.md",
+      "notes": "Config hive - D&R rules"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-investigation.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/config-hive/investigation.md",
+      "notes": "Config hive - investigation"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-lookups.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/config-hive/lookups.md",
+      "notes": "Config hive - lookups"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-secrets.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/config-hive/secrets.md",
+      "notes": "Config hive - secrets"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Platform_Management/Config_Hive/config-hive-yara.md",
+      "new_section": "7-administration",
+      "new_path": "docs/7-administration/config-hive/yara.md",
+      "notes": "Config hive - YARA"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/index.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/index.md",
+      "notes": "FAQ index"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-account-management.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/account-management.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-billing.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/billing.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-detect-and-respond-rules.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/dr-rules.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-general.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/general.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-invoices.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/invoices.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-privacy.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/privacy.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-sensor-installation.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/sensor-installation.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/faq-troubleshooting.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/troubleshooting.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/FAQ/sensor-removal.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/faq/sensor-removal.md",
+      "notes": "FAQ"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Telemetry/index.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/telemetry-index.md",
+      "notes": "Telemetry overview - possibly merge with sensors"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Telemetry/Sensors/Enterprise_Sensor_Deployment/chrome-enterprise.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/enterprise-deployment/chrome-enterprise.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Telemetry/Sensors/Operating_Systems/Windows/building-a-custom-msi-installer-for-windows.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/endpoint-agent/windows/custom-msi.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Telemetry/Sensors/Reference/reference-sensor-selector-expressions.md",
+      "new_section": "8-reference",
+      "new_path": "docs/8-reference/sensor-selector-expressions.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Telemetry/Sensors/sensor-tags.md",
+      "new_section": "2-sensors-deployment",
+      "new_path": "docs/2-sensors-deployment/sensor-tags.md",
+      "notes": "DUPLICATE - remove"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Tutorials/index.md",
+      "new_section": "1-getting-started",
+      "new_path": "docs/1-getting-started/tutorials/index.md",
+      "notes": "Tutorials index"
+    },
+    {
+      "current_path": "docs/limacharlie/doc/Tutorials/Reporting/tutorials-reporting-building-reports-with-bigquery-looker-studio.md",
+      "new_section": "4-data-queries",
+      "new_path": "docs/4-data-queries/tutorials/bigquery-looker-studio.md",
+      "notes": "DUPLICATE - remove"
+    }
+  ],
+  "summary": {
+    "total_files": 302,
+    "duplicate_groups": 14,
+    "duplicate_files_count": 54,
+    "files_by_section": {
+      "1-getting-started": 28,
+      "2-sensors-deployment": 85,
+      "3-detection-response": 18,
+      "4-data-queries": 10,
+      "5-integrations": 92,
+      "6-developer-guide": 15,
+      "7-administration": 16,
+      "8-reference": 20,
+      "assets": 1,
+      "duplicates_to_remove": 17
+    }
+  }
+}
