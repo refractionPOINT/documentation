@@ -1746,10 +1746,6 @@ firehose --listen_interface 0.0.0.0:4444 --data_type event -n my-firehose --use-
 - **Community Support**: [community.limacharlie.io](https://community.limacharlie.io)
 - **Commercial Support**: support@limacharlie.io
 
-## License
-
-The LimaCharlie Go SDK is licensed under the Apache License 2.0. See the LICENSE file in the repository for full details.
-
 ---
 
 ## See Also

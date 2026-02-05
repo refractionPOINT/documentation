@@ -10,6 +10,6 @@ Organization configuration and management.
 
 ## See Also
 
-- [User Access](access)
+- [User Access](access/user-access.md)
 - [API Keys](access/api-keys.md)
-- [Billing](billing)
+- [Billing](billing/options.md)

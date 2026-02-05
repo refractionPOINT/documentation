@@ -186,6 +186,3 @@ LimaCharlie is a SecOps Cloud Platform providing:
 - **Web Console**: https://app.limacharlie.io
 - **Community**: https://community.limacharlie.io
 
-## License
-
-Apache License 2.0 - See [LICENSE](LICENSE)

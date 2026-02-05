@@ -105,6 +105,3 @@ Please be respectful and professional in all interactions. We're building docume
 - Email [support@limacharlie.io](mailto:support@limacharlie.io)
 - Open an issue on GitHub
 
-## License
-
-By contributing, you agree that your contributions will be licensed under the Apache License 2.0.

@@ -113,7 +113,7 @@ extra:
 extra_css:
   - assets/stylesheets/extra.css
 
-copyright: Copyright &copy; 2018-2025 refractionPOINT - Licensed under Apache 2.0
+copyright: Copyright &copy; 2018-2025 refractionPOINT
 
 nav:
   - Home: index.md
@@ -123,30 +123,6 @@ nav:
       - What is LimaCharlie?: 1-getting-started/what-is-limacharlie.md
       - Quickstart: 1-getting-started/quickstart.md
       - Core Concepts: 1-getting-started/core-concepts.md
-      - Use Cases:
-          - EDR: 1-getting-started/use-cases/edr.md
-          - Cloud Security: 1-getting-started/use-cases/cloud-security.md
-          - SIEM Alternative: 1-getting-started/use-cases/cost-effective-siem.md
-          - MSSP/MSP/MDR: 1-getting-started/use-cases/mssp-msp-mdr.md
-          - Incident Response: 1-getting-started/use-cases/incident-response.md
-          - Threat Hunting: 1-getting-started/use-cases/threat-hunting.md
-          - DevOps Security: 1-getting-started/use-cases/devops-security.md
-          - FIM: 1-getting-started/use-cases/fim.md
-          - Purple Teaming: 1-getting-started/use-cases/purple-teaming.md
-          - Investigation Guide: 1-getting-started/use-cases/investigation-guide.md
-          - Adversary Techniques: 1-getting-started/use-cases/adversary-techniques.md
-          - Building Products: 1-getting-started/use-cases/building-products.md
-          - ChromeOS Support: 1-getting-started/use-cases/chromeos-support.md
-          - CTI Capabilities: 1-getting-started/use-cases/cti-capabilities.md
-          - Enterprises: 1-getting-started/use-cases/enterprises.md
-          - M&A Due Diligence: 1-getting-started/use-cases/ma-due-diligence.md
-          - Network Monitoring: 1-getting-started/use-cases/network-monitoring.md
-          - Observability Pipeline: 1-getting-started/use-cases/observability-pipeline.md
-          - SecOps Development: 1-getting-started/use-cases/secops-development.md
-          - Sleeper Mode: 1-getting-started/use-cases/sleeper-mode.md
-          - SOAR Automation: 1-getting-started/use-cases/soar-automation.md
-          - Table Top Exercises: 1-getting-started/use-cases/table-top-exercises.md
-          - WEL Monitoring: 1-getting-started/use-cases/wel-monitoring.md
       - Tutorials:
           - Overview: 1-getting-started/tutorials/index.md
 

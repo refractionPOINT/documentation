@@ -22,6 +22,9 @@
   --md-accent-fg-color: #2563EB;
   --md-accent-fg-color--transparent: #2563EB1a;
 
+  /* Links - explicit color for light mode visibility */
+  --md-typeset-a-color: #2563EB;
+
   /* CTA pink for buttons */
   --lc-cta-color: #E91E63;
   --lc-cta-color--hover: #BE185D;
@@ -56,6 +59,27 @@
 
   /* Links with blue accent */
   --md-typeset-a-color: #60A5FA;
+}
+
+/* Light mode link underlines for better visibility */
+[data-md-color-scheme="default"] .md-typeset a {
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 99, 235, 0.4);
+  text-underline-offset: 0.15em;
+}
+
+[data-md-color-scheme="default"] .md-typeset a:hover {
+  text-decoration-color: rgba(37, 99, 235, 1);
+}
+
+/* Exclude nav, header, footer, and button links from underline */
+[data-md-color-scheme="default"] .md-nav a,
+[data-md-color-scheme="default"] .md-header a,
+[data-md-color-scheme="default"] .md-footer a,
+[data-md-color-scheme="default"] .md-button,
+[data-md-color-scheme="default"] .md-tabs a,
+[data-md-color-scheme="default"] .md-source {
+  text-decoration: none;
 }
 
 /* Custom heading styles */
