@@ -96,14 +96,3 @@ LimaCharlie is the **SecOps Cloud Platform** delivering security operations for 
 - [:material-email: Support](mailto:support@limacharlie.io)
 
 </div>
-
-## About This Documentation
-
-This documentation is open source and available on [GitHub](https://github.com/refractionPOINT/documentation). It includes:
-
-- **267 Documentation Pages**: Comprehensive platform documentation
-- **SDK References**: Complete Go and Python SDK documentation
-- **Code Examples**: Ready-to-use examples for common tasks
-- **Integration Guides**: Step-by-step tutorials for third-party integrations
-
-Licensed under the [Apache License 2.0](https://github.com/refractionPOINT/documentation/blob/master/LICENSE).
