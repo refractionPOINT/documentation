@@ -67,26 +67,22 @@ For commands which emit a report/reply event type from the agent, the correspond
 
 ### artifact_get
 
-Collect an artifact from a sensor by specifying a file path or an OS-specific artifact source.
+Collect an artifact from a sensor by specifying a file path.
 
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
-- `file` (required*): File path to collect from the sensor
-- `source` (required*): OS-specific artifact source
+- `file` (required): File path to collect from the sensor
 - `type` (optional): Artifact type (e.g., "pcap")
 - `payload_id` (optional): Idempotent payload ID for the request (auto-generated if not provided)
 - `days_retention` (optional): Number of days the artifact should be retained (default: 30)
 - `is_ignore_cert` (optional): If set, the sensor will ignore SSL certificate mismatches during artifact upload
 
-*Exactly one of `file` or `source` must be provided.
-
 **Response Event:** FILE_GET_REP
 
-**Usage Examples:**
+**Usage Example:**
 ```bash
 limacharlie sensor task <SID> artifact_get --file "C:\\Windows\\System32\\drivers\\etc\\hosts"
-limacharlie sensor task <SID> artifact_get --source "prefetch" --type "prefetch" --days-retention 7
 ```
 
 ---
