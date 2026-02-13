@@ -12480,13 +12480,17 @@
 </table>
 <h2 id="command-descriptions">Command Descriptions<a class="headerlink" href="#command-descriptions" title="Anchor link to this section">&para;</a></h2>
 <h3 id="artifact_get">artifact_get<a class="headerlink" href="#artifact_get" title="Anchor link to this section">&para;</a></h3>
-<p>Retrieve artifacts (pcaps, memory dumps, system files) from a sensor that were previously collected.</p>
+<p>Collect an artifact from a sensor by specifying a file path.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong>
-- <code>payload_id</code> (required): The unique identifier of the artifact to retrieve</p>
+- <code>file</code> (required): File path to collect from the sensor
+- <code>type</code> (optional): Artifact type (e.g., "pcap")
+- <code>payload_id</code> (optional): Idempotent payload ID for the request (auto-generated if not provided)
+- <code>days_retention</code> (optional): Number of days the artifact should be retained (default: 30)
+- <code>is_ignore_cert</code> (optional): If set, the sensor will ignore SSL certificate mismatches during artifact upload</p>
 <p><strong>Response Event:</strong> FILE_GET_REP</p>
 <p><strong>Usage Example:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>artifact_get<span class="w"> </span>--payload_id<span class="w"> </span>&lt;PAYLOAD_ID&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>artifact_get<span class="w"> </span>--file<span class="w"> </span><span class="s2">&quot;C:\\Windows\\System32\\drivers\\etc\\hosts&quot;</span>
 </span></code></pre></div></p>
 <hr />
 <h3 id="dir_list">dir_list<a class="headerlink" href="#dir_list" title="Anchor link to this section">&para;</a></h3>
