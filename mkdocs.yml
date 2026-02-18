@@ -411,6 +411,7 @@ nav:
       - Permissions: 8-reference/permissions.md
       - Error Codes: 8-reference/error-codes.md
       - Auth Resource Locator: 8-reference/authentication-resource-locator.md
+      - YARA Modules: 8-reference/yara-modules.md
       - FAQ:
           - Overview: 8-reference/faq/index.md
           - General: 8-reference/faq/general.md
