@@ -9480,10 +9480,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#python" class="md-nav__link">
+  <a href="#sdks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Python
+        SDKs
       
     </span>
   </a>
@@ -9548,6 +9548,56 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#programmatic-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Programmatic Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Programmatic Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-api-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List API Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create an API Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete an API Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -10932,10 +10982,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#python" class="md-nav__link">
+  <a href="#sdks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Python
+        SDKs
       
     </span>
   </a>
@@ -11000,6 +11050,56 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#programmatic-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Programmatic Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Programmatic Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-api-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List API Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create an API Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-an-api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete an API Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -11107,12 +11207,40 @@
 <h2 id="managing">Managing<a class="headerlink" href="#managing" title="Anchor link to this section">&para;</a></h2>
 <p>The API Keys are managed through the <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> view of the https://limacharlie.io web interface.</p>
 <h2 id="getting-a-jwt">Getting a JWT<a class="headerlink" href="#getting-a-jwt" title="Anchor link to this section">&para;</a></h2>
-<p>Simply issue an HTTP POST such as:</p>
-<p><code>curl -X POST "https://jwt.limacharlie.io" -H "Content-Type: application/x-www-form-urlencoded" -d "oid=&lt;YOUR_OID&gt;&amp;secret=&lt;YOUR_API_KEY&gt;"</code></p>
-<p>where the <code>oid</code> parameter is the <abbr title="In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry,...">Organization ID</abbr> as found through the web interface and the <code>secret</code> parameter is the API key.</p>
-<p>The return value is a simple JSON response with a <code>jwt</code> component which is the JSON web token. This token is only valid for one hour to limit the possible damage of a leak, and make the deletion of the API keys easier.</p>
-<p>Response:</p>
-<p><code>{ "jwt": "&lt;JWT_VALUE_HERE&gt;" }</code></p>
+<p>Issue an HTTP POST to <code>https://jwt.limacharlie.io</code> with the <abbr title="In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry,...">Organization ID</abbr> and API key. The returned JWT is valid for one hour.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">REST API</label><label for="__tabbed_1_2">Python</label><label for="__tabbed_1_3">Go</label><label for="__tabbed_1_4"><abbr title="Command-line Interface">CLI</abbr></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://jwt.limacharlie.io&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/x-www-form-urlencoded&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;oid=YOUR_OID&amp;secret=YOUR_API_KEY&quot;</span>
+</span></code></pre></div>
+<p>Response: <code>{ "jwt": "&lt;JWT_VALUE_HERE&gt;" }</code></p>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># JWT is acquired and refreshed automatically</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">oid</span><span class="o">=</span><span class="s2">&quot;YOUR_OID&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-go highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nx">limacharlie</span><span class="w"> </span><span class="s">&quot;github.com/refractionPOINT/go-limacharlie/limacharlie&quot;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">// JWT is acquired and refreshed automatically</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nx">client</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">NewClient</span><span class="p">(</span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">ClientOptions</span><span class="p">{</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nx">OID</span><span class="p">:</span><span class="w">    </span><span class="s">&quot;YOUR_OID&quot;</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nx">APIKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">,</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">},</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Credentials are stored in ~/.limacharlie after login</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>limacharlie<span class="w"> </span>auth<span class="w"> </span>login
+</span></code></pre></div>
+</div>
+</div>
+</div>
 <h3 id="user-api-keys">User API Keys<a class="headerlink" href="#user-api-keys" title="Anchor link to this section">&para;</a></h3>
 <p>User API keys are to generate JSON web tokens (JWTs) for the REST API. In contrast to <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> API keys, the User API keys are associated with a specific user and provide the exact same access across all organizations.</p>
 <p>This makes User API Keys very powerful but also riskier to manage. Therefore we recommend using <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> API keys whenever possible.</p>
@@ -11124,8 +11252,8 @@
 <p><code>https://app.limacharlie.io/user_key_info?secret=&lt;YOUR_USER_API_KEY&gt;&amp;uid=&lt;YOUR_USER_ID&gt;&amp;with_names=true</code></p>
 <h4 id="ingestion-keys">Ingestion Keys<a class="headerlink" href="#ingestion-keys" title="Anchor link to this section">&para;</a></h4>
 <p>The <a href="../../../5-integrations/extensions/limacharlie/artifact/">artifact collection</a> in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the <code>ingestkey.ctrl</code> permission.</p>
-<h2 id="python">Python<a class="headerlink" href="#python" title="Anchor link to this section">&para;</a></h2>
-<p>A simple <a href="https://github.com/refractionpoint/python-limacharlie/">Python API</a> is also provided that simplifies usage of the REST API by taking care of the API Key -&gt; JWT exchange as necessary and wraps the functionality into nicer objects.</p>
+<h2 id="sdks">SDKs<a class="headerlink" href="#sdks" title="Anchor link to this section">&para;</a></h2>
+<p>The <a href="../../../6-developer-guide/sdks/python-sdk/">Python SDK</a> and <a href="../../../6-developer-guide/sdks/go-sdk/">Go SDK</a> handle the API Key to JWT exchange automatically and wrap the REST API into convenient objects.</p>
 <h2 id="privileges">Privileges<a class="headerlink" href="#privileges" title="Anchor link to this section">&para;</a></h2>
 <p>API Keys have several on-off privileges available.</p>
 <p>To see a full list, see the "REST API" section of your organization.</p>
@@ -11153,10 +11281,127 @@
 <p>In LimaCharlie, an <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.</p>
 <p>In LimaCharlie, an <abbr title="In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry,...">Organization ID</abbr> is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The <abbr title="In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry,...">Organization ID</abbr> ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.</p>
 <p>Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of <abbr title="Endpoint Detection &amp; Response">EDR</abbr> telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.</p>
+<h2 id="programmatic-management">Programmatic Management<a class="headerlink" href="#programmatic-management" title="Anchor link to this section">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Prerequisites</p>
+<p>Managing API keys programmatically requires an existing API key with the <code>apikey.ctrl</code> permission. See <a href="#managing">Managing</a> for initial setup through the web interface.</p>
+</div>
+<h3 id="list-api-keys">List API Keys<a class="headerlink" href="#list-api-keys" title="Anchor link to this section">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">REST API</label><label for="__tabbed_2_2">Python</label><label for="__tabbed_2_3">Go</label><label for="__tabbed_2_4"><abbr title="Command-line Interface">CLI</abbr></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="s2">&quot;https://api.limacharlie.io/v1/orgs/YOUR_OID/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.sdk.organization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Organization</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.sdk.api_keys</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApiKeys</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">oid</span><span class="o">=</span><span class="s2">&quot;YOUR_OID&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">org</span> <span class="o">=</span> <span class="n">Organization</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">keys</span> <span class="o">=</span> <span class="n">ApiKeys</span><span class="p">(</span><span class="n">org</span><span class="p">)</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-go highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nx">limacharlie</span><span class="w"> </span><span class="s">&quot;github.com/refractionPOINT/go-limacharlie/limacharlie&quot;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nx">client</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">NewClient</span><span class="p">(</span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">ClientOptions</span><span class="p">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="nx">OID</span><span class="p">:</span><span class="w">    </span><span class="s">&quot;YOUR_OID&quot;</span><span class="p">,</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nx">APIKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">,</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="p">},</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nx">org</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">NewOrganization</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nx">keys</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">org</span><span class="p">.</span><span class="nx">GetAPIKeys</span><span class="p">()</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limacharlie<span class="w"> </span>api-key<span class="w"> </span>list
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h3 id="create-an-api-key">Create an API Key<a class="headerlink" href="#create-an-api-key" title="Anchor link to this section">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:4"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">REST API</label><label for="__tabbed_3_2">Python</label><label for="__tabbed_3_3">Go</label><label for="__tabbed_3_4"><abbr title="Command-line Interface">CLI</abbr></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://api.limacharlie.io/v1/orgs/YOUR_OID/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;key_name=ci-key&amp;perms=dr.list,dr.set&quot;</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.sdk.organization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Organization</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.sdk.api_keys</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApiKeys</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">oid</span><span class="o">=</span><span class="s2">&quot;YOUR_OID&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="n">org</span> <span class="o">=</span> <span class="n">Organization</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">key</span> <span class="o">=</span> <span class="n">ApiKeys</span><span class="p">(</span><span class="n">org</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;ci-key&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;dr.list&quot;</span><span class="p">,</span> <span class="s2">&quot;dr.set&quot;</span><span class="p">])</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-go highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">import</span><span class="w"> </span><span class="nx">limacharlie</span><span class="w"> </span><span class="s">&quot;github.com/refractionPOINT/go-limacharlie/limacharlie&quot;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nx">client</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">NewClient</span><span class="p">(</span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">ClientOptions</span><span class="p">{</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="nx">OID</span><span class="p">:</span><span class="w">    </span><span class="s">&quot;YOUR_OID&quot;</span><span class="p">,</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="nx">APIKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">,</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="p">},</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nx">org</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">NewOrganization</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="nx">key</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">org</span><span class="p">.</span><span class="nx">CreateAPIKey</span><span class="p">(</span><span class="s">&quot;ci-key&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&quot;dr.list&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;dr.set&quot;</span><span class="p">})</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>limacharlie<span class="w"> </span>api-key<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>ci-key<span class="w"> </span>--permissions<span class="w"> </span><span class="s2">&quot;dr.list,dr.set&quot;</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h3 id="delete-an-api-key">Delete an API Key<a class="headerlink" href="#delete-an-api-key" title="Anchor link to this section">&para;</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:4"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">REST API</label><label for="__tabbed_4_2">Python</label><label for="__tabbed_4_3">Go</label><label for="__tabbed_4_4"><abbr title="Command-line Interface">CLI</abbr></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="s2">&quot;https://api.limacharlie.io/v1/orgs/YOUR_OID/keys&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;key_hash=KEY_HASH_TO_DELETE&quot;</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.sdk.organization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Organization</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie.sdk.api_keys</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApiKeys</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">oid</span><span class="o">=</span><span class="s2">&quot;YOUR_OID&quot;</span><span class="p">,</span> <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="n">org</span> <span class="o">=</span> <span class="n">Organization</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="n">ApiKeys</span><span class="p">(</span><span class="n">org</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;KEY_HASH_TO_DELETE&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-go highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">import</span><span class="w"> </span><span class="nx">limacharlie</span><span class="w"> </span><span class="s">&quot;github.com/refractionPOINT/go-limacharlie/limacharlie&quot;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="nx">client</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">NewClient</span><span class="p">(</span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">ClientOptions</span><span class="p">{</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nx">OID</span><span class="p">:</span><span class="w">    </span><span class="s">&quot;YOUR_OID&quot;</span><span class="p">,</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nx">APIKey</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">,</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="p">},</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="nx">org</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">limacharlie</span><span class="p">.</span><span class="nx">NewOrganization</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">org</span><span class="p">.</span><span class="nx">DeleteAPIKey</span><span class="p">(</span><span class="s">&quot;KEY_HASH_TO_DELETE&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>limacharlie<span class="w"> </span>api-key<span class="w"> </span>delete<span class="w"> </span>--key-hash<span class="w"> </span>KEY_HASH_TO_DELETE<span class="w"> </span>--confirm
+</span></code></pre></div>
+</div>
+</div>
+</div>
 <hr />
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li><a href="../../../6-developer-guide/sdks/">SDKs</a></li>
+<li><a href="../../../6-developer-guide/sdks/python-sdk/">Python SDK</a></li>
+<li><a href="../../../6-developer-guide/sdks/go-sdk/">Go SDK</a></li>
 </ul>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
