@@ -68,9 +68,9 @@ LimaCharlie makes it easy to add a detection & response rule as soon as new vari
 
 ## What latency can I expect in LimaCharlie?
 
-LimaCharlie Detection & Response (D&R) engine has very low latency and you can expect that responses are almost instantaneous (e.g. 100ms).
+The D&R engine processes events in real-time with sub-100ms latency. Batch outputs (S3, SFTP, GCS) have configurable timing; live outputs (Syslog) deliver immediately.
 
-You may notice some latency as it relates to outputs. Some of our outputs are done in batches, such as Amazon S3, SFTP, Google Cloud Storage. You can configure the maximum size and maximum time for these outputs. We also offer live outputs, such as Syslog.
+If you are seeing high `routing.latency` values on detections, note that this field measures end-to-end time from event origin to detection creation, not D&R processing time. See [Understanding Latency](../latency.md) for a full explanation of what contributes to this value and how to diagnose it.
 
 ## How can I integrate LimaCharlie with my existing SIEM?
 

@@ -412,6 +412,7 @@ nav:
       - Error Codes: 8-reference/error-codes.md
       - Auth Resource Locator: 8-reference/authentication-resource-locator.md
       - YARA Modules: 8-reference/yara-modules.md
+      - Latency: 8-reference/latency.md
       - FAQ:
           - Overview: 8-reference/faq/index.md
           - General: 8-reference/faq/general.md
