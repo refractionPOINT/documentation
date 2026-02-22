@@ -83,6 +83,184 @@ path: routing/hostname
 value: web-server-2
 ```
 
+## Programmatic Management
+
+!!! info "Prerequisites"
+    You need a valid API key with `dr.list` and `dr.set` permissions.
+    See [API Keys](../7-administration/access/api-keys.md) for setup instructions.
+
+### List FP Rules
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/hive/fp/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "fp")
+    rules = hive.list()
+    for name, record in rules.items():
+        print(name, record.enabled)
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+    hc := limacharlie.NewHiveClient(org)
+    records, _ := hc.List(limacharlie.HiveArgs{
+        HiveName:     "fp",
+        PartitionKey: org.GetOID(),
+    })
+    for name, record := range records {
+        fmt.Println(name, record.UsrMtd.Enabled)
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie fp list
+    ```
+
+### Get an FP Rule
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/hive/fp/YOUR_OID/RULE_NAME/data" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    hive = Hive(org, "fp")
+    rule = hive.get("my-fp-rule")
+    print(rule.data)
+    ```
+
+=== "Go"
+
+    ```go
+    hc := limacharlie.NewHiveClient(org)
+    record, _ := hc.Get(limacharlie.HiveArgs{
+        HiveName:     "fp",
+        PartitionKey: org.GetOID(),
+        Key:          "my-fp-rule",
+    })
+    fmt.Println(record.Data)
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie fp get --key my-fp-rule
+    ```
+
+### Create or Update an FP Rule
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST "https://api.limacharlie.io/v1/hive/fp/YOUR_OID/suppress-known-app/data" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d 'data={"op":"is","path":"cat","value":"known-benign-detection"}' \
+      -d 'usr_mtd={"enabled":true}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    hive = Hive(org, "fp")
+    hive.set(HiveRecord(
+        name="suppress-known-app",
+        data={
+            "op": "is",
+            "path": "cat",
+            "value": "known-benign-detection",
+        },
+        enabled=True,
+    ))
+    ```
+
+=== "Go"
+
+    ```go
+    enabled := true
+    hc := limacharlie.NewHiveClient(org)
+    hc.Add(limacharlie.HiveArgs{
+        HiveName:     "fp",
+        PartitionKey: org.GetOID(),
+        Key:          "suppress-known-app",
+        Data: limacharlie.Dict{
+            "op":    "is",
+            "path":  "cat",
+            "value": "known-benign-detection",
+        },
+        Enabled: &enabled,
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    # Save your FP rule to a file, then:
+    limacharlie fp set --key suppress-known-app --input-file fp-rule.yaml
+    ```
+
+### Delete an FP Rule
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE "https://api.limacharlie.io/v1/hive/fp/YOUR_OID/suppress-known-app" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    hive = Hive(org, "fp")
+    hive.delete("suppress-known-app")
+    ```
+
+=== "Go"
+
+    ```go
+    hc := limacharlie.NewHiveClient(org)
+    hc.Remove(limacharlie.HiveArgs{
+        HiveName:     "fp",
+        PartitionKey: org.GetOID(),
+        Key:          "suppress-known-app",
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie fp delete --key suppress-known-app --confirm
+    ```
+
 ---
 
 ## See Also

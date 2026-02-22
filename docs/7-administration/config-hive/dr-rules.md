@@ -79,4 +79,205 @@ options:
 }
 ```
 
+## Programmatic Management
+
+!!! info "Prerequisites"
+    You need a valid API key with `dr.list` and `dr.set` permissions.
+    See [API Keys](../access/api-keys.md) for setup instructions.
+
+The D&R rules hive is named `dr-general`. Managed rules use `dr-managed`.
+
+### List Rules
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/hive/dr-general/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "dr-general")
+    rules = hive.list()
+    for name, record in rules.items():
+        print(name, record.enabled)
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+    hc := limacharlie.NewHiveClient(org)
+    records, _ := hc.List(limacharlie.HiveArgs{
+        HiveName:     "dr-general",
+        PartitionKey: org.GetOID(),
+    })
+    for name, record := range records {
+        fmt.Println(name, record.UsrMtd.Enabled)
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie hive list dr-general
+    # Or use the D&R shortcut:
+    limacharlie dr list
+    ```
+
+### Get a Rule
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/hive/dr-general/YOUR_OID/RULE_NAME/data" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    hive = Hive(org, "dr-general")
+    rule = hive.get("my-detection-rule")
+    print(rule.data)
+    ```
+
+=== "Go"
+
+    ```go
+    hc := limacharlie.NewHiveClient(org)
+    record, _ := hc.Get(limacharlie.HiveArgs{
+        HiveName:     "dr-general",
+        PartitionKey: org.GetOID(),
+        Key:          "my-detection-rule",
+    })
+    fmt.Println(record.Data)
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie hive get dr-general --key my-detection-rule
+    # Or use the D&R shortcut:
+    limacharlie dr get --key my-detection-rule
+    ```
+
+### Set a Rule
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST "https://api.limacharlie.io/v1/hive/dr-general/YOUR_OID/my-rule/data" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d 'data={"detect":{"event":"NEW_PROCESS","op":"ends with","path":"event/FILE_PATH","value":".bat"},"respond":[{"action":"report","name":"bat-file-execution"}]}' \
+      -d 'usr_mtd={"enabled":true}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    hive = Hive(org, "dr-general")
+    hive.set(HiveRecord(
+        name="my-rule",
+        data={
+            "detect": {
+                "event": "NEW_PROCESS",
+                "op": "ends with",
+                "path": "event/FILE_PATH",
+                "value": ".bat",
+            },
+            "respond": [
+                {"action": "report", "name": "bat-file-execution"}
+            ],
+        },
+        enabled=True,
+    ))
+    ```
+
+=== "Go"
+
+    ```go
+    enabled := true
+    hc := limacharlie.NewHiveClient(org)
+    hc.Add(limacharlie.HiveArgs{
+        HiveName:     "dr-general",
+        PartitionKey: org.GetOID(),
+        Key:          "my-rule",
+        Data: limacharlie.Dict{
+            "detect": limacharlie.Dict{
+                "event": "NEW_PROCESS",
+                "op":    "ends with",
+                "path":  "event/FILE_PATH",
+                "value": ".bat",
+            },
+            "respond": limacharlie.List{
+                limacharlie.Dict{"action": "report", "name": "bat-file-execution"},
+            },
+        },
+        Enabled: &enabled,
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie hive set dr-general --key my-rule --data rule.json
+    # Or use the D&R shortcut:
+    limacharlie dr set --key my-rule --input-file rule.yaml
+    ```
+
+### Delete a Rule
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE "https://api.limacharlie.io/v1/hive/dr-general/YOUR_OID/my-rule" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    hive = Hive(org, "dr-general")
+    hive.delete("my-rule")
+    ```
+
+=== "Go"
+
+    ```go
+    hc := limacharlie.NewHiveClient(org)
+    hc.Remove(limacharlie.HiveArgs{
+        HiveName:     "dr-general",
+        PartitionKey: org.GetOID(),
+        Key:          "my-rule",
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie hive remove dr-general --key my-rule
+    # Or use the D&R shortcut:
+    limacharlie dr delete --key my-rule --confirm
+    ```
+
+---
+
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.

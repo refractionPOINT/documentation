@@ -75,6 +75,264 @@ LimaCharlie also provides several publicly available lookups for use in your Org
 
 If your lookups change frequently and you wish to keep them up to date, LimaCharlie offers the lookup manager extension as a mechanism to automatically update your lookups every 24 hours. Documentation on the lookup manager can be found [here](../../5-integrations/extensions/limacharlie/lookup-manager.md).
 
+## Programmatic Management
+
+!!! info "Prerequisites"
+    All API and SDK examples require an API key with the appropriate permissions. See [API Keys](../access/api-keys.md) for setup instructions.
+
+### List Lookups
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://api.limacharlie.io/v1/hive/lookup/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "lookup")
+    records = hive.list()
+    for name, record in records.items():
+        print(name, record.data)
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        "fmt"
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        records, _ := hc.List(limacharlie.HiveArgs{
+            HiveName:     "lookup",
+            PartitionKey: "YOUR_OID",
+        })
+        for name, record := range records {
+            fmt.Println(name, record.Data)
+        }
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie lookup list
+    ```
+
+### Get a Lookup
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://api.limacharlie.io/v1/hive/lookup/YOUR_OID/my-lookup/data" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "lookup")
+    record = hive.get("my-lookup")
+    print(record.data)
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        "fmt"
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        record, _ := hc.Get(limacharlie.HiveArgs{
+            HiveName:     "lookup",
+            PartitionKey: "YOUR_OID",
+            Key:          "my-lookup",
+        })
+        fmt.Println(record.Data)
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie lookup get --key my-lookup
+    ```
+
+### Create / Update a Lookup
+
+Lookups support three data formats: `lookup_data` (key-value pairs), `newline_content` (newline-separated keys), and `yaml_content` (YAML string).
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST \
+      "https://api.limacharlie.io/v1/hive/lookup/YOUR_OID/my-lookup/data" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d '{"data": "{\"lookup_data\": {\"8.8.8.8\": {}, \"1.1.1.1\": {}}}"}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "lookup")
+    record = HiveRecord("my-lookup", data={
+        "lookup_data": {
+            "8.8.8.8": {},
+            "1.1.1.1": {},
+        }
+    })
+    hive.set(record)
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        hc.Add(limacharlie.HiveArgs{
+            HiveName:     "lookup",
+            PartitionKey: "YOUR_OID",
+            Key:          "my-lookup",
+            Data: limacharlie.Dict{
+                "lookup_data": map[string]interface{}{
+                    "8.8.8.8": map[string]interface{}{},
+                    "1.1.1.1": map[string]interface{}{},
+                },
+            },
+        })
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie lookup set --key my-lookup \
+      --input-file lookup.json
+    ```
+
+    Where `lookup.json` contains:
+
+    ```json
+    {
+        "data": {
+            "lookup_data": {
+                "8.8.8.8": {},
+                "1.1.1.1": {}
+            }
+        }
+    }
+    ```
+
+### Delete a Lookup
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE \
+      "https://api.limacharlie.io/v1/hive/lookup/YOUR_OID/my-lookup" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "lookup")
+    hive.delete("my-lookup")
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        hc.Remove(limacharlie.HiveArgs{
+            HiveName:     "lookup",
+            PartitionKey: "YOUR_OID",
+            Key:          "my-lookup",
+        })
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie lookup delete --key my-lookup --confirm
+    ```
+
 ## Example Lookup
 
 ```json

@@ -12,17 +12,45 @@ The API Keys are managed through the Organization view of the https://limacharli
 
 ## Getting a JWT
 
-Simply issue an HTTP POST such as:
+Issue an HTTP POST to `https://jwt.limacharlie.io` with the Organization ID and API key. The returned JWT is valid for one hour.
 
-`curl -X POST "https://jwt.limacharlie.io" -H "Content-Type: application/x-www-form-urlencoded" -d "oid=<YOUR_OID>&secret=<YOUR_API_KEY>"`
+=== "REST API"
 
-where the `oid` parameter is the Organization ID as found through the web interface and the `secret` parameter is the API key.
+    ```bash
+    curl -X POST "https://jwt.limacharlie.io" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d "oid=YOUR_OID&secret=YOUR_API_KEY"
+    ```
 
-The return value is a simple JSON response with a `jwt` component which is the JSON web token. This token is only valid for one hour to limit the possible damage of a leak, and make the deletion of the API keys easier.
+    Response: `{ "jwt": "<JWT_VALUE_HERE>" }`
 
-Response:
+=== "Python"
 
-`{ "jwt": "<JWT_VALUE_HERE>" }`
+    ```python
+    from limacharlie.client import Client
+
+    # JWT is acquired and refreshed automatically
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    // JWT is acquired and refreshed automatically
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    ```
+
+=== "CLI"
+
+    ```bash
+    # Credentials are stored in ~/.limacharlie after login
+    limacharlie auth login
+    ```
 
 ### User API Keys
 
@@ -46,9 +74,9 @@ You may also use a User API Key to get the list of organizations available to it
 
 The [artifact collection](../../5-integrations/extensions/limacharlie/artifact.md) in LC requires Ingestion Keys, which can be managed through the REST API section of the LC web interface. Access to manage these Ingestion Keys requires the `ingestkey.ctrl` permission.
 
-## Python
+## SDKs
 
-A simple [Python API](https://github.com/refractionpoint/python-limacharlie/) is also provided that simplifies usage of the REST API by taking care of the API Key -> JWT exchange as necessary and wraps the functionality into nicer objects.
+The [Python SDK](../../6-developer-guide/sdks/python-sdk.md) and [Go SDK](../../6-developer-guide/sdks/go-sdk.md) handle the API Key to JWT exchange automatically and wrap the REST API into convenient objects.
 
 ## Privileges
 
@@ -93,8 +121,140 @@ In LimaCharlie, an Organization ID is a unique identifier assigned to each tenan
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
+## Programmatic Management
+
+!!! info "Prerequisites"
+    Managing API keys programmatically requires an existing API key with the `apikey.ctrl` permission. See [Managing](#managing) for initial setup through the web interface.
+
+### List API Keys
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/orgs/YOUR_OID/keys" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.api_keys import ApiKeys
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    keys = ApiKeys(org).list()
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    keys, err := org.GetAPIKeys()
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie api-key list
+    ```
+
+### Create an API Key
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST "https://api.limacharlie.io/v1/orgs/YOUR_OID/keys" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d "key_name=ci-key&perms=dr.list,dr.set"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.api_keys import ApiKeys
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    key = ApiKeys(org).create("ci-key", ["dr.list", "dr.set"])
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    key, err := org.CreateAPIKey("ci-key", []string{"dr.list", "dr.set"})
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie api-key create --name ci-key --permissions "dr.list,dr.set"
+    ```
+
+### Delete an API Key
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE "https://api.limacharlie.io/v1/orgs/YOUR_OID/keys" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d "key_hash=KEY_HASH_TO_DELETE"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.api_keys import ApiKeys
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    ApiKeys(org).delete("KEY_HASH_TO_DELETE")
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    err := org.DeleteAPIKey("KEY_HASH_TO_DELETE")
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie api-key delete --key-hash KEY_HASH_TO_DELETE --confirm
+    ```
+
 ---
 
 ## See Also
 
 - [SDKs](../../6-developer-guide/sdks/index.md)
+- [Python SDK](../../6-developer-guide/sdks/python-sdk.md)
+- [Go SDK](../../6-developer-guide/sdks/go-sdk.md)
