@@ -12,27 +12,31 @@
         <meta name="author" content="refractionPOINT">
       
       
-        <link rel="canonical" href="https://refractionpoint.github.io/documentation/1-getting-started/use-cases/building-products/">
+        <link rel="canonical" href="https://refractionpoint.github.io/documentation/8-reference/latency/">
       
       
+        <link rel="prev" href="../yara-modules/">
+      
+      
+        <link rel="next" href="../faq/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
     
     
       
-        <title>Building Products - LimaCharlie Documentation</title>
+        <title>Latency - LimaCharlie Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -78,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#building-products" class="md-skip">
+        <a href="#understanding-latency" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +96,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="LimaCharlie Documentation" class="md-header__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
+    <a href="../.." title="LimaCharlie Documentation" class="md-header__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
       
-  <img src="../../../assets/images/logo.svg" alt="logo">
+  <img src="../../assets/images/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Building Products
+              Latency
             
           </span>
         </div>
@@ -229,7 +233,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -250,7 +254,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../" class="md-tabs__link">
+        <a href="../../1-getting-started/" class="md-tabs__link">
           
   
   
@@ -272,7 +276,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../2-sensors-deployment/" class="md-tabs__link">
+        <a href="../../2-sensors-deployment/" class="md-tabs__link">
           
   
   
@@ -294,7 +298,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../3-detection-response/" class="md-tabs__link">
+        <a href="../../3-detection-response/" class="md-tabs__link">
           
   
   
@@ -316,7 +320,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../4-data-queries/" class="md-tabs__link">
+        <a href="../../4-data-queries/" class="md-tabs__link">
           
   
   
@@ -338,7 +342,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../5-integrations/" class="md-tabs__link">
+        <a href="../../5-integrations/" class="md-tabs__link">
           
   
   
@@ -360,7 +364,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../6-developer-guide/" class="md-tabs__link">
+        <a href="../../6-developer-guide/" class="md-tabs__link">
           
   
   
@@ -382,7 +386,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../7-administration/" class="md-tabs__link">
+        <a href="../../7-administration/" class="md-tabs__link">
           
   
   
@@ -400,11 +404,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../../8-reference/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -440,9 +446,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="LimaCharlie Documentation" class="md-nav__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
+    <a href="../.." title="LimaCharlie Documentation" class="md-nav__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
       
-  <img src="../../../assets/images/logo.svg" alt="logo">
+  <img src="../../assets/images/logo.svg" alt="logo">
 
     </a>
     LimaCharlie Documentation
@@ -469,7 +475,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -527,7 +533,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../1-getting-started/" class="md-nav__link ">
               
   
   
@@ -571,7 +577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../what-is-limacharlie/" class="md-nav__link">
+      <a href="../../1-getting-started/what-is-limacharlie/" class="md-nav__link">
         
   
   
@@ -599,7 +605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../quickstart/" class="md-nav__link">
+      <a href="../../1-getting-started/quickstart/" class="md-nav__link">
         
   
   
@@ -627,7 +633,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../core-concepts/" class="md-nav__link">
+      <a href="../../1-getting-started/core-concepts/" class="md-nav__link">
         
   
   
@@ -678,7 +684,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../tutorials/" class="md-nav__link ">
+            <a href="../../1-getting-started/tutorials/" class="md-nav__link ">
               
   
   
@@ -775,7 +781,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../2-sensors-deployment/" class="md-nav__link ">
+            <a href="../../2-sensors-deployment/" class="md-nav__link ">
               
   
   
@@ -819,7 +825,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/installation-keys/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/installation-keys/" class="md-nav__link">
         
   
   
@@ -847,7 +853,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/connectivity/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/connectivity/" class="md-nav__link">
         
   
   
@@ -875,7 +881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/sensor-tags/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/sensor-tags/" class="md-nav__link">
         
   
   
@@ -903,7 +909,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/log-collection-guide/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/log-collection-guide/" class="md-nav__link">
         
   
   
@@ -931,7 +937,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/telemetry-index/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/telemetry-index/" class="md-nav__link">
         
   
   
@@ -1097,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/windows/installation/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/windows/installation/" class="md-nav__link">
         
   
   
@@ -1125,7 +1131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/windows/custom-msi/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/windows/custom-msi/" class="md-nav__link">
         
   
   
@@ -1227,7 +1233,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/macos/sequoia/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/macos/sequoia/" class="md-nav__link">
         
   
   
@@ -1255,7 +1261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/macos/installation/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/macos/installation/" class="md-nav__link">
         
   
   
@@ -1283,7 +1289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/macos/installation-older/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/macos/installation-older/" class="md-nav__link">
         
   
   
@@ -1311,7 +1317,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/macos/mdm-profiles/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/macos/mdm-profiles/" class="md-nav__link">
         
   
   
@@ -1339,7 +1345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/macos/jamf/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/macos/jamf/" class="md-nav__link">
         
   
   
@@ -1367,7 +1373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/macos/intune/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/macos/intune/" class="md-nav__link">
         
   
   
@@ -1459,7 +1465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/linux/installation/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/linux/installation/" class="md-nav__link">
         
   
   
@@ -1495,7 +1501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/chrome/installation/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/chrome/installation/" class="md-nav__link">
         
   
   
@@ -1523,7 +1529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/edge/installation/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/edge/installation/" class="md-nav__link">
         
   
   
@@ -1551,7 +1557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/docker/installation/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/docker/installation/" class="md-nav__link">
         
   
   
@@ -1579,7 +1585,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/containers/clusters/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/containers/clusters/" class="md-nav__link">
         
   
   
@@ -1607,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/vdi/templates/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/vdi/templates/" class="md-nav__link">
         
   
   
@@ -1635,7 +1641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/payloads/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/payloads/" class="md-nav__link">
         
   
   
@@ -1663,7 +1669,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/versioning-upgrades/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/versioning-upgrades/" class="md-nav__link">
         
   
   
@@ -1691,7 +1697,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/uninstallation/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/uninstallation/" class="md-nav__link">
         
   
   
@@ -1719,7 +1725,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/hostname-resolution/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/hostname-resolution/" class="md-nav__link">
         
   
   
@@ -1747,7 +1753,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/endpoint-agent/sleeper/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/endpoint-agent/sleeper/" class="md-nav__link">
         
   
   
@@ -1841,7 +1847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/enterprise-deployment/chrome-enterprise/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/enterprise-deployment/chrome-enterprise/" class="md-nav__link">
         
   
   
@@ -1869,7 +1875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/enterprise-deployment/intune/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/enterprise-deployment/intune/" class="md-nav__link">
         
   
   
@@ -1954,7 +1960,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../2-sensors-deployment/adapters/" class="md-nav__link ">
+            <a href="../../2-sensors-deployment/adapters/" class="md-nav__link ">
               
   
   
@@ -1998,7 +2004,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/deployment/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/deployment/" class="md-nav__link">
         
   
   
@@ -2026,7 +2032,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/as-a-service/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/as-a-service/" class="md-nav__link">
         
   
   
@@ -2054,7 +2060,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/usage/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/usage/" class="md-nav__link">
         
   
   
@@ -2150,7 +2156,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/aws-cloudtrail/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/aws-cloudtrail/" class="md-nav__link">
         
   
   
@@ -2178,7 +2184,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/aws-guardduty/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/aws-guardduty/" class="md-nav__link">
         
   
   
@@ -2206,7 +2212,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/s3/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/s3/" class="md-nav__link">
         
   
   
@@ -2234,7 +2240,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/sqs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/sqs/" class="md-nav__link">
         
   
   
@@ -2262,7 +2268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/azure-event-hub/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/azure-event-hub/" class="md-nav__link">
         
   
   
@@ -2290,7 +2296,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/google-cloud-pubsub/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/google-cloud-pubsub/" class="md-nav__link">
         
   
   
@@ -2318,7 +2324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/google-cloud-storage/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/google-cloud-storage/" class="md-nav__link">
         
   
   
@@ -2418,7 +2424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/azure/key-vault/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/azure/key-vault/" class="md-nav__link">
         
   
   
@@ -2446,7 +2452,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/azure/kubernetes-service/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/azure/kubernetes-service/" class="md-nav__link">
         
   
   
@@ -2474,7 +2480,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/azure/monitor/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/azure/monitor/" class="md-nav__link">
         
   
   
@@ -2502,7 +2508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/azure/network-security-group/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/azure/network-security-group/" class="md-nav__link">
         
   
   
@@ -2530,7 +2536,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/azure/sql-audit-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/azure/sql-audit-logs/" class="md-nav__link">
         
   
   
@@ -2628,7 +2634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/okta/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/okta/" class="md-nav__link">
         
   
   
@@ -2656,7 +2662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/microsoft-entra-id/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/microsoft-entra-id/" class="md-nav__link">
         
   
   
@@ -2684,7 +2690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/duo/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/duo/" class="md-nav__link">
         
   
   
@@ -2712,7 +2718,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/1password/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/1password/" class="md-nav__link">
         
   
   
@@ -2814,7 +2820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/crowdstrike/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/crowdstrike/" class="md-nav__link">
         
   
   
@@ -2842,7 +2848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/microsoft-defender/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/microsoft-defender/" class="md-nav__link">
         
   
   
@@ -2870,7 +2876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/sentinelone/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/sentinelone/" class="md-nav__link">
         
   
   
@@ -2898,7 +2904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/sophos/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/sophos/" class="md-nav__link">
         
   
   
@@ -2926,7 +2932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/carbon-black/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/carbon-black/" class="md-nav__link">
         
   
   
@@ -2954,7 +2960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/sublime-security/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/sublime-security/" class="md-nav__link">
         
   
   
@@ -3060,7 +3066,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/microsoft-365/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/microsoft-365/" class="md-nav__link">
         
   
   
@@ -3088,7 +3094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/slack-audit-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/slack-audit-logs/" class="md-nav__link">
         
   
   
@@ -3116,7 +3122,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/google-workspace/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/google-workspace/" class="md-nav__link">
         
   
   
@@ -3144,7 +3150,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/atlassian/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/atlassian/" class="md-nav__link">
         
   
   
@@ -3172,7 +3178,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/hubspot/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/hubspot/" class="md-nav__link">
         
   
   
@@ -3200,7 +3206,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/zendesk/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/zendesk/" class="md-nav__link">
         
   
   
@@ -3228,7 +3234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/pandadoc/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/pandadoc/" class="md-nav__link">
         
   
   
@@ -3256,7 +3262,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/mimecast/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/mimecast/" class="md-nav__link">
         
   
   
@@ -3354,7 +3360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/kubernetes-pods/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/kubernetes-pods/" class="md-nav__link">
         
   
   
@@ -3382,7 +3388,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/iis/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/iis/" class="md-nav__link">
         
   
   
@@ -3410,7 +3416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/cato/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/cato/" class="md-nav__link">
         
   
   
@@ -3438,7 +3444,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/tailscale/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/tailscale/" class="md-nav__link">
         
   
   
@@ -3544,7 +3550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/syslog/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/syslog/" class="md-nav__link">
         
   
   
@@ -3572,7 +3578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/json/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/json/" class="md-nav__link">
         
   
   
@@ -3600,7 +3606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/file/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/file/" class="md-nav__link">
         
   
   
@@ -3628,7 +3634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/stdin/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/stdin/" class="md-nav__link">
         
   
   
@@ -3656,7 +3662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/windows-event-log/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/windows-event-log/" class="md-nav__link">
         
   
   
@@ -3684,7 +3690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/evtx/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/evtx/" class="md-nav__link">
         
   
   
@@ -3712,7 +3718,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/mac-unified-logging/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/mac-unified-logging/" class="md-nav__link">
         
   
   
@@ -3740,7 +3746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/imap/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/imap/" class="md-nav__link">
         
   
   
@@ -3834,7 +3840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/canarytokens/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/canarytokens/" class="md-nav__link">
         
   
   
@@ -3862,7 +3868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/types/it-glue/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/types/it-glue/" class="md-nav__link">
         
   
   
@@ -3958,7 +3964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/examples/stdin-json/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/examples/stdin-json/" class="md-nav__link">
         
   
   
@@ -3986,7 +3992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/examples/stdin/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/examples/stdin/" class="md-nav__link">
         
   
   
@@ -4014,7 +4020,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/examples/windows-event-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/examples/windows-event-logs/" class="md-nav__link">
         
   
   
@@ -4110,7 +4116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/tutorials/webhook-adapter/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/tutorials/webhook-adapter/" class="md-nav__link">
         
   
   
@@ -4138,7 +4144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/tutorials/google-cloud-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/tutorials/google-cloud-logs/" class="md-nav__link">
         
   
   
@@ -4166,7 +4172,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/adapters/tutorials/cloud-telemetry/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/adapters/tutorials/cloud-telemetry/" class="md-nav__link">
         
   
   
@@ -4266,7 +4272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/troubleshooting/non-responding-sensors/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/troubleshooting/non-responding-sensors/" class="md-nav__link">
         
   
   
@@ -4370,7 +4376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/tutorials/windows-event-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/tutorials/windows-event-logs/" class="md-nav__link">
         
   
   
@@ -4398,7 +4404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/tutorials/sysmon-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/tutorials/sysmon-logs/" class="md-nav__link">
         
   
   
@@ -4426,7 +4432,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/tutorials/defender-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/tutorials/defender-logs/" class="md-nav__link">
         
   
   
@@ -4454,7 +4460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/tutorials/linux-audit-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/tutorials/linux-audit-logs/" class="md-nav__link">
         
   
   
@@ -4482,7 +4488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/tutorials/macos-unified-logs/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/tutorials/macos-unified-logs/" class="md-nav__link">
         
   
   
@@ -4510,7 +4516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/tutorials/test-sensor-version/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/tutorials/test-sensor-version/" class="md-nav__link">
         
   
   
@@ -4538,7 +4544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../2-sensors-deployment/tutorials/update-sensors/" class="md-nav__link">
+      <a href="../../2-sensors-deployment/tutorials/update-sensors/" class="md-nav__link">
         
   
   
@@ -4620,7 +4626,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../3-detection-response/" class="md-nav__link ">
+            <a href="../../3-detection-response/" class="md-nav__link ">
               
   
   
@@ -4664,7 +4670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/tutorials/writing-testing-rules/" class="md-nav__link">
+      <a href="../../3-detection-response/tutorials/writing-testing-rules/" class="md-nav__link">
         
   
   
@@ -4692,7 +4698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/tutorials/threat-feed-rule/" class="md-nav__link">
+      <a href="../../3-detection-response/tutorials/threat-feed-rule/" class="md-nav__link">
         
   
   
@@ -4720,7 +4726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/examples/" class="md-nav__link">
+      <a href="../../3-detection-response/examples/" class="md-nav__link">
         
   
   
@@ -4748,7 +4754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/false-positives/" class="md-nav__link">
+      <a href="../../3-detection-response/false-positives/" class="md-nav__link">
         
   
   
@@ -4776,7 +4782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/stateful-rules/" class="md-nav__link">
+      <a href="../../3-detection-response/stateful-rules/" class="md-nav__link">
         
   
   
@@ -4804,7 +4810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/unit-tests/" class="md-nav__link">
+      <a href="../../3-detection-response/unit-tests/" class="md-nav__link">
         
   
   
@@ -4832,7 +4838,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/alternate-targets/" class="md-nav__link">
+      <a href="../../3-detection-response/alternate-targets/" class="md-nav__link">
         
   
   
@@ -4926,7 +4932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/managed-rulesets/community-rules/" class="md-nav__link">
+      <a href="../../3-detection-response/managed-rulesets/community-rules/" class="md-nav__link">
         
   
   
@@ -4954,7 +4960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/managed-rulesets/sigma-converter/" class="md-nav__link">
+      <a href="../../3-detection-response/managed-rulesets/sigma-converter/" class="md-nav__link">
         
   
   
@@ -4982,7 +4988,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/managed-rulesets/soc-prime/" class="md-nav__link">
+      <a href="../../3-detection-response/managed-rulesets/soc-prime/" class="md-nav__link">
         
   
   
@@ -5010,7 +5016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/managed-rulesets/soteria/edr/" class="md-nav__link">
+      <a href="../../3-detection-response/managed-rulesets/soteria/edr/" class="md-nav__link">
         
   
   
@@ -5038,7 +5044,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/managed-rulesets/soteria/aws/" class="md-nav__link">
+      <a href="../../3-detection-response/managed-rulesets/soteria/aws/" class="md-nav__link">
         
   
   
@@ -5066,7 +5072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../3-detection-response/managed-rulesets/soteria/m365/" class="md-nav__link">
+      <a href="../../3-detection-response/managed-rulesets/soteria/m365/" class="md-nav__link">
         
   
   
@@ -5146,7 +5152,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../4-data-queries/" class="md-nav__link ">
+            <a href="../../4-data-queries/" class="md-nav__link ">
               
   
   
@@ -5190,7 +5196,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../4-data-queries/lcql-examples/" class="md-nav__link">
+      <a href="../../4-data-queries/lcql-examples/" class="md-nav__link">
         
   
   
@@ -5218,7 +5224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../4-data-queries/query-console-ui/" class="md-nav__link">
+      <a href="../../4-data-queries/query-console-ui/" class="md-nav__link">
         
   
   
@@ -5246,7 +5252,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../4-data-queries/query-cli/" class="md-nav__link">
+      <a href="../../4-data-queries/query-cli/" class="md-nav__link">
         
   
   
@@ -5274,7 +5280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../4-data-queries/template-strings/" class="md-nav__link">
+      <a href="../../4-data-queries/template-strings/" class="md-nav__link">
         
   
   
@@ -5302,7 +5308,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../4-data-queries/template-transforms/" class="md-nav__link">
+      <a href="../../4-data-queries/template-transforms/" class="md-nav__link">
         
   
   
@@ -5355,7 +5361,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../4-data-queries/events/" class="md-nav__link ">
+            <a href="../../4-data-queries/events/" class="md-nav__link ">
               
   
   
@@ -5399,7 +5405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../4-data-queries/events/sysmon-comparison/" class="md-nav__link">
+      <a href="../../4-data-queries/events/sysmon-comparison/" class="md-nav__link">
         
   
   
@@ -5491,7 +5497,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../4-data-queries/tutorials/bigquery-looker-studio/" class="md-nav__link">
+      <a href="../../4-data-queries/tutorials/bigquery-looker-studio/" class="md-nav__link">
         
   
   
@@ -5569,7 +5575,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../5-integrations/" class="md-nav__link ">
+            <a href="../../5-integrations/" class="md-nav__link ">
               
   
   
@@ -5613,7 +5619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/add-ons/" class="md-nav__link">
+      <a href="../../5-integrations/add-ons/" class="md-nav__link">
         
   
   
@@ -5674,7 +5680,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../5-integrations/outputs/" class="md-nav__link ">
+            <a href="../../5-integrations/outputs/" class="md-nav__link ">
               
   
   
@@ -5718,7 +5724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/stream-structures/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/stream-structures/" class="md-nav__link">
         
   
   
@@ -5746,7 +5752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/testing/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/testing/" class="md-nav__link">
         
   
   
@@ -5774,7 +5780,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/allowlisting/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/allowlisting/" class="md-nav__link">
         
   
   
@@ -5802,7 +5808,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/billing/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/billing/" class="md-nav__link">
         
   
   
@@ -5922,7 +5928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/amazon-s3/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/amazon-s3/" class="md-nav__link">
         
   
   
@@ -5950,7 +5956,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/splunk/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/splunk/" class="md-nav__link">
         
   
   
@@ -5978,7 +5984,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/elastic/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/elastic/" class="md-nav__link">
         
   
   
@@ -6006,7 +6012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/bigquery/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/bigquery/" class="md-nav__link">
         
   
   
@@ -6034,7 +6040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/syslog/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/syslog/" class="md-nav__link">
         
   
   
@@ -6062,7 +6068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/webhook/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/webhook/" class="md-nav__link">
         
   
   
@@ -6090,7 +6096,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/webhook-bulk/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/webhook-bulk/" class="md-nav__link">
         
   
   
@@ -6118,7 +6124,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/slack/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/slack/" class="md-nav__link">
         
   
   
@@ -6146,7 +6152,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/smtp/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/smtp/" class="md-nav__link">
         
   
   
@@ -6174,7 +6180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/apache-kafka/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/apache-kafka/" class="md-nav__link">
         
   
   
@@ -6202,7 +6208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/azure-event-hub/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/azure-event-hub/" class="md-nav__link">
         
   
   
@@ -6230,7 +6236,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/azure-storage-blob/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/azure-storage-blob/" class="md-nav__link">
         
   
   
@@ -6258,7 +6264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/google-cloud-storage/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/google-cloud-storage/" class="md-nav__link">
         
   
   
@@ -6286,7 +6292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/google-pubsub/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/google-pubsub/" class="md-nav__link">
         
   
   
@@ -6314,7 +6320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/humio/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/humio/" class="md-nav__link">
         
   
   
@@ -6342,7 +6348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/opensearch/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/opensearch/" class="md-nav__link">
         
   
   
@@ -6370,7 +6376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/scp/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/scp/" class="md-nav__link">
         
   
   
@@ -6398,7 +6404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/sftp/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/sftp/" class="md-nav__link">
         
   
   
@@ -6426,7 +6432,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/outputs/destinations/tines/" class="md-nav__link">
+      <a href="../../5-integrations/outputs/destinations/tines/" class="md-nav__link">
         
   
   
@@ -6503,7 +6509,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../5-integrations/extensions/" class="md-nav__link ">
+            <a href="../../5-integrations/extensions/" class="md-nav__link ">
               
   
   
@@ -6547,7 +6553,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/using-extensions/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/using-extensions/" class="md-nav__link">
         
   
   
@@ -6657,7 +6663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/git-sync/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/git-sync/" class="md-nav__link">
         
   
   
@@ -6685,7 +6691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/reliable-tasking/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/reliable-tasking/" class="md-nav__link">
         
   
   
@@ -6713,7 +6719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/yara-manager/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/yara-manager/" class="md-nav__link">
         
   
   
@@ -6741,7 +6747,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/artifact/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/artifact/" class="md-nav__link">
         
   
   
@@ -6769,7 +6775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/binlib/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/binlib/" class="md-nav__link">
         
   
   
@@ -6797,7 +6803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/infrastructure/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/infrastructure/" class="md-nav__link">
         
   
   
@@ -6825,7 +6831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/usage-alerts/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/usage-alerts/" class="md-nav__link">
         
   
   
@@ -6853,7 +6859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/dumper/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/dumper/" class="md-nav__link">
         
   
   
@@ -6881,7 +6887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/epp/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/epp/" class="md-nav__link">
         
   
   
@@ -6909,7 +6915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/exfil/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/exfil/" class="md-nav__link">
         
   
   
@@ -6937,7 +6943,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/integrity/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/integrity/" class="md-nav__link">
         
   
   
@@ -6965,7 +6971,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/lookup-manager/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/lookup-manager/" class="md-nav__link">
         
   
   
@@ -6993,7 +6999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/payload-manager/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/payload-manager/" class="md-nav__link">
         
   
   
@@ -7021,7 +7027,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/limacharlie/sensor-cull/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/limacharlie/sensor-cull/" class="md-nav__link">
         
   
   
@@ -7139,7 +7145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/velociraptor/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/velociraptor/" class="md-nav__link">
         
   
   
@@ -7167,7 +7173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/zeek/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/zeek/" class="md-nav__link">
         
   
   
@@ -7195,7 +7201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/yara/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/yara/" class="md-nav__link">
         
   
   
@@ -7223,7 +7229,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/hayabusa/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/hayabusa/" class="md-nav__link">
         
   
   
@@ -7251,7 +7257,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/atomic-red-team/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/atomic-red-team/" class="md-nav__link">
         
   
   
@@ -7279,7 +7285,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/otx/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/otx/" class="md-nav__link">
         
   
   
@@ -7307,7 +7313,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/pagerduty/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/pagerduty/" class="md-nav__link">
         
   
   
@@ -7335,7 +7341,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/plaso/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/plaso/" class="md-nav__link">
         
   
   
@@ -7363,7 +7369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/strelka/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/strelka/" class="md-nav__link">
         
   
   
@@ -7391,7 +7397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/twilio/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/twilio/" class="md-nav__link">
         
   
   
@@ -7419,7 +7425,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/govee/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/govee/" class="md-nav__link">
         
   
   
@@ -7447,7 +7453,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/nims/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/nims/" class="md-nav__link">
         
   
   
@@ -7475,7 +7481,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/renigma/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/renigma/" class="md-nav__link">
         
   
   
@@ -7503,7 +7509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/third-party/secureannex/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/third-party/secureannex/" class="md-nav__link">
         
   
   
@@ -7597,7 +7603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/labs/ai-agent-engine/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/labs/ai-agent-engine/" class="md-nav__link">
         
   
   
@@ -7625,7 +7631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/labs/playbook/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/labs/playbook/" class="md-nav__link">
         
   
   
@@ -7739,7 +7745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/1password/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/1password/" class="md-nav__link">
         
   
   
@@ -7767,7 +7773,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/aws/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/aws/" class="md-nav__link">
         
   
   
@@ -7795,7 +7801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/azure/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/azure/" class="md-nav__link">
         
   
   
@@ -7823,7 +7829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/digitalocean/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/digitalocean/" class="md-nav__link">
         
   
   
@@ -7851,7 +7857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/github/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/github/" class="md-nav__link">
         
   
   
@@ -7879,7 +7885,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/google-cloud/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/google-cloud/" class="md-nav__link">
         
   
   
@@ -7907,7 +7913,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/microsoft365/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/microsoft365/" class="md-nav__link">
         
   
   
@@ -7935,7 +7941,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/okta/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/okta/" class="md-nav__link">
         
   
   
@@ -7963,7 +7969,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/sdm/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/sdm/" class="md-nav__link">
         
   
   
@@ -7991,7 +7997,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/sublime/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/sublime/" class="md-nav__link">
         
   
   
@@ -8019,7 +8025,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/tailscale/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/tailscale/" class="md-nav__link">
         
   
   
@@ -8047,7 +8053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/extensions/cloud-cli/vultr/" class="md-nav__link">
+      <a href="../../5-integrations/extensions/cloud-cli/vultr/" class="md-nav__link">
         
   
   
@@ -8128,7 +8134,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../5-integrations/api-integrations/" class="md-nav__link ">
+            <a href="../../5-integrations/api-integrations/" class="md-nav__link ">
               
   
   
@@ -8172,7 +8178,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/api-integrations/virustotal/" class="md-nav__link">
+      <a href="../../5-integrations/api-integrations/virustotal/" class="md-nav__link">
         
   
   
@@ -8200,7 +8206,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/api-integrations/greynoise/" class="md-nav__link">
+      <a href="../../5-integrations/api-integrations/greynoise/" class="md-nav__link">
         
   
   
@@ -8228,7 +8234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/api-integrations/hybrid-analysis/" class="md-nav__link">
+      <a href="../../5-integrations/api-integrations/hybrid-analysis/" class="md-nav__link">
         
   
   
@@ -8256,7 +8262,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/api-integrations/alphamountain/" class="md-nav__link">
+      <a href="../../5-integrations/api-integrations/alphamountain/" class="md-nav__link">
         
   
   
@@ -8284,7 +8290,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/api-integrations/echotrail/" class="md-nav__link">
+      <a href="../../5-integrations/api-integrations/echotrail/" class="md-nav__link">
         
   
   
@@ -8312,7 +8318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/api-integrations/ip-geolocation/" class="md-nav__link">
+      <a href="../../5-integrations/api-integrations/ip-geolocation/" class="md-nav__link">
         
   
   
@@ -8340,7 +8346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/api-integrations/pangea/" class="md-nav__link">
+      <a href="../../5-integrations/api-integrations/pangea/" class="md-nav__link">
         
   
   
@@ -8434,7 +8440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/services/replay/" class="md-nav__link">
+      <a href="../../5-integrations/services/replay/" class="md-nav__link">
         
   
   
@@ -8462,7 +8468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/services/dumper/" class="md-nav__link">
+      <a href="../../5-integrations/services/dumper/" class="md-nav__link">
         
   
   
@@ -8558,7 +8564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/tutorials/virustotal-integration/" class="md-nav__link">
+      <a href="../../5-integrations/tutorials/virustotal-integration/" class="md-nav__link">
         
   
   
@@ -8586,7 +8592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/tutorials/hayabusa-bigquery/" class="md-nav__link">
+      <a href="../../5-integrations/tutorials/hayabusa-bigquery/" class="md-nav__link">
         
   
   
@@ -8614,7 +8620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../5-integrations/tutorials/velociraptor-bigquery/" class="md-nav__link">
+      <a href="../../5-integrations/tutorials/velociraptor-bigquery/" class="md-nav__link">
         
   
   
@@ -8694,7 +8700,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../6-developer-guide/" class="md-nav__link ">
+            <a href="../../6-developer-guide/" class="md-nav__link ">
               
   
   
@@ -8769,7 +8775,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../6-developer-guide/sdks/" class="md-nav__link ">
+            <a href="../../6-developer-guide/sdks/" class="md-nav__link ">
               
   
   
@@ -8813,7 +8819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/sdks/python-sdk/" class="md-nav__link">
+      <a href="../../6-developer-guide/sdks/python-sdk/" class="md-nav__link">
         
   
   
@@ -8841,7 +8847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/sdks/go-sdk/" class="md-nav__link">
+      <a href="../../6-developer-guide/sdks/go-sdk/" class="md-nav__link">
         
   
   
@@ -8869,7 +8875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/sdks/python-sdk-regeneration/" class="md-nav__link">
+      <a href="../../6-developer-guide/sdks/python-sdk-regeneration/" class="md-nav__link">
         
   
   
@@ -8897,7 +8903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/sdks/go-sdk-regeneration/" class="md-nav__link">
+      <a href="../../6-developer-guide/sdks/go-sdk-regeneration/" class="md-nav__link">
         
   
   
@@ -8933,7 +8939,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/sdk-overview/" class="md-nav__link">
+      <a href="../../6-developer-guide/sdk-overview/" class="md-nav__link">
         
   
   
@@ -8961,7 +8967,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/cli/" class="md-nav__link">
+      <a href="../../6-developer-guide/cli/" class="md-nav__link">
         
   
   
@@ -8989,7 +8995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/mcp-server/" class="md-nav__link">
+      <a href="../../6-developer-guide/mcp-server/" class="md-nav__link">
         
   
   
@@ -9017,7 +9023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/pipeline/" class="md-nav__link">
+      <a href="../../6-developer-guide/pipeline/" class="md-nav__link">
         
   
   
@@ -9105,7 +9111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/extensions/building-extensions/" class="md-nav__link">
+      <a href="../../6-developer-guide/extensions/building-extensions/" class="md-nav__link">
         
   
   
@@ -9133,7 +9139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/extensions/building-ui/" class="md-nav__link">
+      <a href="../../6-developer-guide/extensions/building-ui/" class="md-nav__link">
         
   
   
@@ -9161,7 +9167,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/extensions/schema-data-types/" class="md-nav__link">
+      <a href="../../6-developer-guide/extensions/schema-data-types/" class="md-nav__link">
         
   
   
@@ -9197,7 +9203,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../6-developer-guide/grant-program/" class="md-nav__link">
+      <a href="../../6-developer-guide/grant-program/" class="md-nav__link">
         
   
   
@@ -9261,7 +9267,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../7-administration/" class="md-nav__link ">
+            <a href="../../7-administration/" class="md-nav__link ">
               
   
   
@@ -9365,7 +9371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/access/api-keys/" class="md-nav__link">
+      <a href="../../7-administration/access/api-keys/" class="md-nav__link">
         
   
   
@@ -9393,7 +9399,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/access/user-access/" class="md-nav__link">
+      <a href="../../7-administration/access/user-access/" class="md-nav__link">
         
   
   
@@ -9421,7 +9427,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/access/sso/" class="md-nav__link">
+      <a href="../../7-administration/access/sso/" class="md-nav__link">
         
   
   
@@ -9515,7 +9521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/billing/options/" class="md-nav__link">
+      <a href="../../7-administration/billing/options/" class="md-nav__link">
         
   
   
@@ -9543,7 +9549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/billing/custom-plans/" class="md-nav__link">
+      <a href="../../7-administration/billing/custom-plans/" class="md-nav__link">
         
   
   
@@ -9614,7 +9620,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../7-administration/config-hive/" class="md-nav__link ">
+            <a href="../../7-administration/config-hive/" class="md-nav__link ">
               
   
   
@@ -9658,7 +9664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/config-hive/secrets/" class="md-nav__link">
+      <a href="../../7-administration/config-hive/secrets/" class="md-nav__link">
         
   
   
@@ -9686,7 +9692,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/config-hive/lookups/" class="md-nav__link">
+      <a href="../../7-administration/config-hive/lookups/" class="md-nav__link">
         
   
   
@@ -9714,7 +9720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/config-hive/dr-rules/" class="md-nav__link">
+      <a href="../../7-administration/config-hive/dr-rules/" class="md-nav__link">
         
   
   
@@ -9742,7 +9748,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/config-hive/yara/" class="md-nav__link">
+      <a href="../../7-administration/config-hive/yara/" class="md-nav__link">
         
   
   
@@ -9770,7 +9776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/config-hive/cloud-sensors/" class="md-nav__link">
+      <a href="../../7-administration/config-hive/cloud-sensors/" class="md-nav__link">
         
   
   
@@ -9798,7 +9804,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../7-administration/config-hive/investigation/" class="md-nav__link">
+      <a href="../../7-administration/config-hive/investigation/" class="md-nav__link">
         
   
   
@@ -9838,6 +9844,8 @@
       
   
   
+    
+  
   
   
     
@@ -9883,20 +9891,23 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../8-reference/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -9914,13 +9925,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -9940,7 +9951,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/endpoint-agent-commands/" class="md-nav__link">
+      <a href="../endpoint-agent-commands/" class="md-nav__link">
         
   
   
@@ -9968,7 +9979,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/endpoint-commands/" class="md-nav__link">
+      <a href="../endpoint-commands/" class="md-nav__link">
         
   
   
@@ -9996,7 +10007,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/detection-logic-operators/" class="md-nav__link">
+      <a href="../detection-logic-operators/" class="md-nav__link">
         
   
   
@@ -10024,7 +10035,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/response-actions/" class="md-nav__link">
+      <a href="../response-actions/" class="md-nav__link">
         
   
   
@@ -10052,7 +10063,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/edr-events/" class="md-nav__link">
+      <a href="../edr-events/" class="md-nav__link">
         
   
   
@@ -10080,7 +10091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/platform-events/" class="md-nav__link">
+      <a href="../platform-events/" class="md-nav__link">
         
   
   
@@ -10108,7 +10119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/schedule-events/" class="md-nav__link">
+      <a href="../schedule-events/" class="md-nav__link">
         
   
   
@@ -10136,7 +10147,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/event-schemas/" class="md-nav__link">
+      <a href="../event-schemas/" class="md-nav__link">
         
   
   
@@ -10164,7 +10175,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/sensor-selector-expressions/" class="md-nav__link">
+      <a href="../sensor-selector-expressions/" class="md-nav__link">
         
   
   
@@ -10192,7 +10203,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/id-schema/" class="md-nav__link">
+      <a href="../id-schema/" class="md-nav__link">
         
   
   
@@ -10220,7 +10231,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/permissions/" class="md-nav__link">
+      <a href="../permissions/" class="md-nav__link">
         
   
   
@@ -10248,7 +10259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/error-codes/" class="md-nav__link">
+      <a href="../error-codes/" class="md-nav__link">
         
   
   
@@ -10276,7 +10287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/authentication-resource-locator/" class="md-nav__link">
+      <a href="../authentication-resource-locator/" class="md-nav__link">
         
   
   
@@ -10304,7 +10315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/yara-modules/" class="md-nav__link">
+      <a href="../yara-modules/" class="md-nav__link">
         
   
   
@@ -10329,10 +10340,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../8-reference/latency/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Latency
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -10348,6 +10386,153 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dr-engine-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D&amp;R Engine Latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-routinglatency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding routing.latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-causes-of-high-routinglatency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Causes of High routing.latency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Causes of High routing.latency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-data-sources-uspadapters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Data Sources (USP/Adapters)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor-sleepwake-cycles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Sleep/Wake Cycles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-interruptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Interruptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os-level-delays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS-Level Delays
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-diagnose-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Diagnose Latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-can-affect-dr-processing-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Can Affect D&amp;R Processing Time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -10390,10 +10575,13 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -10401,7 +10589,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../8-reference/faq/" class="md-nav__link ">
+            <a href="../faq/" class="md-nav__link ">
               
   
   
@@ -10419,7 +10607,7 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_17" id="__nav_9_17_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_9_17" id="__nav_9_17_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
@@ -10445,7 +10633,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/general/" class="md-nav__link">
+      <a href="../faq/general/" class="md-nav__link">
         
   
   
@@ -10473,7 +10661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/account-management/" class="md-nav__link">
+      <a href="../faq/account-management/" class="md-nav__link">
         
   
   
@@ -10501,7 +10689,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/billing/" class="md-nav__link">
+      <a href="../faq/billing/" class="md-nav__link">
         
   
   
@@ -10529,7 +10717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/dr-rules/" class="md-nav__link">
+      <a href="../faq/dr-rules/" class="md-nav__link">
         
   
   
@@ -10557,7 +10745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/sensor-installation/" class="md-nav__link">
+      <a href="../faq/sensor-installation/" class="md-nav__link">
         
   
   
@@ -10585,7 +10773,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/privacy/" class="md-nav__link">
+      <a href="../faq/privacy/" class="md-nav__link">
         
   
   
@@ -10613,7 +10801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/troubleshooting/" class="md-nav__link">
+      <a href="../faq/troubleshooting/" class="md-nav__link">
         
   
   
@@ -10641,7 +10829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/invoices/" class="md-nav__link">
+      <a href="../faq/invoices/" class="md-nav__link">
         
   
   
@@ -10669,7 +10857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../8-reference/faq/sensor-removal/" class="md-nav__link">
+      <a href="../faq/sensor-removal/" class="md-nav__link">
         
   
   
@@ -10732,10 +10920,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#3-ways-to-go-to-market-more-effectively" class="md-nav__link">
+  <a href="#dr-engine-latency" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3 ways to go to market more effectively
+        D&amp;R Engine Latency
       
     </span>
   </a>
@@ -10743,10 +10931,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#focus-on-your-core-value" class="md-nav__link">
+  <a href="#output-latency" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Focus on Your Core Value
+        Output Latency
       
     </span>
   </a>
@@ -10754,10 +10942,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reduce-up-front-costs" class="md-nav__link">
+  <a href="#understanding-routinglatency" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reduce up-front costs
+        Understanding routing.latency
       
     </span>
   </a>
@@ -10765,10 +10953,93 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#build-to-scale" class="md-nav__link">
+  <a href="#common-causes-of-high-routinglatency" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Build to scale
+        Common Causes of High routing.latency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Causes of High routing.latency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-data-sources-uspadapters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Data Sources (USP/Adapters)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor-sleepwake-cycles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sensor Sleep/Wake Cycles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-interruptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Interruptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os-level-delays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS-Level Delays
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-diagnose-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Diagnose Latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-can-affect-dr-processing-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Can Affect D&amp;R Processing Time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
       
     </span>
   </a>
@@ -10793,6 +11064,46 @@
   
 
 
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Reference
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
@@ -10803,45 +11114,40 @@
   
 
 
-<h1 id="building-products">Building Products<a class="headerlink" href="#building-products" title="Anchor link to this section">&para;</a></h1>
-<p>The LimaCharlie SecOps Cloud Platform (SCP) is a unified platform for modern cybersecurity operations.</p>
-<p>The SCP delivers core cybersecurity capabilities and infrastructure via a public cloud model: on-demand, pay-per-use, and API-first. For the cybersecurity industry, this is a paradigm shift comparable to how the IT public cloud revolutionized IT.</p>
-<p>For cybersecurity startups and builders, the SecOps Cloud Platform offers a robust foundation to create valuable products and services. The SCP helps innovators get to market faster, build genuinely independent businesses, increase their probability of success, and scale successful offerings with ease.</p>
-<h3 id="3-ways-to-go-to-market-more-effectively">3 ways to go to market more effectively<a class="headerlink" href="#3-ways-to-go-to-market-more-effectively" title="Anchor link to this section">&para;</a></h3>
-<p>The SecOps Cloud Platform provides the tools and infrastructure needed to secure any given organization—and is designed to be flexible and highly customizable. Because of this, the SCP enables many different types of solutions. Individual builders' use cases can vary significantly. Nevertheless, all startups and product developers using the platform will benefit from the following three recommendations:</p>
+<h1 id="understanding-latency">Understanding Latency<a class="headerlink" href="#understanding-latency" title="Anchor link to this section">&para;</a></h1>
+<h2 id="dr-engine-latency"><abbr title="Detection &amp; Response">D&amp;R</abbr> Engine Latency<a class="headerlink" href="#dr-engine-latency" title="Anchor link to this section">&para;</a></h2>
+<p>The LimaCharlie Detection &amp; Response (<abbr title="Detection &amp; Response">D&amp;R</abbr>) engine processes events in real-time with very low latency. You can expect <abbr title="Detection &amp; Response">D&amp;R</abbr> rule evaluation to complete in under 100ms in typical conditions.</p>
+<p>There is no long-term backlog queue — events are processed in real-time as they arrive. If a sensor generates data at an unsustainable rate (thousands of events per second over an extended period), the platform will eventually emit a <strong>queue drop</strong> event rather than silently falling behind.</p>
+<h2 id="output-latency">Output Latency<a class="headerlink" href="#output-latency" title="Anchor link to this section">&para;</a></h2>
+<p>Some outputs are delivered in batches (e.g., Amazon S3, SFTP, Google Cloud Storage), where you can configure the maximum batch size and time window. Live outputs such as Syslog deliver data immediately.</p>
+<h2 id="understanding-routinglatency">Understanding <code>routing.latency</code><a class="headerlink" href="#understanding-routinglatency" title="Anchor link to this section">&para;</a></h2>
+<p>Detections include a <code>routing.latency</code> field, which is the delta between <code>routing.event_time</code> and <code>gen_time</code> (detection creation time), expressed in milliseconds. This value represents the <strong>total end-to-end time</strong> from when the event originally occurred to when LimaCharlie created the detection — it is <strong>not</strong> a measure of <abbr title="Detection &amp; Response">D&amp;R</abbr> engine processing time.</p>
+<p>The <code>routing.event_time</code> is the timestamp of the original event as reported by the source. This means <code>routing.latency</code> includes all delays that occur <strong>before</strong> the event reaches LimaCharlie, such as:</p>
 <ul>
-<li>Focus on Your Core Value</li>
-<li>Reduce Up-front Costs</li>
-<li>Build to Scale</li>
+<li>Time spent in third-party pipelines (e.g., Microsoft O365, <abbr title="Amazon Web Services">AWS</abbr> CloudTrail)</li>
+<li>Time between when an OS records an event internally and when it becomes available to the sensor (e.g., macOS Unified Logs, Windows Event Logs)</li>
+<li>Network transit time from the sensor to the LimaCharlie cloud</li>
 </ul>
-<h3 id="focus-on-your-core-value">Focus on Your Core Value<a class="headerlink" href="#focus-on-your-core-value" title="Anchor link to this section">&para;</a></h3>
-<p>The SecOps Cloud Platform delivers foundational, well-understood security technologies as capabilities: as open, cloud-native primitives instead of black-box tools. Here's how builders can use this fact to create better products and service offerings:</p>
-<p><strong>Clarify your differentiators.</strong> In a crowded marketplace where buyers are already wary of tool sprawl, it's difficult to stand out—and challenging to convince buyers to take on another vendor. To succeed, startups must demonstrate clear value and differentiate themselves. Determine what sets you apart, and where you can deliver the greatest value to customers. This is where your internal engineering resources should be focused.</p>
-<p><strong>Offload infrastructure work.</strong> The SecOps Cloud Platform offers the kinds of mature cybersecurity capabilities that teams used to have to develop themselves or purchase as part of a product. This includes things like: Deploying endpoint capabilities via a multiplatform agent, alerting and correlating logs from any source, automating real-time analysis and response regardless of the environment, routing telemetry data to any destination, performing historical threat hunts, isolating endpoints from a network remotely, and many more.</p>
-<p>In short, cybersecurity builders no longer need to "reinvent the wheel" in order to get to market. Here again, the clear analogy is to the IT public cloud. Most software developers today wouldn't invest in physical servers or develop complex, in-house solutions to handle application deployment and scaling. They would simply leverage cloud-based services like <abbr title="Amazon Web Services">AWS</abbr> Lambda or Azure Functions and run their applications without ever worrying about the underlying infrastructure.</p>
-<p>Similarly, by using the infrastructure capabilities of the SCP, cybersecurity builders can spend their time and resources on their core value proposition—thereby reducing maintenance and integration challenges, eliminating external dependencies, and avoiding the risk that comes from building on someone else's product.</p>
-<p><strong>Work with SCP engineers to develop custom integrations.</strong> The SecOps Cloud Platform is a vendor-neutral provider of tooling and infrastructure for the cybersecurity industry. It is not a potential competitor.</p>
-<p>As you develop on the SCP, reach out to LimaCharlie engineers for support in creating customized integrations, advice on best practices for a configurations or deployments, or feature requests that you'd like to see in the development roadmap. The SCP's public cloud business model means that the platform succeeds when its users succeed, so someone will always be on hand to help.</p>
-<p>By building on a public cloud for cybersecurity, startups can focus on what they do best without having to develop and maintain DIY solutions—and without putting their business in the hands of a traditional vendor.</p>
-<h3 id="reduce-up-front-costs">Reduce up-front costs<a class="headerlink" href="#reduce-up-front-costs" title="Anchor link to this section">&para;</a></h3>
-<p>The SecOps Cloud Platform has a transparent, pay-per-use pricing model and delivers all capabilities on demand. In addition, the platform offers a number of valuable free resources. This helps builders to cut costs and reduce initial investment in several ways:</p>
-<p><strong>Conduct research and develop a prototype for free.</strong> The SCP gives all users access to a fully featured free tier that includes two sensors. There is thus zero up-front cost to begin researching the platform, testing your idea, or even developing a prototype. Start by seeing if the SCP is the right choice for your project. Then, save money on early-stage development work once you begin.</p>
-<p><strong>Build without lock-in.</strong> The SCP's pricing model means you only pay for what you need, for as long as you use it. You don't have to deal with mandatory minimums, long-term contracts, complex licensing, or termination fees. This enables you to create on the platform secure in the knowledge that you are not committed to a given level of spending before your growth justifies it—and that you aren't locked into your infrastructure provider.</p>
-<p><strong>Use available SCP resources to save money.</strong> Building on the SCP also offers several direct and indirect ways to lower costs during development.</p>
-<p>The SecOps Cloud Platform is designed to be as user-friendly and easy to master as possible. In addition, the SCP is supported by extensive documentation, an active community forum of users, and a learning library full of tutorials and walkthroughs. This means developers will spend less time learning a new technology—and more time building.</p>
-<p>In addition, you can make use of more direct forms of assistance. Users can reach out to SCP engineers at any time for help. Qualified builders can also apply for a $1000 platform credit through the platform's Cybersecurity Infrastructure Grant Program. Leverage these resources to reduce your development costs and ensure that your engineers are spending their time on tasks that add the most value.</p>
-<p><strong>Meet compliance needs with free storage.</strong> All telemetry data brought into the SCP is stored for the cost of ingestion for one full year. If your project has data retention or compliance needs, leverage the SCP's default storage capability to help keep your data storage costs down.</p>
-<p><strong>Take advantage of discounted pricing.</strong> If you've decided to build with the SCP for the foreseeable future—or if your product or service has started to see significant uptake—use discounted pricing options to save money as you grow. The SecOps Cloud Platform provides volume-based discounts to help you improve your savings as usage increases, as well as annual or multi-year discounts for those ready to commit to longer-term platform usage.</p>
-<p>The SCP gives cybersecurity builders many of the competitive advantages the IT public cloud offers to startups in other verticals—and a high degree of direct assistance and support as well.</p>
-<h3 id="build-to-scale">Build to scale<a class="headerlink" href="#build-to-scale" title="Anchor link to this section">&para;</a></h3>
-<p>The SecOps Cloud Platform enables scalable cybersecurity operations. Here's how developers can benefit from building on such a platform:</p>
-<p><strong>Future-proof your infrastructure.</strong> Cybersecurity startups often turn to open-source or custom-built infrastructure to save money and stay independent. But while this approach may work early on, its limitations become apparent over time. It's possible to build performant and successful cybersecurity projects on open-source or DIY technologies.</p>
-<p>However, many businesses that take this route experience difficulties when they grow. The complexity, integration challenges, and troubleshooting work that are manageable with a small user base can quickly become untenable at scale. Before basing a part of your project on a custom or open-source solution, consider the challenges you will encounter later on if you are successful. You may be better served by using the SCP for that aspect of your offering.</p>
-<p><strong>Build on a scalable platform.</strong> The SecOps Cloud Platform is designed to help organizations scale their security operations. Basic assumptions of the platform include things like multitenancy, flexibility, open APIs, and rich automation capabilities. Builders should plan to scale from the outset—leveraging the SCP's engineering-centric approach to support future growth by developing architectures, integrations, and workflows that will enable scaling without limits.</p>
-<p>Any successful cybersecurity business will encounter challenges as it attempts to increase its customer support or its development work. However, building on an engineering-centric platform enables startups to plan for the future from day one—and makes growth easier and more trouble-free.</p>
-<p><strong>Scale with your revenue.</strong> A major problem for early-stage cybersecurity startups is that they must spend money on fixed infrastructure costs without having enough users for that to be profitable. If funding runs out before a product–market fit is found, the business fails.</p>
-<p>The SecOps Cloud Platform offers an alternative route. Leverage the SCP's pay-per-use pricing to scale your infrastructure spending with your revenue. Even if you start off with a small customer base, you won't be losing money on infrastructure costs. Conserve your resources and allocate your spending to development, marketing, and sales efforts instead.</p>
-<p>The SCP offers builders a firm foundation for success. It provides a platform that is built to scale—and its pay-as-you-go pricing helps startups extend their runway and grow gradually and safely.</p>
+<h2 id="common-causes-of-high-routinglatency">Common Causes of High <code>routing.latency</code><a class="headerlink" href="#common-causes-of-high-routinglatency" title="Anchor link to this section">&para;</a></h2>
+<h3 id="external-data-sources-uspadapters">External Data Sources (USP/Adapters)<a class="headerlink" href="#external-data-sources-uspadapters" title="Anchor link to this section">&para;</a></h3>
+<p>When ingesting data from external platforms via adapters, the source platform controls when events become available. For example, Microsoft 365 events can be delayed anywhere from minutes to several hours in Microsoft's own pipeline before LimaCharlie can pull them. LimaCharlie has no control over these upstream delays.</p>
+<h3 id="sensor-sleepwake-cycles"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Sleep/Wake Cycles<a class="headerlink" href="#sensor-sleepwake-cycles" title="Anchor link to this section">&para;</a></h3>
+<p>If a laptop goes to sleep and wakes up hours later, events generated before sleep are transmitted only after the sensor reconnects. An event from 12 hours ago that arrives after wake-up will show a <code>routing.latency</code> of 12+ hours, even though the <abbr title="Detection &amp; Response">D&amp;R</abbr> engine processed it instantly upon receipt.</p>
+<h3 id="network-interruptions">Network Interruptions<a class="headerlink" href="#network-interruptions" title="Anchor link to this section">&para;</a></h3>
+<p>If a sensor loses internet connectivity, it buffers events locally and transmits them when the connection is restored. This can produce a burst of events with high <code>routing.latency</code> values.</p>
+<h3 id="os-level-delays">OS-Level Delays<a class="headerlink" href="#os-level-delays" title="Anchor link to this section">&para;</a></h3>
+<p>Operating systems do not always emit internal events immediately. macOS and Windows may delay writing certain events to their respective log systems (Unified Logs, Event Logs), which means the sensor cannot transmit them until they are available.</p>
+<h2 id="how-to-diagnose-latency">How to Diagnose Latency<a class="headerlink" href="#how-to-diagnose-latency" title="Anchor link to this section">&para;</a></h2>
+<p>To assess whether the LimaCharlie processing pipeline is healthy, <strong>look at the minimum <code>routing.latency</code> value for a given sensor</strong> rather than the maximum or average. Because events from a sensor are processed first-in-first-out in real-time, if you see some events processed in a few hundred milliseconds, the pipeline is working correctly. High latency on specific events alongside low latency on others indicates the delays are on the source side, not in the LimaCharlie pipeline.</p>
+<h2 id="what-can-affect-dr-processing-time">What Can Affect <abbr title="Detection &amp; Response">D&amp;R</abbr> Processing Time<a class="headerlink" href="#what-can-affect-dr-processing-time" title="Anchor link to this section">&para;</a></h2>
+<p>While the <abbr title="Detection &amp; Response">D&amp;R</abbr> engine itself is sub-100ms, certain configurations can introduce additional processing time:</p>
+<ul>
+<li><strong>Blocking <abbr title="Detection &amp; Response">D&amp;R</abbr> actions</strong>: Rules that use <code>wait</code> or perform external lookups (e.g., VirusTotal queries) block processing while waiting for a response. Heavy use of these across many rules can introduce back-pressure.</li>
+<li><strong>Blocking outputs</strong>: Single-event webhook outputs that receive high volumes can create back-pressure if the destination is slow to respond.</li>
+</ul>
+<p>In practice, these factors typically add milliseconds to seconds, not minutes or hours.</p>
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Anchor link to this section">&para;</a></h2>
+<p>LimaCharlie's infrastructure is multi-tenant. There is no per-organization queue — events are processed across hundreds of services where each sensor's events are handled independently. This means latency issues in one organization do not affect others.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 
@@ -10874,6 +11180,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../yara-modules/" class="md-footer__link md-footer__link--prev" aria-label="Previous: YARA Modules">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                YARA Modules
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../faq/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
@@ -10934,10 +11278,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.tracking", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.tabs", "navigation.sections", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.tracking", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.tabs", "navigation.sections", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

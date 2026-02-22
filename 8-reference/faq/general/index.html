@@ -9885,6 +9885,8 @@
       
         
       
+        
+      
     
     
     
@@ -10338,6 +10340,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../latency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Latency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -10383,7 +10413,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_16" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_17" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -10405,14 +10435,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_16" id="__nav_9_16_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_17" id="__nav_9_17_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_16_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_9_16">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_17_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9_17">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -11149,8 +11179,8 @@
 <p>When the sensor is installed, LimaCharlie will start recording telemetry. It will not, however, generate detections or take actions to protect the endpoints automatically. As an infrastructure company, we recognize that each environment is different, and one size fits all approach rarely works well. By default, any new organization starts empty, without any pre-configured settings, add-ons, or <abbr title="Detection &amp; Response">D&amp;R</abbr> rules.</p>
 <p>LimaCharlie makes it easy to add a detection &amp; response rule as soon as new variants of malware are discovered. This way, you are in a full control of your coverage and there is no need to wait for a vendor to come up with a new detection rule.</p>
 <h2 id="what-latency-can-i-expect-in-limacharlie">What latency can I expect in LimaCharlie?<a class="headerlink" href="#what-latency-can-i-expect-in-limacharlie" title="Anchor link to this section">&para;</a></h2>
-<p>LimaCharlie Detection &amp; Response (<abbr title="Detection &amp; Response">D&amp;R</abbr>) engine has very low latency and you can expect that responses are almost instantaneous (e.g. 100ms).</p>
-<p>You may notice some latency as it relates to outputs. Some of our outputs are done in batches, such as Amazon S3, SFTP, Google Cloud Storage. You can configure the maximum size and maximum time for these outputs. We also offer live outputs, such as Syslog.</p>
+<p>The <abbr title="Detection &amp; Response">D&amp;R</abbr> engine processes events in real-time with sub-100ms latency. Batch outputs (S3, SFTP, GCS) have configurable timing; live outputs (Syslog) deliver immediately.</p>
+<p>If you are seeing high <code>routing.latency</code> values on detections, note that this field measures end-to-end time from event origin to detection creation, not <abbr title="Detection &amp; Response">D&amp;R</abbr> processing time. See <a href="../../latency/">Understanding Latency</a> for a full explanation of what contributes to this value and how to diagnose it.</p>
 <h2 id="how-can-i-integrate-limacharlie-with-my-existing-siem">How can I integrate LimaCharlie with my existing SIEM?<a class="headerlink" href="#how-can-i-integrate-limacharlie-with-my-existing-siem" title="Anchor link to this section">&para;</a></h2>
 <p>The most common use case we see is sending detections and events data from LimaCharlie into the SIEM.</p>
 <p>To do it, you will need to configure outputs. Here are some examples for configuring outputs to go to an email or to Chronicle.</p>
