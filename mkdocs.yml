@@ -242,6 +242,7 @@ nav:
       - Examples: 3-detection-response/examples.md
       - False Positive Rules: 3-detection-response/false-positives.md
       - Stateful Rules: 3-detection-response/stateful-rules.md
+      - Behavioral Detection: 3-detection-response/behavioral-detection.md
       - Unit Tests: 3-detection-response/unit-tests.md
       - Alternate Targets: 3-detection-response/alternate-targets.md
       - Managed Rulesets:

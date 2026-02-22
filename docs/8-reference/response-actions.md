@@ -34,6 +34,36 @@ The `is_global: true` means that the suppression should operate globally within 
 
 The `keys` parameter is a list of strings that support [templating](../4-data-queries/template-transforms.md). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil process-detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then *all* actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
 
+Key templates support three namespaces:
+
+- `{{ .event.* }}` — fields from the event payload
+- `{{ .routing.* }}` — routing metadata (sid, hostname, etc.)
+- `{{ .mtd.* }}` — detection metadata from lookup operators (e.g., GeoIP country, threat intel category)
+
+The `.mtd` namespace contains the metadata returned by lookup operators in the detection. This allows suppression keys to incorporate derived values. For example, using the [IP Geolocation](../5-integrations/api-integrations/ip-geolocation.md) lookup to key suppression on the resolved country:
+
+```yaml
+detect:
+  event: USER_LOGIN
+  op: lookup
+  path: event/SOURCE_IP
+  resource: lcr://api/ip-geo
+
+respond:
+  - action: report
+    name: first-login-from-country
+    suppression:
+      max_count: 1
+      period: 720h
+      is_global: true
+      keys:
+        - 'first-country'
+        - '{{ .event.USER_NAME }}'
+        - '{{ .mtd.lcr___api_ip_geo.country.iso_code }}'
+```
+
+The metadata key name is derived from the resource name with special characters replaced by underscores. See [Behavioral Detection](../3-detection-response/behavioral-detection.md) for more patterns.
+
 > Supported Time Period Formats
 >
 > LimaCharlie supports the following formats for time periods: **ns**, **us** (or **µs**, both are accepted), **ms**, **s**, **m**, **h** (nanoseconds, microseconds, milliseconds, seconds, minutes, and hours, respectively)
