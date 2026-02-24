@@ -15,6 +15,8 @@ On subscription, the extension automatically:
 
 No additional setup is required to begin receiving tickets. Detections start flowing immediately.
 
+The full API specification is available as an OpenAPI document at [ticketing.limacharlie.io/openapi](https://ticketing.limacharlie.io/openapi).
+
 !!! info "Permissions"
     The ticketing extension uses LimaCharlie's existing `investigation.get` and `investigation.set` permissions. Analysts need `investigation.get` to view tickets and reports, and `investigation.set` to update tickets, add notes, and manage configuration.
 
