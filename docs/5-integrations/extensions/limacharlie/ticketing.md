@@ -18,7 +18,7 @@ No additional setup is required to begin receiving tickets. Detections start flo
 The full API specification is available as an OpenAPI document at [ticketing.limacharlie.io/openapi](https://ticketing.limacharlie.io/openapi).
 
 !!! info "Permissions"
-    The ticketing extension uses LimaCharlie's existing `investigation.get` and `investigation.set` permissions. Analysts need `investigation.get` to view tickets and reports, and `investigation.set` to update tickets, add notes, and manage configuration.
+    The ticketing extension uses LimaCharlie's existing RBAC permissions. Analysts need `investigation.get` to view tickets and reports, and `investigation.set` to update tickets, add notes, and manage investigation data. Configuration management requires `org.conf.get` to read and `org.conf.set` to update organization settings.
 
 ## How Tickets Are Created
 
@@ -55,18 +55,24 @@ stateDiagram-v2
     new --> in_progress
     new --> escalated
     new --> closed
+    new --> merged
     acknowledged --> in_progress
     acknowledged --> escalated
     acknowledged --> closed
+    acknowledged --> merged
     in_progress --> escalated
     in_progress --> resolved
     in_progress --> closed
+    in_progress --> merged
     escalated --> in_progress
     escalated --> resolved
     escalated --> closed
+    escalated --> merged
     resolved --> closed
     resolved --> in_progress: reopen
+    resolved --> merged
     closed --> [*]
+    merged --> [*]
 ```
 
 ### Status Definitions
@@ -141,7 +147,6 @@ Each organization has its own configuration that controls severity mapping, SLA 
 | `retention_days` | int | `90` | Days to retain resolved/closed tickets before archival |
 | `auto_close_resolved_after_days` | int | `7` | Automatically close resolved tickets after this many days |
 | `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single tickets |
-| `notification_webhook` | string | | URL to receive webhook notifications for ticket events |
 
 ### Get Configuration
 
@@ -176,8 +181,7 @@ Each organization has its own configuration that controls severity mapping, SLA 
         },
         "retention_days": 90,
         "auto_close_resolved_after_days": 7,
-        "auto_grouping_enabled": true,
-        "notification_webhook": "https://hooks.slack.com/services/..."
+        "auto_grouping_enabled": true
       }'
     ```
 
@@ -192,7 +196,7 @@ Query the ticket queue with filtering, sorting, and pagination. Supports cross-o
     ```bash
     # List open tickets, most recent first
     curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/tickets?oid=YOUR_OID&status=new,acknowledged&sort=created_at&order=desc&limit=50" \
+      "https://ticketing.limacharlie.io/api/v1/tickets?oids=YOUR_OID&status=new,acknowledged&sort=created_at&order=desc&page_size=50" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
@@ -200,16 +204,16 @@ Available query parameters:
 
 | Parameter | Description |
 |-----------|-------------|
-| `oid` | Organization ID (supports multiple, comma-separated) |
+| `oids` | Organization IDs (comma-separated, required) |
 | `status` | Filter by status (comma-separated: `new`, `acknowledged`, `in_progress`, `escalated`, `resolved`, `closed`) |
-| `severity` | Filter by severity (`critical`, `high`, `medium`, `low`) |
-| `assignee` | Filter by assigned analyst |
-| `classification` | Filter by classification (`pending`, `true_positive`, `false_positive`) |
-| `escalation_group` | Filter by escalation group |
-| `sort` | Sort field (`created_at`, `severity`, `status`) |
+| `severity` | Filter by severity (comma-separated: `critical`, `high`, `medium`, `low`) |
+| `classification` | Filter by classification (comma-separated: `pending`, `true_positive`, `false_positive`) |
+| `assignee` | Filter by assigned analyst email |
+| `search` | Search text (matches against detection category and hostname) |
+| `sort` | Sort field (`created_at`, `severity`, `ticket_number`) |
 | `order` | Sort order (`asc`, `desc`) |
-| `limit` | Page size (default 50) |
-| `cursor` | Pagination cursor from previous response |
+| `page_size` | Page size, 1--200 (default 50) |
+| `page_token` | Pagination token from previous response |
 
 ### Getting a Ticket
 
@@ -258,10 +262,11 @@ Update multiple tickets at once, useful for bulk-closing false positives or reas
 
     ```bash
     curl -s -X POST \
-      "https://ticketing.limacharlie.io/api/v1/tickets/bulk-update?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/bulk-update" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
+        "oid": "YOUR_OID",
         "ticket_ids": ["TICKET_1", "TICKET_2", "TICKET_3"],
         "update": {
           "status": "closed",
@@ -269,6 +274,8 @@ Update multiple tickets at once, useful for bulk-closing false positives or reas
         }
       }'
     ```
+
+Up to 200 tickets can be updated in a single bulk operation.
 
 ### Classification
 
@@ -281,6 +288,49 @@ Tickets are classified to track detection accuracy. Classification can be set at
 | `false_positive` | Benign activity incorrectly flagged |
 
 Classification rates are tracked in reports and feed into detection rule tuning.
+
+## Detections
+
+Each ticket is created from a detection and can have additional detections linked to it (for example, when auto-grouping is enabled or when manually associating related detections).
+
+### Link a Detection
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST \
+      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/detections?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "detection_id": "DETECTION_ID",
+        "detection_cat": "lateral-movement",
+        "detection_source": "dr-general",
+        "detection_priority": 7,
+        "sensor_id": "550e8400-e29b-41d4-a716-446655440000",
+        "hostname": "DESKTOP-001"
+      }'
+    ```
+
+### List Linked Detections
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/detections?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+### Unlink a Detection
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE \
+      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/detections/DETECTION_ID?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
 
 ## Investigation
 
@@ -319,7 +369,7 @@ Find all tickets containing a specific indicator. This is critical for understan
 
     ```bash
     curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/entities/search?oid=YOUR_OID&entity_type=ip&entity_value=203.0.113.50" \
+      "https://ticketing.limacharlie.io/api/v1/entities/search?oids=YOUR_OID&entity_type=ip&entity_value=203.0.113.50" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
@@ -389,18 +439,21 @@ Related tickets can be merged when multiple detections are part of the same inci
 
     ```bash
     curl -s -X POST \
-      "https://ticketing.limacharlie.io/api/v1/tickets/merge?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/merge" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
-        "primary_ticket_id": "TICKET_PRIMARY",
-        "merge_ticket_ids": ["TICKET_2", "TICKET_3"]
+        "oid": "YOUR_OID",
+        "target_ticket_id": "TICKET_PRIMARY",
+        "source_ticket_ids": ["TICKET_2", "TICKET_3"]
       }'
     ```
 
+Up to 20 source tickets can be merged at once.
+
 When tickets are merged:
 
-- The primary ticket inherits all detections from merged tickets
+- The target ticket inherits all detections from source tickets
 - Merged tickets transition to the `merged` status (terminal)
 - The `merged_into_ticket_id` field on merged tickets references the primary ticket
 - Merge events are recorded in the audit trail of all affected tickets
@@ -423,6 +476,18 @@ Tickets can be escalated to specialized teams or senior analysts by setting the 
     ```
 
 Tickets can be filtered by `escalation_group` in the listing endpoint. Escalation rates are tracked in reports.
+
+## Assignees
+
+List all unique assignee emails across your accessible organizations. Useful for populating assignment dropdowns.
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://ticketing.limacharlie.io/api/v1/assignees" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
 
 ## D&R Rule Integration
 
@@ -463,20 +528,6 @@ detect:
   op: is greater than
 ```
 
-### Auto-Close Tickets
-
-Automatically close tickets from D&R rules, for example when a false positive rule matches.
-
-```yaml
-respond:
-  - action: extension request
-    extension name: ext-ticketing
-    extension action: close_ticket
-    extension request:
-      detection_id: '{{ .detect.routing.detection_id }}'
-      classification: false_positive
-```
-
 ## Dashboard
 
 The dashboard provides real-time visibility into the ticket queue.
@@ -485,7 +536,7 @@ The dashboard provides real-time visibility into the ticket queue.
 
     ```bash
     curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/dashboard/counts?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/dashboard/counts?oids=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
@@ -505,45 +556,40 @@ SOC performance reports provide aggregated metrics for measuring team effectiven
 
     ```bash
     curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/reports/summary?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/reports/summary?oids=YOUR_OID&from=2025-01-01T00:00:00Z&to=2025-02-01T00:00:00Z" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
-The summary report includes:
+Query parameters:
 
-- **MTTA by severity** -- Average time to acknowledge, broken down by severity level
-- **MTTR by severity** -- Average time to resolve, broken down by severity level
+| Parameter | Description |
+|-----------|-------------|
+| `oids` | Organization IDs (comma-separated) |
+| `from` | Start of reporting period (RFC 3339 timestamp) |
+| `to` | End of reporting period (RFC 3339 timestamp) |
+
+The summary report includes per-organization and aggregate metrics:
+
+- **MTTA** -- Average and median time to acknowledge, with SLA compliance
+- **MTTR** -- Average and median time to resolve, with SLA compliance
+- **Volume** -- Total ticket counts, true positives, and false positives
 - **Classification rates** -- True positive vs false positive percentages
-- **Volume by severity** -- Ticket counts by severity level
-- **Top detection categories** -- Most frequently triggered detection rules
-- **Repeat offenders** -- Sensors or hosts generating the most tickets
-- **Escalation rate** -- Percentage of tickets requiring escalation
-
-### MTTA Report
-
-=== "REST API"
-
-    ```bash
-    curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/reports/mtta?oid=YOUR_OID" \
-      -H "Authorization: Bearer $LC_JWT"
-    ```
-
-### MTTR Report
-
-=== "REST API"
-
-    ```bash
-    curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/reports/mttr?oid=YOUR_OID" \
-      -H "Authorization: Bearer $LC_JWT"
-    ```
 
 ## Webhook Notifications
 
-When a `notification_webhook` is configured, the extension sends HTTP POST requests for ticket events. This enables integration with external systems like Slack, PagerDuty, or custom dashboards.
+The extension automatically sends webhook notifications for ticket events via LimaCharlie's extension hooks mechanism. These are delivered as gzip-compressed HTTP POST requests to the organization's configured webhook adapter endpoint.
 
 Events forwarded via webhook include: ticket creation, status changes, assignments, escalations, classifications, notes, and investigation updates.
+
+Each webhook payload includes:
+
+- `action` -- The event type (e.g. `created`, `status_changed`, `assigned`)
+- `ticket_id` -- The affected ticket ID
+- `ticket_number` -- The human-readable ticket number
+- `oid` -- The organization ID
+- `by` -- The user who performed the action
+- `ts` -- Timestamp of the event
+- `metadata` -- Event-specific details (e.g. old/new status values)
 
 ## Audit Trail
 
