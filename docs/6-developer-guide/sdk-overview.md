@@ -232,7 +232,7 @@ org = Organization(client)
 all_sensors = list(org.list_sensors())
 
 # Select the first sensor.
-sensor = org.get_sensor(all_sensors[0]["sid"])
+sensor = Sensor(org, all_sensors[0]["sid"])
 
 # Tag this sensor with a tag for 10 minutes.
 sensor.add_tag('suspicious', ttl=60 * 10)
@@ -256,7 +256,7 @@ The `Organization` is the main entry point for all org-scoped operations: listin
 
 #### Sensor
 
-The `Sensor` object is returned by `org.get_sensor(sid)`.
+A `Sensor` is created with `Sensor(org, sid)`.
 
 It supports `task`, `hostname`, `add_tag`, `remove_tag`, `get_tags`, `isolate`, `rejoin`, and more. This is the main way to interact with a specific sensor. Import from `limacharlie.sdk.sensor`.
 

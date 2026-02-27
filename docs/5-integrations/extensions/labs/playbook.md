@@ -134,6 +134,8 @@ When a playbook generates a detection, you can customize the detection category 
 The following example checks if a server sensor has missed a check-in and creates a detection with a custom category name:
 
 ```python
+from limacharlie.sdk.sensor import Sensor
+
 def playbook(sdk, data):
   if not sdk:
     return {"error": "LC API key required"}
@@ -145,7 +147,7 @@ def playbook(sdk, data):
 
   missing_sensors = []
   for sensor_info in sdk.list_sensors():
-    sensor = sdk.get_sensor(sensor_info["sid"])
+    sensor = Sensor(sdk, sensor_info["sid"])
     info = sensor.get_info()
     last_seen = info.get('last_seen', 0)
     if (current_time - last_seen) > threshold:
@@ -222,12 +224,13 @@ hives:
         my-playbook:
             data:
                 python: |-
+                    from limacharlie.sdk.sensor import Sensor
                     def playbook(sdk, data):
                         if not sdk:
                             return {"error": "LC API key required to list sensors"}
                         return {
                             "data": {
-                                "sensors": [sdk.get_sensor(s["sid"]).get_info() for s in sdk.list_sensors()]
+                                "sensors": [Sensor(sdk, s["sid"]).get_info() for s in sdk.list_sensors()]
                             }
                         }
             usr_mtd:

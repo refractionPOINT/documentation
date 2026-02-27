@@ -23,11 +23,12 @@ To run the uninstall command against *all* Sensors, a simple loop with the SDK i
 ```python
 from limacharlie.client import Client
 from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 
 client = Client()
 org = Organization(client)
 for sensor_info in org.list_sensors():
-    sensor = org.get_sensor(sensor_info["sid"])
+    sensor = Sensor(org, sensor_info["sid"])
     sensor.task("uninstall")
 ```
 

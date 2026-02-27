@@ -54,6 +54,7 @@ pip install limacharlie
 ```python
 from limacharlie.client import Client
 from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 
 # Initialize client and organization
 client = Client(oid='your-org-id', api_key='your-api-key')
@@ -61,7 +62,7 @@ org = Organization(client)
 
 # List all sensors
 for sensor_info in org.list_sensors():
-    sensor = org.get_sensor(sensor_info["sid"])
+    sensor = Sensor(org, sensor_info["sid"])
     print(f"Sensor: {sensor.sid} - {sensor.hostname}")
 ```
 

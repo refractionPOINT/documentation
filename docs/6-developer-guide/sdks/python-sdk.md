@@ -288,6 +288,7 @@ The `Sensor` class provides detailed control over individual sensors.
 ```python
 from limacharlie.client import Client
 from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 
 client = Client()
 org = Organization(client)
@@ -300,18 +301,19 @@ for sensor_info in org.list_sensors():
 for sensor_info in org.list_sensors(selector='plat == windows'):
     print(sensor_info['sid'])
 
-# List online sensors only
-for sensor_info in org.online_sensors():
-    print(sensor_info['sid'])
+# Get list of online sensor IDs
+online_sids = org.get_online_sensors()
+for sid in online_sids:
+    print(sid)
 
 # Get a specific sensor object
-sensor = org.get_sensor('SENSOR_ID')
+sensor = Sensor(org, 'SENSOR_ID')
 ```
 
 ### Sensor Properties and Methods
 
 ```python
-sensor = org.get_sensor('SENSOR_ID')
+sensor = Sensor(org, 'SENSOR_ID')
 
 # Get full sensor information
 info = sensor.get_info()
@@ -614,12 +616,6 @@ new_record = HiveRecord(
 )
 hive.set(new_record)
 
-# Set expiry on a record
-hive.expire("temp-record", expiry=1700000000)
-
-# Enable/disable a record
-hive.set_enabled("my-rule", enabled=False)
-
 # Delete a record
 hive.delete("old-record")
 ```
@@ -661,10 +657,16 @@ estimate = search.estimate(
     stream="event",
 )
 
-# Saved queries
-search.save_query("my-query", "event.FILE_PATH ends with .exe", description="Find executables")
-saved = search.list_saved_queries()
-search.delete_saved_query("my-query")
+# Saved queries are managed through Hive
+from limacharlie.sdk.hive import Hive, HiveRecord
+query_hive = Hive(org, "query")
+query_hive.set(HiveRecord(
+    name="my-query",
+    data={"query": "event.FILE_PATH ends with .exe", "stream": "event"},
+    enabled=True,
+))
+saved = query_hive.list()
+query_hive.delete("my-query")
 ```
 
 ## Extensions
@@ -742,6 +744,7 @@ from limacharlie.errors import (
 ```python
 from limacharlie.client import Client
 from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 from limacharlie.errors import (
     AuthenticationError,
     NotFoundError,
@@ -752,7 +755,7 @@ from limacharlie.errors import (
 try:
     client = Client(oid='ORG_ID', api_key='API_KEY')
     org = Organization(client)
-    sensor = org.get_sensor('SENSOR_ID')
+    sensor = Sensor(org, 'SENSOR_ID')
     sensor.task('os_info')
 except AuthenticationError as e:
     print(f"Auth failed: {e}")
@@ -778,6 +781,7 @@ The `Client` automatically retries on HTTP 429 (rate limit) and 504 (gateway tim
 ```python
 from limacharlie.client import Client
 from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 
 client = Client()
 org = Organization(client)
@@ -786,7 +790,7 @@ org = Organization(client)
 inventory = {}
 for sensor_info in org.list_sensors():
     sid = sensor_info['sid']
-    sensor = org.get_sensor(sid)
+    sensor = Sensor(org, sid)
     info = sensor.get_info()
     tags = sensor.get_tags()
 
@@ -848,6 +852,7 @@ print("Rule deployed successfully")
 ```python
 from limacharlie.client import Client
 from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 from limacharlie.sdk.spout import Spout
 
 client = Client()
@@ -868,7 +873,7 @@ try:
             if 'ransomware' in detection.get('cat', '').lower():
                 sid = routing.get('sid')
                 if sid:
-                    sensor = org.get_sensor(sid)
+                    sensor = Sensor(org, sid)
                     sensor.isolate()
                     print(f"  [!] Sensor isolated due to ransomware detection")
 finally:

@@ -38,7 +38,7 @@ def get_relevant_sensors(sdk: Organization) -> list[Sensor]:
     sensors = sdk.list_sensors(selector=SENSOR_SELECTOR)
     relevant_sensors = []
     for sensor_info in sensors:
-        relevant_sensors.append(sdk.get_sensor(sensor_info["sid"]))
+        relevant_sensors.append(Sensor(sdk, sensor_info["sid"]))
     return relevant_sensors
 
 def playbook(sdk: Organization, data: dict) -> dict | None:
