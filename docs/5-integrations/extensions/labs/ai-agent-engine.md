@@ -53,13 +53,14 @@ Here is an example D&R rule starting a new invocation of a playbook.
 ### Python example
 
 ```python
-# Import LC SDK
-import limacharlie
 import json
-# Instantiate the SDK with default creds.
-lc = limacharlie.Manager()
-# Instantiate the Extension manager object.
-ext = limacharlie.Extension(lc)
+from limacharlie.client import Client
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.extensions import Extensions
+
+client = Client()
+org = Organization(client)
+ext = Extensions(org)
 
 # Issue a request to the "ext-ai-agent-engine" extension for the "my-agent-name" agent.
 response = ext.request("ext-ai-agent-engine", "start_session", {

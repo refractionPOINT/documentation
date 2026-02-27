@@ -51,7 +51,7 @@ After creating the webhook, you will be provided with a geo-dependent URL, respe
 * Python SDK:
 
 ```python
-python3 -c "import limacharlie; print(limacharlie.Manager().getOrgURLs()['hooks'])"
+python3 -c "from limacharlie.client import Client; from limacharlie.sdk.organization import Organization; print(Organization(Client()).get_urls()['hooks'])"
 ```
 
 ## Using the webhook adapter

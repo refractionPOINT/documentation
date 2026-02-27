@@ -14,7 +14,7 @@ Configurations are a great way of storing rarely-written settings for an Extensi
 
 The structure of the configuration for a given Extension is published by the Extension via its "schema".
 
-Schemas are available through the [Schema API](https://api.limacharlie.io/static/swagger/#/Extension-Schema/getExtensionSchema) or the LimaCharlie CLI: `limacharlie extension get_schema --help`.
+Schemas are available through the [Schema API](https://api.limacharlie.io/static/swagger/#/Extension-Schema/getExtensionSchema) or the LimaCharlie CLI: `limacharlie extension schema --help`.
 
 ### Requests
 
@@ -22,7 +22,7 @@ Requests are, as the name implies, direct individual requests to an Extension. A
 
 The "action" and "payload" entirely depends on the Extension it is destined to. The list of actions and individual payload structures available for an Extension is documented by each Extension using the "schema" they publish.
 
-Schemas are available through the [Schema API](https://api.limacharlie.io/static/swagger/#/Extension-Schema/getExtensionSchema) or the LimaCharlie CLI: `limacharlie extension get_schema --help`.
+Schemas are available through the [Schema API](https://api.limacharlie.io/static/swagger/#/Extension-Schema/getExtensionSchema) or the LimaCharlie CLI: `limacharlie extension schema --help`.
 
 ## Interacting
 
