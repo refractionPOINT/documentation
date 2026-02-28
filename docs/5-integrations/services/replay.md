@@ -43,7 +43,7 @@ The returned data from the API contains the following:
 
 ### Query Language
 
-To use Replay in LCQL Mode (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie query --help`.
+To use Replay in LCQL Mode (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie search --help`.
 
 ### Python CLI
 
@@ -52,30 +52,32 @@ The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives yo
 Sample command line to query one sensor:
 
 ```
-limacharlie-replay --sid 9cbed57a-6d6a-4af0-b881-803a99b177d9 --start 1556568500 --end 1556568600 --rule-content ./test_rule.txt
+limacharlie replay run --detect-file ./test_detect.yaml --respond-file ./test_respond.yaml --start 1556568500 --end 1556568600
 ```
 
 Sample command line to query an entire organization:
 
 ```
-limacharlie-replay --entire-org --start 1555359000 --end 1556568600 --rule-name my-rule-name
+limacharlie replay run --name my-rule-name --start 1555359000 --end 1556568600
 ```
 
-If specifying a rule as content with the `--rule-content`, the format should be
- in `JSON` or `YAML` like:
+When specifying a rule via `--detect-file` and `--respond-file`, each file should be in `JSON` or `YAML` format. For example, a detect file:
 
 ```yaml
-detect:
-  event: DNS_REQUEST
-  op: is
-  path: event/DOMAIN_NAME
-  value: www.dilbert.com
-respond:
-  - action: report
-    name: dilbert-is-here
+event: DNS_REQUEST
+op: is
+path: event/DOMAIN_NAME
+value: www.dilbert.com
 ```
 
-Instead of specifying the `--entire-org` or `--sid` flags, you may use events from a local file via the `--events` flag.
+And a respond file:
+
+```yaml
+- action: report
+  name: dilbert-is-here
+```
+
+Instead of replaying against an entire organization, you may use events from a local file via the `limacharlie dr test` command with the `--events` flag.
 
 We invite you to look at the command line usage itself, as the tool evolves.
 

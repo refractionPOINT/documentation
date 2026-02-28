@@ -174,7 +174,7 @@ In addition to the PyPi distribution we also offer a pre-built Docker image on D
 docker run refractionpoint/limacharlie:latest whoami
 
 # Using a specific version (Docker image tag matches the library version)
-docker run refractionpoint/limacharlie:4.9.13 whoami
+docker run refractionpoint/limacharlie:5.0.0 whoami
 
 # If you already have a credential file locally, you can mount it inside the Docker container
 docker run -v ${HOME}/.limacharlie:/root/.limacharlie:ro refractionpoint/limacharlie:latest whoami
@@ -187,20 +187,20 @@ Authenticating to use the SDK / CLI can be done in a few ways.
 **Option 1 - Logging In**
  The simplest is to login to an Organization using an [API key](../7-administration/access/api-keys.md).
 
-Use `limacharlie login` to store credentials locally. You will need an `OID` (Organization ID) and an API key, and (optionally) a `UID` (User ID), all of which you can get from the Access Management --> REST API section of the web interface.
+Use `limacharlie auth login` to store credentials locally. You will need an `OID` (Organization ID) and an API key, and (optionally) a `UID` (User ID), all of which you can get from the Access Management --> REST API section of the web interface.
 
 The login interface supports named environments, or a default one used when no environment is selected.
 
-To list available environments:
+To list available organizations:
 
 ```bash
-limacharlie use
+limacharlie auth list-orgs
 ```
 
-Setting a given environment in the current shell session can be done like this:
+Setting a given organization in the current shell session can be done like this:
 
 ```bash
-limacharlie use my-dev-org
+limacharlie auth use-org my-dev-org
 ```
 
 You can also specify a `UID` (User ID) during login to use a *user* API key representing
@@ -211,162 +211,122 @@ You can also specify a `UID` (User ID) during login to use a *user* API key repr
 
 ### SDK
 
-The root of the functionality in the SDK is from the `Manager` object. It holds the credentials and is tied to a specific LimaCharlie Organization.
+The SDK is organized around two main objects: `Client` (handles authentication and HTTP) and `Organization` (provides access to all org-scoped operations).
 
-You can authenticate the `Manager` using an `oid` (and optionally a `uid`), along with either a `secret_api_key` or `jwt` directly. Alternatively you can just use an environment name (as specified in `limacharlie login`). If no creds are provided, the `Manager` will try to use the default environment and credentials.
+You can authenticate the `Client` using an `oid` and `api_key` directly, or use environment variables and config file credentials. If no credentials are provided, the `Client` resolves them from the environment (as configured via `limacharlie auth login`).
 
 #### Importing
 
 ```python
-import limacharlie
+from limacharlie.client import Client
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 
 YARA_SIG = 'https://raw.githubusercontent.com/Yara-Rules/rules/master/Malicious_Documents/Maldoc_PDF.yar'
 
 # Create an instance of the SDK.
-mgr = limacharlie.Manager()
+client = Client()
+org = Organization(client)
 
 # Get a list of all the sensors in the current Organization.
-all_sensors = mgr.sensors()
+all_sensors = list(org.list_sensors())
 
-# Select the first sensor in the list.
-sensor = all_sensors[0]
+# Select the first sensor.
+sensor = Sensor(org, all_sensors[0]["sid"])
 
 # Tag this sensor with a tag for 10 minutes.
-sensor.tag( 'suspicious', ttl = 60 * 10 )
+sensor.add_tag('suspicious', ttl=60 * 10)
 
 # Send a task to the sensor (unidirectionally, not expecting a response).
-sensor.task( 'os_processes' )
+sensor.task('os_processes')
 
 # Send a yara scan to that sensor for processes "evil.exe".
-sensor.task( 'yara_scan -e *evil.exe ' + YARA_SIG )
-```
-
-#### Use of gevent
-
-Note that the SDK uses the `gevent` package which sometimes has issues with other
- packages that operate at a low level in python. For example, Jupyter notebooks
- may see freezing on importing `limacharlie` and require a tweak to load:
-
-```json
-{
- "display_name": "IPython 2 w/gevent",
- "language": "python",
- "argv": [
-  "python",
-  "-c", "from gevent.monkey import patch_all; patch_all(thread=False); from ipykernel.kernelapp import main; main()",
-  "-f",
-  "{connection_file}"
- ]
-}
+sensor.task('yara_scan -e *evil.exe ' + YARA_SIG)
 ```
 
 ### Components
 
-#### Manager
+#### Client
 
-This is a the general component that provides access to the managing functions of the API like querying sensors online, creating and removing Outputs etc.
+The `Client` handles HTTP communication with the LimaCharlie API, including JWT generation/refresh, retry with exponential backoff, and rate limit awareness. Import from `limacharlie.client`.
 
-#### Firehose
+#### Organization
 
-The `Firehose` is a simple object that listens on a port for LimaCharlie.io data. Under the hood it creates a Syslog Output on limacharlie.io pointing to itself and removes it on shutdown. Data from limacharlie.io is added to `firehose.queue` (a `gevent Queue`) as it is received.
-
-It is a basic building block of automation for limacharlie.io.
-
-#### Spout
-
-Much like the `Firehose`, the Spout receives data from LimaCharlie.io, the difference
- is that the `Spout` does not require opening a local port to listen actively on. Instead
- it leverages `stream.limacharlie.io` to receive the data stream over HTTPS.
-
-A `Spout` is automatically created when you instantiate a `Manager` with the
-`is_interactive = True` and `inv_id = XXXX` arguments in order to provide real-time
- feedback from tasking sensors.
+The `Organization` is the main entry point for all org-scoped operations: listing sensors, managing rules, accessing hives, outputs, users, extensions, and more. Import from `limacharlie.sdk.organization`.
 
 #### Sensor
 
-This is the object returned by `manager.sensor( sensor_id )`.
+A `Sensor` is created with `Sensor(org, sid)`.
 
-It supports a `task`, `hostname`, `tag`, `untag`, `getTags` and more functions. This
- is the main way to interact with a specific sensor.
+It supports `task`, `hostname`, `add_tag`, `remove_tag`, `get_tags`, `isolate`, `rejoin`, and more. This is the main way to interact with a specific sensor. Import from `limacharlie.sdk.sensor`.
 
 The `task` function sends a task to the sensor unidirectionally, meaning it does not
- receive the response from the sensor (if any). If you want to interact with a sensor
- in real-time, use the interactive mode (as mentioned in the `Spout`) and use either
- the `request` function to receive replies through a `FutureResults` object or the
-`simpleRequest` to wait for the response and receive it as a return value.
+ receive the response from the sensor (if any).
 
-#### Artifacts
+#### Firehose
 
-The `Artifacts` is a helpful class to upload artifacts to LimaCharlie without going through a sensor.
+The `Firehose` is a TLS push-mode streaming listener. Under the hood it creates an Output on limacharlie.io pointing to itself and removes it on shutdown. Import from `limacharlie.sdk.firehose`.
+
+#### Spout
+
+Much like the `Firehose`, the `Spout` receives data from LimaCharlie.io, the difference
+ is that the `Spout` does not require opening a local port to listen actively on. Instead
+ it leverages `stream.limacharlie.io` to receive the data stream over HTTPS. Import from `limacharlie.sdk.spout`.
+
+#### Hive
+
+The `Hive` provides access to LimaCharlie's key-value configuration store. Used for D&R rules, secrets, playbooks, and more. Import from `limacharlie.sdk.hive`.
 
 #### Extensions
 
-The `Extensions` can be used to subscribe to and manage extensions within your org.
+The `Extensions` class manages extension subscriptions and requests.
 
 ```python
-import limacharlie
-from limacharlie import Extension
+from limacharlie.client import Client
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.extensions import Extensions
 
-mgr = limacharlie.Manager()
-ext = Extension(mgr)
+client = Client()
+org = Organization(client)
+ext = Extensions(org)
 ext.subscribe('binlib')
 ```
+
+#### Search
+
+The `Search` object allows you to execute LCQL queries, validate queries, estimate costs, and manage saved queries. Import from `limacharlie.sdk.search`.
+
+#### Replay
+
+The `Replay` object allows you to interact with [Replay](../5-integrations/services/replay.md) jobs managed by LimaCharlie. These allow you to re-run D&R Rules on historical data. Import from `limacharlie.sdk.replay`.
+
+#### Artifacts
+
+The `Artifacts` class is used to upload, list, and download artifacts. Import from `limacharlie.sdk.artifacts`.
 
 #### Payloads
 
 The `Payloads` can be used to manage various executable [payloads](../2-sensors-deployment/endpoint-agent/payloads.md) accessible to sensors.
 
-#### Replay
-
-The `Replay` object allows you to interact with [Replay](../5-integrations/services/replay.md) jobs managed by LimaCharlie. These allow you to re-run D&R Rules on historical data.
-
-Sample command line to query one sensor:
-
-```
-limacharlie-replay --sid 9cbed57a-6d6a-4af0-b881-803a99b177d9 --start 1556568500 --end 1556568600 --rule-content ./test_rule.txt
-```
-
-Sample command line to query an entire organization:
-
-```
-limacharlie-replay --entire-org --start 1555359000 --end 1556568600 --rule-name my-rule-name
-```
-
-#### Search
-
-The `Search` object allows you to perform an IOC search across multiple organizations.
-
-#### SpotCheck
-
-The `SpotCheck` object (sometimes called Fleet Check) allows you to manage an active (query sensors directly as opposed to searching on indexed historical data) search for various IOCs on an organization's sensors.
-
 #### Configs
 
 The `Configs` is used to retrieve an organization's configuration as a config file, or apply
- an existing config file to an organization. This is the concept of Infrastructure as Code.
-
-#### Webhook
-
-The `Webhook` object demonstrates handling [webhooks emitted by the LimaCharlie cloud](../2-sensors-deployment/adapters/tutorials/webhook-adapter.md), including verifying the shared-secret signing of the webhooks.
+ an existing config file to an organization. This is the concept of Infrastructure as Code. Import from `limacharlie.sdk.configs`.
 
 ### Examples:
 
-* [Basic Manager Operations](https://github.com/refractionPOINT/python-limacharlie/blob/master/samples/demo_manager.py)
-* [Basic Firehose Operations](https://github.com/refractionPOINT/python-limacharlie/blob/master/samples/demo_firehose.py)
-* [Basic Spout Operations](https://github.com/refractionPOINT/python-limacharlie/blob/master/samples/demo_spout.py)
-* [Basic Integrated Operations](https://github.com/refractionPOINT/python-limacharlie/blob/master/samples/demo_interactive_sensor.py)
 * [Sample Configs](https://github.com/refractionPOINT/python-limacharlie/tree/master/limacharlie/sample_configs)
 
 ### Command Line Interface
 
-Many of the objects available as part of the LimaCharlie Python SDK also support various command line interfaces.
+The CLI uses a `limacharlie <noun> <verb>` command pattern. Every command supports `--help` for detailed usage and `--ai-help` for AI-optimized explanations.
 
-#### Query
+#### Search / Query
 
 [LimaCharlie Query Language (LCQL)](../4-data-queries/lcql-examples.md) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie.
 
 ```bash
-limacharlie query --help
+limacharlie search --help
 ```
 
 #### ARLs
@@ -377,72 +337,54 @@ ARLs can be used in the [YARA manager](../5-integrations/extensions/limacharlie/
 
 Testing an ARL before applying it somewhere can be helpful to shake out access or authentication errors beforehand. You can test an ARL and see what files are fetched, and their contents, by running the following command:
 
-```powershell
-limacharlie get-arl -a [github,Yara-Rules/rules/email]
+```bash
+limacharlie arl get -a [github,Yara-Rules/rules/email]
 ```
 
-#### Firehose
+#### Streaming
 
-Listens on interface `1.2.3.4`, port `9424` for incoming connections from LimaCharlie.io.
- Receives only events from hosts tagged with `fh_test`.
-
-```python
-python -m limacharlie.Firehose 1.2.3.4:9424 event -n firehose_test -t fh_test --oid c82e5c17-d519-4ef5-a4ac-caa4a95d31ca
-```
-
-#### Spout
-
-Behaves similarly to the Firehose, but instead of listening from an internet accessible port, it connects to the `stream.limacharlie.io` service to stream the output over HTTPS. This means the Spout allows you to get ad-hoc output like the Firehose, but it also works through NATs and proxies.
-
-It is MUCH more convenient for short term ad-hoc outputs, but it is less reliable than a Firehose for very large amounts of data.
-
-```python
-python -m limacharlie.Spout event --oid c82e5c17-d519-4ef5-a4ac-caa4a95d31ca
-```
-
-#### Configs
-
-The `fetch` command will get a list of the Detection & Response rules in your
- organization and will write them to the config file specified or the default
- config file `lc_conf.yaml` in YAML format.
+Stream events, detections, or audit logs in real-time. Uses pull-mode spouts (HTTPS) or push-mode firehose listeners (TLS).
 
 ```bash
-limacharlie configs fetch --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca`
+# Stream events (pull-mode via stream.limacharlie.io, works through NATs and proxies)
+limacharlie stream events
+limacharlie stream events --tag server
+
+# Stream detections
+limacharlie stream detections
+
+# Stream audit logs
+limacharlie stream audit
 ```
 
-Then `push` can upload the rules specified in the config file (or the default one)
- to your organization. The optional `--force` argument will remove active rules not
- found in the config file. The `--dry-run` simulates the sync and displays the changes
- that would occur.
+#### Sync (Infrastructure as Code)
 
-The `--config` allows you to specify an alternate config file and the `--api-key` allows
- you to specify a file on disk where the API should be read from (otherwise, of if `-` is
- specified as a file, the API Key is read from STDIN).
+The `pull` command will fetch the organization configuration and write it to a local YAML file.
 
 ```bash
-limacharlie configs push --dry-run --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca --config /path/to/template.yaml --all --ignore-inaccessible
+limacharlie sync pull --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca
 ```
 
-All these capabilities are also supported directly by the `limacharlie.Configs` object.
+Then `push` can upload the configuration specified in the YAML file to your organization. The `--dry-run` simulates the sync and displays the changes that would occur.
 
-The Sync functionality currently supports all common useful configurations. The `--no-rules` and `--no-outputs` flags can be used to ignore one or the other in config files and sync. Additional flags are also supported, see `limacharlie configs --help`.
+```bash
+limacharlie sync push --dry-run --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca --config /path/to/template.yaml
+```
 
-To understand better the config format, do a `fetch` from your organization. Notice the use of the `include`
+All these capabilities are also supported directly by the `Configs` SDK class (`limacharlie.sdk.configs`).
+
+The Sync functionality supports all common useful configurations. Use the hive flags (`--hive-dr-general`, `--hive-fp`, `--outputs`, etc.) to control which resource types are synced. See `limacharlie sync --help` for all options.
+
+To understand better the config format, do a `pull` from your organization. Notice the use of the `include`
  statement. Using this statement you can combine multiple config files together, making
  it ideal for the management of complex rule sets and their versioning.
 
 #### Spot Checks
 
-Used to perform Organization-wide checks for specific indicators of compromise. Available as a custom API `SpotCheck` object or as a module from the command line. Supports many types of IoCs like file names, directories, registry keys, file hashes and YARA signatures.
+Used to perform Organization-wide checks for specific indicators of compromise. Supports many types of IoCs like file names, directories, registry keys, file hashes and YARA signatures.
 
-```python
-python -m limacharlie.SpotCheck --no-macos --no-linux --tags vip --file c:\\evil.exe`
-```
-
-For detailed usage:
-
-```python
-python -m limacharlie.SpotCheck --help
+```bash
+limacharlie spotcheck --help
 ```
 
 #### Search
@@ -461,20 +403,12 @@ Shortcut utility to manage extensions.
 limacharlie extension --help
 ```
 
-#### Artifact Upload
+#### Artifacts
 
-Shortcut utility to upload and retrieve Artifacts within LimaCharlie with just the CLI (no agent).
-
-```bash
-limacharlie artifacts --help
-```
-
-#### Artifact Download
-
-Shortcut utility to download Artifact Collection in LimaCharlie locally.
+Shortcut utility to upload, list, and download Artifacts within LimaCharlie.
 
 ```bash
-limacharlie artifacts get_original --help
+limacharlie artifact --help
 ```
 
 #### Replay
@@ -498,8 +432,8 @@ limacharlie dr --help
 Print out to STDOUT events or detections matching the parameter.
 
 ```bash
-limacharlie events --help
-limacharlie detections --help
+limacharlie event --help
+limacharlie detection --help
 ```
 
 #### List Sensors
@@ -507,36 +441,36 @@ limacharlie detections --help
 Print out all basic sensor information for all sensors matching the [selector](../8-reference/sensor-selector-expressions.md).
 
 ```bash
-limacharlie sensors --selector 'plat == windows'
+limacharlie sensor list --selector 'plat == windows'
 ```
 
-#### Invite Users
+#### Add Users
 
-Invite single or multiple users to LimaCharlie. Invited users will be sent an email to confirm their address, enable the account and create a new password.
+Add single or multiple users to a LimaCharlie organization. Added users will be sent an email to confirm their address, enable the account and create a new password.
 
-Keep in mind that this actions operates in the user context which means you need to use user scoped API key. For more information on how to obtain one, see <https://api.limacharlie.io/static/swagger/#getting-a-jwt>
+Keep in mind that this action operates in the user context which means you need to use a user scoped API key. For more information on how to obtain one, see <https://api.limacharlie.io/static/swagger/#getting-a-jwt>
 
-Invite a single user:
+Add a single user:
 
 ```bash
-limacharlie users invite --email=user1@example.com
+limacharlie user add --email user1@example.com
 ```
 
-Invite multiple users:
+Add multiple users:
 
 ```bash
-limacharlie users invite --email=user1@example.com,user2@example.com,user3@example.com
+limacharlie user add --email user1@example.com,user2@example.com,user3@example.com
 ```
 
-Invite multiple users from new line delimited entries in a text file:
+Add multiple users from new line delimited entries in a text file:
 
 ```bash
-cat users_to_invite.txt
+cat users_to_add.txt
 user1@example.com
 user2@example.com
 user3@example.com
 ```
 
 ```bash
-limacharlie users invite --file=users_to_invite.txt
+limacharlie user add --file users_to_add.txt
 ```
