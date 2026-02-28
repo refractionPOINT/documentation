@@ -158,6 +158,12 @@ Each organization has its own configuration that controls severity mapping, SLA 
       -H "Authorization: Bearer $LC_JWT"
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket config-get
+    ```
+
 ### Update Configuration
 
 === "REST API"
@@ -185,7 +191,50 @@ Each organization has its own configuration that controls severity mapping, SLA 
       }'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket config-set --input-file config.yaml
+    ```
+
 ## Working with Tickets
+
+### Creating a Ticket
+
+While detections are automatically converted to tickets, you can also create tickets manually via the CLI or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources.
+
+=== "CLI"
+
+    ```bash
+    # Create from a detection ID
+    limacharlie ticket create --detection-id DETECTION_ID
+
+    # Create with full metadata
+    limacharlie ticket create --detection-id DETECTION_ID \
+        --detection-cat "lateral_movement" --severity high \
+        --sensor-id SENSOR_ID --hostname DESKTOP-001
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.sdk.ticketing import Ticketing
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.client import Client
+
+    client = Client(oid="YOUR_OID")
+    org = Organization(client)
+    t = Ticketing(org)
+
+    result = t.create_ticket(
+        "DETECTION_ID",
+        detection_cat="lateral_movement",
+        severity="high",
+        sensor_id="SENSOR_ID",
+        hostname="DESKTOP-001",
+    )
+    print(result["ticket_id"])
+    ```
 
 ### Listing Tickets
 
@@ -198,6 +247,13 @@ Query the ticket queue with filtering, sorting, and pagination. Supports cross-o
     curl -s -X GET \
       "https://ticketing.limacharlie.io/api/v1/tickets?oids=YOUR_OID&status=new,acknowledged&sort=created_at&order=desc&page_size=50" \
       -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket list --status new --status acknowledged --sort created_at --order desc
+    limacharlie ticket list --severity critical --severity high --search "mimikatz"
     ```
 
 Available query parameters:
@@ -225,6 +281,12 @@ Available query parameters:
       -H "Authorization: Bearer $LC_JWT"
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket get --id TICKET_ID
+    ```
+
 Returns the full ticket including the event timeline (audit trail of all changes).
 
 ### Updating a Ticket
@@ -240,6 +302,14 @@ Returns the full ticket including the event timeline (audit trail of all changes
         "status": "acknowledged",
         "assignee": "analyst@example.com"
       }'
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket update --id TICKET_ID --status acknowledged --assignee analyst@example.com
+    limacharlie ticket update --id TICKET_ID --status resolved \
+        --classification true_positive --conclusion "Contained via network isolation"
     ```
 
 Updatable fields:
@@ -273,6 +343,14 @@ Update multiple tickets at once, useful for bulk-closing false positives or reas
           "classification": "false_positive"
         }
       }'
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket bulk-update --ids TICKET_1,TICKET_2,TICKET_3 \
+        --status closed --classification false_positive
+    limacharlie ticket bulk-update --input-file ticket_ids.txt --status resolved
     ```
 
 Up to 200 tickets can be updated in a single bulk operation.
@@ -312,6 +390,13 @@ Each ticket is created from a detection and can have additional detections linke
       }'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket detection add --ticket TICKET_ID \
+        --detection-id DETECTION_ID --detection-cat lateral-movement
+    ```
+
 ### List Linked Detections
 
 === "REST API"
@@ -322,6 +407,12 @@ Each ticket is created from a detection and can have additional detections linke
       -H "Authorization: Bearer $LC_JWT"
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket detection list --ticket TICKET_ID
+    ```
+
 ### Unlink a Detection
 
 === "REST API"
@@ -330,6 +421,12 @@ Each ticket is created from a detection and can have additional detections linke
     curl -s -X DELETE \
       "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/detections/DETECTION_ID?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket detection remove --ticket TICKET_ID --detection-id DETECTION_ID
     ```
 
 ## Investigation
@@ -357,6 +454,17 @@ Attach indicators of compromise and other artifacts of interest to a ticket.
       }'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket entity add --ticket TICKET_ID \
+        --type ip --value "203.0.113.50" --verdict malicious \
+        --context "Outbound connections observed from compromised host"
+    limacharlie ticket entity list --ticket TICKET_ID
+    limacharlie ticket entity update --ticket TICKET_ID --entity-id ENTITY_ID --verdict benign
+    limacharlie ticket entity remove --ticket TICKET_ID --entity-id ENTITY_ID
+    ```
+
 Supported entity types: `ip`, `domain`, `hash`, `url`, `user`, `email`, `file`, `process`, `registry`, `other`
 
 Verdict values: `malicious`, `suspicious`, `benign`, `unknown`, `informational`
@@ -371,6 +479,12 @@ Find all tickets containing a specific indicator. This is critical for understan
     curl -s -X GET \
       "https://ticketing.limacharlie.io/api/v1/entities/search?oids=YOUR_OID&entity_type=ip&entity_value=203.0.113.50" \
       -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket entity search --type ip --value "203.0.113.50"
     ```
 
 ### Telemetry References
@@ -394,6 +508,15 @@ Link specific LimaCharlie events to the ticket by their atom and sensor ID. This
       }'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket telemetry add --ticket TICKET_ID \
+        --atom abc123def456 --sid SENSOR_ID \
+        --event-type NEW_PROCESS --verdict malicious
+    limacharlie ticket telemetry list --ticket TICKET_ID
+    ```
+
 ### Artifacts
 
 Attach references to forensic artifacts such as memory dumps, packet captures, or disk images.
@@ -412,6 +535,14 @@ Attach references to forensic artifacts such as memory dumps, packet captures, o
       }'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket artifact add --ticket TICKET_ID \
+        --type memory_dump --description "Full memory dump of PID 4832" --verdict malicious
+    limacharlie ticket artifact list --ticket TICKET_ID
+    ```
+
 ### Notes
 
 Add structured notes to document analysis, remediation steps, and handoff information.
@@ -427,6 +558,14 @@ Add structured notes to document analysis, remediation steps, and handoff inform
         "content": "Confirmed lateral movement to DESKTOP-002 via PsExec. Isolating both endpoints.",
         "note_type": "analysis"
       }'
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket add-note --id TICKET_ID --type analysis \
+        --content "Confirmed lateral movement to DESKTOP-002 via PsExec."
+    echo "Handoff notes" | limacharlie ticket add-note --id TICKET_ID --type handoff
     ```
 
 Note types: `general`, `analysis`, `remediation`, `escalation`, `handoff`
@@ -447,6 +586,12 @@ Related tickets can be merged when multiple detections are part of the same inci
         "target_ticket_id": "TICKET_PRIMARY",
         "source_ticket_ids": ["TICKET_2", "TICKET_3"]
       }'
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket merge --target TICKET_PRIMARY --sources TICKET_2,TICKET_3
     ```
 
 Up to 20 source tickets can be merged at once.
@@ -475,6 +620,13 @@ Tickets can be escalated to specialized teams or senior analysts by setting the 
       }'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket update --id TICKET_ID --status escalated \
+        --escalation-group tier-3-malware
+    ```
+
 Tickets can be filtered by `escalation_group` in the listing endpoint. Escalation rates are tracked in reports.
 
 ## Assignees
@@ -487,6 +639,12 @@ List all unique assignee emails across your accessible organizations. Useful for
     curl -s -X GET \
       "https://ticketing.limacharlie.io/api/v1/assignees" \
       -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket assignees
     ```
 
 ## D&R Rule Integration
@@ -540,6 +698,12 @@ The dashboard provides real-time visibility into the ticket queue.
       -H "Authorization: Bearer $LC_JWT"
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie ticket dashboard
+    ```
+
 Returns:
 
 - Ticket counts by status
@@ -558,6 +722,15 @@ SOC performance reports provide aggregated metrics for measuring team effectiven
     curl -s -X GET \
       "https://ticketing.limacharlie.io/api/v1/reports/summary?oids=YOUR_OID&from=2025-01-01T00:00:00Z&to=2025-02-01T00:00:00Z" \
       -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket report \
+        --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z
+    limacharlie ticket report \
+        --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z --group-by severity
     ```
 
 Query parameters:
