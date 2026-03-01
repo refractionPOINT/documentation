@@ -233,7 +233,7 @@ While detections are automatically converted to tickets, you can also create tic
         sensor_id="SENSOR_ID",
         hostname="DESKTOP-001",
     )
-    print(result["ticket_id"])
+    print(result["ticket_number"])
     ```
 
 ### Listing Tickets
@@ -277,14 +277,14 @@ Available query parameters:
 
     ```bash
     curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
 === "CLI"
 
     ```bash
-    limacharlie ticket get --id TICKET_ID
+    limacharlie ticket get --id 42
     ```
 
 Returns the full ticket including the event timeline (audit trail of all changes).
@@ -297,18 +297,18 @@ Export a ticket with all its components (ticket record, event timeline, detectio
 
     ```bash
     # Export as JSON to stdout
-    limacharlie ticket export --id TICKET_ID
+    limacharlie ticket export --id 42
 
     # Export with full data (detection records, telemetry events,
     # artifact binaries) to a local directory
-    limacharlie ticket export --id TICKET_ID --with-data ./ticket-export
+    limacharlie ticket export --id 42 --with-data ./ticket-export
     ```
 
 === "Python"
 
     ```python
     t = Ticketing(org)
-    data = t.export_ticket("TICKET_ID")
+    data = t.export_ticket(42)
     # data contains: ticket, events, detections, entities, telemetry, artifacts
     ```
 
@@ -327,7 +327,7 @@ Fetches that fail (e.g. expired or retained data) emit a warning and are skipped
 
     ```bash
     curl -s -X PATCH \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
@@ -339,8 +339,8 @@ Fetches that fail (e.g. expired or retained data) emit a warning and are skipped
 === "CLI"
 
     ```bash
-    limacharlie ticket update --id TICKET_ID --status acknowledged --assignee analyst@example.com
-    limacharlie ticket update --id TICKET_ID --status resolved \
+    limacharlie ticket update --id 42 --status acknowledged --assignee analyst@example.com
+    limacharlie ticket update --id 42 --status resolved \
         --classification true_positive --conclusion "Contained via network isolation"
     ```
 
@@ -369,7 +369,7 @@ Update multiple tickets at once, useful for bulk-closing false positives or reas
       -H "Content-Type: application/json" \
       -d '{
         "oid": "YOUR_OID",
-        "ticket_ids": ["TICKET_1", "TICKET_2", "TICKET_3"],
+        "ticket_numbers": [1, 2, 3],
         "update": {
           "status": "closed",
           "classification": "false_positive"
@@ -380,9 +380,9 @@ Update multiple tickets at once, useful for bulk-closing false positives or reas
 === "CLI"
 
     ```bash
-    limacharlie ticket bulk-update --ids TICKET_1,TICKET_2,TICKET_3 \
+    limacharlie ticket bulk-update --numbers 1,2,3 \
         --status closed --classification false_positive
-    limacharlie ticket bulk-update --input-file ticket_ids.txt --status resolved
+    limacharlie ticket bulk-update --input-file ticket_numbers.txt --status resolved
     ```
 
 Up to 200 tickets can be updated in a single bulk operation.
@@ -409,7 +409,7 @@ Each ticket is created from a detection and can have additional detections linke
 
     ```bash
     curl -s -X POST \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/detections?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42/detections?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
@@ -425,7 +425,7 @@ Each ticket is created from a detection and can have additional detections linke
 === "CLI"
 
     ```bash
-    limacharlie ticket detection add --ticket TICKET_ID \
+    limacharlie ticket detection add --ticket 42 \
         --detection-id DETECTION_ID --detection-cat lateral-movement
     ```
 
@@ -435,14 +435,14 @@ Each ticket is created from a detection and can have additional detections linke
 
     ```bash
     curl -s -X GET \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/detections?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42/detections?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
 === "CLI"
 
     ```bash
-    limacharlie ticket detection list --ticket TICKET_ID
+    limacharlie ticket detection list --ticket 42
     ```
 
 ### Unlink a Detection
@@ -451,14 +451,14 @@ Each ticket is created from a detection and can have additional detections linke
 
     ```bash
     curl -s -X DELETE \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/detections/DETECTION_ID?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42/detections/DETECTION_ID?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
 === "CLI"
 
     ```bash
-    limacharlie ticket detection remove --ticket TICKET_ID --detection-id DETECTION_ID
+    limacharlie ticket detection remove --ticket 42 --detection-id DETECTION_ID
     ```
 
 ## Investigation
@@ -474,7 +474,7 @@ Attach indicators of compromise and other artifacts of interest to a ticket.
     ```bash
     # Add an entity
     curl -s -X POST \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/entities?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42/entities?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
@@ -489,12 +489,12 @@ Attach indicators of compromise and other artifacts of interest to a ticket.
 === "CLI"
 
     ```bash
-    limacharlie ticket entity add --ticket TICKET_ID \
+    limacharlie ticket entity add --ticket 42 \
         --type ip --value "203.0.113.50" --verdict malicious \
         --context "Outbound connections observed from compromised host"
-    limacharlie ticket entity list --ticket TICKET_ID
-    limacharlie ticket entity update --ticket TICKET_ID --entity-id ENTITY_ID --verdict benign
-    limacharlie ticket entity remove --ticket TICKET_ID --entity-id ENTITY_ID
+    limacharlie ticket entity list --ticket 42
+    limacharlie ticket entity update --ticket 42 --entity-id ENTITY_ID --verdict benign
+    limacharlie ticket entity remove --ticket 42 --entity-id ENTITY_ID
     ```
 
 Supported entity types: `ip`, `domain`, `hash`, `url`, `user`, `email`, `file`, `process`, `registry`, `other`
@@ -527,7 +527,7 @@ Link specific LimaCharlie events to the ticket by their atom and sensor ID. This
 
     ```bash
     curl -s -X POST \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/telemetry?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42/telemetry?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
@@ -543,10 +543,10 @@ Link specific LimaCharlie events to the ticket by their atom and sensor ID. This
 === "CLI"
 
     ```bash
-    limacharlie ticket telemetry add --ticket TICKET_ID \
+    limacharlie ticket telemetry add --ticket 42 \
         --atom abc123def456 --sid SENSOR_ID \
         --event-type NEW_PROCESS --verdict malicious
-    limacharlie ticket telemetry list --ticket TICKET_ID
+    limacharlie ticket telemetry list --ticket 42
     ```
 
 ### Artifacts
@@ -557,7 +557,7 @@ Attach references to forensic artifacts such as memory dumps, packet captures, o
 
     ```bash
     curl -s -X POST \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/artifacts?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42/artifacts?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
@@ -570,9 +570,9 @@ Attach references to forensic artifacts such as memory dumps, packet captures, o
 === "CLI"
 
     ```bash
-    limacharlie ticket artifact add --ticket TICKET_ID \
+    limacharlie ticket artifact add --ticket 42 \
         --type memory_dump --description "Full memory dump of PID 4832" --verdict malicious
-    limacharlie ticket artifact list --ticket TICKET_ID
+    limacharlie ticket artifact list --ticket 42
     ```
 
 ### Notes
@@ -583,7 +583,7 @@ Add structured notes to document analysis, remediation steps, and handoff inform
 
     ```bash
     curl -s -X POST \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID/notes?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42/notes?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
@@ -595,9 +595,9 @@ Add structured notes to document analysis, remediation steps, and handoff inform
 === "CLI"
 
     ```bash
-    limacharlie ticket add-note --id TICKET_ID --type analysis \
+    limacharlie ticket add-note --id 42 --type analysis \
         --content "Confirmed lateral movement to DESKTOP-002 via PsExec."
-    echo "Handoff notes" | limacharlie ticket add-note --id TICKET_ID --type handoff
+    echo "Handoff notes" | limacharlie ticket add-note --id 42 --type handoff
     ```
 
 Note types: `general`, `analysis`, `remediation`, `escalation`, `handoff`
@@ -615,15 +615,15 @@ Related tickets can be merged when multiple detections are part of the same inci
       -H "Content-Type: application/json" \
       -d '{
         "oid": "YOUR_OID",
-        "target_ticket_id": "TICKET_PRIMARY",
-        "source_ticket_ids": ["TICKET_2", "TICKET_3"]
+        "target_ticket_number": 10,
+        "source_ticket_numbers": [11, 12]
       }'
     ```
 
 === "CLI"
 
     ```bash
-    limacharlie ticket merge --target TICKET_PRIMARY --sources TICKET_2,TICKET_3
+    limacharlie ticket merge --target 10 --sources 11,12
     ```
 
 Up to 20 source tickets can be merged at once.
@@ -643,7 +643,7 @@ Tickets can be escalated to specialized teams or senior analysts by setting the 
 
     ```bash
     curl -s -X PATCH \
-      "https://ticketing.limacharlie.io/api/v1/tickets/TICKET_ID?oid=YOUR_OID" \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42?oid=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
@@ -655,7 +655,7 @@ Tickets can be escalated to specialized teams or senior analysts by setting the 
 === "CLI"
 
     ```bash
-    limacharlie ticket update --id TICKET_ID --status escalated \
+    limacharlie ticket update --id 42 --status escalated \
         --escalation-group tier-3-malware
     ```
 
