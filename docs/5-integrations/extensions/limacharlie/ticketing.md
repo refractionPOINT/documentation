@@ -289,6 +289,38 @@ Available query parameters:
 
 Returns the full ticket including the event timeline (audit trail of all changes).
 
+### Exporting a Ticket
+
+Export a ticket with all its components (ticket record, event timeline, detections, entities, telemetry, and artifacts) in a single JSON object.
+
+=== "CLI"
+
+    ```bash
+    # Export as JSON to stdout
+    limacharlie ticket export --id TICKET_ID
+
+    # Export with full data (detection records, telemetry events,
+    # artifact binaries) to a local directory
+    limacharlie ticket export --id TICKET_ID --with-data ./ticket-export
+    ```
+
+=== "Python"
+
+    ```python
+    t = Ticketing(org)
+    data = t.export_ticket("TICKET_ID")
+    # data contains: ticket, events, detections, entities, telemetry, artifacts
+    ```
+
+Without `--with-data`, the combined metadata JSON is printed to stdout. With `--with-data <DIR>`, the command creates a directory containing:
+
+- `ticket.json` -- ticket record, event timeline, entities
+- `detections/` -- one JSON file per linked detection (fetched from Insight)
+- `telemetry/` -- one JSON file per linked telemetry event (fetched by atom+sid)
+- `artifacts/` -- downloaded artifact binaries
+
+Fetches that fail (e.g. expired or retained data) emit a warning and are skipped.
+
 ### Updating a Ticket
 
 === "REST API"
