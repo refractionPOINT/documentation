@@ -400,8 +400,7 @@ nav:
 
   - Reference:
       - Overview: 8-reference/index.md
-      - Endpoint Commands: 8-reference/endpoint-agent-commands.md
-      - Endpoint Commands (Alt): 8-reference/endpoint-commands.md
+      - Endpoint Commands: 8-reference/endpoint-commands.md
       - Detection Operators: 8-reference/detection-logic-operators.md
       - Response Actions: 8-reference/response-actions.md
       - EDR Events: 8-reference/edr-events.md

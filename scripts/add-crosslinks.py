@@ -159,7 +159,7 @@ CONTENT_CLUSTERS = {
     "8-reference/response-actions.md": [
         ("D&R Rules Overview", "3-detection-response/index.md"),
         ("Detection Operators", "8-reference/detection-logic-operators.md"),
-        ("Endpoint Commands", "8-reference/endpoint-agent-commands.md"),
+        ("Endpoint Commands", "8-reference/endpoint-commands.md"),
     ],
 }
 

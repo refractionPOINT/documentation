@@ -453,5 +453,5 @@ For detailed configuration options, see [D&R-Driven AI Sessions](../9-ai-session
 
 - [D&R Rules Overview](../3-detection-response/index.md)
 - [Detection Operators](detection-logic-operators.md)
-- [Endpoint Commands](endpoint-agent-commands.md)
+- [Endpoint Commands](endpoint-commands.md)
 - [AI Sessions](../9-ai-sessions/index.md)
