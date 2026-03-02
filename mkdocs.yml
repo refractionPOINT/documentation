@@ -313,6 +313,7 @@ nav:
               - Lookup Manager: 5-integrations/extensions/limacharlie/lookup-manager.md
               - Payload Manager: 5-integrations/extensions/limacharlie/payload-manager.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
+              - Ticketing: 5-integrations/extensions/limacharlie/ticketing.md
           - Third Party:
               - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
               - Zeek: 5-integrations/extensions/third-party/zeek.md
@@ -425,3 +426,10 @@ nav:
           - Troubleshooting: 8-reference/faq/troubleshooting.md
           - Invoices: 8-reference/faq/invoices.md
           - Sensor Removal: 8-reference/faq/sensor-removal.md
+
+  - AI Sessions:
+      - Overview: 9-ai-sessions/index.md
+      - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
+      - User Sessions: 9-ai-sessions/user-sessions.md
+      - API Reference: 9-ai-sessions/api-reference.md
+      - TypeScript SDK: 9-ai-sessions/sdk.md
