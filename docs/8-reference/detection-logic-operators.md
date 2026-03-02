@@ -215,6 +215,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 
 **Identity & Access Management:**
 * `1password`
+* `bitwarden`
 * `duo`
 * `entraid` (Microsoft Entra ID)
 * `okta`
@@ -228,6 +229,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 * `msdefender` (Microsoft Defender)
 * `sentinel_one`
 * `sophos`
+* `trend_micro`
 * `trend_worryfree`
 * `wiz`
 
