@@ -82,6 +82,11 @@ The platform is a 32-bit integer (in its hex format) which identifies the exact 
 | 0x18000000 | 402653184  | azure_network_security_group | Azure Network Security Group |
 | 0x19000000 | 419430400  | azure_sql_audit              | Azure SQL Audit              |
 | 0x1A000000 | 436207616  | email                        | Email                        |
+| 0x1B000000 | 452984832  | fortigate                    | Fortigate                    |
+| 0x1C000000 | 469762048  | trend_worryfree              | Trend Worry Free             |
+| 0x1D000000 | 486539264  | netscaler                    | Netscaler                    |
+| 0x1E000000 | 503316480  | paloalto_fw                  | Palo Alto Firewall           |
+| 0x1F000000 | 520093696  | iis                          | Internet Information Services|
 | 0x21000000 | 553648128  | hubspot                      | HubSpot                      |
 | 0x22000000 | 570425344  | zendesk                      | Zendesk                      |
 | 0x23000000 | 587202560  | pandadoc                     | PandaDoc                     |
@@ -93,6 +98,8 @@ The platform is a 32-bit integer (in its hex format) which identifies the exact 
 | 0x29000000 | 687865856  | proofpoint                   | Proofpoint                   |
 | 0x2A000000 | 704643072  | entraid                      | EntraID                      |
 | 0x2B000000 | 721420288  | wiz                          | Wiz                          |
+| 0x2C000000 | 738197504  | bitwarden                    | Bitwarden                    |
+| 0x2D000000 | 754974720  | trend_micro                  | Trend Micro                  |
 | 0x10000000 | 268435456  | windows                      | Windows                      |
 | 0x20000000 | 536870912  | linux                        | Linux                        |
 | 0x30000000 | 805306368  | macos                        | MacOS                        |
