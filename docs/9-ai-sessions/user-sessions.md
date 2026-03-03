@@ -260,7 +260,7 @@ You: I need to investigate suspicious activity on sensor abc123.
 Claude: I'll investigate this sensor. Let me start by gathering some
         context about the sensor and recent events.
 
-        [Uses LimaCharlie MCP to query sensor info and events]
+        [Uses LimaCharlie tools to query sensor info and events]
 
         I found several suspicious indicators:
         1. A new process "update.exe" started from a temp directory

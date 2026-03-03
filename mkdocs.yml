@@ -373,7 +373,7 @@ nav:
           - Go SDK Regeneration: 6-developer-guide/sdks/go-sdk-regeneration.md
       - SDK Overview: 6-developer-guide/sdk-overview.md
       - CLI: 6-developer-guide/cli.md
-      - MCP Server: 6-developer-guide/mcp-server.md
+      - Connecting AI Assistants: 6-developer-guide/mcp-server.md
       - Pipeline: 6-developer-guide/pipeline.md
       - Building Extensions:
           - Getting Started: 6-developer-guide/extensions/building-extensions.md

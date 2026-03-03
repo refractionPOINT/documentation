@@ -12,7 +12,7 @@ Automatically spawn AI sessions in response to detections, events, or any condit
 
 - **Automated incident triage**: When a detection fires, have Claude investigate the alert, gather context, and produce a summary report
 - **Threat hunting**: Automatically investigate suspicious activity patterns
-- **Enrichment**: Use Claude to correlate data from multiple sources via MCP servers
+- **Enrichment**: Use Claude to correlate data from multiple sources
 - **Response automation**: Generate recommendations or take automated actions
 
 [Learn more about D&R-Driven Sessions](dr-sessions.md)
@@ -43,7 +43,7 @@ AI Sessions runs fully-managed Claude Code instances in isolated cloud environme
 
 1. **Receives a prompt** with context (event data, detection details, or user input)
 2. **Executes autonomously** using Claude's tool capabilities (Bash, file operations, web fetch, etc.)
-3. **Connects to external data** via MCP servers (LimaCharlie API, threat intel, etc.)
+3. **Connects to external data** via the LimaCharlie CLI, MCP servers, or other configured tools
 4. **Returns results** either as a final summary or streamed in real-time
 
 ## Getting Started

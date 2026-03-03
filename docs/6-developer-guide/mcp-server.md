@@ -1,25 +1,28 @@
-# MCP Server
+# Connecting AI Assistants
 
-The Model Context Protocol (MCP) is a standardized protocol that enables AI agents to access and interact with external tools and resources. LimaCharlie provides an MCP server that allows AI assistants to query telemetry, investigate endpoints, manage configurations, and take response actions.
+LimaCharlie can be accessed by AI assistants in two ways:
+
+- **Claude Code Plugin** — Uses the `limacharlie` CLI for all operations, with pre-built skills and workflows (recommended)
+- **MCP Server** — A [Model Context Protocol](https://modelcontextprotocol.io/) endpoint for any MCP-compatible AI client
 
 ## Setup Options
 
-Choose the setup method based on your MCP client:
+Choose the setup method based on your AI client:
 
 | Method | Auth Type | Multi-Org |
 |--------|-----------|-----------|
-| **Option 1:** Claude Code Plugin | OAuth (browser login) | Yes |
+| **Option 1:** Claude Code Plugin | OAuth via CLI (browser login) | Yes |
 | **Option 2:** HTTP MCP with OAuth | OAuth (browser login) | Yes |
 | **Option 3:** HTTP MCP with JWT | User API Key → JWT | Yes |
 | **Option 3:** HTTP MCP with API Key | Org API Key | No |
 
-**Recommendation:** Use Option 1 if you're using Claude Code. If not, check whether your MCP client supports OAuth and use Option 2. Fall back to Option 3 (JWT or API key) only if OAuth isn't available in your client.
+**Recommendation:** Use Option 1 if you're using Claude Code — it provides the richest experience with pre-built skills and workflows, and uses the `limacharlie` CLI for all operations. If not using Claude Code, check whether your MCP client supports OAuth and use Option 2. Fall back to Option 3 (JWT or API key) only if OAuth isn't available in your client.
 
 ---
 
 ## Option 1: Claude Code Plugin (Recommended)
 
-The LimaCharlie plugin provides the richest experience with pre-built skills, workflows, and multi-org support.
+The LimaCharlie plugin provides the richest experience with pre-built skills, workflows, and multi-org support. Unlike Options 2–3, this plugin does **not** use an MCP server—it uses the `limacharlie` CLI for all API operations, which is automatically installed on session start.
 
 ### Installation
 
@@ -30,17 +33,33 @@ Run these commands in Claude Code:
 /plugin install lc-essentials@lc-marketplace
 ```
 
+The plugin automatically installs the `limacharlie` CLI when a session starts. If auto-installation fails, install it manually:
+
+```bash
+pipx install limacharlie   # preferred (isolated environment)
+uv tool install limacharlie # alternative
+pip install --user limacharlie # fallback
+```
+
 ### Authentication
 
-1. Run `/mcp` in Claude Code
-2. Select the LimaCharlie server
-3. Complete OAuth login in your browser when prompted
+Authenticate the CLI via OAuth:
 
-Your credentials persist across sessions automatically.
+```bash
+limacharlie auth login
+```
+
+This opens your browser for LimaCharlie OAuth. Credentials persist across sessions automatically.
 
 ### Verify Setup
 
-Ask Claude: *"List my LimaCharlie organizations"*
+Run the following to confirm authentication and list your organizations:
+
+```bash
+limacharlie org list --output yaml
+```
+
+Or ask Claude: *"List my LimaCharlie organizations"*
 
 ---
 
@@ -261,9 +280,11 @@ Once connected, AI assistants can:
 | Issue | Solution |
 |-------|----------|
 | "Unauthorized" error | Verify your API key and OID are correct. Ensure the API key has the required permissions for the operation — the error message will specify the missing privilege. |
-| Plugin not appearing | Restart Claude Code after installation. Run `/mcp` to check server status. |
+| Plugin not appearing | Restart Claude Code after installation. |
 | OAuth login fails | Clear browser cookies for limacharlie.io and try again. |
-| Tools not loading | Run `/mcp` to verify the server is connected and authenticated. |
+| CLI not found (plugin) | The plugin auto-installs the `limacharlie` CLI on session start. If it fails, install manually: `pipx install limacharlie` |
+| CLI not authenticated | Run `limacharlie auth login` to authenticate via browser OAuth. |
+| MCP tools not loading (Options 2–3) | Verify the MCP server URL and authentication headers are correct. |
 | "Missing privilege" on specific operations | The authenticated user or API key lacks the required permission. See [Permission Requirements](#permission-requirements) to identify which permissions to grant. |
 
 ---

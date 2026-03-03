@@ -10,11 +10,11 @@ Programmatic access to LimaCharlie:
 - [Go SDK](sdks/go-sdk.md) - Native Go implementation
 - [SDK Overview](sdks/index.md) - Getting started with SDKs
 
-## MCP Server
+## AI Assistants
 
-AI-native integration for Claude and other AI assistants:
+Connect AI assistants to LimaCharlie via the Claude Code Plugin or MCP:
 
-- [MCP Server Setup](mcp-server.md)
+- [Connecting AI Assistants](mcp-server.md)
 
 ## Building Extensions
 
