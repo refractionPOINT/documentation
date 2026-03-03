@@ -34,6 +34,36 @@ The `is_global: true` means that the suppression should operate globally within 
 
 The `keys` parameter is a list of strings that support [templating](../4-data-queries/template-transforms.md). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil process-detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then *all* actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
 
+Key templates support three namespaces:
+
+- `{{ .event.* }}` — fields from the event payload
+- `{{ .routing.* }}` — routing metadata (sid, hostname, etc.)
+- `{{ .mtd.* }}` — detection metadata from lookup operators (e.g., GeoIP country, threat intel category)
+
+The `.mtd` namespace contains the metadata returned by lookup operators in the detection. This allows suppression keys to incorporate derived values. For example, using the [IP Geolocation](../5-integrations/api-integrations/ip-geolocation.md) lookup to key suppression on the resolved country:
+
+```yaml
+detect:
+  event: USER_LOGIN
+  op: lookup
+  path: event/SOURCE_IP
+  resource: lcr://api/ip-geo
+
+respond:
+  - action: report
+    name: first-login-from-country
+    suppression:
+      max_count: 1
+      period: 720h
+      is_global: true
+      keys:
+        - 'first-country'
+        - '{{ .event.USER_NAME }}'
+        - '{{ .mtd.lcr___api_ip_geo.country.iso_code }}'
+```
+
+The metadata key name is derived from the resource name with special characters replaced by underscores. See [Behavioral Detection](../3-detection-response/behavioral-detection.md) for more patterns.
+
 > Supported Time Period Formats
 >
 > LimaCharlie supports the following formats for time periods: **ns**, **us** (or **µs**, both are accepted), **ms**, **s**, **m**, **h** (nanoseconds, microseconds, milliseconds, seconds, minutes, and hours, respectively)
@@ -344,10 +374,84 @@ Removes a tag from a Hive record.
   tag: high-hit
 ```
 
+### start ai session
+
+Spawns a Claude AI session to perform automated investigation, analysis, or response actions. See [AI Sessions](../9-ai-sessions/index.md) for full documentation.
+
+```yaml
+- action: start ai session
+  prompt: "Investigate this detection and provide a summary..."
+  anthropic_secret: hive://secret/my-anthropic-key
+```
+
+This action launches a fully-managed Claude Code session that can investigate events, query data via MCP servers, and generate reports.
+
+#### Required Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `prompt` | Instructions for Claude. Supports [template strings](../4-data-queries/template-transforms.md). |
+| `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). |
+
+#### Optional Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `name` | Session name. Supports template strings. |
+| `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. |
+| `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. |
+| `data` | Extract event fields to include in the prompt as JSON. |
+| `profile` | Inline session configuration (tools, model, limits, MCP servers). |
+| `profile_name` | Reference a saved profile by name. |
+| `profile.one_shot` | When `true`, session completes initial prompt work then terminates. Recommended for automated sessions. |
+
+#### Example: Automated Detection Investigation
+
+```yaml
+detect:
+  event: NEW_PROCESS
+  op: contains
+  path: event/COMMAND_LINE
+  value: mimikatz
+
+respond:
+  - action: report
+    name: mimikatz-detected
+  - action: start ai session
+    prompt: |
+      A Mimikatz-related process was detected.
+      Investigate the process tree, check for credential dumping activity,
+      and provide a detailed incident report.
+    anthropic_secret: hive://secret/anthropic-key
+    lc_api_key_secret: hive://secret/lc-api-key
+    idempotent_key: "{{ .routing.event_id }}"
+    data:
+      hostname: "{{ .routing.hostname }}"
+      process: "{{ .event.FILE_PATH }}"
+      command_line: "{{ .event.COMMAND_LINE }}"
+    profile:
+      allowed_tools:
+        - Bash
+        - Read
+        - Grep
+      max_turns: 50
+      max_budget_usd: 5.0
+      one_shot: true
+      mcp_servers:
+        limacharlie:
+          type: http
+          url: https://mcp.limacharlie.io
+          headers:
+            Authorization: hive://secret/lc-mcp-token
+```
+
+For detailed configuration options, see [D&R-Driven AI Sessions](../9-ai-sessions/dr-sessions.md).
+
 ---
 
 ## See Also
 
 - [D&R Rules Overview](../3-detection-response/index.md)
 - [Detection Operators](detection-logic-operators.md)
-- [Endpoint Commands](endpoint-agent-commands.md)
+- [Endpoint Commands](endpoint-commands.md)
+- [AI Sessions](../9-ai-sessions/index.md)

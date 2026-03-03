@@ -39,6 +39,139 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 
 Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
 
+## Programmatic Management
+
+!!! info "Prerequisites"
+    All programmatic examples require an API key with `ikey.list`, `ikey.set`, and `ikey.del` permissions. See [API Keys](../7-administration/access/api-keys.md) for setup instructions.
+
+### List Installation Keys
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/installationkeys/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.installation_keys import InstallationKeys
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    keys = InstallationKeys(org).list()
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    keys, err := org.InstallationKeys()
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie installation-key list
+    ```
+
+### Create an Installation Key
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST "https://api.limacharlie.io/v1/installationkeys/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d "desc=Production+servers&tags=server,prod"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.installation_keys import InstallationKeys
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    key = InstallationKeys(org).create("Production servers", tags=["server", "prod"])
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    iid, err := org.AddInstallationKey(limacharlie.InstallationKey{
+        Description: "Production servers",
+        Tags:        []string{"server", "prod"},
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie installation-key create --description "Production servers" --tags "server,prod"
+    ```
+
+### Delete an Installation Key
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE "https://api.limacharlie.io/v1/installationkeys/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d "iid=IID_TO_DELETE"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.installation_keys import InstallationKeys
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    InstallationKeys(org).delete("IID_TO_DELETE")
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    err := org.DelInstallationKey("IID_TO_DELETE")
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie installation-key delete --iid IID_TO_DELETE --confirm
+    ```
+
 ---
 
 ## See Also
@@ -46,3 +179,5 @@ Adapters serve as flexible data ingestion mechanisms for both on-premise and clo
 - [Sensor Deployment Overview](index.md)
 - [Windows Installation](endpoint-agent/windows/installation.md)
 - [Linux Installation](endpoint-agent/linux/installation.md)
+- [Python SDK](../6-developer-guide/sdks/python-sdk.md)
+- [Go SDK](../6-developer-guide/sdks/go-sdk.md)

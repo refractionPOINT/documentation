@@ -1,6 +1,6 @@
 # Query with CLI
 
-The command line interface found in the Python CLI/SDK can be invoked like `limacharlie query` once installed (`pip install limacharlie`).
+The command line interface found in the Python CLI/SDK can be invoked like `limacharlie search` once installed (`pip install limacharlie`).
 
 ## Context
 

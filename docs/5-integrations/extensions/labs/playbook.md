@@ -54,12 +54,13 @@ Here is an example D&R rule starting a new invocation of a playbook.
 ### Python example
 
 ```python
-# Import LC SDK
-import limacharlie
-# Instantiate the SDK with default creds.
-lc = limacharlie.Manager()
-# Instantiate the Extension manager object.
-ext = limacharlie.Extension(lc)
+from limacharlie.client import Client
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.extensions import Extensions
+
+client = Client()
+org = Organization(client)
+ext = Extensions(org)
 
 # Issue a request to the "ext-playbook" extension.
 response = ext.request("ext-playbook", "run_playbook", {
@@ -78,7 +79,7 @@ print(response)
 
 A playbook is a normal python script. The only required component is a top level function called `playbook` which takes 2 arguments:
 
-* `sdk`: an instance of the LC Python SDK ( `limacharlie.Manager()` ) pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise.
+* `sdk`: an instance of the LC Python SDK (`Organization` from `limacharlie.sdk.organization`) pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise.
 * `data`: the optional JSON dictionary provided as context to your playbook.
 
 The function must return a dictionary with the following optional keys:
@@ -95,13 +96,13 @@ This allows your playbook to return information about its execution, return data
 The following is a sample playbook that sends a webhook to an external product with a secret stored in LimaCharlie, and it returns the data as the response from the playbook.
 
 ```python
-import limacharlie
 import json
 import urllib.request
+from limacharlie.sdk.hive import Hive
 
 def playbook(sdk, data):
   # Get the secret we need from LimaCharlie.
-  mySecret = limacharlie.Hive(sdk, "secret").get("my-secret-name").data["secret"]
+  mySecret = Hive(sdk, "secret").get("my-secret-name").data["secret"]
 
   # Send the Webhook.
   request = urllib.request.Request("https://example.com/webhook", data=json.dumps(data).encode('utf-8'), headers={
@@ -133,7 +134,7 @@ When a playbook generates a detection, you can customize the detection category 
 The following example checks if a server sensor has missed a check-in and creates a detection with a custom category name:
 
 ```python
-import limacharlie
+from limacharlie.sdk.sensor import Sensor
 
 def playbook(sdk, data):
   if not sdk:
@@ -145,8 +146,9 @@ def playbook(sdk, data):
   threshold = 3600  # 1 hour in seconds
 
   missing_sensors = []
-  for sensor in sdk.sensors():
-    info = sensor.getInfo()
+  for sensor_info in sdk.list_sensors():
+    sensor = Sensor(sdk, sensor_info["sid"])
+    info = sensor.get_info()
     last_seen = info.get('last_seen', 0)
     if (current_time - last_seen) > threshold:
       missing_sensors.append({
@@ -169,7 +171,7 @@ def playbook(sdk, data):
   return {
     "data": {"status": "all sensors checked in"}
   }
-```python
+```
 
 **Important:** The `cat` field must be placed at the **top level** of the return dictionary, alongside `detection`, not inside it. When this playbook creates a detection, it will appear in the Detections UI with the category name "Server-Sensor-Missing-Check-In" instead of the default "playbook-detection".
 
@@ -222,12 +224,13 @@ hives:
         my-playbook:
             data:
                 python: |-
+                    from limacharlie.sdk.sensor import Sensor
                     def playbook(sdk, data):
                         if not sdk:
                             return {"error": "LC API key required to list sensors"}
                         return {
                             "data": {
-                                "sensors": [s.getInfo() for s in sdk.sensors()]
+                                "sensors": [Sensor(sdk, s["sid"]).get_info() for s in sdk.list_sensors()]
                             }
                         }
             usr_mtd:

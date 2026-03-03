@@ -78,7 +78,7 @@ The Organization ID (OID) identifies uniquely your organization while the API ke
 
 ### Login to the CLI
 
-Back in your terminal, log in with your credentials: `limacharlie login`.
+Back in your terminal, log in with your credentials: `limacharlie auth login`.
 
 1. When asked for the Organization ID, paste your OID from the previous step.
 2. When asked for a name for this access, you can leave it blank to set the default credentials.
@@ -264,7 +264,9 @@ respond:
     name: T1196
 ```
 
-Now validate: `limacharlie replay --validate --rule-content T1196.rule`
+Now validate the rule structure. Save the detect and respond components to separate files (`T1196_detect.yaml` and `T1196_respond.yaml`), then run:
+
+`limacharlie dr validate --detect T1196_detect.yaml --respond T1196_respond.yaml`
 
 After a few seconds, you should see a response with `success: true` if the rule
 validates properly.
@@ -312,7 +314,7 @@ should still NOT match because it's not a `.cpl`.
 
 Now we can run our 3 samples against the rule using Replay,
 
-`limacharlie replay --rule-content T1196.rule --events positive.json` should output a result
+`limacharlie dr test --input-file T1196.rule --events positive.json` should output a result
 indicating the event matched (by actioning the `report`) like:
 
 ```json
@@ -328,7 +330,7 @@ indicating the event matched (by actioning the `report`) like:
 ...
 ```
 
-`limacharlie replay --rule-content T1196.rule --events negative-1.json` should output a result
+`limacharlie dr test --input-file T1196.rule --events negative-1.json` should output a result
 indicating the event did NOT match like:
 
 ```json
@@ -341,7 +343,7 @@ indicating the event did NOT match like:
 }
 ```
 
-`limacharlie replay --rule-content T1196.rule --events negative-2.json` be the same as `negative-1.json`.
+`limacharlie dr test --input-file T1196.rule --events negative-2.json` be the same as `negative-1.json`.
 
 ### Testing Historical Data
 
@@ -353,7 +355,11 @@ costs associated.
 
 Running our rule against the last week of data is simple:
 
-`limacharlie replay --rule-content T1196.rule --entire-org --last-seconds 604800`
+```bash
+START=$(date -d '7 days ago' +%s)
+END=$(date +%s)
+limacharlie replay run --detect-file T1196_detect.yaml --respond-file T1196_respond.yaml --start $START --end $END
+```
 
 No matches should look like that:
 
@@ -375,5 +381,5 @@ Once your rule is done and you've evaluated various events for matches, you can 
 
 Now is the time to push the new rule to production, the easy part.
 
-Simply run `limacharlie dr add --rule-name T1196 --rule-file T1196.rule`
+Simply run `limacharlie dr set --key T1196 --input-file T1196.rule`
 and confirm it is operational by running `limacharlie dr list`.

@@ -242,6 +242,7 @@ nav:
       - Examples: 3-detection-response/examples.md
       - False Positive Rules: 3-detection-response/false-positives.md
       - Stateful Rules: 3-detection-response/stateful-rules.md
+      - Behavioral Detection: 3-detection-response/behavioral-detection.md
       - Unit Tests: 3-detection-response/unit-tests.md
       - Alternate Targets: 3-detection-response/alternate-targets.md
       - Managed Rulesets:
@@ -312,6 +313,7 @@ nav:
               - Lookup Manager: 5-integrations/extensions/limacharlie/lookup-manager.md
               - Payload Manager: 5-integrations/extensions/limacharlie/payload-manager.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
+              - Ticketing: 5-integrations/extensions/limacharlie/ticketing.md
           - Third Party:
               - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
               - Zeek: 5-integrations/extensions/third-party/zeek.md
@@ -398,8 +400,7 @@ nav:
 
   - Reference:
       - Overview: 8-reference/index.md
-      - Endpoint Commands: 8-reference/endpoint-agent-commands.md
-      - Endpoint Commands (Alt): 8-reference/endpoint-commands.md
+      - Endpoint Commands: 8-reference/endpoint-commands.md
       - Detection Operators: 8-reference/detection-logic-operators.md
       - Response Actions: 8-reference/response-actions.md
       - EDR Events: 8-reference/edr-events.md
@@ -411,6 +412,8 @@ nav:
       - Permissions: 8-reference/permissions.md
       - Error Codes: 8-reference/error-codes.md
       - Auth Resource Locator: 8-reference/authentication-resource-locator.md
+      - YARA Modules: 8-reference/yara-modules.md
+      - Latency: 8-reference/latency.md
       - FAQ:
           - Overview: 8-reference/faq/index.md
           - General: 8-reference/faq/general.md
@@ -422,3 +425,10 @@ nav:
           - Troubleshooting: 8-reference/faq/troubleshooting.md
           - Invoices: 8-reference/faq/invoices.md
           - Sensor Removal: 8-reference/faq/sensor-removal.md
+
+  - AI Sessions:
+      - Overview: 9-ai-sessions/index.md
+      - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
+      - User Sessions: 9-ai-sessions/user-sessions.md
+      - API Reference: 9-ai-sessions/api-reference.md
+      - TypeScript SDK: 9-ai-sessions/sdk.md

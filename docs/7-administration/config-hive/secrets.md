@@ -53,6 +53,249 @@ Using a secret in combination with an output has very few steps:
 1. Create a secret in the `secret` hive
 2. Create an Output and use the format `hive://secret/my-secret-name` as the value for a credentials field.
 
+## Programmatic Management
+
+!!! info "Prerequisites"
+    All API and SDK examples require an API key with the appropriate permissions. See [API Keys](../access/api-keys.md) for setup instructions.
+
+### List Secrets
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://api.limacharlie.io/v1/hive/secret/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "secret")
+    records = hive.list()
+    for name, record in records.items():
+        print(name, record.data)
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        "fmt"
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        records, _ := hc.List(limacharlie.HiveArgs{
+            HiveName:     "secret",
+            PartitionKey: "YOUR_OID",
+        })
+        for name, record := range records {
+            fmt.Println(name, record.Data)
+        }
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie secret list
+    ```
+
+### Get a Secret
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://api.limacharlie.io/v1/hive/secret/YOUR_OID/my-secret/data" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "secret")
+    record = hive.get("my-secret")
+    print(record.data)
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        "fmt"
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        record, _ := hc.Get(limacharlie.HiveArgs{
+            HiveName:     "secret",
+            PartitionKey: "YOUR_OID",
+            Key:          "my-secret",
+        })
+        fmt.Println(record.Data)
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie secret get --key my-secret
+    ```
+
+### Create / Update a Secret
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST \
+      "https://api.limacharlie.io/v1/hive/secret/YOUR_OID/my-secret/data" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d '{"data": "{\"secret\": \"my-secret-value\"}"}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "secret")
+    record = HiveRecord("my-secret", data={"secret": "my-secret-value"})
+    hive.set(record)
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        hc.Add(limacharlie.HiveArgs{
+            HiveName:     "secret",
+            PartitionKey: "YOUR_OID",
+            Key:          "my-secret",
+            Data:         limacharlie.Dict{"secret": "my-secret-value"},
+        })
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie secret set --key my-secret \
+      --input-file secret.json
+    ```
+
+    Where `secret.json` contains:
+
+    ```json
+    {
+        "data": {
+            "secret": "my-secret-value"
+        }
+    }
+    ```
+
+### Delete a Secret
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE \
+      "https://api.limacharlie.io/v1/hive/secret/YOUR_OID/my-secret" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.hive import Hive
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    hive = Hive(org, "secret")
+    hive.delete("my-secret")
+    ```
+
+=== "Go"
+
+    ```go
+    package main
+
+    import (
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    func main() {
+        client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+            OID:    "YOUR_OID",
+            APIKey: "YOUR_API_KEY",
+        }, nil)
+        org, _ := limacharlie.NewOrganization(client)
+        hc := limacharlie.NewHiveClient(org)
+
+        hc.Remove(limacharlie.HiveArgs{
+            HiveName:     "secret",
+            PartitionKey: "YOUR_OID",
+            Key:          "my-secret",
+        })
+    }
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie secret delete --key my-secret --confirm
+    ```
+
 ## Example
 
 Let's create a simple secret using the LimaCharlie CLI in a terminal. First, create a small file with the secret record in it:

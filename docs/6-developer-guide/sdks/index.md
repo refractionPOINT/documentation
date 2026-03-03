@@ -41,7 +41,7 @@ pip install limacharlie
 ```
 
 **Key Features:**
-- Manager class for all platform operations
+- Client + Organization architecture for all platform operations
 - Sensor tasking and management
 - Real-time streaming (Firehose/Spout)
 - Detection rule management via Hive
@@ -52,19 +52,18 @@ pip install limacharlie
 
 ### Python
 ```python
-import limacharlie
+from limacharlie.client import Client
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 
-# Initialize the manager
-manager = limacharlie.Manager(
-    oid='your-org-id',
-    secret_api_key='your-api-key'
-)
+# Initialize client and organization
+client = Client(oid='your-org-id', api_key='your-api-key')
+org = Organization(client)
 
-# List all online sensors
-sensors = manager.sensors()
-for sensor in sensors:
-    if sensor.isOnline():
-        print(f"Online: {sensor.sid}")
+# List all sensors
+for sensor_info in org.list_sensors():
+    sensor = Sensor(org, sensor_info["sid"])
+    print(f"Sensor: {sensor.sid} - {sensor.hostname}")
 ```
 
 ### Go

@@ -21,10 +21,15 @@ On Windows, the command defaults to uninstalling the sensor as if installed from
 To run the uninstall command against *all* Sensors, a simple loop with the SDK in Python would work:
 
 ```python
-import limacharlie
-lc = limacharlie.Manager()
-for sensor in lc.sensors():
-  sensor.task( 'uninstall' )
+from limacharlie.client import Client
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
+
+client = Client()
+org = Organization(client)
+for sensor_info in org.list_sensors():
+    sensor = Sensor(org, sensor_info["sid"])
+    sensor.task("uninstall")
 ```
 
 ### Using a D&R Rule

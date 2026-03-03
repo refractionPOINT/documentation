@@ -7,8 +7,9 @@ A common request is to alert an administrator if a Sensor that normally forwards
 ## Example Playbook Code
 
 ```python
-import limacharlie
 import time
+from limacharlie.sdk.organization import Organization
+from limacharlie.sdk.sensor import Sensor
 
 # LimaCharlie D&R Rule to trigger this playbook
 # every 30 minutes.
@@ -28,19 +29,19 @@ import time
 SENSOR_SELECTOR = "plat == windows and `server` in tags"
 DATA_WITHIN = 10 * 60 * 1000 # 10 minutes
 
-def notify_missing_data(sdk: limacharlie.Limacharlie, sensor: limacharlie.Sensor):
+def notify_missing_data(sdk: Organization, sensor: Sensor):
     # TODO: Implement this, but it's optional if all you want is a detection
     # since those will be generated automatically.
     pass
 
-def get_relevant_sensors(sdk: limacharlie.Limacharlie) -> list[limacharlie.Sensor]:
-    sensors = sdk.sensors(selector=SENSOR_SELECTOR)
+def get_relevant_sensors(sdk: Organization) -> list[Sensor]:
+    sensors = sdk.list_sensors(selector=SENSOR_SELECTOR)
     relevant_sensors = []
-    for sensor in sensors:
-        relevant_sensors.append(sensor)
+    for sensor_info in sensors:
+        relevant_sensors.append(Sensor(sdk, sensor_info["sid"]))
     return relevant_sensors
 
-def playbook(sdk: limacharlie.Limacharlie, data: dict) -> dict | None:
+def playbook(sdk: Organization, data: dict) -> dict | None:
     # Get the sensors we care about.
     relevant_sensors = get_relevant_sensors(sdk)
 
@@ -49,7 +50,7 @@ def playbook(sdk: limacharlie.Limacharlie, data: dict) -> dict | None:
     # For each sensor, check if we've received data within that time period.
     for sensor in relevant_sensors:
         # To do that we will get the data overview and see if a recent time stamp is present.
-        data_overview = sensor.getHistoricOverview(int(time.time() - DATA_WITHIN), int(time.time()))
+        data_overview = sensor.get_overview(int(time.time() - DATA_WITHIN), int(time.time()))
         after = int(time.time() * 1000) - DATA_WITHIN
         for timestamp in data_overview:
             if timestamp > after:

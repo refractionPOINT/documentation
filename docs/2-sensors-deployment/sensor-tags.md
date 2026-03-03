@@ -125,9 +125,268 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
 
 In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
+## Programmatic Management
+
+!!! info "Prerequisites"
+    All programmatic examples require an API key with `sensor.tag` permissions. See [API Keys](../7-administration/access/api-keys.md) for setup instructions.
+
+### List All Organization Tags
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/tags/YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    tags = org.get_all_tags()
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    tags, err := org.GetAllTags()
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie tag list
+    ```
+
+### List Tags for a Sensor
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/YOUR_SID/tags" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.sensor import Sensor
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    sensor = Sensor(org, "YOUR_SID")
+    tags = sensor.get_tags()
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    sensor := org.GetSensor("YOUR_SID")
+    tags, err := sensor.GetTags()
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie tag list --sid YOUR_SID
+    ```
+
+### Add a Tag to a Sensor
+
+=== "REST API"
+
+    ```bash
+    curl -s -X POST "https://api.limacharlie.io/v1/YOUR_SID/tags" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d "tags=my-tag&ttl=3600"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.sensor import Sensor
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    sensor = Sensor(org, "YOUR_SID")
+    sensor.add_tag("my-tag", ttl=3600)
+    ```
+
+=== "Go"
+
+    ```go
+    import (
+        "time"
+        limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+    )
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    sensor := org.GetSensor("YOUR_SID")
+    err := sensor.AddTag("my-tag", time.Hour)
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie tag add --sid YOUR_SID --tag my-tag --ttl 3600
+    ```
+
+### Remove a Tag from a Sensor
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE "https://api.limacharlie.io/v1/YOUR_SID/tags" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d "tag=my-tag"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+    from limacharlie.sdk.sensor import Sensor
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    sensor = Sensor(org, "YOUR_SID")
+    sensor.remove_tag("my-tag")
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    sensor := org.GetSensor("YOUR_SID")
+    err := sensor.RemoveTag("my-tag")
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie tag remove --sid YOUR_SID --tag my-tag
+    ```
+
+### Find Sensors by Tag
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET "https://api.limacharlie.io/v1/tags/YOUR_OID/my-tag" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    sensors = org.find_sensors_by_tag("my-tag")
+    ```
+
+=== "Go"
+
+    ```go
+    import limacharlie "github.com/refractionPOINT/go-limacharlie/limacharlie"
+
+    client, _ := limacharlie.NewClient(limacharlie.ClientOptions{
+        OID:    "YOUR_OID",
+        APIKey: "YOUR_API_KEY",
+    }, nil)
+    org, _ := limacharlie.NewOrganization(client)
+
+    sensors, err := org.GetSensorsWithTag("my-tag")
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie tag find --tag my-tag
+    ```
+
+### Mass Add Tag by Selector
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    result = org.mass_tag('plat == "windows"', "my-tag", ttl=3600)
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie tag mass-add --selector 'plat == "windows"' --tag my-tag
+    ```
+
+### Mass Remove Tag by Selector
+
+=== "Python"
+
+    ```python
+    from limacharlie.client import Client
+    from limacharlie.sdk.organization import Organization
+
+    client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
+    org = Organization(client)
+    result = org.mass_untag('plat == "windows"', "my-tag")
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie tag mass-remove --selector 'plat == "windows"' --tag my-tag
+    ```
+
 ---
 
 ## See Also
 
 - [D&R Rules with Tags](../3-detection-response/index.md)
 - [Sensor Selectors](../8-reference/sensor-selector-expressions.md)
+- [Python SDK](../6-developer-guide/sdks/python-sdk.md)
+- [Go SDK](../6-developer-guide/sdks/go-sdk.md)
