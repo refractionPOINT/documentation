@@ -4,20 +4,6 @@ Official documentation for **LimaCharlie**, the SecOps Cloud Platform.
 
 **Live Site:** [https://refractionpoint.github.io/documentation/](https://refractionpoint.github.io/documentation/)
 
-## Quick Start
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Preview locally with live reload
-mkdocs serve
-
-# Open http://127.0.0.1:8000/documentation/
-```
-
----
-
 ## Repository Structure
 
 ```
