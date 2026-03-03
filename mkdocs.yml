@@ -153,6 +153,7 @@ nav:
           - VDI Templates: 2-sensors-deployment/endpoint-agent/vdi/templates.md
           - Payloads: 2-sensors-deployment/endpoint-agent/payloads.md
           - Versioning & Upgrades: 2-sensors-deployment/endpoint-agent/versioning-upgrades.md
+          - Service Upgrades: 2-sensors-deployment/endpoint-agent/service-upgrades.md
           - Uninstallation: 2-sensors-deployment/endpoint-agent/uninstallation.md
           - Hostname Resolution: 2-sensors-deployment/endpoint-agent/hostname-resolution.md
           - Sleeper Mode: 2-sensors-deployment/endpoint-agent/sleeper.md
