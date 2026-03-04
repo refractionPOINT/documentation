@@ -1,5 +1,8 @@
 # Ticketing
 
+!!! warning "Closed Beta"
+    Ticketing is currently in closed beta. Please contact LimaCharlie to request access.
+
 The Ticketing extension is a purpose-built SOC triage system that automatically converts LimaCharlie detections into trackable tickets with SLA enforcement, investigation tooling, and performance reporting. It is designed for high-volume environments where every detection needs to be acknowledged, investigated, classified, and resolved within measurable timeframes.
 
 Once subscribed, all detections from the organization are automatically ingested and converted into tickets. Analysts work the ticket queue through a defined lifecycle, attach investigation evidence, and classify outcomes. SOC managers get real-time dashboards and MTTA/MTTR reports.
