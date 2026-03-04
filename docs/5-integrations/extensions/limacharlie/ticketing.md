@@ -266,6 +266,7 @@ Available query parameters:
 | `classification` | Filter by classification (comma-separated: `pending`, `true_positive`, `false_positive`) |
 | `assignee` | Filter by assigned analyst email |
 | `search` | Search text (matches against detection category and hostname) |
+| `tag` | Filter by tags (comma-separated, AND logic: all specified tags must be present) |
 | `sort` | Sort field (`created_at`, `severity`, `ticket_number`) |
 | `order` | Sort order (`asc`, `desc`) |
 | `page_size` | Page size, 1--200 (default 50) |
@@ -355,6 +356,7 @@ Updatable fields:
 | `investigation_id` | string | Link to a LimaCharlie [Investigation](../../../7-administration/config-hive/investigation.md) |
 | `summary` | string | Investigation summary narrative (max 8192 characters) |
 | `conclusion` | string | Final conclusion (max 8192 characters) |
+| `tags` | string[] | Arbitrary tags for categorization (see [Tags](#tags)) |
 
 ### Bulk Updates
 
@@ -386,6 +388,88 @@ Update multiple tickets at once, useful for bulk-closing false positives or reas
     ```
 
 Up to 200 tickets can be updated in a single bulk operation.
+
+### Tags
+
+Tickets support arbitrary string tags for custom categorization and workflow organization (e.g., "phishing", "ransomware", "shift-b").
+
+**Constraints:**
+
+| Constraint | Value |
+|-----------|-------|
+| Max tag length | 128 characters |
+| Max tags per ticket | 50 |
+| Case sensitivity | Case-preserved, case-insensitive deduplication |
+| Allowed characters | Any printable character (no control characters) |
+
+#### Setting Tags
+
+Tags are set by replacing the full tag array on the ticket.
+
+=== "REST API"
+
+    ```bash
+    curl -s -X PATCH \
+      "https://ticketing.limacharlie.io/api/v1/tickets/42?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{"tags": ["phishing", "urgent"]}'
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket update --id 42 --tag phishing --tag urgent --oid YOUR_OID
+    ```
+
+=== "Python"
+
+    ```python
+    t = Ticketing(org)
+    t.update_ticket(42, tags=["phishing", "urgent"])
+    ```
+
+#### Tag Management CLI
+
+The CLI provides convenience commands for adding or removing individual tags without replacing the full array.
+
+```bash
+# Replace all tags
+limacharlie ticket tag set --id 42 --tag phishing --tag urgent --oid YOUR_OID
+
+# Add a tag (preserves existing tags)
+limacharlie ticket tag add --id 42 --tag new-label --oid YOUR_OID
+
+# Remove a tag
+limacharlie ticket tag remove --id 42 --tag old-label --oid YOUR_OID
+```
+
+#### Filtering by Tag
+
+Filter the ticket list to only tickets that have all specified tags (AND logic).
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://ticketing.limacharlie.io/api/v1/tickets?oids=YOUR_OID&tag=phishing,urgent" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
+    limacharlie ticket list --tag phishing --tag urgent --oid YOUR_OID
+    ```
+
+=== "Python"
+
+    ```python
+    t = Ticketing(org)
+    t.list_tickets(tag=["phishing", "urgent"])
+    ```
+
+Tag changes create a `tags_updated` event in the ticket's audit trail with old and new tag values in the event metadata.
 
 ### Classification
 
@@ -828,6 +912,7 @@ Tracked event types:
 | `telemetry_removed` | Telemetry reference removed |
 | `artifact_added` | Forensic artifact attached |
 | `artifact_removed` | Artifact removed |
+| `tags_updated` | Tags modified (old and new values in metadata) |
 | `summary_updated` | Investigation summary edited |
 | `conclusion_updated` | Investigation conclusion edited |
 
