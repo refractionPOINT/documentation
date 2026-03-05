@@ -301,42 +301,57 @@ Using a secret in combination with an output has very few steps:
 === "REST API"
 
     ```bash
-    # Disable a secret (update metadata only):
+    # 1. Read current metadata to preserve tags, expiry, comment:
+    CURRENT=$(curl -s -X GET \
+      "https://api.limacharlie.io/v1/hive/secret/YOUR_OID/my-secret/mtd" \
+      -H "Authorization: Bearer $LC_JWT")
+
+    # 2. Merge and update (set enabled to false, keep other fields):
     curl -s -X POST "https://api.limacharlie.io/v1/hive/secret/YOUR_OID/my-secret/mtd" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/x-www-form-urlencoded" \
-      -d 'usr_mtd={"enabled":false}'
+      -d 'usr_mtd={"enabled":false,"expiry":0,"tags":[],"comment":""}'
     ```
+
+    !!! warning
+        The API **replaces** `usr_mtd` entirely. Sending only `{"enabled":false}` will reset tags, expiry, and comment to their defaults. Always read the current metadata first and resend all fields.
 
 === "Python"
 
     ```python
-    from limacharlie.sdk.hive import Hive, HiveRecord
-
     hive = Hive(org, "secret")
-    # Disable:
-    hive.set(HiveRecord("my-secret", enabled=False))
-    # Enable:
-    hive.set(HiveRecord("my-secret", enabled=True))
+    # Read-modify-write to preserve other metadata:
+    record = hive.get_metadata("my-secret")
+    record.enabled = False  # or True to re-enable
+    hive.set(record)
     ```
 
 === "Go"
 
     ```go
-    enabled := false
     hc := limacharlie.NewHiveClient(org)
+    // Read current metadata first to preserve tags, expiry, comment.
+    existing, _ := hc.GetMTD(limacharlie.HiveArgs{
+        HiveName:     "secret",
+        PartitionKey: org.GetOID(),
+        Key:          "my-secret",
+    })
+    enabled := false
     hc.Add(limacharlie.HiveArgs{
         HiveName:     "secret",
         PartitionKey: org.GetOID(),
         Key:          "my-secret",
         Enabled:      &enabled,
+        Tags:         existing.UsrMtd.Tags,
+        Expiry:       &existing.UsrMtd.Expiry,
+        Comment:      &existing.UsrMtd.Comment,
     })
     ```
 
 === "CLI"
 
     ```bash
-    # Disable a secret:
+    # Disable a secret (reads metadata first to preserve other fields):
     limacharlie secret disable --key my-secret
     # Re-enable:
     limacharlie secret enable --key my-secret

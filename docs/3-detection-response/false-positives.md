@@ -266,42 +266,57 @@ value: web-server-2
 === "REST API"
 
     ```bash
-    # Disable an FP rule (update metadata only):
+    # 1. Read current metadata to preserve tags, expiry, comment:
+    CURRENT=$(curl -s -X GET \
+      "https://api.limacharlie.io/v1/hive/fp/YOUR_OID/suppress-known-app/mtd" \
+      -H "Authorization: Bearer $LC_JWT")
+
+    # 2. Merge and update (set enabled to false, keep other fields):
     curl -s -X POST "https://api.limacharlie.io/v1/hive/fp/YOUR_OID/suppress-known-app/mtd" \
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/x-www-form-urlencoded" \
-      -d 'usr_mtd={"enabled":false}'
+      -d 'usr_mtd={"enabled":false,"expiry":0,"tags":[],"comment":""}'
     ```
+
+    !!! warning
+        The API **replaces** `usr_mtd` entirely. Sending only `{"enabled":false}` will reset tags, expiry, and comment to their defaults. Always read the current metadata first and resend all fields.
 
 === "Python"
 
     ```python
-    from limacharlie.sdk.hive import Hive, HiveRecord
-
     hive = Hive(org, "fp")
-    # Disable:
-    hive.set(HiveRecord("suppress-known-app", enabled=False))
-    # Enable:
-    hive.set(HiveRecord("suppress-known-app", enabled=True))
+    # Read-modify-write to preserve other metadata:
+    record = hive.get_metadata("suppress-known-app")
+    record.enabled = False  # or True to re-enable
+    hive.set(record)
     ```
 
 === "Go"
 
     ```go
-    enabled := false
     hc := limacharlie.NewHiveClient(org)
+    // Read current metadata first to preserve tags, expiry, comment.
+    existing, _ := hc.GetMTD(limacharlie.HiveArgs{
+        HiveName:     "fp",
+        PartitionKey: org.GetOID(),
+        Key:          "suppress-known-app",
+    })
+    enabled := false
     hc.Add(limacharlie.HiveArgs{
         HiveName:     "fp",
         PartitionKey: org.GetOID(),
         Key:          "suppress-known-app",
         Enabled:      &enabled,
+        Tags:         existing.UsrMtd.Tags,
+        Expiry:       &existing.UsrMtd.Expiry,
+        Comment:      &existing.UsrMtd.Comment,
     })
     ```
 
 === "CLI"
 
     ```bash
-    # Disable an FP rule:
+    # Disable an FP rule (reads metadata first to preserve other fields):
     limacharlie fp disable --key suppress-known-app
     # Re-enable:
     limacharlie fp enable --key suppress-known-app
