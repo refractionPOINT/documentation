@@ -296,6 +296,54 @@ Using a secret in combination with an output has very few steps:
     limacharlie secret delete --key my-secret --confirm
     ```
 
+### Enable / Disable a Secret
+
+=== "REST API"
+
+    ```bash
+    # Disable a secret (update metadata only):
+    curl -s -X POST "https://api.limacharlie.io/v1/hive/secret/YOUR_OID/my-secret/mtd" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d 'usr_mtd={"enabled":false}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    hive = Hive(org, "secret")
+    # Disable:
+    hive.set(HiveRecord("my-secret", enabled=False))
+    # Enable:
+    hive.set(HiveRecord("my-secret", enabled=True))
+    ```
+
+=== "Go"
+
+    ```go
+    enabled := false
+    hc := limacharlie.NewHiveClient(org)
+    hc.Add(limacharlie.HiveArgs{
+        HiveName:     "secret",
+        PartitionKey: org.GetOID(),
+        Key:          "my-secret",
+        Enabled:      &enabled,
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    # Disable a secret:
+    limacharlie secret disable --key my-secret
+    # Re-enable:
+    limacharlie secret enable --key my-secret
+    # Or using the generic hive command:
+    limacharlie hive disable --hive-name secret --key my-secret
+    ```
+
 ## Example
 
 Let's create a simple secret using the LimaCharlie CLI in a terminal. First, create a small file with the secret record in it:

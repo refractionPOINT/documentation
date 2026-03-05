@@ -192,6 +192,54 @@ Build custom detection logic with automated response actions.
     limacharlie dr delete --key my-new-rule --confirm
     ```
 
+### Enable / Disable a Rule
+
+=== "REST API"
+
+    ```bash
+    # Disable a rule (update metadata only):
+    curl -s -X POST "https://api.limacharlie.io/v1/hive/dr-general/YOUR_OID/my-rule/mtd" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d 'usr_mtd={"enabled":false}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    hive = Hive(org, "dr-general")
+    # Disable:
+    hive.set(HiveRecord("my-rule", enabled=False))
+    # Enable:
+    hive.set(HiveRecord("my-rule", enabled=True))
+    ```
+
+=== "Go"
+
+    ```go
+    enabled := false
+    hc := limacharlie.NewHiveClient(org)
+    hc.Add(limacharlie.HiveArgs{
+        HiveName:     "dr-general",
+        PartitionKey: org.GetOID(),
+        Key:          "my-rule",
+        Enabled:      &enabled,
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    # Disable a rule:
+    limacharlie dr disable --key my-rule
+    # Re-enable:
+    limacharlie dr enable --key my-rule
+    # Or using the generic hive command:
+    limacharlie hive disable --hive-name dr-general --key my-rule
+    ```
+
 ### Test a Rule Against Sample Events
 
 === "REST API"

@@ -333,6 +333,54 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
     limacharlie lookup delete --key my-lookup --confirm
     ```
 
+### Enable / Disable a Lookup
+
+=== "REST API"
+
+    ```bash
+    # Disable a lookup (update metadata only):
+    curl -s -X POST "https://api.limacharlie.io/v1/hive/lookup/YOUR_OID/my-lookup/mtd" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d 'usr_mtd={"enabled":false}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    hive = Hive(org, "lookup")
+    # Disable:
+    hive.set(HiveRecord("my-lookup", enabled=False))
+    # Enable:
+    hive.set(HiveRecord("my-lookup", enabled=True))
+    ```
+
+=== "Go"
+
+    ```go
+    enabled := false
+    hc := limacharlie.NewHiveClient(org)
+    hc.Add(limacharlie.HiveArgs{
+        HiveName:     "lookup",
+        PartitionKey: org.GetOID(),
+        Key:          "my-lookup",
+        Enabled:      &enabled,
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    # Disable a lookup:
+    limacharlie lookup disable --key my-lookup
+    # Re-enable:
+    limacharlie lookup enable --key my-lookup
+    # Or using the generic hive command:
+    limacharlie hive disable --hive-name lookup --key my-lookup
+    ```
+
 ## Example Lookup
 
 ```json

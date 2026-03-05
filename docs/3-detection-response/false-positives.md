@@ -261,6 +261,54 @@ value: web-server-2
     limacharlie fp delete --key suppress-known-app --confirm
     ```
 
+### Enable / Disable an FP Rule
+
+=== "REST API"
+
+    ```bash
+    # Disable an FP rule (update metadata only):
+    curl -s -X POST "https://api.limacharlie.io/v1/hive/fp/YOUR_OID/suppress-known-app/mtd" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d 'usr_mtd={"enabled":false}'
+    ```
+
+=== "Python"
+
+    ```python
+    from limacharlie.sdk.hive import Hive, HiveRecord
+
+    hive = Hive(org, "fp")
+    # Disable:
+    hive.set(HiveRecord("suppress-known-app", enabled=False))
+    # Enable:
+    hive.set(HiveRecord("suppress-known-app", enabled=True))
+    ```
+
+=== "Go"
+
+    ```go
+    enabled := false
+    hc := limacharlie.NewHiveClient(org)
+    hc.Add(limacharlie.HiveArgs{
+        HiveName:     "fp",
+        PartitionKey: org.GetOID(),
+        Key:          "suppress-known-app",
+        Enabled:      &enabled,
+    })
+    ```
+
+=== "CLI"
+
+    ```bash
+    # Disable an FP rule:
+    limacharlie fp disable --key suppress-known-app
+    # Re-enable:
+    limacharlie fp enable --key suppress-known-app
+    # Or using the generic hive command:
+    limacharlie hive disable --hive-name fp --key suppress-known-app
+    ```
+
 ---
 
 ## See Also
