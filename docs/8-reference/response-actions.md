@@ -156,7 +156,7 @@ For example, this would apply the `full_pcap` to all sensors on the device for 5
 
 ### add var, del var
 
-Add or remove a value from the variables associated with a sensor.
+Add or remove a value from the [sensor variables](../3-detection-response/sensor-variables.md) associated with a sensor. Variables set here can be referenced in detection rules using the `[[variable_name]]` syntax.
 
 ```yaml
 - action: add var
@@ -165,7 +165,9 @@ Add or remove a value from the variables associated with a sensor.
   ttl: 30 # optional
 ```
 
-The `add var` action can optionally take a `ttl` parameter that is a number of seconds the variable should remain in state for the sensor.
+The `add var` action can optionally take a `ttl` parameter that is a number of seconds the variable should remain in state for the sensor. The `value` parameter supports lookback syntax (`<<path>>`) to extract values from the triggering event.
+
+For detailed usage, including how to read variables in detection rules, see [Sensor Variables](../3-detection-response/sensor-variables.md).
 
 ### extension request
 
