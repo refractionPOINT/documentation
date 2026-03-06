@@ -9,6 +9,7 @@ Build custom detection logic with automated response actions.
 - [False Positive Rules](false-positives.md) - Managing false positives
 - [Writing and Testing Rules](tutorials/writing-testing-rules.md) - Rule development guide
 - [Stateful Rules](stateful-rules.md) - Rules with state tracking
+- [Sensor Variables](sensor-variables.md) - Share state across rules with per-sensor variables
 - [Unit Tests](unit-tests.md) - Testing detection rules
 - [Replay](../5-integrations/services/replay.md) - Replaying events for testing
 

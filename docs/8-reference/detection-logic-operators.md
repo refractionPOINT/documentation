@@ -24,7 +24,7 @@ rules:
 
 Tests for equality between the value of the `"value": <>` parameter and the value found in the event at the `"path": <>` parameter.
 
-Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
+Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms, [lookbacks](#lookbacks), and [sensor variables](../3-detection-response/sensor-variables.md).
 
 Example rule:
 
@@ -571,10 +571,37 @@ times:
 
 The `tz` should match a TZ database name from the [Time Zones Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
+## Value Modifiers
+
+Several operators (`is`, `contains`, `starts with`, `ends with`, `is greater than`, `is lower than`) support special syntax in the `value` parameter to dynamically resolve values at evaluation time.
+
+### Lookbacks
+
+Use `<<path>>` to compare against a value from elsewhere in the same event:
+
+```yaml
+op: is
+path: event/DESTINATION/IP_ADDRESS
+value: <<event/SOURCE/IP_ADDRESS>>
+```
+
+### Sensor Variables
+
+Use `[[variable_name]]` to compare against values stored in a [sensor variable](../3-detection-response/sensor-variables.md). Variables are set using the [`add var` response action](response-actions.md#add-var-del-var) and can hold multiple values. The operator checks if the value at `path` matches **any** value in the variable.
+
+```yaml
+op: is
+path: event/FILE_PATH
+value: '[[known-good-processes]]'
+```
+
+If the variable is empty or does not exist, the operator returns `false`. Combined with `not: true`, this allows rules to fire only when a variable is not set. See [Sensor Variables](../3-detection-response/sensor-variables.md) for detailed usage and examples.
+
 ---
 
 ## See Also
 
 - [D&R Rules Overview](../3-detection-response/index.md)
 - [Response Actions](response-actions.md)
+- [Sensor Variables](../3-detection-response/sensor-variables.md)
 - [Writing Rules](../3-detection-response/tutorials/writing-testing-rules.md)
