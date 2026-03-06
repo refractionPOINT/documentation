@@ -1554,12 +1554,6 @@
       "notes": "LC extension"
     },
     {
-      "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Labs/ai-agent-engine.md",
-      "new_section": "5-integrations",
-      "new_path": "docs/5-integrations/extensions/labs/ai-agent-engine.md",
-      "notes": "Labs extension"
-    },
-    {
       "current_path": "docs/limacharlie/doc/Add-Ons/Extensions/LimaCharlie_Labs/playbook.md",
       "new_section": "5-integrations",
       "new_path": "docs/5-integrations/extensions/labs/playbook.md",

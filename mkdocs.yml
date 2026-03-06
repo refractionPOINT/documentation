@@ -331,7 +331,6 @@ nav:
               - Renigma: 5-integrations/extensions/third-party/renigma.md
               - SecureAnnex: 5-integrations/extensions/third-party/secureannex.md
           - Labs:
-              - AI Agent Engine: 5-integrations/extensions/labs/ai-agent-engine.md
               - Playbook: 5-integrations/extensions/labs/playbook.md
           - Cloud CLI:
               - 1Password: 5-integrations/extensions/cloud-cli/1password.md
