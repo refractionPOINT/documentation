@@ -37,6 +37,7 @@ respond:
 | `name` | Session name. Supports template strings. Useful for identifying sessions in logs. |
 | `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. |
 | `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. |
+| `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. |
 | `data` | Extract event data fields to include in the prompt as JSON. |
 | `profile` | Inline session configuration (tools, model, limits, etc.). |
 | `profile_name` | Reference a saved profile by name. |
@@ -93,6 +94,28 @@ Prevent duplicate sessions for the same event using `idempotent_key`:
 ```
 
 If a session with the same idempotent key was recently created, the action is skipped.
+
+### Debounced Sessions
+
+Use `debounce_key` to serialize sessions so only one runs at a time per key. When a session is already active for a given debounce key, new requests are queued. When the active session ends, the most recent queued request is automatically re-fired.
+
+This is useful for workflows where multiple detections may fire in rapid succession but should be handled sequentially by a single agent (e.g., a triage bot processing tickets one at a time).
+
+```yaml
+- action: start ai session
+  prompt: "Investigate this ticket..."
+  anthropic_secret: hive://secret/anthropic-key
+  debounce_key: "triage-bot"
+```
+
+Unlike `idempotent_key` which silently drops duplicates, `debounce_key` guarantees the latest request will eventually be processed — it just waits for the current session to finish first. The key supports template strings for dynamic serialization:
+
+```yaml
+# Serialize per sensor — one active investigation per endpoint
+debounce_key: "investigate-{{ .routing.sid }}"
+```
+
+> **Debounce vs Idempotent**: Use `idempotent_key` when the same event should never create more than one session. Use `debounce_key` when each event should be processed, but sequentially rather than in parallel.
 
 ### Session Profiles
 
@@ -349,9 +372,10 @@ respond:
 - **Use denied_tools**: Explicitly block dangerous tools for sensitive operations
 - **Restrict MCP access**: Only configure MCP servers that are necessary
 
-### Deduplication
+### Deduplication and Serialization
 
 - **Use idempotent_key**: Prevent duplicate sessions for the same event
+- **Use debounce_key**: Serialize sessions so only one runs at a time per key, with queued requests re-fired on completion
 - **Include unique identifiers**: Use `detect_id`, `this` atom, or similar unique values
 - **Combine with suppression**: Use D&R suppression to limit how often sessions are spawned
 

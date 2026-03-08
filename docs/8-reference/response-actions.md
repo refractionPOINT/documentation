@@ -402,6 +402,7 @@ This action launches a fully-managed Claude Code session that can investigate ev
 | `name` | Session name. Supports template strings. |
 | `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. |
 | `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. |
+| `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. |
 | `data` | Extract event fields to include in the prompt as JSON. |
 | `profile` | Inline session configuration (tools, model, limits, MCP servers). |
 | `profile_name` | Reference a saved profile by name. |
