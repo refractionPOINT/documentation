@@ -146,32 +146,32 @@ Users can opt in / out of collection of event types on a per-platform basis. The
 ## Examples of LimaCharlie Sensor Data
 
 1. Sensor Overview
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-01.png)
+   ![](../../assets/images/sensor-01.png)
 2. Artifacts
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-03.png)
+   ![](../../assets/images/sensor-03.png)
 3. Autoruns
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-04.png)
+   ![](../../assets/images/sensor-04.png)
 4. Console
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-05.png)
+   ![](../../assets/images/sensor-05.png)
 5. Detections
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-06a.png)
+   ![](../../assets/images/sensor-06a.png)
 6. Drivers
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-07.png)
+   ![](../../assets/images/sensor-07.png)
 7. File System
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-08.png)
+   ![](../../assets/images/sensor-08.png)
 8. File Integrity Monitoring
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-09(1).png)
+   ![](../../assets/images/sensor-09(1).png)
 9. Network Connections
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-10.png)
+   ![](../../assets/images/sensor-10.png)
 10. Packages
-    ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-11.png)
+    ![](../../assets/images/sensor-11.png)
 11. Processes
-    ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-12.png)
+    ![](../../assets/images/sensor-12.png)
 12. Services
-    ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-13.png)
+    ![](../../assets/images/sensor-13.png)
 13. Timeline with Event Details
-    ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-14.png)
+    ![](../../assets/images/sensor-14.png)
 14. Users
-    ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-15.png)
+    ![](../../assets/images/sensor-15.png)
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

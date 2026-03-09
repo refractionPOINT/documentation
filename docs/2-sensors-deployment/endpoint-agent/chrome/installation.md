@@ -29,11 +29,11 @@ If the extension continues to fail to connect, please provide the LimaCharlie su
 2. Go to `chrome://extensions/`
 3. Ensure "Developer Mode" is enabled (see toggle in the top right)
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2838%29.png)
+![image.png](../../../assets/images/image(38).png)
 
 4. Click the `background.html` link in the LimaCharlie Sensor entry.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2839%29.png)
+![image.png](../../../assets/images/image(39).png)
 
 5. In the window that opens, click Console and provide us with a screenshot of what appears for analysis.
 

@@ -4,17 +4,17 @@ You can enable real-time Windows Event Log (WEL) ingestion using the LimaCharlie
 
 First, navigate to the Exfil Control section of LimaCharlie and ensure that `WEL` events are enabled for your Windows rules.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-wel-1.png)
+![](../../assets/images/ingest-wel-1.png)
 
 Next, navigate to the `Artifact Collection` section and set up an artifact collection rule for the Windows Event Log(s) of interest.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-wel-2.png)
+![](../../assets/images/ingest-wel-2.png)
 
 To ingest WEL real-time events in the timeline, use the `wel://[Log Name]` format. For example, to ingest the System event log, you'd use the following pattern:
 
 `wel://system:*`
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-wel-3.png)
+![](../../assets/images/ingest-wel-3.png)
 
 Difference between `.evtx` versus `wel://` ingestion
 
@@ -24,4 +24,4 @@ If you ingest Windows Event Logs with a `wel://` pattern, they are streamed in r
 
 After you apply those, you should start seeing your Windows Event Log data coming through for your endpoints. You can verify this by going into the Timeline view and choosing `WEL` event type.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-wel-4.png)
+![](../../assets/images/ingest-wel-4.png)

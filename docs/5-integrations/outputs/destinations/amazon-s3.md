@@ -25,7 +25,7 @@ is_indexing: "true"
 is_compression: "true"
 ```
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/aws.png)
+![](../../../assets/images/aws.png)
 
 If the `is_indexing` option is enabled, data uploaded to S3 will be in a specific format enabling some indexed queries.
 

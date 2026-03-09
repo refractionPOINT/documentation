@@ -388,6 +388,6 @@ You should get a confirmation that the secret was created, including metadata of
 
 Next, create an output in the web app, using the value `hive://secret/my-secret` as the Secret Key value.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/secret.png)
+![](../../assets/images/secret.png)
 
 And that's it! The output should start as expected, however when viewing the output's configuration, the secret should refer to the `hive` ARN, rather than the actual credentials.

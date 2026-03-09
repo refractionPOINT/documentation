@@ -25,7 +25,7 @@ The originating event for the detection can still be accessed at the `detect` pa
 
 This is the quickest and the most common way to create a FP rule. On every detection, you can click the `Mark False Positive` button.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/fp-rules-1.png)
+![](../assets/images/fp-rules-1.png)
 
 Clicking the button will pre-populate the details of the event and automatically generate a draft false positive rule which you can edit before saving.
 
@@ -37,11 +37,11 @@ While creating FP rule from detections is a common and easy way to reduce the nu
 
 To create a new false positive rule, click the `New Rule` button.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/fp-rules-2.png)
+![](../assets/images/fp-rules-2.png)
 
 This will open a rule editor allowing you to create a new rule.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/fp-rules-3.png)
+![](../assets/images/fp-rules-3.png)
 
 An FP rule is structured with the same format at the detection component of a D&R rule. The main difference is that the rule applies to the content of a detection, as can be seen in the Detections section of the web app.
 

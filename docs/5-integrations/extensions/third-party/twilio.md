@@ -10,7 +10,7 @@ Some more detailed information is available [here](https://www.twilio.com/docs/s
 
 To start leveraging the Twilio extension, first subscribe to the `ext-twilio` add-on that can be accessed from the LimaCharlie **Marketplace**.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/twilio.png)
+![](../../../assets/images/twilio.png)
 
 After you have subscribed to the extension, setup the Twilio authentication in the `Secrets Manager` section of your organization.
 

@@ -45,7 +45,7 @@ target: artifact_event
 
 Upon running Zeek, several JSON log files are generated. The log files are parsed and pushed into the `ext-zeek` sensor timeline.
 
-![Screenshot 2024-02-20 1.04.52 PM.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Screenshot 2024-02-20 1.04.52 PM.png)
+![Screenshot 2024-02-20 1.04.52 PM.png](../../../assets/images/Screenshot-2024-02-20-1.04.52-PM.png)
 
 ## Usage
 
@@ -57,7 +57,7 @@ Enable PCAP collection on your Linux sensors via a PCAP capture rule within the 
 
 For example, if you have an interface `ens4` and would like to gather PCAPs of network traffic on that interface on TCP port 80, you would craft the following rule.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/zeek-2.png)
+![](../../../assets/images/zeek-2.png)
 
 Once ~30MB of traffic has been collected, a PCAP will be uploaded as an artifact in LimaCharlie. Subsequent PCAPs will continue to be uploaded as additional PCAPs as they hit the size threshold.
 

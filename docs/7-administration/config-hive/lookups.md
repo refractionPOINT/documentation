@@ -69,7 +69,7 @@ Lookups can be added in the web interface by navigating to Automation --> Lookup
 
 LimaCharlie also provides several publicly available lookups for use in your Organization. More information and the contents of these can be found on [GitHub](https://github.com/refractionpoint/lc-public-lookups). The contents of these lookups can be used here as well.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/lookups.png)
+![](../../assets/images/lookups.png)
 
 ### Automatically via the Lookup Manager
 

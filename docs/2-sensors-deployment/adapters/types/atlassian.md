@@ -71,7 +71,7 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Within the Atlassian Admin window, navigate to **Jira Administration** > **Jira settings** > **Advanced** > **WebHooks**. Select **+ Create a WebHook**.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28178%29.png)
+![image.png](../../../assets/images/image(178).png)
 
 * Choose an appropriate name to differentiate that this is a LimaCharlie webhook
 * Provide the webhook URL (see step 2 above)

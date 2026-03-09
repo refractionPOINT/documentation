@@ -23,7 +23,7 @@ If you'd like to make your extension public (and/or monetize it), reach out to `
 
 ## High Level Structure
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28252%29.png)
+![image.png](../../assets/images/image(252).png)
 
 Extensions are small services that receive webhooks from LimaCharlie. This means building an extension requires exposing a small HTTPS service to the internet. We recommend using something like [Google Cloud Run](https://cloud.google.com/run/), but ultimately you could also use AWS Lambdas or even host on your own hardware.
 

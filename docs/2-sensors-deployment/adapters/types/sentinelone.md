@@ -32,7 +32,7 @@ Adapter Type: `sentinel_one`
 
 On the Sensors page, Add Sensor, and choose SentinelOne sensor type. Fill out the parameters, and complete the cloud installation.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28301%29.png)
+![image.png](../../../assets/images/image(301).png)
 
 ### On-prem deployment
 

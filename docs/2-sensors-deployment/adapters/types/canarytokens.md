@@ -76,6 +76,6 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Navigate to the [Canarytokens generate page](https://canarytokens.org/generate) to create your token of choice.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28173%29.png)
+![image.png](../../../assets/images/image(173).png)
 
 Utilize the URL from Step 2 as the webhook URL. Provide a reminder note, which will also appear in the Canarytoken alert when tripped. Click **Create my Canarytoken**, which will provide you the content related to the selected token. When the Canarytoken is tripped, a webhook alert will be forwarded to the LimaCharlie Adapter.

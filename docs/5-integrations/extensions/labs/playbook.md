@@ -19,7 +19,7 @@ This means playbooks can be issued in a fully automated fashion based on events,
 
 The Playbook extension can be enabled by subscribing your organization to the ext-playbook add-on.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(317).png)
+![](../../../assets/images/image(317).png)
 
 ## Accessing Playbooks
 
@@ -27,9 +27,9 @@ Playbooks are created, modified, and deleted via the Playbooks option located wi
 
 > Note: If you are unable to see the Playbooks option, ensure your user account has the appropriate permissions enabled.
 >
-> ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(319).png)
+> ![](../../../assets/images/image(319).png)
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(321).png)
+![](../../../assets/images/image(321).png)
 
 ## Usage
 

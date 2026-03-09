@@ -13,16 +13,16 @@ The interface defines 2 main actions:
 
 Simply choose an artifact from the list to inspect it's contents.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-1.png)
+![](../../../assets/images/velociraptor-ext-1.png)
 
 Result of the action
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-2.png)
+![](../../../assets/images/velociraptor-ext-2.png)
 
 ### Collect Artifact
 
 This allows you to collect one or more Velociraptor [Artifacts](https://docs.velociraptor.app/artifact_references/) from one or more endpoints via the Endpoint Agent.
-![](./velociraptor-3.png)
+![](../../../assets/images/velociraptor-3.png)
 
 Velociraptor will generate a ZIP file with all collected data, which is automatically ingested into LimaCharlie's Artifact system for download.
 
@@ -53,11 +53,11 @@ For [Windows.KapeFiles.Targets](https://github.com/Velocidex/velociraptor/blob/m
 
 You are able to track Velociraptor hunts by viewing the Timeline for the `ext-velociraptor` sensor.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-4.png)
+![](../../../assets/images/velociraptor-ext-4.png)
 
 Once you see `artifact_uploaded` in the timeline, you can expect to find the artifact on the "Artifacts" screen.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-5.png)
+![](../../../assets/images/velociraptor-ext-5.png)
 
 ## Automating Collection Retrieval
 

@@ -15,7 +15,7 @@ To upgrade to paid tier, simply navigate to the Setup section of the Organizatio
 1. Ensure you have a payment method on file by clicking the **Billing & Usage** tab.
 2. In the **Billing & Usage** tab, set the quota number you would like and click **Update Quota**. Quota is the number of sensors concurrently online you would like to support.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/billing-1.png)
+![](../../assets/images/billing-1.png)
 
 ## What is the Cost of Deploying Payloads via LimaCharlie?
 
@@ -25,7 +25,7 @@ This only impacts organizations that leverage Payloads functionality, as well as
 
 To understand the impact on your organization, check the **Metered Usage** section of the **Billing** page. You will notice the new **Payload Data Sent** metric along with the size of payloads deployed and price.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/billing-2.png)
+![](../../assets/images/billing-2.png)
 
 ## What is Usage-Based Billing?
 

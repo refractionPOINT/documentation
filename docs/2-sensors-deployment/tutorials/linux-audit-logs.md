@@ -14,7 +14,7 @@ We will explore these techniques in this tutorial. Adapters can also be configur
 
 Our Windows, Linux, and macOS EDR sensors offer file system navigation capabilities. If you need a single, ad-hoc collection of the `auth.log`, you can use the File System capability to navigate to `/var/log`, and download `auth.log`.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/audit-1.png)
+![](../../assets/images/audit-1.png)
 
 ## Artifact Collection
 
@@ -22,19 +22,19 @@ If you don't need to stream Linux Audit log(s), but instead want to maintain a c
 
 **Step 1:** Within the Navigation Pane, select `Artifact Collection`.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/audit-2.png)
+![](../../assets/images/audit-2.png)
 
 **Step 2:** Create a simple artifact collection rule for `/var/log/auth.log`. In this example, we chose a retention period of 30 days; however, you should choose the correct retention period for your use case.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/audit-3.png)
+![](../../assets/images/audit-3.png)
 
 click **Save**
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/audit-4.png)
+![](../../assets/images/audit-4.png)
 
 **Step 3:** Saving the artifact rule will then populate to the appropriate sensor(s), and you should see the `auth.log` in the Artifacts menu, once it is collected by the Sensor.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/audit-5(1).png)
+![](../../assets/images/audit-5(1).png)
 
 Want more logs?
 
@@ -72,6 +72,6 @@ The adapter should load the config and display options to the terminal.
 
 **Step 4:** Returning to the LimaCharlie web UI, you should start to see events flowing in almost instantaneously.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28115%29.png)
+![image.png](../../assets/images/image(115).png)
 
 Note that a `text` platform will ingest data as basic text, however you could use formatting options to parse the fields respective to your `auth.log` format.

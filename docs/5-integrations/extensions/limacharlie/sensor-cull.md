@@ -8,7 +8,7 @@ The extension works by creating rules that describe when specified sensors shoul
 
 To enable the Sensor Cull extension, navigate to the [Sensor Cull extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-sensor-cull) in the LimaCharlie marketplace.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-cull-1.png)
+![](../../../assets/images/sensor-cull-1.png)
 
 After clicking **Subscribe**, the Sensor Cull extension should be available almost immediately.
 
@@ -16,11 +16,11 @@ After clicking **Subscribe**, the Sensor Cull extension should be available almo
 
 Once enabled, you will see a **Sensor Cull** option under **Sensors** within the LimaCharlie web UI. You can also interact with the extension via REST API.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-cull-2.png)
+![](../../../assets/images/sensor-cull-2.png)
 
 Within the Sensor Cull module, you have the ability to create rules. Sensor Cull rules are run automatically once a day, and can be edited as needed.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/sensor-cull-3.png)
+![](../../../assets/images/sensor-cull-3.png)
 
 Each rule specifies a single sensor `tag` used as a selector for the sensors the rule applies to. A rule also has a `name` (simply used for your bookkeeping), and a `ttl` which is the number of days a sensor can remain unconnected to LimaCharlie before it becomes eligible for cleanup.
 

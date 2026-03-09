@@ -119,11 +119,11 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Within the Sublime Security console, navigate to **Manage** > **Actions**. From here, you can select **New Action** > **Webhook**.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28174%29.png)
+![image.png](../../../assets/images/image(174).png)
 
 Within the **Configure webhook** menu, provide a name and the Adapter URL constructed in Step 2 above.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28175%29.png)
+![image.png](../../../assets/images/image(175).png)
 
 As mentioned in Step 2, you can configure the HTTP header `lc-secret`, if so desired.
 

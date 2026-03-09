@@ -13,7 +13,7 @@ curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --hea
 
 3. Decide what RGB color(s) you want to use. By default, the extension will alert with red (`255,0,0`), and revert back to white (`255,255,255`) when the alert `duration` has ended.
 4. Add your Govee API key to the extension configuration:
-    ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/govee.png)
+    ![](../../../assets/images/govee.png)
 
 ### Usage
 

@@ -36,11 +36,11 @@ Customers who are set up on Unified Billing receive one invoice that contain a r
 
 *Example Unified invoice*
 
-Your browser does not support PDF. Click [here](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/EXAMPLE%20-%20Unified%20-%20Invoice-ABC1234D-0011.pdf) to download.
+Your browser does not support PDF. Click [here](../../assets/images/EXAMPLE---Unified---Invoice-ABC1234D-0011.pdf) to download.
 
 *Example individual Tenant invoice*
 
-Your browser does not support PDF. Click [here](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/EXAMPLE%20-%20Alpha%20Customer%20-%20Invoice-BCDE9876-0035.pdf) to download.
+Your browser does not support PDF. Click [here](../../assets/images/EXAMPLE---Alpha-Customer---Invoice-BCDE9876-0035.pdf) to download.
 
 In addition to the Unified Billing invoice, customers are also provided with a LimaCharlie Global Billing email. This email contains:
 

@@ -4,7 +4,7 @@
 
 Intune can be used to simplify LimaCharlie Sensor deployment within enterprise environments. To add a custom App to Intune, select the `+ Add` button within the Intune admin center:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2861%29.png)
+![image.png](../../assets/images/image(61).png)
 
 InTune supports Windows and macOS package deployment.
 
@@ -20,4 +20,4 @@ We recommend first creating a [custom MSI installer](../endpoint-agent/windows/c
 
 After clicking `+ Add`, choose `Windows app (Win32)`:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2863%29.png)
+![image.png](../../assets/images/image(63).png)

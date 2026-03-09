@@ -10,7 +10,7 @@ The Exfil Extension helps manage which real-time [events](../../../8-reference/e
 
 To enable the Exfil extension, navigate to the [Exfil extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-exfil) in the marketplace. Select the Organization you wish to enable the extension for, and select **Subscribe**.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/exfil-1.png "image(231).png")
+![](../../../assets/images/exfil-1.png "image(231).png")
 
 After clicking subscribe, the Exfil extension should be available almost immediately.
 
@@ -18,7 +18,7 @@ After clicking subscribe, the Exfil extension should be available almost immedia
 
 Once the extension is enabled, you will see an **Event Collection** option under **Sensors** in the LimaCharlie web UI.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/exfil-2.png "image(227).png")
+![](../../../assets/images/exfil-2.png "image(227).png")
 
 There are three rule options within the Exfil extension:
 

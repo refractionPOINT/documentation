@@ -14,19 +14,19 @@ Follow Splunk's guide to [set up an HEC](https://docs.splunk.com/Documentation/S
 
 From the **Outputs** view, click `Add Output`.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-1.png)
+![](../../../assets/images/splunk-1.png)
 
 Choose the type of stream you want to output from LimaCharlie.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-2(1).png)
+![](../../../assets/images/splunk-2(1).png)
 
 Set `Webhook` or `Webhook Bulk` as a destination.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-3.png)
+![](../../../assets/images/splunk-3.png)
 
 Enter the output name.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-4.png)
+![](../../../assets/images/splunk-4.png)
 
 Enter the [correct HEC URI](https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector#Send_data_to_HTTP_Event_Collector) for your Splunk implementation as Destination Host. Use the  /services/collector/event  endpoint. Note if you are using Spunk Cloud, this will be the string from the URL `https://<host>.splunkcloud.com/`.
 
@@ -52,4 +52,4 @@ You can choose to only send a specific list of event types by configuring an all
 
 **Do not include routing** flag allows users to forward only the original logs to outputs, excluding the routing label. This can be helpful for users wanting to use LimaCharlie for storage optimization since the routing label can add significant overhead.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/splunk-5.png)
+![](../../../assets/images/splunk-5.png)

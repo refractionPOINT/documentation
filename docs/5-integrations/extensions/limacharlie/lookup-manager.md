@@ -18,9 +18,9 @@ LimaCharlie provides a curated list of several publicly available JSON lookups f
 
 More details and the contents of each of these lookups can be found [here](https://github.com/refractionpoint/lc-public-lookups).
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image (1).png "Screenshot 2024-10-22 at 13.23.35(2).png")
+![](../../../assets/images/image-(1).png "Screenshot 2024-10-22 at 13.23.35(2).png")
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image (2).png "Screenshot 2024-10-22 at 13.23.45(1).png")
+![](../../../assets/images/image-(2).png "Screenshot 2024-10-22 at 13.23.45(1).png")
 
 ### Option 2: Publicly available Lookups
 
