@@ -390,6 +390,7 @@ nav:
       - Billing:
           - Options: 7-administration/billing/options.md
           - Custom Plans: 7-administration/billing/custom-plans.md
+          - Estimating Data Ingestion: 7-administration/billing/data-estimation.md
       - Config Hive:
           - Overview: 7-administration/config-hive/index.md
           - Secrets: 7-administration/config-hive/secrets.md
