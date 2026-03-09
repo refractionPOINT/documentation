@@ -22,7 +22,7 @@ Result of the action
 ### Collect Artifact
 
 This allows you to collect one or more Velociraptor [Artifacts](https://docs.velociraptor.app/artifact_references/) from one or more endpoints via the Endpoint Agent.
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-3.png)
+![](./velociraptor-3.png)
 
 Velociraptor will generate a ZIP file with all collected data, which is automatically ingested into LimaCharlie's Artifact system for download.
 
@@ -30,10 +30,24 @@ Velociraptor will generate a ZIP file with all collected data, which is automati
 
 * **Artifacts** - Select one or more Velociraptor artifacts you wish to collect
 * **Sensor Selector** - Select either a single sensor by selecting it's Sensor ID from the dropdown or use a [Sensor Selector Expression](../../../8-reference/sensor-selector-expressions.md) to cast a wider net such as `plat==windows`
-* **Arguments (optional)** - These are optional arguments (or parameters) passed directly to the Velociraptor Artifact. For instance, if you wanted to run a collection for [Windows.KapeFiles.Targets](https://github.com/Velocidex/velociraptor/blob/master/artifacts/definitions/Windows/KapeFiles/Targets.yaml) and wanted to specify the [KapeTriage](https://github.com/Velocidex/velociraptor/blob/5db9bc46cc79013da1bbaf8c493a263eb1ca64b4/artifacts/definitions/Windows/KapeFiles/Targets.yaml#L412-L414) targets for collection, you would specify `KapeTriage=Y` in the **Arguments** since this is a boolean parameter for the `Windows.KapeFiles.Targets` artifact.
+* **Arguments (optional)** - See below
 * **Collection Seconds (optional)** - Define how long (in seconds) the Extension will wait for a targeted endpoint to come online and be processed for collection.
 * **Retention Days (optional)** - Define how long the collected artifact will be retained by the platform.
 * **Ignore SSL Errors (optional)** - Tells the endpoint to ignore SSL errors while running and collecting. This can be useful if the endpoint is behind a MITM proxy or firewall performing SSL interception.
+
+##### Arguments (optional)
+
+These are optional arguments (or parameters) passed directly to the Velociraptor Artifact. Arguments use the format `"Key=[\"value\"]"` for list parameters and `"Key=Y"` for boolean parameters.
+
+For example, to run a [Linux.Triage.UAC](https://triage.velocidex.com/docs/linux.triage.uac/) collection targeting all categories, specify:
+
+```
+"Targets=[\"_All\"]"
+```
+
+If `_All` returns more data than needed, you can define a single target instead. See the [UAC target reference](https://triage.velocidex.com/docs/linux.triage.uac/) for the full list of available options.
+
+For [Windows.KapeFiles.Targets](https://github.com/Velocidex/velociraptor/blob/master/artifacts/definitions/Windows/KapeFiles/Targets.yaml), you can use `"HighLevelTargets=[\"_KapeTriage\"]"`.
 
 ## Monitoring Collections
 
