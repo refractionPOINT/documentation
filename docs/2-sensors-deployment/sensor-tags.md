@@ -115,11 +115,7 @@ When you tag a sensor with lc:limit-update, the sensor will not update the versi
 
 ### lc:sleeper
 
-When you tag a sensor with *lc:sleeper*, the sensor will keep its connection to the LimaCharlie Cloud, but will disable all other functionality to avoid any impact on the system.
-
-### lc:usage
-
-When you tag a sensor with *lc:usage*, the sensor will work as usual, but its connection will not count against the normal sensor quota. Instead, the time the sensor spends connected will be billed separately per second, and so will events received by the sensor. For more details, see [Sleeper Deployments](../1-getting-started/use-cases/sleeper-mode.md).
+When you tag a sensor with *lc:sleeper*, the sensor will keep its connection to the LimaCharlie Cloud, but will disable all other functionality to avoid any impact on the system. To wake up sensors from sleeper mode, set your organization's Quota to accommodate the number of sensors you want to activate, then remove the `lc:sleeper` tag from those sensors. For more details, see [Sleeper Deployments](endpoint-agent/sleeper.md).
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
 
