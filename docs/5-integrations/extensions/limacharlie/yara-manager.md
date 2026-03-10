@@ -12,7 +12,7 @@ Rule sources can be either direct links (URLs) to a given YARA rule or [ARLs](..
 
 LimaCharlie provides a list of YARA rule repositories, available in the configuration menu. To leverage these rules select "Predefined" and a list of LimaCharlie and Community rules will populate. By selecting one or more of these repositories, the respective rules will be automatically imported and will appear in your YARA rules under Automation → YARA Rules.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(322).png)
+![](../../../assets/images/image(322).png)
 
 ### Option 2: Publicly available YARA rules
 

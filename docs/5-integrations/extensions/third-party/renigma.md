@@ -14,7 +14,7 @@ Through the integration, these D&R rules send the artifact or URL directly to RE
 
 To use the REnigma extension, you will need your REnigma URL and API key. [Contact the REnigma team for access](https://dtrsec.com/contact.html).
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(284).png)
+![](../../../assets/images/image(284).png)
 
 ## Using the Extension
 
@@ -22,8 +22,8 @@ You can submit a file or URL to the REnigma extension for processing in one of 2
 
 1. Via the LimaCharlie web UI:
 
-   1. Submit the ID of the artifact you wish to process with REnigma, and it will get uploaded and processed via a series of D&R rules. You will see the output in the `ext-renigma` sensor timeline.![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(297).png)
-   2. Submit the URL you wish to analyze with REnigma, and it will get sent and processed via a series of D&R rules. You will see the output in the `ext-renigma` sensor timeline.![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(296).png)
+   1. Submit the ID of the artifact you wish to process with REnigma, and it will get uploaded and processed via a series of D&R rules. You will see the output in the `ext-renigma` sensor timeline.![](../../../assets/images/image(297).png)
+   2. Submit the URL you wish to analyze with REnigma, and it will get sent and processed via a series of D&R rules. You will see the output in the `ext-renigma` sensor timeline.![](../../../assets/images/image(296).png)
 2. Via D&R rules:
 
    1. Detect:

@@ -242,7 +242,7 @@ Then the resulting Output would be:
 
 When passing events to an output, you have the option to transform the original event in multiple ways. When creating an output, Custom Transforms are applied in the CUSTOM TRANSFORM area of the screenshot below. In this example we are transforming a detection event to pass via a custom webhook to a web application.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(310).png)
+![](../assets/images/image(310).png)
 
 ### Examples
 

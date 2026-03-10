@@ -88,7 +88,7 @@ If you use the LimaCharlie [Velociraptor](velociraptor.md) extension, a good use
    **Argument options:**
 
    * `EventLogs=Y` - EventLogs only, quicker processing time for proof of concept
-   * `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/velociraptor-ext-3.png)
+   * `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](../../../assets/images/velociraptor-ext-3.png)
 3. Once Velociraptor collects, zips, and uploads the evidence, the previously created D&R rule will send the triage `.zip` to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
 
 ### MFT Processing
@@ -122,14 +122,14 @@ If you use the LimaCharlie [Dumper](../limacharlie/dumper.md) extension, a good 
          artifact_id: '{{ .routing.log_id }}'
    ```
 2. Launch an MFT dump in the LimaCharlie Dumper extension.
-   ![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/plaso-ext-1.png)
+   ![](../../../assets/images/plaso-ext-1.png)
 3. Once dumper is complete and uploads the evidence, the previously created D&R rule will send the zipped MFT CSV to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
 
 ## Working with the Output
 
 Running the extension generates the following useful outputs:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28254%29.png)
+![image.png](../../../assets/images/image(254).png)
 
 * `pinfo` on `ext-plaso` sensor timeline
    First and foremost, after the completion of a processing job by `ext-plaso`, it is highly encouraged to analyze the resulting `pinfo` event on the `ext-plaso` sensor timeline. This event provides a detailed summary with metrics of the processing that occurred, as well as any relevant errors you should be aware of.
@@ -180,7 +180,7 @@ Running the extension generates the following useful outputs:
 
 ### Downloadable Artifacts
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28253%29.png)
+![image.png](../../../assets/images/image(253).png)
 
 * `plaso` artifact
    The downloadable `.plaso` file contains the raw output of `log2timeline.py` and can be [imported into Timesketch](https://timesketch.org/guides/user/upload-data/) as a timeline.

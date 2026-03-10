@@ -15,7 +15,7 @@ Note: This tutorial is a synthesized version of this [official GCP article](http
 
 In your GCP Project, or Organization, go to the Logging product and the Logs Router section.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(145).png)
+![image.png](../../../assets/images/image(145).png)
 
 Click the Create Sink button, give it a Name and Description.
 
@@ -23,7 +23,7 @@ In the Sink Destination choose Cloud Pub/Sub Topic as a sink service.
 
 Below, select Create a Topic.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(146).png)
+![image.png](../../../assets/images/image(146).png)
 
 Give the Topic an ID and click Create Topic.
 
@@ -33,7 +33,7 @@ Click Next.
 
 Now you need to choose which logs you want included. Be careful selecting exactly what you want as GCP logs can get very verbose.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(147).png)
+![image.png](../../../assets/images/image(147).png)
 
 Click the Preview Logs button in the top right to be taken to the main logging interface where you can experiment with selecting the right logs.
 
@@ -51,19 +51,19 @@ Click Next. You can optionally define an exclusion filter. Let's skip this step.
 
 Click Create Sink. You should get a confirmation the sink was created.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(148).png)
+![image.png](../../../assets/images/image(148).png)
 
 ## Step 2: Create a Subscription
 
 Go to the Pubsub product.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(149).png)
+![image.png](../../../assets/images/image(149).png)
 
 Click on your new Topic.
 
 Click on the Create Subscription button and select Create Subscription.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(150).png)
+![image.png](../../../assets/images/image(150).png)
 
 Give this Subscription a name, you will need this name later when configuring the Adapter.
 
@@ -73,7 +73,7 @@ You can leave all other options to their default. Click Create.
 
 Head over to the IAM & Admin product. Then the Service Accounts section.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(151).png)
+![image.png](../../../assets/images/image(151).png)
 
 Click Create Service Account.
 
@@ -81,7 +81,7 @@ Give the new Service Account a Name and Description. Click Create and Continue.
 
 Select a Role. You want to select Pub/Sub Subscriber.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(152).png)
+![image.png](../../../assets/images/image(152).png)
 
 Click Continue. And finally click Done.
 
@@ -93,7 +93,7 @@ This step is optional. You may already have a machine you want to run the collec
 
 Head over to the Compute Engine product.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(153).png)
+![image.png](../../../assets/images/image(153).png)
 
 Click the Create Instance button.
 
@@ -108,7 +108,7 @@ Click Create. This may take a minute.
 
 Once created, click the SSH button to log on the machine.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(154).png)
+![image.png](../../../assets/images/image(154).png)
 
 This will bring you to a console on the machine, ready to install the Adapter.
 
@@ -120,7 +120,7 @@ Click the Create Installation Key button. Enter a name for the key. This name wi
 
 Click on the copy-to-clipboard button next to the Adapter Key column. **The value should be a UUID, keep note of it, you'll need it in the next step.**
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(309).png)
+![](../../../assets/images/image(309).png)
 
 ## Step 6: Run the Adapter
 

@@ -19,7 +19,7 @@ This takes you to the Community Rules search page, and gives you access to thous
 
 > Rules are searchable by CVE number, keyword, or pre-defined descriptors (Tags). Searchable tags include attack techniques, MITRE ATT&CK id codes and other key rule identificators.
 
-![Community Rules Search Interface](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(337).png)
+![Community Rules Search Interface](../../assets/images/image(337).png)
 
 ## Loading a Community Rule
 

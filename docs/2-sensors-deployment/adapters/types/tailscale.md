@@ -61,11 +61,11 @@ Note that the `secret` value can be provided in the webhook URL or as an HTTP he
 
 Within the Tailscale Admin Console, navigate to **Settings** > **Webhooks**. Select **Add endpoint...**
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28168%29.png)
+![image.png](../../../assets/images/image(168).png)
 
 Provide the completed Webhook URL from Step 2, above. You can also select the various events you want sent via Webhook. Options include:
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%28170%29.png)
+![image.png](../../../assets/images/image(170).png)
 
 Select **Add endpoint**. Tailscale will provide you a webhook secret unique to this endpoint. You may want to keep this value, however it is not required within LimaCharlie.
 

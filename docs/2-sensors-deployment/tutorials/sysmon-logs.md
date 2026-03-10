@@ -44,17 +44,17 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
      ```
 2. Within the Organization where you wish to collect Sysmon data, go to the `Event Collection > Event Collection Rules` section.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-sysmon-1.png)
+![](../../assets/images/ingest-sysmon-1.png)
 
 3. Ensure that for Windows systems, `WEL` events are collected.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-sysmon-2.png)
+![](../../assets/images/ingest-sysmon-2.png)
 
 4. Go to the `Artifact Collection` section and add a new collection rule with the following path to bring in all Sysmon events:
 
 `wel://Microsoft-Windows-Sysmon/Operational:*`
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/ingest-sysmon-3.png)
+![](../../assets/images/ingest-sysmon-3.png)
 
 **Note:** You can use tagging or other filters to narrow down the systems that logs are collected from.
 
@@ -69,4 +69,4 @@ You can filter events by event ID to import select events. For example:
 5. Allow up to 10 minutes for data to come into LimaCharlie after setting up a new Artifact Collection rule. Data will flow in real-time after that point.
 6. Navigate to the Timeline view of a Sensor to confirm that Sysmon logs are present. You can search for Event Type `WEL` and Search for `Microsoft-Windows-Sysmon` to validate the telemetry.
 
-![image.png](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image%2896%29.png)
+![image.png](../../assets/images/image(96).png)

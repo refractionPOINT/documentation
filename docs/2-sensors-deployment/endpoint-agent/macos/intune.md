@@ -8,7 +8,7 @@ Set up the installation script by following these steps:
 
 1. In the [Microsoft Intune admin center](https://intune.microsoft.com/), go to Devices → Manage Devices → Configuration.
 
-![Screenshot of MS Intune -> Devices | Configuration](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Configurations.png)
+![Screenshot of MS Intune -> Devices | Configuration](../../../assets/images/Configurations.png)
 
 2. Choose [Policies](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/configuration), click the Create button and choose New Policy
 
@@ -30,7 +30,7 @@ Set up the installation script by following these steps:
 
 Set the Assignments to include all users who need the profile installed.
 
-![Screenshot of MS Intune -> Devices | Configuration | Details](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Configuration-details.png)
+![Screenshot of MS Intune -> Devices | Configuration | Details](../../../assets/images/Configuration-details.png)
 
 ## Installation Script
 
@@ -38,7 +38,7 @@ Set up the installation script by following these steps:
 
 1. In the [Microsoft Intune admin center](https://intune.microsoft.com/), go to Devices → Manage Devices → Scripts and remediations.
 
-![Screenshot of MS Intune -> Devices | Scripts](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Scripts.png)
+![Screenshot of MS Intune -> Devices | Scripts](../../../assets/images/Scripts.png)
 
 2. Choose [Platform scripts](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/scripts), click the Add button and choose macOS
 
@@ -58,4 +58,4 @@ Max number of times to retry if script fails: 3
 
 Assignments: Set the `Included groups` to be `All Users` if you wish all users to get the application to be installed, or simply select the correct group to whom you wish to have LimaCharlie be installed for.
 
-![Screenshot of MS Intune -> Devices | Scripts | Details](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/Script-details.png)
+![Screenshot of MS Intune -> Devices | Scripts | Details](../../../assets/images/Script-details.png)

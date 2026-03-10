@@ -10,7 +10,7 @@ To utilize SMTP output, you will need:
 
 ## Webapp Configuration
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/smtp(1).png)
+![](../../../assets/images/smtp(1).png)
 
 Output individually each event, detection, audit, deployment or log through an email.
 

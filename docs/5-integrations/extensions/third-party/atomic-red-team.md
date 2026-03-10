@@ -12,17 +12,17 @@ Please note that the Atomic Red Team **Extension** has replaced the Atomic Red T
 
 Enabling Atomic Red Team can be done within the LimaCharlie **Marketplace**, or at [this link](https://beta.app.limacharlie.io/add-ons/extension-detail/ext-atomic-red-team).
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-1.png)
+![](../../../assets/images/atomic-1.png)
 
 Under the Organization dropdown, select a tenant (organization) you want to subscribe to Atomic Red Team and click subscribe.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-2.png)
+![](../../../assets/images/atomic-2.png)
 
 Please note that Extensions are applied on the per-tenant basis. If you have multiple organizations you want to subscribe to Atomic Red Team, you will need to subscribe each organization to the extension separately.
 
 You can also manage add-ons from the **Subscriptions** menu under **Billing**.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-3.png)
+![](../../../assets/images/atomic-3.png)
 
 Tenants that have been subscribed to the extension, will be marked with a green check mark in the **Organization** dropdown.
 
@@ -30,7 +30,7 @@ Tenants that have been subscribed to the extension, will be marked with a green 
 
 After Atomic Red Team has been enabled for your organization, the **Atomic Red Team** option will be available under the **Extensions** menu in the web UI. Selecting this Extension will render the Atomic Red Team test selection menu.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-4.png)
+![](../../../assets/images/atomic-4.png)
 
 Sensor Eligibility for Atomic Red Team tests
 
@@ -51,7 +51,7 @@ Running Atomic Red Team tests will likely modify some system configurations. Lim
 
 The list of available tests is updated every time the window is open, ensuring that you are getting all available options from the Atomic Red Team repository.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-5.png)
+![](../../../assets/images/atomic-5.png)
 
 Select your test(s) of choice, and click 'Run Tests'. You will receive a dialog box with a job id that is associated with this particular run of test(s).
 
@@ -59,18 +59,18 @@ Select your test(s) of choice, and click 'Run Tests'. You will receive a dialog 
 
 When the Atomic Red Team extension is enabled, you will see an Adapter named `ext-atomic-red-team`.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-6.png)
+![](../../../assets/images/atomic-6.png)
 
 This Adapter corresponds to all Atomic Red Team activity, including jobs run and results returned. As a separate adapter, this also means that Atomic Red Team tests are actionable events. For example, you could construct a  rule based on Atomic Red Team test results or feedback from system telemetry.
 
 Viewing the **Timeline** within the `ext-atomic-red-team` adapter will display the test(s) run and associated results, if available.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-7.png)
+![](../../../assets/images/atomic-7.png)
 
 Note that results are easily distinguished via a `result <MITRE ATT&CK ID>` event name, allowing for easy filtering and analysis.
 
 Within the **Timeline** of the *system on which you ran a test*, you will also find `RECEIPT` event(s) that contain more details about executed tests. For example, the following output shows data related to a test for ATT&CK ID T1053.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/atomic-8.png)
+![](../../../assets/images/atomic-8.png)
 
 Between `RECEIPT` events and output in the `ext-atomic-red-team` adapter, you can correlate and identify successful and failed Atomic Red Team tests.

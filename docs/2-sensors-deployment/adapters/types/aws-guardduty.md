@@ -66,4 +66,4 @@ region=<AWS-REGION>
 
 Within the LimaCharlie web application, you can create an AWS GuardDuty Cloud Connector using the `+ Add Sensor` option.
 
-![](https://cdn.document360.io/84ec2311-0e05-4c58-90b9-baa9c041d22b/Images/Documentation/image(304).png)
+![](../../../assets/images/image(304).png)
