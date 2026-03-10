@@ -815,32 +815,35 @@ respond:
     extension action: create_ticket
     extension request:
       detection:
-        detect_id: '{{ .detect_id }}'
-        cat: '{{ .cat }}'
-        source: '{{ .source }}'
-        routing: '{{ .routing }}'
-        detect_mtd: '{{ .detect_mtd }}'
-      severity: high
+        detect_id: detect_id
+        cat: cat
+        source: source
+        routing: routing
+        detect_mtd: detect_mtd
 ```
+
+!!! note "Value resolution"
+    Values in `extension request` are resolved as gjson paths against the triggering event. Bare names like `detect_id` extract the actual field value, preserving nested object structure for fields like `routing`. Do not use Go template syntax (`{{ }}`), as it stringifies objects.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `detection` | object | Optional. Full LC detection object. Fields `detect_id`, `cat`, `source`, `routing`, and `detect_mtd` are extracted automatically. Omit to create an empty investigation ticket. |
-| `severity` | string | Optional. Severity override: `critical`, `high`, `medium`, `low`. Defaults to the severity derived from the detection priority. |
+| `severity` | string | Optional. Severity override: `critical`, `high`, `medium`, `low`. Defaults to the severity derived from the detection priority. When calling from the REST API or SDK, pass as a top-level string field. |
 
 ### Query Open Ticket Count
 
-The `get_ticket_count` action returns the number of tickets matching optional status and severity filters. Use it from a response action to drive conditional automation.
+The `get_ticket_count` extension action returns the number of tickets matching optional status and severity filters. It is available as an extension request via the REST API or SDK and is useful for building automation and monitoring workflows.
 
-```yaml
-respond:
-  - action: extension request
-    extension name: ext-ticketing
-    extension action: get_ticket_count
-    extension request:
-      status: new,acknowledged,in_progress
-      severity: critical,high
-```
+=== "REST API"
+
+    ```bash
+    curl -s -X POST \
+      "https://api.limacharlie.io/v1/extension/request/ext-ticketing" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d oid="YOUR_OID" \
+      -d action="get_ticket_count" \
+      -d data='{"status": "new,acknowledged,in_progress", "severity": "critical,high"}'
+    ```
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
