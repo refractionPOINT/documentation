@@ -160,7 +160,7 @@ GET /v1/sessions/{sessionId}
     "region": "us-central1",
     "created_at": "2025-01-15T10:30:00Z",
     "started_at": "2025-01-15T10:30:05Z",
-    "ended_at": null,
+    "terminated_at": null,
     "end_reason": null,
     "exit_code": null,
     "error_message": null,
@@ -179,7 +179,7 @@ DELETE /v1/sessions/{sessionId}
 **Response: 200 OK**
 ```json
 {
-  "ended": true
+  "terminated": true
 }
 ```
 
@@ -189,7 +189,7 @@ DELETE /v1/sessions/{sessionId}
 DELETE /v1/sessions/{sessionId}/record
 ```
 
-Delete an ended session from history. Only sessions in the `ended` state can be deleted.
+Delete a terminated session from history. Only sessions in the `ended` state can be deleted.
 
 **Response: 200 OK**
 ```json
@@ -352,7 +352,7 @@ GET /v1/auth/claude/url?session_id={oauth_session_id}
 **Response: 200 OK (Pending)**
 ```json
 {
-  "status": "waiting",
+  "status": "pending",
   "message": "Waiting for OAuth URL to be generated"
 }
 ```
@@ -750,11 +750,12 @@ Session has ended.
 **End Reasons:**
 - `completed`: Session completed normally
 - `failed`: Session encountered an execution error
+- `job_completed`: Session runner process exited
 - `user_requested`: User terminated the session
 - `org_api_requested`: Session was terminated via the org API
-- `timeout`: Session exceeded its maximum duration
-- `ttl_expired`: Session lifetime (`ttl_seconds`) was exceeded
-- `cancelled`: Session was cancelled by the system
+- `max_duration_exceeded`: Session exceeded its maximum duration
+- `startup_timeout`: Session failed to start within the allowed time
+- `heartbeat_stale`: Lost connection to the session runner
 
 #### session_error
 

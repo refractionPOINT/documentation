@@ -180,11 +180,12 @@ When a session enters the `ended` state, the `end_reason` field indicates why:
 |--------|-------------|
 | `completed` | Session completed its task normally |
 | `failed` | Session encountered an execution error |
-| `timeout` | Session exceeded its maximum duration |
-| `cancelled` | Session was cancelled by the system |
-| `ttl_expired` | Session lifetime (`ttl_seconds`) was exceeded |
+| `job_completed` | Session runner process exited |
 | `user_requested` | User terminated the session |
 | `org_api_requested` | Session was terminated via the org API |
+| `max_duration_exceeded` | Session exceeded its maximum duration |
+| `startup_timeout` | Session failed to start within the allowed time |
+| `heartbeat_stale` | Lost connection to the session runner |
 
 ### Terminating a Session
 
