@@ -376,39 +376,56 @@ Removes a tag from a Hive record.
   tag: high-hit
 ```
 
-### start ai session
+### start ai agent
 
 Spawns a Claude AI session to perform automated investigation, analysis, or response actions. See [AI Sessions](../9-ai-sessions/index.md) for full documentation.
 
+This action supports two modes: **inline mode** (all parameters in the rule) and **definition mode** (referencing a pre-configured AI agent from the Hive via `definition: hive://ai_agent/<name>`).
+
+#### Inline Mode
+
 ```yaml
-- action: start ai session
+- action: start ai agent
   prompt: "Investigate this detection and provide a summary..."
   anthropic_secret: hive://secret/my-anthropic-key
 ```
 
+#### Definition Mode
+
+```yaml
+- action: start ai agent
+  definition: hive://ai_agent/my-triage-bot
+```
+
 This action launches a fully-managed Claude Code session that can investigate events, query data via MCP servers, and generate reports.
 
-#### Required Parameters
+#### Required Parameters (Inline Mode)
 
 | Parameter | Description |
 |-----------|-------------|
 | `prompt` | Instructions for Claude. Supports [template strings](../4-data-queries/template-transforms.md). |
 | `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). |
 
+#### Required Parameters (Definition Mode)
+
+| Parameter | Description |
+|-----------|-------------|
+| `definition` | Reference to a pre-configured AI agent in the Hive: `hive://ai_agent/<name>`. |
+
 #### Optional Parameters
 
 | Parameter | Description |
 |-----------|-------------|
-| `name` | Session name. Supports template strings. |
-| `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. |
-| `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. |
-| `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. |
-| `data` | Extract event fields to include in the prompt as JSON. |
-| `profile` | Inline session configuration (tools, model, limits, MCP servers). |
-| `profile_name` | Reference a saved profile by name. |
-| `profile.one_shot` | When `true`, session completes initial prompt work then terminates. Recommended for automated sessions. |
+| `name` | Session name. Supports template strings. (Inline mode only.) |
+| `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. (Inline mode only.) |
+| `lc_uid_secret` | LimaCharlie User ID. Required when `lc_api_key_secret` is a user API key. Use `hive://secret/<name>`. (Inline mode only.) |
+| `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. (Inline mode only.) |
+| `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. (Both modes.) |
+| `data` | Extract event fields to include in the prompt as JSON. (Inline mode only.) |
+| `profile` | Inline session configuration (tools, model, limits, MCP servers). (Inline mode only.) |
+| `profile_name` | Reference a saved profile by name. (Inline mode only.) |
 
-#### Example: Automated Detection Investigation
+#### Example: Inline Mode
 
 ```yaml
 detect:
@@ -420,7 +437,7 @@ detect:
 respond:
   - action: report
     name: mimikatz-detected
-  - action: start ai session
+  - action: start ai agent
     prompt: |
       A Mimikatz-related process was detected.
       Investigate the process tree, check for credential dumping activity,
@@ -446,6 +463,15 @@ respond:
           url: https://mcp.limacharlie.io
           headers:
             Authorization: hive://secret/lc-mcp-token
+```
+
+#### Example: Definition Mode
+
+```yaml
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/l1-triage-bot
+    debounce_key: "triage-{{ .routing.sid }}"
 ```
 
 For detailed configuration options, see [D&R-Driven AI Sessions](../9-ai-sessions/dr-sessions.md).

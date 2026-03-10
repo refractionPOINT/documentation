@@ -4,7 +4,7 @@ D&R-Driven AI Sessions allow you to automatically spawn Claude AI sessions in re
 
 ## Overview
 
-When a D&R rule matches, the `start ai session` response action launches a Claude session with:
+When a D&R rule matches, the `start ai agent` response action launches a Claude session with:
 
 - A prompt containing the context you specify
 - Access to tools and MCP servers you configure
@@ -12,37 +12,63 @@ When a D&R rule matches, the `start ai session` response action launches a Claud
 
 The session runs autonomously, performing the investigation or analysis you've defined, and the results can be captured via outputs or stored for later review.
 
-## The `start ai session` Action
+## The `start ai agent` Action
 
-### Basic Syntax
+There are two ways to configure the action: **inline mode** (all parameters in the rule) or **definition mode** (referencing a pre-configured AI agent from the Hive).
+
+### Inline Mode
+
+Specify all session parameters directly in the D&R rule:
 
 ```yaml
 respond:
-  - action: start ai session
+  - action: start ai agent
     prompt: "Your instructions to Claude..."
     anthropic_secret: hive://secret/my-anthropic-key
 ```
 
-### Required Parameters
+#### Required Parameters (Inline Mode)
 
 | Parameter | Description |
 |-----------|-------------|
 | `prompt` | The instructions for Claude. Supports [template strings](../4-data-queries/template-transforms.md) to include event data. |
 | `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). |
 
-### Optional Parameters
+#### Optional Parameters (Inline Mode)
 
 | Parameter | Description |
 |-----------|-------------|
 | `name` | Session name. Supports template strings. Useful for identifying sessions in logs. |
 | `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. |
+| `lc_uid_secret` | LimaCharlie User ID. Required when `lc_api_key_secret` is a user API key (as opposed to an org API key). Use `hive://secret/<name>`. |
 | `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. |
 | `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. |
 | `data` | Extract event data fields to include in the prompt as JSON. |
 | `profile` | Inline session configuration (tools, model, limits, etc.). |
-| `profile_name` | Reference a saved profile by name. |
+| `profile_name` | Reference a saved profile by name. Currently only supported for user sessions; for D&R sessions, use inline `profile` instead. |
 
 > Note: You can specify either `profile` (inline) or `profile_name` (reference), but not both.
+
+### Definition Mode
+
+Reference a pre-configured AI agent definition stored in the Hive:
+
+```yaml
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/my-triage-bot
+```
+
+In definition mode, all session configuration (prompt, anthropic key, profile, etc.) comes from the referenced AI agent record. No other parameters are required.
+
+You can optionally override `debounce_key` at the action level, even in definition mode:
+
+```yaml
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/my-triage-bot
+    debounce_key: "investigate-{{ .routing.sid }}"
+```
 
 ## Configuration Options
 
@@ -51,7 +77,7 @@ respond:
 The `prompt` parameter supports LimaCharlie's template syntax. You can include event data directly in your instructions:
 
 ```yaml
-- action: start ai session
+- action: start ai agent
   prompt: |
     A suspicious process was detected on {{ .routing.hostname }}.
 
@@ -68,7 +94,7 @@ The `prompt` parameter supports LimaCharlie's template syntax. You can include e
 Use the `data` parameter to extract specific fields and include them as structured JSON:
 
 ```yaml
-- action: start ai session
+- action: start ai agent
   prompt: "Analyze this detection and provide a severity assessment."
   anthropic_secret: hive://secret/anthropic-key
   data:
@@ -87,13 +113,13 @@ The extracted data is appended to the prompt as a JSON code block.
 Prevent duplicate sessions for the same event using `idempotent_key`:
 
 ```yaml
-- action: start ai session
+- action: start ai agent
   prompt: "Investigate this detection..."
   anthropic_secret: hive://secret/anthropic-key
   idempotent_key: "{{ .detect.detect_id }}"
 ```
 
-If a session with the same idempotent key was recently created, the action is skipped.
+If a session with the same idempotent key was recently created (within 24 hours), the action is skipped.
 
 ### Debounced Sessions
 
@@ -102,13 +128,13 @@ Use `debounce_key` to serialize sessions so only one runs at a time per key. Whe
 This is useful for workflows where multiple detections may fire in rapid succession but should be handled sequentially by a single agent (e.g., a triage bot processing tickets one at a time).
 
 ```yaml
-- action: start ai session
+- action: start ai agent
   prompt: "Investigate this ticket..."
   anthropic_secret: hive://secret/anthropic-key
   debounce_key: "triage-bot"
 ```
 
-Unlike `idempotent_key` which silently drops duplicates, `debounce_key` guarantees the latest request will eventually be processed — it just waits for the current session to finish first. The key supports template strings for dynamic serialization:
+Unlike `idempotent_key` which silently drops duplicates, `debounce_key` guarantees the latest request will eventually be processed — it just waits for the current session to finish first. Only the most recent pending request is kept per key. The key supports template strings for dynamic serialization:
 
 ```yaml
 # Serialize per sensor — one active investigation per endpoint
@@ -124,7 +150,7 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
 #### Inline Profile
 
 ```yaml
-- action: start ai session
+- action: start ai agent
   prompt: "Investigate this activity..."
   anthropic_secret: hive://secret/anthropic-key
   profile:
@@ -146,7 +172,7 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
     model: claude-sonnet-4-20250514
     max_turns: 50
     max_budget_usd: 5.0
-    one_shot: true  # Complete initial task then terminate
+    one_shot: true  # Complete initial task then terminate (this is the default for D&R sessions)
     ttl_seconds: 1800
 
     # Environment variables
@@ -173,8 +199,8 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
 | `model` | string | Claude model to use (e.g., `claude-sonnet-4-20250514`) |
 | `max_turns` | integer | Maximum conversation turns before auto-termination |
 | `max_budget_usd` | float | Maximum spend limit in USD |
-| `one_shot` | boolean | When `true`, session completes all work for the initial prompt (including tools, skills, and subagents) then terminates automatically. Recommended for D&R-triggered sessions. Default: `false` |
-| `ttl_seconds` | integer | Maximum session lifetime in seconds |
+| `one_shot` | boolean | When `true`, session completes all work for the initial prompt (including tools, skills, and subagents) then terminates automatically. Default: `true` for D&R-triggered sessions. |
+| `ttl_seconds` | integer | Maximum session lifetime in seconds. Capped at 24 hours. |
 | `environment` | map | Environment variables. Values can use `hive://secret/` |
 | `mcp_servers` | map | MCP server configurations (see below) |
 
@@ -223,7 +249,7 @@ detect:
 respond:
   - action: report
     name: encoded-powershell-command
-  - action: start ai session
+  - action: start ai agent
     prompt: |
       A PowerShell process with an encoded command was detected.
 
@@ -250,7 +276,7 @@ detect:
   value: 3
 
 respond:
-  - action: start ai session
+  - action: start ai agent
     prompt: |
       A high-priority detection was triggered. Use the LimaCharlie MCP tools to:
 
@@ -292,7 +318,7 @@ detect:
 respond:
   - action: report
     name: threat-intel-domain-match
-  - action: start ai session
+  - action: start ai agent
     name: "threat-hunt-{{ .routing.sid }}"
     prompt: |
       A DNS request to a known malicious domain was detected.
@@ -327,7 +353,7 @@ Use external tools via MCP for enrichment:
 
 ```yaml
 respond:
-  - action: start ai session
+  - action: start ai agent
     prompt: |
       Enrich this alert with external threat intelligence.
 
@@ -348,6 +374,24 @@ respond:
         mitre:
           type: http
           url: https://mitre-mcp.example.com
+```
+
+### Example 5: Definition Mode with Hive AI Agent
+
+Reference a pre-configured AI agent for a cleaner rule:
+
+```yaml
+detect:
+  target: detection
+  event: "*"
+  op: is greater than
+  path: priority
+  value: 3
+
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/l1-triage-bot
+    debounce_key: "triage-{{ .routing.sid }}"
 ```
 
 ## Best Practices

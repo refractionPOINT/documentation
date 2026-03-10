@@ -473,7 +473,7 @@ async function main() {
 
   // Wait for session to be running
   let status = session.status;
-  while (status === 'pending') {
+  while (status === 'starting') {
     await new Promise(r => setTimeout(r, 1000));
     const resp = await client.getSession(session.id);
     status = resp.session.status;

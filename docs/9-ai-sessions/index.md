@@ -36,6 +36,7 @@ Interactive AI sessions accessed through the web interface or API. Use cases inc
 | **Interaction** | Fire-and-forget | Real-time WebSocket |
 | **Use case** | Automation | Investigation |
 | **Idempotency** | Supported | N/A |
+| **Debouncing** | Supported | N/A |
 
 ## How It Works
 
@@ -51,7 +52,7 @@ AI Sessions runs fully-managed Claude Code instances in isolated cloud environme
 ### For D&R-Driven Sessions
 
 1. Store your Anthropic API key in a [Hive Secret](../7-administration/config-hive/secrets.md)
-2. Create a D&R rule with the `start ai session` action
+2. Create a D&R rule with the `start ai agent` action
 3. Configure the prompt and optional profile settings
 
 ```yaml
@@ -64,7 +65,7 @@ detect:
 respond:
   - action: report
     name: suspicious-process-detected
-  - action: start ai session
+  - action: start ai agent
     prompt: |
       Investigate this suspicious process detection.
       Analyze the process tree, network connections, and file activity.

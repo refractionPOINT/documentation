@@ -87,7 +87,7 @@ GET /v1/sessions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `status` | string | Filter by status: `pending`, `running`, `terminated`, `failed` |
+| `status` | string | Filter by status: `starting`, `running`, `ended` |
 | `limit` | integer | Max results (default 50, max 200) |
 | `cursor` | string | Pagination cursor |
 
@@ -133,7 +133,7 @@ POST /v1/sessions
 {
   "session": {
     "id": "abc123",
-    "status": "pending",
+    "status": "starting",
     "region": "us-central1",
     "created_at": "2025-01-15T10:30:00Z"
   }
@@ -160,8 +160,8 @@ GET /v1/sessions/{sessionId}
     "region": "us-central1",
     "created_at": "2025-01-15T10:30:00Z",
     "started_at": "2025-01-15T10:30:05Z",
-    "terminated_at": null,
-    "termination_reason": null,
+    "ended_at": null,
+    "end_reason": null,
     "exit_code": null,
     "error_message": null,
     "allowed_tools": ["Bash", "Read"],
@@ -179,7 +179,7 @@ DELETE /v1/sessions/{sessionId}
 **Response: 200 OK**
 ```json
 {
-  "terminated": true
+  "ended": true
 }
 ```
 
@@ -189,7 +189,7 @@ DELETE /v1/sessions/{sessionId}
 DELETE /v1/sessions/{sessionId}/record
 ```
 
-Delete a terminated session from history. Only terminated or failed sessions can be deleted.
+Delete an ended session from history. Only sessions in the `ended` state can be deleted.
 
 **Response: 200 OK**
 ```json
@@ -352,7 +352,7 @@ GET /v1/auth/claude/url?session_id={oauth_session_id}
 **Response: 200 OK (Pending)**
 ```json
 {
-  "status": "pending",
+  "status": "waiting",
   "message": "Waiting for OAuth URL to be generated"
 }
 ```
@@ -734,7 +734,7 @@ Session status update.
 
 #### session_end
 
-Session has terminated.
+Session has ended.
 
 ```json
 {
@@ -747,12 +747,14 @@ Session has terminated.
 }
 ```
 
-**Termination Reasons:**
+**End Reasons:**
 - `completed`: Session completed normally
+- `failed`: Session encountered an execution error
 - `user_requested`: User terminated the session
-- `timeout`: Session timed out
-- `process_crashed`: Claude process crashed
-- `cancelled`: Session was cancelled
+- `org_api_requested`: Session was terminated via the org API
+- `timeout`: Session exceeded its maximum duration
+- `ttl_expired`: Session lifetime (`ttl_seconds`) was exceeded
+- `cancelled`: Session was cancelled by the system
 
 #### session_error
 
@@ -869,8 +871,8 @@ const createResp = await fetch(`${baseUrl}/v1/sessions`, {
 const { session } = await createResp.json();
 
 // 2. Wait for session to be running
-let status = 'pending';
-while (status === 'pending') {
+let status = 'starting';
+while (status === 'starting') {
   await new Promise(r => setTimeout(r, 1000));
   const resp = await fetch(`${baseUrl}/v1/sessions/${session.id}`, {
     headers: { 'Authorization': `Bearer ${jwt}` }
