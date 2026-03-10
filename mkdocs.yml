@@ -223,6 +223,7 @@ nav:
               - Windows Event Logs: 2-sensors-deployment/adapters/examples/windows-event-logs.md
           - Tutorials:
               - Webhook Adapter: 2-sensors-deployment/adapters/tutorials/webhook-adapter.md
+              - OpenTelemetry via Webhook: 2-sensors-deployment/adapters/tutorials/otel-webhook.md
               - Google Cloud Logs: 2-sensors-deployment/adapters/tutorials/google-cloud-logs.md
               - Cloud Telemetry: 2-sensors-deployment/adapters/tutorials/cloud-telemetry.md
       - Troubleshooting:
