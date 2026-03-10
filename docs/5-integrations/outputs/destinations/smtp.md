@@ -1,6 +1,6 @@
 # SMTP
 
-One option to export data from LimaCharlie is via SMTP, allowing you to send emails directly to a ticketing inbox or send high-priority detections to an on-call, shared email.
+One option to export data from LimaCharlie is via SMTP, allowing you to send emails directly to a case management inbox or send high-priority detections to an on-call, shared email.
 
 To utilize SMTP output, you will need:
 

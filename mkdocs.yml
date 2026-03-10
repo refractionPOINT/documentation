@@ -316,7 +316,7 @@ nav:
               - Lookup Manager: 5-integrations/extensions/limacharlie/lookup-manager.md
               - Payload Manager: 5-integrations/extensions/limacharlie/payload-manager.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
-              - Ticketing: 5-integrations/extensions/limacharlie/ticketing.md
+              - Cases: 5-integrations/extensions/limacharlie/cases.md
           - Third Party:
               - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
               - Zeek: 5-integrations/extensions/third-party/zeek.md

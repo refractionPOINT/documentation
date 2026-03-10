@@ -125,11 +125,11 @@ If a session with the same idempotent key was recently created (within 24 hours)
 
 Use `debounce_key` to serialize sessions so only one runs at a time per key. When a session is already active for a given debounce key, new requests are queued. When the active session ends, the most recent queued request is automatically re-fired.
 
-This is useful for workflows where multiple detections may fire in rapid succession but should be handled sequentially by a single agent (e.g., a triage bot processing tickets one at a time).
+This is useful for workflows where multiple detections may fire in rapid succession but should be handled sequentially by a single agent (e.g., a triage bot processing cases one at a time).
 
 ```yaml
 - action: start ai agent
-  prompt: "Investigate this ticket..."
+  prompt: "Investigate this case..."
   anthropic_secret: hive://secret/anthropic-key
   debounce_key: "triage-bot"
 ```

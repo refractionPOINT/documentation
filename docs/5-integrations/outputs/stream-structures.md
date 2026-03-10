@@ -179,7 +179,7 @@ The `detect_data` field contains **structured IOCs** extracted by the D&R rule. 
 - Automated enrichment (lookup IPs, domains, hashes)
 - SOAR playbook inputs
 - Threat intelligence platform integration
-- Case management system ticketing
+- Case management systems
 
 Example `detect_data` for different detection types:
 
@@ -206,7 +206,7 @@ Example `detect_data` for different detection types:
 ### Use Cases
 
 - **Incident Response**: Feed high-priority detections to SOAR platforms
-- **Alerting**: Send to Slack, email, or ticketing systems
+- **Alerting**: Send to Slack, email, or case management systems
 - **Triage**: Filter by `priority` and `cat` for analyst review
 - **Enrichment**: Extract IOCs from `detect_data` for threat intel lookups
 
