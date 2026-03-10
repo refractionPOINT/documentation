@@ -378,7 +378,77 @@ respond:
 
 ### Example 5: Definition Mode with Hive AI Agent
 
-Reference a pre-configured AI agent for a cleaner rule:
+Instead of putting all session configuration inline in every D&R rule, you can store a reusable AI agent definition in the `ai_agent` hive and reference it by name.
+
+#### Step 1: Create the AI Agent Record
+
+Store the agent definition in the `ai_agent` hive (via the API, CLI, or infrastructure-as-code):
+
+```yaml
+ai_agent:
+  detection-investigator:
+    data:
+      # Credentials (use hive://secret/ references)
+      anthropic_secret: hive://secret/anthropic-key
+      lc_api_key_secret: hive://secret/lc-api-key
+
+      # Prompt with instructions
+      prompt: |
+        You are a detection investigator. A detection has fired and you need to
+        investigate it and document your findings.
+
+        Using the provided event data:
+        1. Get details about the sensor where this occurred
+        2. Check the process tree and parent/child relationships
+        3. Look for related network connections and file operations
+        4. Check if similar activity exists on other sensors
+        5. Assess severity and provide a recommendation
+
+        Document all findings in a structured report.
+
+      # Session name (supports template strings)
+      name: "investigate-{{ .routing.hostname }}"
+
+      # Extract event data fields to include in the prompt
+      data:
+        hostname: routing.hostname
+        sensor_id: routing.sid
+        detection_name: detect.cat
+
+      # Session configuration
+      model: claude-sonnet-4-20250514
+      max_turns: 50
+      max_budget_usd: 5.0
+      ttl_seconds: 1800
+      one_shot: true
+      permission_mode: bypassPermissions
+
+      # Tool restrictions
+      allowed_tools:
+        - Bash
+        - Read
+        - Grep
+        - Glob
+        - WebFetch
+      denied_tools:
+        - Write
+        - Edit
+
+      # MCP servers
+      mcp_servers:
+        limacharlie:
+          type: http
+          url: https://mcp.limacharlie.io
+          headers:
+            Authorization: hive://secret/lc-mcp-token
+
+    usr_mtd:
+      enabled: true
+```
+
+#### Step 2: Reference It from D&R Rules
+
+The D&R rule becomes minimal — just a reference to the agent definition:
 
 ```yaml
 detect:
@@ -390,9 +460,32 @@ detect:
 
 respond:
   - action: start ai agent
-    definition: hive://ai_agent/l1-triage-bot
-    debounce_key: "triage-{{ .routing.sid }}"
+    definition: hive://ai_agent/detection-investigator
+    debounce_key: "investigate-{{ .routing.sid }}"
 ```
+
+This approach keeps D&R rules clean and lets you update the agent's behavior (prompt, model, tools, etc.) in one place without modifying every rule that uses it. The `debounce_key` can be overridden at the action level even in definition mode.
+
+#### AI Agent Record Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `prompt` | string | Yes | Instructions for Claude. |
+| `anthropic_secret` | string | No | Anthropic API key or `hive://secret/` reference. |
+| `lc_api_key_secret` | string | No | LimaCharlie API key or `hive://secret/` reference. |
+| `lc_uid_secret` | string | No | LimaCharlie User ID or `hive://secret/` reference. Required when `lc_api_key_secret` is a user API key. |
+| `name` | string | No | Session name. Supports template strings. |
+| `data` | map | No | Event data extraction mapping. |
+| `allowed_tools` | list | No | Tools Claude can use. |
+| `denied_tools` | list | No | Tools Claude cannot use. |
+| `permission_mode` | string | No | `acceptEdits`, `plan`, or `bypassPermissions`. |
+| `model` | string | No | Claude model identifier. |
+| `max_turns` | integer | No | Maximum conversation turns. |
+| `max_budget_usd` | float | No | Maximum spend limit in USD. |
+| `ttl_seconds` | integer | No | Maximum session lifetime in seconds. |
+| `one_shot` | boolean | No | Auto-terminate after initial task. |
+| `environment` | map | No | Environment variables (values can use `hive://secret/`). |
+| `mcp_servers` | map | No | MCP server configurations. |
 
 ## Best Practices
 
