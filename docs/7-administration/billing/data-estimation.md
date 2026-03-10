@@ -22,8 +22,8 @@ The estimates in this guide use the following size brackets, defined by the numb
 | Medium | 200–1,000 | 200–1,000 | 20–100 |
 | Large | 1,000–5,000 | 1,000–5,000 | 100–500 |
 
-!!! note
-    These are rough guidelines. Your actual numbers depend on your industry, infrastructure maturity, and which data sources you choose to ingest. Use these estimates as a starting point and refine based on your environment.
+> [!NOTE]
+> These are rough guidelines. Your actual numbers depend on your industry, infrastructure maturity, and which data sources you choose to ingest. Use these estimates as a starting point and refine based on your environment.
 
 ## External Telemetry Sources
 
@@ -78,8 +78,8 @@ Logs from firewalls, IDS/IPS, VPN concentrators, and network proxies. These are 
 | VPN / ZTNA | 0.1–0.5 GB | 0.5–2 GB | 2–10 GB | Session and authentication events |
 | Web Proxy / DNS | 0.5–3 GB | 3–15 GB | 15–80 GB | Per-request logging is very high volume |
 
-!!! warning
-    Network security devices are typically the largest source of log data. Firewall traffic logs alone can dwarf all other sources combined. Consider ingesting only threat events and denied connections rather than full connection logs to manage volume.
+> [!WARNING]
+> Network security devices are typically the largest source of log data. Firewall traffic logs alone can dwarf all other sources combined. Consider ingesting only threat events and denied connections rather than full connection logs to manage volume.
 
 **Typical total — Network:** 2–10 GB/day (small), 10–55 GB/day (medium), 55–290 GB/day (large)
 
@@ -116,8 +116,8 @@ The table below shows estimated **total daily external ingestion** based on a ty
 | **Moderate** — Above + Email/Collab + one security tool | 3–12 GB/day | 12–60 GB/day | 60–270 GB/day |
 | **Comprehensive** — Above + Network + multiple security tools | 5–25 GB/day | 25–140 GB/day | 140–500+ GB/day |
 
-!!! info
-    These estimates assume typical logging verbosity. Enabling verbose or debug logging on any source can increase volumes by 2–10x. Conversely, filtering to only security-relevant events can reduce volumes significantly.
+> [!NOTE]
+> These estimates assume typical logging verbosity. Enabling verbose or debug logging on any source can increase volumes by 2–10x. Conversely, filtering to only security-relevant events can reduce volumes significantly.
 
 ## Tips for Managing Ingestion Costs
 
