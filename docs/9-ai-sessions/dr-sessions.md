@@ -406,7 +406,7 @@ ai_agent:
 
         Document all findings in a structured report.
 
-      # Session name template (supports event templating at runtime)
+      # Session name (supports template strings)
       name: "investigate-{{ .routing.hostname }}"
 
       # Extract event data fields to include in the prompt
@@ -474,7 +474,7 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 | `anthropic_secret` | string | No | Anthropic API key or `hive://secret/` reference. |
 | `lc_api_key_secret` | string | No | LimaCharlie API key or `hive://secret/` reference. |
 | `lc_uid_secret` | string | No | LimaCharlie User ID or `hive://secret/` reference. Required when `lc_api_key_secret` is a user API key. |
-| `name` | string | No | Session name template. |
+| `name` | string | No | Session name. Supports template strings. |
 | `data` | map | No | Event data extraction mapping. |
 | `allowed_tools` | list | No | Tools Claude can use. |
 | `denied_tools` | list | No | Tools Claude cannot use. |

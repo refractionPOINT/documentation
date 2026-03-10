@@ -5,7 +5,7 @@
 
 The Ticketing extension is a purpose-built SOC triage system that automatically converts LimaCharlie detections into trackable tickets with SLA enforcement, investigation tooling, and performance reporting. It is designed for high-volume environments where every detection needs to be acknowledged, investigated, classified, and resolved within measurable timeframes.
 
-Once subscribed, all detections from the organization are automatically ingested and converted into tickets. Analysts work the ticket queue through a defined lifecycle, attach investigation evidence, and classify outcomes. SOC managers get real-time dashboards and MTTA/MTTR reports.
+Once subscribed, detections from the organization are ingested and converted into tickets. By default all detections are ingested automatically; alternatively, [Tailored mode](#ingestion-mode) lets you select which detections create tickets via D&R rules. Analysts work the ticket queue through a defined lifecycle, attach investigation evidence, and classify outcomes. SOC managers get real-time dashboards and MTTA/MTTR reports.
 
 ## Enabling the Extension
 
@@ -148,8 +148,9 @@ Each organization has its own configuration that controls severity mapping, SLA 
 | `sla_config.low.mtta_minutes` | int | `100` | MTTA target for low tickets (minutes) |
 | `sla_config.low.mttr_minutes` | int | `2800` | MTTR target for low tickets (minutes) |
 | `retention_days` | int | `90` | Days to retain resolved/closed tickets before archival |
-| `auto_close_resolved_after_days` | int | `7` | Automatically close resolved tickets after this many days |
+| `auto_close_resolved_after_days` | int | `7` | Automatically close resolved tickets after this many days. Set to `0` to disable |
 | `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single tickets |
+| `ingestion_mode` | string | `"all"` | Controls which detections create tickets. `"all"` forwards every detection; `"tailored"` only creates tickets for detections explicitly sent via D&R rules (see [Ingestion Mode](#ingestion-mode)) |
 
 ### Get Configuration
 
@@ -204,7 +205,7 @@ Each organization has its own configuration that controls severity mapping, SLA 
 
 ### Creating a Ticket
 
-While detections are automatically converted to tickets, you can also create tickets manually via the CLI or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources.
+While detections are automatically converted to tickets, you can also create tickets manually via the CLI or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources. You can also create empty investigation tickets (without linking a detection) by omitting the detection ID.
 
 === "CLI"
 
@@ -269,6 +270,7 @@ Available query parameters:
 | `classification` | Filter by classification (comma-separated: `pending`, `true_positive`, `false_positive`) |
 | `assignee` | Filter by assigned analyst email |
 | `search` | Search text (matches against detection category and hostname) |
+| `sensor_id` | Filter to tickets with detections from this sensor ID |
 | `tag` | Filter by tags (comma-separated, AND logic: all specified tags must be present) |
 | `sort` | Sort field (`created_at`, `severity`, `ticket_number`) |
 | `order` | Sort order (`asc`, `desc`) |
@@ -746,7 +748,7 @@ Tickets can be escalated to specialized teams or senior analysts by setting the 
         --escalation-group tier-3-malware
     ```
 
-Tickets can be filtered by `escalation_group` in the listing endpoint. Escalation rates are tracked in reports.
+Escalation rates are tracked in reports.
 
 ## Assignees
 
@@ -770,9 +772,41 @@ List all unique assignee emails across your accessible organizations. Useful for
 
 The ticketing extension exposes request handlers that can be used in D&R rule response actions. This enables automated ticket management based on detection logic.
 
+### Ingestion Mode
+
+The `ingestion_mode` configuration controls how detections become tickets:
+
+- **`all`** (default) -- Every detection in the organization automatically creates a ticket. No D&R rules are required.
+- **`tailored`** -- Only detections explicitly forwarded via D&R rules using the `ingest_detection` action create tickets. This gives you fine-grained control over which detections enter the ticket queue.
+
+To forward a specific detection to the ticketing system in tailored mode, create a D&R rule:
+
+```yaml
+# Change 'my-detection-name' to the detection category you want to track.
+detect:
+  target: detection
+  event: my-detection-name
+  op: exists
+  path: detect
+
+respond:
+  - action: extension request
+    extension name: ext-ticketing
+    extension action: ingest_detection
+    extension request:
+      detect_id: detect_id
+      cat: cat
+      source: source
+      routing: routing
+      detect: detect
+      detect_mtd: detect_mtd
+```
+
+The extension configuration page includes a sample D&R rule template for tailored mode that you can copy and modify.
+
 ### Create a Ticket Manually
 
-Create a ticket from a D&R rule response action, useful for rules that need tickets for specific scenarios beyond the default auto-ticketing.
+Create a ticket from a D&R rule response action. The `create_ticket` action accepts an optional `detection` object containing the full detection data, and an optional `severity` override. If `detection` is omitted, an empty investigation ticket is created.
 
 ```yaml
 respond:
@@ -780,30 +814,41 @@ respond:
     extension name: ext-ticketing
     extension action: create_ticket
     extension request:
-      detection_cat: '{{ .cat }}'
-      detection_source: manual
-      detection_priority: 5
-      sensor_id: '{{ .routing.sid }}'
-      hostname: '{{ .routing.hostname }}'
+      detection:
+        detect_id: detect_id
+        cat: cat
+        source: source
+        routing: routing
+        detect_mtd: detect_mtd
 ```
+
+!!! note "Value resolution"
+    Values in `extension request` are resolved as gjson paths against the triggering event. Bare names like `detect_id` extract the actual field value, preserving nested object structure for fields like `routing`. Do not use Go template syntax (`{{ }}`), as it stringifies objects.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `detection` | object | Optional. Full LC detection object. Fields `detect_id`, `cat`, `source`, `routing`, and `detect_mtd` are extracted automatically. Omit to create an empty investigation ticket. |
+| `severity` | string | Optional. Severity override: `critical`, `high`, `medium`, `low`. Defaults to the severity derived from the detection priority. When calling from the REST API or SDK, pass as a top-level string field. |
 
 ### Query Open Ticket Count
 
-Use as a condition in D&R rules to trigger actions based on ticket volume. For example, escalate when a sensor has too many open tickets.
+The `get_ticket_count` extension action returns the number of tickets matching optional status and severity filters. It is available as an extension request via the REST API or SDK and is useful for building automation and monitoring workflows.
 
-```yaml
-detect:
-  event: detection
-  op: extension
-  extension name: ext-ticketing
-  extension action: get_ticket_count
-  extension request:
-    sensor_id: '{{ .routing.sid }}'
-    status: new,acknowledged,in_progress
-  path: count
-  value: 10
-  op: is greater than
-```
+=== "REST API"
+
+    ```bash
+    curl -s -X POST \
+      "https://api.limacharlie.io/v1/extension/request/ext-ticketing" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -d oid="YOUR_OID" \
+      -d action="get_ticket_count" \
+      -d data='{"status": "new,acknowledged,in_progress", "severity": "critical,high"}'
+    ```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | string | Optional. Comma-separated status filter (e.g. `new,acknowledged,in_progress`) |
+| `severity` | string | Optional. Comma-separated severity filter (e.g. `critical,high`) |
 
 ## Dashboard
 
@@ -848,8 +893,6 @@ SOC performance reports provide aggregated metrics for measuring team effectiven
     ```bash
     limacharlie ticket report \
         --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z
-    limacharlie ticket report \
-        --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z --group-by severity
     ```
 
 Query parameters:
@@ -882,6 +925,22 @@ Each webhook payload includes:
 - `by` -- The user who performed the action
 - `ts` -- Timestamp of the event
 - `metadata` -- Event-specific details (e.g. old/new status values)
+
+## Real-Time Updates (WebSocket)
+
+The ticketing API provides a WebSocket endpoint for real-time ticket event delivery at `GET /api/v1/ws`.
+
+To connect:
+
+1. Open a WebSocket connection to `wss://ticketing.limacharlie.io/api/v1/ws`
+2. Authenticate by sending `{"type": "auth", "token": "<LC_JWT>"}`
+3. Subscribe to ticket updates by sending `{"type": "subscribe", "ticket_id": "<TICKET_ID>"}`
+
+The server pushes `ticket_event` messages as changes occur, including status transitions, assignments, notes, and investigation updates. Presence tracking shows which users are currently viewing a ticket.
+
+## Rate Limiting
+
+The API enforces a rate limit of 20 requests per second (sustained) with a burst allowance of 50 requests per user. Requests exceeding the limit receive a `429 Too Many Requests` response.
 
 ## Audit Trail
 

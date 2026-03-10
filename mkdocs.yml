@@ -223,6 +223,7 @@ nav:
               - Windows Event Logs: 2-sensors-deployment/adapters/examples/windows-event-logs.md
           - Tutorials:
               - Webhook Adapter: 2-sensors-deployment/adapters/tutorials/webhook-adapter.md
+              - OpenTelemetry via Webhook: 2-sensors-deployment/adapters/tutorials/otel-webhook.md
               - Google Cloud Logs: 2-sensors-deployment/adapters/tutorials/google-cloud-logs.md
               - Cloud Telemetry: 2-sensors-deployment/adapters/tutorials/cloud-telemetry.md
       - Troubleshooting:
@@ -390,6 +391,7 @@ nav:
       - Billing:
           - Options: 7-administration/billing/options.md
           - Custom Plans: 7-administration/billing/custom-plans.md
+          - Estimating Data Ingestion: 7-administration/billing/data-estimation.md
       - Config Hive:
           - Overview: 7-administration/config-hive/index.md
           - Secrets: 7-administration/config-hive/secrets.md
