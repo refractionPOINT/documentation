@@ -241,6 +241,7 @@ nav:
       - Overview: 3-detection-response/index.md
       - Writing & Testing Rules: 3-detection-response/tutorials/writing-testing-rules.md
       - Threat Feed Rule: 3-detection-response/tutorials/threat-feed-rule.md
+      - D&R Rule Building Guidebook: 3-detection-response/tutorials/dr-rule-building-guidebook.md
       - Examples: 3-detection-response/examples.md
       - False Positive Rules: 3-detection-response/false-positives.md
       - Stateful Rules: 3-detection-response/stateful-rules.md
