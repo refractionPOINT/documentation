@@ -76,6 +76,8 @@ The `contains` checks if a substring can be found in the value at the path.
 An optional parameter `count: 3` can be specified to only match if the given
  substring is found *at least* 3 times in path.
 
+An optional parameter `case sensitive: false` can be specified to perform case-insensitive matching (defaults to `true`).
+
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
 Example rule:
@@ -106,6 +108,8 @@ They both use the `path` and `value` parameters. They also both support the `len
 ### matches
 
 The `matches` op compares the value at `path` with a regular expression supplied in the `re` parameter. Under the hood, this uses the Golang's `regexp` [package](https://golang.org/pkg/regexp/), which also enables you to apply the regexp to log files.
+
+**Note**: Unlike other operators, `matches` defaults to **case-insensitive** matching unless `case sensitive: true` is explicitly set.
 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
@@ -555,8 +559,8 @@ path: event/FILE_PATH
 value: chrome.exe
 case sensitive: false
 times:
-  - day_of_week_start: 2     # 1 - 7
-    day_of_week_end: 6       # 1 - 7
+  - day_of_week_start: 2     # 1 - 7 (1 = Sunday, 7 = Saturday)
+    day_of_week_end: 6       # 1 - 7 (1 = Sunday, 7 = Saturday)
     time_of_day_start: 2200  # 0 - 2359
     time_of_day_end: 2359    # 0 - 2359
     tz: America/Los_Angeles  # time zone
