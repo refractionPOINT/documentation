@@ -128,7 +128,7 @@ detect:
   event: USER_LOGIN
   op: lookup
   path: event/SOURCE_IP
-  resource: lcr://api/ip-geo
+  resource: lcr://api/ip-asn
 
 respond:
   - action: report
@@ -140,7 +140,7 @@ respond:
       keys:
         - 'first-asn'
         - '{{ .event.USER_NAME }}'
-        - '{{ .mtd.lcr___api_ip_geo.autonomous_system.number }}'
+        - '{{ .mtd.lcr___api_ip_asn.autonomous_system_number }}'
 ```
 
 **First time a threat-intel-matched hash appears on a host:**
@@ -170,6 +170,7 @@ respond:
 > The `.mtd` key name is derived from the lookup resource name with `/` and `:` replaced by `_`. For example:
 >
 > - `lcr://api/ip-geo` becomes `.mtd.lcr___api_ip_geo`
+> - `lcr://api/ip-asn` becomes `.mtd.lcr___api_ip_asn`
 > - `hive://lookup/my-list` becomes `.mtd.my_list`
 
 ### Combining First-Seen with Other Operators
