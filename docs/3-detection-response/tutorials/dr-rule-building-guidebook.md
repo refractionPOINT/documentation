@@ -44,7 +44,7 @@ respond:
 
 ### Core Concepts
 
-- **Path**: Dot-separated selectors to extract data from events (e.g., `event/FILE_PATH`, `routing/hostname`)
+- **Path**: Slash-separated selectors to extract data from events (e.g., `event/FILE_PATH`, `routing/hostname`)
 - **Operators**: Logic operations for detection (`is`, `contains`, `matches`, etc.)
 - **Values**: Comparison targets (static values, lookbacks, or sensor variables)
 - **Targets**: Data sources the rule processes (`edr`, `detection`, `artifact`, etc.)
@@ -138,7 +138,7 @@ case sensitive: false
 ### 6. Schedule Target
 
 **Purpose**: Process time-based triggered events at various intervals.
-**Frequencies**: `30m_per_sensor`, `1h_per_org`, `3h_per_sensor`, `6h_per_org`, `12h_per_sensor`, `24h_per_org`, `168h_per_sensor`
+**Frequencies**: Both `_per_org` and `_per_sensor` variants are available for each interval: `30m`, `1h`, `3h`, `6h`, `12h`, `24h`, `168h` (7 days). For example: `1h_per_org`, `1h_per_sensor`, `24h_per_org`, `24h_per_sensor`, etc.
 
 ```yaml
 target: schedule
@@ -237,6 +237,8 @@ case sensitive: false
 ```
 
 **Important**: The regex pattern is specified using the `re:` parameter, not `value:`.
+
+**Note**: The `matches` operator defaults to **case-insensitive** matching unless `case sensitive: true` is explicitly set. This is the opposite of other operators like `is` and `contains`, which default to case-sensitive.
 
 Supports the `file name` and `sub domain` transforms.
 
@@ -363,8 +365,9 @@ name: windows
 
 **Shorthand operators** are also available for common platforms:
 
-- `is windows`, `is linux`, `is mac`, `is chrome`
+- `is windows`, `is linux`, `is mac`, `is chrome`, `is net`
 - `is 32 bit`, `is 64 bit`, `is arm`
+- `is text`, `is json`, `is gcp`, `is carbon_black`
 
 ```yaml
 op: and
@@ -485,7 +488,10 @@ Restricts the rule to specific event types for performance. Always specify event
 # Single event type
 event: NEW_PROCESS
 
-# Multiple event types (not supported — use one event: per rule, or create separate rules)
+# Multiple event types
+events:
+  - NEW_PROCESS
+  - EXISTING_PROCESS
 ```
 
 ### Stateful Detection Parameters
@@ -561,7 +567,7 @@ with events:
 
 #### `times` - Time Restrictions
 
-Restricts rule execution to specific time periods. Uses numeric day-of-week (1-7) and 24-hour time (0-2359).
+Restricts rule execution to specific time periods. Uses numeric day-of-week (1-7, where 1 = Sunday and 7 = Saturday) and 24-hour time (0-2359).
 
 ```yaml
 event: NEW_PROCESS
