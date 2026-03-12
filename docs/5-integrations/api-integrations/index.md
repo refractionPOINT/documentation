@@ -8,6 +8,7 @@ Connect to external threat intelligence and security services.
 - [EchoTrail](echotrail.md)
 - [GreyNoise](greynoise.md)
 - [Hybrid Analysis](hybrid-analysis.md)
+- [IP ASN](ip-asn.md)
 - [IP Geolocation](ip-geolocation.md)
 - [Pangea](pangea.md)
 - [VirusTotal](virustotal.md)

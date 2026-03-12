@@ -355,6 +355,7 @@ nav:
           - Hybrid Analysis: 5-integrations/api-integrations/hybrid-analysis.md
           - AlphaMountain: 5-integrations/api-integrations/alphamountain.md
           - EchoTrail: 5-integrations/api-integrations/echotrail.md
+          - IP ASN: 5-integrations/api-integrations/ip-asn.md
           - IP Geolocation: 5-integrations/api-integrations/ip-geolocation.md
           - Pangea: 5-integrations/api-integrations/pangea.md
       - Services:
