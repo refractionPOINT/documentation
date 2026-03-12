@@ -79,4 +79,4 @@ The format of the metadata returned is documented [here](https://github.com/maxm
 }
 ```
 
-The geolocation data comes from GeoLite2 data created by [MaxMind](http://www.maxmind.com).
+The geolocation data comes from the maxmind GeoLite2 database. For more information, visit [maxmind.com](http://www.maxmind.com).
