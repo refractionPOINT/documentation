@@ -101,7 +101,7 @@ stateDiagram-v2
 
 ### Severity Mapping
 
-LimaCharlie detection priorities (integer 0--10) are mapped to four severity levels. The thresholds are configurable per organization.
+LimaCharlie detection priorities (integer 0--10) are mapped to four severity levels. The thresholds are configurable per organization. A fifth level, `info`, exists for manual use only.
 
 | Severity | Default Priority Range | Description |
 |----------|----------------------|-------------|
@@ -109,6 +109,9 @@ LimaCharlie detection priorities (integer 0--10) are mapped to four severity lev
 | `high` | 5--7 | Urgent, handle promptly |
 | `medium` | 3--4 | Standard priority |
 | `low` | 0--2 | Informational, handle when available |
+| `info` | _(manual only)_ | Non-actionable; lets analysts associate activity without implying a real problem |
+
+`info` is never assigned automatically from detection priority. It can only be set explicitly when creating or updating a case.
 
 ### SLA Targets
 
@@ -125,6 +128,7 @@ Default SLA targets:
 | `high` | 15 minutes | 12 hours |
 | `medium` | 1 hour | 24 hours |
 | `low` | 100 minutes | ~47 hours |
+| `info` | 8 hours | 7 days |
 
 SLA breaches are tracked in the dashboard and reporting views.
 
@@ -147,6 +151,8 @@ Each organization has its own configuration that controls severity mapping, SLA 
 | `sla_config.medium.mttr_minutes` | int | `1440` | MTTR target for medium cases (minutes) |
 | `sla_config.low.mtta_minutes` | int | `100` | MTTA target for low cases (minutes) |
 | `sla_config.low.mttr_minutes` | int | `2800` | MTTR target for low cases (minutes) |
+| `sla_config.info.mtta_minutes` | int | `480` | MTTA target for info cases (minutes) |
+| `sla_config.info.mttr_minutes` | int | `10080` | MTTR target for info cases (minutes) |
 | `retention_days` | int | `90` | Days to retain resolved/closed cases before archival |
 | `auto_close_resolved_after_days` | int | `7` | Automatically close resolved cases after this many days. Set to `0` to disable |
 | `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single cases |
@@ -187,7 +193,8 @@ Each organization has its own configuration that controls severity mapping, SLA 
           "critical": {"mtta_minutes": 15, "mttr_minutes": 240},
           "high": {"mtta_minutes": 30, "mttr_minutes": 480},
           "medium": {"mtta_minutes": 60, "mttr_minutes": 1440},
-          "low": {"mtta_minutes": 120, "mttr_minutes": 2880}
+          "low": {"mtta_minutes": 120, "mttr_minutes": 2880},
+          "info": {"mtta_minutes": 480, "mttr_minutes": 10080}
         },
         "retention_days": 90,
         "auto_close_resolved_after_days": 7,
@@ -266,7 +273,7 @@ Available query parameters:
 |-----------|-------------|
 | `oids` | Organization IDs (comma-separated, required) |
 | `status` | Filter by status (comma-separated: `new`, `acknowledged`, `in_progress`, `escalated`, `resolved`, `closed`) |
-| `severity` | Filter by severity (comma-separated: `critical`, `high`, `medium`, `low`) |
+| `severity` | Filter by severity (comma-separated: `critical`, `high`, `medium`, `low`, `info`) |
 | `classification` | Filter by classification (comma-separated: `pending`, `true_positive`, `false_positive`) |
 | `assignee` | Filter by assigned analyst email |
 | `search` | Search text (matches against detection category and hostname) |
@@ -828,7 +835,7 @@ respond:
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `detection` | object | Optional. Full LC detection object. Fields `detect_id`, `cat`, `source`, `routing`, and `detect_mtd` are extracted automatically. Omit to create an empty investigation case. |
-| `severity` | string | Optional. Severity override: `critical`, `high`, `medium`, `low`. Defaults to the severity derived from the detection priority. When calling from the REST API or SDK, pass as a top-level string field. |
+| `severity` | string | Optional. Severity override: `critical`, `high`, `medium`, `low`, `info`. Defaults to the severity derived from the detection priority. When calling from the REST API or SDK, pass as a top-level string field. |
 
 ### Query Open Case Count
 
