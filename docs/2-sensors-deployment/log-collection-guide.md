@@ -1,6 +1,6 @@
 # Log Collection Guide
 
-This guide covers how to collect various Linux system logs into LimaCharlie using USP adapters. LimaCharlie provides flexible log collection capabilities through file monitoring and syslog ingestion.
+This guide covers how to collect system logs into LimaCharlie using USP adapters. While the examples focus on common Linux log paths, the same adapter configurations work on any supported platform (FreeBSD, macOS, etc.) — just adjust the file paths for your OS.
 
 ## Collection Methods
 
@@ -34,7 +34,7 @@ file:
 
 ### Syslog Adapter
 
-runs as a syslog server, accepting logs via TCP or UDP. This is useful for centralizing logs from multiple systems or integrating with existing syslog infrastructure.
+The syslog adapter runs as a syslog server, accepting logs via TCP or UDP. This is useful for centralizing logs from multiple systems or integrating with existing syslog infrastructure.
 
 #### Key Features:
 
@@ -54,9 +54,11 @@ syslog:
     platform: "text"
     sensor_seed_key: "syslog-server"
   port: 514
-  interface: "0.0.0.0"
-  is_udp: false  # Use TCP by defaultLog Parsing Options
+  iface: "0.0.0.0"
+  is_udp: false  # Use TCP by default
 ```
+
+## Log Parsing Options
 
 LimaCharlie supports two methods for parsing unstructured log data:
 
@@ -86,10 +88,12 @@ file:
         message: "%{SYSLOGTIMESTAMP:date} %{HOSTNAME:host} %{DATA:service}(?:\\[%{POSINT:pid}\\])?: %{GREEDYDATA:message}"
       sensor_hostname_path: "host"
       event_type_path: "service"
-  file_path: "/var/log/messages"  # or /var/log/syslogKernel Logs (/var/log/kern.log)
+  file_path: "/var/log/messages"  # or /var/log/syslog
 ```
 
-**Kernel-specific messages including hardware events, driver messages, and security events.**
+### Kernel Logs (/var/log/kern.log)
+
+Kernel-specific messages including hardware events, driver messages, and security events.
 
 ```yaml
 file:
@@ -107,7 +111,7 @@ file:
   file_path: "/var/log/kern.log"
 ```
 
-**Apache Logs (/var/log/httpd/*, /var/log/apache2/*):**
+### Apache Logs (/var/log/httpd/*, /var/log/apache2/*)
 
 ```yaml
 file:
@@ -124,7 +128,7 @@ file:
   file_path: "/var/log/apache2/access.log"  # or /var/log/httpd/access_log
 ```
 
-**Nginx Logs (/var/log/nginx/*):**
+### Nginx Logs (/var/log/nginx/*)
 
 ```yaml
 file:
@@ -165,11 +169,16 @@ file:
 
 Modern logging solution that can output in JSON format for structured parsing.
 
-**Method 1: Pipe to Syslog Adapter**
+**Method 1: Pipe to Stdin Adapter**
 
 ```bash
-# Stream journalctl to syslog adapter
-journalctl -f -q --output=json | nc localhost 514
+# Stream journalctl JSON output into the stdin adapter
+journalctl -f -q --output=json | /path/to/lc_adapter stdin \
+  client_options.identity.installation_key=$INSTALLATION_KEY \
+  client_options.identity.oid=$OID \
+  client_options.platform=json \
+  client_options.sensor_seed_key=journalctl-logs \
+  client_options.hostname=my-server
 ```
 
 **Method 2: Output to File and Monitor**
@@ -283,5 +292,3 @@ Common issues:
 * **Missing logs**: Verify file paths and glob patterns
 * **Adapter stops collecting after log rotation**: Set `poll: true` in your file adapter configuration. This switches from filesystem event notifications to polling, which reliably detects new data after log rotation tools (e.g. `newsyslog`, `logrotate`) replace the file. This is especially common on FreeBSD and other BSD systems
 * **Connection issues**: Check network connectivity and authentication credentials
-
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
