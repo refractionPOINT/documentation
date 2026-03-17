@@ -18,9 +18,11 @@ All Adapters have the same common client configuration options, found [here](../
 
 * `port`: port to listen for syslog from.
 * `iface`: the interface name to listen for new connections/packets from, defaults to all.
-* `is_udp`: if `true`, listen over UDP instead of TCP.
+* `is_udp`: if `true`, listen over UDP instead of TCP. Cannot be combined with SSL/TLS.
 * `ssl_cert`: path to a file with the SSL cert to use to receive logs over TCP.
 * `ssl_key`: path to a file with the SSL key to use to receive logs over TCP.
+* `mutual_tls_cert`: path to a CA certificate file for mutual TLS client authentication.
+* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
 ### Collecting Syslog via Docker
 
@@ -74,33 +76,30 @@ Syslog events are typically ingested as `text`, however often have specific stru
 
 The following example config file can be a starting point. However, you might need to modify the regex to match your specific message.
 
-```python
-# Syslog Specific Docs: https://docs.limacharlie.io/docs/adapter-types-syslog
-
-sensor_type: "syslog"
-  syslog:
-    port: 1514
-    iface: "0.0.0.0"
-    client_options:
-      identity:
-        oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        installation_key: "YOUR_LC_INSTALLATION_KEY_SYSLOG"
-      hostname: "syslog-adapter"
-      platform: "linux"
-      sensor_seed_key: "syslog-collector"
-      mapping:
-        parsing_grok:
-          message: "^<%{INT:pri}>%{SYSLOGTIMESTAMP:timestamp}\\s+%{HOSTNAME:hostname}\\s+%{WORD:tag}(?:\\[%{INT:pid}\\])?:\\s+%{GREEDYDATA:message}"
-        sensor_hostname_path: "hostname"
-        event_type_path: "tag"
-        event_time_path: "timestamp"
-        event_time_timezone: "America/New_York"  # Required if logs use local time (SYSLOGTIMESTAMP has no timezone)
-    # Optional syslog-specific configuration
-    is_udp: false                               # TCP (default) vs UDP
-    write_timeout_sec: 30                       # Write timeout
-    ssl_cert: "/certs/syslog_server.pem"       # Optional SSL cert
-    ssl_key: "/certs/syslog_server.key"        # Optional SSL key
-    mutual_tls_cert: "/certs/client_ca.pem"    # Optional mTLS
+```yaml
+syslog:
+  port: 1514
+  iface: "0.0.0.0"
+  client_options:
+    identity:
+      oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      installation_key: "YOUR_LC_INSTALLATION_KEY_SYSLOG"
+    hostname: "syslog-adapter"
+    platform: "text"
+    sensor_seed_key: "syslog-collector"
+    mapping:
+      parsing_grok:
+        message: "^<%{INT:pri}>%{SYSLOGTIMESTAMP:timestamp}\\s+%{HOSTNAME:hostname}\\s+%{WORD:tag}(?:\\[%{INT:pid}\\])?:\\s+%{GREEDYDATA:message}"
+      sensor_hostname_path: "hostname"
+      event_type_path: "tag"
+      event_time_path: "timestamp"
+      event_time_timezone: "America/New_York"  # Required if logs use local time (SYSLOGTIMESTAMP has no timezone)
+  # Optional syslog-specific configuration
+  is_udp: false                               # TCP (default) vs UDP
+  write_timeout_sec: 30                       # Write timeout
+  ssl_cert: "/certs/syslog_server.pem"       # Optional SSL cert
+  ssl_key: "/certs/syslog_server.key"        # Optional SSL key
+  mutual_tls_cert: "/certs/client_ca.pem"    # Optional mTLS
 ```
 
 #### Step 3: Configure syslog output to send messages to a local listener

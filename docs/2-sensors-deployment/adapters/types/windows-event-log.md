@@ -10,12 +10,11 @@ Adapter Type: `wel`
 
 * `client_options`: common configuration for adapter as defined [here](../usage.md).
 * `evt_sources`: a comma separated list of elements in the format `SOURCE:FILTER`, where `SOURCE` is an Event Source name like `Application`, `System` or `Security` and `FILTER` is an `XPath` filter value as described in the documentation linked below.
+* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
-### Infrastructure as Code Deployment
+### Configuration File Example
 
-```python
-# Windows Event Log (WEL) Specific Docs: https://docs.limacharlie.io/docs/adapter-types-windows-event-log
-
+```yaml
 # Basic Event Sources:
 # evt_sources: "Security,System,Application"
 
@@ -25,16 +24,16 @@ Adapter Type: `wel`
 # File-Based Sources:
 # evt_sources: "C:\\Windows\\System32\\winevt\\Logs\\Security.evtx:'*[System[(EventID=4624)]]'"
 
-  wel:
-    evt_sources: "Security:'*[System[(Level=1 or Level=2 or Level=3)]]',System,Application"
-    client_options:
-      identity:
-        oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        installation_key: "YOUR_LC_INSTALLATION_KEY_WEL"
-      hostname: "prod-dc01.example.local"
-      platform: "windows"
-      sensor_seed_key: "wel-collector"
-    write_timeout_sec: 30
+wel:
+  evt_sources: "Security:'*[System[(Level=1 or Level=2 or Level=3)]]',System,Application"
+  client_options:
+    identity:
+      oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      installation_key: "YOUR_LC_INSTALLATION_KEY_WEL"
+    hostname: "prod-dc01.example.local"
+    platform: "wel"
+    sensor_seed_key: "wel-collector"
+  write_timeout_sec: 30
 ```
 
 ### XPath Filter Examples
