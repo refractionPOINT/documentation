@@ -4,7 +4,8 @@ Organization configuration and management.
 
 ## Documentation
 
-- [LimaCharlie SDK](../6-developer-guide/sdk-overview.md) - SDK and CLI tools
+- [LimaCharlie CLI](../6-developer-guide/sdk-overview.md) - Command line interface
+- [SDKs](../6-developer-guide/sdks/index.md) - Python and Go SDK documentation
 
 ---
 

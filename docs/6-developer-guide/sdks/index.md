@@ -2,108 +2,39 @@
 
 Programmatic access to LimaCharlie via official SDKs.
 
-## Overview
-
-LimaCharlie provides official SDKs for Go and Python, enabling complete programmatic control of the platform:
-
-- Sensor management and tasking
-- Detection rule deployment
-- Artifact collection and export
-- Organization administration
-- Real-time event streaming
-
 ## Available SDKs
-
-### [Go SDK](go-sdk.md)
-
-The Go SDK provides a comprehensive client library for building security automation, integrations, and custom tools.
-
-**Installation:**
-```bash
-go get github.com/refractionPOINT/go-limacharlie/limacharlie
-```
-
-**Key Features:**
-- Type-safe API client
-- Sensor management
-- Detection & Response rule management
-- Artifact collection
-- Real-time event streaming (Firehose)
-- Organization administration
 
 ### [Python SDK](python-sdk.md)
 
-The Python SDK offers a full-featured interface perfect for security automation, data analysis, and rapid prototyping.
+The Python SDK offers a full-featured interface for security automation, data analysis, and rapid prototyping. It also includes the [command line interface](../sdk-overview.md).
 
-**Installation:**
 ```bash
 pip install limacharlie
 ```
 
-**Key Features:**
-- Client + Organization architecture for all platform operations
-- Sensor tasking and management
-- Real-time streaming (Firehose/Spout)
-- Detection rule management via Hive
-- LCQL query support
-- Artifact and payload management
+* Repo — <https://github.com/refractionPOINT/python-limacharlie>
 
-## Quick Start Examples
+### [Go SDK](go-sdk.md)
 
-### Python
-```python
-from limacharlie.client import Client
-from limacharlie.sdk.organization import Organization
-from limacharlie.sdk.sensor import Sensor
+The Go SDK provides a type-safe client library for building security automation, integrations, and custom tools.
 
-# Initialize client and organization
-client = Client(oid='your-org-id', api_key='your-api-key')
-org = Organization(client)
-
-# List all sensors
-for sensor_info in org.list_sensors():
-    sensor = Sensor(org, sensor_info["sid"])
-    print(f"Sensor: {sensor.sid} - {sensor.hostname}")
+```bash
+go get github.com/refractionPOINT/go-limacharlie/limacharlie
 ```
 
-### Go
-```go
-import "github.com/refractionPOINT/go-limacharlie/limacharlie"
-
-// Initialize client
-client := limacharlie.NewClientFromLoader(
-    limacharlie.ClientOptions{
-        OID:    "your-org-id",
-        APIKey: "your-api-key",
-    },
-)
-
-// List sensors
-sensors, err := client.GetSensors()
-if err != nil {
-    log.Fatal(err)
-}
-```
-
-## Resources
-
-- [API Documentation](https://api.limacharlie.io/openapi)
-- [GitHub - Go SDK](https://github.com/refractionPOINT/go-limacharlie)
-- [GitHub - Python SDK](https://github.com/refractionPOINT/python-limacharlie)
-- [Community Slack](https://slack.limacharlie.io)
+* Repo — <https://github.com/refractionPOINT/go-limacharlie>
 
 ## Authentication
 
 Both SDKs support multiple authentication methods:
 
-1. **API Key**: Organization-level API key
-2. **JWT**: User-specific JWT tokens
-3. **Environment Variables**: Auto-load from `LC_OID` and `LC_API_KEY`
+1. **API Key**: Organization-level API key (`oid` + `api_key`)
+2. **Environment Variables**: Auto-load from `LC_OID` and `LC_API_KEY`
+3. **Config File**: Credentials stored in `~/.limacharlie` with named environments
 
-## Support
+See the individual SDK pages for detailed authentication examples.
 
-For SDK-specific questions:
+## Resources
 
-- File issues on the respective GitHub repositories
-- Join the [Community Slack](https://slack.limacharlie.io)
-- Email [support@limacharlie.io](mailto:support@limacharlie.io)
+- [REST API Documentation](https://api.limacharlie.io/static/swagger/)
+- [Community Slack](https://slack.limacharlie.io)

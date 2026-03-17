@@ -528,11 +528,11 @@ client = Client()
 org = Organization(client)
 
 # Stream events
-spout = Spout(org, "my-spout", data_type="event", tag="production")
+spout = Spout(org, data_type="event", tag="production")
 
 try:
     while True:
-        data = spout.pull(timeout=5)
+        data = spout.get(timeout=5)
         if data is not None:
             print(data)
 finally:
@@ -574,14 +574,12 @@ from limacharlie.sdk.artifacts import Artifacts
 artifacts = Artifacts(org)
 
 # List artifacts
-for artifact in artifacts.list(sensor='SENSOR_ID', start=start_time, end=end_time):
+result = artifacts.list(sid='SENSOR_ID', start=start_time, end=end_time)
+for artifact in result.get('artifacts', []):
     print(artifact)
 
 # Get download URL for an artifact
-url = artifacts.get_download_url('ARTIFACT_ID')
-
-# Download an artifact to a local file
-artifacts.download('ARTIFACT_ID', '/path/to/output')
+url = artifacts.get_url('ARTIFACT_ID')
 ```
 
 ## Hive Operations
@@ -711,13 +709,13 @@ from limacharlie.sdk.configs import Configs
 configs = Configs(org)
 
 # Pull organization configuration to a local file
-configs.pull(config_file='lc_conf.yaml')
+configs.fetch_to_file(file_path='lc_conf.yaml')
 
-# Push configuration from a local file
-configs.push(config_file='lc_conf.yaml', dry_run=True)
+# Push configuration from a local file (dry run)
+configs.push_from_file(file_path='lc_conf.yaml', is_dry_run=True)
 
 # Push with force (remove resources not in config)
-configs.push(config_file='lc_conf.yaml', is_force=True)
+configs.push_from_file(file_path='lc_conf.yaml', is_force=True)
 ```
 
 ## Error Handling
@@ -859,11 +857,11 @@ client = Client()
 org = Organization(client)
 
 # Stream detections in real-time
-spout = Spout(org, "detection-monitor", data_type="detect")
+spout = Spout(org, data_type="detect")
 
 try:
     while True:
-        detection = spout.pull(timeout=10)
+        detection = spout.get(timeout=10)
         if detection is not None:
             routing = detection.get('routing', {})
             print(f"Detection: {detection.get('cat', 'unknown')}")

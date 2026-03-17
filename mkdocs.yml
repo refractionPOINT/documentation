@@ -372,7 +372,7 @@ nav:
           - Overview: 6-developer-guide/sdks/index.md
           - Python SDK: 6-developer-guide/sdks/python-sdk.md
           - Go SDK: 6-developer-guide/sdks/go-sdk.md
-      - SDKs & CLI: 6-developer-guide/sdk-overview.md
+      - Command Line Interface: 6-developer-guide/sdk-overview.md
       - CLI Extension: 6-developer-guide/cli.md
       - Connecting AI Assistants: 6-developer-guide/mcp-server.md
       - Building Extensions:
