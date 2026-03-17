@@ -13,7 +13,7 @@ Navigate to the [Cases extension page](https://app.limacharlie.io/add-ons/extens
 
 On subscription, the extension automatically:
 
-1. Creates a detection output that forwards all detections to the cases system
+1. Installs D&R rules that forward detections to the cases system via extension requests
 2. Initializes the organization with default configuration (severity mapping, SLA targets, retention)
 
 No additional setup is required to begin receiving cases. Detections start flowing immediately.
@@ -684,7 +684,8 @@ Add structured notes to document analysis, remediation steps, and handoff inform
       -H "Content-Type: application/json" \
       -d '{
         "content": "Confirmed lateral movement to DESKTOP-002 via PsExec. Isolating both endpoints.",
-        "note_type": "analysis"
+        "note_type": "analysis",
+        "is_public": false
       }'
     ```
 
@@ -696,7 +697,19 @@ Add structured notes to document analysis, remediation steps, and handoff inform
     echo "Handoff notes" | limacharlie case add-note --id 42 --type handoff
     ```
 
-Note types: `general`, `analysis`, `remediation`, `escalation`, `handoff`
+Note types:
+
+| Type | Description |
+|------|-------------|
+| `general` | General-purpose note |
+| `analysis` | Analysis findings and observations |
+| `remediation` | Remediation steps taken or planned |
+| `escalation` | Escalation context and rationale |
+| `handoff` | Shift or team handoff information |
+| `to_stakeholder` | Communication sent to external stakeholders (customers, management) |
+| `from_stakeholder` | Communication received from external stakeholders |
+
+Notes support an optional `is_public` boolean field. When set to `true`, the note is marked as visible and shareable to external stakeholders. Defaults to `false`.
 
 ## Case Merging
 
@@ -993,7 +1006,7 @@ Archived data is retained for 2 years in long-term storage for compliance and hi
 
 ## Unsubscribing
 
-Unsubscribing from the extension removes the detection output and deletes all case data for the organization. This action is irreversible.
+Unsubscribing from the extension removes the detection-forwarding D&R rules and deletes all case data for the organization. This action is irreversible.
 
 ---
 
