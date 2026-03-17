@@ -15,7 +15,8 @@ All adapters support the same `client_options`, which you should always specify 
 
 **Optional Arguments:**
 
-* `predicate`: example, `predicate='subsystem=="com.apple.TimeMachine"'`
+* `predicate`: an [NSPredicate](https://developer.apple.com/documentation/foundation/nspredicate) filter string to limit which log entries are collected. Example: `predicate='subsystem=="com.apple.TimeMachine"'`
+* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
 ## CLI Deployment
 
@@ -31,30 +32,27 @@ client_options.sensor_seed_key=$SENSOR_NAME \
 client_options.hostname=$SENSOR_NAME
 ```
 
-### Infrastructure as Code Deployment
+### Configuration File Example
 
-```python
-# macOS Unified Logging Specific Docs: https://docs.limacharlie.io/docs/adapter-types-macos-unified-logging
-
-sensor_type: "mac_unified_logging"
-  mac_unified_logging:
-    client_options:
-      identity:
-        oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        installation_key: "YOUR_LC_INSTALLATION_KEY_MACOSUL"
-      hostname: "user-macbook-pro"
-      platform: "mac_unified_logging"
-      sensor_seed_key: "macos-unified-logging-sensor"
-    # Optional configuration
-    write_timeout_sec: 600                           # Default: 600 seconds
-    predicate: 'processImagePath endswith "/usr/sbin/sshd" OR subsystem == "com.apple.security"'
+```yaml
+mac_unified_logging:
+  client_options:
+    identity:
+      oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      installation_key: "YOUR_LC_INSTALLATION_KEY_MACOSUL"
+    hostname: "user-macbook-pro"
+    platform: "mac_unified_logging"
+    sensor_seed_key: "macos-unified-logging-sensor"
+  # Optional configuration
+  write_timeout_sec: 600                           # Default: 600 seconds
+  predicate: 'processImagePath endswith "/usr/sbin/sshd" OR subsystem == "com.apple.security"'
 ```
 
 ## Service Creation
 
 If you want this adapter to run as a service, you can run the following script to add a plist file to the endpoint **with your variables replaced**. Please note that this example also has an example predicate, so if you do not wish to use a predicate, remove that line.
 
-```python
+```bash
 sudo -i
 
 curl https://downloads.limacharlie.io/adapter/mac/64 -o /usr/local/bin/lc_adapter
