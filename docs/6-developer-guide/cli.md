@@ -1,9 +1,9 @@
 # CLI Extension
 
-The `limacharlie-cli` extension allows you to run [LimaCharlie CLI commands](sdk-overview.md#command-line-interface) from within D&R rule response actions. This is useful for automating infrastructure changes (syncing configs, managing rules, etc.) in response to detections.
+The `limacharlie-cli` extension allows you to run [LimaCharlie CLI commands](sdk-overview.md) from within D&R rule response actions. This is useful for automating infrastructure changes (syncing configs, managing rules, etc.) in response to detections.
 
 !!! note
-    This page documents the `limacharlie-cli` **extension** for use in D&R rules. For the CLI tool itself, see the [Command Line Interface](sdk-overview.md#command-line-interface) section of the SDK Overview.
+    This page documents the `limacharlie-cli` **extension** for use in D&R rules. For the CLI tool itself, see the [Command Line Interface](sdk-overview.md) page.
 
 ## Usage
 

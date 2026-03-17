@@ -10,6 +10,11 @@ Programmatic access to LimaCharlie:
 - [Go SDK](sdks/go-sdk.md) - Native Go implementation
 - [SDK Overview](sdks/index.md) - Getting started with SDKs
 
+## Command Line Interface
+
+- [CLI](sdk-overview.md) - Command line tool for managing LimaCharlie
+- [CLI Extension](cli.md) - Run CLI commands from D&R rule response actions
+
 ## AI Assistants
 
 Connect AI assistants to LimaCharlie via the Claude Code Plugin or MCP:
@@ -29,17 +34,7 @@ Create custom extensions for LimaCharlie:
 Manage LimaCharlie configuration as code:
 
 - [Git Sync Extension](../5-integrations/extensions/limacharlie/git-sync.md)
-- [Pipeline](pipeline.md)
 
 ## Developer Program
 
 - [Developer Grant Program](grant-program.md)
-
----
-
-## See Also
-
-- [Python SDK](sdks/python-sdk.md)
-- [Go SDK](sdks/go-sdk.md)
-- [Building Extensions](extensions/building-extensions.md)
-- [API Keys](../7-administration/access/api-keys.md)
