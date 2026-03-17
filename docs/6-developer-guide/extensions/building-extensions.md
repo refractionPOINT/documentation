@@ -2,7 +2,7 @@
 
 This section is a work in progress
 
-Feel free to reach out to us on our Community Slack if you'd like to learn more
+Feel free to reach out to us on the [community forum](https://community.limacharlie.com/) if you'd like to learn more
 
 ## Why Extensions?
 
@@ -127,7 +127,7 @@ Afterwards, we recommend you define the data_type and other optional fields furt
 
 The config schema is a description of what the extension's config should look like, when stored as a Hive record in the `extension_configuration` Hive for convenience.
 
-Not all extensions will have a configuration, feel free to reach out on the community slack if you need help determining whether or not your extension needs a configuration.
+Not all extensions will have a configuration, feel free to reach out on the [community forum](https://community.limacharlie.com/) if you need help determining whether or not your extension needs a configuration.
 
 At the core, the config schema is simply a list of fields.
 

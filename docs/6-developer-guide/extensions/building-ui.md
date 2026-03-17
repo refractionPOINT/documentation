@@ -59,6 +59,6 @@ In the schema, it is possible to define several views to utilize a combination o
 
 Functionality for this field is set to be expanded in the future
 
-Please feel free to reach out to us on our community slack if you'd like to stay up to date on
+Please feel free to reach out to us on the [community forum](https://community.limacharlie.com/) if you'd like to stay up to date on
 
 Supported actions are tied to a request's (also called "actions") response. It allows the response data to be modified and passed along to a follow-up action. This may be useful when operating a dry run, or triggering a workflow.
