@@ -1,4 +1,18 @@
-#### Authentication
+# SDKs & CLI
+
+LimaCharlie provides a [Go SDK](#go-sdk), [Python SDK](#python-sdk), and a [command line interface](#command-line-interface) for interacting with the platform programmatically.
+
+## Go SDK
+
+* Repo — <https://github.com/refractionPOINT/go-limacharlie>
+
+### Installation
+
+```bash
+go get github.com/refractionPOINT/go-limacharlie/limacharlie
+```
+
+### Authentication
 
 You can use Client Options to declare your client/org, or you can use environment variables.
 
@@ -8,7 +22,7 @@ You can use Client Options to declare your client/org, or you can use environmen
 * `LC_API_KEY`: your LC API KEY
 * `LC_UID`: optional, your user ID
 
-```python
+```go
 package main
 
 import (
@@ -30,7 +44,7 @@ func main() {
 
 **Using Client Options:**
 
-```python
+```go
 package main
 
 import (
@@ -40,7 +54,7 @@ import (
 )
 
 func main() {
-    clientOptions = limacharlie.ClientOptions{
+    clientOptions := limacharlie.ClientOptions{
         OID: "MY_OID",
         APIKey: "MY_API_KEY",
         UID: "MY_UID",
@@ -54,7 +68,7 @@ func main() {
 
 #### Examples
 
-```python
+```go
 package main
 
 import (
@@ -140,7 +154,7 @@ func main() {
     }
 
     // Create installation key
-    key_request, _ := org.AddInstallationKey(InstallationKey{
+    key_request, _ := org.AddInstallationKey(limacharlie.InstallationKey{
 		Description: "my-test-key",
 		Tags:        []string{"tag", "another-tag"},
 	})
@@ -148,11 +162,11 @@ func main() {
 }
 ```
 
-## Python
+## Python SDK
 
-The Python library is a simple abstraction to the [LimaCharlie.io REST API](https://api.limacharlie.io/static/swagger/). The REST API currently supports many more functions. If it's missing a function available in the REST API that you would like to use, let us know at support@limacharlie.io.
+The Python library is a wrapper for the [LimaCharlie.io REST API](https://api.limacharlie.io/static/swagger/). If it's missing a function available in the REST API that you would like to use, let us know at support@limacharlie.io.
 
-* Repo - <https://github.com/refractionpoint/python-limacharlie>
+* Repo — <https://github.com/refractionPOINT/python-limacharlie>
 
 ### Getting Started
 
@@ -306,7 +320,7 @@ The `Artifacts` class is used to upload, list, and download artifacts. Import fr
 
 #### Payloads
 
-The `Payloads` can be used to manage various executable [payloads](../2-sensors-deployment/endpoint-agent/payloads.md) accessible to sensors.
+The `Payloads` can be used to manage various executable [payloads](../2-sensors-deployment/endpoint-agent/payloads.md) accessible to sensors. Import from `limacharlie.sdk.payloads`.
 
 #### Configs
 
@@ -387,12 +401,12 @@ Used to perform Organization-wide checks for specific indicators of compromise. 
 limacharlie spotcheck --help
 ```
 
-#### Search
+#### IOC Search
 
-Shortcut utility to perform IOC searches across all locally configured organizations.
+Search for Indicators of Compromise (domains, IPs, file hashes, etc.) across the Insight data lake.
 
 ```bash
-limacharlie search --help
+limacharlie ioc --help
 ```
 
 #### Extensions
