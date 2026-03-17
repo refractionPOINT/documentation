@@ -126,7 +126,7 @@ Click on the copy-to-clipboard button next to the Adapter Key column. **The valu
 
 First let's download the latest adapter for Linux.
 
-```python
+```bash
 curl -L https://downloads.limacharlie.io/adapter/linux/64 -o lc_adapter
 chmod +x lc_adapter
 ```
