@@ -4,7 +4,7 @@ LimaCharlie Query Language (LCQL) lets you write well-structured queries to sear
 
 Got a Unique Query?
 
-If you've written a unique query or have one you'd like to share with the community, please join us in the [LimaCharlie Community](https://community.limacharlie.io)!
+If you've written a unique query or have one you'd like to share with the community, please join us in the [LimaCharlie Community](https://community.limacharlie.com/)!
 
 ## General Queries
 

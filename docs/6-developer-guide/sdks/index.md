@@ -37,4 +37,4 @@ See the individual SDK pages for detailed authentication examples.
 ## Resources
 
 - [REST API Documentation](https://api.limacharlie.io/static/swagger/)
-- [Community Slack](https://slack.limacharlie.io)
+- [Community Forum](https://community.limacharlie.com/)

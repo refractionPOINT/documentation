@@ -1743,7 +1743,7 @@ firehose --listen_interface 0.0.0.0:4444 --data_type event -n my-firehose --use-
 - **LimaCharlie Documentation**: [docs.limacharlie.io](https://docs.limacharlie.io)
 - **LCQL Query Language**: [docs.limacharlie.io/docs/query-language](https://docs.limacharlie.io/docs/query-language)
 - **Detection & Response Rules**: [docs.limacharlie.io/docs/detection-and-response](https://docs.limacharlie.io/docs/detection-and-response)
-- **Community Support**: [community.limacharlie.io](https://community.limacharlie.io)
+- **Community Support**: [community.limacharlie.com](https://community.limacharlie.com/)
 - **Commercial Support**: support@limacharlie.io
 
 ---
