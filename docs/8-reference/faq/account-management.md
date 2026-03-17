@@ -12,7 +12,7 @@ Please navigate to the bottom of the Billing & Usage section of the organization
 
 ## Is There a Way to Wipe an Organization?
 
-You can wipe the data retention by disabling the `Insight` add on on the marketplace and re-enabling it again. Please note that unsubscribing from `Insight` will delete all telemetry stored for a selected organization, and this action cannot be undone.
+You can wipe the data retention by deleting the `Insight` add-on (using `DELETE /insight/{oid}`) and re-enabling it again. Please note that disabling `Insight` (unsubscribing from the marketplace) will only pause data collection but will **not** delete historical telemetry. To permanently delete all stored telemetry for a selected organization, you must explicitly issue a delete operation, and this action cannot be undone.
 
 To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](../../5-integrations/extensions/limacharlie/infrastructure.md).
 
