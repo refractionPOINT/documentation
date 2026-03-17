@@ -10,8 +10,37 @@ For real-time collection of Windows Event Logs, see the [Windows Event Logs](../
 
 Adapter Type: `evtx`
 
-* `client_options`: common configuration for adapter as defined [here](../index.md#usage).
+* `client_options`: common configuration for adapter as defined [here](../usage.md).
 * `file_path`: path to the `.evtx` file to ingest.
+* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
+
+### Configuration File Example
+
+```yaml
+evtx:
+  file_path: "C:\\Evidence\\Security.evtx"
+  client_options:
+    identity:
+      oid: "your-organization-id"
+      installation_key: "your-installation-key"
+    platform: "wel"
+    sensor_seed_key: "ir-evidence-01"
+    hostname: "compromised-host"
+```
+
+### CLI Deployment
+
+Adapter downloads can be found [here](../deployment.md).
+
+```bash
+/path/to/lc_adapter evtx \
+  file_path=/path/to/Security.evtx \
+  client_options.identity.installation_key=$INSTALLATION_KEY \
+  client_options.identity.oid=$OID \
+  client_options.platform=wel \
+  client_options.sensor_seed_key=ir-evidence-01 \
+  client_options.hostname=compromised-host
+```
 
 ## API Doc
 

@@ -23,6 +23,7 @@ Adapter type `file`:
 * `serialize_files`: if `true`, files will be ingested one at a time, useful for very large number of files that could blow up memory
 * `poll`: if `true`, use polling instead of filesystem event notifications to detect file changes. See [Polling Mode](#polling-mode) below
 * `multi_line_json`: if `true`, the adapter will buffer lines and assemble complete JSON objects spanning multiple lines before sending them
+* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600)
 
 ### Polling Mode
 
