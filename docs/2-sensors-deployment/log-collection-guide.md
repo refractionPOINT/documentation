@@ -11,7 +11,8 @@ The file adapter monitors log files for changes and streams new entries to LimaC
 #### Key Features:
 
 * Glob pattern support (/var/log/*.log)
-* Automatic log rotation handling
+* Automatic log rotation handling (with inode-based detection)
+* Polling mode for reliable collection on BSD, network filesystems, and across log rotations
 * Backfill support for historical data
 * Multi-line JSON parsing
 * Grok pattern parsing for structured log extraction
@@ -269,6 +270,7 @@ file:
 * **Set sensor_seed_key appropriately** - Use descriptive names that identify the log source for easier management.
 * **Monitor file permissions** - Ensure the adapter has read access to log files.
 * **Use backfill carefully** - Only enable for initial historical data collection to avoid duplicates.
+* **Enable polling when needed** - Set `poll: true` if the adapter stops collecting after log rotation, or when running on FreeBSD/BSD systems or network filesystems. See the [File Adapter documentation](adapters/types/file.md#polling-mode) for details.
 * **Implement proper field mapping** - Extract hostname, timestamps, and event types for better searchability.
 * **Pattern testing** - Test Grok patterns against sample log lines before deployment. Common patterns include %{COMMONAPACHELOG}, %{SYSLOGTIMESTAMP}, and %{NGINXACCESS}.
 
@@ -279,6 +281,7 @@ Common issues:
 * **File permission errors**: Check that the adapter process has read access to log files
 * **Parse failures**: Validate Grok patterns against actual log formats
 * **Missing logs**: Verify file paths and glob patterns
+* **Adapter stops collecting after log rotation**: Set `poll: true` in your file adapter configuration. This switches from filesystem event notifications to polling, which reliably detects new data after log rotation tools (e.g. `newsyslog`, `logrotate`) replace the file. This is especially common on FreeBSD and other BSD systems
 * **Connection issues**: Check network connectivity and authentication credentials
 
 Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
