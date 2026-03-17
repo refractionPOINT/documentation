@@ -12,24 +12,14 @@ Webhook adapters can be created either through the webapp, API, or CLI. Before c
 {
     "sensor_type": "webhook",
     "webhook": {
-        // This secret value will be part of the URL to accept your webhooks.
-        // It enables you to prevent or revoke unauthorized access to a hook.
         "secret": "some-secret-value-hard-to-predict",
-
-        // Placeholder for generic webhook signature validation.
-        // If you require a specific format, please get in touch with us.
         "signature_secret": "",
         "signature_header": "",
         "signature_scheme": "",
-
-        // Format with which the data is ingested in LC.
         "client_options": {
-            // Provide your own name for the webhook adapter
             "hostname": "<any_name>",
             "identity": {
-                // Provide the OID of the organization you wish to send to
                 "oid": "<oid>",
-                // Provide the installation key to be used for the adapter
                 "installation_key": "<installation_key>"
             },
             "platform": "json",
@@ -38,6 +28,16 @@ Webhook adapters can be created either through the webapp, API, or CLI. Before c
     }
 }
 ```
+
+Field descriptions:
+
+* `secret`: this secret value will be part of the URL to accept your webhooks. It enables you to prevent or revoke unauthorized access to a hook.
+* `signature_secret`, `signature_header`, `signature_scheme`: placeholders for generic webhook signature validation. If you require a specific format, please get in touch with us.
+* `client_options.hostname`: provide your own name for the webhook adapter.
+* `client_options.identity.oid`: the OID of the organization you wish to send to.
+* `client_options.identity.installation_key`: the installation key to be used for the adapter.
+* `client_options.platform`: the data format (typically `json` for webhooks).
+* `client_options.sensor_seed_key`: an arbitrary value used to generate a stable Sensor ID.
 
 When the above configuration is provided to LimaCharlie, a webhook adapter will appear and be available for webhook event ingestion. Here's an example of creating the above record through the LimaCharlie CLI:
 
@@ -86,4 +86,4 @@ When sending data via POST requests to the URL, the body of your request is expe
 
 Or, one of the above, but compressed using gzip.
 
-With the completed webhook URL, you can begin sending events and will see them in the Timeline for your webhook Adapater.
+With the completed webhook URL, you can begin sending events and will see them in the Timeline for your webhook Adapter.
