@@ -84,8 +84,6 @@ client_options.hostname=<HOSTNAME> \
 ### Infrastructure as Code Deployment
 
 ```python
-# Azure Event Hub Specific Docs: https://docs.limacharlie.io/docs/adapter-types-azure-event-hub
-
 sensor_type: "azure_event_hub"
   azure_event_hub:
     connection_string: "Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_EVENT_HUB_SHARED_ACCESS_K

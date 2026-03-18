@@ -42,7 +42,6 @@ zendesk_email=you@yourcompany.com
 ### Infrastructure as Code Deployment
 
 ```python
-# Zendesk Specific Docs: https://docs.limacharlie.io/docs/adapter-types-zendesk
 # For cloud sensor deployment, store credentials as hive secrets:
 #   api_token: "hive://secret/zendesk-api-token"
 #   zendesk_email: "hive://secret/zendesk-email"

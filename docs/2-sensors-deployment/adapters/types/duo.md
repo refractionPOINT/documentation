@@ -16,8 +16,6 @@ Adapter Type: `duo`
 ### Infrastructure as Code Deployment
 
 ```python
-# Duo Security Specific Docs: https://docs.limacharlie.io/docs/adapter-types-duo
-
 # For cloud sensor deployment, store credentials as hive secrets:
 #   integration_key: "hive://secret/duo-integration-key"
 #   secret_key: "hive://secret/duo-secret-key"

@@ -75,7 +75,6 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 ### Infrastructure as Code Deployment
 
 ```python
-# Sophos Central Specific Docs: https://docs.limacharlie.io/docs/adapter-types-sophos-central
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   clientid: "hive://secret/sophos-client-id"
