@@ -40,8 +40,6 @@ client_secret=$CLIENT_SECRET
 ### Infrastructure as Code Deployment
 
 ```python
-# CrowdStrike Falcon ("falconcloud") Specific Docs: https://docs.limacharlie.io/docs/adapter-types-crowdstrike
-
 sensor_type: "falconcloud"
   falconcloud:
     client_id: "YOUR_CROWDSTRIKE_FALCON_API_CLIENT_ID"

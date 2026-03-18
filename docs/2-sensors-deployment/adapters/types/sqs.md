@@ -16,8 +16,6 @@ Adapter Type: `sqs`
 ### Infrastructure as Code Deployment
 
 ```python
-# AWS SQS Specific Docs: https://docs.limacharlie.io/docs/adapter-types-sqs
-
 sensor_type: "sqs"
 sqs:
   queue_url: "https://sqs.us-east-1.amazonaws.com/123456789012/your-security-logs-queue"

@@ -19,8 +19,6 @@ Adapter Type: `gcs`
 ### Infrastructure as Code Deployment
 
 ```python
-# Google Cloud Storage (GCS) Specific Docs: https://docs.limacharlie.io/docs/adapter-types-gcs
-
 sensor_type: "gcs"
 gcs:
   bucket_name: "your-gcs-bucket-for-limacharlie-logs"
