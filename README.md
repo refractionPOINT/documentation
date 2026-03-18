@@ -56,5 +56,5 @@ LimaCharlie is a SecOps Cloud Platform providing:
 - **Live Docs**: https://refractionpoint.github.io/documentation/
 - **Platform**: https://limacharlie.io
 - **Web Console**: https://app.limacharlie.io
-- **Community**: https://community.limacharlie.io
+- **Community**: https://community.limacharlie.com
 
