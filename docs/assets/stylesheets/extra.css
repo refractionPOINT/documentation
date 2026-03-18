@@ -128,7 +128,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Search highlighting */
 .md-search-result__article--document .md-search-result__title {
-  color: var(--md-accent-fg-color);
+  color: var(--md-default-fg-color);
+  font-weight: 500;
 }
 
 /* Navigation hover effects */
@@ -233,6 +234,6 @@ h1, h2, h3, h4, h5, h6,
 /* Search result highlighting */
 .md-search-result mark {
   background-color: var(--md-accent-fg-color--transparent);
-  color: var(--md-accent-fg-color);
-  text-decoration: underline;
+  color: inherit;
+  text-decoration: none;
 }
