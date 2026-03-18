@@ -434,3 +434,6 @@ nav:
       - User Sessions: 9-ai-sessions/user-sessions.md
       - API Reference: 9-ai-sessions/api-reference.md
       - TypeScript SDK: 9-ai-sessions/sdk.md
+
+  - Release Notes:
+      - Overview: 10-release-notes/index.md
