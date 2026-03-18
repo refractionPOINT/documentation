@@ -40,7 +40,7 @@ Here's the breakdown of the above example:
 ### Infrastructure as Code Deployment
 
 ```python
-# Google Cloud Pub/Sub Specific Docs: https://docs.limacharlie.io/docs/adapter-types-google-cloud-pubsub
+# Google Cloud Pub/Sub Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/google-cloud-pubsub/
 
 sensor_type: "pubsub"
 pubsub:

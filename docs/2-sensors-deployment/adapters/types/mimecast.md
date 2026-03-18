@@ -39,7 +39,7 @@ client_id=$CLIENT_ID client_secret=$CLIENT_SECRET
 ### Infrastructure as Code Deployment
 
 ```python
-# Mimecast Specific Docs: https://docs.limacharlie.io/docs/adapter-types-mimecast
+# Mimecast Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/mimecast/
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   client_id: "hive://secret/mimecast-client-id"

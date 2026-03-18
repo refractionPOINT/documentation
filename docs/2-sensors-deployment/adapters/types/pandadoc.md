@@ -38,7 +38,7 @@ api_key=$API_KEY
 ### Infrastructure as Code Deployment
 
 ```python
-# PandaDoc Specific Docs: https://docs.limacharlie.io/docs/adapter-types-pandadoc
+# PandaDoc Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/pandadoc/
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   api_key: "hive://secret/pandadoc-api-key"

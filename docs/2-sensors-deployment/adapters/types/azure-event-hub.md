@@ -84,7 +84,7 @@ client_options.hostname=<HOSTNAME> \
 ### Infrastructure as Code Deployment
 
 ```python
-# Azure Event Hub Specific Docs: https://docs.limacharlie.io/docs/adapter-types-azure-event-hub
+# Azure Event Hub Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/azure-event-hub/
 
 sensor_type: "azure_event_hub"
   azure_event_hub:

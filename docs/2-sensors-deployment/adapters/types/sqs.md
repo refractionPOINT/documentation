@@ -16,7 +16,7 @@ Adapter Type: `sqs`
 ### Infrastructure as Code Deployment
 
 ```python
-# AWS SQS Specific Docs: https://docs.limacharlie.io/docs/adapter-types-sqs
+# AWS SQS Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sqs/
 
 sensor_type: "sqs"
 sqs:

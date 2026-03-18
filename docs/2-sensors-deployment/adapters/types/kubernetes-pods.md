@@ -20,7 +20,7 @@ The following fields are required for configuration:
 ### Infrastructure as Code Deployment
 
 ```python
-# Kubernetes Pods Specific Docs: https://docs.limacharlie.io/docs/adapter-types-k8s-pods
+# Kubernetes Pods Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/kubernetes-pods/
 
 sensor_type: "k8_pods"
 k8s_pods:

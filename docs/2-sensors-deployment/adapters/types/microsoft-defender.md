@@ -90,7 +90,7 @@ client_options.hostname=msdefender \
 ### Infrastructure as Code Deployment
 
 ```python
-# Adapter Documentation: https://docs.limacharlie.io/docs/adapter-types
+# Adapter Documentation: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-defender/
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   tenant_id: "hive://secret/azure-tenant-id"

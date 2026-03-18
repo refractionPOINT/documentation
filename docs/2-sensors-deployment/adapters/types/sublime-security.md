@@ -30,7 +30,7 @@ api_key=$API_KEY
 ### Infrastructure as Code Deployment
 
 ```python
-# Sublime Security Specific Docs: https://docs.limacharlie.io/docs/adapter-types-sublime-security
+# Sublime Security Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sublime-security/
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   api_key: "hive://secret/sublime-api-key"

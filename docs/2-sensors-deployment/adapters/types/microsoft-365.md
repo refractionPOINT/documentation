@@ -39,7 +39,7 @@ Establishing a cloud-to-cloud connector between LimaCharlie and Office 365 requi
 ### Infrastructure as Code Deployment
 
 ```python
-# Office 365 Management Activity API Specific Docs: https://docs.limacharlie.io/docs/adapter-types-office-365-management-activity-api
+# Office 365 Management Activity API Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-365/
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   tenant_id: "hive://secret/o365-tenant-id"

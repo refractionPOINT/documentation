@@ -2,7 +2,7 @@
 
 Operators are used in the Detection part of a Detection & Response rule. Operators may also be accompanied by other available parameters, such as transforms, times, and others, referenced later in this page.
 
-> For more information on how to use operators, read [Detection & Response Rules](https://docs.limacharlie.io/docs/detection-and-response).
+> For more information on how to use operators, read [Detection & Response Rules](https://docs.limacharlie.io/3-detection-response/).
 
 ## Operators
 
@@ -303,7 +303,7 @@ The value is supplied via the `path` parameter and the lookup is defined in the 
 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
-> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](https://docs.limacharlie.io/docs/add-ons-api-integrations).
+> API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](https://docs.limacharlie.io/5-integrations/api-integrations/).
 
 > You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](../7-administration/config-hive/lookups.md) and [Lookup Manager](../5-integrations/extensions/limacharlie/lookup-manager.md).
 

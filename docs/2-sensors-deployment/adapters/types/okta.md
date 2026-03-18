@@ -38,7 +38,7 @@ apikey=$API_KEY url=$URL
 ### Infrastructure as Code Deployment
 
 ```python
-# Okta Specific Docs: https://docs.limacharlie.io/docs/adapter-types-okta
+# Okta Specific Docs: https://docs.limacharlie.io/2-sensors-deployment/adapters/types/okta/
 # For cloud sensor deployment, store credentials as hive secrets:
 
 #   apikey: "hive://secret/okta-api-token"

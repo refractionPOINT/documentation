@@ -1741,8 +1741,8 @@ firehose --listen_interface 0.0.0.0:4444 --data_type event -n my-firehose --use-
 - **GitHub Repository**: [github.com/refractionPOINT/go-limacharlie](https://github.com/refractionPOINT/go-limacharlie)
 - **API Documentation**: [api.limacharlie.io/openapi](https://api.limacharlie.io/openapi)
 - **LimaCharlie Documentation**: [docs.limacharlie.io](https://docs.limacharlie.io)
-- **LCQL Query Language**: [docs.limacharlie.io/docs/query-language](https://docs.limacharlie.io/docs/query-language)
-- **Detection & Response Rules**: [docs.limacharlie.io/docs/detection-and-response](https://docs.limacharlie.io/docs/detection-and-response)
+- **LCQL Query Language**: [docs.limacharlie.io/4-data-queries/lcql-examples](https://docs.limacharlie.io/4-data-queries/lcql-examples/)
+- **Detection & Response Rules**: [docs.limacharlie.io/3-detection-response](https://docs.limacharlie.io/3-detection-response/)
 - **Community Support**: [community.limacharlie.com](https://community.limacharlie.com/)
 - **Commercial Support**: support@limacharlie.io
 

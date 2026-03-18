@@ -31,6 +31,6 @@ Within the Artifact Collection page, you can configure:
 
 The following screenshot provides examples of capturing Windows Security and Sysmon Windows Event Logs via Artifact Collection. Rather than using an Adapter, capturing WEL events via the `wel://` pattern adds the corresponding events to the sensor telemetry, creating a real-time stream of Windows Event Log data. However, you can also specify the pattern to collect the specific `.evtx` files.
 
-More information on Artifact collections can be found [here](https://docs.limacharlie.io/docs/artifacts).
+More information on Artifact collections can be found [here](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/artifact/).
 
 ![](../../../assets/images/artifact-3.png)
