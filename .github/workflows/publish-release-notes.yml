@@ -1,0 +1,42 @@
+name: Publish Release Notes
+
+on:
+  repository_dispatch:
+    types: [publish-release-notes]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Publish release note
+        env:
+          COMPONENT: ${{ github.event.client_payload.component }}
+          VERSION: ${{ github.event.client_payload.version }}
+          DATE: ${{ github.event.client_payload.date }}
+          URL: ${{ github.event.client_payload.url }}
+          BODY: ${{ github.event.client_payload.body }}
+        run: |
+          python scripts/publish-release-note.py \
+            --component "$COMPONENT" \
+            --version "$VERSION" \
+            --date "$DATE" \
+            --url "$URL" \
+            --body "$BODY"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/10-release-notes/ mkdocs.yml
+          git diff --cached --quiet || git commit -m "Release notes: ${{ github.event.client_payload.component }} ${{ github.event.client_payload.version }}"
+          git push
