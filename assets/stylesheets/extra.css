@@ -1,0 +1,239 @@
+/* LimaCharlie Custom Branding */
+/* Brand Colors (from official brand guide):
+   - LC Blue 1 (Dark Navy):     #0D1B2A - backgrounds, headers
+   - LC Blue 2:                 #1B263B - secondary dark
+   - LC Blue 3:                 #415A77 - tertiary
+   - LC Blue 4 (Primary Blue):  #2563EB - main brand color, logo
+   - LC Blue 5:                 #60A5FA - light accent
+   - LC Blue 6:                 #BFDBFE - lightest
+   - LC Pink 1:                 #831843 - dark CTA
+   - LC Pink 2:                 #BE185D - medium CTA
+   - LC Pink 3 (CTA):           #E91E63 - primary CTA/accent
+   - LC White:                  #FFFFFF
+*/
+
+:root {
+  /* Light mode custom colors */
+  --md-primary-fg-color: #0D1B2A;
+  --md-primary-fg-color--light: #1B263B;
+  --md-primary-fg-color--dark: #0A1220;
+
+  /* Primary brand blue for links and highlights */
+  --md-accent-fg-color: #2563EB;
+  --md-accent-fg-color--transparent: #2563EB1a;
+
+  /* Links - explicit color for light mode visibility */
+  --md-typeset-a-color: #2563EB;
+
+  /* CTA pink for buttons */
+  --lc-cta-color: #E91E63;
+  --lc-cta-color--hover: #BE185D;
+
+  /* Custom typography scale */
+  --md-typeset-font-size: 0.8rem;
+}
+
+[data-md-color-scheme="slate"] {
+  /* Dark mode - use LC Blue palette for backgrounds */
+  --md-primary-fg-color: #0D1B2A;
+  --md-primary-fg-color--light: #1B263B;
+  --md-primary-fg-color--dark: #0A1220;
+
+  /* Accent - use bright blue for better dark mode visibility */
+  --md-accent-fg-color: #60A5FA;
+  --md-accent-fg-color--transparent: #60A5FA1a;
+
+  /* CTA pink */
+  --lc-cta-color: #E91E63;
+  --lc-cta-color--hover: #F472B6;
+
+  /* Enhanced dark mode backgrounds using LC Blue tones */
+  --md-default-bg-color: #0A1220;
+  --md-default-bg-color--light: #0D1B2A;
+  --md-default-bg-color--lighter: #1B263B;
+  --md-default-bg-color--lightest: #415A77;
+
+  /* Code blocks - darker navy for better contrast */
+  --md-code-bg-color: #0A1220;
+  --md-code-fg-color: #BFDBFE;
+
+  /* Links with blue accent */
+  --md-typeset-a-color: #60A5FA;
+}
+
+/* Light mode link underlines for better visibility */
+[data-md-color-scheme="default"] .md-typeset a {
+  text-decoration: underline;
+  text-decoration-color: rgba(37, 99, 235, 0.4);
+  text-underline-offset: 0.15em;
+}
+
+[data-md-color-scheme="default"] .md-typeset a:hover {
+  text-decoration-color: rgba(37, 99, 235, 1);
+}
+
+/* Exclude nav, header, footer, and button links from underline */
+[data-md-color-scheme="default"] .md-nav a,
+[data-md-color-scheme="default"] .md-header a,
+[data-md-color-scheme="default"] .md-footer a,
+[data-md-color-scheme="default"] .md-button,
+[data-md-color-scheme="default"] .md-tabs a,
+[data-md-color-scheme="default"] .md-source {
+  text-decoration: none;
+}
+
+/* Custom heading styles */
+h1, h2, h3, h4, h5, h6,
+.md-header__topic,
+.md-nav__title {
+  font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Enhanced code block styling */
+.md-typeset pre > code {
+  border-radius: 0.4rem;
+}
+
+.md-typeset code {
+  background-color: var(--md-code-bg-color);
+  border-radius: 0.25rem;
+  padding: 0.15em 0.4em;
+  font-size: 0.85em;
+}
+
+/* Improved table styling */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.4rem;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Admonition enhancements */
+.md-typeset .admonition,
+.md-typeset details {
+  border-left: 0.2rem solid var(--md-accent-fg-color);
+  border-radius: 0.4rem;
+}
+
+/* Search highlighting */
+.md-search-result__article--document .md-search-result__title {
+  color: var(--md-default-fg-color);
+  font-weight: 500;
+}
+
+/* Navigation hover effects */
+.md-nav__link:hover {
+  color: var(--md-accent-fg-color);
+}
+
+.md-nav__link--active {
+  color: var(--md-accent-fg-color);
+  font-weight: 600;
+}
+
+/* Button styling */
+.md-button {
+  border-radius: 0.3rem;
+  transition: all 0.2s ease;
+}
+
+.md-button--primary {
+  background-color: var(--lc-cta-color, #E91E63);
+  border-color: var(--lc-cta-color, #E91E63);
+}
+
+.md-button--primary:hover {
+  background-color: var(--lc-cta-color--hover, #BE185D);
+  border-color: var(--lc-cta-color--hover, #BE185D);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(233, 30, 99, 0.3);
+}
+
+/* Enhanced hero section for index page - scoped to main content only */
+.md-content .md-typeset h1:first-of-type {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #E91E63 0%, #2563EB 50%, #0D1B2A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glassmorphic card effect for better visual hierarchy */
+.md-typeset .card {
+  background: var(--md-default-bg-color--light);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.6rem;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  backdrop-filter: blur(10px);
+}
+
+/* Footer customization */
+.md-footer {
+  background-color: var(--md-primary-fg-color);
+}
+
+.md-footer-meta {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Top navigation tabs */
+.md-tabs {
+  background-color: var(--md-primary-fg-color);
+}
+
+/* Scrollbar styling for dark mode */
+[data-md-color-scheme="slate"] ::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb {
+  background-color: var(--md-default-fg-color--lightest);
+  border-radius: 0.25rem;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--md-accent-fg-color);
+}
+
+/* Responsive improvements */
+@media screen and (max-width: 76.25em) {
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    background-color: var(--md-primary-fg-color);
+  }
+}
+
+/* Code copy button enhancement */
+.md-clipboard {
+  color: var(--md-default-fg-color--light);
+}
+
+.md-clipboard:hover {
+  color: var(--md-accent-fg-color);
+}
+
+/* Version badge styling (if versioning is added later) */
+.md-version__current {
+  color: var(--md-accent-fg-color);
+}
+
+/* Search result highlighting */
+.md-search-result mark {
+  background-color: var(--md-accent-fg-color--transparent);
+  color: inherit;
+  text-decoration: none;
+}
