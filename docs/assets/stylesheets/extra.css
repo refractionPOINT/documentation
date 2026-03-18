@@ -160,8 +160,8 @@ h1, h2, h3, h4, h5, h6,
   box-shadow: 0 4px 8px rgba(233, 30, 99, 0.3);
 }
 
-/* Enhanced hero section for index page */
-.md-typeset h1:first-of-type {
+/* Enhanced hero section for index page - scoped to main content only */
+.md-content .md-typeset h1:first-of-type {
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 1rem;
