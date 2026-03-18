@@ -161,7 +161,7 @@ h1, h2, h3, h4, h5, h6,
 
 /* Enhanced hero section for index page */
 .md-typeset h1:first-of-type {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1rem;
   background: linear-gradient(135deg, #E91E63 0%, #2563EB 50%, #0D1B2A 100%);
