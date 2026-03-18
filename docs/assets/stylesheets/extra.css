@@ -30,7 +30,7 @@
   --lc-cta-color--hover: #BE185D;
 
   /* Custom typography scale */
-  --md-typeset-font-size: 0.9rem;
+  --md-typeset-font-size: 0.8rem;
 }
 
 [data-md-color-scheme="slate"] {
