@@ -1,10 +1,10 @@
 # LimaCharlie Documentation
 
-Welcome to the official documentation for **LimaCharlie** - the SecOps Cloud Platform.
+Welcome to the official documentation for **LimaCharlie** - the Agentic SecOps Workspace.
 
 ## What is LimaCharlie?
 
-LimaCharlie is the **SecOps Cloud Platform** delivering security operations for the modern era. The platform provides comprehensive enterprise protection that brings together critical cybersecurity capabilities and eliminates integration challenges and security gaps for more effective protection against today's threats.
+LimaCharlie is the **Agentic SecOps Workspace** delivering security operations for the modern era. The platform provides comprehensive enterprise protection that brings together critical cybersecurity capabilities and eliminates integration challenges and security gaps for more effective protection against today's threats.
 
 ## Quick Navigation
 
