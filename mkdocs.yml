@@ -336,6 +336,7 @@ nav:
           - Labs:
               - Playbook: 5-integrations/extensions/labs/playbook.md
           - Cloud CLI:
+              - Overview: 5-integrations/extensions/cloud-cli/index.md
               - 1Password: 5-integrations/extensions/cloud-cli/1password.md
               - AWS: 5-integrations/extensions/cloud-cli/aws.md
               - Azure: 5-integrations/extensions/cloud-cli/azure.md
