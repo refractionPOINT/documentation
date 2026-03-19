@@ -78,6 +78,7 @@ LimaCharlie is the **SecOps Cloud Platform** delivering security operations for 
 
 ## Platform Capabilities
 
+- **Agentic AI & Bring-Your-Own-LLM**: Run AI agents as full security operators with auditable, governed access to every platform capability
 - **Endpoint Detection & Response (EDR)**: Deploy sensors across multiple platforms
 - **Detection & Response Rules**: Build custom detection logic with automated responses
 - **Real-time Telemetry**: Centralized event streaming and data collection
