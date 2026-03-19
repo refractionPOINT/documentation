@@ -1,13 +1,13 @@
 # MkDocs and Material Theme
-mkdocs>=1.5.3
-mkdocs-material>=9.5.0
+mkdocs>=1.5.3,<2
+mkdocs-material>=9.5.0,<10
 
 # Python Markdown Extensions
-pymdown-extensions>=10.7
+pymdown-extensions>=10.7,<11
 
 # Redirects for old URL structure
-mkdocs-redirects>=1.2.0
+mkdocs-redirects>=1.2.0,<2
 
 # Additional dependencies for Material theme features
-Pygments>=2.17.0
-markdown>=3.5.0
+Pygments>=2.17.0,<3
+markdown>=3.5.0,<4
