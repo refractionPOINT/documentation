@@ -165,7 +165,7 @@ extra:
 extra_css:
   - assets/stylesheets/extra.css
 
-copyright: Copyright &copy; 2018-2025 refractionPOINT
+copyright: Copyright &copy; 2018-2026 refractionPOINT
 
 nav:
   - Home: index.md

@@ -34,9 +34,12 @@ jobs:
             --body "$BODY"
 
       - name: Commit and push
+        env:
+          COMPONENT: ${{ github.event.client_payload.component }}
+          VERSION: ${{ github.event.client_payload.version }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/10-release-notes/ mkdocs.yml
-          git diff --cached --quiet || git commit -m "Release notes: ${{ github.event.client_payload.component }} ${{ github.event.client_payload.version }}"
+          git diff --cached --quiet || git commit -m "Release notes: ${COMPONENT} ${VERSION}"
           git push
