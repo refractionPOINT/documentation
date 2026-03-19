@@ -78,37 +78,64 @@ def append_entry(filepath: str, component: str, version: str, dt: datetime,
 
 
 def update_mkdocs_nav(dt: datetime) -> None:
-    """Add the monthly file to mkdocs.yml nav if not already present."""
+    """Add the monthly file to mkdocs.yml nav if not already present.
+
+    Inserts in reverse chronological order so the newest month appears first
+    after the Overview entry.
+    """
     filename = dt.strftime("%Y-%m") + ".md"
     month_label = dt.strftime("%B %Y")
     nav_entry = f"10-release-notes/{filename}"
 
     with open(MKDOCS_YML, "r") as f:
-        content = f.read()
+        lines = f.readlines()
 
-    if nav_entry in content:
+    # Check if already present
+    if any(nav_entry in line for line in lines):
         return
 
-    # Find the Release Notes section and add the new month
-    # Insert after the index line, keeping months in reverse chronological order
-    release_notes_pattern = r"(  - Release Notes:\n(?:.*\n)*?)(      - Overview: 10-release-notes/index\.md\n)"
-    match = re.search(release_notes_pattern, content)
+    # Find the "- Overview: 10-release-notes/index.md" line
+    overview_idx = None
+    for i, line in enumerate(lines):
+        if "10-release-notes/index.md" in line:
+            overview_idx = i
+            break
 
-    if not match:
-        print(f"Warning: Could not find Release Notes nav section in mkdocs.yml", file=sys.stderr)
+    if overview_idx is None:
+        print("Warning: Could not find Release Notes overview in mkdocs.yml nav", file=sys.stderr)
         return
 
-    # Find all existing monthly entries to insert in the right position
-    section_end = match.end()
     insert_line = f"      - {month_label}: {nav_entry}\n"
 
-    # Insert right after the index line
-    content = content[:section_end] + insert_line + content[section_end:]
+    # Find the correct position among existing monthly entries (reverse chronological).
+    # Monthly entries follow the overview line and match the pattern YYYY-MM.md.
+    insert_idx = overview_idx + 1
+    for i in range(overview_idx + 1, len(lines)):
+        m = re.search(r'10-release-notes/(\d{4}-\d{2})\.md', lines[i])
+        if not m:
+            break
+        # If the existing entry is for a newer or same month, insert after it
+        if m.group(1) >= dt.strftime("%Y-%m"):
+            insert_idx = i + 1
+        else:
+            break
+
+    lines.insert(insert_idx, insert_line)
 
     with open(MKDOCS_YML, "w") as f:
-        f.write(content)
+        f.writelines(lines)
 
     print(f"Added {month_label} to mkdocs.yml nav")
+
+
+def validate_inputs(component: str, version: str) -> None:
+    """Validate component and version to prevent path traversal or injection."""
+    if not re.match(r'^[\w][\w.-]*$', component):
+        print(f"Invalid component name: {component}", file=sys.stderr)
+        sys.exit(1)
+    if not re.match(r'^v?[\d]+[\d.]*[\w.-]*$', version):
+        print(f"Invalid version: {version}", file=sys.stderr)
+        sys.exit(1)
 
 
 def main():
@@ -119,6 +146,8 @@ def main():
     parser.add_argument("--url", default="", help="URL to the GitHub Release")
     parser.add_argument("--body", default="", help="Release note body in markdown")
     args = parser.parse_args()
+
+    validate_inputs(args.component, args.version)
 
     os.makedirs(DOCS_DIR, exist_ok=True)
 

@@ -8,7 +8,6 @@ on:
   push:
     branches:
       - master
-      - main
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
@@ -64,7 +63,7 @@ jobs:
         uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411  # v2.8.0
         with:
           args: >-
-            --base './site'
+            --base '${{ github.workspace }}/site'
             --cache
             --max-cache-age 1d
             --exclude '^https?://'
@@ -79,7 +78,7 @@ jobs:
         uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411  # v2.8.0
         with:
           args: >-
-            --base './site'
+            --base '${{ github.workspace }}/site'
             --cache
             --max-cache-age 7d
             --exclude '^https://app\.limacharlie\.io'
@@ -98,11 +97,12 @@ jobs:
           retention-days: 7
 
       - name: Comment on PR with broken links
-        if: github.event_name == 'pull_request' && hashFiles('linkcheck-results.txt') != ''
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
+            if (!fs.existsSync('linkcheck-results.txt')) return;
             const results = fs.readFileSync('linkcheck-results.txt', 'utf8');
 
             // Extract lines with errors
@@ -111,8 +111,9 @@ jobs:
               .slice(0, 20)
               .join('\n');
 
-            if (brokenLinks) {
-              const body = `## Broken Links Detected
+            if (!brokenLinks) return;
+
+            const body = `## Broken Links Detected
 
             The link checker found some issues:
 
@@ -128,13 +129,12 @@ jobs:
             See the uploaded artifact for complete link check results.
             </details>`;
 
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: body,
-              });
-            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: body,
+            });
 
   check-markdown:
     runs-on: ubuntu-latest
