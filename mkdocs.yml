@@ -104,6 +104,24 @@ plugins:
         # Versioned Readme.io paths
         'v1/docs/extensions-third-party-extensions-hayabusa.md': '5-integrations/extensions/third-party/hayabusa.md'
         'v2/docs/reference-edr-events.md': '8-reference/edr-events.md'
+        # Product UI links (old Readme.io paths)
+        'docs/query-console.md': '4-data-queries/query-console-ui.md'
+        'docs/sensors.md': '2-sensors-deployment/index.md'
+        'docs/adapters.md': '2-sensors-deployment/adapters/index.md'
+        'docs/payloads.md': '2-sensors-deployment/endpoint-agent/payloads.md'
+        'docs/installation-keys.md': '2-sensors-deployment/installation-keys.md'
+        'docs/adapter-deployment.md': '2-sensors-deployment/adapters/deployment.md'
+        'docs/artifacts.md': '5-integrations/extensions/limacharlie/artifact.md'
+        'docs/detection-and-response.md': '3-detection-response/index.md'
+        'docs/false-positive-rules.md': '3-detection-response/false-positives.md'
+        'docs/config-hive-yara.md': '7-administration/config-hive/yara.md'
+        'docs/lookups.md': '7-administration/config-hive/lookups.md'
+        'docs/extensions.md': '5-integrations/extensions/index.md'
+        'docs/outputs.md': '5-integrations/outputs/index.md'
+        'docs/config-hive-secrets.md': '7-administration/config-hive/secrets.md'
+        'docs/user-access.md': '7-administration/access/user-access.md'
+        'docs/billing.md': '7-administration/billing/options.md'
+        'docs/add-ons.md': '5-integrations/add-ons/index.md'
         # SDK / CLI references
         'docs/en/platform-configuration-limacharlie-sdk.md': '6-developer-guide/sdk-overview.md'
 
