@@ -54,6 +54,58 @@ plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
       lang: en
+  - redirects:
+      redirect_maps:
+        # Extension website fields (old Readme.io /docs/<slug> format)
+        'docs/binlib.md': '5-integrations/extensions/limacharlie/binlib.md'
+        'docs/ext-artifact.md': '5-integrations/extensions/limacharlie/artifact.md'
+        'docs/ext-atomic-red-team.md': '5-integrations/extensions/third-party/atomic-red-team.md'
+        'docs/ext-cloud-cli.md': '5-integrations/extensions/cloud-cli/index.md'
+        'docs/ext-dumper.md': '5-integrations/extensions/limacharlie/dumper.md'
+        'docs/ext-epp.md': '5-integrations/extensions/limacharlie/epp.md'
+        'docs/ext-exfil.md': '5-integrations/extensions/limacharlie/exfil.md'
+        'docs/ext-govee.md': '5-integrations/extensions/third-party/govee.md'
+        'docs/ext-hayabusa.md': '5-integrations/extensions/third-party/hayabusa.md'
+        'docs/ext-infrastructure.md': '5-integrations/extensions/limacharlie/infrastructure.md'
+        'docs/ext-integrity.md': '5-integrations/extensions/limacharlie/integrity.md'
+        'docs/ext-lookup-manager.md': '5-integrations/extensions/limacharlie/lookup-manager.md'
+        'docs/ext-nims.md': '5-integrations/extensions/third-party/nims.md'
+        'docs/ext-otx.md': '5-integrations/extensions/third-party/otx.md'
+        'docs/ext-pagerduty.md': '5-integrations/extensions/third-party/pagerduty.md'
+        'docs/ext-plaso.md': '5-integrations/extensions/third-party/plaso.md'
+        'docs/ext-reliable-tasking.md': '5-integrations/extensions/limacharlie/reliable-tasking.md'
+        'docs/ext-renigma.md': '5-integrations/extensions/third-party/renigma.md'
+        'docs/ext-secureannex.md': '5-integrations/extensions/third-party/secureannex.md'
+        'docs/ext-sensor-cull.md': '5-integrations/extensions/limacharlie/sensor-cull.md'
+        'docs/ext-strelka.md': '5-integrations/extensions/third-party/strelka.md'
+        'docs/ext-twilio.md': '5-integrations/extensions/third-party/twilio.md'
+        'docs/ext-usage-alerts.md': '5-integrations/extensions/limacharlie/usage-alerts.md'
+        'docs/ext-velociraptor.md': '5-integrations/extensions/third-party/velociraptor.md'
+        'docs/ext-yara.md': '5-integrations/extensions/third-party/yara.md'
+        'docs/ext-yara-manager.md': '5-integrations/extensions/limacharlie/yara-manager.md'
+        'docs/ext-zeek.md': '5-integrations/extensions/third-party/zeek.md'
+        'docs/limacharlie-cli.md': '6-developer-guide/cli.md'
+        'docs/payload-manager.md': '5-integrations/extensions/limacharlie/payload-manager.md'
+        'docs/playbook.md': '5-integrations/extensions/labs/playbook.md'
+        'docs/sigma-rules.md': '3-detection-response/managed-rulesets/sigma-converter.md'
+        'docs/soteria-aws-rules.md': '3-detection-response/managed-rulesets/soteria/aws.md'
+        'docs/soteria-edr-rules.md': '3-detection-response/managed-rulesets/soteria/edr.md'
+        'docs/soteria-m365-rules.md': '3-detection-response/managed-rulesets/soteria/m365.md'
+        'docs/demo-data-loader.md': '5-integrations/extensions/index.md'
+        'docs/ai-agent-engine.md': '9-ai-sessions/index.md'
+        # Embedded long_desc URLs (old Readme.io paths)
+        'docs/extensions-lc-extensions-cloud-cli.md': '5-integrations/extensions/cloud-cli/index.md'
+        'docs/faq-billing.md': '8-reference/faq/billing.md'
+        'docs/sensor-cull.md': '5-integrations/extensions/limacharlie/sensor-cull.md'
+        'docs/adapter-types-google-workspace.md': '2-sensors-deployment/adapters/types/google-workspace.md'
+        'docs/addons-services-velociraptor.md': '5-integrations/extensions/third-party/velociraptor.md'
+        'docs/addons-services-yara.md': '5-integrations/extensions/third-party/yara.md'
+        'docs/addons-services-infrastructure-service.md': '5-integrations/extensions/limacharlie/infrastructure.md'
+        # Versioned Readme.io paths
+        'v1/docs/extensions-third-party-extensions-hayabusa.md': '5-integrations/extensions/third-party/hayabusa.md'
+        'v2/docs/reference-edr-events.md': '8-reference/edr-events.md'
+        # SDK / CLI references
+        'docs/en/platform-configuration-limacharlie-sdk.md': '6-developer-guide/sdk-overview.md'
 
 markdown_extensions:
   - abbr
@@ -336,6 +388,7 @@ nav:
           - Labs:
               - Playbook: 5-integrations/extensions/labs/playbook.md
           - Cloud CLI:
+              - Overview: 5-integrations/extensions/cloud-cli/index.md
               - 1Password: 5-integrations/extensions/cloud-cli/1password.md
               - AWS: 5-integrations/extensions/cloud-cli/aws.md
               - Azure: 5-integrations/extensions/cloud-cli/azure.md
