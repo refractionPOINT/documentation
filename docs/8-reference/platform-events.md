@@ -265,6 +265,9 @@ Over quota deployment events are produced when a Sensor tries to connect but the
     "sid": "a75cc927-bf28-4178-a42d-25ecc8a6be81",
     "plat": 536870912,
     "arch": 2,
+    "ext_ip": "104.196.34.101",
+    "int_ip": "172.17.0.2",
+    "hostname": "linux-server-1",
     "event_type": "sensor_over_quota",
     "event_time": 1561741553230
   },
