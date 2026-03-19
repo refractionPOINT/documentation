@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Official documentation for LimaCharlie SecOps Cloud Platform">
+        <meta name="description" content="Official documentation for LimaCharlie Agentic SecOps Workspace">
       
       
         <meta name="author" content="refractionPOINT">
@@ -6681,7 +6681,7 @@
   <span class="md-ellipsis">
     
   
-    SCP
+    ASW
   
 
     
@@ -11425,7 +11425,7 @@
 <p>When the above configuration is provided to LimaCharlie, a webhook adapter will appear and be available for webhook event ingestion. Here's an example of creating the above record through the LimaCharlie <abbr title="Command-line Interface">CLI</abbr>:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;sensor_type&quot;: &quot;webhook&quot;, &quot;webhook&quot;: {&quot;secret&quot;: &quot;some-secret-value-hard-to-predict&quot;, &quot;signature_secret&quot;: &quot;&quot;, &quot;signature_header&quot;: &quot;&quot;, &quot;signature_scheme&quot;: &quot;&quot;, &quot;client_options&quot;: {&quot;hostname&quot;: &quot;&lt;any_name&gt;&quot;, &quot;identity&quot;: {&quot;oid&quot;: &quot;&lt;oid&gt;&quot;, &quot;installation_key&quot;: &quot;&lt;installation_key&gt;&quot;}, &quot;platform&quot;: &quot;json&quot;, &quot;sensor_seed_key&quot;: &quot;test-webhook&quot;}}}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>cloud_sensor<span class="w"> </span>--key<span class="w"> </span>my-webhook<span class="w"> </span>--data<span class="w"> </span>-
 </span></code></pre></div>
-<p>After creating the webhook, you will be provided with a geo-dependent URL, respective to your LimaCharlie <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> location. You can also retrieve your webhook URLs with either of the following commands:</p>
+<p>After creating the webhook, you will be provided with a geo-dependent URL, respective to your LimaCharlie <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> location. You can also retrieve your webhook URLs with either of the following commands:</p>
 <ul>
 <li>REST API: <a href="https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls">getOrgURLs</a></li>
 <li>Python SDK:</li>
@@ -11437,7 +11437,7 @@
 <p>Let's assume the returned domain looks like <code>9157798c50af372c.hook.limacharlie.io</code>, the format of the URL would be:</p>
 <p><code>https://9157798c50af372c.hook.limacharlie.io/OID/HOOKNAME/SECRET</code>, where:</p>
 <ul>
-<li><abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr> is the <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> <abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr> provided in the configuration above.</li>
+<li><abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr> is the <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> <abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr> provided in the configuration above.</li>
 <li>HOOKNAME is the name of the hook provided in the configuration above.</li>
 <li>SECRET is the secret value provided in the configuration. You can provide the secret value in the URL or as an HTTP header named <code>lc-secret</code>.</li>
 </ul>

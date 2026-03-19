@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Official documentation for LimaCharlie SecOps Cloud Platform">
+        <meta name="description" content="Official documentation for LimaCharlie Agentic SecOps Workspace">
       
       
         <meta name="author" content="refractionPOINT">
@@ -6609,7 +6609,7 @@
   <span class="md-ellipsis">
     
   
-    SCP
+    ASW
   
 
     
@@ -11266,7 +11266,7 @@
 
 
 <h1 id="sleeper-deployment">Sleeper Deployment<a class="headerlink" href="#sleeper-deployment" title="Anchor link to this section">&para;</a></h1>
-<p>LimaCharlie's usage-based billing enables incident responders to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr>'s entire fleet and lay dormant in 'sleeper mode' at a cost of just $0.10 per 30 days. With agents deployed ahead of an incident, responders can offer competitive SLAs.</p>
+<p>LimaCharlie's usage-based billing enables incident responders to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr>'s entire fleet and lay dormant in 'sleeper mode' at a cost of just $0.10 per 30 days. With agents deployed ahead of an incident, responders can offer competitive SLAs.</p>
 <blockquote>
 <p>Have more questions?</p>
 <p>For more details on sleeper mode deployments, feel free to contact us at <a href="mailto:answers@limacharlie.io">answers@limacharlie.io</a> or book a quick call with the engineering team to discuss your use case.</p>
@@ -11292,7 +11292,7 @@
 <p>Using sleeper mode requires the organization in question to have billing enabled (a quota of at least 3 to be outside of the free tier).</p>
 <p>This means a sample scenario around pre-deploying in an enterprise could look something like this:</p>
 <ol>
-<li>Create a new <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> in LimaCharlie.</li>
+<li>Create a new <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> in LimaCharlie.</li>
 <li>Set the Quota to 3 to enable billing.</li>
 <li>Create a new <abbr title="Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.">Installation Key</abbr>, and set the <code>lc:sleeper</code> tag on the key.</li>
 <li>Enroll any number of <abbr title="Endpoint Detection &amp; Response">EDR</abbr> sensors. Charges will apply as specified above. For example, if you deploy 100 Sensors in sleeper mode, total monthly costs will be $10.</li>

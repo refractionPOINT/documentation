@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Official documentation for LimaCharlie SecOps Cloud Platform">
+        <meta name="description" content="Official documentation for LimaCharlie Agentic SecOps Workspace">
       
       
         <meta name="author" content="refractionPOINT">
@@ -6585,7 +6585,7 @@
   <span class="md-ellipsis">
     
   
-    SCP
+    ASW
   
 
     
@@ -11517,7 +11517,7 @@
 <p>Once enabled, this extension allows you to generate Zeek logs from packet capture (PCAP) files collected via Artifacts. The resulting Zeek log files are subsequently parsed and pushed into the <code>ext-zeek</code> <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> timeline as JSON. You can create detection &amp; response rules to automate based on Zeek log data.</p>
 <p>LimaCharlie will automatically kick off Zeek based on the artifact ID provided in a rule action.</p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Anchor link to this section">&para;</a></h2>
-<p>To enable the Zeek extension, navigate to the <a href="https://app.limacharlie.io/add-ons/extension-detail/ext-zeek">Zeek extension page</a> in the marketplace. Select the <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> you wish to enable the extension for, and select Subscribe.</p>
+<p>To enable the Zeek extension, navigate to the <a href="https://app.limacharlie.io/add-ons/extension-detail/ext-zeek">Zeek extension page</a> in the marketplace. Select the <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> you wish to enable the extension for, and select Subscribe.</p>
 <p>When enabled, you may configure the response of a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule to run Zeek against an artifact event. Here is an example <abbr title="Detection &amp; Response">D&amp;R</abbr> rule:</p>
 <p><strong>Detect:</strong></p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">artifact type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pcap</span>

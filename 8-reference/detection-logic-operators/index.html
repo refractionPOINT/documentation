@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Official documentation for LimaCharlie SecOps Cloud Platform">
+        <meta name="description" content="Official documentation for LimaCharlie Agentic SecOps Workspace">
       
       
         <meta name="author" content="refractionPOINT">
@@ -6577,7 +6577,7 @@
   <span class="md-ellipsis">
     
   
-    SCP
+    ASW
   
 
     
@@ -12227,7 +12227,7 @@
 </span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="nt">case sensitive</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div>
 <p>This rule will get the <code>event/DOMAIN_NAME</code> of a <code>DNS_REQUEST</code> event and check if it's a member of the <code>lookup</code> named <code>malwaredomains</code>. If it is, then the rule is a match.</p>
-<p>The value is supplied via the <code>path</code> parameter and the lookup is defined in the <code>resource</code> parameter. Resources are of the form <code>hive://lookup/RESOURCE_NAME</code>. In order to access a lookup, your <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> must be subscribed to it.</p>
+<p>The value is supplied via the <code>path</code> parameter and the lookup is defined in the <code>resource</code> parameter. Resources are of the form <code>hive://lookup/RESOURCE_NAME</code>. In order to access a lookup, your <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> must be subscribed to it.</p>
 <p>Supports the <a href="#file-name">file name</a> and <a href="#sub-domain">sub domain</a> transforms.</p>
 <blockquote>
 <p>API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see <a href="../../5-integrations/api-integrations/">Using API-based lookups</a>.</p>

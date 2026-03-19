@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Official documentation for LimaCharlie SecOps Cloud Platform">
+        <meta name="description" content="Official documentation for LimaCharlie Agentic SecOps Workspace">
       
       
         <meta name="author" content="refractionPOINT">
@@ -6748,7 +6748,7 @@
   <span class="md-ellipsis">
     
   
-    SCP
+    ASW
   
 
     
@@ -11575,7 +11575,7 @@
 </blockquote>
 <p>Executing the installer via the command line, pass the <code>-d INSTALLATION_KEY</code> argument where <code>INSTALLATION_KEY</code> is the key mentioned above.</p>
 <p>Because Linux supports a plethora of service management frameworks, by default the LC sensor does not install itself onto the system. Rather it assumes the "current working directory" is the installation directory and immediately begins enrollment from there.</p>
-<p>This means you can wrap the executable using the specific service management technology used within your <abbr title="In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> by simply specifying the location of the installer, the <code>-d INSTALLATION_KEY</code> parameter and making sure the current working directory is the directory where you want the few sensor-related files written to disk to reside.</p>
+<p>This means you can wrap the executable using the specific service management technology used within your <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> by simply specifying the location of the installer, the <code>-d INSTALLATION_KEY</code> parameter and making sure the current working directory is the directory where you want the few sensor-related files written to disk to reside.</p>
 <p>A common methodology for Linux is to use <code>init.d</code>, if this is sufficient for your needs, see this <a href="https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh">sample install script</a>.
 You can invoke it like this:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>./lc_linux_installer.sh
