@@ -19,7 +19,7 @@
 
 ## Overview
 
-The LimaCharlie Python SDK provides a comprehensive interface for interacting with the LimaCharlie SecOps Cloud Platform. This SDK enables programmatic access to all platform features including sensor management, detection and response rules, real-time event streaming, and artifact collection.
+The LimaCharlie Python SDK provides a comprehensive interface for interacting with the LimaCharlie Agentic SecOps Workspace. This SDK enables programmatic access to all platform features including sensor management, detection and response rules, real-time event streaming, and artifact collection.
 
 ### Key Features
 - **Organization Management**: Create, configure, and manage LimaCharlie organizations
