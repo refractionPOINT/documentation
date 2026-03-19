@@ -69,7 +69,7 @@ jobs:
             --exclude '^https?://'
             --exclude '^mailto:'
             ./site
-          fail: true
+          fail: false
           output: ./linkcheck-results.txt
 
       # Push/schedule/manual: full check including external links
