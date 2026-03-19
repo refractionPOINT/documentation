@@ -1,6 +1,6 @@
 # Observability Pipeline
 
-The SecOps Cloud Platform (SCP) creates a scalable, versatile, and actionable observability pipeline by collecting and standardizing telemetry from the full security stack. Stream data from any input, route it to any output. The SCP provides visibility into telemetry sources and empowers users to create automated responses to actionable events in the pipeline.
+The Agentic SecOps Workspace (ASW) creates a scalable, versatile, and actionable observability pipeline by collecting and standardizing telemetry from the full security stack. Stream data from any input, route it to any output. The ASW provides visibility into telemetry sources and empowers users to create automated responses to actionable events in the pipeline.
 
 #### Observability pipeline problems
 
@@ -14,10 +14,10 @@ Creating an observability pipeline can be a daunting task as users try to integr
 
 #### LimaCharlie's solutions
 
-The SecOps Cloud Platform unifies telemetry collection by using an API-first approach for integrating the security stack. It creates a natural observability pipeline that scales without limit, facilitates automated responses, and greatly reduces data costs across the board. With the SCP you get a fully interactive observability pipeline that can facilitate countless other critical security operations as well.
+The Agentic SecOps Workspace unifies telemetry collection by using an API-first approach for integrating the security stack. It creates a natural observability pipeline that scales without limit, facilitates automated responses, and greatly reduces data costs across the board. With the ASW you get a fully interactive observability pipeline that can facilitate countless other critical security operations as well.
 
 * **Free data retention:** LimaCharlie offers a rolling year of free data storage.
 * **Infrastructure-as-a-Service:** LimaCharlie provides a scalable, cloud-native infrastructure on an API-first platform. This gives our users maximum flexibility, scalability, and integration capabilities across the full security stack, including the observability pipeline.
-* **Instant, bi-directional response:** LimaCharlie supports bi-directionality which allows automated responses sent directly to the source of a detection. For example, if the SecOps Cloud Platform receives a suspicious login alert from O365 it can immediately send a response to suspend the account before telemetry is sent for further processing.
+* **Instant, bi-directional response:** LimaCharlie supports bi-directionality which allows automated responses sent directly to the source of a detection. For example, if the Agentic SecOps Workspace receives a suspicious login alert from O365 it can immediately send a response to suspend the account before telemetry is sent for further processing.
 * **Reduce SIEM spend:** LimaCharlie makes it easy to send only relevant telemetry to your SIEM, while still retaining all of your data in storage. This instantly reduces the costs of operating your SIEM while also accommodating any regulatory compliance requirements involving your data.
 * **No vendor lock-in:** The API-first nature of LimaCharlie allows you to integrate and use whatever security solutions, services, and resources you prefer. There are no contracts or artificial barriers put in place to restrict your choices.

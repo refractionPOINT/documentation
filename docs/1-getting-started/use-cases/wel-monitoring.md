@@ -1,6 +1,6 @@
 # WEL Monitoring
 
-LimaCharlie's SecOps Cloud Platform transforms Windows Event Log monitoring by providing real-time visibility, streamlined infrastructure, and powerful detection and response capabilities. Effectively monitor and protect your Windows environments, ensuring rapid detection and response to potential security incidents.
+LimaCharlie's Agentic SecOps Workspace transforms Windows Event Log monitoring by providing real-time visibility, streamlined infrastructure, and powerful detection and response capabilities. Effectively monitor and protect your Windows environments, ensuring rapid detection and response to potential security incidents.
 
 #### WEL monitoring problems
 

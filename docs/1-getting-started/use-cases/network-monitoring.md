@@ -1,6 +1,6 @@
 # Network Monitoring
 
-LimaCharlie's SecOps Cloud Platform, through its integration with Zeek, revolutionizes network security monitoring by providing scalable semantic analysis, seamless artifact ingestion, and powerful detection and response capabilities. By automating threat detection and enabling efficient incident investigation and response, LimaCharlie helps organizations stay ahead of evolving network threats and maintain a robust security posture.
+LimaCharlie's Agentic SecOps Workspace, through its integration with Zeek, revolutionizes network security monitoring by providing scalable semantic analysis, seamless artifact ingestion, and powerful detection and response capabilities. By automating threat detection and enabling efficient incident investigation and response, LimaCharlie helps organizations stay ahead of evolving network threats and maintain a robust security posture.
 
 #### Network monitoring problems
 

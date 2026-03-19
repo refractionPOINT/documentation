@@ -81,7 +81,7 @@ Quota-based items are charged a month ahead, while usage items are billed the mo
 
 If you are using a credit card for payment and wish to change your address or card details, navigate to **Billing > Billing & Usage** within the web UI. From there, select **Change Payment Details** to update the appropriate details.
 
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
 Endpoint Detection & Response
 

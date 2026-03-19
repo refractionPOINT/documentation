@@ -1,6 +1,6 @@
 # File and Registry Integrity Monitoring (FIM) Deployments
 
-Use the SecOps Cloud Platform to gain comprehensive visibility, control, and proactive protection for sensitive files and registry keys with LimaCharlie's robust FIM capabilities.
+Use the Agentic SecOps Workspace to gain comprehensive visibility, control, and proactive protection for sensitive files and registry keys with LimaCharlie's robust FIM capabilities.
 
 #### FIM deployment problems
 

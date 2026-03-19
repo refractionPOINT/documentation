@@ -1,6 +1,6 @@
 # SecOps Development
 
-The SecOps Cloud Platform accelerates building, customizing, integrating, and scaling security operations. By handling the infrastructure-intensive aspects of security engineering, LimaCharlie takes on the heavy lifting making it easy for developers to focus on their core projects.
+The Agentic SecOps Workspace accelerates building, customizing, integrating, and scaling security operations. By handling the infrastructure-intensive aspects of security engineering, LimaCharlie takes on the heavy lifting making it easy for developers to focus on their core projects.
 
 #### SecOps development problems
 
@@ -13,9 +13,9 @@ Innovating new security products and modifying existing ones is crucial for prot
 
 #### LimaCharlie's solution
 
-The SecOps Cloud Platform delivers core security capabilities in the form of "primitives" that can be modified to accommodate specific needs. It offers infrastructure-as-code and other resources that can improve a developer's mean-time-to-market, including:
+The Agentic SecOps Workspace delivers core security capabilities in the form of "primitives" that can be modified to accommodate specific needs. It offers infrastructure-as-code and other resources that can improve a developer's mean-time-to-market, including:
 
 * **Infrastructure-as-a-service:** LimaCharlie delivers security-oriented cloud-primitives that provide scalable infrastructure and critical resources for your project development. Think AWS, but for security.
-* **API-first foundation:** The SecOps Cloud Platform (SCP) is built upon an API-first foundation. Information normalized and shared via API, freeing you from vendor lock-in and giving you maximum flexibility.
-* **Seamless scalability:** The SCP is a cloud platform, and scales effortlessly with the growth of your company.
-* **Maximum flexibility:** The SCP offers full transparency and granular management of the resources you choose to incorporate. Where third-party tools or open source solutions offer roadblocks, the SCP provides the capability to customize, innovate, and create needed capabilities.
+* **API-first foundation:** The Agentic SecOps Workspace (ASW) is built upon an API-first foundation. Information normalized and shared via API, freeing you from vendor lock-in and giving you maximum flexibility.
+* **Seamless scalability:** The ASW is a cloud platform, and scales effortlessly with the growth of your company.
+* **Maximum flexibility:** The ASW offers full transparency and granular management of the resources you choose to incorporate. Where third-party tools or open source solutions offer roadblocks, the ASW provides the capability to customize, innovate, and create needed capabilities.

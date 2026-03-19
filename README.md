@@ -1,6 +1,6 @@
 # LimaCharlie Documentation
 
-Official documentation for **LimaCharlie**, the SecOps Cloud Platform.
+Official documentation for **LimaCharlie**, the Agentic SecOps Workspace.
 
 **Live Site:** [https://refractionpoint.github.io/documentation/](https://refractionpoint.github.io/documentation/)
 
@@ -22,7 +22,7 @@ docs/
 
 ## What is LimaCharlie?
 
-LimaCharlie is a SecOps Cloud Platform providing:
+LimaCharlie is a Agentic SecOps Workspace providing:
 
 - **Endpoint Detection & Response (EDR)** - Windows, Linux, macOS, Chrome, containers
 - **Detection & Response Rules** - Custom detection logic with automated responses
