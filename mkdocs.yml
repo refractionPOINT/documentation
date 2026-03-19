@@ -1,6 +1,6 @@
 site_name: LimaCharlie Documentation
 site_url: https://docs.limacharlie.io/
-site_description: Official documentation for LimaCharlie SecOps Cloud Platform
+site_description: Official documentation for LimaCharlie Agentic SecOps Workspace
 site_author: refractionPOINT
 repo_url: https://github.com/refractionPOINT/documentation
 repo_name: refractionPOINT/documentation
@@ -348,7 +348,7 @@ nav:
               - Google Pub/Sub: 5-integrations/outputs/destinations/google-pubsub.md
               - Humio: 5-integrations/outputs/destinations/humio.md
               - OpenSearch: 5-integrations/outputs/destinations/opensearch.md
-              - SCP: 5-integrations/outputs/destinations/scp.md
+              - ASW: 5-integrations/outputs/destinations/scp.md
               - SFTP: 5-integrations/outputs/destinations/sftp.md
               - Tines: 5-integrations/outputs/destinations/tines.md
       - Extensions:
