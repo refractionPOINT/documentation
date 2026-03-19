@@ -19,4 +19,4 @@ index: limacharlie-events
 ## Related articles
 
 * [Elastic](elastic.md)
-* [SCP](scp.md)
+* [ASW](scp.md)
