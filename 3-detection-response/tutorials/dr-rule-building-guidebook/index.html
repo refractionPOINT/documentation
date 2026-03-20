@@ -13162,7 +13162,7 @@
 </span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">event/COMMAND_LINE</span>
 </span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;reg</span><span class="nv"> </span><span class="s">add</span><span class="nv"> </span><span class="s">HKLM&quot;</span>
 </span></code></pre></div>
-<p>See the <a href="../8-reference/detection-logic-operators.md">Detection Logic Operators</a> reference for the full list of supported platform names.</p>
+<p>See the <a href="../../../8-reference/detection-logic-operators/">Detection Logic Operators</a> reference for the full list of supported platform names.</p>
 <h3 id="ip-address-operations">IP Address Operations<a class="headerlink" href="#ip-address-operations" title="Anchor link to this section">&para;</a></h3>
 <h4 id="cidr-ip-range-matching"><code>cidr</code> - IP Range Matching<a class="headerlink" href="#cidr-ip-range-matching" title="Anchor link to this section">&para;</a></h4>
 <p>Matches IP addresses against CIDR ranges.</p>
@@ -13360,7 +13360,7 @@
 <li><code>metadata</code>: Free-form key-value data (appears as <code>detect_mtd</code> in the detection)</li>
 <li><code>detect_data</code>: Free-form field for extracting specific elements into a known format</li>
 </ul>
-<p>The <code>name</code>, <code>metadata</code>, and <code>detect_data</code> parameters support <a href="../4-data-queries/template-transforms.md">template strings</a>. Note that the template context is the detection itself, so use <code>.detect.event.USER_NAME</code> not <code>.event.USER_NAME</code>.</p>
+<p>The <code>name</code>, <code>metadata</code>, and <code>detect_data</code> parameters support <a href="../../../4-data-queries/template-transforms/">template strings</a>. Note that the template context is the detection itself, so use <code>.detect.event.USER_NAME</code> not <code>.event.USER_NAME</code>.</p>
 <h3 id="output-data-routing"><code>output</code> - Data Routing<a class="headerlink" href="#output-data-routing" title="Anchor link to this section">&para;</a></h3>
 <p>Forwards the matched event to a specific Output in the <code>tailored</code> stream.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
@@ -13377,7 +13377,7 @@
 <li><code>command</code>: The sensor command to execute (supports template strings, e.g., <code>artifact_get {{ .event.FILE_PATH }}</code>)</li>
 <li><code>investigation</code>: Optional unique identifier for the task and resulting events</li>
 </ul>
-<p>See <a href="../8-reference/endpoint-commands.md">Endpoint Commands</a> for all available commands.</p>
+<p>See <a href="../../../8-reference/endpoint-commands/">Endpoint Commands</a> for all available commands.</p>
 <h3 id="add-tag-remove-tag-sensor-tagging"><code>add tag</code> / <code>remove tag</code> - <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Tagging<a class="headerlink" href="#add-tag-remove-tag-sensor-tagging" title="Anchor link to this section">&para;</a></h3>
 <p>Manages sensor tags for organization and targeting.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add tag</span>
@@ -13404,7 +13404,7 @@
 <li><code>value</code>: Value to store (supports lookback <code>&lt;&lt;path&gt;&gt;</code> syntax)</li>
 <li><code>ttl</code>: Optional, seconds until the variable expires</li>
 </ul>
-<p>Variables set here can be referenced in detection rules using <code>[[variable_name]]</code> syntax. See <a href="../3-detection-response/sensor-variables.md"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Variables</a> for detailed usage.</p>
+<p>Variables set here can be referenced in detection rules using <code>[[variable_name]]</code> syntax. See <a href="../../sensor-variables/"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Variables</a> for detailed usage.</p>
 <h3 id="isolate-network-rejoin-network-network-control"><code>isolate network</code> / <code>rejoin network</code> - Network Control<a class="headerlink" href="#isolate-network-rejoin-network-network-control" title="Anchor link to this section">&para;</a></h3>
 <p>Controls sensor network connectivity for containment. Isolation is persistent (survives reboots).</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">isolate network</span>
@@ -13465,7 +13465,7 @@
 </span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="w">  </span><span class="nt">definition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://ai_agent/my-triage-bot</span>
 </span><span id="__span-51-3"><a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a><span class="w">  </span><span class="nt">debounce_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;triage-{{</span><span class="nv"> </span><span class="s">.routing.sid</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span></code></pre></div>
-<p>See <a href="../9-ai-sessions/dr-sessions.md">AI Sessions</a> for full configuration options.</p>
+<p>See <a href="../../../9-ai-sessions/dr-sessions/">AI Sessions</a> for full configuration options.</p>
 <h3 id="suppression">Suppression<a class="headerlink" href="#suppression" title="Anchor link to this section">&para;</a></h3>
 <p>All response actions support <code>suppression</code> to manage repetitive or noisy alerts.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
@@ -13600,7 +13600,7 @@
 <li><code>{{ base .path }}</code> — Filename from path</li>
 <li><code>{{ dir .path }}</code> — Directory from path</li>
 </ul>
-<p>See <a href="../4-data-queries/template-transforms.md">Template Strings</a> for the full reference.</p>
+<p>See <a href="../../../4-data-queries/template-transforms/">Template Strings</a> for the full reference.</p>
 <h3 id="resource-integration">Resource Integration<a class="headerlink" href="#resource-integration" title="Anchor link to this section">&para;</a></h3>
 <h4 id="lookup-resources">Lookup Resources<a class="headerlink" href="#lookup-resources" title="Anchor link to this section">&para;</a></h4>
 <p>Integrate external threat intelligence and reference data:</p>
