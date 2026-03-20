@@ -21,4 +21,4 @@ Trigger a CLI command as a D&R rule response action using `extension request`:
 Field descriptions:
 
 * `command_line`: the full CLI command to execute.
-* `credentials`: a reference to stored credentials in the [secrets manager](../7-administration/access/secrets.md), used to authenticate the CLI command.
+* `credentials`: a reference to stored credentials in the [secrets manager](../7-administration/config-hive/secrets.md), used to authenticate the CLI command.
