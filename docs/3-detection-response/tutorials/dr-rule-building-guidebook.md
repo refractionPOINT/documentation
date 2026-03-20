@@ -378,7 +378,7 @@ rules:
     value: "reg add HKLM"
 ```
 
-See the [Detection Logic Operators](../8-reference/detection-logic-operators.md) reference for the full list of supported platform names.
+See the [Detection Logic Operators](../../8-reference/detection-logic-operators.md) reference for the full list of supported platform names.
 
 ### IP Address Operations
 
@@ -661,7 +661,7 @@ Creates a detection (alert) that is sent to the detection output stream, the Det
 - `metadata`: Free-form key-value data (appears as `detect_mtd` in the detection)
 - `detect_data`: Free-form field for extracting specific elements into a known format
 
-The `name`, `metadata`, and `detect_data` parameters support [template strings](../4-data-queries/template-transforms.md). Note that the template context is the detection itself, so use `.detect.event.USER_NAME` not `.event.USER_NAME`.
+The `name`, `metadata`, and `detect_data` parameters support [template strings](../../4-data-queries/template-transforms.md). Note that the template context is the detection itself, so use `.detect.event.USER_NAME` not `.event.USER_NAME`.
 
 ### `output` - Data Routing
 
@@ -687,7 +687,7 @@ Sends a command to the sensor that generated the event.
 - `command`: The sensor command to execute (supports template strings, e.g., `artifact_get {{ .event.FILE_PATH }}`)
 - `investigation`: Optional unique identifier for the task and resulting events
 
-See [Endpoint Commands](../8-reference/endpoint-commands.md) for all available commands.
+See [Endpoint Commands](../../8-reference/endpoint-commands.md) for all available commands.
 
 ### `add tag` / `remove tag` - Sensor Tagging
 
@@ -723,7 +723,7 @@ Manages sensor-specific variables for cross-rule state tracking.
 - `value`: Value to store (supports lookback `<<path>>` syntax)
 - `ttl`: Optional, seconds until the variable expires
 
-Variables set here can be referenced in detection rules using `[[variable_name]]` syntax. See [Sensor Variables](../3-detection-response/sensor-variables.md) for detailed usage.
+Variables set here can be referenced in detection rules using `[[variable_name]]` syntax. See [Sensor Variables](../sensor-variables.md) for detailed usage.
 
 ### `isolate network` / `rejoin network` - Network Control
 
@@ -821,7 +821,7 @@ Spawns a Claude AI session for automated investigation and response. Supports tw
   debounce_key: "triage-{{ .routing.sid }}"
 ```
 
-See [AI Sessions](../9-ai-sessions/dr-sessions.md) for full configuration options.
+See [AI Sessions](../../9-ai-sessions/dr-sessions.md) for full configuration options.
 
 ### Suppression
 
@@ -988,7 +988,7 @@ Templates enable dynamic content generation in response actions using Go templat
 - `{{ base .path }}` — Filename from path
 - `{{ dir .path }}` — Directory from path
 
-See [Template Strings](../4-data-queries/template-transforms.md) for the full reference.
+See [Template Strings](../../4-data-queries/template-transforms.md) for the full reference.
 
 ### Resource Integration
 

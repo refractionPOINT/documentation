@@ -192,5 +192,5 @@ Example: create a syslog output for event data.
 ## See Also
 
 - [Stream Structures](stream-structures.md)
-- [Output Destinations](destinations)
+- [Output Destinations](destinations/amazon-s3.md)
 - [D&R Response Actions](../../8-reference/response-actions.md)

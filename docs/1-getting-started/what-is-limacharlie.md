@@ -18,4 +18,4 @@ Dig in, and build the security program you need and have always wanted.
 
 - [Quickstart Guide](quickstart.md)
 - [Core Concepts](core-concepts.md)
-- [Use Cases](use-cases)
+- [Use Cases](use-cases/edr.md)
