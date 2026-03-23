@@ -122,6 +122,8 @@ plugins:
         'docs/user-access.md': '7-administration/access/user-access.md'
         'docs/billing.md': '7-administration/billing/options.md'
         'docs/add-ons.md': '5-integrations/add-ons/index.md'
+        # FAQ
+        'docs/faq-invoices.md': '8-reference/faq/invoices.md'
         # SDK / CLI references
         'docs/en/platform-configuration-limacharlie-sdk.md': '6-developer-guide/sdk-overview.md'
 
