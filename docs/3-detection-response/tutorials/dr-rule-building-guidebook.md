@@ -614,12 +614,31 @@ with child:
 
 #### Lookbacks
 
-Use `<<path>>` syntax to compare against a value from elsewhere in the same event:
+Use `<<path>>` syntax to compare against a value from elsewhere in the same event.
+
+Compare two fields for equality — detect loopback traffic where source and destination IP match:
 
 ```yaml
 op: is
 path: event/DESTINATION/IP_ADDRESS
 value: <<event/SOURCE/IP_ADDRESS>>
+```
+
+Detect privilege escalation where the target user differs from the source user:
+
+```yaml
+op: is
+path: event/TARGET_USER
+value: <<event/SOURCE_USER>>
+not: true
+```
+
+Lookbacks work with operators beyond `is`. Detect reconnaissance where the hostname appears in a command line:
+
+```yaml
+op: contains
+path: event/COMMAND_LINE
+value: <<routing/hostname>>
 ```
 
 #### Sensor Variables
