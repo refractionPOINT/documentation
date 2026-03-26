@@ -13,6 +13,6 @@ Sensor deployment and management.
 ## See Also
 
 - [Installation Keys](installation-keys.md)
-- [Endpoint Agents](endpoint-agent)
+- [Endpoint Agents](endpoint-agent/windows/installation.md)
 - [Adapters](adapters/index.md)
 - [Sensor Tags](sensor-tags.md)
