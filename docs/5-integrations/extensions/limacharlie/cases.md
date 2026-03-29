@@ -192,18 +192,17 @@ Each organization has its own configuration that controls severity mapping, SLA 
 
 ### Creating a Case
 
-While detections are automatically converted to cases, you can also create cases manually via the CLI or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources. You can also create empty investigation cases (without linking a detection) by omitting the detection ID.
+While detections are automatically converted to cases, you can also create cases manually via the CLI or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources. You can also create empty investigation cases (without linking a detection) by omitting the `--detection` flag.
 
 === "CLI"
 
     ```bash
-    # Create from a detection ID
-    limacharlie case create --detect-id DETECTION_ID
+    # Create an empty investigation case (--summary is required)
+    limacharlie case create --summary "Investigating lateral movement"
 
-    # Create with full metadata
-    limacharlie case create --detect-id DETECTION_ID \
-        --detection-cat "lateral_movement" --severity high \
-        --sid SENSOR_ID --hostname DESKTOP-001
+    # Create from a full detection object with severity override
+    limacharlie case create --detection '<full detection JSON>' \
+        --severity high --summary "High severity lateral movement"
     ```
 
 === "Python"
@@ -218,11 +217,9 @@ While detections are automatically converted to cases, you can also create cases
     c = Cases(org)
 
     result = c.create_case(
-        "DETECTION_ID",
-        detection_cat="lateral_movement",
+        detection={"detect_id": "DETECTION_ID", "cat": "lateral_movement", ...},
         severity="high",
-        sid="SENSOR_ID",
-        hostname="DESKTOP-001",
+        summary="High severity lateral movement",
     )
     print(result["case_number"])
     ```
@@ -501,7 +498,7 @@ Each case is created from a detection and can have additional detections linked 
 
     ```bash
     limacharlie case detection add --case 42 \
-        --detect-id DETECTION_ID --detection-cat lateral-movement
+        --detection '<full detection JSON>'
     ```
 
 ### List Linked Detections
@@ -533,7 +530,7 @@ Each case is created from a detection and can have additional detections linked 
 === "CLI"
 
     ```bash
-    limacharlie case detection remove --case 42 --detect-id DETECTION_ID
+    limacharlie case detection remove --case 42 --detection-id DETECTION_ID
     ```
 
 ## Investigation
@@ -595,7 +592,7 @@ Find all cases containing a specific indicator. This is critical for understandi
 
 ### Telemetry References
 
-Link specific LimaCharlie events to the case by their atom and sensor ID. This creates a direct reference back to the raw telemetry for forensic review.
+Link specific LimaCharlie events to the case. This creates a direct reference back to the raw telemetry for forensic review.
 
 === "REST API"
 
@@ -617,9 +614,8 @@ Link specific LimaCharlie events to the case by their atom and sensor ID. This c
 
     ```bash
     limacharlie case telemetry add --case 42 \
-        --atom abc123def456 --sid SENSOR_ID \
-        --event-type NEW_PROCESS --verdict malicious \
-        --note "Initial payload execution"
+        --event '<full LC event JSON>' \
+        --verdict malicious --note "Initial payload execution"
     limacharlie case telemetry list --case 42
     ```
 
