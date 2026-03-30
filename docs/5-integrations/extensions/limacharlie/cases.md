@@ -274,7 +274,7 @@ Available query parameters:
 === "CLI"
 
     ```bash
-    limacharlie case get --id 42
+    limacharlie case get --case-number 42
     ```
 
 Returns the full case including the event timeline (audit trail of all changes).
@@ -287,11 +287,11 @@ Export a case with all its components (case record, event timeline, detections, 
 
     ```bash
     # Export as JSON to stdout
-    limacharlie case export --id 42
+    limacharlie case export --case-number 42
 
     # Export with full data (detection records, telemetry events,
     # artifact binaries) to a local directory
-    limacharlie case export --id 42 --with-data ./case-export
+    limacharlie case export --case-number 42 --with-data ./case-export
     ```
 
 === "Python"
@@ -329,8 +329,8 @@ Fetches that fail (e.g. expired or retained data) emit a warning and are skipped
 === "CLI"
 
     ```bash
-    limacharlie case update --id 42 --status in_progress --assignees analyst@example.com
-    limacharlie case update --id 42 --status resolved \
+    limacharlie case update --case-number 42 --status in_progress --assignees analyst@example.com
+    limacharlie case update --case-number 42 --status resolved \
         --classification true_positive --conclusion "Contained via network isolation"
     ```
 
@@ -407,7 +407,7 @@ Tags are set by replacing the full tag array on the case.
 === "CLI"
 
     ```bash
-    limacharlie case update --id 42 --tag phishing --tag urgent --oid YOUR_OID
+    limacharlie case update --case-number 42 --tag phishing --tag urgent --oid YOUR_OID
     ```
 
 === "Python"
@@ -423,13 +423,13 @@ The CLI provides convenience commands for adding or removing individual tags wit
 
 ```bash
 # Replace all tags
-limacharlie case tag set --id 42 --tag phishing --tag urgent --oid YOUR_OID
+limacharlie case tag set --case-number 42 --tag phishing --tag urgent --oid YOUR_OID
 
 # Add a tag (preserves existing tags)
-limacharlie case tag add --id 42 --tag new-label --oid YOUR_OID
+limacharlie case tag add --case-number 42 --tag new-label --oid YOUR_OID
 
 # Remove a tag
-limacharlie case tag remove --id 42 --tag old-label --oid YOUR_OID
+limacharlie case tag remove --case-number 42 --tag old-label --oid YOUR_OID
 ```
 
 #### Filtering by Tag
@@ -670,9 +670,9 @@ Add structured notes to document analysis, remediation steps, and handoff inform
 === "CLI"
 
     ```bash
-    limacharlie case add-note --id 42 --type analysis \
+    limacharlie case add-note --case-number 42 --type analysis \
         --content "Confirmed lateral movement to DESKTOP-002 via PsExec."
-    echo "Handoff notes" | limacharlie case add-note --id 42 --type handoff
+    echo "Handoff notes" | limacharlie case add-note --case-number 42 --type handoff
     ```
 
 Note types:
