@@ -32,9 +32,9 @@ Each case captures from the detection:
 - **Severity** (derived from the detection priority via the configured severity mapping)
 - **Detection count** (number of linked detections)
 
-The individual detection fields (detection category, source, priority, sensor ID, hostname, and detection ID) are stored on the linked **CaseDetection** records, not on the case itself. When listing cases, aggregated fields `detection_cats` (unique detection categories) and `sensor_ids` (unique sensor IDs) are populated from linked detections.
+The individual detection fields (detection category, source, priority, sensor ID, hostname, and detection ID) are stored on the linked **CaseDetection** records, not on the case itself. When listing cases, aggregated fields `detection_cats` (unique detection categories) and `sids` (unique SIDs) are populated from linked detections.
 
-Duplicate detections (same `detection_id`) are silently dropped to prevent case duplication.
+Duplicate detections (same `detect_id`) are silently dropped to prevent case duplication.
 
 ### Auto-Grouping
 
@@ -53,28 +53,12 @@ Cases follow a defined state machine that tracks progress from creation through 
 ```mermaid
 stateDiagram-v2
     [*] --> new
-    new --> acknowledged
     new --> in_progress
-    new --> escalated
     new --> closed
-    new --> merged
-    acknowledged --> in_progress
-    acknowledged --> escalated
-    acknowledged --> closed
-    acknowledged --> merged
-    in_progress --> escalated
     in_progress --> resolved
     in_progress --> closed
-    in_progress --> merged
-    escalated --> in_progress
-    escalated --> resolved
-    escalated --> closed
-    escalated --> merged
     resolved --> closed
-    resolved --> in_progress: reopen
-    resolved --> merged
-    closed --> [*]
-    merged --> [*]
+    closed --> in_progress: reopen
 ```
 
 ### Status Definitions
@@ -82,18 +66,15 @@ stateDiagram-v2
 | Status | Description |
 |--------|-------------|
 | `new` | Case created, not yet reviewed by an analyst |
-| `acknowledged` | Analyst has seen and accepted the case. Records MTTA timestamp |
-| `in_progress` | Active investigation underway |
-| `escalated` | Escalated to a senior analyst or specialized team |
-| `resolved` | Investigation complete, findings documented. Records MTTR timestamp |
+| `in_progress` | Active investigation underway. Records TTA timestamp on first entry |
+| `resolved` | Investigation complete, findings documented. Records TTR timestamp |
 | `closed` | Case fully closed. Terminal state |
-| `merged` | Case was merged into another case. Terminal state |
 
 ### Key Timestamps
 
 - **`created_at`** -- Set when the case is created from a detection
-- **`acknowledged_at`** -- Set on first transition to `acknowledged` (used for MTTA calculation)
-- **`resolved_at`** -- Set on first transition to `resolved` (used for MTTR calculation)
+- **`acknowledged_at`** -- Set on first transition to `in_progress` (used for TTA calculation)
+- **`resolved_at`** -- Set on first transition to `resolved` (used for TTR calculation)
 - **`closed_at`** -- Set on transition to `closed`
 
 ## Severity and SLA
@@ -211,18 +192,17 @@ Each organization has its own configuration that controls severity mapping, SLA 
 
 ### Creating a Case
 
-While detections are automatically converted to cases, you can also create cases manually via the CLI or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources. You can also create empty investigation cases (without linking a detection) by omitting the detection ID.
+While detections are automatically converted to cases, you can also create cases manually via the CLI or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources. You can also create empty investigation cases (without linking a detection) by omitting the `--detection` flag.
 
 === "CLI"
 
     ```bash
-    # Create from a detection ID
-    limacharlie case create --detection-id DETECTION_ID
+    # Create an empty investigation case (--summary is required)
+    limacharlie case create --summary "Investigating lateral movement"
 
-    # Create with full metadata
-    limacharlie case create --detection-id DETECTION_ID \
-        --detection-cat "lateral_movement" --severity high \
-        --sensor-id SENSOR_ID --hostname DESKTOP-001
+    # Create from a full detection object with severity override
+    limacharlie case create --detection '<full detection JSON>' \
+        --severity high --summary "High severity lateral movement"
     ```
 
 === "Python"
@@ -237,11 +217,9 @@ While detections are automatically converted to cases, you can also create cases
     c = Cases(org)
 
     result = c.create_case(
-        "DETECTION_ID",
-        detection_cat="lateral_movement",
+        detection={"detect_id": "DETECTION_ID", "cat": "lateral_movement", ...},
         severity="high",
-        sensor_id="SENSOR_ID",
-        hostname="DESKTOP-001",
+        summary="High severity lateral movement",
     )
     print(result["case_number"])
     ```
@@ -255,14 +233,14 @@ Query the case queue with filtering, sorting, and pagination. Supports cross-org
     ```bash
     # List open cases, most recent first
     curl -s -X GET \
-      "https://cases.limacharlie.io/api/v1/cases?oids=YOUR_OID&status=new,acknowledged&sort=created_at&order=desc&page_size=50" \
+      "https://cases.limacharlie.io/api/v1/cases?oids=YOUR_OID&status=new&sort=created_at&order=desc&page_size=50" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
 === "CLI"
 
     ```bash
-    limacharlie case list --status new --status acknowledged --sort created_at --order desc
+    limacharlie case list --status new --sort created_at --order desc
     limacharlie case list --severity critical --severity high --search "mimikatz"
     ```
 
@@ -271,12 +249,12 @@ Available query parameters:
 | Parameter | Description |
 |-----------|-------------|
 | `oids` | Organization IDs (comma-separated, required) |
-| `status` | Filter by status (comma-separated: `new`, `acknowledged`, `in_progress`, `escalated`, `resolved`, `closed`) |
+| `status` | Filter by status (comma-separated: `new`, `in_progress`, `resolved`, `closed`) |
 | `severity` | Filter by severity (comma-separated: `critical`, `high`, `medium`, `low`, `info`) |
 | `classification` | Filter by classification (comma-separated: `pending`, `true_positive`, `false_positive`) |
 | `assignee` | Filter by assigned analyst email |
 | `search` | Search text (matches against detection category and hostname across linked detections) |
-| `sensor_id` | Filter to cases with detections from this sensor ID |
+| `sid` | Filter to cases with detections from this SID |
 | `tag` | Filter by tags (comma-separated, AND logic: all specified tags must be present) |
 | `sort` | Sort field (`created_at`, `severity`, `case_number`) |
 | `order` | Sort order (`asc`, `desc`) |
@@ -343,15 +321,15 @@ Fetches that fail (e.g. expired or retained data) emit a warning and are skipped
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
-        "status": "acknowledged",
-        "assignee": "analyst@example.com"
+        "status": "in_progress",
+        "assignees": ["analyst@example.com"]
       }'
     ```
 
 === "CLI"
 
     ```bash
-    limacharlie case update --id 42 --status acknowledged --assignee analyst@example.com
+    limacharlie case update --id 42 --status in_progress --assignees analyst@example.com
     limacharlie case update --id 42 --status resolved \
         --classification true_positive --conclusion "Contained via network isolation"
     ```
@@ -362,10 +340,8 @@ Updatable fields:
 |-------|------|-------------|
 | `status` | string | New status (must be a valid transition) |
 | `severity` | string | Case severity: `critical`, `high`, `medium`, `low`, or `info` |
-| `assignee` | string | Analyst to assign the case to |
+| `assignees` | string[] | Analysts to assign the case to |
 | `classification` | string | `true_positive`, `false_positive`, or `pending` |
-| `escalation_group` | string | Team or group to escalate to |
-| `investigation_id` | string | Link to a LimaCharlie [Investigation](../../../7-administration/config-hive/investigation.md) |
 | `summary` | string | Investigation summary narrative (max 8192 characters) |
 | `conclusion` | string | Final conclusion (max 8192 characters) |
 | `tags` | string[] | Arbitrary tags for categorization (see [Tags](#tags)) |
@@ -509,11 +485,11 @@ Each case is created from a detection and can have additional detections linked 
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
-        "detection_id": "DETECTION_ID",
+        "detect_id": "DETECTION_ID",
         "detection_cat": "lateral-movement",
         "detection_source": "dr-general",
         "detection_priority": 7,
-        "sensor_id": "550e8400-e29b-41d4-a716-446655440000",
+        "sid": "550e8400-e29b-41d4-a716-446655440000",
         "hostname": "DESKTOP-001"
       }'
     ```
@@ -522,7 +498,7 @@ Each case is created from a detection and can have additional detections linked 
 
     ```bash
     limacharlie case detection add --case 42 \
-        --detection-id DETECTION_ID --detection-cat lateral-movement
+        --detection '<full detection JSON>'
     ```
 
 ### List Linked Detections
@@ -576,9 +552,8 @@ Attach indicators of compromise and other artifacts of interest to a case.
       -d '{
         "entity_type": "ip",
         "entity_value": "203.0.113.50",
-        "name": "Suspected C2 Server",
         "verdict": "malicious",
-        "context": "Outbound connections observed from compromised host"
+        "note": "Outbound connections observed from compromised host"
       }'
     ```
 
@@ -587,7 +562,7 @@ Attach indicators of compromise and other artifacts of interest to a case.
     ```bash
     limacharlie case entity add --case 42 \
         --type ip --value "203.0.113.50" --verdict malicious \
-        --context "Outbound connections observed from compromised host"
+        --note "Outbound connections observed from compromised host"
     limacharlie case entity list --case 42
     limacharlie case entity update --case 42 --entity-id ENTITY_ID --verdict benign
     limacharlie case entity remove --case 42 --entity-id ENTITY_ID
@@ -617,7 +592,7 @@ Find all cases containing a specific indicator. This is critical for understandi
 
 ### Telemetry References
 
-Link specific LimaCharlie events to the case by their atom and sensor ID. This creates a direct reference back to the raw telemetry for forensic review.
+Link specific LimaCharlie events to the case. This creates a direct reference back to the raw telemetry for forensic review.
 
 === "REST API"
 
@@ -630,9 +605,8 @@ Link specific LimaCharlie events to the case by their atom and sensor ID. This c
         "atom": "abc123def456",
         "sid": "550e8400-e29b-41d4-a716-446655440000",
         "event_type": "NEW_PROCESS",
-        "event_summary": "powershell.exe launched with encoded command",
         "verdict": "malicious",
-        "relevance": "Initial payload execution"
+        "note": "Initial payload execution"
       }'
     ```
 
@@ -640,8 +614,8 @@ Link specific LimaCharlie events to the case by their atom and sensor ID. This c
 
     ```bash
     limacharlie case telemetry add --case 42 \
-        --atom abc123def456 --sid SENSOR_ID \
-        --event-type NEW_PROCESS --verdict malicious
+        --event '<full LC event JSON>' \
+        --verdict malicious --note "Initial payload execution"
     limacharlie case telemetry list --case 42
     ```
 
@@ -658,8 +632,10 @@ Attach references to forensic artifacts such as memory dumps, packet captures, o
       -H "Content-Type: application/json" \
       -d '{
         "artifact_type": "memory_dump",
-        "description": "Full memory dump of PID 4832 from DESKTOP-001",
-        "verdict": "malicious"
+        "path": "/artifacts/pid4832_memdump.raw",
+        "source": "DESKTOP-001",
+        "verdict": "malicious",
+        "note": "Full memory dump of PID 4832 from DESKTOP-001"
       }'
     ```
 
@@ -667,7 +643,9 @@ Attach references to forensic artifacts such as memory dumps, packet captures, o
 
     ```bash
     limacharlie case artifact add --case 42 \
-        --type memory_dump --description "Full memory dump of PID 4832" --verdict malicious
+        --type memory_dump --path "/artifacts/pid4832_memdump.raw" \
+        --source DESKTOP-001 --verdict malicious \
+        --note "Full memory dump of PID 4832"
     limacharlie case artifact list --case 42
     ```
 
@@ -740,35 +718,8 @@ Up to 20 source cases can be merged at once.
 When cases are merged:
 
 - The target case inherits all detections from source cases
-- Merged cases transition to the `merged` status (terminal)
-- The `merged_into_case_id` field on merged cases references the primary case
+- Source cases are closed with `merged_into_case_id` set to the target case
 - Merge events are recorded in the audit trail of all affected cases
-
-## Escalation
-
-Cases can be escalated to specialized teams or senior analysts by setting the `escalation_group` field and transitioning to `escalated` status.
-
-=== "REST API"
-
-    ```bash
-    curl -s -X PATCH \
-      "https://cases.limacharlie.io/api/v1/cases/42?oid=YOUR_OID" \
-      -H "Authorization: Bearer $LC_JWT" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "status": "escalated",
-        "escalation_group": "tier-3-malware"
-      }'
-    ```
-
-=== "CLI"
-
-    ```bash
-    limacharlie case update --id 42 --status escalated \
-        --escalation-group tier-3-malware
-    ```
-
-Escalation rates are tracked in reports.
 
 ## Assignees
 
@@ -862,12 +813,12 @@ The `get_case_count` extension action returns the number of cases matching optio
       -H "Authorization: Bearer $LC_JWT" \
       -d oid="YOUR_OID" \
       -d action="get_case_count" \
-      -d data='{"status": "new,acknowledged,in_progress", "severity": "critical,high"}'
+      -d data='{"status": "new,in_progress", "severity": "critical,high"}'
     ```
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `status` | string | Optional. Comma-separated status filter (e.g. `new,acknowledged,in_progress`) |
+| `status` | string | Optional. Comma-separated status filter (e.g. `new,in_progress`) |
 | `severity` | string | Optional. Comma-separated severity filter (e.g. `critical,high`) |
 
 ## Dashboard
@@ -934,7 +885,7 @@ The summary report includes per-organization and aggregate metrics:
 
 The extension automatically sends webhook notifications for case events via LimaCharlie's extension hooks mechanism. These are delivered as gzip-compressed HTTP POST requests to the organization's configured webhook adapter endpoint.
 
-Events forwarded via webhook include: case creation, status changes, assignments, escalations, classifications, notes, and investigation updates.
+Events forwarded via webhook include: case creation, status changes, assignments, classifications, notes, and investigation updates.
 
 Each webhook payload includes:
 
@@ -971,23 +922,22 @@ Tracked event types:
 | Event | Description |
 |-------|-------------|
 | `created` | Case created from detection |
-| `acknowledged` | Case first acknowledged |
 | `status_changed` | Status transition |
 | `assigned` | Analyst assigned |
-| `escalated` | Case escalated to a group |
 | `classified` | True positive / false positive classification set |
+| `severity_changed` | Severity manually changed |
 | `resolved` | Case resolved |
 | `closed` | Case closed |
 | `reopened` | Resolved case reopened |
 | `note_added` | Note added to case |
-| `investigation_linked` | LimaCharlie investigation linked |
+| `note_visibility_changed` | Note public visibility toggled |
 | `detection_added` | Detection grouped into case |
 | `detection_removed` | Detection removed from case |
 | `severity_upgraded` | Severity increased due to higher-priority detection |
 | `merged_into` | Case merged into another case |
 | `merged_from` | Case received merge from another case |
 | `entity_added` | IOC/entity attached |
-| `entity_updated` | Entity verdict or context updated |
+| `entity_updated` | Entity verdict or note updated |
 | `entity_removed` | Entity removed |
 | `telemetry_added` | Telemetry reference linked |
 | `telemetry_updated` | Telemetry metadata updated |
@@ -997,6 +947,8 @@ Tracked event types:
 | `tags_updated` | Tags modified (old and new values in metadata) |
 | `summary_updated` | Investigation summary edited |
 | `conclusion_updated` | Investigation conclusion edited |
+| `config_updated` | Organization configuration updated |
+| `cases_deleted` | Cases deleted (retention) |
 
 ## Data Retention
 
