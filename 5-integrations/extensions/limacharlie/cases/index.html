@@ -7742,17 +7742,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#escalation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Escalation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#assignees" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12228,17 +12217,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#escalation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Escalation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#assignees" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12546,8 +12524,8 @@
 <li><strong>Severity</strong> (derived from the detection priority via the configured severity mapping)</li>
 <li><strong>Detection count</strong> (number of linked detections)</li>
 </ul>
-<p>The individual detection fields (detection category, source, priority, sensor ID, hostname, and detection ID) are stored on the linked <strong>CaseDetection</strong> records, not on the case itself. When listing cases, aggregated fields <code>detection_cats</code> (unique detection categories) and <code>sensor_ids</code> (unique sensor IDs) are populated from linked detections.</p>
-<p>Duplicate detections (same <code>detection_id</code>) are silently dropped to prevent case duplication.</p>
+<p>The individual detection fields (detection category, source, priority, sensor ID, hostname, and detection ID) are stored on the linked <strong>CaseDetection</strong> records, not on the case itself. When listing cases, aggregated fields <code>detection_cats</code> (unique detection categories) and <code>sids</code> (unique SIDs) are populated from linked detections.</p>
+<p>Duplicate detections (same <code>detect_id</code>) are silently dropped to prevent case duplication.</p>
 <h3 id="auto-grouping">Auto-Grouping<a class="headerlink" href="#auto-grouping" title="Anchor link to this section">&para;</a></h3>
 <p>When auto-grouping is enabled in the organization configuration, detections that share the same category and sensor within a one-hour window are automatically grouped into a single case instead of creating separate cases. This significantly reduces case volume for noisy rules.</p>
 <p>When a detection is grouped into an existing case:</p>
@@ -12560,28 +12538,12 @@
 <p>Cases follow a defined state machine that tracks progress from creation through resolution.</p>
 <pre class="mermaid"><code>stateDiagram-v2
     [*] --&gt; new
-    new --&gt; acknowledged
     new --&gt; in_progress
-    new --&gt; escalated
     new --&gt; closed
-    new --&gt; merged
-    acknowledged --&gt; in_progress
-    acknowledged --&gt; escalated
-    acknowledged --&gt; closed
-    acknowledged --&gt; merged
-    in_progress --&gt; escalated
     in_progress --&gt; resolved
     in_progress --&gt; closed
-    in_progress --&gt; merged
-    escalated --&gt; in_progress
-    escalated --&gt; resolved
-    escalated --&gt; closed
-    escalated --&gt; merged
     resolved --&gt; closed
-    resolved --&gt; in_progress: reopen
-    resolved --&gt; merged
-    closed --&gt; [*]
-    merged --&gt; [*]</code></pre>
+    closed --&gt; in_progress: reopen</code></pre>
 <h3 id="status-definitions">Status Definitions<a class="headerlink" href="#status-definitions" title="Anchor link to this section">&para;</a></h3>
 <table>
 <thead>
@@ -12596,36 +12558,24 @@
 <td>Case created, not yet reviewed by an analyst</td>
 </tr>
 <tr>
-<td><code>acknowledged</code></td>
-<td>Analyst has seen and accepted the case. Records MTTA timestamp</td>
-</tr>
-<tr>
 <td><code>in_progress</code></td>
-<td>Active investigation underway</td>
-</tr>
-<tr>
-<td><code>escalated</code></td>
-<td>Escalated to a senior analyst or specialized team</td>
+<td>Active investigation underway. Records TTA timestamp on first entry</td>
 </tr>
 <tr>
 <td><code>resolved</code></td>
-<td>Investigation complete, findings documented. Records MTTR timestamp</td>
+<td>Investigation complete, findings documented. Records TTR timestamp</td>
 </tr>
 <tr>
 <td><code>closed</code></td>
 <td>Case fully closed. Terminal state</td>
-</tr>
-<tr>
-<td><code>merged</code></td>
-<td>Case was merged into another case. Terminal state</td>
 </tr>
 </tbody>
 </table>
 <h3 id="key-timestamps">Key Timestamps<a class="headerlink" href="#key-timestamps" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li><strong><code>created_at</code></strong> -- Set when the case is created from a detection</li>
-<li><strong><code>acknowledged_at</code></strong> -- Set on first transition to <code>acknowledged</code> (used for MTTA calculation)</li>
-<li><strong><code>resolved_at</code></strong> -- Set on first transition to <code>resolved</code> (used for MTTR calculation)</li>
+<li><strong><code>acknowledged_at</code></strong> -- Set on first transition to <code>in_progress</code> (used for TTA calculation)</li>
+<li><strong><code>resolved_at</code></strong> -- Set on first transition to <code>resolved</code> (used for TTR calculation)</li>
 <li><strong><code>closed_at</code></strong> -- Set on transition to <code>closed</code></li>
 </ul>
 <h2 id="severity-and-sla">Severity and SLA<a class="headerlink" href="#severity-and-sla" title="Anchor link to this section">&para;</a></h2>
@@ -12879,17 +12829,16 @@
 </div>
 <h2 id="working-with-cases">Working with Cases<a class="headerlink" href="#working-with-cases" title="Anchor link to this section">&para;</a></h2>
 <h3 id="creating-a-case">Creating a Case<a class="headerlink" href="#creating-a-case" title="Anchor link to this section">&para;</a></h3>
-<p>While detections are automatically converted to cases, you can also create cases manually via the <abbr title="Command-line Interface">CLI</abbr> or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources. You can also create empty investigation cases (without linking a detection) by omitting the detection ID.</p>
+<p>While detections are automatically converted to cases, you can also create cases manually via the <abbr title="Command-line Interface">CLI</abbr> or SDK. This is useful for ad-hoc investigations or when integrating with external detection sources. You can also create empty investigation cases (without linking a detection) by omitting the <code>--detection</code> flag.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1"><abbr title="Command-line Interface">CLI</abbr></label><label for="__tabbed_3_2">Python</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Create from a detection ID</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>create<span class="w"> </span>--detection-id<span class="w"> </span>DETECTION_ID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Create an empty investigation case (--summary is required)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>create<span class="w"> </span>--summary<span class="w"> </span><span class="s2">&quot;Investigating lateral movement&quot;</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Create with full metadata</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>create<span class="w"> </span>--detection-id<span class="w"> </span>DETECTION_ID<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span>--detection-cat<span class="w"> </span><span class="s2">&quot;lateral_movement&quot;</span><span class="w"> </span>--severity<span class="w"> </span>high<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span>--sensor-id<span class="w"> </span>SENSOR_ID<span class="w"> </span>--hostname<span class="w"> </span>DESKTOP-001
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Create from a full detection object with severity override</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>create<span class="w"> </span>--detection<span class="w"> </span><span class="s1">&#39;&lt;full detection JSON&gt;&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span>--severity<span class="w"> </span>high<span class="w"> </span>--summary<span class="w"> </span><span class="s2">&quot;High severity lateral movement&quot;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -12902,13 +12851,11 @@
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">c</span> <span class="o">=</span> <span class="n">Cases</span><span class="p">(</span><span class="n">org</span><span class="p">)</span>
 </span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">result</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">create_case</span><span class="p">(</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="s2">&quot;DETECTION_ID&quot;</span><span class="p">,</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="n">detection_cat</span><span class="o">=</span><span class="s2">&quot;lateral_movement&quot;</span><span class="p">,</span>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    <span class="n">sensor_id</span><span class="o">=</span><span class="s2">&quot;SENSOR_ID&quot;</span><span class="p">,</span>
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>    <span class="n">hostname</span><span class="o">=</span><span class="s2">&quot;DESKTOP-001&quot;</span><span class="p">,</span>
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="p">)</span>
-</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;case_number&quot;</span><span class="p">])</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">detection</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;detect_id&quot;</span><span class="p">:</span> <span class="s2">&quot;DETECTION_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">:</span> <span class="s2">&quot;lateral_movement&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="n">summary</span><span class="o">=</span><span class="s2">&quot;High severity lateral movement&quot;</span><span class="p">,</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="p">)</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;case_number&quot;</span><span class="p">])</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -12920,12 +12867,12 @@
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># List open cases, most recent first</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/cases?oids=YOUR_OID&amp;status=new,acknowledged&amp;sort=created_at&amp;order=desc&amp;page_size=50&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/cases?oids=YOUR_OID&amp;status=new&amp;sort=created_at&amp;order=desc&amp;page_size=50&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>list<span class="w"> </span>--status<span class="w"> </span>new<span class="w"> </span>--status<span class="w"> </span>acknowledged<span class="w"> </span>--sort<span class="w"> </span>created_at<span class="w"> </span>--order<span class="w"> </span>desc
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>list<span class="w"> </span>--status<span class="w"> </span>new<span class="w"> </span>--sort<span class="w"> </span>created_at<span class="w"> </span>--order<span class="w"> </span>desc
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>list<span class="w"> </span>--severity<span class="w"> </span>critical<span class="w"> </span>--severity<span class="w"> </span>high<span class="w"> </span>--search<span class="w"> </span><span class="s2">&quot;mimikatz&quot;</span>
 </span></code></pre></div>
 </div>
@@ -12946,7 +12893,7 @@
 </tr>
 <tr>
 <td><code>status</code></td>
-<td>Filter by status (comma-separated: <code>new</code>, <code>acknowledged</code>, <code>in_progress</code>, <code>escalated</code>, <code>resolved</code>, <code>closed</code>)</td>
+<td>Filter by status (comma-separated: <code>new</code>, <code>in_progress</code>, <code>resolved</code>, <code>closed</code>)</td>
 </tr>
 <tr>
 <td><code>severity</code></td>
@@ -12965,8 +12912,8 @@
 <td>Search text (matches against detection category and hostname across linked detections)</td>
 </tr>
 <tr>
-<td><code>sensor_id</code></td>
-<td>Filter to cases with detections from this sensor ID</td>
+<td><code>sid</code></td>
+<td>Filter to cases with detections from this <abbr title="In LimaCharlie, a Sensor ID (SID) is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for...">SID</abbr></td>
 </tr>
 <tr>
 <td><code>tag</code></td>
@@ -13044,13 +12991,13 @@
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="s1">    &quot;status&quot;: &quot;acknowledged&quot;,</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="s1">    &quot;assignee&quot;: &quot;analyst@example.com&quot;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="s1">    &quot;status&quot;: &quot;in_progress&quot;,</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="s1">    &quot;assignees&quot;: [&quot;analyst@example.com&quot;]</span>
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="s1">  }&#39;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>acknowledged<span class="w"> </span>--assignee<span class="w"> </span>analyst@example.com
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>in_progress<span class="w"> </span>--assignees<span class="w"> </span>analyst@example.com
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>resolved<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span>--classification<span class="w"> </span>true_positive<span class="w"> </span>--conclusion<span class="w"> </span><span class="s2">&quot;Contained via network isolation&quot;</span>
 </span></code></pre></div>
@@ -13078,24 +13025,14 @@
 <td>Case severity: <code>critical</code>, <code>high</code>, <code>medium</code>, <code>low</code>, or <code>info</code></td>
 </tr>
 <tr>
-<td><code>assignee</code></td>
-<td>string</td>
-<td>Analyst to assign the case to</td>
+<td><code>assignees</code></td>
+<td>string[]</td>
+<td>Analysts to assign the case to</td>
 </tr>
 <tr>
 <td><code>classification</code></td>
 <td>string</td>
 <td><code>true_positive</code>, <code>false_positive</code>, or <code>pending</code></td>
-</tr>
-<tr>
-<td><code>escalation_group</code></td>
-<td>string</td>
-<td>Team or group to escalate to</td>
-</tr>
-<tr>
-<td><code>investigation_id</code></td>
-<td>string</td>
-<td>Link to a LimaCharlie <a href="../../../../7-administration/config-hive/investigation/">Investigation</a></td>
 </tr>
 <tr>
 <td><code>summary</code></td>
@@ -13263,18 +13200,18 @@
 </span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
-</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="s1">    &quot;detection_id&quot;: &quot;DETECTION_ID&quot;,</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="s1">    &quot;detect_id&quot;: &quot;DETECTION_ID&quot;,</span>
 </span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="s1">    &quot;detection_cat&quot;: &quot;lateral-movement&quot;,</span>
 </span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="s1">    &quot;detection_source&quot;: &quot;dr-general&quot;,</span>
 </span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="s1">    &quot;detection_priority&quot;: 7,</span>
-</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="s1">    &quot;sensor_id&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="s1">    &quot;sid&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,</span>
 </span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="s1">    &quot;hostname&quot;: &quot;DESKTOP-001&quot;</span>
 </span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="s1">  }&#39;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>detection<span class="w"> </span>add<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">    </span>--detection-id<span class="w"> </span>DETECTION_ID<span class="w"> </span>--detection-cat<span class="w"> </span>lateral-movement
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">    </span>--detection<span class="w"> </span><span class="s1">&#39;&lt;full detection JSON&gt;&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -13324,16 +13261,15 @@
 </span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
 </span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="s1">    &quot;entity_type&quot;: &quot;ip&quot;,</span>
 </span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="s1">    &quot;entity_value&quot;: &quot;203.0.113.50&quot;,</span>
-</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a><span class="s1">    &quot;name&quot;: &quot;Suspected C2 Server&quot;,</span>
-</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="s1">    &quot;verdict&quot;: &quot;malicious&quot;,</span>
-</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a><span class="s1">    &quot;context&quot;: &quot;Outbound connections observed from compromised host&quot;</span>
-</span><span id="__span-29-12"><a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a><span class="s1">  }&#39;</span>
+</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a><span class="s1">    &quot;verdict&quot;: &quot;malicious&quot;,</span>
+</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="s1">    &quot;note&quot;: &quot;Outbound connections observed from compromised host&quot;</span>
+</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a><span class="s1">  }&#39;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>entity<span class="w"> </span>add<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="w">    </span>--type<span class="w"> </span>ip<span class="w"> </span>--value<span class="w"> </span><span class="s2">&quot;203.0.113.50&quot;</span><span class="w"> </span>--verdict<span class="w"> </span>malicious<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="w">    </span>--context<span class="w"> </span><span class="s2">&quot;Outbound connections observed from compromised host&quot;</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="w">    </span>--note<span class="w"> </span><span class="s2">&quot;Outbound connections observed from compromised host&quot;</span>
 </span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>entity<span class="w"> </span>list<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span>
 </span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>entity<span class="w"> </span>update<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span><span class="w"> </span>--entity-id<span class="w"> </span>ENTITY_ID<span class="w"> </span>--verdict<span class="w"> </span>benign
 </span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>entity<span class="w"> </span>remove<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span><span class="w"> </span>--entity-id<span class="w"> </span>ENTITY_ID
@@ -13360,7 +13296,7 @@
 </div>
 </div>
 <h3 id="telemetry-references">Telemetry References<a class="headerlink" href="#telemetry-references" title="Anchor link to this section">&para;</a></h3>
-<p>Link specific LimaCharlie events to the case by their atom and sensor ID. This creates a direct reference back to the raw telemetry for forensic review.</p>
+<p>Link specific LimaCharlie events to the case. This creates a direct reference back to the raw telemetry for forensic review.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="16:2"><input checked="checked" id="__tabbed_16_1" name="__tabbed_16" type="radio" /><input id="__tabbed_16_2" name="__tabbed_16" type="radio" /><div class="tabbed-labels"><label for="__tabbed_16_1">REST API</label><label for="__tabbed_16_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -13372,16 +13308,15 @@
 </span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="s1">    &quot;atom&quot;: &quot;abc123def456&quot;,</span>
 </span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a><span class="s1">    &quot;sid&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,</span>
 </span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="s1">    &quot;event_type&quot;: &quot;NEW_PROCESS&quot;,</span>
-</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="s1">    &quot;event_summary&quot;: &quot;powershell.exe launched with encoded command&quot;,</span>
-</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="s1">    &quot;verdict&quot;: &quot;malicious&quot;,</span>
-</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="s1">    &quot;relevance&quot;: &quot;Initial payload execution&quot;</span>
-</span><span id="__span-33-12"><a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a><span class="s1">  }&#39;</span>
+</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="s1">    &quot;verdict&quot;: &quot;malicious&quot;,</span>
+</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="s1">    &quot;note&quot;: &quot;Initial payload execution&quot;</span>
+</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="s1">  }&#39;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>telemetry<span class="w"> </span>add<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">    </span>--atom<span class="w"> </span>abc123def456<span class="w"> </span>--sid<span class="w"> </span>SENSOR_ID<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">    </span>--event-type<span class="w"> </span>NEW_PROCESS<span class="w"> </span>--verdict<span class="w"> </span>malicious
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">    </span>--event<span class="w"> </span><span class="s1">&#39;&lt;full LC event JSON&gt;&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">    </span>--verdict<span class="w"> </span>malicious<span class="w"> </span>--note<span class="w"> </span><span class="s2">&quot;Initial payload execution&quot;</span>
 </span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>telemetry<span class="w"> </span>list<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span>
 </span></code></pre></div>
 </div>
@@ -13398,15 +13333,19 @@
 </span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
 </span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a><span class="s1">    &quot;artifact_type&quot;: &quot;memory_dump&quot;,</span>
-</span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="s1">    &quot;description&quot;: &quot;Full memory dump of PID 4832 from DESKTOP-001&quot;,</span>
-</span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="s1">    &quot;verdict&quot;: &quot;malicious&quot;</span>
-</span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a><span class="s1">  }&#39;</span>
+</span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="s1">    &quot;path&quot;: &quot;/artifacts/pid4832_memdump.raw&quot;,</span>
+</span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="s1">    &quot;source&quot;: &quot;DESKTOP-001&quot;,</span>
+</span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a><span class="s1">    &quot;verdict&quot;: &quot;malicious&quot;,</span>
+</span><span id="__span-35-10"><a id="__codelineno-35-10" name="__codelineno-35-10" href="#__codelineno-35-10"></a><span class="s1">    &quot;note&quot;: &quot;Full memory dump of PID 4832 from DESKTOP-001&quot;</span>
+</span><span id="__span-35-11"><a id="__codelineno-35-11" name="__codelineno-35-11" href="#__codelineno-35-11"></a><span class="s1">  }&#39;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>artifact<span class="w"> </span>add<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="w">    </span>--type<span class="w"> </span>memory_dump<span class="w"> </span>--description<span class="w"> </span><span class="s2">&quot;Full memory dump of PID 4832&quot;</span><span class="w"> </span>--verdict<span class="w"> </span>malicious
-</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>artifact<span class="w"> </span>list<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="w">    </span>--type<span class="w"> </span>memory_dump<span class="w"> </span>--path<span class="w"> </span><span class="s2">&quot;/artifacts/pid4832_memdump.raw&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="w">    </span>--source<span class="w"> </span>DESKTOP-001<span class="w"> </span>--verdict<span class="w"> </span>malicious<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="w">    </span>--note<span class="w"> </span><span class="s2">&quot;Full memory dump of PID 4832&quot;</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>artifact<span class="w"> </span>list<span class="w"> </span>--case<span class="w"> </span><span class="m">42</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -13501,45 +13440,21 @@
 <p>When cases are merged:</p>
 <ul>
 <li>The target case inherits all detections from source cases</li>
-<li>Merged cases transition to the <code>merged</code> status (terminal)</li>
-<li>The <code>merged_into_case_id</code> field on merged cases references the primary case</li>
+<li>Source cases are closed with <code>merged_into_case_id</code> set to the target case</li>
 <li>Merge events are recorded in the audit trail of all affected cases</li>
 </ul>
-<h2 id="escalation">Escalation<a class="headerlink" href="#escalation" title="Anchor link to this section">&para;</a></h2>
-<p>Cases can be escalated to specialized teams or senior analysts by setting the <code>escalation_group</code> field and transitioning to <code>escalated</code> status.</p>
+<h2 id="assignees">Assignees<a class="headerlink" href="#assignees" title="Anchor link to this section">&para;</a></h2>
+<p>List all unique assignee emails across your accessible organizations. Useful for populating assignment dropdowns.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="20:2"><input checked="checked" id="__tabbed_20_1" name="__tabbed_20" type="radio" /><input id="__tabbed_20_2" name="__tabbed_20" type="radio" /><div class="tabbed-labels"><label for="__tabbed_20_1">REST API</label><label for="__tabbed_20_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/cases/42?oid=YOUR_OID&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
-</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a><span class="s1">    &quot;status&quot;: &quot;escalated&quot;,</span>
-</span><span id="__span-41-7"><a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a><span class="s1">    &quot;escalation_group&quot;: &quot;tier-3-malware&quot;</span>
-</span><span id="__span-41-8"><a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a><span class="s1">  }&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/assignees&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>escalated<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="w">    </span>--escalation-group<span class="w"> </span>tier-3-malware
-</span></code></pre></div>
-</div>
-</div>
-</div>
-<p>Escalation rates are tracked in reports.</p>
-<h2 id="assignees">Assignees<a class="headerlink" href="#assignees" title="Anchor link to this section">&para;</a></h2>
-<p>List all unique assignee emails across your accessible organizations. Useful for populating assignment dropdowns.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="21:2"><input checked="checked" id="__tabbed_21_1" name="__tabbed_21" type="radio" /><input id="__tabbed_21_2" name="__tabbed_21" type="radio" /><div class="tabbed-labels"><label for="__tabbed_21_1">REST API</label><label for="__tabbed_21_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/assignees&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
-</span></code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>assignees
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>assignees
 </span></code></pre></div>
 </div>
 </div>
@@ -13553,39 +13468,39 @@
 <li><strong><code>tailored</code></strong> -- Only detections explicitly forwarded via <abbr title="Detection &amp; Response">D&amp;R</abbr> rules using the <code>ingest_detection</code> action create cases. This gives you fine-grained control over which detections enter the case queue.</li>
 </ul>
 <p>To forward a specific detection to the cases system in tailored mode, create a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="c1"># Change &#39;my-detection-name&#39; to the detection category you want to track.</span>
-</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="nt">detect</span><span class="p">:</span>
-</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detection</span>
-</span><span id="__span-45-4"><a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="w">  </span><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-detection-name</span>
-</span><span id="__span-45-5"><a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a><span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exists</span>
-</span><span id="__span-45-6"><a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="w">  </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect</span>
-</span><span id="__span-45-7"><a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a>
-</span><span id="__span-45-8"><a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a><span class="nt">respond</span><span class="p">:</span>
-</span><span id="__span-45-9"><a id="__codelineno-45-9" name="__codelineno-45-9" href="#__codelineno-45-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
-</span><span id="__span-45-10"><a id="__codelineno-45-10" name="__codelineno-45-10" href="#__codelineno-45-10"></a><span class="w">    </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-cases</span>
-</span><span id="__span-45-11"><a id="__codelineno-45-11" name="__codelineno-45-11" href="#__codelineno-45-11"></a><span class="w">    </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ingest_detection</span>
-</span><span id="__span-45-12"><a id="__codelineno-45-12" name="__codelineno-45-12" href="#__codelineno-45-12"></a><span class="w">    </span><span class="nt">extension request</span><span class="p">:</span>
-</span><span id="__span-45-13"><a id="__codelineno-45-13" name="__codelineno-45-13" href="#__codelineno-45-13"></a><span class="w">      </span><span class="nt">detect_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_id</span>
-</span><span id="__span-45-14"><a id="__codelineno-45-14" name="__codelineno-45-14" href="#__codelineno-45-14"></a><span class="w">      </span><span class="nt">cat</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span>
-</span><span id="__span-45-15"><a id="__codelineno-45-15" name="__codelineno-45-15" href="#__codelineno-45-15"></a><span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source</span>
-</span><span id="__span-45-16"><a id="__codelineno-45-16" name="__codelineno-45-16" href="#__codelineno-45-16"></a><span class="w">      </span><span class="nt">routing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">routing</span>
-</span><span id="__span-45-17"><a id="__codelineno-45-17" name="__codelineno-45-17" href="#__codelineno-45-17"></a><span class="w">      </span><span class="nt">detect</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect</span>
-</span><span id="__span-45-18"><a id="__codelineno-45-18" name="__codelineno-45-18" href="#__codelineno-45-18"></a><span class="w">      </span><span class="nt">detect_mtd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_mtd</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="c1"># Change &#39;my-detection-name&#39; to the detection category you want to track.</span>
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="nt">detect</span><span class="p">:</span>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detection</span>
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a><span class="w">  </span><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-detection-name</span>
+</span><span id="__span-43-5"><a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="w">  </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exists</span>
+</span><span id="__span-43-6"><a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="w">  </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect</span>
+</span><span id="__span-43-7"><a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a>
+</span><span id="__span-43-8"><a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a><span class="nt">respond</span><span class="p">:</span>
+</span><span id="__span-43-9"><a id="__codelineno-43-9" name="__codelineno-43-9" href="#__codelineno-43-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
+</span><span id="__span-43-10"><a id="__codelineno-43-10" name="__codelineno-43-10" href="#__codelineno-43-10"></a><span class="w">    </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-cases</span>
+</span><span id="__span-43-11"><a id="__codelineno-43-11" name="__codelineno-43-11" href="#__codelineno-43-11"></a><span class="w">    </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ingest_detection</span>
+</span><span id="__span-43-12"><a id="__codelineno-43-12" name="__codelineno-43-12" href="#__codelineno-43-12"></a><span class="w">    </span><span class="nt">extension request</span><span class="p">:</span>
+</span><span id="__span-43-13"><a id="__codelineno-43-13" name="__codelineno-43-13" href="#__codelineno-43-13"></a><span class="w">      </span><span class="nt">detect_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_id</span>
+</span><span id="__span-43-14"><a id="__codelineno-43-14" name="__codelineno-43-14" href="#__codelineno-43-14"></a><span class="w">      </span><span class="nt">cat</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span>
+</span><span id="__span-43-15"><a id="__codelineno-43-15" name="__codelineno-43-15" href="#__codelineno-43-15"></a><span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source</span>
+</span><span id="__span-43-16"><a id="__codelineno-43-16" name="__codelineno-43-16" href="#__codelineno-43-16"></a><span class="w">      </span><span class="nt">routing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">routing</span>
+</span><span id="__span-43-17"><a id="__codelineno-43-17" name="__codelineno-43-17" href="#__codelineno-43-17"></a><span class="w">      </span><span class="nt">detect</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect</span>
+</span><span id="__span-43-18"><a id="__codelineno-43-18" name="__codelineno-43-18" href="#__codelineno-43-18"></a><span class="w">      </span><span class="nt">detect_mtd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_mtd</span>
 </span></code></pre></div>
 <p>The extension configuration page includes a sample <abbr title="Detection &amp; Response">D&amp;R</abbr> rule template for tailored mode that you can copy and modify.</p>
 <h3 id="create-a-case-manually">Create a Case Manually<a class="headerlink" href="#create-a-case-manually" title="Anchor link to this section">&para;</a></h3>
 <p>Create a case from a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule response action. The <code>create_case</code> action accepts an optional <code>detection</code> object containing the full detection data, and an optional <code>severity</code> override. If <code>detection</code> is omitted, an empty investigation case is created.</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="nt">respond</span><span class="p">:</span>
-</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
-</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="w">    </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-cases</span>
-</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="w">    </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">create_case</span>
-</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a><span class="w">    </span><span class="nt">extension request</span><span class="p">:</span>
-</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a><span class="w">      </span><span class="nt">detection</span><span class="p">:</span>
-</span><span id="__span-46-7"><a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a><span class="w">        </span><span class="nt">detect_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_id</span>
-</span><span id="__span-46-8"><a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a><span class="w">        </span><span class="nt">cat</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span>
-</span><span id="__span-46-9"><a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source</span>
-</span><span id="__span-46-10"><a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a><span class="w">        </span><span class="nt">routing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">routing</span>
-</span><span id="__span-46-11"><a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a><span class="w">        </span><span class="nt">detect_mtd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_mtd</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="nt">respond</span><span class="p">:</span>
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a><span class="w">    </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-cases</span>
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a><span class="w">    </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">create_case</span>
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a><span class="w">    </span><span class="nt">extension request</span><span class="p">:</span>
+</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a><span class="w">      </span><span class="nt">detection</span><span class="p">:</span>
+</span><span id="__span-44-7"><a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a><span class="w">        </span><span class="nt">detect_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_id</span>
+</span><span id="__span-44-8"><a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a><span class="w">        </span><span class="nt">cat</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cat</span>
+</span><span id="__span-44-9"><a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source</span>
+</span><span id="__span-44-10"><a id="__codelineno-44-10" name="__codelineno-44-10" href="#__codelineno-44-10"></a><span class="w">        </span><span class="nt">routing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">routing</span>
+</span><span id="__span-44-11"><a id="__codelineno-44-11" name="__codelineno-44-11" href="#__codelineno-44-11"></a><span class="w">        </span><span class="nt">detect_mtd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detect_mtd</span>
 </span></code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Value resolution</p>
@@ -13614,15 +13529,15 @@
 </table>
 <h3 id="query-open-case-count">Query Open Case Count<a class="headerlink" href="#query-open-case-count" title="Anchor link to this section">&para;</a></h3>
 <p>The <code>get_case_count</code> extension action returns the number of cases matching optional status and severity filters. It is available as an extension request via the REST API or SDK and is useful for building automation and monitoring workflows.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="22:1"><input checked="checked" id="__tabbed_22_1" name="__tabbed_22" type="radio" /><div class="tabbed-labels"><label for="__tabbed_22_1">REST API</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="21:1"><input checked="checked" id="__tabbed_21_1" name="__tabbed_21" type="radio" /><div class="tabbed-labels"><label for="__tabbed_21_1">REST API</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-47-2"><a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a><span class="w">  </span><span class="s2">&quot;https://api.limacharlie.io/v1/extension/request/ext-cases&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-47-3"><a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-47-4"><a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="nv">oid</span><span class="o">=</span><span class="s2">&quot;YOUR_OID&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-47-5"><a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a><span class="w">  </span>-d<span class="w"> </span><span class="nv">action</span><span class="o">=</span><span class="s2">&quot;get_case_count&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-47-6"><a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a><span class="w">  </span>-d<span class="w"> </span><span class="nv">data</span><span class="o">=</span><span class="s1">&#39;{&quot;status&quot;: &quot;new,acknowledged,in_progress&quot;, &quot;severity&quot;: &quot;critical,high&quot;}&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="w">  </span><span class="s2">&quot;https://api.limacharlie.io/v1/extension/request/ext-cases&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-4"><a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="nv">oid</span><span class="o">=</span><span class="s2">&quot;YOUR_OID&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-5"><a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a><span class="w">  </span>-d<span class="w"> </span><span class="nv">action</span><span class="o">=</span><span class="s2">&quot;get_case_count&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-45-6"><a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="w">  </span>-d<span class="w"> </span><span class="nv">data</span><span class="o">=</span><span class="s1">&#39;{&quot;status&quot;: &quot;new,in_progress&quot;, &quot;severity&quot;: &quot;critical,high&quot;}&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -13639,7 +13554,7 @@
 <tr>
 <td><code>status</code></td>
 <td>string</td>
-<td>Optional. Comma-separated status filter (e.g. <code>new,acknowledged,in_progress</code>)</td>
+<td>Optional. Comma-separated status filter (e.g. <code>new,in_progress</code>)</td>
 </tr>
 <tr>
 <td><code>severity</code></td>
@@ -13650,16 +13565,16 @@
 </table>
 <h2 id="dashboard">Dashboard<a class="headerlink" href="#dashboard" title="Anchor link to this section">&para;</a></h2>
 <p>The dashboard provides real-time visibility into the case queue.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="23:2"><input checked="checked" id="__tabbed_23_1" name="__tabbed_23" type="radio" /><input id="__tabbed_23_2" name="__tabbed_23" type="radio" /><div class="tabbed-labels"><label for="__tabbed_23_1">REST API</label><label for="__tabbed_23_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="22:2"><input checked="checked" id="__tabbed_22_1" name="__tabbed_22" type="radio" /><input id="__tabbed_22_2" name="__tabbed_22" type="radio" /><div class="tabbed-labels"><label for="__tabbed_22_1">REST API</label><label for="__tabbed_22_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-48-2"><a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/dashboard/counts?oids=YOUR_OID&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-48-3"><a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/dashboard/counts?oids=YOUR_OID&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>dashboard
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>dashboard
 </span></code></pre></div>
 </div>
 </div>
@@ -13673,17 +13588,17 @@
 <h2 id="reporting">Reporting<a class="headerlink" href="#reporting" title="Anchor link to this section">&para;</a></h2>
 <p>SOC performance reports provide aggregated metrics for measuring team effectiveness and detection quality.</p>
 <h3 id="summary-report">Summary Report<a class="headerlink" href="#summary-report" title="Anchor link to this section">&para;</a></h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="24:2"><input checked="checked" id="__tabbed_24_1" name="__tabbed_24" type="radio" /><input id="__tabbed_24_2" name="__tabbed_24" type="radio" /><div class="tabbed-labels"><label for="__tabbed_24_1">REST API</label><label for="__tabbed_24_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="23:2"><input checked="checked" id="__tabbed_23_1" name="__tabbed_23" type="radio" /><input id="__tabbed_23_2" name="__tabbed_23" type="radio" /><div class="tabbed-labels"><label for="__tabbed_23_1">REST API</label><label for="__tabbed_23_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/reports/summary?oids=YOUR_OID&amp;from=2025-01-01T00:00:00Z&amp;to=2025-02-01T00:00:00Z&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-50-3"><a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-48-2"><a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a><span class="w">  </span><span class="s2">&quot;https://cases.limacharlie.io/api/v1/reports/summary?oids=YOUR_OID&amp;from=2025-01-01T00:00:00Z&amp;to=2025-02-01T00:00:00Z&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-48-3"><a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>report<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="w">    </span>--from<span class="w"> </span><span class="m">2025</span>-01-01T00:00:00Z<span class="w"> </span>--to<span class="w"> </span><span class="m">2025</span>-02-01T00:00:00Z
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>report<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="w">    </span>--from<span class="w"> </span><span class="m">2025</span>-01-01T00:00:00Z<span class="w"> </span>--to<span class="w"> </span><span class="m">2025</span>-02-01T00:00:00Z
 </span></code></pre></div>
 </div>
 </div>
@@ -13720,7 +13635,7 @@
 </ul>
 <h2 id="webhook-notifications">Webhook Notifications<a class="headerlink" href="#webhook-notifications" title="Anchor link to this section">&para;</a></h2>
 <p>The extension automatically sends webhook notifications for case events via LimaCharlie's extension hooks mechanism. These are delivered as gzip-compressed HTTP POST requests to the organization's configured webhook adapter endpoint.</p>
-<p>Events forwarded via webhook include: case creation, status changes, assignments, escalations, classifications, notes, and investigation updates.</p>
+<p>Events forwarded via webhook include: case creation, status changes, assignments, classifications, notes, and investigation updates.</p>
 <p>Each webhook payload includes:</p>
 <ul>
 <li><code>action</code> -- The event type (e.g. <code>created</code>, <code>status_changed</code>, <code>assigned</code>)</li>
@@ -13758,10 +13673,6 @@
 <td>Case created from detection</td>
 </tr>
 <tr>
-<td><code>acknowledged</code></td>
-<td>Case first acknowledged</td>
-</tr>
-<tr>
 <td><code>status_changed</code></td>
 <td>Status transition</td>
 </tr>
@@ -13770,12 +13681,12 @@
 <td>Analyst assigned</td>
 </tr>
 <tr>
-<td><code>escalated</code></td>
-<td>Case escalated to a group</td>
-</tr>
-<tr>
 <td><code>classified</code></td>
 <td>True positive / false positive classification set</td>
+</tr>
+<tr>
+<td><code>severity_changed</code></td>
+<td>Severity manually changed</td>
 </tr>
 <tr>
 <td><code>resolved</code></td>
@@ -13794,8 +13705,8 @@
 <td>Note added to case</td>
 </tr>
 <tr>
-<td><code>investigation_linked</code></td>
-<td>LimaCharlie investigation linked</td>
+<td><code>note_visibility_changed</code></td>
+<td>Note public visibility toggled</td>
 </tr>
 <tr>
 <td><code>detection_added</code></td>
@@ -13823,7 +13734,7 @@
 </tr>
 <tr>
 <td><code>entity_updated</code></td>
-<td>Entity verdict or context updated</td>
+<td>Entity verdict or note updated</td>
 </tr>
 <tr>
 <td><code>entity_removed</code></td>
@@ -13860,6 +13771,14 @@
 <tr>
 <td><code>conclusion_updated</code></td>
 <td>Investigation conclusion edited</td>
+</tr>
+<tr>
+<td><code>config_updated</code></td>
+<td><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> configuration updated</td>
+</tr>
+<tr>
+<td><code>cases_deleted</code></td>
+<td>Cases deleted (retention)</td>
 </tr>
 </tbody>
 </table>
