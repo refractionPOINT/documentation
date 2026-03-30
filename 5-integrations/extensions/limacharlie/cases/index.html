@@ -12947,7 +12947,7 @@
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>get<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>get<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -12959,11 +12959,11 @@
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Export as JSON to stdout</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span>--id<span class="w"> </span><span class="m">42</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Export with full data (detection records, telemetry events,</span>
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1"># artifact binaries) to a local directory</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--with-data<span class="w"> </span>./case-export
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--with-data<span class="w"> </span>./case-export
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -12997,8 +12997,8 @@
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>in_progress<span class="w"> </span>--assignees<span class="w"> </span>analyst@example.com
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>resolved<span class="w"> </span><span class="se">\</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>in_progress<span class="w"> </span>--assignees<span class="w"> </span>analyst@example.com
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--status<span class="w"> </span>resolved<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span>--classification<span class="w"> </span>true_positive<span class="w"> </span>--conclusion<span class="w"> </span><span class="s2">&quot;Contained via network isolation&quot;</span>
 </span></code></pre></div>
 </div>
@@ -13121,7 +13121,7 @@
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>phishing<span class="w"> </span>--tag<span class="w"> </span>urgent<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>update<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>phishing<span class="w"> </span>--tag<span class="w"> </span>urgent<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -13134,13 +13134,13 @@
 <h4 id="tag-management-cli"><abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr> Management <abbr title="Command-line Interface">CLI</abbr><a class="headerlink" href="#tag-management-cli" title="Anchor link to this section">&para;</a></h4>
 <p>The <abbr title="Command-line Interface">CLI</abbr> provides convenience commands for adding or removing individual tags without replacing the full array.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Replace all tags</span>
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>tag<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>phishing<span class="w"> </span>--tag<span class="w"> </span>urgent<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>tag<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>phishing<span class="w"> </span>--tag<span class="w"> </span>urgent<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
 </span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
 </span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Add a tag (preserves existing tags)</span>
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>tag<span class="w"> </span>add<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>new-label<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>tag<span class="w"> </span>add<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>new-label<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
 </span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
 </span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># Remove a tag</span>
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>tag<span class="w"> </span>remove<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>old-label<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>tag<span class="w"> </span>remove<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--tag<span class="w"> </span>old-label<span class="w"> </span>--oid<span class="w"> </span>YOUR_OID
 </span></code></pre></div>
 <h4 id="filtering-by-tag">Filtering by <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr><a class="headerlink" href="#filtering-by-tag" title="Anchor link to this section">&para;</a></h4>
 <p>Filter the case list to only cases that have all specified tags (AND logic).</p>
@@ -13367,9 +13367,9 @@
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>add-note<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--type<span class="w"> </span>analysis<span class="w"> </span><span class="se">\</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>add-note<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--type<span class="w"> </span>analysis<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="w">    </span>--content<span class="w"> </span><span class="s2">&quot;Confirmed lateral movement to DESKTOP-002 via PsExec.&quot;</span>
-</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Handoff notes&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>add-note<span class="w"> </span>--id<span class="w"> </span><span class="m">42</span><span class="w"> </span>--type<span class="w"> </span>handoff
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Handoff notes&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>limacharlie<span class="w"> </span><span class="k">case</span><span class="w"> </span>add-note<span class="w"> </span>--case-number<span class="w"> </span><span class="m">42</span><span class="w"> </span>--type<span class="w"> </span>handoff
 </span></code></pre></div>
 </div>
 </div>
