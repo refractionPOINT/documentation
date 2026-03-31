@@ -125,6 +125,8 @@ plugins:
         'docs/add-ons.md': '5-integrations/add-ons/index.md'
         # FAQ
         'docs/faq-invoices.md': '8-reference/faq/invoices.md'
+        # Developer guide
+        'docs/building-extensions.md': '6-developer-guide/extensions/building-extensions.md'
         # SDK / CLI references
         'docs/en/platform-configuration-limacharlie-sdk.md': '6-developer-guide/sdk-overview.md'
 
