@@ -1,7 +1,7 @@
 # Cases
 
-!!! warning "Closed Beta"
-    Cases is currently in closed beta. Please contact LimaCharlie to request access.
+!!! warning "Beta"
+    Cases is currently in Beta. It will change without warnings, and no backward compatibility is promised or provided.
 
 The Cases extension is a purpose-built SOC triage system that automatically converts LimaCharlie detections into trackable cases with SLA enforcement, investigation tooling, and performance reporting. It is designed for high-volume environments where every detection needs to be acknowledged, investigated, classified, and resolved within measurable timeframes.
 
@@ -53,11 +53,11 @@ Cases follow a defined state machine that tracks progress from creation through 
 ```mermaid
 stateDiagram-v2
     [*] --> new
-    new --> in_progress
-    new --> closed
-    in_progress --> resolved
-    in_progress --> closed
-    resolved --> closed
+    new --> in_progress: acknowledge
+    new --> closed: close
+    in_progress --> resolved: resolve
+    in_progress --> closed: close
+    resolved --> closed: close
     closed --> in_progress: reopen
 ```
 
@@ -193,6 +193,8 @@ The following settings are managed through the extension configuration page in t
 
     ```bash
     limacharlie case config-set --input-file config.yaml
+    # Or pipe from stdin
+    echo '{"retention_days": 60}' | limacharlie case config-set
     ```
 
 ## Working with Cases
@@ -247,8 +249,9 @@ Query the case queue with filtering, sorting, and pagination. Supports cross-org
 === "CLI"
 
     ```bash
-    limacharlie case list --status new --sort created_at --order desc
+    limacharlie case list --status new --sort created_at --order desc --limit 20
     limacharlie case list --severity critical --severity high --search "mimikatz"
+    limacharlie case list --sid SENSOR_ID --status new
     ```
 
 Available query parameters:
@@ -790,6 +793,13 @@ After a note is created, you can toggle its `is_public` flag:
       -d '{"is_public": true}'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie case update-note --case-number 42 --event-id EVENT_ID --is-public
+    limacharlie case update-note --case-number 42 --event-id EVENT_ID --no-is-public
+    ```
+
 The `EVENT_ID` is the `event_id` returned when the note was created.
 
 ## Case Merging
@@ -832,7 +842,7 @@ List all unique assignee emails across your accessible organizations. Useful for
 
     ```bash
     curl -s -X GET \
-      "https://cases.limacharlie.io/api/v1/assignees" \
+      "https://cases.limacharlie.io/api/v1/assignees?oids=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
@@ -1079,7 +1089,6 @@ Unsubscribing from the extension removes the detection-forwarding D&R rules and 
 
 ## See Also
 
-- [Investigation](../../../7-administration/config-hive/investigation.md) -- Investigation records that can be linked to cases
 - [D&R Rules Overview](../../../3-detection-response/index.md) -- Detection rules that generate the detections ingested as cases
 - [Response Actions](../../../8-reference/response-actions.md) -- The `extension request` action used for D&R rule integration
 - [Using Extensions](../using-extensions.md) -- General extension subscription and management

@@ -365,8 +365,3 @@ Consistent tagging enables searching across multiple investigations:
 | MFA gaps | `gap:no-mfa` |
 | Specific customer (MSSP) | `customer:acme-corp` |
 
----
-
-## Related Documentation
-
-- [Config Hive: Investigation](../../7-administration/config-hive/investigation.md) - Investigation schema reference
