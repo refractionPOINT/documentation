@@ -479,7 +479,6 @@ nav:
           - D&R Rules: 7-administration/config-hive/dr-rules.md
           - YARA: 7-administration/config-hive/yara.md
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
-          - Investigation: 7-administration/config-hive/investigation.md
 
   - Reference:
       - Overview: 8-reference/index.md

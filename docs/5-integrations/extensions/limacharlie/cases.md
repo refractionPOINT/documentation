@@ -1079,7 +1079,6 @@ Unsubscribing from the extension removes the detection-forwarding D&R rules and 
 
 ## See Also
 
-- [Investigation](../../../7-administration/config-hive/investigation.md) -- Investigation records that can be linked to cases
 - [D&R Rules Overview](../../../3-detection-response/index.md) -- Detection rules that generate the detections ingested as cases
 - [Response Actions](../../../8-reference/response-actions.md) -- The `extension request` action used for D&R rule integration
 - [Using Extensions](../using-extensions.md) -- General extension subscription and management
