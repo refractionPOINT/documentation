@@ -13099,12 +13099,12 @@
 <tr>
 <td><code>summary</code></td>
 <td>string</td>
-<td>Investigation summary narrative (max 8192 characters)</td>
+<td>Investigation summary narrative (max 8192 characters, Markdown supported)</td>
 </tr>
 <tr>
 <td><code>conclusion</code></td>
 <td>string</td>
-<td>Final conclusion (max 8192 characters)</td>
+<td>Final conclusion (max 8192 characters, Markdown supported)</td>
 </tr>
 <tr>
 <td><code>tags</code></td>
@@ -13140,7 +13140,7 @@
 </div>
 </div>
 </div>
-<p>Up to 200 cases can be updated in a single bulk operation.</p>
+<p>Up to 200 cases can be updated in a single bulk operation. Bulk updates support only <code>status</code> and <code>classification</code> fields. For other fields (severity, assignees, tags, etc.), update cases individually.</p>
 <h3 id="tags"><abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr><a class="headerlink" href="#tags" title="Anchor link to this section">&para;</a></h3>
 <p>Cases support arbitrary string tags for custom categorization and workflow organization (e.g., "phishing", "ransomware", "shift-b").</p>
 <p><strong>Constraints:</strong></p>
@@ -13225,7 +13225,7 @@
 </div>
 </div>
 </div>
-<p><abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr> changes create a <code>tags_updated</code> event in the case's audit trail with old and new tag values in the event metadata.</p>
+<p><abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr> changes create a <code>case_tags_updated</code> event in the case's audit trail with old and new tag values in the event metadata.</p>
 <h3 id="classification">Classification<a class="headerlink" href="#classification" title="Anchor link to this section">&para;</a></h3>
 <p>Cases are classified to track detection accuracy. Classification can be set at any status.</p>
 <table>
@@ -13490,7 +13490,7 @@
 </div>
 </div>
 <h3 id="notes">Notes<a class="headerlink" href="#notes" title="Anchor link to this section">&para;</a></h3>
-<p>Add structured notes to document analysis, remediation steps, and handoff information.</p>
+<p>Add structured notes to document analysis, remediation steps, and handoff information. Note content supports Markdown formatting (headers, bullet lists, tables, code blocks).</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="23:2"><input checked="checked" id="__tabbed_23_1" name="__tabbed_23" type="radio" /><input id="__tabbed_23_2" name="__tabbed_23" type="radio" /><div class="tabbed-labels"><label for="__tabbed_23_1">REST API</label><label for="__tabbed_23_2"><abbr title="Command-line Interface">CLI</abbr></label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -13625,7 +13625,7 @@
 <h3 id="ingestion-mode">Ingestion Mode<a class="headerlink" href="#ingestion-mode" title="Anchor link to this section">&para;</a></h3>
 <p>The <code>ingestion_mode</code> configuration controls how detections become cases:</p>
 <ul>
-<li><strong><code>all</code></strong> (default) -- Every detection in the organization automatically creates a case. No <abbr title="Detection &amp; Response">D&amp;R</abbr> rules are required.</li>
+<li><strong><code>all</code></strong> (default) -- Every detection in the organization automatically creates a case. No <abbr title="Detection &amp; Response">D&amp;R</abbr> rules are required. Internal detections (categories starting with <code>__</code>) are excluded automatically.</li>
 <li><strong><code>tailored</code></strong> -- Only detections explicitly forwarded via <abbr title="Detection &amp; Response">D&amp;R</abbr> rules using the <code>ingest_detection</code> action create cases. This gives you fine-grained control over which detections enter the case queue.</li>
 </ul>
 <p>To forward a specific detection to the cases system in tailored mode, create a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule:</p>
@@ -13798,6 +13798,7 @@
 <p>The server pushes <code>case_event</code> messages as changes occur, including status transitions, assignments, notes, and investigation updates. Presence tracking shows which users are currently viewing a case.</p>
 <h2 id="rate-limiting">Rate Limiting<a class="headerlink" href="#rate-limiting" title="Anchor link to this section">&para;</a></h2>
 <p>The API enforces a rate limit of 20 requests per second (sustained) with a burst allowance of 50 requests per user. Requests exceeding the limit receive a <code>429 Too Many Requests</code> response.</p>
+<p>Detection ingestion is separately rate-limited per organization at 100 detections per minute. Organizations on the free tier (sensor quota of 2 or fewer) are limited to 5 detections per minute.</p>
 <h2 id="audit-trail">Audit Trail<a class="headerlink" href="#audit-trail" title="Anchor link to this section">&para;</a></h2>
 <p>Every action on a case is recorded as an immutable event in the case's timeline. This provides a complete chain of custody for compliance and review.</p>
 <p>Tracked event types:</p>
