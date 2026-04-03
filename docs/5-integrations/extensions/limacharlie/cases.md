@@ -193,6 +193,8 @@ The following settings are managed through the extension configuration page in t
 
     ```bash
     limacharlie case config-set --input-file config.yaml
+    # Or pipe from stdin
+    echo '{"retention_days": 60}' | limacharlie case config-set
     ```
 
 ## Working with Cases
@@ -247,8 +249,9 @@ Query the case queue with filtering, sorting, and pagination. Supports cross-org
 === "CLI"
 
     ```bash
-    limacharlie case list --status new --sort created_at --order desc
+    limacharlie case list --status new --sort created_at --order desc --limit 20
     limacharlie case list --severity critical --severity high --search "mimikatz"
+    limacharlie case list --sid SENSOR_ID --status new
     ```
 
 Available query parameters:
@@ -790,6 +793,13 @@ After a note is created, you can toggle its `is_public` flag:
       -d '{"is_public": true}'
     ```
 
+=== "CLI"
+
+    ```bash
+    limacharlie case update-note --case-number 42 --event-id EVENT_ID --is-public
+    limacharlie case update-note --case-number 42 --event-id EVENT_ID --no-is-public
+    ```
+
 The `EVENT_ID` is the `event_id` returned when the note was created.
 
 ## Case Merging
@@ -832,7 +842,7 @@ List all unique assignee emails across your accessible organizations. Useful for
 
     ```bash
     curl -s -X GET \
-      "https://cases.limacharlie.io/api/v1/assignees" \
+      "https://cases.limacharlie.io/api/v1/assignees?oids=YOUR_OID" \
       -H "Authorization: Bearer $LC_JWT"
     ```
 
@@ -976,6 +986,9 @@ SOC performance reports provide aggregated metrics for measuring team effectiven
     ```bash
     limacharlie case report \
         --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z
+    limacharlie case report \
+        --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z \
+        --group-by severity
     ```
 
 Query parameters:
@@ -985,6 +998,7 @@ Query parameters:
 | `oids` | Organization IDs (comma-separated) |
 | `from` | Start of reporting period (RFC 3339 timestamp) |
 | `to` | End of reporting period (RFC 3339 timestamp) |
+| `group_by` | Group results by field (e.g. `severity`) |
 
 The summary report includes per-organization and aggregate metrics:
 
