@@ -118,6 +118,8 @@ Each organization has its own configuration that controls severity mapping, SLA 
 
 ### Configuration Options
 
+The following settings are available through the REST API (`GET/PUT /api/v1/config/{oid}`):
+
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
 | `severity_mapping.critical_min` | int | `8` | Minimum detection priority for `critical` severity |
@@ -136,6 +138,11 @@ Each organization has its own configuration that controls severity mapping, SLA 
 | `retention_days` | int | `90` | Days to retain resolved/closed cases before archival |
 | `auto_close_resolved_after_days` | int | `7` | Automatically close resolved cases after this many days. Set to `0` to disable |
 | `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single cases |
+
+The following settings are managed through the extension configuration page in the LimaCharlie web UI (not through the REST API):
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
 | `ingestion_mode` | string | `"all"` | Controls which detections create cases. `"all"` forwards every detection; `"tailored"` only creates cases for detections explicitly sent via D&R rules (see [Ingestion Mode](#ingestion-mode)) |
 
 ### Get Configuration
@@ -485,14 +492,22 @@ Each case is created from a detection and can have additional detections linked 
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
-        "detect_id": "DETECTION_ID",
-        "detection_cat": "lateral-movement",
-        "detection_source": "dr-general",
-        "detection_priority": 7,
-        "sid": "550e8400-e29b-41d4-a716-446655440000",
-        "hostname": "DESKTOP-001"
+        "detection": {
+          "detect_id": "DETECTION_ID",
+          "cat": "lateral-movement",
+          "source": "dr-general",
+          "routing": {
+            "sid": "550e8400-e29b-41d4-a716-446655440000",
+            "hostname": "DESKTOP-001"
+          },
+          "detect_mtd": {
+            "level": "high"
+          }
+        }
       }'
     ```
+
+    The `detection` field accepts a full LC detection object. The fields `detect_id`, `cat`, `source`, `routing` (with `sid` and `hostname`), and `detect_mtd` (with `level`) are extracted automatically.
 
 === "CLI"
 
@@ -594,6 +609,8 @@ Find all cases containing a specific indicator. This is critical for understandi
 
 Link specific LimaCharlie events to the case. This creates a direct reference back to the raw telemetry for forensic review.
 
+#### Add Telemetry
+
 === "REST API"
 
     ```bash
@@ -602,13 +619,19 @@ Link specific LimaCharlie events to the case. This creates a direct reference ba
       -H "Authorization: Bearer $LC_JWT" \
       -H "Content-Type: application/json" \
       -d '{
-        "atom": "abc123def456",
-        "sid": "550e8400-e29b-41d4-a716-446655440000",
-        "event_type": "NEW_PROCESS",
+        "event": {
+          "routing": {
+            "this": "abc123def456",
+            "sid": "550e8400-e29b-41d4-a716-446655440000",
+            "event_type": "NEW_PROCESS"
+          }
+        },
         "verdict": "malicious",
         "note": "Initial payload execution"
       }'
     ```
+
+    The `event` field accepts a full LC event object. The `routing.this` (atom), `routing.sid`, and `routing.event_type` fields are extracted automatically.
 
 === "CLI"
 
@@ -616,12 +639,51 @@ Link specific LimaCharlie events to the case. This creates a direct reference ba
     limacharlie case telemetry add --case 42 \
         --event '<full LC event JSON>' \
         --verdict malicious --note "Initial payload execution"
+    ```
+
+#### List Telemetry
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://cases.limacharlie.io/api/v1/cases/42/telemetry?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
     limacharlie case telemetry list --case 42
+    ```
+
+#### Update Telemetry
+
+=== "REST API"
+
+    ```bash
+    curl -s -X PATCH \
+      "https://cases.limacharlie.io/api/v1/cases/42/telemetry/TELEMETRY_ID?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{"verdict": "benign", "note": "Confirmed legitimate process"}'
+    ```
+
+#### Remove Telemetry
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE \
+      "https://cases.limacharlie.io/api/v1/cases/42/telemetry/TELEMETRY_ID?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
     ```
 
 ### Artifacts
 
 Attach references to forensic artifacts such as memory dumps, packet captures, or disk images.
+
+#### Add Artifact
 
 === "REST API"
 
@@ -646,7 +708,32 @@ Attach references to forensic artifacts such as memory dumps, packet captures, o
         --type memory_dump --path "/artifacts/pid4832_memdump.raw" \
         --source DESKTOP-001 --verdict malicious \
         --note "Full memory dump of PID 4832"
+    ```
+
+#### List Artifacts
+
+=== "REST API"
+
+    ```bash
+    curl -s -X GET \
+      "https://cases.limacharlie.io/api/v1/cases/42/artifacts?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
+
+=== "CLI"
+
+    ```bash
     limacharlie case artifact list --case 42
+    ```
+
+#### Remove Artifact
+
+=== "REST API"
+
+    ```bash
+    curl -s -X DELETE \
+      "https://cases.limacharlie.io/api/v1/cases/42/artifacts/ARTIFACT_ID?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT"
     ```
 
 ### Notes
@@ -688,6 +775,22 @@ Note types:
 | `from_stakeholder` | Communication received from external stakeholders |
 
 Notes support an optional `is_public` boolean field. When set to `true`, the note is marked as visible and shareable to external stakeholders. Defaults to `false`.
+
+#### Updating Note Visibility
+
+After a note is created, you can toggle its `is_public` flag:
+
+=== "REST API"
+
+    ```bash
+    curl -s -X PATCH \
+      "https://cases.limacharlie.io/api/v1/cases/42/notes/EVENT_ID?oid=YOUR_OID" \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{"is_public": true}'
+    ```
+
+The `EVENT_ID` is the `event_id` returned when the note was created.
 
 ## Case Merging
 
@@ -738,6 +841,18 @@ List all unique assignee emails across your accessible organizations. Useful for
     ```bash
     limacharlie case assignees
     ```
+
+## Subscribed Organizations
+
+List all organizations subscribed to the Cases extension that you have access to.
+
+```bash
+curl -s -X GET \
+  "https://cases.limacharlie.io/api/v1/orgs" \
+  -H "Authorization: Bearer $LC_JWT"
+```
+
+Returns `{"oids": ["oid1", "oid2", ...]}`. Requires `investigation.get` permission. Useful for discovering which of your organizations have Cases enabled without checking each one individually.
 
 ## D&R Rule Integration
 
@@ -803,7 +918,7 @@ respond:
 
 ### Query Open Case Count
 
-The `get_case_count` extension action returns the number of cases matching optional status and severity filters. It is available as an extension request via the REST API or SDK and is useful for building automation and monitoring workflows.
+The `get_case_count` extension action returns the number of open cases broken down by status. It is available as an extension request via the REST API or SDK and is useful for building automation and monitoring workflows.
 
 === "REST API"
 
@@ -813,13 +928,10 @@ The `get_case_count` extension action returns the number of cases matching optio
       -H "Authorization: Bearer $LC_JWT" \
       -d oid="YOUR_OID" \
       -d action="get_case_count" \
-      -d data='{"status": "new,in_progress", "severity": "critical,high"}'
+      -d data='{}'
     ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `status` | string | Optional. Comma-separated status filter (e.g. `new,in_progress`) |
-| `severity` | string | Optional. Comma-separated severity filter (e.g. `critical,high`) |
+Returns counts per status and a `total` field, for example: `{"new": 5, "in_progress": 3, "resolved": 2, "closed": 10, "total": 20}`.
 
 ## Dashboard
 
@@ -921,33 +1033,34 @@ Tracked event types:
 
 | Event | Description |
 |-------|-------------|
-| `created` | Case created from detection |
-| `status_changed` | Status transition |
-| `assigned` | Analyst assigned |
-| `classified` | True positive / false positive classification set |
-| `severity_changed` | Severity manually changed |
-| `resolved` | Case resolved |
-| `closed` | Case closed |
-| `reopened` | Resolved case reopened |
-| `note_added` | Note added to case |
-| `note_visibility_changed` | Note public visibility toggled |
-| `detection_added` | Detection grouped into case |
-| `detection_removed` | Detection removed from case |
-| `severity_upgraded` | Severity increased due to higher-priority detection |
-| `merged_into` | Case merged into another case |
-| `merged_from` | Case received merge from another case |
-| `entity_added` | IOC/entity attached |
-| `entity_updated` | Entity verdict or note updated |
-| `entity_removed` | Entity removed |
-| `telemetry_added` | Telemetry reference linked |
-| `telemetry_updated` | Telemetry metadata updated |
-| `telemetry_removed` | Telemetry reference removed |
-| `artifact_added` | Forensic artifact attached |
-| `artifact_removed` | Artifact removed |
-| `tags_updated` | Tags modified (old and new values in metadata) |
-| `summary_updated` | Investigation summary edited |
-| `conclusion_updated` | Investigation conclusion edited |
-| `config_updated` | Organization configuration updated |
+| `case_created` | Case created from detection |
+| `case_acknowledged` | First transition to `in_progress` (TTA milestone) |
+| `case_status_changed` | Status transition |
+| `case_assigned` | Analyst assigned |
+| `case_classified` | True positive / false positive classification set |
+| `case_severity_changed` | Severity manually changed |
+| `case_resolved` | Case resolved |
+| `case_closed` | Case closed |
+| `case_reopened` | Closed case reopened |
+| `case_note_added` | Note added to case |
+| `case_note_visibility_changed` | Note public visibility toggled |
+| `case_detection_added` | Detection grouped into case |
+| `case_detection_removed` | Detection removed from case |
+| `case_severity_upgraded` | Severity increased due to higher-priority detection |
+| `case_merged_into` | Case merged into another case |
+| `case_merged_from` | Case received merge from another case |
+| `case_entity_added` | IOC/entity attached |
+| `case_entity_updated` | Entity verdict or note updated |
+| `case_entity_removed` | Entity removed |
+| `case_telemetry_added` | Telemetry reference linked |
+| `case_telemetry_updated` | Telemetry metadata updated |
+| `case_telemetry_removed` | Telemetry reference removed |
+| `case_artifact_added` | Forensic artifact attached |
+| `case_artifact_removed` | Artifact removed |
+| `case_tags_updated` | Tags modified (old and new values in metadata) |
+| `case_summary_updated` | Investigation summary edited |
+| `case_conclusion_updated` | Investigation conclusion edited |
+| `case_config_updated` | Organization configuration updated |
 | `cases_deleted` | Cases deleted (retention) |
 
 ## Data Retention
