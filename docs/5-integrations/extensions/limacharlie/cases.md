@@ -1,7 +1,7 @@
 # Cases
 
-!!! warning "Closed Beta"
-    Cases is currently in closed beta. Please contact LimaCharlie to request access.
+!!! warning "Beta"
+    Cases is currently in Beta. It will change without warnings, and no backward compatibility is promised or provided.
 
 The Cases extension is a purpose-built SOC triage system that automatically converts LimaCharlie detections into trackable cases with SLA enforcement, investigation tooling, and performance reporting. It is designed for high-volume environments where every detection needs to be acknowledged, investigated, classified, and resolved within measurable timeframes.
 
