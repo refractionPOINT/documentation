@@ -349,8 +349,8 @@ Updatable fields:
 | `severity` | string | Case severity: `critical`, `high`, `medium`, `low`, or `info` |
 | `assignees` | string[] | Analysts to assign the case to |
 | `classification` | string | `true_positive`, `false_positive`, or `pending` |
-| `summary` | string | Investigation summary narrative (max 8192 characters) |
-| `conclusion` | string | Final conclusion (max 8192 characters) |
+| `summary` | string | Investigation summary narrative (max 8192 characters, Markdown supported) |
+| `conclusion` | string | Final conclusion (max 8192 characters, Markdown supported) |
 | `tags` | string[] | Arbitrary tags for categorization (see [Tags](#tags)) |
 
 ### Bulk Updates
@@ -382,7 +382,7 @@ Update multiple cases at once, useful for bulk-closing false positives or reassi
     limacharlie case bulk-update --input-file case_numbers.txt --status resolved
     ```
 
-Up to 200 cases can be updated in a single bulk operation.
+Up to 200 cases can be updated in a single bulk operation. Bulk updates support only `status` and `classification` fields. For other fields (severity, assignees, tags, etc.), update cases individually.
 
 ### Tags
 
@@ -464,7 +464,7 @@ Filter the case list to only cases that have all specified tags (AND logic).
     c.list_cases(tag=["phishing", "urgent"])
     ```
 
-Tag changes create a `tags_updated` event in the case's audit trail with old and new tag values in the event metadata.
+Tag changes create a `case_tags_updated` event in the case's audit trail with old and new tag values in the event metadata.
 
 ### Classification
 
@@ -738,7 +738,7 @@ Attach references to forensic artifacts such as memory dumps, packet captures, o
 
 ### Notes
 
-Add structured notes to document analysis, remediation steps, and handoff information.
+Add structured notes to document analysis, remediation steps, and handoff information. Note content supports Markdown formatting (headers, bullet lists, tables, code blocks).
 
 === "REST API"
 
@@ -862,7 +862,7 @@ The cases extension exposes request handlers that can be used in D&R rule respon
 
 The `ingestion_mode` configuration controls how detections become cases:
 
-- **`all`** (default) -- Every detection in the organization automatically creates a case. No D&R rules are required.
+- **`all`** (default) -- Every detection in the organization automatically creates a case. No D&R rules are required. Internal detections (categories starting with `__`) are excluded automatically.
 - **`tailored`** -- Only detections explicitly forwarded via D&R rules using the `ingest_detection` action create cases. This gives you fine-grained control over which detections enter the case queue.
 
 To forward a specific detection to the cases system in tailored mode, create a D&R rule:
@@ -1024,6 +1024,8 @@ The server pushes `case_event` messages as changes occur, including status trans
 ## Rate Limiting
 
 The API enforces a rate limit of 20 requests per second (sustained) with a burst allowance of 50 requests per user. Requests exceeding the limit receive a `429 Too Many Requests` response.
+
+Detection ingestion is separately rate-limited per organization at 100 detections per minute. Organizations on the free tier (sensor quota of 2 or fewer) are limited to 5 detections per minute.
 
 ## Audit Trail
 
