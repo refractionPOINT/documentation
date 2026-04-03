@@ -57,6 +57,9 @@ plugins:
       lang: en
   - redirects:
       redirect_maps:
+        # Extension landing pages (linked from emails)
+        'docs/lc-extensions.md': '5-integrations/extensions/limacharlie/index.md'
+        'docs/third-party-extensions.md': '5-integrations/extensions/third-party/index.md'
         # Extension website fields (old Readme.io /docs/<slug> format)
         'docs/binlib.md': '5-integrations/extensions/limacharlie/binlib.md'
         'docs/ext-artifact.md': '5-integrations/extensions/limacharlie/artifact.md'
@@ -378,6 +381,7 @@ nav:
           - Overview: 5-integrations/extensions/index.md
           - Using Extensions: 5-integrations/extensions/using-extensions.md
           - LimaCharlie:
+              - Overview: 5-integrations/extensions/limacharlie/index.md
               - Git Sync: 5-integrations/extensions/limacharlie/git-sync.md
               - Reliable Tasking: 5-integrations/extensions/limacharlie/reliable-tasking.md
               - YARA Manager: 5-integrations/extensions/limacharlie/yara-manager.md
@@ -394,6 +398,7 @@ nav:
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
           - Third Party:
+              - Overview: 5-integrations/extensions/third-party/index.md
               - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
               - Zeek: 5-integrations/extensions/third-party/zeek.md
               - YARA: 5-integrations/extensions/third-party/yara.md
