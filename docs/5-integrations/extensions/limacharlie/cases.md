@@ -53,11 +53,11 @@ Cases follow a defined state machine that tracks progress from creation through 
 ```mermaid
 stateDiagram-v2
     [*] --> new
-    new --> in_progress
-    new --> closed
-    in_progress --> resolved
-    in_progress --> closed
-    resolved --> closed
+    new --> in_progress: acknowledge
+    new --> closed: merge
+    in_progress --> resolved: resolve
+    in_progress --> closed: merge
+    resolved --> closed: close
     closed --> in_progress: reopen
 ```
 
