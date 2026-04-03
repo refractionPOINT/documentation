@@ -54,9 +54,9 @@ Cases follow a defined state machine that tracks progress from creation through 
 stateDiagram-v2
     [*] --> new
     new --> in_progress: acknowledge
-    new --> closed: merge
+    new --> closed: close
     in_progress --> resolved: resolve
-    in_progress --> closed: merge
+    in_progress --> closed: close
     resolved --> closed: close
     closed --> in_progress: reopen
 ```
@@ -986,9 +986,6 @@ SOC performance reports provide aggregated metrics for measuring team effectiven
     ```bash
     limacharlie case report \
         --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z
-    limacharlie case report \
-        --from 2025-01-01T00:00:00Z --to 2025-02-01T00:00:00Z \
-        --group-by severity
     ```
 
 Query parameters:
@@ -998,7 +995,6 @@ Query parameters:
 | `oids` | Organization IDs (comma-separated) |
 | `from` | Start of reporting period (RFC 3339 timestamp) |
 | `to` | End of reporting period (RFC 3339 timestamp) |
-| `group_by` | Group results by field (e.g. `severity`) |
 
 The summary report includes per-organization and aggregate metrics:
 
