@@ -4,73 +4,72 @@
 
 Find more information about it [here](https://atomicredteam.io/).
 
-New Atomic Red Team Extension
-
-Please note that the Atomic Red Team **Extension** has replaced the Atomic Red Team **Service**. Ensure that your Organization disabled/removes the Service and subscribes to the Extension. This documentation applies to the Atomic Red Team extension.
-
 ## Enabling the Atomic Red Team Extension
 
 Enabling Atomic Red Team can be done within the LimaCharlie **Marketplace**, or at [this link](https://beta.app.limacharlie.io/add-ons/extension-detail/ext-atomic-red-team).
 
-![](../../../assets/images/atomic-1.png)
-
 Under the Organization dropdown, select a tenant (organization) you want to subscribe to Atomic Red Team and click subscribe.
 
-![](../../../assets/images/atomic-2.png)
+Please note that Extensions are applied on a per-tenant basis. If you have multiple organizations you want to subscribe to Atomic Red Team, you will need to subscribe each organization to the extension separately.
 
-Please note that Extensions are applied on the per-tenant basis. If you have multiple organizations you want to subscribe to Atomic Red Team, you will need to subscribe each organization to the extension separately.
+## Supported Platforms
 
-You can also manage add-ons from the **Subscriptions** menu under **Billing**.
+The extension supports sensors on **Windows**, **Linux**, and **macOS**. Sensors must be online for tests to run.
 
-![](../../../assets/images/atomic-3.png)
+On Linux and macOS, the extension installs PowerShell Core (`pwsh`) automatically during the Prepare step if it is not already present.
 
-Tenants that have been subscribed to the extension, will be marked with a green check mark in the **Organization** dropdown.
+## Three-Step Workflow
 
-## Running Atomic Red Team test(s)
+The extension uses a three-step workflow: **Prepare Host** → **Run Tests** → **Cleanup Host**. This matches how the upstream Atomic Red Team project is intended to be used.
 
-After Atomic Red Team has been enabled for your organization, the **Atomic Red Team** option will be available under the **Extensions** menu in the web UI. Selecting this Extension will render the Atomic Red Team test selection menu.
+### Step 1: Prepare Host
 
-![](../../../assets/images/atomic-4.png)
+Before running any tests, you must prepare the target sensor. This installs the Atomic Red Team framework and its dependencies.
 
-Sensor Eligibility for Atomic Red Team tests
+**What it does:**
 
-Currently, LimaCharlie supports Atomic Red Team tests on Sensors installed on Windows operating systems. Furthermore, sensors must be online in order for tests to run.
+- **Windows**: adds a Windows Defender exclusion for `C:\AtomicRedTeam` (best-effort — Tamper Protection may block it), installs NuGet, the `powershell-yaml` module, and the Invoke-AtomicRedTeam framework with atomics.
+- **Linux**: installs PowerShell Core via the system package manager (apt/dnf), then installs the framework to `/opt/AtomicRedTeam`.
+- **macOS**: installs PowerShell Core via the official `.pkg` installer, then installs the framework to `/opt/AtomicRedTeam`.
 
-Within the Atomic Red Team menu, you can select a **Sensor** to run test(s) against. Furthermore, you can also pre-select a set of tests from the full Atomic Red Team suite.
+You only need to prepare a host once. After that, you can run as many tests as you want.
 
-System Changes
+### Step 2: Run Tests
 
-Running Atomic Red Team tests will likely modify some system configurations. LimaCharlie attempts to revert any configuration changes performed, but the core logic is handled by the Atomic Red Team project. The following actions may occur:
+Select one or more MITRE ATT&CK technique IDs from the dropdown and click Run. Tests execute sequentially — each test checks prerequisites, installs them if needed, executes the technique, and optionally runs the atomic cleanup step.
 
-* Modify PowerShell scripting permissions
-* Modify PowerShell script execution policies
-* Check/Modify Microsoft Defender status
-* Install dependencies like Nuget
-* Install Atomic Red Team technique-specific dependencies
-* Technique-specific configuration changes
+The **Clean** option controls whether each test's atomic cleanup runs after execution (reverting technique-specific changes). This is separate from the host-level Cleanup step.
 
-The list of available tests is updated every time the window is open, ensuring that you are getting all available options from the Atomic Red Team repository.
+If multiple tests are selected, they are chained automatically. Each test completion triggers the next via a callback. A single `job_id` tracks the entire run.
 
-![](../../../assets/images/atomic-5.png)
+### Step 3: Cleanup Host
 
-Select your test(s) of choice, and click 'Run Tests'. You will receive a dialog box with a job id that is associated with this particular run of test(s).
+When you are done testing, run Cleanup to reverse the changes made by Prepare:
 
-## Checking Atomic Red Team Results
+- **Windows**: removes the Defender exclusion and deletes `C:\AtomicRedTeam`.
+- **Linux/macOS**: deletes `/opt/AtomicRedTeam`.
+- All platforms: uninstalls the `powershell-yaml` PowerShell module.
 
-When the Atomic Red Team extension is enabled, you will see an Adapter named `ext-atomic-red-team`.
+Cleanup is best-effort — if some components can't be removed (e.g., files locked), it reports partial success with details.
 
-![](../../../assets/images/atomic-6.png)
+## Checking Results
 
-This Adapter corresponds to all Atomic Red Team activity, including jobs run and results returned. As a separate adapter, this also means that Atomic Red Team tests are actionable events. For example, you could construct a  rule based on Atomic Red Team test results or feedback from system telemetry.
+When the extension is enabled, you will see an Adapter named `ext-atomic-red-team`. This adapter receives all extension activity as webhook events:
 
-Viewing the **Timeline** within the `ext-atomic-red-team` adapter will display the test(s) run and associated results, if available.
+| Event | When |
+|-------|------|
+| `prepare_started` / `prepare_success` / `prepare_failed` | Prepare Host lifecycle |
+| `run_started` / `test_result` / `run_success` / `run_failed` | Test execution (one `test_result` per technique) |
+| `cleanup_started` / `cleanup_success` / `cleanup_failed` | Cleanup Host lifecycle |
 
-![](../../../assets/images/atomic-7.png)
+Each event includes a `job_id` for correlation and the sensor ID. The `test_result` event includes the technique ID, execution status, and a base64-encoded log of the test output.
 
-Note that results are easily distinguished via a `result <MITRE ATT&CK ID>` event name, allowing for easy filtering and analysis.
+Within the **Timeline** of the sensor you ran a test on, you will also find `RECEIPT` events that contain the raw execution output (STDOUT, STDERR, exit code).
 
-Within the **Timeline** of the *system on which you ran a test*, you will also find `RECEIPT` event(s) that contain more details about executed tests. For example, the following output shows data related to a test for ATT&CK ID T1053.
+Between webhook events in the `ext-atomic-red-team` adapter and `RECEIPT` events on the sensor, you can correlate and identify successful and failed tests.
 
-![](../../../assets/images/atomic-8.png)
+## Notes
 
-Between `RECEIPT` events and output in the `ext-atomic-red-team` adapter, you can correlate and identify successful and failed Atomic Red Team tests.
+- The Defender exclusion on Windows is best-effort. If Tamper Protection blocks it, the extension still installs the framework and reports a warning. Defender may quarantine some atomic test files.
+- Some techniques include many sub-tests (e.g., T1082 on Windows has 17+). Individual sub-tests may time out after 120 seconds — this is an upstream `Invoke-AtomicTest` default, not a limitation of the extension.
+- The list of available techniques is loaded from the upstream Atomic Red Team index at extension startup.
