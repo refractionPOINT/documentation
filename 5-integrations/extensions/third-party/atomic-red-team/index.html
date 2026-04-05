@@ -7604,10 +7604,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-atomic-red-team-tests" class="md-nav__link">
+  <a href="#supported-platforms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running Atomic Red Team test(s)
+        Supported Platforms
       
     </span>
   </a>
@@ -7615,10 +7615,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checking-atomic-red-team-results" class="md-nav__link">
+  <a href="#three-step-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Checking Atomic Red Team Results
+        Three-Step Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three-Step Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-prepare-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Prepare Host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-run-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Run Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-cleanup-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Cleanup Host
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking Results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
       
     </span>
   </a>
@@ -11270,10 +11331,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-atomic-red-team-tests" class="md-nav__link">
+  <a href="#supported-platforms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running Atomic Red Team test(s)
+        Supported Platforms
       
     </span>
   </a>
@@ -11281,10 +11342,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checking-atomic-red-team-results" class="md-nav__link">
+  <a href="#three-step-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Checking Atomic Red Team Results
+        Three-Step Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three-Step Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-prepare-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Prepare Host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-run-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Run Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-cleanup-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Cleanup Host
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking Results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
       
     </span>
   </a>
@@ -11398,46 +11520,69 @@
 <h1 id="atomic-red-team">Atomic Red Team<a class="headerlink" href="#atomic-red-team" title="Anchor link to this section">&para;</a></h1>
 <p><strong>Atomic Red Team</strong> is a library of tests mapped to the MITRE ATT&amp;CK framework, provided by Red Canary. With this <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr>, LimaCharlie users can use Atomic Red Team to quickly, portably, and reproducibly test their environments.</p>
 <p>Find more information about it <a href="https://atomicredteam.io/">here</a>.</p>
-<p>New Atomic Red Team <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr></p>
-<p>Please note that the Atomic Red Team <strong><abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr></strong> has replaced the Atomic Red Team <strong>Service</strong>. Ensure that your <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> disabled/removes the Service and subscribes to the <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr>. This documentation applies to the Atomic Red Team extension.</p>
 <h2 id="enabling-the-atomic-red-team-extension">Enabling the Atomic Red Team <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr><a class="headerlink" href="#enabling-the-atomic-red-team-extension" title="Anchor link to this section">&para;</a></h2>
 <p>Enabling Atomic Red Team can be done within the LimaCharlie <strong>Marketplace</strong>, or at <a href="https://beta.app.limacharlie.io/add-ons/extension-detail/ext-atomic-red-team">this link</a>.</p>
-<p><img alt="" src="../../../../assets/images/atomic-1.png" /></p>
 <p>Under the <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> dropdown, select a tenant (organization) you want to subscribe to Atomic Red Team and click subscribe.</p>
-<p><img alt="" src="../../../../assets/images/atomic-2.png" /></p>
-<p>Please note that <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> are applied on the per-tenant basis. If you have multiple organizations you want to subscribe to Atomic Red Team, you will need to subscribe each organization to the extension separately.</p>
-<p>You can also manage add-ons from the <strong>Subscriptions</strong> menu under <strong>Billing</strong>.</p>
-<p><img alt="" src="../../../../assets/images/atomic-3.png" /></p>
-<p>Tenants that have been subscribed to the extension, will be marked with a green check mark in the <strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr></strong> dropdown.</p>
-<h2 id="running-atomic-red-team-tests">Running Atomic Red Team test(s)<a class="headerlink" href="#running-atomic-red-team-tests" title="Anchor link to this section">&para;</a></h2>
-<p>After Atomic Red Team has been enabled for your organization, the <strong>Atomic Red Team</strong> option will be available under the <strong><abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr></strong> menu in the web UI. Selecting this <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> will render the Atomic Red Team test selection menu.</p>
-<p><img alt="" src="../../../../assets/images/atomic-4.png" /></p>
-<p><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Eligibility for Atomic Red Team tests</p>
-<p>Currently, LimaCharlie supports Atomic Red Team tests on Sensors installed on Windows operating systems. Furthermore, sensors must be online in order for tests to run.</p>
-<p>Within the Atomic Red Team menu, you can select a <strong><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr></strong> to run test(s) against. Furthermore, you can also pre-select a set of tests from the full Atomic Red Team suite.</p>
-<p>System Changes</p>
-<p>Running Atomic Red Team tests will likely modify some system configurations. LimaCharlie attempts to revert any configuration changes performed, but the core logic is handled by the Atomic Red Team project. The following actions may occur:</p>
+<p>Please note that <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> are applied on a per-tenant basis. If you have multiple organizations you want to subscribe to Atomic Red Team, you will need to subscribe each organization to the extension separately.</p>
+<h2 id="supported-platforms">Supported Platforms<a class="headerlink" href="#supported-platforms" title="Anchor link to this section">&para;</a></h2>
+<p>The extension supports sensors on <strong>Windows</strong>, <strong>Linux</strong>, and <strong>macOS</strong>. Sensors must be online for tests to run.</p>
+<p>On Linux and macOS, the extension installs PowerShell Core (<code>pwsh</code>) automatically during the Prepare step if it is not already present.</p>
+<h2 id="three-step-workflow">Three-Step Workflow<a class="headerlink" href="#three-step-workflow" title="Anchor link to this section">&para;</a></h2>
+<p>The extension uses a three-step workflow: <strong>Prepare Host</strong> → <strong>Run Tests</strong> → <strong>Cleanup Host</strong>. This matches how the upstream Atomic Red Team project is intended to be used.</p>
+<h3 id="step-1-prepare-host">Step 1: Prepare Host<a class="headerlink" href="#step-1-prepare-host" title="Anchor link to this section">&para;</a></h3>
+<p>Before running any tests, you must prepare the target sensor. This installs the Atomic Red Team framework and its dependencies.</p>
+<p><strong>What it does:</strong></p>
 <ul>
-<li>Modify PowerShell scripting permissions</li>
-<li>Modify PowerShell script execution policies</li>
-<li>Check/Modify Microsoft Defender status</li>
-<li>Install dependencies like Nuget</li>
-<li>Install Atomic Red Team technique-specific dependencies</li>
-<li>Technique-specific configuration changes</li>
+<li><strong>Windows</strong>: adds a Windows Defender exclusion for <code>C:\AtomicRedTeam</code> (best-effort — Tamper Protection may block it), installs NuGet, the <code>powershell-yaml</code> module, and the Invoke-AtomicRedTeam framework with atomics.</li>
+<li><strong>Linux</strong>: installs PowerShell Core via the system package manager (apt/dnf), then installs the framework to <code>/opt/AtomicRedTeam</code>.</li>
+<li><strong>macOS</strong>: installs PowerShell Core via the official <code>.pkg</code> installer, then installs the framework to <code>/opt/AtomicRedTeam</code>.</li>
 </ul>
-<p>The list of available tests is updated every time the window is open, ensuring that you are getting all available options from the Atomic Red Team repository.</p>
-<p><img alt="" src="../../../../assets/images/atomic-5.png" /></p>
-<p>Select your test(s) of choice, and click 'Run Tests'. You will receive a dialog box with a job id that is associated with this particular run of test(s).</p>
-<h2 id="checking-atomic-red-team-results">Checking Atomic Red Team Results<a class="headerlink" href="#checking-atomic-red-team-results" title="Anchor link to this section">&para;</a></h2>
-<p>When the Atomic Red Team extension is enabled, you will see an <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> named <code>ext-atomic-red-team</code>.</p>
-<p><img alt="" src="../../../../assets/images/atomic-6.png" /></p>
-<p>This <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> corresponds to all Atomic Red Team activity, including jobs run and results returned. As a separate adapter, this also means that Atomic Red Team tests are actionable events. For example, you could construct a  rule based on Atomic Red Team test results or feedback from system telemetry.</p>
-<p>Viewing the <strong>Timeline</strong> within the <code>ext-atomic-red-team</code> adapter will display the test(s) run and associated results, if available.</p>
-<p><img alt="" src="../../../../assets/images/atomic-7.png" /></p>
-<p>Note that results are easily distinguished via a <code>result &lt;MITRE ATT&amp;CK ID&gt;</code> event name, allowing for easy filtering and analysis.</p>
-<p>Within the <strong>Timeline</strong> of the <em>system on which you ran a test</em>, you will also find <code>RECEIPT</code> event(s) that contain more details about executed tests. For example, the following output shows data related to a test for ATT&amp;CK ID T1053.</p>
-<p><img alt="" src="../../../../assets/images/atomic-8.png" /></p>
-<p>Between <code>RECEIPT</code> events and output in the <code>ext-atomic-red-team</code> adapter, you can correlate and identify successful and failed Atomic Red Team tests.</p>
+<p>You only need to prepare a host once. After that, you can run as many tests as you want.</p>
+<h3 id="step-2-run-tests">Step 2: Run Tests<a class="headerlink" href="#step-2-run-tests" title="Anchor link to this section">&para;</a></h3>
+<p>Select one or more MITRE ATT&amp;CK technique IDs from the dropdown and click Run. Tests execute sequentially — each test checks prerequisites, installs them if needed, executes the technique, and optionally runs the atomic cleanup step.</p>
+<p>The <strong>Clean</strong> option controls whether each test's atomic cleanup runs after execution (reverting technique-specific changes). This is separate from the host-level Cleanup step.</p>
+<p>If multiple tests are selected, they are chained automatically. Each test completion triggers the next via a callback. A single <code>job_id</code> tracks the entire run.</p>
+<h3 id="step-3-cleanup-host">Step 3: Cleanup Host<a class="headerlink" href="#step-3-cleanup-host" title="Anchor link to this section">&para;</a></h3>
+<p>When you are done testing, run Cleanup to reverse the changes made by Prepare:</p>
+<ul>
+<li><strong>Windows</strong>: removes the Defender exclusion and deletes <code>C:\AtomicRedTeam</code>.</li>
+<li><strong>Linux/macOS</strong>: deletes <code>/opt/AtomicRedTeam</code>.</li>
+<li>All platforms: uninstalls the <code>powershell-yaml</code> PowerShell module.</li>
+</ul>
+<p>Cleanup is best-effort — if some components can't be removed (e.g., files locked), it reports partial success with details.</p>
+<h2 id="checking-results">Checking Results<a class="headerlink" href="#checking-results" title="Anchor link to this section">&para;</a></h2>
+<p>When the extension is enabled, you will see an <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> named <code>ext-atomic-red-team</code>. This adapter receives all extension activity as webhook events:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prepare_started</code> / <code>prepare_success</code> / <code>prepare_failed</code></td>
+<td>Prepare Host lifecycle</td>
+</tr>
+<tr>
+<td><code>run_started</code> / <code>test_result</code> / <code>run_success</code> / <code>run_failed</code></td>
+<td>Test execution (one <code>test_result</code> per technique)</td>
+</tr>
+<tr>
+<td><code>cleanup_started</code> / <code>cleanup_success</code> / <code>cleanup_failed</code></td>
+<td>Cleanup Host lifecycle</td>
+</tr>
+</tbody>
+</table>
+<p>Each event includes a <code>job_id</code> for correlation and the sensor ID. The <code>test_result</code> event includes the technique ID, execution status, and a base64-encoded log of the test output.</p>
+<p>Within the <strong>Timeline</strong> of the sensor you ran a test on, you will also find <code>RECEIPT</code> events that contain the raw execution output (STDOUT, STDERR, exit code).</p>
+<p>Between webhook events in the <code>ext-atomic-red-team</code> adapter and <code>RECEIPT</code> events on the sensor, you can correlate and identify successful and failed tests.</p>
+<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Anchor link to this section">&para;</a></h2>
+<ul>
+<li>The Defender exclusion on Windows is best-effort. If Tamper Protection blocks it, the extension still installs the framework and reports a warning. Defender may quarantine some atomic test files.</li>
+<li>Some techniques include many sub-tests (e.g., T1082 on Windows has 17+). Individual sub-tests may time out after 120 seconds — this is an upstream <code>Invoke-AtomicTest</code> default, not a limitation of the extension.</li>
+<li>The list of available techniques is loaded from the upstream Atomic Red Team index at extension startup.</li>
+</ul>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 
