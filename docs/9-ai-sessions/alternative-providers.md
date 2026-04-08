@@ -66,11 +66,11 @@ You must also ensure that the Claude models you intend to use are [enabled in yo
 
 ### Configuration
 
-Set the environment variables in your session profile. These can be configured in both interactive (user) and headless (D&R-driven) sessions.
+Set the model and environment variables in your session profile. These can be configured in both interactive (user) and headless (D&R-driven) sessions.
 
 #### Interactive Sessions (Profile)
 
-When creating or updating a profile, include the Bedrock environment variables:
+Profiles can be configured through the LimaCharlie web app (under AI Sessions > Profiles) or via the API. When creating or updating a profile, set the Bedrock model and environment variables:
 
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
