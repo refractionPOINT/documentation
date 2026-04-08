@@ -12,7 +12,11 @@ This is useful when:
 
 [Amazon Bedrock](https://aws.amazon.com/bedrock/) provides access to Claude models through AWS infrastructure. To use Bedrock as the AI provider for your sessions, you configure AWS credentials and a feature flag via environment variables.
 
-### Required Environment Variables
+### Requirements
+
+You need to configure both environment variables and a profile-level `model` setting.
+
+#### Environment Variables
 
 | Variable | Description |
 |----------|-------------|
@@ -20,6 +24,23 @@ This is useful when:
 | `AWS_ACCESS_KEY_ID` | Your AWS access key ID with Bedrock permissions. |
 | `AWS_SECRET_ACCESS_KEY` | Your AWS secret access key. |
 | `AWS_REGION` | The AWS region where Bedrock is available (e.g., `us-east-1`, `us-west-2`, `ap-southeast-2`). |
+
+#### Model
+
+You must also set the `model` field in the profile to a Bedrock model ID. Bedrock model IDs differ from standard Anthropic model IDs — they include a region prefix and version suffix:
+
+| Profile field | Example value |
+|---------------|---------------|
+| `model` | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
+
+The general format is `<region-prefix>.anthropic.<model-name>-v<version>:<minor>`. Available model IDs can be found in the [Bedrock model IDs documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html). Common examples:
+
+- `us.anthropic.claude-sonnet-4-5-20250929-v1:0`
+- `us.anthropic.claude-haiku-4-5-20251001-v1:0`
+- `eu.anthropic.claude-sonnet-4-5-20250929-v1:0`
+- `ap.anthropic.claude-sonnet-4-5-20250929-v1:0`
+
+The region prefix in the model ID (e.g., `us`, `eu`, `ap`) should correspond to your `AWS_REGION`.
 
 ### AWS IAM Permissions
 
@@ -58,6 +79,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
   -d '{
     "name": "Bedrock Investigation",
     "description": "Investigation profile using AWS Bedrock",
+    "model": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
     "environment": {
       "CLAUDE_CODE_USE_BEDROCK": "1",
       "AWS_ACCESS_KEY_ID": "AKIAIOSFODNN7EXAMPLE",
@@ -79,6 +101,7 @@ respond:
     prompt: "Investigate this detection..."
     anthropic_secret: hive://secret/anthropic-key
     profile:
+      model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
       environment:
         CLAUDE_CODE_USE_BEDROCK: "1"
         AWS_ACCESS_KEY_ID: hive://secret/aws-access-key
@@ -88,7 +111,7 @@ respond:
 
 #### D&R-Driven Sessions (AI Agent Hive Record)
 
-When using definition mode with a Hive AI agent record, set the environment variables in the record:
+When using definition mode with a Hive AI agent record, set the model and environment variables in the record:
 
 ```yaml
 ai_agent:
@@ -97,6 +120,7 @@ ai_agent:
       prompt: "Investigate this detection..."
       anthropic_secret: hive://secret/anthropic-key
       lc_api_key_secret: hive://secret/lc-api-key
+      model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
       environment:
         CLAUDE_CODE_USE_BEDROCK: "1"
         AWS_ACCESS_KEY_ID: hive://secret/aws-access-key
