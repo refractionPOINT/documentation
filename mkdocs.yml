@@ -512,6 +512,7 @@ nav:
       - Overview: 9-ai-sessions/index.md
       - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
       - User Sessions: 9-ai-sessions/user-sessions.md
+      - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
       - TypeScript SDK: 9-ai-sessions/sdk.md
 
