@@ -397,6 +397,7 @@ nav:
               - Payload Manager: 5-integrations/extensions/limacharlie/payload-manager.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
+              - Feedback: 5-integrations/extensions/limacharlie/feedback.md
           - Third Party:
               - Overview: 5-integrations/extensions/third-party/index.md
               - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
