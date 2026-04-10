@@ -1,6 +1,6 @@
 # Feedback
 
-The Feedback extension enables interactive feedback requests across external channels. It sends approval/denial prompts, acknowledgement requests, or free-form questions to Slack channels or a built-in web UI, collects responses, and dispatches them to LimaCharlie subsystems (case notes via ext-cases, playbook triggers via ext-playbook).
+The Feedback extension enables interactive feedback requests across external channels. It sends approval/denial prompts, acknowledgement requests, or free-form questions to Slack, Telegram, Microsoft Teams, email, or a built-in web UI. It collects responses and dispatches them to LimaCharlie subsystems (case notes via ext-cases, playbook triggers via ext-playbook).
 
 Designed for AI-driven and human-initiated workflows where operator approval or input is required before taking an automated action. For example, a D&R rule or playbook can ask a human "Should we isolate host compromised-01?" and wait for a response before proceeding.
 
@@ -21,10 +21,13 @@ No additional configuration is required. You can immediately start configuring c
 
 A **channel** defines how feedback requests are delivered to respondents. Each channel has a name and a type. Channels are configured through the extension config (see [Channel Configuration](#channel-configuration)).
 
-| Channel Type | Description | Requirements |
-|-------------|-------------|--------------|
-| `web` | Built-in web UI. Returns a shareable URL that displays the question with response buttons or text input. No external setup needed. | None |
-| `slack` | Sends an interactive Block Kit message to a Slack channel with action buttons. For question-type requests, a "Respond" button links to the web UI since Slack does not support inline text input. | A LimaCharlie [Tailored Output](../../../3-detection-response/outputs.md) with `slack_api_token` and `slack_channel` configured |
+| Channel Type | Description | In-Chat Buttons | Requirements |
+|-------------|-------------|:---------------:|--------------|
+| `web` | Built-in web UI. Returns a shareable URL that displays the question with response buttons or text input. | N/A | None |
+| `slack` | Sends an interactive Block Kit message to a Slack channel with action buttons. | Yes | A Slack [Tailored Output](../../../3-detection-response/outputs.md) with `slack_api_token` and `slack_channel`. See [Slack Setup](#slack-setup). |
+| `telegram` | Sends a message with inline keyboard buttons to a Telegram chat via Bot API. | Yes | A Telegram [Tailored Output](../../../3-detection-response/outputs.md) with `bot_token` and `chat_id`. See [Telegram Setup](#telegram-setup). |
+| `ms_teams` | Sends an Adaptive Card to a Microsoft Teams channel via webhook. A button links to the web UI for response. | No (link to web UI) | A Microsoft Teams [Tailored Output](../../../3-detection-response/outputs.md) with `webhook_url`. See [Microsoft Teams Setup](#microsoft-teams-setup). |
+| `email` | Sends an HTML email with the question and a link to the web approval page. | No (link to web UI) | An SMTP [Tailored Output](../../../3-detection-response/outputs.md) with `dest_host`, `dest_email`, `from_email`, and SMTP credentials. See [Email Setup](#email-setup). |
 
 ### Feedback Types
 
@@ -59,7 +62,7 @@ Channels are managed through the extension config, not via extension actions. Yo
 
 === "CLI"
     ```bash
-    echo '{"data":{"channels":[{"name":"ops","channel_type":"web"},{"name":"slack-ops","channel_type":"slack","output_name":"my-slack-output"}]},"usr_mtd":{"enabled":true}}' | \
+    echo '{"data":{"channels":[{"name":"ops","channel_type":"web"},{"name":"slack-ops","channel_type":"slack","output_name":"my-slack-output"},{"name":"tg-ops","channel_type":"telegram","output_name":"my-telegram-output"},{"name":"teams-ops","channel_type":"ms_teams","output_name":"my-teams-output"},{"name":"email-ops","channel_type":"email","output_name":"my-smtp-output"}]},"usr_mtd":{"enabled":true}}' | \
       limacharlie hive set --hive-name extension_config --key ext-feedback
     ```
 
@@ -73,7 +76,18 @@ Channels are managed through the extension config, not via extension actions. Yo
       - name: slack-ops
         channel_type: slack
         output_name: my-slack-output
+      - name: tg-ops
+        channel_type: telegram
+        output_name: my-telegram-output
+      - name: teams-ops
+        channel_type: ms_teams
+        output_name: my-teams-output
+      - name: email-ops
+        channel_type: email
+        output_name: my-smtp-output
     ```
+
+For all channel types except `web`, the `output_name` field references a LimaCharlie [Tailored Output](../../../3-detection-response/outputs.md) that holds the credentials for the channel.
 
 ## Sending Feedback Requests
 
@@ -105,7 +119,7 @@ The response includes:
 }
 ```
 
-The `url` is the shareable link to the web UI where the respondent can answer. For Slack channels, no URL is returned -- the message is sent directly to the Slack channel.
+The `url` is the shareable link to the web UI where the respondent can answer. For Slack, Telegram, Microsoft Teams, and email channels, no URL is returned in the response -- the message is sent directly to the configured channel.
 
 ### Acknowledgement
 
@@ -228,6 +242,126 @@ To use Slack channels:
 
 !!! note
     For `request_question` feedback type, Slack shows a "Respond" button that links to the web UI, since Slack interactive messages do not support inline text input fields.
+
+## Telegram Setup
+
+To use Telegram channels, you need a Telegram bot and a LimaCharlie Tailored Output with its credentials.
+
+### Step 1: Create a Telegram Bot
+
+1. Open Telegram and start a conversation with [**@BotFather**](https://t.me/BotFather) ([Telegram Bot API documentation](https://core.telegram.org/bots#botfather))
+2. Send `/newbot` and follow the prompts to choose a name and username
+3. BotFather will respond with a **bot token** (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`). Save this token.
+4. Add the bot to the Telegram group or channel where you want feedback messages delivered
+5. Get the **chat ID** of the group or channel. You can do this by:
+    - Adding the bot to the group, sending a message, then checking `https://api.telegram.org/bot<TOKEN>/getUpdates` for the `chat.id` field
+    - For channels, the chat ID is typically a negative number like `-1001234567890`
+
+For more information, see the [Telegram Bot API documentation](https://core.telegram.org/bots/api).
+
+### Step 2: Create a Tailored Output
+
+In LimaCharlie, create a Telegram [Tailored Output](../../../3-detection-response/outputs.md) with:
+
+- `bot_token`: the bot token from BotFather
+- `chat_id`: the target chat, group, or channel ID
+
+### Step 3: Add a Telegram Channel
+
+Add a channel to your extension config referencing the output name:
+
+```yaml
+channels:
+  - name: tg-ops
+    channel_type: telegram
+    output_name: my-telegram-output
+```
+
+### How Telegram Responses Work
+
+For `simple_approval` and `acknowledgement` feedback types, Telegram messages include **inline keyboard buttons** (Approve/Deny or Acknowledge) that the respondent can tap directly in the chat. The response is processed immediately without leaving Telegram.
+
+For `request_question`, a "Respond" button links to the web UI since Telegram inline keyboards do not support text input.
+
+When a response is received, the original Telegram message is updated to show the choice and who responded.
+
+!!! note
+    The extension automatically registers a webhook with the Telegram bot (using [`setWebhook`](https://core.telegram.org/bots/api#setwebhook)) to receive button-click callbacks. If the bot is also used for other webhook-based integrations, the ext-feedback webhook registration will override the existing one. Use a dedicated bot for ext-feedback if this is a concern.
+
+## Microsoft Teams Setup
+
+To use Microsoft Teams channels, you need a Teams webhook URL and a LimaCharlie Tailored Output.
+
+### Option A: Incoming Webhook (simple)
+
+1. In Microsoft Teams, navigate to the channel where you want feedback messages
+2. Click the channel name, then **Connectors** (or **Manage channel** > **Connectors**)
+3. Find **Incoming Webhook** and click **Configure**
+4. Give the webhook a name (e.g. "LimaCharlie Feedback") and click **Create**
+5. Copy the webhook URL
+
+For details, see [Create Incoming Webhooks](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook) in the Microsoft documentation.
+
+### Option B: Power Automate Workflow (recommended)
+
+Microsoft is transitioning from Office 365 Connectors to Power Automate Workflows. To create a workflow-based webhook:
+
+1. In the Teams channel, click **+** (Add a tab) or go to the channel settings
+2. Select **Workflows** and choose the **Post to a channel when a webhook request is received** template
+3. Follow the setup wizard to create the workflow
+4. Copy the workflow webhook URL
+
+For details, see [Create incoming webhooks with Workflows](https://support.microsoft.com/en-us/office/create-incoming-webhooks-with-workflows-for-microsoft-teams-8ae491c7-0394-4861-ba59-055e33f75498).
+
+### Create the Tailored Output
+
+In LimaCharlie, create a Microsoft Teams [Tailored Output](../../../3-detection-response/outputs.md) with:
+
+- `webhook_url`: the Teams webhook URL (from either option above)
+
+### Add a Teams Channel
+
+Add a channel to your extension config referencing the output name:
+
+```yaml
+channels:
+  - name: teams-ops
+    channel_type: ms_teams
+    output_name: my-teams-output
+```
+
+### How Teams Responses Work
+
+Feedback requests are delivered as [Adaptive Cards](https://learn.microsoft.com/en-us/adaptive-cards/) in the Teams channel. The card displays the question and a button that opens the web approval page in a browser. Responses are collected through the web UI.
+
+## Email Setup
+
+To use email channels, you need an SMTP server and a LimaCharlie Tailored Output with its credentials.
+
+### Create a Tailored Output
+
+In LimaCharlie, create an SMTP [Tailored Output](../../../3-detection-response/outputs.md) with:
+
+- `dest_host`: SMTP server address, optionally with port (e.g. `smtp.example.com:587`). Defaults to port 587 if not specified.
+- `dest_email`: the recipient email address (e.g. `soc@example.com`)
+- `from_email`: the sender email address (e.g. `limacharlie@example.com`)
+- `username` (optional): SMTP authentication username
+- `password` (optional): SMTP authentication password
+
+### Add an Email Channel
+
+Add a channel to your extension config referencing the output name:
+
+```yaml
+channels:
+  - name: email-ops
+    channel_type: email
+    output_name: my-smtp-output
+```
+
+### How Email Responses Work
+
+The extension sends an HTML email containing the feedback question and a **Respond** button that links to the web approval page. Responses are collected through the web UI.
 
 ## Actions Reference
 
