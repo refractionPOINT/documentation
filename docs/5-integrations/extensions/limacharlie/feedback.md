@@ -290,26 +290,20 @@ When a response is received, the original Telegram message is updated to show th
 
 ## Microsoft Teams Setup
 
-To use Microsoft Teams channels, you need a Teams webhook URL and a LimaCharlie Tailored Output.
+To use Microsoft Teams channels, you need a Teams Workflow webhook URL and a LimaCharlie Tailored Output.
 
-### Option A: Incoming Webhook (simple)
+!!! warning "Incoming Webhooks retired"
+    Microsoft retired Office 365 Connectors (including Incoming Webhooks) from Teams. You must use a Power Automate Workflow as described below.
+
+### Create a Workflow Webhook
 
 1. In Microsoft Teams, navigate to the channel where you want feedback messages
-2. Click the channel name, then **Connectors** (or **Manage channel** > **Connectors**)
-3. Find **Incoming Webhook** and click **Configure**
-4. Give the webhook a name (e.g. "LimaCharlie Feedback") and click **Create**
-5. Copy the webhook URL
-
-For details, see [Create Incoming Webhooks](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook) in the Microsoft documentation.
-
-### Option B: Power Automate Workflow (recommended)
-
-Microsoft is transitioning from Office 365 Connectors to Power Automate Workflows. To create a workflow-based webhook:
-
-1. In the Teams channel, click **+** (Add a tab) or go to the channel settings
-2. Select **Workflows** and choose the **Post to a channel when a webhook request is received** template
-3. Follow the setup wizard to create the workflow
-4. Copy the workflow webhook URL
+2. Click **...** (More options) next to the channel name
+3. Select **Workflows**
+4. Search for and select the **Send webhook alerts to a channel** template
+5. Give the workflow a name (e.g. "LimaCharlie Feedback") and authenticate your account
+6. Click **Next**, confirm the Team and Channel, then click **Add workflow**
+7. Copy the webhook URL from the confirmation dialog
 
 For details, see [Create incoming webhooks with Workflows](https://support.microsoft.com/en-us/office/create-incoming-webhooks-with-workflows-for-microsoft-teams-8ae491c7-0394-4861-ba59-055e33f75498).
 
