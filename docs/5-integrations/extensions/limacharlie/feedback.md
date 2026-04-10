@@ -24,10 +24,10 @@ A **channel** defines how feedback requests are delivered to respondents. Each c
 | Channel Type | Description | In-Chat Buttons | Requirements |
 |-------------|-------------|:---------------:|--------------|
 | `web` | Built-in web UI. Returns a shareable URL that displays the question with response buttons or text input. | N/A | None |
-| `slack` | Sends an interactive Block Kit message to a Slack channel with action buttons. | Yes | A Slack [Tailored Output](../../../3-detection-response/outputs.md) with `slack_api_token` and `slack_channel`. See [Slack Setup](#slack-setup). |
-| `telegram` | Sends a message with inline keyboard buttons to a Telegram chat via Bot API. | Yes | A Telegram [Tailored Output](../../../3-detection-response/outputs.md) with `bot_token` and `chat_id`. See [Telegram Setup](#telegram-setup). |
-| `ms_teams` | Sends an Adaptive Card to a Microsoft Teams channel via webhook. A button links to the web UI for response. | No (link to web UI) | A Microsoft Teams [Tailored Output](../../../3-detection-response/outputs.md) with `webhook_url`. See [Microsoft Teams Setup](#microsoft-teams-setup). |
-| `email` | Sends an HTML email with the question and a link to the web approval page. | No (link to web UI) | An SMTP [Tailored Output](../../../3-detection-response/outputs.md) with `dest_host`, `dest_email`, `from_email`, and SMTP credentials. See [Email Setup](#email-setup). |
+| `slack` | Sends an interactive Block Kit message to a Slack channel with action buttons. | Yes | A [Slack Tailored Output](../../outputs/destinations/slack.md) with `slack_api_token` and `slack_channel`. See [Slack Setup](#slack-setup). |
+| `telegram` | Sends a message with inline keyboard buttons to a Telegram chat via Bot API. | Yes | A [Telegram Tailored Output](../../outputs/destinations/telegram.md) with `bot_token` and `chat_id`. See [Telegram Setup](#telegram-setup). |
+| `ms_teams` | Sends an Adaptive Card to a Microsoft Teams channel via webhook. A button links to the web UI for response. | No (link to web UI) | A [Microsoft Teams Tailored Output](../../outputs/destinations/ms-teams.md) with `webhook_url`. See [Microsoft Teams Setup](#microsoft-teams-setup). |
+| `email` | Sends an HTML email with the question and a link to the web approval page. | No (link to web UI) | An [SMTP Tailored Output](../../outputs/destinations/smtp.md) with `dest_host`, `dest_email`, `from_email`, and SMTP credentials. See [Email Setup](#email-setup). |
 
 ### Feedback Types
 

@@ -367,6 +367,7 @@ nav:
               - Webhook Bulk: 5-integrations/outputs/destinations/webhook-bulk.md
               - Slack: 5-integrations/outputs/destinations/slack.md
               - Telegram: 5-integrations/outputs/destinations/telegram.md
+              - Microsoft Teams: 5-integrations/outputs/destinations/ms-teams.md
               - SMTP: 5-integrations/outputs/destinations/smtp.md
               - Apache Kafka: 5-integrations/outputs/destinations/apache-kafka.md
               - Azure Event Hub: 5-integrations/outputs/destinations/azure-event-hub.md
