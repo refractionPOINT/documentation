@@ -67,7 +67,7 @@ Channels are managed through the extension config, not via extension actions. Yo
     ```
 
 === "Infrastructure as Code"
-    Channels can be managed via [git-sync](../../../7-infrastructure-as-code/index.md) by including the extension config in your synced repository:
+    Channels can be managed via [git-sync](git-sync.md) by including the extension config in your synced repository:
     ```yaml
     # extension_config/ext-feedback
     channels:
@@ -87,7 +87,7 @@ Channels are managed through the extension config, not via extension actions. Yo
         output_name: my-smtp-output
     ```
 
-For all channel types except `web`, the `output_name` field references a LimaCharlie [Tailored Output](../../../3-detection-response/outputs.md) that holds the credentials for the channel.
+For all channel types except `web`, the `output_name` field references a LimaCharlie [Tailored Output](../../outputs/index.md) that holds the credentials for the channel.
 
 ## Sending Feedback Requests
 
@@ -235,7 +235,7 @@ To use Slack channels:
 1. Create a Slack App with "Interactivity & Shortcuts" enabled
 2. Set the Request URL to the Slack callback endpoint: `https://feedback-system.limacharlie.io/callback/slack`
 3. Install the app to your Slack workspace and note the Bot User OAuth Token
-4. In LimaCharlie, create a [Tailored Output](../../../3-detection-response/outputs.md) with:
+4. In LimaCharlie, create a [Tailored Output](../../outputs/index.md) with:
     - `slack_api_token`: the Bot User OAuth Token
     - `slack_channel`: the target channel (e.g. `#security-ops`)
 5. Add a Slack channel to your extension config referencing the output name (see [Channel Configuration](#channel-configuration)). For example, a channel with `name: "ops"`, `channel_type: "slack"`, and `output_name: "my-slack-output"`.
@@ -261,7 +261,7 @@ For more information, see the [Telegram Bot API documentation](https://core.tele
 
 ### Step 2: Create a Tailored Output
 
-In LimaCharlie, create a Telegram [Tailored Output](../../../3-detection-response/outputs.md) with:
+In LimaCharlie, create a Telegram [Tailored Output](../../outputs/index.md) with:
 
 - `bot_token`: the bot token from BotFather
 - `chat_id`: the target chat, group, or channel ID
@@ -315,7 +315,7 @@ For details, see [Create incoming webhooks with Workflows](https://support.micro
 
 ### Create the Tailored Output
 
-In LimaCharlie, create a Microsoft Teams [Tailored Output](../../../3-detection-response/outputs.md) with:
+In LimaCharlie, create a Microsoft Teams [Tailored Output](../../outputs/index.md) with:
 
 - `webhook_url`: the Teams webhook URL (from either option above)
 
@@ -340,7 +340,7 @@ To use email channels, you need an SMTP server and a LimaCharlie Tailored Output
 
 ### Create a Tailored Output
 
-In LimaCharlie, create an SMTP [Tailored Output](../../../3-detection-response/outputs.md) with:
+In LimaCharlie, create an SMTP [Tailored Output](../../outputs/index.md) with:
 
 - `dest_host`: SMTP server address, optionally with port (e.g. `smtp.example.com:587`). Defaults to port 587 if not specified.
 - `dest_email`: the recipient email address (e.g. `soc@example.com`)
