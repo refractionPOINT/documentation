@@ -163,7 +163,7 @@ This playbook receives the feedback response and either isolates the host or tag
 ### Playbook Code
 
 ```python
-from limacharlie.sdk.sensor import Sensor
+from limacharlie.Sensor import Sensor
 
 def playbook(sdk, data):
     if not sdk:
@@ -184,7 +184,7 @@ def playbook(sdk, data):
 
     if action == "isolate":
         # Isolate the host from the network.
-        sensor.isolate()
+        sensor.isolateNetwork()
 
         # Generate a detection so this shows up in the Detections view.
         return {
@@ -239,7 +239,7 @@ hives:
     handle-isolation-decision:
       data:
         python: |-
-          from limacharlie.sdk.sensor import Sensor
+          from limacharlie.Sensor import Sensor
 
           def playbook(sdk, data):
               if not sdk:
@@ -259,7 +259,7 @@ hives:
               sensor = Sensor(sdk, sid)
 
               if action == "isolate":
-                  sensor.isolate()
+                  sensor.isolateNetwork()
                   return {
                       "data": {
                           "action": "isolated",
