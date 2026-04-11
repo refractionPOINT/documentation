@@ -12300,7 +12300,7 @@
 
 
 <h1 id="feedback">Feedback<a class="headerlink" href="#feedback" title="Anchor link to this section">&para;</a></h1>
-<p>The Feedback extension enables interactive feedback requests across external channels. It sends approval/denial prompts, acknowledgement requests, or free-form questions to Slack, Telegram, Microsoft Teams, email, or a built-in web UI. It collects responses and dispatches them to LimaCharlie subsystems (case notes via ext-cases, playbook triggers via ext-playbook).</p>
+<p>The Feedback extension enables interactive feedback requests across external channels. It sends approval/denial prompts, acknowledgement requests, or free-form questions to Slack, Telegram, Microsoft Teams, email, or a built-in web UI. It collects responses and dispatches them to LimaCharlie subsystems (case notes via ext-cases, playbook triggers via ext-playbook, or AI agent sessions via the AI Sessions API).</p>
 <p>Designed for AI-driven and human-initiated workflows where operator approval or input is required before taking an automated action. For example, a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule or playbook can ask a human "Should we isolate host compromised-01?" and wait for a response before proceeding.</p>
 <h2 id="enabling-the-extension">Enabling the <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr><a class="headerlink" href="#enabling-the-extension" title="Anchor link to this section">&para;</a></h2>
 <p>Navigate to the <a href="https://app.limacharlie.io/add-ons/extension-detail/ext-feedback">Feedback extension page</a> in the marketplace. Select the organization you wish to enable it for, and select <strong>Subscribe</strong>.</p>
@@ -12404,6 +12404,10 @@
 <tr>
 <td><code>playbook</code></td>
 <td>Triggers the specified playbook via ext-playbook with the response data. Requires a <code>playbook_name</code>.</td>
+</tr>
+<tr>
+<td><code>ai_agent</code></td>
+<td>Starts an AI agent session with the response data appended to the agent's prompt. Requires an <code>ai_agent_name</code> referencing an <code>ai_agent</code> hive record.</td>
 </tr>
 </tbody>
 </table>
@@ -12834,7 +12838,7 @@
 <tr>
 <td><code>feedback_destination</code></td>
 <td style="text-align: center;">Yes</td>
-<td><code>case</code> or <code>playbook</code></td>
+<td><code>case</code>, <code>playbook</code>, or <code>ai_agent</code></td>
 </tr>
 <tr>
 <td><code>case_id</code></td>
@@ -12845,6 +12849,11 @@
 <td><code>playbook_name</code></td>
 <td style="text-align: center;">When destination is <code>playbook</code></td>
 <td>Playbook to trigger with the response</td>
+</tr>
+<tr>
+<td><code>ai_agent_name</code></td>
+<td style="text-align: center;">When destination is <code>ai_agent</code></td>
+<td>Name of the <code>ai_agent</code> hive record to start a session with</td>
 </tr>
 <tr>
 <td><code>approved_content</code></td>
@@ -12896,7 +12905,7 @@
 <tr>
 <td><code>feedback_destination</code></td>
 <td style="text-align: center;">Yes</td>
-<td><code>case</code> or <code>playbook</code></td>
+<td><code>case</code>, <code>playbook</code>, or <code>ai_agent</code></td>
 </tr>
 <tr>
 <td><code>case_id</code></td>
@@ -12907,6 +12916,11 @@
 <td><code>playbook_name</code></td>
 <td style="text-align: center;">When destination is <code>playbook</code></td>
 <td>Playbook to trigger with the response</td>
+</tr>
+<tr>
+<td><code>ai_agent_name</code></td>
+<td style="text-align: center;">When destination is <code>ai_agent</code></td>
+<td>Name of the <code>ai_agent</code> hive record to start a session with</td>
 </tr>
 <tr>
 <td><code>acknowledged_content</code></td>
@@ -12948,7 +12962,7 @@
 <tr>
 <td><code>feedback_destination</code></td>
 <td style="text-align: center;">Yes</td>
-<td><code>case</code> or <code>playbook</code></td>
+<td><code>case</code>, <code>playbook</code>, or <code>ai_agent</code></td>
 </tr>
 <tr>
 <td><code>case_id</code></td>
@@ -12959,6 +12973,11 @@
 <td><code>playbook_name</code></td>
 <td style="text-align: center;">When destination is <code>playbook</code></td>
 <td>Playbook to trigger with the response</td>
+</tr>
+<tr>
+<td><code>ai_agent_name</code></td>
+<td style="text-align: center;">When destination is <code>ai_agent</code></td>
+<td>Name of the <code>ai_agent</code> hive record to start a session with</td>
 </tr>
 <tr>
 <td><code>timeout_seconds</code></td>

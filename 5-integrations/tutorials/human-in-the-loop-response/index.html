@@ -12098,6 +12098,7 @@
 <p><strong>Escalation chain:</strong> If the timeout fires, have the playbook send a second feedback request to a different channel (e.g., <code>management-approvals</code>) with a shorter timeout before auto-isolating.</p>
 <p><strong>Multi-step workflow:</strong> Chain multiple feedback requests. For example, after isolation approval, ask "Run memory forensics on this host?" with the response going to a second playbook that triggers <a href="../../extensions/third-party/velociraptor/">Velociraptor</a> or a <a href="../../extensions/limacharlie/dumper/">Dumper</a> collection.</p>
 <p><strong>Audit trail:</strong> Set the feedback destination to <code>case</code> instead of <code>playbook</code> to log every approval decision as a case note, creating a reviewable audit trail.</p>
+<p><strong>AI agent follow-up:</strong> Set the feedback destination to <code>ai_agent</code> to start an AI agent session when the human responds. The agent receives the feedback response appended to its prompt, allowing it to take context-aware automated action based on the human's decision.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 
