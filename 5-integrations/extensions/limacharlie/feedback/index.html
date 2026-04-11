@@ -12281,7 +12281,7 @@
 <td><code>slack</code></td>
 <td>Sends an interactive Block Kit message to a Slack channel with action buttons.</td>
 <td style="text-align: center;">Yes</td>
-<td>A <a href="../../../outputs/destinations/slack/">Slack Tailored Output</a> with <code>slack_api_token</code>, <code>slack_channel</code>, and <code>slack_webhook_url</code>. See <a href="#slack-setup">Slack Setup</a>.</td>
+<td>A <a href="../../../outputs/destinations/slack/">Slack Tailored Output</a> with <code>slack_api_token</code> and <code>slack_channel</code>. See <a href="#slack-setup">Slack Setup</a>.</td>
 </tr>
 <tr>
 <td><code>telegram</code></td>
@@ -12527,7 +12527,6 @@
 <li>In LimaCharlie, create a <a href="../../../outputs/destinations/slack/">Slack Tailored Output</a> with:<ul>
 <li><code>slack_api_token</code>: the Bot User OAuth Token</li>
 <li><code>slack_channel</code>: the target channel (e.g. <code>#security-ops</code>)</li>
-<li><code>slack_webhook_url</code>: <code>https://feedback-system.limacharlie.io/callback/slack</code></li>
 </ul>
 </li>
 <li>Add a Slack channel to your extension config referencing the output name (see <a href="#channel-configuration">Channel Configuration</a>). For example, a channel with <code>name: "ops"</code>, <code>channel_type: "slack"</code>, and <code>output_name: "my-slack-output"</code>.</li>
