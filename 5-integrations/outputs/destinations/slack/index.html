@@ -6413,6 +6413,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Provisioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interactivity-setup-for-ext-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactivity Setup (for ext-feedback)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -11365,6 +11382,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Provisioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interactivity-setup-for-ext-feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactivity Setup (for ext-feedback)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -11474,25 +11508,40 @@
 <h1 id="slack">Slack<a class="headerlink" href="#slack" title="Anchor link to this section">&para;</a></h1>
 <p>Output detections and audit (only) to a Slack community and channel.</p>
 <ul>
-<li><code>slack_api_token</code>: the Slack provided API token used to authenticate.</li>
-<li><code>slack_channel</code>: the channel to output to within the community.</li>
+<li><code>slack_api_token</code>: the Bot User OAuth Token from your Slack App.</li>
+<li><code>slack_channel</code>: the channel to output to within the community (e.g. <code>#detections</code>).</li>
+<li><code>slack_webhook_url</code>: (optional) the Slack Interactivity Request URL. Required when using the output with interactive extensions like <a href="../../../extensions/limacharlie/feedback/">ext-feedback</a>. Set this to the callback endpoint provided by the extension (e.g. <code>https://feedback-system.limacharlie.io/callback/slack</code>).</li>
 </ul>
 <p>Example:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>slack_api_token: sample_api_token
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>slack_api_token: xoxb-your-bot-token
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>slack_channel: #detections
 </span></code></pre></div>
+<p>When used with <a href="../../../extensions/limacharlie/feedback/">ext-feedback</a> for interactive messages:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>slack_api_token: xoxb-your-bot-token
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>slack_channel: #security-ops
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>slack_webhook_url: https://feedback-system.limacharlie.io/callback/slack
+</span></code></pre></div>
 <h2 id="provisioning">Provisioning<a class="headerlink" href="#provisioning" title="Anchor link to this section">&para;</a></h2>
-<p>To use this Output, you need to create a Slack App and Bot. This is very simple:</p>
+<p>To use this Output, you need to create a Slack App and Bot:</p>
 <ol>
-<li>Head over to https://api.slack.com/apps</li>
-<li>Click on "Create App" and select the workspace where it should go</li>
-<li>From the sidebar, click on OAuth &amp; Permissions</li>
-<li>Go to the section "Bot Token Scope" and click "Add an OAuth Scope"</li>
-<li>Select the scope <code>chat:write</code></li>
-<li>From the sidebar, click "Install App" and then "Install to Workspace"</li>
-<li>Copy token shown, this is the <code>slack_api_token</code> you need in LimaCharlie</li>
-<li>In your Slack workspace, go to the channel you want to receive messages in, and type the slash command: <code>/invite @limacharlie</code> (assuming the app name is <code>limacharlie</code>)</li>
+<li>Go to <a href="https://api.slack.com/apps">https://api.slack.com/apps</a></li>
+<li>Click <strong>Create New App</strong>, select <strong>From scratch</strong>, and choose the workspace</li>
+<li>From the sidebar, click <strong>OAuth &amp; Permissions</strong></li>
+<li>Under <strong>Bot Token Scopes</strong>, click <strong>Add an OAuth Scope</strong> and add <code>chat:write</code></li>
+<li>From the sidebar, click <strong>Install App</strong>, then <strong>Install to Workspace</strong></li>
+<li>Copy the <strong>Bot User OAuth Token</strong> — this is the <code>slack_api_token</code> you need in LimaCharlie</li>
+<li>In your Slack workspace, go to the target channel and invite the bot with the slash command: <code>/invite @your-app-name</code></li>
 </ol>
+<h3 id="interactivity-setup-for-ext-feedback">Interactivity Setup (for ext-feedback)<a class="headerlink" href="#interactivity-setup-for-ext-feedback" title="Anchor link to this section">&para;</a></h3>
+<p>If using this output with the <a href="../../../extensions/limacharlie/feedback/">Feedback extension</a> for interactive Slack messages (approval buttons, acknowledgements):</p>
+<ol>
+<li>In your Slack App settings (<a href="https://api.slack.com/apps">api.slack.com/apps</a>), click <strong>Interactivity &amp; Shortcuts</strong> in the sidebar</li>
+<li>Toggle <strong>Interactivity</strong> to <strong>On</strong></li>
+<li>Set the <strong>Request URL</strong> to <code>https://feedback-system.limacharlie.io/callback/slack</code></li>
+<li>Click <strong>Save Changes</strong></li>
+<li>In LimaCharlie, set the <code>slack_webhook_url</code> parameter on the output to the same URL: <code>https://feedback-system.limacharlie.io/callback/slack</code></li>
+</ol>
+<p>This allows Slack to send button-click interactions back to the feedback extension for processing.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 
