@@ -4,21 +4,12 @@ Output detections and audit (only) to a Slack community and channel.
 
 * `slack_api_token`: the Bot User OAuth Token from your Slack App.
 * `slack_channel`: the channel to output to within the community (e.g. `#detections`).
-* `slack_webhook_url`: (optional) the Slack Interactivity Request URL. Required when using the output with interactive extensions like [ext-feedback](../../extensions/limacharlie/feedback.md). Set this to the callback endpoint provided by the extension (e.g. `https://feedback-system.limacharlie.io/callback/slack`).
 
 Example:
 
 ```
 slack_api_token: xoxb-your-bot-token
 slack_channel: #detections
-```
-
-When used with [ext-feedback](../../extensions/limacharlie/feedback.md) for interactive messages:
-
-```
-slack_api_token: xoxb-your-bot-token
-slack_channel: #security-ops
-slack_webhook_url: https://feedback-system.limacharlie.io/callback/slack
 ```
 
 ## Provisioning
@@ -41,6 +32,5 @@ If using this output with the [Feedback extension](../../extensions/limacharlie/
 2. Toggle **Interactivity** to **On**
 3. Set the **Request URL** to `https://feedback-system.limacharlie.io/callback/slack`
 4. Click **Save Changes**
-5. In LimaCharlie, set the `slack_webhook_url` parameter on the output to the same URL: `https://feedback-system.limacharlie.io/callback/slack`
 
-This allows Slack to send button-click interactions back to the feedback extension for processing.
+This allows Slack to send button-click interactions back to the feedback extension for processing. No additional LimaCharlie output parameters are needed — the extension registers the callback automatically.
