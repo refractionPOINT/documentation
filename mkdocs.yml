@@ -447,6 +447,7 @@ nav:
           - Dumper: 5-integrations/services/dumper.md
       - Tutorials:
           - VirusTotal Integration: 5-integrations/tutorials/virustotal-integration.md
+          - Human-in-the-Loop Response: 5-integrations/tutorials/human-in-the-loop-response.md
           - Hayabusa BigQuery: 5-integrations/tutorials/hayabusa-bigquery.md
           - Velociraptor BigQuery: 5-integrations/tutorials/velociraptor-bigquery.md
 
