@@ -1,6 +1,6 @@
 # Feedback
 
-The Feedback extension enables interactive feedback requests across external channels. It sends approval/denial prompts, acknowledgement requests, or free-form questions to Slack, Telegram, Microsoft Teams, email, or a built-in web UI. It collects responses and dispatches them to LimaCharlie subsystems (case notes via ext-cases, playbook triggers via ext-playbook).
+The Feedback extension enables interactive feedback requests across external channels. It sends approval/denial prompts, acknowledgement requests, or free-form questions to Slack, Telegram, Microsoft Teams, email, or a built-in web UI. It collects responses and dispatches them to LimaCharlie subsystems (case notes via ext-cases, playbook triggers via ext-playbook, or AI agent sessions via the AI Sessions API).
 
 Designed for AI-driven and human-initiated workflows where operator approval or input is required before taking an automated action. For example, a D&R rule or playbook can ask a human "Should we isolate host compromised-01?" and wait for a response before proceeding.
 
@@ -47,6 +47,7 @@ When a respondent answers, the extension dispatches the response to the configur
 |-------------|----------|
 | `case` | Adds a note to the specified case via ext-cases. Requires a `case_id`. |
 | `playbook` | Triggers the specified playbook via ext-playbook with the response data. Requires a `playbook_name`. |
+| `ai_agent` | Starts an AI agent session with the response data appended to the agent's prompt. Requires an `ai_agent_name` referencing an `ai_agent` hive record. |
 
 ### Response Content
 
@@ -470,9 +471,10 @@ The extension sends an HTML email containing the feedback question and a **Respo
 |-----------|:--------:|-------------|
 | `channel` | Yes | Name of the feedback channel |
 | `question` | Yes | The question or prompt to present |
-| `feedback_destination` | Yes | `case` or `playbook` |
+| `feedback_destination` | Yes | `case`, `playbook`, or `ai_agent` |
 | `case_id` | When destination is `case` | Case to add the response note to |
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
+| `ai_agent_name` | When destination is `ai_agent` | Name of the `ai_agent` hive record to start a session with |
 | `approved_content` | No | JSON data included when the respondent approves |
 | `denied_content` | No | JSON data included when the respondent denies |
 | `timeout_seconds` | No | Auto-respond after this many seconds if no response (minimum 60) |
@@ -485,9 +487,10 @@ The extension sends an HTML email containing the feedback question and a **Respo
 |-----------|:--------:|-------------|
 | `channel` | Yes | Name of the feedback channel |
 | `question` | Yes | The question or prompt to present |
-| `feedback_destination` | Yes | `case` or `playbook` |
+| `feedback_destination` | Yes | `case`, `playbook`, or `ai_agent` |
 | `case_id` | When destination is `case` | Case to add the response note to |
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
+| `ai_agent_name` | When destination is `ai_agent` | Name of the `ai_agent` hive record to start a session with |
 | `acknowledged_content` | No | JSON data included when the respondent acknowledges |
 | `timeout_seconds` | No | Auto-acknowledge after this many seconds if no response (minimum 60) |
 | `timeout_content` | No | JSON data for the timeout response (overrides `acknowledged_content`) |
@@ -498,8 +501,9 @@ The extension sends an HTML email containing the feedback question and a **Respo
 |-----------|:--------:|-------------|
 | `channel` | Yes | Name of the feedback channel |
 | `question` | Yes | The question or prompt to present |
-| `feedback_destination` | Yes | `case` or `playbook` |
+| `feedback_destination` | Yes | `case`, `playbook`, or `ai_agent` |
 | `case_id` | When destination is `case` | Case to add the response note to |
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
+| `ai_agent_name` | When destination is `ai_agent` | Name of the `ai_agent` hive record to start a session with |
 | `timeout_seconds` | No | Auto-answer after this many seconds if no response (minimum 60) |
 | `timeout_content` | When `timeout_seconds` is set | JSON data used as the automatic answer on timeout (required for question type) |

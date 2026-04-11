@@ -347,3 +347,5 @@ The CLI returns a `url` you can open in your browser to respond.
 **Multi-step workflow:** Chain multiple feedback requests. For example, after isolation approval, ask "Run memory forensics on this host?" with the response going to a second playbook that triggers [Velociraptor](../extensions/third-party/velociraptor.md) or a [Dumper](../extensions/limacharlie/dumper.md) collection.
 
 **Audit trail:** Set the feedback destination to `case` instead of `playbook` to log every approval decision as a case note, creating a reviewable audit trail.
+
+**AI agent follow-up:** Set the feedback destination to `ai_agent` to start an AI agent session when the human responds. The agent receives the feedback response appended to its prompt, allowing it to take context-aware automated action based on the human's decision.
