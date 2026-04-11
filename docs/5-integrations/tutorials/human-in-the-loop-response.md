@@ -58,11 +58,20 @@ Add a Slack channel to the Feedback extension config. This tells ext-feedback wh
 
 === "Infrastructure as Code"
     ```yaml
-    # extension_config/ext-feedback
-    channels:
-      - name: soc-approvals
-        channel_type: slack
-        output_name: my-slack-output
+    version: 3
+    hives:
+      extension_config:
+        ext-feedback:
+          data:
+            channels:
+              - name: soc-approvals
+                channel_type: slack
+                output_name: my-slack-output
+          usr_mtd:
+            enabled: true
+            expiry: 0
+            tags: []
+            comment: ""
     ```
 
 Verify the channel was created:
