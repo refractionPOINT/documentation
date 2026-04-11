@@ -56,11 +56,41 @@ Each feedback request can include optional JSON data per choice. When the respon
 - For `request_acknowledgement`, use `acknowledged_content`.
 - For `request_question`, no content fields are available -- the respondent's free-form text IS the response.
 
+### Timeouts
+
+All feedback actions accept an optional timeout. When `timeout_seconds` is set (minimum 60), the system automatically responds with a default choice if no human responds before the deadline. The timeout response flows through the same webhook/D&R/dispatch path as a normal response, with `responder` set to `"timeout"`.
+
+| Parameter | Applies To | Description |
+|-----------|-----------|-------------|
+| `timeout_seconds` | All actions | Number of seconds to wait before auto-responding (minimum 60) |
+| `timeout_choice` | `request_simple_approval` | Which choice to auto-select: `approved` or `denied`. Required when `timeout_seconds` is set. |
+| `timeout_content` | All actions | JSON data to include in the timeout response (overrides the per-choice content). Required for `request_question` when `timeout_seconds` is set. |
+
+For `request_acknowledgement`, the timeout choice is always `acknowledged`. For `request_question`, the timeout choice is always `answered` and `timeout_content` provides the automatic answer.
+
+When a timeout is configured, the channel message includes a note like "(Auto-denied in 5 minutes if no response)" so the respondent knows the deadline.
+
 ## Channel Configuration
 
 Channels are managed through the extension config, not via extension actions. You can configure channels through the LimaCharlie web UI (extension settings page), via the CLI, or through infrastructure-as-code with git-sync.
 
 === "CLI"
+    ```bash
+    # Add channels individually
+    limacharlie feedback channel add --name ops --type web
+    limacharlie feedback channel add --name slack-ops --type slack --output-name my-slack-output
+    limacharlie feedback channel add --name tg-ops --type telegram --output-name my-telegram-output
+    limacharlie feedback channel add --name teams-ops --type ms_teams --output-name my-teams-output
+    limacharlie feedback channel add --name email-ops --type email --output-name my-smtp-output
+
+    # List configured channels
+    limacharlie feedback channel list
+
+    # Remove a channel
+    limacharlie feedback channel remove --name old-channel
+    ```
+
+=== "Hive (bulk)"
     ```bash
     echo '{"data":{"channels":[{"name":"ops","channel_type":"web"},{"name":"slack-ops","channel_type":"slack","output_name":"my-slack-output"},{"name":"tg-ops","channel_type":"telegram","output_name":"my-telegram-output"},{"name":"teams-ops","channel_type":"ms_teams","output_name":"my-teams-output"},{"name":"email-ops","channel_type":"email","output_name":"my-smtp-output"}]},"usr_mtd":{"enabled":true}}' | \
       limacharlie hive set --hive-name extension_config --key ext-feedback
@@ -97,6 +127,28 @@ The `request_simple_approval` action sends a question with Approve/Deny buttons.
 
 === "CLI"
     ```bash
+    limacharlie feedback request-approval \
+      --channel ops \
+      --question "Should we isolate host compromised-01?" \
+      --destination case --case-id 78 \
+      --approved-content '{"action": "isolate", "sid": "sensor-abc"}' \
+      --denied-content '{"action": "skip"}'
+    ```
+
+=== "CLI (with timeout)"
+    ```bash
+    # Auto-deny after 5 minutes if no human responds
+    limacharlie feedback request-approval \
+      --channel ops \
+      --question "Should we isolate host compromised-01?" \
+      --destination case --case-id 78 \
+      --approved-content '{"action": "isolate", "sid": "sensor-abc"}' \
+      --denied-content '{"action": "skip"}' \
+      --timeout 300 --timeout-choice denied
+    ```
+
+=== "Extension Request (generic)"
+    ```bash
     limacharlie extension request \
       --name ext-feedback \
       --action request_simple_approval \
@@ -127,6 +179,25 @@ The `request_acknowledgement` action sends a question with an Acknowledge button
 
 === "CLI"
     ```bash
+    limacharlie feedback request-ack \
+      --channel ops \
+      --question "Alert: Ransomware detected on file-server-02. Please acknowledge." \
+      --destination case --case-id 92 \
+      --acknowledged-content '{"status": "seen"}'
+    ```
+
+=== "CLI (with timeout)"
+    ```bash
+    # Auto-acknowledge after 10 minutes
+    limacharlie feedback request-ack \
+      --channel ops \
+      --question "Alert: Ransomware detected on file-server-02. Please acknowledge." \
+      --destination case --case-id 92 \
+      --timeout 600
+    ```
+
+=== "Extension Request (generic)"
+    ```bash
     limacharlie extension request \
       --name ext-feedback \
       --action request_acknowledgement \
@@ -144,6 +215,24 @@ The `request_acknowledgement` action sends a question with an Acknowledge button
 The `request_question` action sends a question with a text input field. The respondent types a free-form answer.
 
 === "CLI"
+    ```bash
+    limacharlie feedback request-question \
+      --channel ops \
+      --question "What is the root cause of alert X?" \
+      --destination playbook --playbook handle-root-cause
+    ```
+
+=== "CLI (with timeout)"
+    ```bash
+    # Auto-answer after 5 minutes with a default response
+    limacharlie feedback request-question \
+      --channel ops \
+      --question "What is the root cause of alert X?" \
+      --destination playbook --playbook handle-root-cause \
+      --timeout 300 --timeout-content '{"answer": "no response"}'
+    ```
+
+=== "Extension Request (generic)"
     ```bash
     limacharlie extension request \
       --name ext-feedback \
@@ -186,7 +275,11 @@ value: /usr/bin/suspicious-tool
     denied_content:
       action: '{{ "monitor" }}'
       sid: routing.sid
+    timeout_seconds: '{{ 300 }}'
+    timeout_choice: '{{ "denied" }}'
 ```
+
+The `timeout_seconds: 300` and `timeout_choice: "denied"` ensure the rule auto-denies if no one responds within 5 minutes, preventing the workflow from hanging indefinitely.
 
 ### Playbook Example
 
@@ -196,7 +289,7 @@ A playbook can request approval during execution:
 def main(lc, data):
     import json
 
-    # Request human approval
+    # Request human approval with a 5-minute timeout
     response = lc.extension_request(
         "ext-feedback",
         "request_simple_approval",
@@ -207,11 +300,14 @@ def main(lc, data):
             "playbook_name": "handle-isolation-response",
             "approved_content": json.dumps({"action": "isolate", "sid": data.get("sid")}),
             "denied_content": json.dumps({"action": "skip"}),
+            "timeout_seconds": 300,
+            "timeout_choice": "denied",
         },
     )
 
     # The response will trigger the handle-isolation-response playbook
-    # when the human responds.
+    # when the human responds (or after 5 minutes with choice="denied"
+    # and responder="timeout").
     return {"request_id": response.get("request_id")}
 ```
 
@@ -219,14 +315,16 @@ def main(lc, data):
 
 1. A feedback request is created and stored with a 7-day TTL
 2. The question is delivered via the configured channel (Slack message or web URL)
-3. The respondent clicks a button or submits a text response
+3. The respondent clicks a button or submits a text response (or the timeout fires if configured)
 4. The response is routed through the organization's webhook adapter (authenticated via `lc-secret` header)
 5. A D&R rule matches the response event and triggers the extension's `process_response` action
 6. The extension atomically claims the request (preventing duplicate processing) and dispatches the response to the configured destination
 
+If a timeout is configured and no human responds before the deadline, the system automatically sends a response with the configured default choice. The timeout response includes `responder: "timeout"` so downstream automation can distinguish it from human responses.
+
 Feedback requests expire after **7 days**. Expired requests show an error in the web UI and are rejected by the extension.
 
-Responses are protected against replay: once a response is processed, any duplicate deliveries (from webhook retries or replay) are rejected.
+Responses are protected against replay: once a response is processed, any duplicate deliveries (from webhook retries or replay) are rejected. This also prevents races between a human response and a timeout firing simultaneously -- whichever is processed first claims the request.
 
 ## Slack Setup
 
@@ -377,6 +475,9 @@ The extension sends an HTML email containing the feedback question and a **Respo
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
 | `approved_content` | No | JSON data included when the respondent approves |
 | `denied_content` | No | JSON data included when the respondent denies |
+| `timeout_seconds` | No | Auto-respond after this many seconds if no response (minimum 60) |
+| `timeout_choice` | When `timeout_seconds` is set | Choice to auto-select on timeout: `approved` or `denied` |
+| `timeout_content` | No | JSON data for the timeout response (overrides the choice's content) |
 
 ### request_acknowledgement Parameters
 
@@ -388,6 +489,8 @@ The extension sends an HTML email containing the feedback question and a **Respo
 | `case_id` | When destination is `case` | Case to add the response note to |
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
 | `acknowledged_content` | No | JSON data included when the respondent acknowledges |
+| `timeout_seconds` | No | Auto-acknowledge after this many seconds if no response (minimum 60) |
+| `timeout_content` | No | JSON data for the timeout response (overrides `acknowledged_content`) |
 
 ### request_question Parameters
 
@@ -398,3 +501,5 @@ The extension sends an HTML email containing the feedback question and a **Respo
 | `feedback_destination` | Yes | `case` or `playbook` |
 | `case_id` | When destination is `case` | Case to add the response note to |
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
+| `timeout_seconds` | No | Auto-answer after this many seconds if no response (minimum 60) |
+| `timeout_content` | When `timeout_seconds` is set | JSON data used as the automatic answer on timeout (required for question type) |
