@@ -367,6 +367,7 @@ nav:
               - Webhook Bulk: 5-integrations/outputs/destinations/webhook-bulk.md
               - Slack: 5-integrations/outputs/destinations/slack.md
               - Telegram: 5-integrations/outputs/destinations/telegram.md
+              - Microsoft Teams: 5-integrations/outputs/destinations/ms-teams.md
               - SMTP: 5-integrations/outputs/destinations/smtp.md
               - Apache Kafka: 5-integrations/outputs/destinations/apache-kafka.md
               - Azure Event Hub: 5-integrations/outputs/destinations/azure-event-hub.md
@@ -398,6 +399,7 @@ nav:
               - Payload Manager: 5-integrations/extensions/limacharlie/payload-manager.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
               - Cases: 5-integrations/extensions/limacharlie/cases.md
+              - Feedback: 5-integrations/extensions/limacharlie/feedback.md
           - Third Party:
               - Overview: 5-integrations/extensions/third-party/index.md
               - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
