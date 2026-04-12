@@ -137,7 +137,7 @@ The response has two actions: report the detection, and request approval via ext
       hostname: routing.hostname
       file_path: event.FILE_PATH
       action: '{{ "monitor" }}'
-    timeout_seconds: '{{ 600 }}'
+    timeout_seconds: 600
     timeout_choice: '{{ "denied" }}'
   suppression:
     max_count: 1

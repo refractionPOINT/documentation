@@ -276,7 +276,7 @@ value: /usr/bin/suspicious-tool
     denied_content:
       action: '{{ "monitor" }}'
       sid: routing.sid
-    timeout_seconds: '{{ 300 }}'
+    timeout_seconds: 300
     timeout_choice: '{{ "denied" }}'
 ```
 
