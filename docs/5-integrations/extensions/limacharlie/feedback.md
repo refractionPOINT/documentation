@@ -158,8 +158,8 @@ The `request_simple_approval` action sends a question with Approve/Deny buttons.
         "question": "Should we isolate host compromised-01?",
         "feedback_destination": "case",
         "case_id": "78",
-        "approved_content": "{\"action\": \"isolate\", \"sid\": \"sensor-abc\"}",
-        "denied_content": "{\"action\": \"skip\"}"
+        "approved_content": {"action": "isolate", "sid": "sensor-abc"},
+        "denied_content": {"action": "skip"}
       }'
     ```
 
@@ -207,7 +207,7 @@ The `request_acknowledgement` action sends a question with an Acknowledge button
         "question": "Alert: Ransomware detected on file-server-02. Please acknowledge.",
         "feedback_destination": "case",
         "case_id": "92",
-        "acknowledged_content": "{\"status\": \"seen\"}"
+        "acknowledged_content": {"status": "seen"}
       }'
     ```
 
@@ -288,8 +288,6 @@ A playbook can request approval during execution:
 
 ```python
 def main(lc, data):
-    import json
-
     # Request human approval with a 5-minute timeout
     response = lc.extension_request(
         "ext-feedback",
@@ -299,8 +297,8 @@ def main(lc, data):
             "question": f"Isolate host {data.get('hostname', 'unknown')}?",
             "feedback_destination": "playbook",
             "playbook_name": "handle-isolation-response",
-            "approved_content": json.dumps({"action": "isolate", "sid": data.get("sid")}),
-            "denied_content": json.dumps({"action": "skip"}),
+            "approved_content": {"action": "isolate", "sid": data.get("sid")},
+            "denied_content": {"action": "skip"},
             "timeout_seconds": 300,
             "timeout_choice": "denied",
         },
