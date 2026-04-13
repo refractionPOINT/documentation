@@ -287,9 +287,10 @@ The `timeout_seconds: 300` and `timeout_choice: "denied"` ensure the rule auto-d
 A playbook can request approval during execution:
 
 ```python
-def main(lc, data):
-    # Request human approval with a 5-minute timeout
-    response = lc.extension_request(
+def playbook(sdk, data):
+    # Request human approval with a 5-minute timeout.
+    # sdk is a limacharlie.Manager instance.
+    response = sdk.extensionRequest(
         "ext-feedback",
         "request_simple_approval",
         {
