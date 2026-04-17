@@ -10,3 +10,13 @@ The resolution of that hostname is done in a few different ways:
 4. If the FQDN could not be resolved, the local hostname of the box is used.
 
 This method allows the endpoint agent to better resolve its hostname in large environments where different regions re-use the same hostname.
+
+## Disabling Reverse DNS Resolution
+
+In some environments the reverse DNS lookup is undesirable (for example, when it is slow, unreliable, or returns a hostname that is not meaningful for the deployment). The reverse DNS step can be disabled by setting the following environment variable on the host before the Endpoint Agent starts:
+
+```
+LC_DISABLE_REVERSE_DNS_HOSTNAME=1
+```
+
+The variable must be explicitly set to `1` or `true` (case-insensitive) — simply defining the variable with an empty or other value is not enough and will be treated as disabled. When enabled, the agent skips steps 2 and 3 above and directly uses the local hostname of the box (step 4).
