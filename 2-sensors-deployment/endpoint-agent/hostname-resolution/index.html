@@ -1829,6 +1829,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hostname Resolution
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1845,6 +1863,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#disabling-reverse-dns-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabling Reverse DNS Resolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -11330,6 +11378,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#disabling-reverse-dns-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabling Reverse DNS Resolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -11432,6 +11499,11 @@
 <li>If the FQDN could not be resolved, the local hostname of the box is used.</li>
 </ol>
 <p>This method allows the endpoint agent to better resolve its hostname in large environments where different regions re-use the same hostname.</p>
+<h2 id="disabling-reverse-dns-resolution">Disabling Reverse DNS Resolution<a class="headerlink" href="#disabling-reverse-dns-resolution" title="Anchor link to this section">&para;</a></h2>
+<p>In some environments the reverse DNS lookup is undesirable (for example, when it is slow, unreliable, or returns a hostname that is not meaningful for the deployment). The reverse DNS step can be disabled by setting the following environment variable on the host before the <abbr title="Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.">Endpoint Agent</abbr> starts:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>LC_DISABLE_REVERSE_DNS_HOSTNAME=1
+</span></code></pre></div>
+<p>The variable must be explicitly set to <code>1</code> or <code>true</code> (case-insensitive) — simply defining the variable with an empty or other value is not enough and will be treated as disabled. When enabled, the agent skips steps 2 and 3 above and directly uses the local hostname of the box (step 4).</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 
