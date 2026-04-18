@@ -205,3 +205,27 @@ user3@example.com
 ```bash
 limacharlie user add --file users_to_add.txt
 ```
+
+### AI Sessions
+
+Create, inspect, and attach to [AI Sessions](../9-ai-sessions/index.md) directly from the terminal. The `ai_agent` Hive record named by `--definition` is treated as a reusable template; any matching `--option` replaces the corresponding field for that run (scalars and lists replace; `--env` merges).
+
+```bash
+# Start a session from an ai_agent template, overriding budget and model.
+limacharlie ai start-session --definition my-agent \
+  --model claude-sonnet-4-6 --max-budget-usd 2.50
+
+# List running sessions.
+limacharlie ai session list --status running
+
+# Attach to a running session and stream messages live.
+limacharlie ai session attach --id <SESSION_ID>
+
+# Attach with interactive chat.
+limacharlie ai session attach --id <SESSION_ID> --interactive
+
+# Terminate a session.
+limacharlie ai session terminate --id <SESSION_ID>
+```
+
+See [AI Sessions — Command Line Interface](../9-ai-sessions/cli.md) for the full command reference, override semantics, and stream output formatting.

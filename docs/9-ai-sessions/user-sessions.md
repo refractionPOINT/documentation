@@ -104,6 +104,9 @@ ws.send(JSON.stringify({
 }));
 ```
 
+!!! tip "Attach from the terminal"
+    The LimaCharlie CLI can also attach to a running session, stream its messages, and send prompts interactively. See [Command Line Interface](cli.md#limacharlie-ai-session-attach) for `limacharlie ai session attach --id <SESSION_ID> --interactive`.
+
 ## Session Profiles
 
 Profiles let you save and reuse session configurations. You can have up to 10 profiles, with one designated as the default.
