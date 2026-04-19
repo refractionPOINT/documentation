@@ -803,6 +803,7 @@ Note types:
 | `general` | General-purpose note |
 | `analysis` | Analysis findings and observations |
 | `remediation` | Remediation steps taken or planned |
+| `recommendation` | Suggested actions or next steps for reviewers |
 | `escalation` | Escalation context and rationale |
 | `handoff` | Shift or team handoff information |
 | `to_stakeholder` | Communication sent to external stakeholders (customers, management) |
