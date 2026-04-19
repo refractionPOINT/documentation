@@ -208,24 +208,26 @@ limacharlie user add --file users_to_add.txt
 
 ### AI Sessions
 
-Create, inspect, and attach to [AI Sessions](../9-ai-sessions/index.md) directly from the terminal. The `ai_agent` Hive record named by `--definition` is treated as a reusable template; any matching `--option` replaces the corresponding field for that run (scalars and lists replace; `--env` merges).
+Create, inspect, and attach to [AI Sessions](../9-ai-sessions/index.md) directly from the terminal. The CLI exposes both ownership models the backend supports — **org-owned** sessions (started from an `ai_agent` Hive template, billed against the org's stored Anthropic key) and **user-owned** sessions (started fresh, billed against your personal Claude credential).
 
 ```bash
-# Start a session from an ai_agent template, overriding budget and model.
+# --- Org-owned: run an ai_agent Hive record as a template, with overrides.
+# (--option flags replace template scalars/lists; --env merges.)
 limacharlie ai start-session --definition my-agent \
   --model claude-sonnet-4-6 --max-budget-usd 2.50
 
-# List running sessions.
-limacharlie ai session list --status running
-
-# Attach to a running session and stream messages live.
-limacharlie ai session attach --id <SESSION_ID>
-
-# Attach with interactive chat.
-limacharlie ai session attach --id <SESSION_ID> --interactive
-
-# Terminate a session.
+limacharlie ai session list --status running        # list org sessions
+limacharlie ai session attach --id <SESSION_ID>     # tail the live stream
 limacharlie ai session terminate --id <SESSION_ID>
+
+# --- User-owned: chat from the terminal under your own Claude credential.
+limacharlie ai auth claude login                    # one-time: store credential
+limacharlie ai chat "what sensors pinged in the last hour?"
+
+limacharlie ai chats list --status running          # list your chat sessions
+limacharlie ai chats terminate --id <SESSION_ID>
 ```
 
-See [AI Sessions — Command Line Interface](../9-ai-sessions/cli.md) for the full command reference, override semantics, and stream output formatting.
+The `ai session attach --interactive` command works for either kind of session: it sends prompts when you own the session (user-owned), and falls back to read-only with a notice when the session is org-owned (the backend exposes only a read-only WebSocket for those by design).
+
+See [AI Sessions — Command Line Interface](../9-ai-sessions/cli.md) for the full command reference, override semantics, the org-vs-user split, and stream output formatting.

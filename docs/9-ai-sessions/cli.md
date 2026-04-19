@@ -15,6 +15,20 @@ pip install limacharlie
 
 Then authenticate as described in the [CLI overview](../6-developer-guide/sdk-overview.md#authentication).
 
+## Two session ownership models
+
+The AI Sessions backend exposes two distinct kinds of session, each with its own creation command, lifecycle group, and WebSocket auth model. They are independent: a session created in one model is not visible from the other model's commands.
+
+| | **Org-owned session** | **User-owned session** |
+|---|---|---|
+| Started by | `ai start-session --definition <hive-record>` (or a DR rule) | `ai chat [PROMPT]` |
+| Owner | The organization (`OwnerOID`) | The authenticated user (`OwnerUID`) |
+| Anthropic credential | `anthropic_secret` from the `ai_agent` Hive record | The user's stored credential, set up via [`ai auth claude`](#limacharlie-ai-auth-claude) |
+| Lifecycle commands | [`ai session list/get/history/terminate`](#limacharlie-ai-session-list) | [`ai chats list/get/history/terminate`](#limacharlie-ai-chats) |
+| `ai session attach` mode | Read-only by design — the org WS endpoint is the only one available, so `--interactive` auto-falls back to read-only | Owner-interactive — `--interactive` actually sends prompts |
+
+Use **org sessions** for automation: scheduled runs, DR-rule triggers, ad-hoc invocations of an `ai_agent` Hive record. Use **user sessions** for an interactive Claude chat in your terminal that bills against your own Claude credential.
+
 ## `limacharlie ai session list`
 
 List AI sessions for the current organization.
@@ -87,7 +101,7 @@ limacharlie ai session attach --id <SESSION_ID> --raw | jq .
 |---|---|
 | `--id` | **Required.** Session ID to attach to. |
 | `--interactive`, `-i` | Send stdin lines as prompts; surface approval/question messages interactively. |
-| `--read-only` | Use the org-scoped read-only WebSocket (`/v1/org/sessions/{id}/ws`). Requires `ai_agent.get` on the session's owning org. Send operations are blocked client-side. |
+| `--read-only` | Use the org-scoped read-only WebSocket (`/v1/ws/org/sessions/{id}`). Requires `ai_agent.get` on the session's owning org. Send operations are blocked client-side. |
 | `--no-history` | Don't render the history block on connect; just show new messages. |
 | `--raw` | Print each WebSocket frame as a single JSON line instead of colour-coded formatting. |
 
@@ -95,10 +109,13 @@ limacharlie ai session attach --id <SESSION_ID> --raw | jq .
 
 Two WebSocket endpoints exist on the AI Sessions service:
 
-- `/v1/sessions/{id}/ws` — owner-interactive. The authenticated user must own the session; write messages (prompts, approvals, interrupts) are accepted.
-- `/v1/org/sessions/{id}/ws` — org-scoped, read-only. Requires `ai_agent.get` on the session's owning org. No write messages accepted.
+- `/v1/ws/sessions/{id}` — owner-interactive. The authenticated user must own the session; write messages (prompts, approvals, interrupts) are accepted.
+- `/v1/ws/org/sessions/{id}` — org-scoped, read-only. Requires `ai_agent.get` on the session's owning org. No write messages accepted.
 
-By default the CLI connects to the owner endpoint. If the server returns 403 (the session belongs to another user), the CLI transparently falls back to the org-scoped read-only endpoint and prints a notice. Pass `--read-only` to connect directly to the org endpoint and skip the 403 round trip.
+By default the CLI connects to the owner endpoint. If the server returns 403 (the session is owned by your organization rather than by you personally — for example any session created via `ai start-session`), the CLI transparently falls back to the org-scoped read-only endpoint and prints a notice. Pass `--read-only` to connect directly to the org endpoint and skip the 403 round trip.
+
+!!! tip "When `--interactive` actually accepts your input"
+    `ai session attach --interactive` only sends prompts when the owner endpoint accepts you. That happens for **user-owned** sessions (created via [`ai chat`](#limacharlie-ai-chat) or the web UI under your identity). For **org-owned** sessions (created via `ai start-session` and any DR-rule-triggered run), the org endpoint is the only path the backend exposes, and it is read-only by design — the CLI auto-falls back and prints a notice. Use [`ai chat`](#limacharlie-ai-chat) when you want a real terminal chat.
 
 ### Interactive controls
 
@@ -188,12 +205,12 @@ limacharlie ai start-session --definition my-agent \
   --allowed-tools Read,Grep --denied-tools Bash,Write --no-one-shot
 ```
 
-Pipe the result into `jq` to grab the new session ID and attach to it:
+Pipe the result into `jq` to grab the new session ID and attach to it (read-only — these are org-owned sessions; for an interactive terminal chat use [`ai chat`](#limacharlie-ai-chat) instead):
 
 ```bash
 SID=$(limacharlie ai start-session --definition my-agent \
         --output json | jq -r '.session_id')
-limacharlie ai session attach --id "$SID" --interactive
+limacharlie ai session attach --id "$SID"
 ```
 
 ### Flags
@@ -250,6 +267,108 @@ The command prints the server's session-creation response. With `--output json`:
 ```
 
 Use the returned `session_id` with `ai session attach`, `ai session get`, or `ai session terminate`.
+
+## `limacharlie ai auth claude`
+
+Manage the per-user Anthropic credential that backs [`ai chat`](#limacharlie-ai-chat). Org-owned sessions started via `ai start-session` ignore these and use the `anthropic_secret` field from the `ai_agent` Hive record instead — there is no need to run `auth claude` for those.
+
+The credential is stored server-side and bound to the authenticated UID. It can be either a Claude Max OAuth token (browser flow) or a raw Anthropic API key.
+
+```bash
+limacharlie ai auth claude status
+limacharlie ai auth claude login
+limacharlie ai auth claude set-key --key "$ANTHROPIC_API_KEY"
+limacharlie ai auth claude set-key --key hive://secret/anthropic-key
+echo "$ANTHROPIC_API_KEY" | limacharlie ai auth claude set-key --key-from-stdin
+limacharlie ai auth claude logout
+```
+
+### Subcommands
+
+| Command | Description |
+|---|---|
+| `status` | Returns `has_credentials`, `credential_type` (`oauth_token` or `apikey`), and `created_at`. |
+| `login` | Runs the browser OAuth flow: starts a server-side OAuth session, polls until Claude returns the URL, prints it to the terminal, and prompts for the authorization code. |
+| `set-key` | Stores a raw Anthropic API key. Accepts `--key <VALUE>` (literal or `hive://secret/<name>`) or `--key-from-stdin` for piping. The two are mutually exclusive. |
+| `logout` | Deletes the stored credential. |
+
+Errors:
+
+- *"No Claude credentials registered for this user"* — `ai chat` raises this when `status.has_credentials` is `false`. Run `auth claude login` or `auth claude set-key` and retry.
+- The browser OAuth flow has a 5-minute server-side TTL; if you take longer than that to paste the code back, restart with `auth claude login`.
+
+## `limacharlie ai chat`
+
+Start a fresh **user-owned** AI session and drop into an interactive WebSocket chat. The session is owned by the authenticated user, billed against the credential stored via [`ai auth claude`](#limacharlie-ai-auth-claude), and attaches over the owner endpoint so prompts can flow both directions.
+
+The opening prompt comes from the optional `PROMPT` argument; further turns come from interactive stdin once the session is attached. Stdin is **not** consumed as the opening prompt — supply that via the argument so multi-line piping is not silently glued into one message.
+
+```bash
+# Start a chat with an opening prompt.
+limacharlie ai chat "What sensors pinged in the last hour?"
+
+# Start a chat with overrides — caps and a specific model.
+limacharlie ai chat --model claude-sonnet-4-6 --max-budget-usd 0.50
+
+# Start a chat with no opening prompt; first message comes from stdin in the
+# interactive loop that runs after attach.
+limacharlie ai chat
+```
+
+`ai chat` runs three steps before handing the terminal to the chat loop:
+
+1. Calls [`ai auth claude status`](#limacharlie-ai-auth-claude) and exits non-zero with instructions if no credential is stored.
+2. Calls `POST /v1/register` (idempotent — safe to run on every invocation).
+3. Calls `POST /v1/sessions` with the override flags below, then attaches via [`ai session attach`](#limacharlie-ai-session-attach) in interactive mode.
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| *(positional)* `PROMPT` | Optional opening prompt sent as the first message after attach. |
+| `--name` | Session name (display only). |
+| `--model` | Anthropic model (e.g. `claude-sonnet-4-6`). |
+| `--max-turns` | Maximum agent turns before auto-stop. |
+| `--max-budget-usd` | Hard USD cost cap for the session. |
+| `--task-budget-tokens` | Per-task token budget. |
+| `--permission-mode` | `acceptEdits`, `plan`, or `bypassPermissions`. |
+| `--allowed-tools` | Comma-separated list of allowed tool names. |
+| `--denied-tools` | Comma-separated list of denied tool names. |
+| `--plugin` (repeatable) | Plugin names to enable. |
+| `--idempotent-key` | Deduplication key for session creation. |
+
+The flag set is intentionally narrower than [`ai start-session`](#limacharlie-ai-start-session): there is no `--definition` (chat sessions are blank, not template-derived), no environment merge, and no credential-override flags (`--anthropic-key` / `--lc-api-key` / `--lc-uid`) since the session uses the per-user credential set via `auth claude` and runs without an attached LC service identity.
+
+### Interactive controls
+
+Identical to [`ai session attach --interactive`](#interactive-controls): stdin lines become prompts, `/interrupt` cancels the agent's current turn, `/quit` detaches, Ctrl+C disconnects. Tool approval requests and `ask_user_question` messages are surfaced as in-line prompts.
+
+### Re-attaching to an in-progress chat
+
+`ai chat` always creates a new session. To reconnect to one you already started, use [`ai session attach --interactive --id <SESSION_ID>`](#limacharlie-ai-session-attach) — it works against user-owned sessions just like the in-process attach loop, since you own them and the owner endpoint accepts you.
+
+## `limacharlie ai chats`
+
+Lifecycle management for user-owned sessions — the counterpart to the [`ai session`](#limacharlie-ai-session-list) group. Same subcommand shape (`list`, `get`, `history`, `terminate`), routed to the user-scoped REST endpoints (`/v1/sessions/*`) instead of the org-scoped ones (`/v1/org/sessions/*`).
+
+```bash
+limacharlie ai chats list
+limacharlie ai chats list --status running
+limacharlie ai chats get --id <SESSION_ID>
+limacharlie ai chats get --id <SESSION_ID> --full-prompt
+limacharlie ai chats history --id <SESSION_ID>
+limacharlie ai chats history --id <SESSION_ID> --raw
+limacharlie ai chats terminate --id <SESSION_ID>
+```
+
+| Subcommand | Org equivalent | Notes |
+|---|---|---|
+| `chats list` | `session list` | Lists sessions where you are the owning UID. Same `--status`, `--limit`, `--cursor` flags. |
+| `chats get` | `session get` | Same `--full-prompt` toggle. |
+| `chats history` | `session history` | Same internal-system-message filter; same `--raw` to disable it. |
+| `chats terminate` | `session terminate` | Calls `DELETE /v1/sessions/{id}` (user-scoped). |
+
+Sessions you create with `ai chat` will appear in `chats list`. Sessions you create with `ai start-session` (or that DR rules trigger) will appear in `session list`. The two sets do not overlap; a `chats get --id <org-session-id>` returns "not found" rather than the org session, and vice versa.
 
 ## Related pages
 

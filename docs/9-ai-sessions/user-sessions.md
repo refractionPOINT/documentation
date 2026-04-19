@@ -104,8 +104,8 @@ ws.send(JSON.stringify({
 }));
 ```
 
-!!! tip "Attach from the terminal"
-    The LimaCharlie CLI can also attach to a running session, stream its messages, and send prompts interactively. See [Command Line Interface](cli.md#limacharlie-ai-session-attach) for `limacharlie ai session attach --id <SESSION_ID> --interactive`.
+!!! tip "Chat from the terminal"
+    The LimaCharlie CLI's `limacharlie ai chat` command starts a new user session and drops you straight into the interactive chat — no manual `POST /v1/sessions` + WebSocket bring-up. Pre-requisite is running `limacharlie ai auth claude login` (or `set-key`) once to register your Anthropic credential. See [Command Line Interface](cli.md#limacharlie-ai-chat) for the full flag set, and `ai session attach --id <SESSION_ID> --interactive` for re-attaching to a session you started earlier.
 
 ## Session Profiles
 
