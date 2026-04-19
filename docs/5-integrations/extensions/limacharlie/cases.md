@@ -76,8 +76,11 @@ stateDiagram-v2
     in_progress --> resolved: resolve
     in_progress --> closed: close
     resolved --> closed: close
+    resolved --> in_progress: auto-group reopen
     closed --> in_progress: reopen
 ```
+
+Manual updates can move a case from `resolved` only to `closed`. Auto-grouping (when `auto_grouping_reopen_closed` is enabled) can additionally reopen a `resolved` or `closed` case directly back to `in_progress` when a matching detection arrives. When an auto-grouping reopen happens, the stale `resolved_at` / `closed_at` timestamps and `ttr_seconds` are cleared so that re-resolution recalculates TTR correctly.
 
 ### Status Definitions
 
