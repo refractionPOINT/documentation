@@ -67,7 +67,7 @@ limacharlie ai session history --id <SESSION_ID>
 limacharlie ai session history --id <SESSION_ID> --raw
 ```
 
-Internal system bootstrap messages (credential diagnostics, `claude_md_loaded`, MCP config debug, etc.) are filtered out by default. Pass `--raw` to include them.
+Internal system bootstrap messages (credential diagnostics, `claude_md_loaded`, MCP config debug, etc.) are filtered out by default — same set hidden from the live stream by [`ai session attach`](#default-noise-filter). Pass `--raw` to include them.
 
 ## `limacharlie ai session terminate`
 
@@ -104,6 +104,7 @@ limacharlie ai session attach --id <SESSION_ID> --raw | jq .
 | `--read-only` | Use the org-scoped read-only WebSocket (`/v1/ws/org/sessions/{id}`). Requires `ai_agent.get` on the session's owning org. Send operations are blocked client-side. |
 | `--no-history` | Don't render the history block on connect; just show new messages. |
 | `--raw` | Print each WebSocket frame as a single JSON line instead of colour-coded formatting. |
+| `--verbose`, `-v` | Show the full firehose: plumbing `system[subtype]` messages (`init_received`, `model_set`, `hook_started`, …), `session_status` pings, `usage_delta` frames, and full ISO timestamps instead of the default `HH:MM:SS`. See [Default noise filter](#default-noise-filter). |
 
 ### Endpoint selection and fallback
 
@@ -145,12 +146,24 @@ Notices (connection status, read-only fallback, errors) go to **stderr**; sessio
 | `tool_approval_request` (non-interactive) | yellow bold | `approval requested for NAME: {input}` |
 | `ask_user_question` (non-interactive) | magenta bold | `question: <text>` |
 
+Timestamps are abbreviated to `HH:MM:SS` by default; pass `--verbose` to preserve the full ISO-8601 value the server sent.
+
 With `--raw` each frame is a single JSON object per line, making it easy to post-process:
 
 ```bash
 limacharlie ai session attach --id $SID --raw \
   | jq -c 'select(.type=="tool_use") | .payload'
 ```
+
+### Default noise filter
+
+The AI Sessions runner emits a number of housekeeping frames at the start of every session and between tool calls. Without filtering they overwhelm the live stream — the interesting assistant turns get buried between dozens of `system[credential_diagnostics]:` / `system[model_set]:` / `session_status: {...}` / empty `assistant:` headers. The pretty renderer therefore hides the following frames by default:
+
+- **Plumbing message types** — `session_status` (startup/status pings), `usage_delta` (per-API-call token tallies), `sdk_session_id`.
+- **Plumbing `system` subtypes** — every bootstrap event emitted by the bridge (`credential_diagnostics`, `init_received`, `claude_md_loaded`, `mcp_config_debug`, `mcp_servers_set`, `model_set`, `max_turns_set`, `max_budget_set`, `task_budget_set`, `one_shot_mode_set`, `permission_mode_set`, `tools_configured`, `system_prompt_set`, `oid_added_to_system_prompt`, `ttl_added_to_system_prompt`, `plugins_resolved`, `autoinit_loaded`, `autoinit_error`, `resuming_sdk_session`, `user_mcp_servers_loaded`, `mcp_servers_loaded`, `session_patterns_loaded`, `unknown_plugin`, `claude_md_error`, …) plus Claude SDK hook events (`hook_started`, `hook_response`, `hook_matched`).
+- **Empty frames** — `assistant` turns that carry only a `tool_use` block (the accompanying `tool_use` message already renders the call), `user` frames that wrap a `tool_result` (same — the `tool_result` message already renders the output), and `result` pings with no human-readable summary.
+
+This filter applies to both the initial history block and the live stream. Pass `--verbose` / `-v` to disable it and see every frame; `--raw` bypasses the renderer entirely and prints untouched JSON. The same noise set is used by [`ai session history`](#limacharlie-ai-session-history) and [`ai chats history`](#limacharlie-ai-chats); `--raw` on those commands includes the filtered frames.
 
 ## `limacharlie ai start-session`
 
@@ -336,6 +349,7 @@ limacharlie ai chat
 | `--denied-tools` | Comma-separated list of denied tool names. |
 | `--plugin` (repeatable) | Plugin names to enable. |
 | `--idempotent-key` | Deduplication key for session creation. |
+| `--verbose`, `-v` | Disable the [default noise filter](#default-noise-filter) and use full ISO timestamps — same flag as on `ai session attach`. |
 
 The flag set is intentionally narrower than [`ai start-session`](#limacharlie-ai-start-session): there is no `--definition` (chat sessions are blank, not template-derived), no environment merge, and no credential-override flags (`--anthropic-key` / `--lc-api-key` / `--lc-uid`) since the session uses the per-user credential set via `auth claude` and runs without an attached LC service identity.
 
