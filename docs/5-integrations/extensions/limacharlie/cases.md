@@ -38,7 +38,25 @@ Duplicate detections (same `detect_id`) are silently dropped to prevent case dup
 
 ### Auto-Grouping
 
-When auto-grouping is enabled in the organization configuration, detections that share the same category and sensor within a one-hour window are automatically grouped into a single case instead of creating separate cases. This significantly reduces case volume for noisy rules.
+When auto-grouping is enabled in the organization configuration, incoming detections can be attached to an existing open case instead of creating a new one. This significantly reduces case volume for noisy rules.
+
+The grouping behavior is configurable along two axes:
+
+**Group key** -- which identity dimensions must match for detections to group together:
+
+- `auto_grouping_include_sensor` (default `true`) -- only detections from the same sensor group together.
+- `auto_grouping_include_category` (default `false`) -- only detections of the same category group together.
+
+If both are disabled, all detections in the org group into one case during the window. If both are enabled, detections must match on both sensor and category.
+
+**Time window** -- how far apart in time detections can be and still group:
+
+- `auto_grouping_window_minutes` (default `1440`, range `1`--`10080`) -- maximum time span used to group detections.
+- `auto_grouping_window_mode` (default `sliding`):
+    - `sliding` -- the window resets on each new detection. A case stays groupable as long as matching detections keep arriving within the window of its most recent activity.
+    - `fixed` -- detections are bucketed by wall-clock boundaries of size `window_minutes`. Two detections group only if they fall in the same bucket.
+
+**Reopening closed cases** -- `auto_grouping_reopen_closed` (default `true`) controls whether a matching detection can reopen an already `resolved` or `closed` case. When true, the case is reopened and a `case_reopened` event with `source=auto_grouping` is added to its audit trail. When false, a matching detection against a closed case creates a new case instead.
 
 When a detection is grouped into an existing case:
 
@@ -58,8 +76,11 @@ stateDiagram-v2
     in_progress --> resolved: resolve
     in_progress --> closed: close
     resolved --> closed: close
+    resolved --> in_progress: auto-group reopen
     closed --> in_progress: reopen
 ```
+
+Manual updates can move a case from `resolved` only to `closed`. Auto-grouping (when `auto_grouping_reopen_closed` is enabled) can additionally reopen a `resolved` or `closed` case directly back to `in_progress` when a matching detection arrives. When an auto-grouping reopen happens, the stale `resolved_at` / `closed_at` timestamps and `ttr_seconds` are cleared so that re-resolution recalculates TTR correctly.
 
 ### Status Definitions
 
@@ -137,7 +158,12 @@ The following settings are available through the REST API (`GET/PUT /api/v1/conf
 | `sla_config.info.mttr_minutes` | int | `10080` | MTTR target for info cases (minutes) |
 | `retention_days` | int | `90` | Days to retain resolved/closed cases before archival |
 | `auto_close_resolved_after_days` | int | `7` | Automatically close resolved cases after this many days. Set to `0` to disable |
-| `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single cases |
+| `auto_grouping_enabled` | bool | `false` | Enable auto-grouping of related detections into single cases (see [Auto-Grouping](#auto-grouping)) |
+| `auto_grouping_include_sensor` | bool | `true` | Only applies when auto-grouping is enabled. When true, only detections from the same sensor group together |
+| `auto_grouping_include_category` | bool | `false` | Only applies when auto-grouping is enabled. When true, only detections of the same category group together |
+| `auto_grouping_window_minutes` | int | `1440` | Only applies when auto-grouping is enabled. Maximum time span used to group detections (1--10080 minutes) |
+| `auto_grouping_window_mode` | string | `"sliding"` | Only applies when auto-grouping is enabled. `"sliding"` resets the window on each new detection; `"fixed"` buckets by wall-clock boundaries |
+| `auto_grouping_reopen_closed` | bool | `true` | Only applies when auto-grouping is enabled. When true, a matching detection reopens an already resolved/closed case instead of creating a new one |
 
 The following settings are managed through the extension configuration page in the LimaCharlie web UI (not through the REST API):
 
@@ -185,7 +211,12 @@ The following settings are managed through the extension configuration page in t
         },
         "retention_days": 90,
         "auto_close_resolved_after_days": 7,
-        "auto_grouping_enabled": true
+        "auto_grouping_enabled": true,
+        "auto_grouping_include_sensor": true,
+        "auto_grouping_include_category": false,
+        "auto_grouping_window_minutes": 1440,
+        "auto_grouping_window_mode": "sliding",
+        "auto_grouping_reopen_closed": true
       }'
     ```
 
@@ -772,6 +803,7 @@ Note types:
 | `general` | General-purpose note |
 | `analysis` | Analysis findings and observations |
 | `remediation` | Remediation steps taken or planned |
+| `recommendation` | Suggested actions or next steps for reviewers |
 | `escalation` | Escalation context and rationale |
 | `handoff` | Shift or team handoff information |
 | `to_stakeholder` | Communication sent to external stakeholders (customers, management) |
