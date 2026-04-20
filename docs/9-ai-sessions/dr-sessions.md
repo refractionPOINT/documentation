@@ -466,6 +466,9 @@ respond:
 
 This approach keeps D&R rules clean and lets you update the agent's behavior (prompt, model, tools, etc.) in one place without modifying every rule that uses it. The `debounce_key` can be overridden at the action level even in definition mode.
 
+!!! tip "Reuse the same definition from the CLI"
+    The same `ai_agent` Hive record can be used as a template from the CLI with `limacharlie ai start-session --definition <name>`. Individual fields (prompt, model, budget, tool list, environment, credentials) can be overridden per run, so one definition doubles as both a D&R-driven agent and an ad-hoc CLI template. See [Command Line Interface](cli.md#limacharlie-ai-start-session) for the full list of override flags.
+
 #### AI Agent Record Fields
 
 | Field | Type | Required | Description |

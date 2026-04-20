@@ -104,6 +104,9 @@ ws.send(JSON.stringify({
 }));
 ```
 
+!!! tip "Chat from the terminal"
+    The LimaCharlie CLI's `limacharlie ai chat` command starts a new user session and drops you straight into the interactive chat — no manual `POST /v1/sessions` + WebSocket bring-up. Pre-requisite is running `limacharlie ai auth claude login` (or `set-key`) once to register your Anthropic credential. See [Command Line Interface](cli.md#limacharlie-ai-chat) for the full flag set, and `ai session attach --id <SESSION_ID> --interactive` for re-attaching to a session you started earlier.
+
 ## Session Profiles
 
 Profiles let you save and reuse session configurations. You can have up to 10 profiles, with one designated as the default.
