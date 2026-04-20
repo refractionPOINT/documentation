@@ -11010,6 +11010,8 @@
       
         
       
+        
+      
     
     
     
@@ -11473,6 +11475,34 @@
     
   
     User Sessions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command Line Interface
   
 
     
@@ -12533,6 +12563,10 @@
 </span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span><span class="nt">debounce_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;investigate-{{</span><span class="nv"> </span><span class="s">.routing.sid</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span></code></pre></div>
 <p>This approach keeps <abbr title="Detection &amp; Response">D&amp;R</abbr> rules clean and lets you update the agent's behavior (prompt, model, tools, etc.) in one place without modifying every rule that uses it. The <code>debounce_key</code> can be overridden at the action level even in definition mode.</p>
+<div class="admonition tip">
+<p class="admonition-title">Reuse the same definition from the <abbr title="Command-line Interface">CLI</abbr></p>
+<p>The same <code>ai_agent</code> Hive record can be used as a template from the <abbr title="Command-line Interface">CLI</abbr> with <code>limacharlie ai start-session --definition &lt;name&gt;</code>. Individual fields (prompt, model, budget, tool list, environment, credentials) can be overridden per run, so one definition doubles as both a <abbr title="Detection &amp; Response">D&amp;R</abbr>-driven agent and an ad-hoc <abbr title="Command-line Interface">CLI</abbr> template. See <a href="../cli/#limacharlie-ai-start-session">Command Line Interface</a> for the full list of override flags.</p>
+</div>
 <h4 id="ai-agent-record-fields">AI Agent Record Fields<a class="headerlink" href="#ai-agent-record-fields" title="Anchor link to this section">&para;</a></h4>
 <table>
 <thead>

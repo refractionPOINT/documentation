@@ -18,7 +18,7 @@
         <link rel="prev" href="../dr-sessions/">
       
       
-        <link rel="next" href="../alternative-providers/">
+        <link rel="next" href="../cli/">
       
       
         
@@ -11010,6 +11010,8 @@
       
         
       
+        
+      
     
     
     
@@ -11581,6 +11583,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command Line Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -12340,6 +12370,10 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
 </span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">  </span><span class="nx">payload</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;List all files in the current directory&#39;</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="p">}));</span>
 </span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Chat from the terminal</p>
+<p>The LimaCharlie <abbr title="Command-line Interface">CLI</abbr>'s <code>limacharlie ai chat</code> command starts a new user session and drops you straight into the interactive chat — no manual <code>POST /v1/sessions</code> + WebSocket bring-up. Pre-requisite is running <code>limacharlie ai auth claude login</code> (or <code>set-key</code>) once to register your Anthropic credential. See <a href="../cli/#limacharlie-ai-chat">Command Line Interface</a> for the full flag set, and <code>ai session attach --id &lt;SESSION_ID&gt; --interactive</code> for re-attaching to a session you started earlier.</p>
+</div>
 <h2 id="session-profiles">Session Profiles<a class="headerlink" href="#session-profiles" title="Anchor link to this section">&para;</a></h2>
 <p>Profiles let you save and reuse session configurations. You can have up to 10 profiles, with one designated as the default.</p>
 <h3 id="creating-a-profile">Creating a Profile<a class="headerlink" href="#creating-a-profile" title="Anchor link to this section">&para;</a></h3>
@@ -12747,13 +12781,13 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
         
         
           
-          <a href="../alternative-providers/" class="md-footer__link md-footer__link--next" aria-label="Next: Alternative Providers">
+          <a href="../cli/" class="md-footer__link md-footer__link--next" aria-label="Next: Command Line Interface">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Alternative Providers
+                Command Line Interface
               </div>
             </div>
             <div class="md-footer__button md-icon">
