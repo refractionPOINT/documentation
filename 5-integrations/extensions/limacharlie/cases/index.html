@@ -12725,7 +12725,24 @@
 <p>The individual detection fields (detection category, source, priority, sensor ID, hostname, and detection ID) are stored on the linked <strong>CaseDetection</strong> records, not on the case itself. When listing cases, aggregated fields <code>detection_cats</code> (unique detection categories) and <code>sids</code> (unique SIDs) are populated from linked detections.</p>
 <p>Duplicate detections (same <code>detect_id</code>) are silently dropped to prevent case duplication.</p>
 <h3 id="auto-grouping">Auto-Grouping<a class="headerlink" href="#auto-grouping" title="Anchor link to this section">&para;</a></h3>
-<p>When auto-grouping is enabled in the organization configuration, detections that share the same category and sensor within a one-hour window are automatically grouped into a single case instead of creating separate cases. This significantly reduces case volume for noisy rules.</p>
+<p>When auto-grouping is enabled in the organization configuration, incoming detections can be attached to an existing open case instead of creating a new one. This significantly reduces case volume for noisy rules.</p>
+<p>The grouping behavior is configurable along two axes:</p>
+<p><strong>Group key</strong> -- which identity dimensions must match for detections to group together:</p>
+<ul>
+<li><code>auto_grouping_include_sensor</code> (default <code>true</code>) -- only detections from the same sensor group together.</li>
+<li><code>auto_grouping_include_category</code> (default <code>false</code>) -- only detections of the same category group together.</li>
+</ul>
+<p>If both are disabled, all detections in the org group into one case during the window. If both are enabled, detections must match on both sensor and category.</p>
+<p><strong>Time window</strong> -- how far apart in time detections can be and still group:</p>
+<ul>
+<li><code>auto_grouping_window_minutes</code> (default <code>1440</code>, range <code>1</code>--<code>10080</code>) -- maximum time span used to group detections.</li>
+<li><code>auto_grouping_window_mode</code> (default <code>sliding</code>):<ul>
+<li><code>sliding</code> -- the window resets on each new detection. A case stays groupable as long as matching detections keep arriving within the window of its most recent activity.</li>
+<li><code>fixed</code> -- detections are bucketed by wall-clock boundaries of size <code>window_minutes</code>. Two detections group only if they fall in the same bucket.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Reopening closed cases</strong> -- <code>auto_grouping_reopen_closed</code> (default <code>true</code>) controls whether a matching detection can reopen an already <code>resolved</code> or <code>closed</code> case. When true, the case is reopened and a <code>case_reopened</code> event with <code>source=auto_grouping</code> is added to its audit trail. When false, a matching detection against a closed case creates a new case instead.</p>
 <p>When a detection is grouped into an existing case:</p>
 <ul>
 <li>The case's <code>detection_count</code> increments</li>
@@ -12741,7 +12758,9 @@
     in_progress --&gt; resolved: resolve
     in_progress --&gt; closed: close
     resolved --&gt; closed: close
+    resolved --&gt; in_progress: auto-group reopen
     closed --&gt; in_progress: reopen</code></pre>
+<p>Manual updates can move a case from <code>resolved</code> only to <code>closed</code>. Auto-grouping (when <code>auto_grouping_reopen_closed</code> is enabled) can additionally reopen a <code>resolved</code> or <code>closed</code> case directly back to <code>in_progress</code> when a matching detection arrives. When an auto-grouping reopen happens, the stale <code>resolved_at</code> / <code>closed_at</code> timestamps and <code>ttr_seconds</code> are cleared so that re-resolution recalculates TTR correctly.</p>
 <h3 id="status-definitions">Status Definitions<a class="headerlink" href="#status-definitions" title="Anchor link to this section">&para;</a></h3>
 <table>
 <thead>
@@ -12968,7 +12987,37 @@
 <td><code>auto_grouping_enabled</code></td>
 <td>bool</td>
 <td><code>false</code></td>
-<td>Enable auto-grouping of related detections into single cases</td>
+<td>Enable auto-grouping of related detections into single cases (see <a href="#auto-grouping">Auto-Grouping</a>)</td>
+</tr>
+<tr>
+<td><code>auto_grouping_include_sensor</code></td>
+<td>bool</td>
+<td><code>true</code></td>
+<td>Only applies when auto-grouping is enabled. When true, only detections from the same sensor group together</td>
+</tr>
+<tr>
+<td><code>auto_grouping_include_category</code></td>
+<td>bool</td>
+<td><code>false</code></td>
+<td>Only applies when auto-grouping is enabled. When true, only detections of the same category group together</td>
+</tr>
+<tr>
+<td><code>auto_grouping_window_minutes</code></td>
+<td>int</td>
+<td><code>1440</code></td>
+<td>Only applies when auto-grouping is enabled. Maximum time span used to group detections (1--10080 minutes)</td>
+</tr>
+<tr>
+<td><code>auto_grouping_window_mode</code></td>
+<td>string</td>
+<td><code>"sliding"</code></td>
+<td>Only applies when auto-grouping is enabled. <code>"sliding"</code> resets the window on each new detection; <code>"fixed"</code> buckets by wall-clock boundaries</td>
+</tr>
+<tr>
+<td><code>auto_grouping_reopen_closed</code></td>
+<td>bool</td>
+<td><code>true</code></td>
+<td>Only applies when auto-grouping is enabled. When true, a matching detection reopens an already resolved/closed case instead of creating a new one</td>
 </tr>
 </tbody>
 </table>
@@ -13029,8 +13078,13 @@
 </span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="s1">    },</span>
 </span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="s1">    &quot;retention_days&quot;: 90,</span>
 </span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="s1">    &quot;auto_close_resolved_after_days&quot;: 7,</span>
-</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="s1">    &quot;auto_grouping_enabled&quot;: true</span>
-</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="s1">  }&#39;</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="s1">    &quot;auto_grouping_enabled&quot;: true,</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="s1">    &quot;auto_grouping_include_sensor&quot;: true,</span>
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="s1">    &quot;auto_grouping_include_category&quot;: false,</span>
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="s1">    &quot;auto_grouping_window_minutes&quot;: 1440,</span>
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="s1">    &quot;auto_grouping_window_mode&quot;: &quot;sliding&quot;,</span>
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="s1">    &quot;auto_grouping_reopen_closed&quot;: true</span>
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="s1">  }&#39;</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -13686,6 +13740,10 @@
 <tr>
 <td><code>remediation</code></td>
 <td>Remediation steps taken or planned</td>
+</tr>
+<tr>
+<td><code>recommendation</code></td>
+<td>Suggested actions or next steps for reviewers</td>
 </tr>
 <tr>
 <td><code>escalation</code></td>
