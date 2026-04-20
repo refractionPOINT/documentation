@@ -1,6 +1,6 @@
 # macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)
 
-This document provides details of how to install, verify, and uninstall the LimaCharlie Endpoint Agent on macOS (versions 15 Sonoma). We also offer separate documentation for older versions.
+This document provides details of how to install, verify, and uninstall the LimaCharlie Endpoint Agent on macOS (version 15 Sequoia). We also offer separate documentation for older versions.
 
 ## Installer Options
 
