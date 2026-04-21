@@ -69,19 +69,16 @@ Bash(kubectl get:*)    # read-only kubectl verbs
 MCP server tools are exposed to Claude under a mangled name of the form `mcp__<server_name>__<tool_name>`. You can deny or allow them with either the full name or a scoped pattern.
 
 ```yaml
-# Deny one specific MCP tool
-denied_tools:
-  - mcp__virustotal__scan_file
-
-# Allow only a specific lc_call_tool RPC
+# Allow every tool exposed by the VirusTotal MCP server
 allowed_tools:
-  - mcp__limacharlie__lc_call_tool(list_user_orgs:*)
+  - mcp__virustotal
+
+# Deny one specific tool from the VirusTotal MCP server
+denied_tools:
+  - mcp__virustotal__upload_file
 ```
 
-There are two MCP-specific rules worth knowing:
-
-- **Suffix matching for server name drift.** When both the tool name reported by Claude and the pattern start with `mcp__`, only the `__<tool_suffix>` at the end has to match. A pattern written `mcp__limacharlie__lc_call_tool` will still match a tool Claude exposes as `mcp__claude_ai_LimaCharlie__lc_call_tool`. This keeps Profiles portable across MCP server name variants.
-- **`lc_call_tool` meta-tool scoping.** The LimaCharlie MCP server exposes a meta-tool `lc_call_tool` that multiplexes over many LC API functions via its `tool_name` parameter. Patterns of the form `mcp__*__lc_call_tool(<fn>:*)` scope approval to a specific LC function (`list_user_orgs`, `run_lcql_query`, etc.) rather than the whole meta-tool.
+**Suffix matching for server name drift.** When both the tool name reported by Claude and the pattern start with `mcp__`, only the `__<tool_suffix>` at the end has to match. A pattern written `mcp__virustotal__scan_url` will still match a tool Claude exposes as `mcp__claude_ai_VirusTotal__scan_url`. This keeps Profiles portable across MCP server name variants — the same rule covers registry-resolved servers, locally registered servers, and UI-installed servers even when they publish slightly different server identifiers.
 
 ## `allowed_tools` vs `denied_tools`
 
@@ -149,7 +146,7 @@ Good baseline for interactive triage — Claude can inspect workspace files and 
 
 ### Unattended D&R triage agent
 
-An `ai_agent` Hive record meant to run without a human. `bypassPermissions` is required so tool calls don't block on approval; `denied_tools` still prevents the agent from writing or fetching the web even though `allowed_tools` is empty.
+An `ai_agent` Hive record meant to run without a human. `bypassPermissions` is required so tool calls don't block on approval; `denied_tools` still prevents the agent from writing or from reaching arbitrary URLs even though `allowed_tools` is empty.
 
 ```yaml
 ai_agent:
@@ -165,23 +162,17 @@ ai_agent:
         - Write
         - Edit
         - WebFetch
-      mcp_servers:
-        limacharlie:
-          type: http
-          url: https://mcp.limacharlie.io
-          headers:
-            Authorization: hive://secret/lc-mcp-token
 ```
 
-### Scoping a single MCP tool
+### Scoping MCP tools to a single server
 
-Allow the agent to call the LimaCharlie MCP server, but only the `run_lcql_query` function of its `lc_call_tool` meta-tool. Every other LC function re-prompts (or is denied if `permission_mode` is `plan`).
+Let the agent call the VirusTotal MCP server for enrichment, but nothing else — and specifically block the one tool that would submit local files to the service. Any other MCP server the session inherits is still subject to the normal approval flow (or denied outright under `permission_mode: plan`).
 
 ```yaml
 allowed_tools:
-  - mcp__limacharlie__lc_call_tool(run_lcql_query:*)
+  - mcp__virustotal
 denied_tools:
-  - mcp__limacharlie__lc_call_tool(delete_org:*)
+  - mcp__virustotal__upload_file
 ```
 
 ### Blocking destructive Bash verbs
