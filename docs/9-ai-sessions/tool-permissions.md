@@ -56,13 +56,17 @@ Bash(npm install:*)    # any command starting with "npm install "
 Bash(kubectl get:*)    # read-only kubectl verbs
 ```
 
-**Matching semantics** (mirrors the upstream CLI):
+**Matching semantics (allowed_tools)** — Profile-supplied `allowed_tools` patterns are evaluated by LimaCharlie's own hardened matcher, which is a strict superset of the upstream Claude Code rules:
 
 - The command is split on shell stage operators (`|`, `||`, `&`, `&&`, `;`, `|&`) and on real newlines. **Every stage** of the pipeline must be covered by some stored pattern. `Bash(git:*)` alone does **not** approve `git status && rm -rf /`.
 - Process wrappers (`timeout`, `time`, `nice`, `nohup`, `stdbuf`, bare `xargs`) and leading `VAR=value` env assignments are stripped iteratively from the front of each stage, so `nohup timeout 30 DEBUG=1 npm test` reduces to `npm test` before matching.
 - Redirection operators (`>`, `>>`, `<`, `>&`, `&>`, fd-duplications) stay attached to their command — they are **not** stage separators.
-- **Fail-closed** on command substitution, process substitution, backticks, and subshell/brace grouping (`` ` ``, `$(...)`, `<(...)`, `>(...)`, `(...)`, `{...}`). These can smuggle commands past a prefix check, so any stage containing them re-prompts regardless of the pattern list.
+- **Fail-closed** on command substitution, process substitution, backticks, and subshell/brace grouping (`` ` ``, `$(...)`, `<(...)`, `>(...)`, `(...)`, `{...}`). These can smuggle commands past a prefix check, so any stage containing them re-prompts regardless of the pattern list. A `cat $(rm -rf /)` invocation is **not** auto-approved by `Bash(cat:*)`.
 - Matching is literal prefix on the stripped stage: either the stage equals the prefix exactly, or it starts with `prefix + " "`. There is no flag-value allowlist and no alias resolution.
+
+The same matcher is used for session-scoped approvals (the `session` answer in the interactive approval prompt) — both paths go through a single implementation so autonomous org-owned sessions get the same guarantees as interactive ones.
+
+**Matching semantics (denied_tools)** — `denied_tools` is enforced **by the Claude Agent SDK**, not by the LimaCharlie matcher. The SDK uses the upstream literal-prefix rule, which does not perform pipeline-stage splitting or fail-close on substitution. This means a deny-list pattern only blocks commands whose **leading** stage matches — `Bash(rm:*)` in `denied_tools` blocks `rm -rf /` but does **not** block `ls && rm -rf /`. Treat `denied_tools` as a coarse backstop; rely on a tight `allowed_tools` set (evaluated under the hardened rules above) for the real containment.
 
 ### 3. MCP tool pattern
 
@@ -82,13 +86,14 @@ The `<server_name>` segment is whatever the MCP server registers itself as when 
 
 ## `allowed_tools` vs `denied_tools`
 
-The two lists are independent Claude Agent SDK inputs and compose as follows:
+The two lists are evaluated at different layers and compose as follows for every tool call:
 
-1. If `allowed_tools` is non-empty, it becomes the allowlist — tools not in the list are subject to approval prompts (or are denied outright, depending on `permission_mode`).
-2. If `denied_tools` is non-empty, those patterns block the corresponding tools **regardless of whether they also appear in `allowed_tools`**. `denied_tools` always wins.
-3. If both lists are empty, no filter is installed — the agent sees every tool, and the `permission_mode` decides what happens on each call.
+1. **Deny list (SDK layer).** `denied_tools` is handed to the Claude Agent SDK as `disallowed_tools`. If a call matches any deny pattern it is blocked before the bridge's callback ever sees it — `denied_tools` always wins, regardless of anything else in `allowed_tools` or `permission_mode`.
+2. **Allow list (bridge layer).** The bridge seeds `allowed_tools` into its session-approved pattern set and evaluates every surviving tool call through the hardened matcher described above. A match auto-approves the call without a prompt.
+3. **Fallback on no match.** If neither list matches, `permission_mode` decides what happens: `acceptEdits` auto-approves file-edit tools and prompts the user for everything else, `plan` keeps the session read-only, and `bypassPermissions` auto-approves the call.
+4. **Both lists empty.** Nothing is pre-authorised; every tool call falls through to `permission_mode`.
 
-> A practical mental model: `allowed_tools` is the "positive" intent ("these are the things I expect this agent to do"); `denied_tools` is the "backstop" ("even if a looser rule sneaks through, never let it touch these"). For unattended D&R-driven agents this pair replaces the interactive approval flow entirely.
+> A practical mental model: `allowed_tools` is the "positive" intent, evaluated under the hardened matcher ("these are the things this agent should be able to do without asking"); `denied_tools` is a coarser SDK-level backstop ("even if something slips through, never let the agent start a matching command"). For unattended D&R-driven agents, a tight `allowed_tools` plus `permission_mode: bypassPermissions` replaces the interactive approval flow entirely.
 
 ## `permission_mode`
 
@@ -106,7 +111,7 @@ The runner defaults `permission_mode` to `acceptEdits` when the field is omitted
 
 In user sessions that go through the approval prompt, the operator can answer `session` instead of `y` or `n`. That choice stores a **session-scoped pattern** derived from the actual tool call — typically a `Bash(<prefix>:*)` for shell commands, or the plain tool name for everything else — and auto-approves future matching calls for the rest of the session without asking again.
 
-Session-scoped patterns use the same grammar as `allowed_tools`, so once a user approves a `Bash(git:*)` for the session, the Bash pipeline-stage coverage rules described above apply identically. These patterns are ephemeral: they vanish when the session ends and are never promoted into the Profile automatically — to persist a session's configuration, snapshot it with `POST /v1/sessions/{sessionId}/capture-profile` (see the [capture-profile endpoint](api-reference.md#profiles)).
+Session-scoped patterns share a single pattern store with the Profile-supplied `allowed_tools`, so they share the hardened matcher and all its guarantees. These patterns are ephemeral: they vanish when the session ends and are never promoted into the Profile automatically — to persist a session's configuration, snapshot it with `POST /v1/sessions/{sessionId}/capture-profile` (see the [capture-profile endpoint](api-reference.md#profiles)).
 
 ## Defaults shipped to new users
 
@@ -177,17 +182,20 @@ denied_tools:
 
 ### Blocking destructive Bash verbs
 
-`denied_tools` patterns are evaluated the same way as `allowed_tools`, so you can block a specific prefix even when the rest of Bash is allowed:
+You can deny a specific prefix even when the rest of Bash is allowed. Keep in mind that the deny list runs through the SDK's literal-prefix matcher, so it only blocks the leading stage of the command — a pattern like `Bash(rm:*)` catches `rm -rf /` but will not stop `ls && rm -rf /`. For containment you still want a tight allowlist under the hardened matcher.
 
 ```yaml
-allowed_tools: ["Bash"]
+allowed_tools:
+  - "Bash(ls:*)"
+  - "Bash(cat:*)"
+  - "Bash(grep:*)"
 denied_tools:
   - "Bash(rm:*)"
   - "Bash(mv:*)"
   - "Bash(kubectl delete:*)"
 ```
 
-Because of the pipeline-stage coverage rule, `Bash(rm:*)` in `denied_tools` will also trip on `ls && rm -rf /` — the `rm -rf /` stage is seen in isolation.
+Under the hardened allowlist matcher the `ls && rm -rf /` case is already handled: the `rm -rf /` stage is not covered by any allowed pattern, so the whole command fails the pipeline-stage coverage check and never auto-approves.
 
 ## Where to go next
 
