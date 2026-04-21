@@ -471,6 +471,7 @@ nav:
       - Access:
           - API Keys: 7-administration/access/api-keys.md
           - User Access: 7-administration/access/user-access.md
+          - Designing Access: 7-administration/access/designing-access.md
           - SSO: 7-administration/access/sso.md
       - Billing:
           - Options: 7-administration/billing/options.md

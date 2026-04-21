@@ -1,5 +1,8 @@
 # User Access
 
+!!! tip "Running more than one organization?"
+    If you operate multiple organizations — for example as an MSSP, MDR, or an enterprise with several business units — read [Designing Access for Multi-Org Deployments](designing-access.md) first. It explains how to structure organizations, groups, and roles so that the individual steps below compose into a safe, maintainable access model.
+
 To control who has access to an Organization, and what they have access to, go to the "Users" section of the web application.
 
 Adding users is done by email address and requires the user to already have a limacharlie.io account.
