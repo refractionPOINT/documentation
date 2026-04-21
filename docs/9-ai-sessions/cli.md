@@ -388,4 +388,5 @@ Sessions you create with `ai chat` will appear in `chats list`. Sessions you cre
 
 - [User Sessions](user-sessions.md) — concepts, session states, profiles, the web UI.
 - [D&R-Driven Sessions](dr-sessions.md) — triggering the same `ai_agent` records automatically from Detection & Response rules.
+- [Tool Permissions & Profiles](tool-permissions.md) — reference for `--allowed-tools`, `--denied-tools`, and `--permission-mode`.
 - [API Reference](api-reference.md) — the REST and WebSocket endpoints the CLI wraps.
