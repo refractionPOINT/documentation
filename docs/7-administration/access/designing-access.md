@@ -44,8 +44,8 @@ flowchart LR
     end
 
     subgraph EndUsers [End-customer users added directly]
-        U1[alice@customerA.com]
-        U2[bob@customerB.com]
+        U1[Alice - Customer A contact]
+        U2[Bob - Customer B contact]
     end
 
     GE --- C1
