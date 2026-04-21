@@ -12,31 +12,31 @@
         <meta name="author" content="refractionPOINT">
       
       
-        <link rel="canonical" href="https://docs.limacharlie.io/2-sensors-deployment/adapters/types/aws-guardduty/">
+        <link rel="canonical" href="https://docs.limacharlie.io/7-administration/access/designing-access/">
       
       
-        <link rel="prev" href="../aws-cloudtrail/">
+        <link rel="prev" href="../user-access/">
       
       
-        <link rel="next" href="../s3/">
+        <link rel="next" href="../sso/">
       
       
         
       
       
-      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>AWS GuardDuty - LimaCharlie Documentation</title>
+        <title>Designing Access - LimaCharlie Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/extra.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -93,7 +93,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#aws-guardduty" class="md-skip">
+        <a href="#designing-access-for-multi-org-deployments" class="md-skip">
           Skip to content
         </a>
       
@@ -107,9 +107,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="LimaCharlie Documentation" class="md-header__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
+    <a href="../../.." title="LimaCharlie Documentation" class="md-header__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
       
-  <img src="../../../../assets/images/logo.svg" alt="logo">
+  <img src="../../../assets/images/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -126,7 +126,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AWS GuardDuty
+              Designing Access
             
           </span>
         </div>
@@ -244,7 +244,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -265,7 +265,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../1-getting-started/" class="md-tabs__link">
+        <a href="../../../1-getting-started/" class="md-tabs__link">
           
   
   
@@ -283,13 +283,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../../2-sensors-deployment/" class="md-tabs__link">
           
   
   
@@ -311,7 +309,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../3-detection-response/" class="md-tabs__link">
+        <a href="../../../3-detection-response/" class="md-tabs__link">
           
   
   
@@ -333,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../4-data-queries/" class="md-tabs__link">
+        <a href="../../../4-data-queries/" class="md-tabs__link">
           
   
   
@@ -355,7 +353,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../5-integrations/" class="md-tabs__link">
+        <a href="../../../5-integrations/" class="md-tabs__link">
           
   
   
@@ -377,7 +375,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../6-developer-guide/" class="md-tabs__link">
+        <a href="../../../6-developer-guide/" class="md-tabs__link">
           
   
   
@@ -395,11 +393,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../../../7-administration/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -421,7 +421,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../8-reference/" class="md-tabs__link">
+        <a href="../../../8-reference/" class="md-tabs__link">
           
   
   
@@ -443,7 +443,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../9-ai-sessions/" class="md-tabs__link">
+        <a href="../../../9-ai-sessions/" class="md-tabs__link">
           
   
   
@@ -465,7 +465,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../10-release-notes/" class="md-tabs__link">
+        <a href="../../../10-release-notes/" class="md-tabs__link">
           
   
   
@@ -501,9 +501,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="LimaCharlie Documentation" class="md-nav__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
+    <a href="../../.." title="LimaCharlie Documentation" class="md-nav__button md-logo" aria-label="LimaCharlie Documentation" data-md-component="logo">
       
-  <img src="../../../../assets/images/logo.svg" alt="logo">
+  <img src="../../../assets/images/logo.svg" alt="logo">
 
     </a>
     LimaCharlie Documentation
@@ -530,7 +530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -588,7 +588,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../1-getting-started/" class="md-nav__link ">
+            <a href="../../../1-getting-started/" class="md-nav__link ">
               
   
   
@@ -632,7 +632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../1-getting-started/what-is-limacharlie/" class="md-nav__link">
+      <a href="../../../1-getting-started/what-is-limacharlie/" class="md-nav__link">
         
   
   
@@ -660,7 +660,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../1-getting-started/quickstart/" class="md-nav__link">
+      <a href="../../../1-getting-started/quickstart/" class="md-nav__link">
         
   
   
@@ -688,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../1-getting-started/core-concepts/" class="md-nav__link">
+      <a href="../../../1-getting-started/core-concepts/" class="md-nav__link">
         
   
   
@@ -739,7 +739,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../1-getting-started/tutorials/" class="md-nav__link ">
+            <a href="../../../1-getting-started/tutorials/" class="md-nav__link ">
               
   
   
@@ -790,8 +790,6 @@
       
   
   
-    
-  
   
   
     
@@ -825,23 +823,20 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../" class="md-nav__link ">
+            <a href="../../../2-sensors-deployment/" class="md-nav__link ">
               
   
   
@@ -859,13 +854,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -885,7 +880,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../installation-keys/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/installation-keys/" class="md-nav__link">
         
   
   
@@ -913,7 +908,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../connectivity/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/connectivity/" class="md-nav__link">
         
   
   
@@ -941,7 +936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../sensor-tags/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/sensor-tags/" class="md-nav__link">
         
   
   
@@ -969,7 +964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../log-collection-guide/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/log-collection-guide/" class="md-nav__link">
         
   
   
@@ -997,7 +992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../telemetry-index/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/telemetry-index/" class="md-nav__link">
         
   
   
@@ -1061,20 +1056,17 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7" >
         
           
-          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
             
   
   
@@ -1168,7 +1160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/windows/installation/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/windows/installation/" class="md-nav__link">
         
   
   
@@ -1196,7 +1188,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/windows/custom-msi/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/windows/custom-msi/" class="md-nav__link">
         
   
   
@@ -1298,7 +1290,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/macos/sequoia/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/macos/sequoia/" class="md-nav__link">
         
   
   
@@ -1326,7 +1318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/macos/installation/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/macos/installation/" class="md-nav__link">
         
   
   
@@ -1354,7 +1346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/macos/installation-older/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/macos/installation-older/" class="md-nav__link">
         
   
   
@@ -1382,7 +1374,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/macos/mdm-profiles/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/macos/mdm-profiles/" class="md-nav__link">
         
   
   
@@ -1410,7 +1402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/macos/jamf/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/macos/jamf/" class="md-nav__link">
         
   
   
@@ -1438,7 +1430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/macos/intune/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/macos/intune/" class="md-nav__link">
         
   
   
@@ -1530,7 +1522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/linux/installation/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/linux/installation/" class="md-nav__link">
         
   
   
@@ -1566,7 +1558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/chrome/installation/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/chrome/installation/" class="md-nav__link">
         
   
   
@@ -1594,7 +1586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/edge/installation/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/edge/installation/" class="md-nav__link">
         
   
   
@@ -1622,7 +1614,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/docker/installation/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/docker/installation/" class="md-nav__link">
         
   
   
@@ -1650,7 +1642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/containers/clusters/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/containers/clusters/" class="md-nav__link">
         
   
   
@@ -1678,7 +1670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/vdi/templates/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/vdi/templates/" class="md-nav__link">
         
   
   
@@ -1706,7 +1698,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/payloads/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/payloads/" class="md-nav__link">
         
   
   
@@ -1734,7 +1726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/versioning-upgrades/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/versioning-upgrades/" class="md-nav__link">
         
   
   
@@ -1762,7 +1754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/service-upgrades/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/service-upgrades/" class="md-nav__link">
         
   
   
@@ -1790,7 +1782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/uninstallation/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/uninstallation/" class="md-nav__link">
         
   
   
@@ -1818,7 +1810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/hostname-resolution/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/hostname-resolution/" class="md-nav__link">
         
   
   
@@ -1846,7 +1838,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../endpoint-agent/sleeper/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/endpoint-agent/sleeper/" class="md-nav__link">
         
   
   
@@ -1894,20 +1886,17 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
         
           
-          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
             
   
   
@@ -1943,7 +1932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../enterprise-deployment/chrome-enterprise/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/enterprise-deployment/chrome-enterprise/" class="md-nav__link">
         
   
   
@@ -1971,7 +1960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../enterprise-deployment/intune/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/enterprise-deployment/intune/" class="md-nav__link">
         
   
   
@@ -2004,8 +1993,6 @@
                 
   
   
-    
-  
   
   
     
@@ -2047,21 +2034,18 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../../2-sensors-deployment/adapters/" class="md-nav__link ">
               
   
   
@@ -2079,13 +2063,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_3_9" id="__nav_3_9_label" tabindex="">
+              <label class="md-nav__link " for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2105,7 +2089,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../deployment/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/deployment/" class="md-nav__link">
         
   
   
@@ -2133,7 +2117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../as-a-service/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/as-a-service/" class="md-nav__link">
         
   
   
@@ -2161,7 +2145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/usage/" class="md-nav__link">
         
   
   
@@ -2186,10 +2170,8 @@
                 
   
   
-    
   
   
-  
     
     
       
@@ -2216,11 +2198,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9_5" >
         
           
           <label class="md-nav__link" for="__nav_3_9_5" id="__nav_3_9_5_label" tabindex="0">
@@ -2241,7 +2223,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_9_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_9_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_9_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2259,7 +2241,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../aws-cloudtrail/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/aws-cloudtrail/" class="md-nav__link">
         
   
   
@@ -2284,37 +2266,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    AWS GuardDuty
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../2-sensors-deployment/adapters/types/aws-guardduty/" class="md-nav__link">
         
   
   
@@ -2330,76 +2285,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-configurations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deployment Configurations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deployment Configurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#adapter-specific-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adapter-specific Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#guided-deployment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Guided Deployment
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2412,7 +2297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../s3/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/s3/" class="md-nav__link">
         
   
   
@@ -2440,7 +2325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sqs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/sqs/" class="md-nav__link">
         
   
   
@@ -2468,7 +2353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../azure-event-hub/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/azure-event-hub/" class="md-nav__link">
         
   
   
@@ -2496,7 +2381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../google-cloud-pubsub/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/google-cloud-pubsub/" class="md-nav__link">
         
   
   
@@ -2524,7 +2409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../google-cloud-storage/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/google-cloud-storage/" class="md-nav__link">
         
   
   
@@ -2624,7 +2509,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../azure/key-vault/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/azure/key-vault/" class="md-nav__link">
         
   
   
@@ -2652,7 +2537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../azure/kubernetes-service/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/azure/kubernetes-service/" class="md-nav__link">
         
   
   
@@ -2680,7 +2565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../azure/monitor/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/azure/monitor/" class="md-nav__link">
         
   
   
@@ -2708,7 +2593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../azure/network-security-group/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/azure/network-security-group/" class="md-nav__link">
         
   
   
@@ -2736,7 +2621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../azure/sql-audit-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/azure/sql-audit-logs/" class="md-nav__link">
         
   
   
@@ -2834,7 +2719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../okta/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/okta/" class="md-nav__link">
         
   
   
@@ -2862,7 +2747,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../microsoft-entra-id/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/microsoft-entra-id/" class="md-nav__link">
         
   
   
@@ -2890,7 +2775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../duo/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/duo/" class="md-nav__link">
         
   
   
@@ -2918,7 +2803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../1password/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/1password/" class="md-nav__link">
         
   
   
@@ -3020,7 +2905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../crowdstrike/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/crowdstrike/" class="md-nav__link">
         
   
   
@@ -3048,7 +2933,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../microsoft-defender/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/microsoft-defender/" class="md-nav__link">
         
   
   
@@ -3076,7 +2961,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sentinelone/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/sentinelone/" class="md-nav__link">
         
   
   
@@ -3104,7 +2989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sophos/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/sophos/" class="md-nav__link">
         
   
   
@@ -3132,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../carbon-black/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/carbon-black/" class="md-nav__link">
         
   
   
@@ -3160,7 +3045,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sublime-security/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/sublime-security/" class="md-nav__link">
         
   
   
@@ -3266,7 +3151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../microsoft-365/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/microsoft-365/" class="md-nav__link">
         
   
   
@@ -3294,7 +3179,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../slack-audit-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/slack-audit-logs/" class="md-nav__link">
         
   
   
@@ -3322,7 +3207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../google-workspace/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/google-workspace/" class="md-nav__link">
         
   
   
@@ -3350,7 +3235,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../atlassian/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/atlassian/" class="md-nav__link">
         
   
   
@@ -3378,7 +3263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hubspot/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/hubspot/" class="md-nav__link">
         
   
   
@@ -3406,7 +3291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../zendesk/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/zendesk/" class="md-nav__link">
         
   
   
@@ -3434,7 +3319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../pandadoc/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/pandadoc/" class="md-nav__link">
         
   
   
@@ -3462,7 +3347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mimecast/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/mimecast/" class="md-nav__link">
         
   
   
@@ -3560,7 +3445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../kubernetes-pods/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/kubernetes-pods/" class="md-nav__link">
         
   
   
@@ -3588,7 +3473,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../iis/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/iis/" class="md-nav__link">
         
   
   
@@ -3616,7 +3501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cato/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/cato/" class="md-nav__link">
         
   
   
@@ -3644,7 +3529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tailscale/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/tailscale/" class="md-nav__link">
         
   
   
@@ -3750,7 +3635,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../syslog/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/syslog/" class="md-nav__link">
         
   
   
@@ -3778,7 +3663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../json/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/json/" class="md-nav__link">
         
   
   
@@ -3806,7 +3691,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../file/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/file/" class="md-nav__link">
         
   
   
@@ -3834,7 +3719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../stdin/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/stdin/" class="md-nav__link">
         
   
   
@@ -3862,7 +3747,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../windows-event-log/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/windows-event-log/" class="md-nav__link">
         
   
   
@@ -3890,7 +3775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../evtx/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/evtx/" class="md-nav__link">
         
   
   
@@ -3918,7 +3803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mac-unified-logging/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/mac-unified-logging/" class="md-nav__link">
         
   
   
@@ -3946,7 +3831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../imap/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/imap/" class="md-nav__link">
         
   
   
@@ -4040,7 +3925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../canarytokens/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/canarytokens/" class="md-nav__link">
         
   
   
@@ -4068,7 +3953,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../it-glue/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/types/it-glue/" class="md-nav__link">
         
   
   
@@ -4164,7 +4049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/stdin-json/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/examples/stdin-json/" class="md-nav__link">
         
   
   
@@ -4192,7 +4077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/stdin/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/examples/stdin/" class="md-nav__link">
         
   
   
@@ -4220,7 +4105,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/windows-event-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/examples/windows-event-logs/" class="md-nav__link">
         
   
   
@@ -4318,7 +4203,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/webhook-adapter/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/tutorials/webhook-adapter/" class="md-nav__link">
         
   
   
@@ -4346,7 +4231,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/otel-webhook/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/tutorials/otel-webhook/" class="md-nav__link">
         
   
   
@@ -4374,7 +4259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/google-cloud-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/tutorials/google-cloud-logs/" class="md-nav__link">
         
   
   
@@ -4402,7 +4287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/cloud-telemetry/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/adapters/tutorials/cloud-telemetry/" class="md-nav__link">
         
   
   
@@ -4456,20 +4341,17 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_10" >
         
           
-          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3_10" id="__nav_3_10_label" tabindex="0">
             
   
   
@@ -4505,7 +4387,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../troubleshooting/non-responding-sensors/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/troubleshooting/non-responding-sensors/" class="md-nav__link">
         
   
   
@@ -4563,20 +4445,17 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_11" >
         
           
-          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="">
+          <label class="md-nav__link" for="__nav_3_11" id="__nav_3_11_label" tabindex="0">
             
   
   
@@ -4612,7 +4491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../tutorials/windows-event-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/tutorials/windows-event-logs/" class="md-nav__link">
         
   
   
@@ -4640,7 +4519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../tutorials/sysmon-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/tutorials/sysmon-logs/" class="md-nav__link">
         
   
   
@@ -4668,7 +4547,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../tutorials/defender-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/tutorials/defender-logs/" class="md-nav__link">
         
   
   
@@ -4696,7 +4575,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../tutorials/linux-audit-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/tutorials/linux-audit-logs/" class="md-nav__link">
         
   
   
@@ -4724,7 +4603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../tutorials/macos-unified-logs/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/tutorials/macos-unified-logs/" class="md-nav__link">
         
   
   
@@ -4752,7 +4631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../tutorials/test-sensor-version/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/tutorials/test-sensor-version/" class="md-nav__link">
         
   
   
@@ -4780,7 +4659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../tutorials/update-sensors/" class="md-nav__link">
+      <a href="../../../2-sensors-deployment/tutorials/update-sensors/" class="md-nav__link">
         
   
   
@@ -4868,7 +4747,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../3-detection-response/" class="md-nav__link ">
+            <a href="../../../3-detection-response/" class="md-nav__link ">
               
   
   
@@ -4912,7 +4791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/tutorials/writing-testing-rules/" class="md-nav__link">
+      <a href="../../../3-detection-response/tutorials/writing-testing-rules/" class="md-nav__link">
         
   
   
@@ -4940,7 +4819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/tutorials/threat-feed-rule/" class="md-nav__link">
+      <a href="../../../3-detection-response/tutorials/threat-feed-rule/" class="md-nav__link">
         
   
   
@@ -4968,7 +4847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/tutorials/dr-rule-building-guidebook/" class="md-nav__link">
+      <a href="../../../3-detection-response/tutorials/dr-rule-building-guidebook/" class="md-nav__link">
         
   
   
@@ -4996,7 +4875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/examples/" class="md-nav__link">
+      <a href="../../../3-detection-response/examples/" class="md-nav__link">
         
   
   
@@ -5024,7 +4903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/false-positives/" class="md-nav__link">
+      <a href="../../../3-detection-response/false-positives/" class="md-nav__link">
         
   
   
@@ -5052,7 +4931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/stateful-rules/" class="md-nav__link">
+      <a href="../../../3-detection-response/stateful-rules/" class="md-nav__link">
         
   
   
@@ -5080,7 +4959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/sensor-variables/" class="md-nav__link">
+      <a href="../../../3-detection-response/sensor-variables/" class="md-nav__link">
         
   
   
@@ -5108,7 +4987,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/behavioral-detection/" class="md-nav__link">
+      <a href="../../../3-detection-response/behavioral-detection/" class="md-nav__link">
         
   
   
@@ -5136,7 +5015,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/unit-tests/" class="md-nav__link">
+      <a href="../../../3-detection-response/unit-tests/" class="md-nav__link">
         
   
   
@@ -5164,7 +5043,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/alternate-targets/" class="md-nav__link">
+      <a href="../../../3-detection-response/alternate-targets/" class="md-nav__link">
         
   
   
@@ -5258,7 +5137,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/managed-rulesets/community-rules/" class="md-nav__link">
+      <a href="../../../3-detection-response/managed-rulesets/community-rules/" class="md-nav__link">
         
   
   
@@ -5286,7 +5165,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/managed-rulesets/sigma-converter/" class="md-nav__link">
+      <a href="../../../3-detection-response/managed-rulesets/sigma-converter/" class="md-nav__link">
         
   
   
@@ -5314,7 +5193,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/managed-rulesets/soc-prime/" class="md-nav__link">
+      <a href="../../../3-detection-response/managed-rulesets/soc-prime/" class="md-nav__link">
         
   
   
@@ -5342,7 +5221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/managed-rulesets/soteria/edr/" class="md-nav__link">
+      <a href="../../../3-detection-response/managed-rulesets/soteria/edr/" class="md-nav__link">
         
   
   
@@ -5370,7 +5249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/managed-rulesets/soteria/aws/" class="md-nav__link">
+      <a href="../../../3-detection-response/managed-rulesets/soteria/aws/" class="md-nav__link">
         
   
   
@@ -5398,7 +5277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../3-detection-response/managed-rulesets/soteria/m365/" class="md-nav__link">
+      <a href="../../../3-detection-response/managed-rulesets/soteria/m365/" class="md-nav__link">
         
   
   
@@ -5478,7 +5357,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../4-data-queries/" class="md-nav__link ">
+            <a href="../../../4-data-queries/" class="md-nav__link ">
               
   
   
@@ -5522,7 +5401,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../4-data-queries/lcql-examples/" class="md-nav__link">
+      <a href="../../../4-data-queries/lcql-examples/" class="md-nav__link">
         
   
   
@@ -5550,7 +5429,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../4-data-queries/query-console-ui/" class="md-nav__link">
+      <a href="../../../4-data-queries/query-console-ui/" class="md-nav__link">
         
   
   
@@ -5578,7 +5457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../4-data-queries/query-cli/" class="md-nav__link">
+      <a href="../../../4-data-queries/query-cli/" class="md-nav__link">
         
   
   
@@ -5606,7 +5485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../4-data-queries/template-strings/" class="md-nav__link">
+      <a href="../../../4-data-queries/template-strings/" class="md-nav__link">
         
   
   
@@ -5634,7 +5513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../4-data-queries/template-transforms/" class="md-nav__link">
+      <a href="../../../4-data-queries/template-transforms/" class="md-nav__link">
         
   
   
@@ -5687,7 +5566,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../4-data-queries/events/" class="md-nav__link ">
+            <a href="../../../4-data-queries/events/" class="md-nav__link ">
               
   
   
@@ -5731,7 +5610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../4-data-queries/events/sysmon-comparison/" class="md-nav__link">
+      <a href="../../../4-data-queries/events/sysmon-comparison/" class="md-nav__link">
         
   
   
@@ -5823,7 +5702,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../4-data-queries/tutorials/bigquery-looker-studio/" class="md-nav__link">
+      <a href="../../../4-data-queries/tutorials/bigquery-looker-studio/" class="md-nav__link">
         
   
   
@@ -5901,7 +5780,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../5-integrations/" class="md-nav__link ">
+            <a href="../../../5-integrations/" class="md-nav__link ">
               
   
   
@@ -5945,7 +5824,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/add-ons/" class="md-nav__link">
+      <a href="../../../5-integrations/add-ons/" class="md-nav__link">
         
   
   
@@ -6006,7 +5885,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../5-integrations/outputs/" class="md-nav__link ">
+            <a href="../../../5-integrations/outputs/" class="md-nav__link ">
               
   
   
@@ -6050,7 +5929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/stream-structures/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/stream-structures/" class="md-nav__link">
         
   
   
@@ -6078,7 +5957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/testing/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/testing/" class="md-nav__link">
         
   
   
@@ -6106,7 +5985,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/allowlisting/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/allowlisting/" class="md-nav__link">
         
   
   
@@ -6134,7 +6013,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/billing/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/billing/" class="md-nav__link">
         
   
   
@@ -6258,7 +6137,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/amazon-s3/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/amazon-s3/" class="md-nav__link">
         
   
   
@@ -6286,7 +6165,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/splunk/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/splunk/" class="md-nav__link">
         
   
   
@@ -6314,7 +6193,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/elastic/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/elastic/" class="md-nav__link">
         
   
   
@@ -6342,7 +6221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/bigquery/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/bigquery/" class="md-nav__link">
         
   
   
@@ -6370,7 +6249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/syslog/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/syslog/" class="md-nav__link">
         
   
   
@@ -6398,7 +6277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/webhook/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/webhook/" class="md-nav__link">
         
   
   
@@ -6426,7 +6305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/webhook-bulk/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/webhook-bulk/" class="md-nav__link">
         
   
   
@@ -6454,7 +6333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/slack/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/slack/" class="md-nav__link">
         
   
   
@@ -6482,7 +6361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/telegram/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/telegram/" class="md-nav__link">
         
   
   
@@ -6510,7 +6389,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/ms-teams/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/ms-teams/" class="md-nav__link">
         
   
   
@@ -6538,7 +6417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/smtp/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/smtp/" class="md-nav__link">
         
   
   
@@ -6566,7 +6445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/apache-kafka/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/apache-kafka/" class="md-nav__link">
         
   
   
@@ -6594,7 +6473,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/azure-event-hub/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/azure-event-hub/" class="md-nav__link">
         
   
   
@@ -6622,7 +6501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/azure-storage-blob/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/azure-storage-blob/" class="md-nav__link">
         
   
   
@@ -6650,7 +6529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/google-cloud-storage/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/google-cloud-storage/" class="md-nav__link">
         
   
   
@@ -6678,7 +6557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/google-pubsub/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/google-pubsub/" class="md-nav__link">
         
   
   
@@ -6706,7 +6585,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/humio/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/humio/" class="md-nav__link">
         
   
   
@@ -6734,7 +6613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/opensearch/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/opensearch/" class="md-nav__link">
         
   
   
@@ -6762,7 +6641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/scp/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/scp/" class="md-nav__link">
         
   
   
@@ -6790,7 +6669,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/sftp/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/sftp/" class="md-nav__link">
         
   
   
@@ -6818,7 +6697,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/outputs/destinations/tines/" class="md-nav__link">
+      <a href="../../../5-integrations/outputs/destinations/tines/" class="md-nav__link">
         
   
   
@@ -6895,7 +6774,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../5-integrations/extensions/" class="md-nav__link ">
+            <a href="../../../5-integrations/extensions/" class="md-nav__link ">
               
   
   
@@ -6939,7 +6818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/using-extensions/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/using-extensions/" class="md-nav__link">
         
   
   
@@ -7022,7 +6901,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../5-integrations/extensions/limacharlie/" class="md-nav__link ">
+            <a href="../../../5-integrations/extensions/limacharlie/" class="md-nav__link ">
               
   
   
@@ -7066,7 +6945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/git-sync/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/git-sync/" class="md-nav__link">
         
   
   
@@ -7094,7 +6973,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/reliable-tasking/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/reliable-tasking/" class="md-nav__link">
         
   
   
@@ -7122,7 +7001,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/yara-manager/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/yara-manager/" class="md-nav__link">
         
   
   
@@ -7150,7 +7029,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/artifact/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/artifact/" class="md-nav__link">
         
   
   
@@ -7178,7 +7057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/binlib/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/binlib/" class="md-nav__link">
         
   
   
@@ -7206,7 +7085,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/infrastructure/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/infrastructure/" class="md-nav__link">
         
   
   
@@ -7234,7 +7113,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/usage-alerts/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/usage-alerts/" class="md-nav__link">
         
   
   
@@ -7262,7 +7141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/dumper/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/dumper/" class="md-nav__link">
         
   
   
@@ -7290,7 +7169,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/epp/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/epp/" class="md-nav__link">
         
   
   
@@ -7318,7 +7197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/exfil/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/exfil/" class="md-nav__link">
         
   
   
@@ -7346,7 +7225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/integrity/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/integrity/" class="md-nav__link">
         
   
   
@@ -7374,7 +7253,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/lookup-manager/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/lookup-manager/" class="md-nav__link">
         
   
   
@@ -7402,7 +7281,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/payload-manager/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/payload-manager/" class="md-nav__link">
         
   
   
@@ -7430,7 +7309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/sensor-cull/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/sensor-cull/" class="md-nav__link">
         
   
   
@@ -7458,7 +7337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/cases/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/cases/" class="md-nav__link">
         
   
   
@@ -7486,7 +7365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/limacharlie/feedback/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/limacharlie/feedback/" class="md-nav__link">
         
   
   
@@ -7573,7 +7452,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../5-integrations/extensions/third-party/" class="md-nav__link ">
+            <a href="../../../5-integrations/extensions/third-party/" class="md-nav__link ">
               
   
   
@@ -7617,7 +7496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/velociraptor/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/velociraptor/" class="md-nav__link">
         
   
   
@@ -7645,7 +7524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/zeek/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/zeek/" class="md-nav__link">
         
   
   
@@ -7673,7 +7552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/yara/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/yara/" class="md-nav__link">
         
   
   
@@ -7701,7 +7580,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/hayabusa/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/hayabusa/" class="md-nav__link">
         
   
   
@@ -7729,7 +7608,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/atomic-red-team/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/atomic-red-team/" class="md-nav__link">
         
   
   
@@ -7757,7 +7636,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/otx/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/otx/" class="md-nav__link">
         
   
   
@@ -7785,7 +7664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/pagerduty/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/pagerduty/" class="md-nav__link">
         
   
   
@@ -7813,7 +7692,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/plaso/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/plaso/" class="md-nav__link">
         
   
   
@@ -7841,7 +7720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/strelka/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/strelka/" class="md-nav__link">
         
   
   
@@ -7869,7 +7748,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/twilio/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/twilio/" class="md-nav__link">
         
   
   
@@ -7897,7 +7776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/govee/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/govee/" class="md-nav__link">
         
   
   
@@ -7925,7 +7804,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/nims/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/nims/" class="md-nav__link">
         
   
   
@@ -7953,7 +7832,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/renigma/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/renigma/" class="md-nav__link">
         
   
   
@@ -7981,7 +7860,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/third-party/secureannex/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/third-party/secureannex/" class="md-nav__link">
         
   
   
@@ -8073,7 +7952,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/labs/playbook/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/labs/playbook/" class="md-nav__link">
         
   
   
@@ -8156,7 +8035,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../5-integrations/extensions/cloud-cli/" class="md-nav__link ">
+            <a href="../../../5-integrations/extensions/cloud-cli/" class="md-nav__link ">
               
   
   
@@ -8200,7 +8079,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/1password/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/1password/" class="md-nav__link">
         
   
   
@@ -8228,7 +8107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/aws/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/aws/" class="md-nav__link">
         
   
   
@@ -8256,7 +8135,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/azure/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/azure/" class="md-nav__link">
         
   
   
@@ -8284,7 +8163,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/digitalocean/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/digitalocean/" class="md-nav__link">
         
   
   
@@ -8312,7 +8191,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/github/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/github/" class="md-nav__link">
         
   
   
@@ -8340,7 +8219,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/google-cloud/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/google-cloud/" class="md-nav__link">
         
   
   
@@ -8368,7 +8247,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/microsoft365/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/microsoft365/" class="md-nav__link">
         
   
   
@@ -8396,7 +8275,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/okta/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/okta/" class="md-nav__link">
         
   
   
@@ -8424,7 +8303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/sdm/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/sdm/" class="md-nav__link">
         
   
   
@@ -8452,7 +8331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/sublime/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/sublime/" class="md-nav__link">
         
   
   
@@ -8480,7 +8359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/tailscale/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/tailscale/" class="md-nav__link">
         
   
   
@@ -8508,7 +8387,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/extensions/cloud-cli/vultr/" class="md-nav__link">
+      <a href="../../../5-integrations/extensions/cloud-cli/vultr/" class="md-nav__link">
         
   
   
@@ -8591,7 +8470,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../5-integrations/api-integrations/" class="md-nav__link ">
+            <a href="../../../5-integrations/api-integrations/" class="md-nav__link ">
               
   
   
@@ -8635,7 +8514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/virustotal/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/virustotal/" class="md-nav__link">
         
   
   
@@ -8663,7 +8542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/greynoise/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/greynoise/" class="md-nav__link">
         
   
   
@@ -8691,7 +8570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/hybrid-analysis/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/hybrid-analysis/" class="md-nav__link">
         
   
   
@@ -8719,7 +8598,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/alphamountain/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/alphamountain/" class="md-nav__link">
         
   
   
@@ -8747,7 +8626,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/echotrail/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/echotrail/" class="md-nav__link">
         
   
   
@@ -8775,7 +8654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/ip-asn/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/ip-asn/" class="md-nav__link">
         
   
   
@@ -8803,7 +8682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/ip-geolocation/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/ip-geolocation/" class="md-nav__link">
         
   
   
@@ -8831,7 +8710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/api-integrations/pangea/" class="md-nav__link">
+      <a href="../../../5-integrations/api-integrations/pangea/" class="md-nav__link">
         
   
   
@@ -8925,7 +8804,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/services/replay/" class="md-nav__link">
+      <a href="../../../5-integrations/services/replay/" class="md-nav__link">
         
   
   
@@ -8953,7 +8832,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/services/dumper/" class="md-nav__link">
+      <a href="../../../5-integrations/services/dumper/" class="md-nav__link">
         
   
   
@@ -9051,7 +8930,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/tutorials/virustotal-integration/" class="md-nav__link">
+      <a href="../../../5-integrations/tutorials/virustotal-integration/" class="md-nav__link">
         
   
   
@@ -9079,7 +8958,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/tutorials/human-in-the-loop-response/" class="md-nav__link">
+      <a href="../../../5-integrations/tutorials/human-in-the-loop-response/" class="md-nav__link">
         
   
   
@@ -9107,7 +8986,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/tutorials/hayabusa-bigquery/" class="md-nav__link">
+      <a href="../../../5-integrations/tutorials/hayabusa-bigquery/" class="md-nav__link">
         
   
   
@@ -9135,7 +9014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../5-integrations/tutorials/velociraptor-bigquery/" class="md-nav__link">
+      <a href="../../../5-integrations/tutorials/velociraptor-bigquery/" class="md-nav__link">
         
   
   
@@ -9213,7 +9092,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../6-developer-guide/" class="md-nav__link ">
+            <a href="../../../6-developer-guide/" class="md-nav__link ">
               
   
   
@@ -9284,7 +9163,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../6-developer-guide/sdks/" class="md-nav__link ">
+            <a href="../../../6-developer-guide/sdks/" class="md-nav__link ">
               
   
   
@@ -9328,7 +9207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/sdks/python-sdk/" class="md-nav__link">
+      <a href="../../../6-developer-guide/sdks/python-sdk/" class="md-nav__link">
         
   
   
@@ -9356,7 +9235,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/sdks/go-sdk/" class="md-nav__link">
+      <a href="../../../6-developer-guide/sdks/go-sdk/" class="md-nav__link">
         
   
   
@@ -9392,7 +9271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/sdk-overview/" class="md-nav__link">
+      <a href="../../../6-developer-guide/sdk-overview/" class="md-nav__link">
         
   
   
@@ -9420,7 +9299,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/cli/" class="md-nav__link">
+      <a href="../../../6-developer-guide/cli/" class="md-nav__link">
         
   
   
@@ -9448,7 +9327,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/mcp-server/" class="md-nav__link">
+      <a href="../../../6-developer-guide/mcp-server/" class="md-nav__link">
         
   
   
@@ -9536,7 +9415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/extensions/building-extensions/" class="md-nav__link">
+      <a href="../../../6-developer-guide/extensions/building-extensions/" class="md-nav__link">
         
   
   
@@ -9564,7 +9443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/extensions/building-ui/" class="md-nav__link">
+      <a href="../../../6-developer-guide/extensions/building-ui/" class="md-nav__link">
         
   
   
@@ -9592,7 +9471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/extensions/schema-data-types/" class="md-nav__link">
+      <a href="../../../6-developer-guide/extensions/schema-data-types/" class="md-nav__link">
         
   
   
@@ -9628,7 +9507,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../6-developer-guide/grant-program/" class="md-nav__link">
+      <a href="../../../6-developer-guide/grant-program/" class="md-nav__link">
         
   
   
@@ -9660,6 +9539,8 @@
       
   
   
+    
+  
   
   
     
@@ -9679,20 +9560,23 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../7-administration/" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -9710,13 +9594,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -9733,8 +9617,10 @@
                 
   
   
+    
   
   
+  
     
     
       
@@ -9751,18 +9637,21 @@
     
       
       
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
         
           
-          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="">
             
   
   
@@ -9780,7 +9669,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_8_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -9798,7 +9687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/access/api-keys/" class="md-nav__link">
+      <a href="../api-keys/" class="md-nav__link">
         
   
   
@@ -9826,7 +9715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/access/user-access/" class="md-nav__link">
+      <a href="../user-access/" class="md-nav__link">
         
   
   
@@ -9851,10 +9740,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../../7-administration/access/designing-access/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Designing Access
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -9870,6 +9786,148 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#building-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building blocks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-architecture-for-an-mssp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended architecture for an MSSP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended architecture for an MSSP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optional-an-internal-management-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional: an internal "management" organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#granting-access-to-your-internal-staff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Granting access to your internal staff
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Granting access to your internal staff">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#separating-production-from-non-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separating production from non-production
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#granting-access-to-your-end-customers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Granting access to your end customers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-customer-onboarding-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New-customer onboarding checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns-to-avoid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-patterns to avoid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -9882,7 +9940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/access/sso/" class="md-nav__link">
+      <a href="../sso/" class="md-nav__link">
         
   
   
@@ -9932,17 +9990,20 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="">
             
   
   
@@ -9978,7 +10039,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/billing/options/" class="md-nav__link">
+      <a href="../../billing/options/" class="md-nav__link">
         
   
   
@@ -10006,7 +10067,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/billing/custom-plans/" class="md-nav__link">
+      <a href="../../billing/custom-plans/" class="md-nav__link">
         
   
   
@@ -10034,7 +10095,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/billing/data-estimation/" class="md-nav__link">
+      <a href="../../billing/data-estimation/" class="md-nav__link">
         
   
   
@@ -10092,10 +10153,13 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -10103,7 +10167,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../7-administration/config-hive/" class="md-nav__link ">
+            <a href="../../config-hive/" class="md-nav__link ">
               
   
   
@@ -10121,7 +10185,7 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_8_4" id="__nav_8_4_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
@@ -10147,7 +10211,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/config-hive/secrets/" class="md-nav__link">
+      <a href="../../config-hive/secrets/" class="md-nav__link">
         
   
   
@@ -10175,7 +10239,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/config-hive/lookups/" class="md-nav__link">
+      <a href="../../config-hive/lookups/" class="md-nav__link">
         
   
   
@@ -10203,7 +10267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/config-hive/dr-rules/" class="md-nav__link">
+      <a href="../../config-hive/dr-rules/" class="md-nav__link">
         
   
   
@@ -10231,7 +10295,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/config-hive/yara/" class="md-nav__link">
+      <a href="../../config-hive/yara/" class="md-nav__link">
         
   
   
@@ -10259,7 +10323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../7-administration/config-hive/cloud-sensors/" class="md-nav__link">
+      <a href="../../config-hive/cloud-sensors/" class="md-nav__link">
         
   
   
@@ -10355,7 +10419,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../8-reference/" class="md-nav__link ">
+            <a href="../../../8-reference/" class="md-nav__link ">
               
   
   
@@ -10399,7 +10463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/endpoint-commands/" class="md-nav__link">
+      <a href="../../../8-reference/endpoint-commands/" class="md-nav__link">
         
   
   
@@ -10427,7 +10491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/detection-logic-operators/" class="md-nav__link">
+      <a href="../../../8-reference/detection-logic-operators/" class="md-nav__link">
         
   
   
@@ -10455,7 +10519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/response-actions/" class="md-nav__link">
+      <a href="../../../8-reference/response-actions/" class="md-nav__link">
         
   
   
@@ -10483,7 +10547,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/edr-events/" class="md-nav__link">
+      <a href="../../../8-reference/edr-events/" class="md-nav__link">
         
   
   
@@ -10511,7 +10575,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/platform-events/" class="md-nav__link">
+      <a href="../../../8-reference/platform-events/" class="md-nav__link">
         
   
   
@@ -10539,7 +10603,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/schedule-events/" class="md-nav__link">
+      <a href="../../../8-reference/schedule-events/" class="md-nav__link">
         
   
   
@@ -10567,7 +10631,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/event-schemas/" class="md-nav__link">
+      <a href="../../../8-reference/event-schemas/" class="md-nav__link">
         
   
   
@@ -10595,7 +10659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/sensor-selector-expressions/" class="md-nav__link">
+      <a href="../../../8-reference/sensor-selector-expressions/" class="md-nav__link">
         
   
   
@@ -10623,7 +10687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/id-schema/" class="md-nav__link">
+      <a href="../../../8-reference/id-schema/" class="md-nav__link">
         
   
   
@@ -10651,7 +10715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/permissions/" class="md-nav__link">
+      <a href="../../../8-reference/permissions/" class="md-nav__link">
         
   
   
@@ -10679,7 +10743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/error-codes/" class="md-nav__link">
+      <a href="../../../8-reference/error-codes/" class="md-nav__link">
         
   
   
@@ -10707,7 +10771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/authentication-resource-locator/" class="md-nav__link">
+      <a href="../../../8-reference/authentication-resource-locator/" class="md-nav__link">
         
   
   
@@ -10735,7 +10799,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/yara-modules/" class="md-nav__link">
+      <a href="../../../8-reference/yara-modules/" class="md-nav__link">
         
   
   
@@ -10763,7 +10827,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/latency/" class="md-nav__link">
+      <a href="../../../8-reference/latency/" class="md-nav__link">
         
   
   
@@ -10832,7 +10896,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../8-reference/faq/" class="md-nav__link ">
+            <a href="../../../8-reference/faq/" class="md-nav__link ">
               
   
   
@@ -10876,7 +10940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/general/" class="md-nav__link">
+      <a href="../../../8-reference/faq/general/" class="md-nav__link">
         
   
   
@@ -10904,7 +10968,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/account-management/" class="md-nav__link">
+      <a href="../../../8-reference/faq/account-management/" class="md-nav__link">
         
   
   
@@ -10932,7 +10996,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/billing/" class="md-nav__link">
+      <a href="../../../8-reference/faq/billing/" class="md-nav__link">
         
   
   
@@ -10960,7 +11024,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/dr-rules/" class="md-nav__link">
+      <a href="../../../8-reference/faq/dr-rules/" class="md-nav__link">
         
   
   
@@ -10988,7 +11052,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/sensor-installation/" class="md-nav__link">
+      <a href="../../../8-reference/faq/sensor-installation/" class="md-nav__link">
         
   
   
@@ -11016,7 +11080,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/privacy/" class="md-nav__link">
+      <a href="../../../8-reference/faq/privacy/" class="md-nav__link">
         
   
   
@@ -11044,7 +11108,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/troubleshooting/" class="md-nav__link">
+      <a href="../../../8-reference/faq/troubleshooting/" class="md-nav__link">
         
   
   
@@ -11072,7 +11136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/invoices/" class="md-nav__link">
+      <a href="../../../8-reference/faq/invoices/" class="md-nav__link">
         
   
   
@@ -11100,7 +11164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../8-reference/faq/sensor-removal/" class="md-nav__link">
+      <a href="../../../8-reference/faq/sensor-removal/" class="md-nav__link">
         
   
   
@@ -11178,7 +11242,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../9-ai-sessions/" class="md-nav__link ">
+            <a href="../../../9-ai-sessions/" class="md-nav__link ">
               
   
   
@@ -11222,7 +11286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../9-ai-sessions/dr-sessions/" class="md-nav__link">
+      <a href="../../../9-ai-sessions/dr-sessions/" class="md-nav__link">
         
   
   
@@ -11250,7 +11314,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../9-ai-sessions/user-sessions/" class="md-nav__link">
+      <a href="../../../9-ai-sessions/user-sessions/" class="md-nav__link">
         
   
   
@@ -11278,7 +11342,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../9-ai-sessions/cli/" class="md-nav__link">
+      <a href="../../../9-ai-sessions/cli/" class="md-nav__link">
         
   
   
@@ -11306,7 +11370,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../9-ai-sessions/alternative-providers/" class="md-nav__link">
+      <a href="../../../9-ai-sessions/alternative-providers/" class="md-nav__link">
         
   
   
@@ -11334,7 +11398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../9-ai-sessions/api-reference/" class="md-nav__link">
+      <a href="../../../9-ai-sessions/api-reference/" class="md-nav__link">
         
   
   
@@ -11362,7 +11426,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../9-ai-sessions/sdk/" class="md-nav__link">
+      <a href="../../../9-ai-sessions/sdk/" class="md-nav__link">
         
   
   
@@ -11420,7 +11484,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../10-release-notes/" class="md-nav__link ">
+            <a href="../../../10-release-notes/" class="md-nav__link ">
               
   
   
@@ -11486,10 +11550,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#building-blocks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        Building blocks
       
     </span>
   </a>
@@ -11497,22 +11561,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#deployment-configurations" class="md-nav__link">
+  <a href="#recommended-architecture-for-an-mssp" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deployment Configurations
+        Recommended architecture for an MSSP
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Deployment Configurations">
+    <nav class="md-nav" aria-label="Recommended architecture for an MSSP">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#adapter-specific-options" class="md-nav__link">
+  <a href="#optional-an-internal-management-organization" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adapter-specific Options
+        Optional: an internal "management" organization
       
     </span>
   </a>
@@ -11525,10 +11589,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#guided-deployment" class="md-nav__link">
+  <a href="#granting-access-to-your-internal-staff" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Guided Deployment
+        Granting access to your internal staff
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Granting access to your internal staff">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#separating-production-from-non-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separating production from non-production
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#granting-access-to-your-end-customers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Granting access to your end customers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-customer-onboarding-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New-customer onboarding checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns-to-avoid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-patterns to avoid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
       
     </span>
   </a>
@@ -11560,7 +11696,7 @@
   
   
     <li class="md-path__item">
-      <a href="../../../.." class="md-path__link">
+      <a href="../../.." class="md-path__link">
         
   <span class="md-ellipsis">
     Home
@@ -11578,28 +11714,10 @@
     
     
       <li class="md-path__item">
-        <a href="../../../" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    Sensors
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
         <a href="../../" class="md-path__link">
           
   <span class="md-ellipsis">
-    Adapters
+    Administration
   </span>
 
         </a>
@@ -11614,10 +11732,10 @@
     
     
       <li class="md-path__item">
-        <a href="../aws-cloudtrail/" class="md-path__link">
+        <a href="../api-keys/" class="md-path__link">
           
   <span class="md-ellipsis">
-    Cloud Providers
+    Access
   </span>
 
         </a>
@@ -11639,58 +11757,220 @@
   
 
 
-<h1 id="aws-guardduty"><abbr title="Amazon Web Services">AWS</abbr> GuardDuty<a class="headerlink" href="#aws-guardduty" title="Anchor link to this section">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Anchor link to this section">&para;</a></h2>
-<p>This <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> allows you to ingest <abbr title="Amazon Web Services">AWS</abbr> GuardDuty events via either an <a href="https://aws.amazon.com/s3/">S3 bucket</a> or <a href="https://aws.amazon.com/sqs/">SQS message queue</a>.</p>
-<p><a href="https://aws.amazon.com/guardduty/"><abbr title="Amazon Web Services">AWS</abbr> GuardDuty</a> helps you protect your <abbr title="Amazon Web Services">AWS</abbr> accounts with intelligent threat detection.</p>
-<p>Telemetry Platform: <code>guard_duty</code></p>
-<h2 id="deployment-configurations">Deployment Configurations<a class="headerlink" href="#deployment-configurations" title="Anchor link to this section">&para;</a></h2>
-<p>All adapters support the same <code>client_options</code>, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> helpers in the web app, you will not need to specify these values.</p>
+<h1 id="designing-access-for-multi-org-deployments">Designing Access for Multi-Org Deployments<a class="headerlink" href="#designing-access-for-multi-org-deployments" title="Anchor link to this section">&para;</a></h1>
+<p>This guide is written for administrators who operate more than a single organization — typically MSSPs, MDRs, or enterprises with multiple business units — and who need to give access to two distinct populations:</p>
 <ul>
-<li><code>client_options.identity.oid</code>: the LimaCharlie <abbr title="In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry,...">Organization ID</abbr> (<abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr>) this adapter is used with.</li>
-<li><code>client_options.identity.installation_key</code>: the LimaCharlie <abbr title="Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.">Installation Key</abbr> this adapter should use to identify with LimaCharlie.</li>
-<li><code>client_options.platform</code>: the type of data ingested through this adapter, like <code>text</code>, <code>json</code>, <code>gcp</code>, <code>carbon_black</code>, etc.</li>
-<li><code>client_options.sensor_seed_key</code>: an arbitrary name for this adapter which <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> IDs (<abbr title="In LimaCharlie, a Sensor ID (SID) is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for...">SID</abbr>) are generated from, see below.</li>
+<li><strong>Internal staff</strong> (analysts, engineers, managers) who need access across <em>many</em> organizations.</li>
+<li><strong>End customers</strong> (or business-unit owners) who should only see their <em>own</em> organization.</li>
 </ul>
-<h3 id="adapter-specific-options"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr>-specific Options<a class="headerlink" href="#adapter-specific-options" title="Anchor link to this section">&para;</a></h3>
-<h4 id="collecting-aws-guardduty-logs-via-an-s3-bucket">Collecting <abbr title="Amazon Web Services">AWS</abbr> GuardDuty Logs via an S3 Bucket<a class="headerlink" href="#collecting-aws-guardduty-logs-via-an-s3-bucket" title="Anchor link to this section">&para;</a></h4>
-<p>If collecting GuardDuty logs via an S3 bucket, you will need the following parameters:</p>
+<p>The mechanics of granting and verifying access are documented in <a href="../user-access/">User Access</a>. This page focuses on the architectural decisions that happen <em>before</em> you start clicking "Add user" — so that the access model stays safe and manageable as you grow from one customer to fifty.</p>
+<h2 id="building-blocks">Building blocks<a class="headerlink" href="#building-blocks" title="Anchor link to this section">&para;</a></h2>
+<p>Three LimaCharlie primitives combine to form every access model:</p>
+<table>
+<thead>
+<tr>
+<th>Primitive</th>
+<th>Scope</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr></strong></td>
+<td>Single tenant (isolated data, sensors, billing)</td>
+<td>One per customer / business unit</td>
+</tr>
+<tr>
+<td><strong>Direct user</strong></td>
+<td>One user ↔ one organization</td>
+<td>A user who should see only that single org (e.g. an end-customer contact)</td>
+</tr>
+<tr>
+<td><strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Group</strong></td>
+<td>Set of orgs × set of users × set of permissions</td>
+<td>A job-function bundle: everyone in the group gets the same permissions on every org in the group</td>
+</tr>
+</tbody>
+</table>
+<p>Supporting primitives that reinforce the model:</p>
 <ul>
-<li><code>bucket_name</code> - The name of the S3 bucket holding the data)</li>
-<li><code>secret_key</code> - The API key for <abbr title="Amazon Web Services">AWS</abbr> that has access to the respective bucket.</li>
-<li><code>access_key</code> - The <abbr title="Amazon Web Services">AWS</abbr> access key for the API key</li>
+<li><strong>Predefined roles</strong> (<code>Owner</code>, <code>Administrator</code>, <code>Operator</code>, <code>Viewer</code>, <code>Basic</code>) — apply a whole permission preset in one step. See <a href="../../../8-reference/permissions/">Reference: Permissions</a>.</li>
+<li><strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> API keys</strong> — machine access, scoped to a specific set of permissions on a specific org. See <a href="../api-keys/">API Keys</a>.</li>
+<li><strong>SSO / Strict SSO</strong> — force users on your domain to authenticate via your IdP only. See <a href="../sso/">SSO</a>.</li>
+<li><strong>Group owners vs. group members</strong> — owners manage a group (add users, add orgs, change permissions) but the group's permissions do <strong>not</strong> apply to them. Members receive the permissions but cannot modify the group.</li>
 </ul>
-<p>The following command will create an <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> using the (1) <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> binary and (2) logs stored in an S3 bucket:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>./lc_adapter<span class="w"> </span>s3<span class="w"> </span>client_options.identity.installation_key<span class="o">=</span>&lt;INSTALLATION_KEY&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>client_options.identity.oid<span class="o">=</span>&lt;OID&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>client_options.platform<span class="o">=</span>guard_duty<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">bucket_name</span><span class="o">=</span>lc-ct-test<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nv">access_key</span><span class="o">=</span>YYYYYYYYYY<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nv">secret_key</span><span class="o">=</span>XXXXXXXX<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>client_options.hostname<span class="o">=</span>guardduty-logs
-</span></code></pre></div>
-<h4 id="collecting-aws-guardduty-logs-via-an-sqs-queue">Collecting <abbr title="Amazon Web Services">AWS</abbr> GuardDuty Logs via an SQS Queue<a class="headerlink" href="#collecting-aws-guardduty-logs-via-an-sqs-queue" title="Anchor link to this section">&para;</a></h4>
-<p>If collecting GuardDuty logs via an SQS queue, you will need the following parameters:</p>
+<h2 id="recommended-architecture-for-an-mssp">Recommended architecture for an <abbr title="Managed Security Services Provider">MSSP</abbr><a class="headerlink" href="#recommended-architecture-for-an-mssp" title="Anchor link to this section">&para;</a></h2>
+<p>The pattern below scales from two customers to several hundred without restructuring. Use it as the starting point and adapt as needed.</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Staff [MSSP Staff Groups by job function]
+        GE[Engineers group&lt;br/&gt;Administrator-equivalent]
+        GA2[L2 Analysts group&lt;br/&gt;Administrator-equivalent]
+        GA1[L1 Analysts group&lt;br/&gt;Operator-equivalent]
+        GRO[Read-only group&lt;br/&gt;Viewer-equivalent]
+    end
+
+    subgraph Customers [Customer Organizations one per tenant]
+        C1[Customer A org]
+        C2[Customer B org]
+        C3[Customer C org]
+    end
+
+    subgraph EndUsers [End-customer users added directly]
+        U1[Alice - Customer A contact]
+        U2[Bob - Customer B contact]
+    end
+
+    GE --- C1
+    GE --- C2
+    GE --- C3
+    GA2 --- C1
+    GA2 --- C2
+    GA2 --- C3
+    GA1 --- C1
+    GA1 --- C2
+    GA1 --- C3
+    GRO --- C1
+    GRO --- C2
+    GRO --- C3
+
+    U1 -.-&gt; C1
+    U2 -.-&gt; C2</code></pre>
+<p>Three rules keep this architecture coherent:</p>
+<ol>
+<li><strong>One organization per customer tenant.</strong> Data, sensors, billing and configuration are self-contained in an organization. A customer <em>is</em> an organization. Do not mix customers inside a single org.</li>
+<li><strong>Your staff get access through <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Groups, by job function.</strong> Never add internal staff directly to a customer org — that does not scale and silently drifts over time.</li>
+<li><strong>Your customers get access directly on their own organization.</strong> Never add an end-customer user to a group that spans multiple customer orgs — groups are additive, and a group that touches other customers would leak access to data the user must not see.</li>
+</ol>
+<h3 id="optional-an-internal-management-organization">Optional: an internal "management" organization<a class="headerlink" href="#optional-an-internal-management-organization" title="Anchor link to this section">&para;</a></h3>
+<p>Many MSSPs also create a dedicated organization used only internally (templates, <abbr title="Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure...">IaC</abbr> source of truth, demo / training work). It is not a customer tenant. You can include it in a staff group, but do <strong>not</strong> enrol customer users in it.</p>
+<h2 id="granting-access-to-your-internal-staff">Granting access to your internal staff<a class="headerlink" href="#granting-access-to-your-internal-staff" title="Anchor link to this section">&para;</a></h2>
+<p>Design the groups around job functions, not around customers. A typical starting set — the right-most column is the permission level you want each group to grant (matching the predefined roles you use for direct users makes the overall model easier to reason about):</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Members</th>
+<th>Permission level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>engineers</code></td>
+<td>Detection engineers, platform admins</td>
+<td>Administrator-equivalent</td>
+</tr>
+<tr>
+<td><code>analysts-l2</code></td>
+<td>Senior analysts, IR leads</td>
+<td>Administrator-equivalent</td>
+</tr>
+<tr>
+<td><code>analysts-l1</code></td>
+<td>Front-line SOC</td>
+<td>Operator-equivalent</td>
+</tr>
+<tr>
+<td><code>read-only</code></td>
+<td>Leadership, auditors</td>
+<td>Viewer-equivalent</td>
+</tr>
+</tbody>
+</table>
+<p>Workflow once the groups exist:</p>
+<ol>
+<li><strong>Create each group once.</strong> <code>limacharlie group create --name &lt;name&gt;</code> (or via the <strong>Groups</strong> page).</li>
+<li><strong>Add every customer org</strong> to each relevant group. <code>limacharlie group org-add --gid &lt;id&gt; --oid &lt;customer_oid&gt;</code>.</li>
+<li><strong>Set the group's permissions.</strong> In the <strong>Groups</strong> page of the web app, select the permissions that match the intended permission level. Via the <abbr title="Command-line Interface">CLI</abbr>, pass the explicit permission list: <code>limacharlie group permissions-set --gid &lt;id&gt; --permissions 'sensor.list,sensor.get,dr.list,...'</code>. Note that the group <abbr title="Command-line Interface">CLI</abbr> takes a raw permission list — unlike <code>limacharlie user permissions set-role</code> for direct users, there is no single role-preset flag. Keep the list aligned with the direct-user role of the same name so effective permissions stay easy to reason about.</li>
+<li><strong>Add a user to exactly the group(s) matching their job.</strong> <code>limacharlie group member-add --gid &lt;id&gt; --email &lt;address&gt;</code>.</li>
+<li><strong>When you onboard a new customer</strong>, simply add the new org to each staff group (step 2). Every staff member instantly gets the right level of access on the new tenant, with no per-user work.</li>
+</ol>
+<h3 id="separating-production-from-non-production">Separating production from non-production<a class="headerlink" href="#separating-production-from-non-production" title="Anchor link to this section">&para;</a></h3>
+<p>A very common refinement is to split a sensitive group (e.g. <code>engineers</code>) into two:</p>
 <ul>
-<li><code>secret_key</code> - The API key for <abbr title="Amazon Web Services">AWS</abbr> that has access to the respective bucket.</li>
-<li><code>access_key</code> - The <abbr title="Amazon Web Services">AWS</abbr> access key for the API key</li>
-<li><code>region</code> - The <abbr title="Amazon Web Services">AWS</abbr> region where the SQS instance lives</li>
-<li><code>queue_url</code> - The URL to the SQS instance</li>
+<li><code>engineers-nonprod</code> — includes sandbox / demo / pre-prod customer orgs.</li>
+<li><code>engineers-prod</code> — includes live customer orgs, restricted to senior staff who have signed off on your production change-control process.</li>
 </ul>
-<p>The following command will create an <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> using the (1) <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> binary and (2) logs stored in an SQS queue:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>./lc_adapter<span class="w"> </span>sqs<span class="w"> </span>client_options.identity.installation_key<span class="o">=</span>&lt;INSTALLATION_KEY&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>client_options.identity.oid<span class="o">=</span>&lt;OID&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>client_options.platform<span class="o">=</span>guard_duty<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>client_options.sensor_seed_key<span class="o">=</span>&lt;SENSOR_SEED_KEY&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>client_options.hostname<span class="o">=</span>guardduty-logs<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nv">access_key</span><span class="o">=</span>YYYYYYYYYY<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nv">secret_key</span><span class="o">=</span>XXXXXXXX<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nv">queue_url</span><span class="o">=</span>&lt;QUEUE_URL&gt;<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nv">region</span><span class="o">=</span>&lt;AWS-REGION&gt;
-</span></code></pre></div>
-<h2 id="guided-deployment">Guided Deployment<a class="headerlink" href="#guided-deployment" title="Anchor link to this section">&para;</a></h2>
-<p>Within the LimaCharlie web application, you can create an <abbr title="Amazon Web Services">AWS</abbr> GuardDuty Cloud Connector using the <code>+ Add Sensor</code> option.</p>
-<p><img alt="" src="../../../../assets/images/image%28304%29.png" /></p>
+<p>Membership in <code>engineers-prod</code> becomes the formal gate to production access, and is easy to audit (<code>limacharlie group get --id &lt;engineers-prod&gt;</code> lists members, orgs, and permissions in one response).</p>
+<h2 id="granting-access-to-your-end-customers">Granting access to your end customers<a class="headerlink" href="#granting-access-to-your-end-customers" title="Anchor link to this section">&para;</a></h2>
+<p>End customers must stay confined to their own organization. The safe pattern is always the same:</p>
+<ol>
+<li><strong>Add the customer's email directly to their own org only.</strong> <code>limacharlie --oid &lt;customer_oid&gt; user invite --email &lt;address&gt;</code>, or the <strong>Users</strong> page of that org.</li>
+<li><strong>Assign a predefined role</strong> that matches what you agreed to in your service agreement. <code>limacharlie --oid &lt;customer_oid&gt; user permissions set-role --email &lt;address&gt; --role Viewer</code> (or <code>Operator</code>, <code>Administrator</code>, etc.).</li>
+<li><strong>Do not add customer users to any staff <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Group.</strong> A group that contains other customers' orgs would silently grant the user access to data belonging to those other customers.</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Groups are additive only</p>
+<p>Permissions granted through a group are <strong>added</strong> to the user's direct permissions on each included organization. A group cannot be used to <em>reduce</em> or <em>restrict</em> what a user can see. Treat "membership in a group" as "give every permission in that group, on every org in that group."</p>
+</div>
+<p>If you want to give a customer access to <em>multiple</em> of their own organizations (for example, a customer with several business units), you have two clean options:</p>
+<ul>
+<li><strong>Direct users on each org.</strong> Simple, auditable, fine if the customer only has a handful of orgs.</li>
+<li><strong>A customer-specific <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Group</strong> that contains <em>only</em> that customer's orgs and <em>only</em> that customer's users. Do not mix tenants inside a single group.</li>
+</ul>
+<h2 id="hardening">Hardening<a class="headerlink" href="#hardening" title="Anchor link to this section">&para;</a></h2>
+<p>A few controls sharply reduce the risk of an access-control mistake:</p>
+<ul>
+<li><strong>Strict SSO Enforcement on your own domain.</strong> Forces every user authenticating as <code>@yourcompany.com</code> to go through your identity provider. Offboarding in your IdP immediately locks the user out of LimaCharlie. See <a href="../sso/#strict-sso-enforcement">Strict SSO Enforcement</a>.</li>
+<li><strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> API keys over user API keys.</strong> An <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> API key is scoped to a single organization and to the minimum permissions needed by the integration. User API keys grant the same access as the user themselves across <em>every</em> organization they can reach — reserve them for interactive work only, never for production automation. See <a href="../api-keys/#user-api-keys">User API Keys</a>.</li>
+<li><strong>Separate group owners from members.</strong> An engineering manager can be an <em>owner</em> of a staff group (to add/remove members) without being a member themselves — they gain the ability to manage access without automatically having access to customer data. This is a useful separation-of-duties control.</li>
+<li><strong>Review access on a cadence.</strong> The companion section <a href="../user-access/#verifying-and-reviewing-access">Verifying and Reviewing Access</a> shows how to enumerate every user, group, and effective permission on an organization, plus how to pull the audit trail of access changes.</li>
+</ul>
+<h2 id="new-customer-onboarding-checklist">New-customer onboarding checklist<a class="headerlink" href="#new-customer-onboarding-checklist" title="Anchor link to this section">&para;</a></h2>
+<p>Once you have the architecture above in place, adding a new customer is a short, repeatable list:</p>
+<ol>
+<li><strong>Create the customer's organization.</strong> The creator automatically holds the <code>Owner</code> role on it.</li>
+<li><strong>Grant <code>Owner</code> to a shared internal account as well,</strong> so administrative access does not depend on the creator's personal account being available. <code>limacharlie --oid &lt;customer_oid&gt; user permissions set-role --email &lt;shared-account&gt; --role Owner</code>. A full billing/legal ownership transfer is a separate support request; see <a href="../../../8-reference/faq/account-management/#can-i-transfer-ownership-of-an-organization">Can I Transfer Ownership of an <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr>?</a>.</li>
+<li><strong>Add the new org to each staff <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Group</strong> that should cover it (e.g. <code>engineers-prod</code>, <code>analysts-l1</code>, <code>read-only</code>). Staff access is now complete — no per-user work.</li>
+<li><strong>Invite the customer's designated contacts directly on the new org,</strong> using a predefined role. Do not add them to any group.</li>
+<li><strong>Configure the rest of the tenant</strong> (installation keys, adapters, <abbr title="Detection &amp; Response">D&amp;R</abbr> rules, outputs) — often from <abbr title="Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure...">Infrastructure-as-Code</abbr> templates if you have them; see <a href="../../../5-integrations/extensions/limacharlie/infrastructure/">Infrastructure <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr></a>.</li>
+<li><strong>Run the <a href="../user-access/#suggested-validation-checklist-for-a-new-production-organization">verification checklist</a></strong> before declaring the tenant live.</li>
+</ol>
+<h2 id="anti-patterns-to-avoid">Anti-patterns to avoid<a class="headerlink" href="#anti-patterns-to-avoid" title="Anchor link to this section">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Anti-pattern</th>
+<th>Why it breaks</th>
+<th>What to do instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adding staff directly to each customer org</td>
+<td>Does not scale, drifts, permissions diverge across orgs</td>
+<td>Staff access only via <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Groups, by job function</td>
+</tr>
+<tr>
+<td>Putting customer users in a multi-tenant group</td>
+<td>Groups are additive — the user now sees every other org in the group</td>
+<td>Direct users on the customer's own org only</td>
+</tr>
+<tr>
+<td>One huge "everyone" staff group with every permission</td>
+<td>No separation of duties, no prod gate</td>
+<td>Split groups by role (<code>Viewer</code>, <code>Operator</code>, <code>Administrator</code>) and by blast radius (<code>nonprod</code> vs <code>prod</code>)</td>
+</tr>
+<tr>
+<td>Using a user API key for an integration</td>
+<td>Scopes to every org the user can reach; breaks when the user leaves</td>
+<td><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> API key scoped to the minimum permissions on that single org</td>
+</tr>
+<tr>
+<td>Hand-picking permissions for every user</td>
+<td>Hard to audit, easy to drift</td>
+<td>Use predefined roles (<code>set-role</code>) and refine only when a role genuinely does not fit</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="related">Related<a class="headerlink" href="#related" title="Anchor link to this section">&para;</a></h2>
+<ul>
+<li><a href="../user-access/">User Access</a> — mechanics of adding users, groups, and verifying access.</li>
+<li><a href="../../../8-reference/permissions/">Reference: Permissions</a> — full permission catalogue and predefined roles.</li>
+<li><a href="../api-keys/">API Keys</a> — machine access, <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> vs. User API keys.</li>
+<li><a href="../sso/">SSO</a> — federated authentication and strict SSO enforcement.</li>
+<li><a href="../../../1-getting-started/use-cases/mssp-msp-mdr/">Security Service Providers (<abbr title="Managed Security Services Provider">MSSP</abbr>, MSP, <abbr title="Managed Detection &amp; Response">MDR</abbr>)</a> — broader <abbr title="Managed Security Services Provider">MSSP</abbr> platform use cases.</li>
+</ul>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 
@@ -11728,7 +12008,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../aws-cloudtrail/" class="md-footer__link md-footer__link--prev" aria-label="Previous: AWS CloudTrail">
+          <a href="../user-access/" class="md-footer__link md-footer__link--prev" aria-label="Previous: User Access">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -11738,20 +12018,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                AWS CloudTrail
+                User Access
               </div>
             </div>
           </a>
         
         
           
-          <a href="../s3/" class="md-footer__link md-footer__link--next" aria-label="Next: AWS S3">
+          <a href="../sso/" class="md-footer__link md-footer__link--next" aria-label="Next: SSO">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                AWS S3
+                SSO
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -11821,10 +12101,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.tracking", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.tabs", "navigation.sections", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.tracking", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.tabs", "navigation.sections", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

@@ -18,7 +18,7 @@
         <link rel="prev" href="../api-keys/">
       
       
-        <link rel="next" href="../sso/">
+        <link rel="next" href="../designing-access/">
       
       
         
@@ -9630,6 +9630,8 @@
       
         
       
+        
+      
     
     
     
@@ -9794,10 +9796,110 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#verifying-and-reviewing-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifying and Reviewing Access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verifying and Reviewing Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-who-has-direct-access-to-this-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Who has direct access to this organization?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-which-groups-grant-access-to-this-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Which groups grant access to this organization?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-what-effective-permissions-does-a-given-user-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What effective permissions does a given user have?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-what-access-related-changes-have-been-made-and-by-whom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What access-related changes have been made, and by whom?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-validation-checklist-for-a-new-production-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested validation checklist for a new production organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../designing-access/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Designing Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -11441,6 +11543,78 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#verifying-and-reviewing-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifying and Reviewing Access
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verifying and Reviewing Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-who-has-direct-access-to-this-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Who has direct access to this organization?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-which-groups-grant-access-to-this-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Which groups grant access to this organization?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-what-effective-permissions-does-a-given-user-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. What effective permissions does a given user have?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-what-access-related-changes-have-been-made-and-by-whom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. What access-related changes have been made, and by whom?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-validation-checklist-for-a-new-production-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested validation checklist for a new production organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -11528,6 +11702,10 @@
 
 
 <h1 id="user-access">User Access<a class="headerlink" href="#user-access" title="Anchor link to this section">&para;</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Running more than one organization?</p>
+<p>If you operate multiple organizations — for example as an <abbr title="Managed Security Services Provider">MSSP</abbr>, <abbr title="Managed Detection &amp; Response">MDR</abbr>, or an enterprise with several business units — read <a href="../designing-access/">Designing Access for Multi-Org Deployments</a> first. It explains how to structure organizations, groups, and roles so that the individual steps below compose into a safe, maintainable access model.</p>
+</div>
 <p>To control who has access to an <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr>, and what they have access to, go to the "Users" section of the web application.</p>
 <p>Adding users is done by email address and requires the user to already have a limacharlie.io account.</p>
 <p>The first user of an organization is added with Owner permissions at creation time. Owner permissions give full access to everything.</p>
@@ -11562,6 +11740,66 @@
 <p>To finish, click <code>Update Permissions</code> at the top right corner.</p>
 <p>To review activity that has occurred in this group, click on <strong>Activity Logs</strong> (left panel).</p>
 <p><img alt="" src="../../../assets/images/image%28343%29.png" /></p>
+<h2 id="verifying-and-reviewing-access">Verifying and Reviewing Access<a class="headerlink" href="#verifying-and-reviewing-access" title="Anchor link to this section">&para;</a></h2>
+<p>After creating a new organization — especially a production tenant — you will typically want to confirm, to yourself or to a system administrator, exactly who can reach the org and with which permissions. Access to an organization comes from two sources: users added <strong>directly</strong> to the organization, and users added via an <strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Group</strong> that includes the organization. A complete review must cover both.</p>
+<p>The sections below show how to answer the common questions using the web app, the <code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr>, or both. All <abbr title="Command-line Interface">CLI</abbr> examples assume you have selected the organization you want to inspect (either via <code>--oid &lt;uuid&gt;</code> or through <code>limacharlie auth use-org</code>).</p>
+<h3 id="1-who-has-direct-access-to-this-organization">1. Who has direct access to this organization?<a class="headerlink" href="#1-who-has-direct-access-to-this-organization" title="Anchor link to this section">&para;</a></h3>
+<p><strong>Web app:</strong> open the organization and go to the <strong>Users</strong> section. Every account listed there has been added directly to the organization. Click an email to see the exact permissions granted to that user.</p>
+<p><strong><abbr title="Command-line Interface">CLI</abbr>:</strong> list the users directly on the organization, and pull the full per-user permission map:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Users added directly to the org</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>limacharlie<span class="w"> </span>user<span class="w"> </span>list
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Exact permissions for every direct user on this org</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>limacharlie<span class="w"> </span>user<span class="w"> </span>permissions<span class="w"> </span>list
+</span></code></pre></div>
+<p>Cross-reference the list against the people who are <em>supposed</em> to have access. Any user who should not be there can be removed with <code>limacharlie user remove --email &lt;address&gt;</code> or from the <strong>Users</strong> section of the web app.</p>
+<h3 id="2-which-groups-grant-access-to-this-organization">2. Which groups grant access to this organization?<a class="headerlink" href="#2-which-groups-grant-access-to-this-organization" title="Anchor link to this section">&para;</a></h3>
+<p>Users can also reach the organization through <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Groups. An org-level user review alone will not show those users — you need to review the groups as well.</p>
+<p><strong>Web app:</strong> open <strong>Groups</strong> from the upper-right menu. Open each group you own or manage and look at the <strong>Organizations</strong> panel: if your new production organization appears there, every user listed in the <strong>Users</strong> panel of that group inherits the group's permissions on it.</p>
+<p><strong><abbr title="Command-line Interface">CLI</abbr>:</strong> list your groups, then inspect each group's organizations, members, owners, and permissions:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># List all groups visible to you</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>limacharlie<span class="w"> </span>group<span class="w"> </span>list
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Inspect one group — shows orgs, members, owners, and the permissions granted</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>limacharlie<span class="w"> </span>group<span class="w"> </span>get<span class="w"> </span>--id<span class="w"> </span>&lt;group_id&gt;
+</span></code></pre></div>
+<p>If the production organization appears under <code>orgs</code> for a group, every email under <code>members</code> has the permissions listed under <code>perms</code> on that organization (in addition to any direct permissions they hold).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The permissions granted by a group are <strong>added</strong> to any permissions the user already has on the organization directly. Groups can only <em>add</em> access, never subtract it — so a user who is directly over-privileged cannot be "downgraded" by a group.</p>
+</div>
+<h3 id="3-what-effective-permissions-does-a-given-user-have">3. What effective permissions does a given user have?<a class="headerlink" href="#3-what-effective-permissions-does-a-given-user-have" title="Anchor link to this section">&para;</a></h3>
+<p>To confirm the final, effective permission set for a single user on a production org:</p>
+<ol>
+<li>Start with the user's direct permissions: in the web app, open <strong>Users</strong>, click the user, and note the checked permissions — or use <code>limacharlie user permissions list</code> and look up the user's email in the output.</li>
+<li>Then walk every group that includes this organization (see step 2 above) and note each group whose <strong>Users</strong> panel contains this user. Add the group's permissions to the user's direct permissions.</li>
+<li>The union of those sets is the effective access the user has on the organization.</li>
+</ol>
+<p>For a cleaner starting point on a new production org, assign a <a href="../../../8-reference/permissions/">predefined role</a> with <code>limacharlie user permissions set-role --email &lt;address&gt; --role &lt;Owner|Administrator|Operator|Viewer|Basic&gt;</code> — this replaces any prior direct permissions for the user on that org.</p>
+<h3 id="4-what-access-related-changes-have-been-made-and-by-whom">4. What access-related changes have been made, and by whom?<a class="headerlink" href="#4-what-access-related-changes-have-been-made-and-by-whom" title="Anchor link to this section">&para;</a></h3>
+<p>Both the organization and every group maintain an audit trail you can use to verify that the access posture you see today is the result of intended changes. For long-term compliance, consider also forwarding the <code>audit</code> stream to separate, append-only storage via an <a href="../../../5-integrations/outputs/stream-structures/#3-audit-stream-structure">Output</a>.</p>
+<p><strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> audit log (web app):</strong> open <strong>Audit Logs</strong> in the organization. Filter for user-management events to see when users were invited, removed, or had their permissions changed, and by which account.</p>
+<p><strong><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> audit log (<abbr title="Command-line Interface">CLI</abbr>):</strong> the <code>limacharlie audit list</code> command returns administrative events for the organization. Each entry includes <code>ident</code> (the account that performed the action), <code>etype</code> (event type), <code>msg</code>, and <code>ts</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Last 24 hours (default window)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>limacharlie<span class="w"> </span>audit<span class="w"> </span>list
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Custom window — review all changes since the org was created</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>limacharlie<span class="w"> </span>audit<span class="w"> </span>list<span class="w"> </span>--start<span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;2026-04-01&#39;</span><span class="w"> </span>+%s<span class="k">)</span><span class="w"> </span>--end<span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span>
+</span></code></pre></div>
+<p><strong>Group audit log:</strong> each <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> Group has its own activity log, reachable from <strong>Activity Logs</strong> in the group's left panel in the web app, or via:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>limacharlie<span class="w"> </span>group<span class="w"> </span>logs<span class="w"> </span>--gid<span class="w"> </span>&lt;group_id&gt;
+</span></code></pre></div>
+<p>Use the group log to verify who added the production org to the group, who added members, and when permissions on the group were last changed.</p>
+<h3 id="suggested-validation-checklist-for-a-new-production-organization">Suggested validation checklist for a new production organization<a class="headerlink" href="#suggested-validation-checklist-for-a-new-production-organization" title="Anchor link to this section">&para;</a></h3>
+<p>A practical sequence to hand to a system administrator when standing up a production tenant:</p>
+<ol>
+<li><strong>Confirm the direct user list.</strong> <code>limacharlie user list</code> (or the <strong>Users</strong> page) should match the agreed list of production operators exactly. Remove anyone unexpected.</li>
+<li><strong>Confirm each user's permissions are intentional.</strong> Inspect <code>limacharlie user permissions list</code> or the per-user permission modal in the web app. Prefer applying a <a href="../../../8-reference/permissions/">predefined role</a> over hand-picked permissions unless you have a specific reason.</li>
+<li><strong>Enumerate every group the org belongs to.</strong> Run <code>limacharlie group list</code> and <code>limacharlie group get --id &lt;group_id&gt;</code> for each group, and record every group whose <code>orgs</code> array contains the new org. Confirm each group's <code>members</code> and <code>perms</code> are expected.</li>
+<li><strong>Compute effective access per user.</strong> For each operator, union direct permissions with permissions from every group containing the org. Confirm the result matches the documented access policy.</li>
+<li><strong>Review the audit trail.</strong> Walk <code>limacharlie audit list</code> since the org was created, plus <code>limacharlie group logs --gid &lt;group_id&gt;</code> for each group granting access, to confirm that every user addition and permission grant was performed by an authorized administrator.</li>
+<li><strong>Re-run this checklist on a cadence.</strong> Access drifts as people join and leave. The same commands can be scripted into a periodic review for ongoing compliance.</li>
+</ol>
 <p>In LimaCharlie, an <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
@@ -11617,13 +11855,13 @@
         
         
           
-          <a href="../sso/" class="md-footer__link md-footer__link--next" aria-label="Next: SSO">
+          <a href="../designing-access/" class="md-footer__link md-footer__link--next" aria-label="Next: Designing Access">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                SSO
+                Designing Access
               </div>
             </div>
             <div class="md-footer__button md-icon">
