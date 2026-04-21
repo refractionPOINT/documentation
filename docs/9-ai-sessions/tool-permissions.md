@@ -40,8 +40,8 @@ A bare identifier matches the entire Claude Code tool of that name. Common built
 | `WebFetch` | Fetch an HTTP(S) URL. |
 | `WebSearch` | Run a web search. |
 | `TodoWrite` | Update the in-session task list. |
-| `Task` / `Agent` | Spawn a subagent. |
-| `AskUserQuestion` | Ask the human-in-the-loop a structured question (routed to the feedback UI in LimaCharlie sessions). |
+| `Task` | Spawn a subagent. |
+| `AskUserQuestion` | Ask the human-in-the-loop a structured question. In interactive sessions the question is surfaced to the attached client (browser chat UI or `ai session attach --interactive`); `one_shot` / unattended sessions time out on these after five minutes. |
 
 !!! note
     The authoritative list of built-in tools is the one published by the Claude Code CLI — LimaCharlie does not add or remove tools from that set. Bare names are case-sensitive.
@@ -78,7 +78,7 @@ denied_tools:
   - mcp__virustotal__upload_file
 ```
 
-**Suffix matching for server name drift.** When both the tool name reported by Claude and the pattern start with `mcp__`, only the `__<tool_suffix>` at the end has to match. A pattern written `mcp__virustotal__scan_url` will still match a tool Claude exposes as `mcp__claude_ai_VirusTotal__scan_url`. This keeps Profiles portable across MCP server name variants — the same rule covers registry-resolved servers, locally registered servers, and UI-installed servers even when they publish slightly different server identifiers.
+The `<server_name>` segment is whatever the MCP server registers itself as when the session starts — the same identifier that appears as the key in the `mcp_servers` map of the Profile or `ai_agent` record. Use that exact name in your pattern.
 
 ## `allowed_tools` vs `denied_tools`
 
@@ -96,7 +96,7 @@ The two lists are independent Claude Agent SDK inputs and compose as follows:
 
 | Value | Behaviour |
 |---|---|
-| `acceptEdits` (default) | Edits (`Write`, `Edit`, `NotebookEdit`) are auto-approved; every other tool call triggers an approval prompt. Best for human-in-the-loop user sessions. |
+| `acceptEdits` (default) | File-editing tools (`Write`, `Edit`, `NotebookEdit`, `MultiEdit`) are auto-approved; every other tool call triggers an approval prompt. Best for human-in-the-loop user sessions. |
 | `plan` | Claude is kept in plan-only mode: it can read and reason but cannot execute any mutating tool without explicit approval. Useful for review/preview flows. |
 | `bypassPermissions` | All tool calls are auto-approved (subject to `denied_tools` still taking effect). Required for unattended D&R-driven agents — without it, tool calls with no user to answer the prompt will time out after 5 minutes and the session will fail. |
 
@@ -106,7 +106,7 @@ The runner defaults `permission_mode` to `acceptEdits` when the field is omitted
 
 In user sessions that go through the approval prompt, the operator can answer `session` instead of `y` or `n`. That choice stores a **session-scoped pattern** derived from the actual tool call — typically a `Bash(<prefix>:*)` for shell commands, or the plain tool name for everything else — and auto-approves future matching calls for the rest of the session without asking again.
 
-Session-scoped patterns use the same grammar as `allowed_tools`, so once a user approves a `Bash(git:*)` for the session, the Bash pipeline-stage coverage rules described above apply identically. These patterns are ephemeral: they vanish when the session ends and are never promoted into the Profile automatically (use `ai_agent.capture-profile` to snapshot a session's settings into a new Profile explicitly).
+Session-scoped patterns use the same grammar as `allowed_tools`, so once a user approves a `Bash(git:*)` for the session, the Bash pipeline-stage coverage rules described above apply identically. These patterns are ephemeral: they vanish when the session ends and are never promoted into the Profile automatically — to persist a session's configuration, snapshot it with `POST /v1/sessions/{sessionId}/capture-profile` (see the [capture-profile endpoint](api-reference.md#profiles)).
 
 ## Defaults shipped to new users
 
