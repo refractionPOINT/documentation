@@ -30,39 +30,39 @@ The pattern below scales from two customers to several hundred without restructu
 
 ```mermaid
 flowchart LR
-    subgraph Staff["MSSP Staff Groups (by job function)"]
-        GE["Group: Engineers<br/>role: Administrator"]
-        GA1["Group: L1 Analysts<br/>role: Operator"]
-        GA2["Group: L2 Analysts<br/>role: Administrator"]
-        GRO["Group: Read-only / Execs<br/>role: Viewer"]
+    subgraph Staff [MSSP Staff Groups by job function]
+        GE[Engineers group<br/>Administrator-equivalent]
+        GA2[L2 Analysts group<br/>Administrator-equivalent]
+        GA1[L1 Analysts group<br/>Operator-equivalent]
+        GRO[Read-only group<br/>Viewer-equivalent]
     end
 
-    subgraph Customers["Customer Organizations (one per tenant)"]
-        C1[("Org: Customer A")]
-        C2[("Org: Customer B")]
-        C3[("Org: Customer C")]
+    subgraph Customers [Customer Organizations one per tenant]
+        C1[Customer A org]
+        C2[Customer B org]
+        C3[Customer C org]
     end
 
-    subgraph CustomerUsers["End-customer users<br/>(added DIRECTLY to their own org)"]
-        U1["alice@customerA.com"]
-        U2["bob@customerB.com"]
+    subgraph EndUsers [End-customer users added directly]
+        U1[alice@customerA.com]
+        U2[bob@customerB.com]
     end
 
     GE --- C1
     GE --- C2
     GE --- C3
-    GA1 --- C1
-    GA1 --- C2
-    GA1 --- C3
     GA2 --- C1
     GA2 --- C2
     GA2 --- C3
+    GA1 --- C1
+    GA1 --- C2
+    GA1 --- C3
     GRO --- C1
     GRO --- C2
     GRO --- C3
 
-    U1 -.direct.-> C1
-    U2 -.direct.-> C2
+    U1 -.-> C1
+    U2 -.-> C2
 ```
 
 Three rules keep this architecture coherent:
