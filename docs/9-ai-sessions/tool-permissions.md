@@ -56,17 +56,24 @@ Bash(npm install:*)    # any command starting with "npm install "
 Bash(kubectl get:*)    # read-only kubectl verbs
 ```
 
-**Matching semantics (allowed_tools)** — Profile-supplied `allowed_tools` patterns are evaluated by LimaCharlie's own hardened matcher, which is a strict superset of the upstream Claude Code rules:
+**Common pre-processing.** Whether a pattern lives in `allowed_tools` or in `denied_tools`, it is evaluated by LimaCharlie's hardened matcher (not by the upstream Claude Code literal-prefix one). Before any matching happens the bridge normalises every Bash command the same way:
 
-- The command is split on shell stage operators (`|`, `||`, `&`, `&&`, `;`, `|&`) and on real newlines. **Every stage** of the pipeline must be covered by some stored pattern. `Bash(git:*)` alone does **not** approve `git status && rm -rf /`.
+- The command is split on shell stage operators (`|`, `||`, `&`, `&&`, `;`, `|&`) and on real newlines.
 - Process wrappers (`timeout`, `time`, `nice`, `nohup`, `stdbuf`, bare `xargs`) and leading `VAR=value` env assignments are stripped iteratively from the front of each stage, so `nohup timeout 30 DEBUG=1 npm test` reduces to `npm test` before matching.
 - Redirection operators (`>`, `>>`, `<`, `>&`, `&>`, fd-duplications) stay attached to their command — they are **not** stage separators.
-- **Fail-closed** on command substitution, process substitution, backticks, and subshell/brace grouping (`` ` ``, `$(...)`, `<(...)`, `>(...)`, `(...)`, `{...}`). These can smuggle commands past a prefix check, so any stage containing them re-prompts regardless of the pattern list. A `cat $(rm -rf /)` invocation is **not** auto-approved by `Bash(cat:*)`.
-- Matching is literal prefix on the stripped stage: either the stage equals the prefix exactly, or it starts with `prefix + " "`. There is no flag-value allowlist and no alias resolution.
+- Matching is a literal prefix on the stripped stage: either the stage equals the prefix exactly or it starts with `prefix + " "`. There is no flag-value allowlist and no alias resolution.
 
-The same matcher is used for session-scoped approvals (the `session` answer in the interactive approval prompt) — both paths go through a single implementation so autonomous org-owned sessions get the same guarantees as interactive ones.
+**Allow semantics.** For an `allowed_tools` match to fire, **every** pipeline stage must be covered by some allow pattern. `Bash(git:*)` alone does **not** approve `git status && rm -rf /` — the `rm -rf /` stage is uncovered, so the command falls through to `permission_mode`.
 
-**Matching semantics (denied_tools)** — `denied_tools` is enforced **by the Claude Agent SDK**, not by the LimaCharlie matcher. The SDK uses the upstream literal-prefix rule, which does not perform pipeline-stage splitting or fail-close on substitution. This means a deny-list pattern only blocks commands whose **leading** stage matches — `Bash(rm:*)` in `denied_tools` blocks `rm -rf /` but does **not** block `ls && rm -rf /`. Treat `denied_tools` as a coarse backstop; rely on a tight `allowed_tools` set (evaluated under the hardened rules above) for the real containment.
+**Deny semantics.** For a `denied_tools` match to fire, **any** pipeline stage matching **any** deny pattern is enough to block the whole call. `Bash(rm:*)` in `denied_tools` catches both `rm -rf /` and the mixed-case `ls && rm -rf /` — deny is the mirror of allow, so the two sides can't be played against each other by splicing wrappers and compound operators.
+
+**Dangerous constructs fall through to `permission_mode`.** Command substitution, process substitution, backticks, and subshell/brace grouping (`` ` ``, `$(...)`, `<(...)`, `>(...)`, `(...)`, `{...}`) smuggle commands past both sides of the matcher. Neither allow nor deny fires automatically on a stage that contains them — the call takes the `permission_mode` fallback path instead, which for interactive sessions means a re-prompt. In particular, `cat $(rm -rf /)` is **not** auto-approved by `Bash(cat:*)`, and is **not** auto-denied by `Bash(rm:*)` either; it prompts.
+
+**Bare tool name.** A bare `Bash` entry (no `(prefix:*)` specifier) means "every Bash invocation" — in `allowed_tools` it short-circuits to auto-approve all shell commands, in `denied_tools` it blocks all of them. The same applies to every other tool name: a bare `Read` or `WebFetch` matches every invocation of that tool.
+
+**Deny wins.** When a call matches both lists, deny is checked first and the call is blocked.
+
+**Shared with session-scoped approvals.** The interactive `session` answer in the approval prompt seeds patterns into the same allow-pattern set, so everything above applies identically to those runtime-added rules. Autonomous org-owned sessions and interactive user sessions share a single matcher implementation.
 
 ### 3. MCP tool pattern
 
@@ -86,14 +93,14 @@ The `<server_name>` segment is whatever the MCP server registers itself as when 
 
 ## `allowed_tools` vs `denied_tools`
 
-The two lists are evaluated at different layers and compose as follows for every tool call:
+Both lists are seeded into the bridge's own pattern sets at session start and evaluated by the same hardened matcher described above. For every tool call:
 
-1. **Deny list (SDK layer).** `denied_tools` is handed to the Claude Agent SDK as `disallowed_tools`. If a call matches any deny pattern it is blocked before the bridge's callback ever sees it — `denied_tools` always wins, regardless of anything else in `allowed_tools` or `permission_mode`.
-2. **Allow list (bridge layer).** The bridge seeds `allowed_tools` into its session-approved pattern set and evaluates every surviving tool call through the hardened matcher described above. A match auto-approves the call without a prompt.
+1. **Deny check first.** If any `denied_tools` pattern matches under the deny semantics, the call is blocked and Claude receives a deny result. Deny always wins.
+2. **Allow check second.** Otherwise, if the call is fully covered by an `allowed_tools` pattern under the allow semantics, it is auto-approved without a prompt.
 3. **Fallback on no match.** If neither list matches, `permission_mode` decides what happens: `acceptEdits` auto-approves file-edit tools and prompts the user for everything else, `plan` keeps the session read-only, and `bypassPermissions` auto-approves the call.
-4. **Both lists empty.** Nothing is pre-authorised; every tool call falls through to `permission_mode`.
+4. **Both lists empty.** Nothing is pre-authorised and nothing is pre-blocked; every tool call falls through to `permission_mode`.
 
-> A practical mental model: `allowed_tools` is the "positive" intent, evaluated under the hardened matcher ("these are the things this agent should be able to do without asking"); `denied_tools` is a coarser SDK-level backstop ("even if something slips through, never let the agent start a matching command"). For unattended D&R-driven agents, a tight `allowed_tools` plus `permission_mode: bypassPermissions` replaces the interactive approval flow entirely.
+> A practical mental model: `allowed_tools` is the positive intent ("these are the things this agent should be able to do without asking"), `denied_tools` is the backstop ("even if a looser allow rule would cover it, never let the agent do this"). For unattended D&R-driven agents, a tight `allowed_tools` plus `permission_mode: bypassPermissions` replaces the interactive approval flow entirely.
 
 ## `permission_mode`
 
@@ -182,20 +189,20 @@ denied_tools:
 
 ### Blocking destructive Bash verbs
 
-You can deny a specific prefix even when the rest of Bash is allowed. Keep in mind that the deny list runs through the SDK's literal-prefix matcher, so it only blocks the leading stage of the command — a pattern like `Bash(rm:*)` catches `rm -rf /` but will not stop `ls && rm -rf /`. For containment you still want a tight allowlist under the hardened matcher.
+Deny a specific prefix even when the rest of Bash is open. The deny-side matcher shares allow's wrapper-stripping and pipeline-splitting, so a single pattern catches both bare and compound forms.
 
 ```yaml
-allowed_tools:
-  - "Bash(ls:*)"
-  - "Bash(cat:*)"
-  - "Bash(grep:*)"
+allowed_tools: ["Bash"]
 denied_tools:
   - "Bash(rm:*)"
   - "Bash(mv:*)"
   - "Bash(kubectl delete:*)"
 ```
 
-Under the hardened allowlist matcher the `ls && rm -rf /` case is already handled: the `rm -rf /` stage is not covered by any allowed pattern, so the whole command fails the pipeline-stage coverage check and never auto-approves.
+- `rm -rf /` → blocked by `Bash(rm:*)`.
+- `ls && rm -rf /` → blocked too: the `rm -rf /` stage matches `Bash(rm:*)` and deny fires on any matching stage.
+- `timeout 30 kubectl delete pod xyz` → blocked: the `timeout 30` wrapper is stripped before matching.
+- `cat $(rm file)` → does **not** auto-deny, but does **not** auto-approve either; the dangerous construct routes the call back through `permission_mode` (a re-prompt in interactive sessions).
 
 ## Where to go next
 
