@@ -12,5 +12,6 @@ Organization configuration and management.
 ## See Also
 
 - [User Access](access/user-access.md)
+- [Designing Access for Multi-Org Deployments](access/designing-access.md)
 - [API Keys](access/api-keys.md)
 - [Billing](billing/options.md)
