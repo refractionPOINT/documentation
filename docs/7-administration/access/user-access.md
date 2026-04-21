@@ -75,7 +75,7 @@ To review activity that has occurred in this group, click on **Activity Logs** (
 
 After creating a new organization — especially a production tenant — you will typically want to confirm, to yourself or to a system administrator, exactly who can reach the org and with which permissions. Access to an organization comes from two sources: users added **directly** to the organization, and users added via an **Organization Group** that includes the organization. A complete review must cover both.
 
-The sections below show how to answer the common questions using the web app, the `limacharlie` CLI, or both. All CLI examples assume you have selected the organization you want to inspect (either via `--oid <uuid>` or through `limacharlie auth use`).
+The sections below show how to answer the common questions using the web app, the `limacharlie` CLI, or both. All CLI examples assume you have selected the organization you want to inspect (either via `--oid <uuid>` or through `limacharlie auth use-org`).
 
 ### 1. Who has direct access to this organization?
 
@@ -126,7 +126,7 @@ For a cleaner starting point on a new production org, assign a [predefined role]
 
 ### 4. What access-related changes have been made, and by whom?
 
-Both the organization and every group maintain a tamper-evident audit trail you can use to verify that the access posture you see today is the result of intended changes.
+Both the organization and every group maintain an audit trail you can use to verify that the access posture you see today is the result of intended changes. For long-term compliance, consider also forwarding the `audit` stream to separate, append-only storage via an [Output](../../5-integrations/outputs/stream-structures.md#3-audit-stream-structure).
 
 **Organization audit log (web app):** open **Audit Logs** in the organization. Filter for user-management events to see when users were invited, removed, or had their permissions changed, and by which account.
 

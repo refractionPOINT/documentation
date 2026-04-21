@@ -77,20 +77,20 @@ Many MSSPs also create a dedicated organization used only internally (templates,
 
 ## Granting access to your internal staff
 
-Design the groups around job functions, not around customers. A typical starting set:
+Design the groups around job functions, not around customers. A typical starting set — the right-most column is the permission level you want each group to grant (matching the predefined roles you use for direct users makes the overall model easier to reason about):
 
-| Group | Members | Predefined role on included orgs |
+| Group | Members | Permission level |
 | --- | --- | --- |
-| `engineers` | Detection engineers, platform admins | `Administrator` |
-| `analysts-l2` | Senior analysts, IR leads | `Administrator` |
-| `analysts-l1` | Front-line SOC | `Operator` |
-| `read-only` | Leadership, auditors | `Viewer` |
+| `engineers` | Detection engineers, platform admins | Administrator-equivalent |
+| `analysts-l2` | Senior analysts, IR leads | Administrator-equivalent |
+| `analysts-l1` | Front-line SOC | Operator-equivalent |
+| `read-only` | Leadership, auditors | Viewer-equivalent |
 
 Workflow once the groups exist:
 
-1. **Create each group once.** `limacharlie group create` (or via the **Groups** page).
+1. **Create each group once.** `limacharlie group create --name <name>` (or via the **Groups** page).
 2. **Add every customer org** to each relevant group. `limacharlie group org-add --gid <id> --oid <customer_oid>`.
-3. **Set the group's permissions** via a predefined role — simplest and easiest to audit. Groups use the same permission set as direct users.
+3. **Set the group's permissions.** In the **Groups** page of the web app, select the permissions that match the intended permission level. Via the CLI, pass the explicit permission list: `limacharlie group permissions-set --gid <id> --permissions 'sensor.list,sensor.get,dr.list,...'`. Note that the group CLI takes a raw permission list — unlike `limacharlie user permissions set-role` for direct users, there is no single role-preset flag. Keep the list aligned with the direct-user role of the same name so effective permissions stay easy to reason about.
 4. **Add a user to exactly the group(s) matching their job.** `limacharlie group member-add --gid <id> --email <address>`.
 5. **When you onboard a new customer**, simply add the new org to each staff group (step 2). Every staff member instantly gets the right level of access on the new tenant, with no per-user work.
 
@@ -132,8 +132,8 @@ A few controls sharply reduce the risk of an access-control mistake:
 
 Once you have the architecture above in place, adding a new customer is a short, repeatable list:
 
-1. **Create the customer's organization.** The creator automatically holds `Owner` on it.
-2. **Transfer ownership to a shared internal account or designated engineer,** so access does not depend on the creator's personal account. See [Can I Transfer Ownership of an Organization?](../../8-reference/faq/account-management.md#can-i-transfer-ownership-of-an-organization).
+1. **Create the customer's organization.** The creator automatically holds the `Owner` role on it.
+2. **Grant `Owner` to a shared internal account as well,** so administrative access does not depend on the creator's personal account being available. `limacharlie --oid <customer_oid> user permissions set-role --email <shared-account> --role Owner`. A full billing/legal ownership transfer is a separate support request; see [Can I Transfer Ownership of an Organization?](../../8-reference/faq/account-management.md#can-i-transfer-ownership-of-an-organization).
 3. **Add the new org to each staff Organization Group** that should cover it (e.g. `engineers-prod`, `analysts-l1`, `read-only`). Staff access is now complete — no per-user work.
 4. **Invite the customer's designated contacts directly on the new org,** using a predefined role. Do not add them to any group.
 5. **Configure the rest of the tenant** (installation keys, adapters, D&R rules, outputs) — often from Infrastructure-as-Code templates if you have them; see [Infrastructure Extension](../../5-integrations/extensions/limacharlie/infrastructure.md).
