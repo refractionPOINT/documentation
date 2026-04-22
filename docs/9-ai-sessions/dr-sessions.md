@@ -191,11 +191,13 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
 
 #### Profile Options
 
+> The full pattern grammar for `allowed_tools` and `denied_tools` (built-in Claude Code tool names, `Bash(prefix:*)` scoping, MCP `mcp__server__tool` names, and the `lc_call_tool` meta-tool form), along with the precedence rules and `permission_mode` semantics, lives on the dedicated [Tool Permissions & Profiles](tool-permissions.md) page. Unattended D&R agents typically want `permission_mode: bypassPermissions` so tool calls don't block on approval prompts.
+
 | Option | Type | Description |
 |--------|------|-------------|
-| `allowed_tools` | list | Tools Claude can use. If empty, all tools are allowed. |
-| `denied_tools` | list | Tools Claude cannot use. Takes precedence over `allowed_tools`. |
-| `permission_mode` | string | `acceptEdits` (default), `plan`, or `bypassPermissions` |
+| `allowed_tools` | list | Tools Claude can use. If empty, all tools are allowed. See [Tool Permissions & Profiles](tool-permissions.md#tool-name-grammar). |
+| `denied_tools` | list | Tools Claude cannot use. Takes precedence over `allowed_tools`. See [Tool Permissions & Profiles](tool-permissions.md#allowed_tools-vs-denied_tools). |
+| `permission_mode` | string | `acceptEdits` (default), `plan`, or `bypassPermissions`. See [Tool Permissions & Profiles](tool-permissions.md#permission_mode). |
 | `model` | string | Claude model to use (e.g., `claude-sonnet-4-20250514`) |
 | `max_turns` | integer | Maximum conversation turns before auto-termination |
 | `max_budget_usd` | float | Maximum spend limit in USD |

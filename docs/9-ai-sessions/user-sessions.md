@@ -134,9 +134,9 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
 |--------|------|-------------|
 | `name` | string | Profile name (max 100 characters) |
 | `description` | string | Profile description (max 500 characters) |
-| `allowed_tools` | list | Tools Claude can use |
-| `denied_tools` | list | Tools Claude cannot use |
-| `permission_mode` | string | `acceptEdits`, `plan`, or `bypassPermissions` |
+| `allowed_tools` | list | Tools Claude can use. See [Tool Permissions & Profiles](tool-permissions.md) for the full pattern grammar. |
+| `denied_tools` | list | Tools Claude cannot use. Always wins over `allowed_tools`. See [Tool Permissions & Profiles](tool-permissions.md). |
+| `permission_mode` | string | `acceptEdits`, `plan`, or `bypassPermissions`. See [Tool Permissions & Profiles](tool-permissions.md#permission_mode). |
 | `model` | string | Claude model to use |
 | `max_turns` | integer | Maximum conversation turns |
 | `max_budget_usd` | float | Maximum spend limit in USD |
