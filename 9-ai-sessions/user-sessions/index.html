@@ -18,7 +18,7 @@
         <link rel="prev" href="../dr-sessions/">
       
       
-        <link rel="next" href="../cli/">
+        <link rel="next" href="../tool-permissions/">
       
       
         
@@ -11042,6 +11042,8 @@
       
         
       
+        
+      
     
     
     
@@ -11613,6 +11615,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tool-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tool Permissions & Profiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -12443,17 +12473,17 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
 <tr>
 <td><code>allowed_tools</code></td>
 <td>list</td>
-<td>Tools Claude can use</td>
+<td>Tools Claude can use. See <a href="../tool-permissions/">Tool Permissions &amp; Profiles</a> for the full pattern grammar.</td>
 </tr>
 <tr>
 <td><code>denied_tools</code></td>
 <td>list</td>
-<td>Tools Claude cannot use</td>
+<td>Tools Claude cannot use. Always wins over <code>allowed_tools</code>. See <a href="../tool-permissions/">Tool Permissions &amp; Profiles</a>.</td>
 </tr>
 <tr>
 <td><code>permission_mode</code></td>
 <td>string</td>
-<td><code>acceptEdits</code>, <code>plan</code>, or <code>bypassPermissions</code></td>
+<td><code>acceptEdits</code>, <code>plan</code>, or <code>bypassPermissions</code>. See <a href="../tool-permissions/#permission_mode">Tool Permissions &amp; Profiles</a>.</td>
 </tr>
 <tr>
 <td><code>model</code></td>
@@ -12811,13 +12841,13 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
         
         
           
-          <a href="../cli/" class="md-footer__link md-footer__link--next" aria-label="Next: Command Line Interface">
+          <a href="../tool-permissions/" class="md-footer__link md-footer__link--next" aria-label="Next: Tool Permissions &amp; Profiles">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Command Line Interface
+                Tool Permissions & Profiles
               </div>
             </div>
             <div class="md-footer__button md-icon">
