@@ -2,14 +2,14 @@
 
 Adapters can be deployed in one of two ways:
 
-* **On-prem**, Adapters utilize the LC Adapter binary to ingest a data source and forward it to LimaCharlie.
-* **Cloud-to-cloud**, connects the LimaCharlie cloud directly with your cloud source and automatically ingests data.
+- **On-prem**, Adapters utilize the LC Adapter binary to ingest a data source and forward it to LimaCharlie.
+- **Cloud-to-cloud**, connects the LimaCharlie cloud directly with your cloud source and automatically ingests data.
 
 Which Adapter Do I Use for Cloud Data?
 
 You can use on-prem adapters to forward cloud data, or you could acquire the same data with a cloud-to-cloud connection. So, which one to use?
 
-The answer lies in *how* you want to send your data to LimaCharlie. Are you OK with configuring a connector from our platform, or would you rather use a bastion box in between? Either way works for us!
+The answer lies in _how_ you want to send your data to LimaCharlie. Are you OK with configuring a connector from our platform, or would you rather use a bastion box in between? Either way works for us!
 
 The data ingested from adapters is parsed/mapped into JSON by LimaCharlie, according to the parameters you provided, unless using a pre-defined format.
 
@@ -17,28 +17,29 @@ The data ingested from adapters is parsed/mapped into JSON by LimaCharlie, accor
 
 Software-based, or "on-prem" adapters are available in the following formats:
 
-* Binaries:
+### POSIX-compliant
 
-  + *nix
+- [AIX ppc64](https://downloads.limacharlie.io/adapter/aix/ppc64)
+- [Linux (Generic) 64-bit](https://downloads.limacharlie.io/adapter/linux/64)
+- [Linux (Generic) arm](https://downloads.limacharlie.io/adapter/linux/arm)
+- [Linux (Generic) arm64](https://downloads.limacharlie.io/adapter/linux/arm64)
+- [FreeBSD 64-bit](https://downloads.limacharlie.io/adapter/freebsd/64)
+- [OpenBSD 64-bit](https://downloads.limacharlie.io/adapter/openbsd/64)
+- [NetBSD 64-bit](https://downloads.limacharlie.io/adapter/netbsd/64)
+- [Solaris 64-bit](https://downloads.limacharlie.io/adapter/solaris/64)
 
-    - [AIX ppc64](https://downloads.limacharlie.io/adapter/aix/ppc64)
-    - [Linux (Generic) 64-bit](https://downloads.limacharlie.io/adapter/linux/64)
-    - [Linux (Generic) arm](https://downloads.limacharlie.io/adapter/linux/arm)
-    - [Linux (Generic) arm64](https://downloads.limacharlie.io/adapter/linux/arm64)
-    - [FreeBSD 64-bit](https://downloads.limacharlie.io/adapter/freebsd/64)
-    - [OpenBSD 64-bit](https://downloads.limacharlie.io/adapter/openbsd/64)
-    - [NetBSD 64-bit](https://downloads.limacharlie.io/adapter/netbsd/64)
-    - [Solaris 64-bit](https://downloads.limacharlie.io/adapter/solaris/64)
-  + macOS
+### macOS
 
-    - [macOS x64](https://downloads.limacharlie.io/adapter/mac/64)
-    - [macOS arm64](https://downloads.limacharlie.io/adapter/mac/arm64)
-  + Windows
+- [macOS x64](https://downloads.limacharlie.io/adapter/mac/64)
+- [macOS arm64](https://downloads.limacharlie.io/adapter/mac/arm64)
 
-    - [Windows x64](https://downloads.limacharlie.io/adapter/windows/64)
-* Docker:
+### Windows
 
-  + https://hub.docker.com/r/refractionpoint/lc-adapter
+- [Windows x64](https://downloads.limacharlie.io/adapter/windows/64)
+
+### Docker
+
+- <https://hub.docker.com/r/refractionpoint/lc-adapter>
 
 Another platform?
 
@@ -59,16 +60,16 @@ The content of an external adapter is exactly the same as a traditional [adapter
 ```yaml
 sensor_type: syslog
 syslog:
-  client_options:
-    buffer_options: {}
-    hostname: test-syslog
-    identity:
-      installation_key: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-      oid: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
-    mapping: {}
-    platform: text
-    sensor_seed_key: test-syslog
-  port: 4242
+    client_options:
+        buffer_options: {}
+        hostname: test-syslog
+        identity:
+            installation_key: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+            oid: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb
+        mapping: {}
+        platform: text
+        sensor_seed_key: test-syslog
+    port: 4242
 ```
 
 Once your external adapter record is created, take note of the `GUID` (Globally Unique ID) found under the `sys_mtd` section of the JSON record, or on the right-hand side of the record view in the web app
