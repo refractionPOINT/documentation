@@ -2173,6 +2173,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Adapter Binaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#posix-compliant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POSIX-compliant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11522,6 +11572,56 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Adapter Binaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#posix-compliant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POSIX-compliant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11661,12 +11761,7 @@
 <p>The data ingested from adapters is parsed/mapped into JSON by LimaCharlie, according to the parameters you provided, unless using a pre-defined format.</p>
 <h2 id="adapter-binaries"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Binaries<a class="headerlink" href="#adapter-binaries" title="Anchor link to this section">&para;</a></h2>
 <p>Software-based, or "on-prem" adapters are available in the following formats:</p>
-<ul>
-<li>
-<p>Binaries:</p>
-</li>
-<li>
-<p>*nix</p>
+<h3 id="posix-compliant">POSIX-compliant<a class="headerlink" href="#posix-compliant" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li><a href="https://downloads.limacharlie.io/adapter/aix/ppc64">AIX ppc64</a></li>
 <li><a href="https://downloads.limacharlie.io/adapter/linux/64">Linux (Generic) 64-bit</a></li>
@@ -11676,25 +11771,19 @@
 <li><a href="https://downloads.limacharlie.io/adapter/openbsd/64">OpenBSD 64-bit</a></li>
 <li><a href="https://downloads.limacharlie.io/adapter/netbsd/64">NetBSD 64-bit</a></li>
 <li><a href="https://downloads.limacharlie.io/adapter/solaris/64">Solaris 64-bit</a></li>
-<li>
-<p>macOS</p>
-</li>
-<li>
-<p><a href="https://downloads.limacharlie.io/adapter/mac/64">macOS x64</a></p>
-</li>
-<li><a href="https://downloads.limacharlie.io/adapter/mac/arm64">macOS arm64</a></li>
-<li>
-<p>Windows</p>
-</li>
-<li>
-<p><a href="https://downloads.limacharlie.io/adapter/windows/64">Windows x64</a></p>
-</li>
-<li>Docker:</li>
 </ul>
-</li>
-<li>
-<p>https://hub.docker.com/r/refractionpoint/lc-adapter</p>
-</li>
+<h3 id="macos">macOS<a class="headerlink" href="#macos" title="Anchor link to this section">&para;</a></h3>
+<ul>
+<li><a href="https://downloads.limacharlie.io/adapter/mac/64">macOS x64</a></li>
+<li><a href="https://downloads.limacharlie.io/adapter/mac/arm64">macOS arm64</a></li>
+</ul>
+<h3 id="windows">Windows<a class="headerlink" href="#windows" title="Anchor link to this section">&para;</a></h3>
+<ul>
+<li><a href="https://downloads.limacharlie.io/adapter/windows/64">Windows x64</a></li>
+</ul>
+<h3 id="docker">Docker<a class="headerlink" href="#docker" title="Anchor link to this section">&para;</a></h3>
+<ul>
+<li><a href="https://hub.docker.com/r/refractionpoint/lc-adapter">https://hub.docker.com/r/refractionpoint/lc-adapter</a></li>
 </ul>
 <p>Another platform?</p>
 <p>If you need support for a specific platform, or require more information about supported platforms, please <a href="https://www.limacharlie.io/contact">let us know</a>.</p>
@@ -11706,16 +11795,16 @@
 <p>The content of an external adapter is exactly the same as a traditional <a href="../usage/">adapter configuration</a> in YAML. It describes what you want your external adapter to do, like collect from file, operate as a syslog server etc. For example:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">sensor_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">syslog</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">syslog</span><span class="p">:</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">client_options</span><span class="p">:</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">buffer_options</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-syslog</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">identity</span><span class="p">:</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="nt">installation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="nt">oid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">mapping</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="nt">sensor_seed_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-syslog</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4242</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">client_options</span><span class="p">:</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="nt">buffer_options</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-syslog</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="nt">identity</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">            </span><span class="nt">installation_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">            </span><span class="nt">oid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">        </span><span class="nt">mapping</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">        </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">        </span><span class="nt">sensor_seed_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test-syslog</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4242</span>
 </span></code></pre></div>
 <p>Once your external adapter record is created, take note of the <code>GUID</code> (Globally Unique ID) found under the <code>sys_mtd</code> section of the JSON record, or on the right-hand side of the record view in the web app</p>
 <p>.</p>
