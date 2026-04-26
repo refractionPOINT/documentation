@@ -133,6 +133,9 @@ plugins:
         # SDK / CLI references
         'docs/en/platform-configuration-limacharlie-sdk.md': '6-developer-guide/sdk-overview.md'
 
+hooks:
+  - hooks/llms_txt.py
+
 markdown_extensions:
   - abbr
   - admonition
