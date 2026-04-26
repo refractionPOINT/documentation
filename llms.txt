@@ -1,0 +1,310 @@
+# LimaCharlie Documentation
+
+> Official documentation for LimaCharlie Agentic SecOps Workspace
+
+This file is a machine-readable index of the documentation, intended for LLMs and other automated consumers. Each link points to a single documentation page.
+
+## Pages
+
+- [LimaCharlie Documentation](https://docs.limacharlie.io/): Home
+## Getting Started
+
+- [Overview](https://docs.limacharlie.io/1-getting-started/): Getting Started
+- [What is LimaCharlie?](https://docs.limacharlie.io/1-getting-started/what-is-limacharlie/)
+- [Quickstart](https://docs.limacharlie.io/1-getting-started/quickstart/)
+- [Core Concepts](https://docs.limacharlie.io/1-getting-started/core-concepts/): LimaCharlie Core Concepts
+- [Overview](https://docs.limacharlie.io/1-getting-started/tutorials/): Tutorials
+
+## Sensors
+
+- [Overview](https://docs.limacharlie.io/2-sensors-deployment/): Sensors
+- [Installation Keys](https://docs.limacharlie.io/2-sensors-deployment/installation-keys/)
+- [Sensor Connectivity](https://docs.limacharlie.io/2-sensors-deployment/connectivity/)
+- [Sensor Tags](https://docs.limacharlie.io/2-sensors-deployment/sensor-tags/)
+- [Log Collection Guide](https://docs.limacharlie.io/2-sensors-deployment/log-collection-guide/)
+- [Telemetry Index](https://docs.limacharlie.io/2-sensors-deployment/telemetry-index/): Telemetry
+- [Installation](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/windows/installation/): Windows Agent Installation
+- [Custom MSI](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/windows/custom-msi/): Building a custom MSI installer for Windows
+- [Installation (Sequoia+)](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/macos/sequoia/): macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)
+- [Installation (Catalina-Sonoma)](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/macos/installation/): macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)
+- [Installation (Older)](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/macos/installation-older/): macOS Agent Installation - Older Versions (macOS 10.14 and prior)
+- [MDM Profiles](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/macos/mdm-profiles/): macOS Agent Installation - MDM Configuration Profiles
+- [Jamf](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/macos/jamf/): macOS Agent Installation via Jamf Now
+- [Intune](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/macos/intune/): macOS Agent Installation via Microsoft Intune
+- [Installation](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/linux/installation/): Linux Agent Installation
+- [Chrome](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/chrome/installation/): Chrome Agent Installation
+- [Edge](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/edge/installation/): Edge Agent Installation
+- [Docker](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/docker/installation/): Docker Agent Installation
+- [Containers](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/containers/clusters/): Container Clusters
+- [VDI Templates](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/vdi/templates/): VDI & Virtual Machine Templates
+- [Payloads](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/payloads/)
+- [Versioning & Upgrades](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/versioning-upgrades/): Endpoint Agent Versioning and Upgrades
+- [Service Upgrades](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/service-upgrades/)
+- [Uninstallation](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/uninstallation/): Endpoint Agent Uninstallation
+- [Hostname Resolution](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/hostname-resolution/)
+- [Sleeper Mode](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/sleeper/): Sleeper Deployment
+- [Chrome Enterprise](https://docs.limacharlie.io/2-sensors-deployment/enterprise-deployment/chrome-enterprise/): ChromeOS with Google Chrome Enterprise
+- [Intune](https://docs.limacharlie.io/2-sensors-deployment/enterprise-deployment/intune/): Agent Deployment via Microsoft Intune
+- [Overview](https://docs.limacharlie.io/2-sensors-deployment/adapters/): Adapters
+- [Deployment](https://docs.limacharlie.io/2-sensors-deployment/adapters/deployment/): Adapter Deployment
+- [As a Service](https://docs.limacharlie.io/2-sensors-deployment/adapters/as-a-service/): Adapters as a Service
+- [Usage](https://docs.limacharlie.io/2-sensors-deployment/adapters/usage/): Adapter Usage
+- [AWS CloudTrail](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/aws-cloudtrail/)
+- [AWS GuardDuty](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/aws-guardduty/)
+- [AWS S3](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/s3/): S3
+- [AWS SQS](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sqs/): SQS
+- [Azure Event Hub](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/azure-event-hub/)
+- [GCP Pub/Sub](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/google-cloud-pubsub/): Google Cloud Pubsub
+- [GCP Storage](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/google-cloud-storage/): Google Cloud Storage
+- [Key Vault](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/azure/key-vault/): Azure Key Vault
+- [Kubernetes Service](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/azure/kubernetes-service/): Azure Kubernetes Service (AKS)
+- [Monitor](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/azure/monitor/): Azure Monitor
+- [Network Security Group](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/azure/network-security-group/): Azure Network Security Group
+- [SQL Audit Logs](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/azure/sql-audit-logs/): Azure SQL Audit Logs
+- [Okta](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/okta/)
+- [Microsoft Entra ID](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-entra-id/)
+- [Duo](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/duo/)
+- [1Password](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/1password/)
+- [CrowdStrike](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/crowdstrike/): CrowdStrike Falcon Cloud
+- [Microsoft Defender](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-defender/)
+- [SentinelOne](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sentinelone/)
+- [Sophos](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sophos/)
+- [Carbon Black](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/carbon-black/): VMWare Carbon Black
+- [Sublime Security](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sublime-security/)
+- [Microsoft 365](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-365/)
+- [Slack Audit](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/slack-audit-logs/): Slack Audit Logs
+- [Google Workspace](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/google-workspace/)
+- [Atlassian](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/atlassian/)
+- [HubSpot](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/hubspot/)
+- [Zendesk](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/zendesk/)
+- [PandaDoc](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/pandadoc/)
+- [Mimecast](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/mimecast/)
+- [Kubernetes Pods](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/kubernetes-pods/): Kubernetes Pods Logs
+- [IIS](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/iis/): IIS Logs
+- [Cato](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/cato/)
+- [Tailscale](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/tailscale/)
+- [Syslog](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/syslog/)
+- [JSON](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/json/)
+- [File](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/file/)
+- [Stdin](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/stdin/)
+- [Windows Event Log](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/windows-event-log/)
+- [EVTX](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/evtx/)
+- [Mac Unified Logging](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/mac-unified-logging/)
+- [IMAP](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/imap/)
+- [Canary Tokens](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/canarytokens/): Canarytokens
+- [IT Glue](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/it-glue/)
+- [Stdin JSON](https://docs.limacharlie.io/2-sensors-deployment/adapters/examples/stdin-json/)
+- [Stdin](https://docs.limacharlie.io/2-sensors-deployment/adapters/examples/stdin/)
+- [Windows Event Logs](https://docs.limacharlie.io/2-sensors-deployment/adapters/examples/windows-event-logs/)
+- [Webhook Adapter](https://docs.limacharlie.io/2-sensors-deployment/adapters/tutorials/webhook-adapter/): Tutorial: Creating a Webhook Adapter
+- [OpenTelemetry via Webhook](https://docs.limacharlie.io/2-sensors-deployment/adapters/tutorials/otel-webhook/): Tutorial: Ingesting OpenTelemetry Data via Webhook
+- [Google Cloud Logs](https://docs.limacharlie.io/2-sensors-deployment/adapters/tutorials/google-cloud-logs/): Tutorial: Ingesting Google Cloud Logs
+- [Cloud Telemetry](https://docs.limacharlie.io/2-sensors-deployment/adapters/tutorials/cloud-telemetry/): Tutorial: Ingesting Telemetry from Cloud-Based External Sources
+- [Non-Responding Sensors](https://docs.limacharlie.io/2-sensors-deployment/troubleshooting/non-responding-sensors/): Detecting Sensors No Longer Sending Data
+- [Windows Event Logs](https://docs.limacharlie.io/2-sensors-deployment/tutorials/windows-event-logs/): Ingesting Windows Event Logs
+- [Sysmon Logs](https://docs.limacharlie.io/2-sensors-deployment/tutorials/sysmon-logs/): Ingesting Sysmon Event Logs
+- [Defender Logs](https://docs.limacharlie.io/2-sensors-deployment/tutorials/defender-logs/): Ingesting Defender Event Logs
+- [Linux Audit Logs](https://docs.limacharlie.io/2-sensors-deployment/tutorials/linux-audit-logs/): Ingesting Linux Audit Logs
+- [macOS Unified Logs](https://docs.limacharlie.io/2-sensors-deployment/tutorials/macos-unified-logs/): Ingesting MacOS Unified Logs
+- [Test Sensor Version](https://docs.limacharlie.io/2-sensors-deployment/tutorials/test-sensor-version/): Test a New Sensor Version
+- [Update Sensors](https://docs.limacharlie.io/2-sensors-deployment/tutorials/update-sensors/): Updating Sensors to the Newest Version
+
+## Detection & Response
+
+- [Overview](https://docs.limacharlie.io/3-detection-response/): Detection and Response
+- [Writing & Testing Rules](https://docs.limacharlie.io/3-detection-response/tutorials/writing-testing-rules/): Writing and Testing Rules
+- [Threat Feed Rule](https://docs.limacharlie.io/3-detection-response/tutorials/threat-feed-rule/): Create a D&R Rule Using a Threat Feed
+- [D&R Rule Building Guidebook](https://docs.limacharlie.io/3-detection-response/tutorials/dr-rule-building-guidebook/)
+- [Examples](https://docs.limacharlie.io/3-detection-response/examples/): Detection and Response Examples
+- [False Positive Rules](https://docs.limacharlie.io/3-detection-response/false-positives/)
+- [Stateful Rules](https://docs.limacharlie.io/3-detection-response/stateful-rules/)
+- [Sensor Variables](https://docs.limacharlie.io/3-detection-response/sensor-variables/)
+- [Behavioral Detection](https://docs.limacharlie.io/3-detection-response/behavioral-detection/)
+- [Unit Tests](https://docs.limacharlie.io/3-detection-response/unit-tests/)
+- [Alternate Targets](https://docs.limacharlie.io/3-detection-response/alternate-targets/): Detection on Alternate Targets
+- [Community Rules](https://docs.limacharlie.io/3-detection-response/managed-rulesets/community-rules/)
+- [Sigma Converter](https://docs.limacharlie.io/3-detection-response/managed-rulesets/sigma-converter/)
+- [SOC Prime](https://docs.limacharlie.io/3-detection-response/managed-rulesets/soc-prime/): SOC Prime Rules
+- [Soteria EDR](https://docs.limacharlie.io/3-detection-response/managed-rulesets/soteria/edr/): Soteria EDR Rules
+- [Soteria AWS](https://docs.limacharlie.io/3-detection-response/managed-rulesets/soteria/aws/): Soteria AWS Rules
+- [Soteria M365](https://docs.limacharlie.io/3-detection-response/managed-rulesets/soteria/m365/): Soteria M365 Rules
+
+## Data & Queries
+
+- [Overview](https://docs.limacharlie.io/4-data-queries/): Query Console
+- [LCQL Examples](https://docs.limacharlie.io/4-data-queries/lcql-examples/)
+- [Query Console UI](https://docs.limacharlie.io/4-data-queries/query-console-ui/)
+- [Query CLI](https://docs.limacharlie.io/4-data-queries/query-cli/): Query with CLI
+- [Template Strings](https://docs.limacharlie.io/4-data-queries/template-strings/): Template Strings and Transforms
+- [Template Transforms](https://docs.limacharlie.io/4-data-queries/template-transforms/): Template Strings and Transforms
+- [Overview](https://docs.limacharlie.io/4-data-queries/events/): Events
+- [Sysmon Comparison](https://docs.limacharlie.io/4-data-queries/events/sysmon-comparison/)
+- [BigQuery + Looker Studio](https://docs.limacharlie.io/4-data-queries/tutorials/bigquery-looker-studio/): Building Reports with BigQuery + Looker Studio
+
+## Integrations
+
+- [Overview](https://docs.limacharlie.io/5-integrations/): Integrations
+- [Add-ons](https://docs.limacharlie.io/5-integrations/add-ons/)
+- [Overview](https://docs.limacharlie.io/5-integrations/outputs/): Outputs
+- [Stream Structures](https://docs.limacharlie.io/5-integrations/outputs/stream-structures/): Output Stream Structures
+- [Testing](https://docs.limacharlie.io/5-integrations/outputs/testing/): Testing Outputs
+- [Allowlisting](https://docs.limacharlie.io/5-integrations/outputs/allowlisting/): Adding Outputs to an Allow List
+- [Billing](https://docs.limacharlie.io/5-integrations/outputs/billing/): Output Billing
+- [Amazon S3](https://docs.limacharlie.io/5-integrations/outputs/destinations/amazon-s3/)
+- [Splunk](https://docs.limacharlie.io/5-integrations/outputs/destinations/splunk/)
+- [Elastic](https://docs.limacharlie.io/5-integrations/outputs/destinations/elastic/)
+- [BigQuery](https://docs.limacharlie.io/5-integrations/outputs/destinations/bigquery/): Google Cloud BigQuery
+- [Syslog](https://docs.limacharlie.io/5-integrations/outputs/destinations/syslog/)
+- [Webhook](https://docs.limacharlie.io/5-integrations/outputs/destinations/webhook/)
+- [Webhook Bulk](https://docs.limacharlie.io/5-integrations/outputs/destinations/webhook-bulk/): Webhook (Bulk)
+- [Slack](https://docs.limacharlie.io/5-integrations/outputs/destinations/slack/)
+- [Telegram](https://docs.limacharlie.io/5-integrations/outputs/destinations/telegram/)
+- [Microsoft Teams](https://docs.limacharlie.io/5-integrations/outputs/destinations/ms-teams/)
+- [SMTP](https://docs.limacharlie.io/5-integrations/outputs/destinations/smtp/)
+- [Apache Kafka](https://docs.limacharlie.io/5-integrations/outputs/destinations/apache-kafka/)
+- [Azure Event Hub](https://docs.limacharlie.io/5-integrations/outputs/destinations/azure-event-hub/)
+- [Azure Storage Blob](https://docs.limacharlie.io/5-integrations/outputs/destinations/azure-storage-blob/)
+- [Google Cloud Storage](https://docs.limacharlie.io/5-integrations/outputs/destinations/google-cloud-storage/)
+- [Google Pub/Sub](https://docs.limacharlie.io/5-integrations/outputs/destinations/google-pubsub/): Google Cloud Pubsub
+- [Humio](https://docs.limacharlie.io/5-integrations/outputs/destinations/humio/)
+- [OpenSearch](https://docs.limacharlie.io/5-integrations/outputs/destinations/opensearch/)
+- [ASW](https://docs.limacharlie.io/5-integrations/outputs/destinations/scp/): SCP
+- [SFTP](https://docs.limacharlie.io/5-integrations/outputs/destinations/sftp/)
+- [Tines](https://docs.limacharlie.io/5-integrations/outputs/destinations/tines/)
+- [Overview](https://docs.limacharlie.io/5-integrations/extensions/): Extensions
+- [Using Extensions](https://docs.limacharlie.io/5-integrations/extensions/using-extensions/)
+- [Overview](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/): LimaCharlie Extensions
+- [Git Sync](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/git-sync/)
+- [Reliable Tasking](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/reliable-tasking/)
+- [YARA Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/yara-manager/)
+- [Artifact](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/artifact/)
+- [BinLib](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/binlib/)
+- [Infrastructure](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/infrastructure/)
+- [Usage Alerts](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/usage-alerts/)
+- [Dumper](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/dumper/)
+- [EPP](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/epp/): Endpoint Protection
+- [Exfil](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/exfil/): Exfil (Event Collection)
+- [Integrity](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/integrity/)
+- [Lookup Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/lookup-manager/)
+- [Payload Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/payload-manager/)
+- [Sensor Cull](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/sensor-cull/)
+- [Cases](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/cases/)
+- [Feedback](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/feedback/)
+- [Overview](https://docs.limacharlie.io/5-integrations/extensions/third-party/): Third-Party Extensions
+- [Velociraptor](https://docs.limacharlie.io/5-integrations/extensions/third-party/velociraptor/)
+- [Zeek](https://docs.limacharlie.io/5-integrations/extensions/third-party/zeek/)
+- [YARA](https://docs.limacharlie.io/5-integrations/extensions/third-party/yara/)
+- [Hayabusa](https://docs.limacharlie.io/5-integrations/extensions/third-party/hayabusa/)
+- [Atomic Red Team](https://docs.limacharlie.io/5-integrations/extensions/third-party/atomic-red-team/)
+- [OTX](https://docs.limacharlie.io/5-integrations/extensions/third-party/otx/)
+- [PagerDuty](https://docs.limacharlie.io/5-integrations/extensions/third-party/pagerduty/)
+- [Plaso](https://docs.limacharlie.io/5-integrations/extensions/third-party/plaso/)
+- [Strelka](https://docs.limacharlie.io/5-integrations/extensions/third-party/strelka/)
+- [Twilio](https://docs.limacharlie.io/5-integrations/extensions/third-party/twilio/)
+- [Govee](https://docs.limacharlie.io/5-integrations/extensions/third-party/govee/)
+- [NIMS](https://docs.limacharlie.io/5-integrations/extensions/third-party/nims/)
+- [Renigma](https://docs.limacharlie.io/5-integrations/extensions/third-party/renigma/)
+- [SecureAnnex](https://docs.limacharlie.io/5-integrations/extensions/third-party/secureannex/): Secure Annex
+- [Playbook](https://docs.limacharlie.io/5-integrations/extensions/labs/playbook/): Playbook [LABS]
+- [Overview](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/): Cloud CLI
+- [1Password](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/1password/)
+- [AWS](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/aws/)
+- [Azure](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/azure/)
+- [DigitalOcean](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/digitalocean/)
+- [GitHub](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/github/)
+- [Google Cloud](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/google-cloud/)
+- [Microsoft 365](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/microsoft365/)
+- [Okta](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/okta/)
+- [SDM](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/sdm/): StrongDM
+- [Sublime](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/sublime/)
+- [Tailscale](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/tailscale/)
+- [Vultr](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/vultr/)
+- [Overview](https://docs.limacharlie.io/5-integrations/api-integrations/): API Integrations
+- [VirusTotal](https://docs.limacharlie.io/5-integrations/api-integrations/virustotal/)
+- [GreyNoise](https://docs.limacharlie.io/5-integrations/api-integrations/greynoise/)
+- [Hybrid Analysis](https://docs.limacharlie.io/5-integrations/api-integrations/hybrid-analysis/)
+- [AlphaMountain](https://docs.limacharlie.io/5-integrations/api-integrations/alphamountain/)
+- [EchoTrail](https://docs.limacharlie.io/5-integrations/api-integrations/echotrail/)
+- [IP ASN](https://docs.limacharlie.io/5-integrations/api-integrations/ip-asn/)
+- [IP Geolocation](https://docs.limacharlie.io/5-integrations/api-integrations/ip-geolocation/)
+- [Pangea](https://docs.limacharlie.io/5-integrations/api-integrations/pangea/)
+- [Replay](https://docs.limacharlie.io/5-integrations/services/replay/)
+- [Dumper](https://docs.limacharlie.io/5-integrations/services/dumper/)
+- [VirusTotal Integration](https://docs.limacharlie.io/5-integrations/tutorials/virustotal-integration/)
+- [Human-in-the-Loop Response](https://docs.limacharlie.io/5-integrations/tutorials/human-in-the-loop-response/): Human-in-the-Loop Response Automation
+- [Hayabusa BigQuery](https://docs.limacharlie.io/5-integrations/tutorials/hayabusa-bigquery/): Hayabusa to BigQuery
+- [Velociraptor BigQuery](https://docs.limacharlie.io/5-integrations/tutorials/velociraptor-bigquery/): Velociraptor to BigQuery
+
+## Developer Guide
+
+- [Overview](https://docs.limacharlie.io/6-developer-guide/): Developer Guide
+- [Overview](https://docs.limacharlie.io/6-developer-guide/sdks/): SDK Documentation
+- [Python SDK](https://docs.limacharlie.io/6-developer-guide/sdks/python-sdk/): LimaCharlie Python SDK Documentation
+- [Go SDK](https://docs.limacharlie.io/6-developer-guide/sdks/go-sdk/): LimaCharlie Go SDK Documentation
+- [Command Line Interface](https://docs.limacharlie.io/6-developer-guide/sdk-overview/)
+- [CLI Extension](https://docs.limacharlie.io/6-developer-guide/cli/)
+- [Connecting AI Assistants](https://docs.limacharlie.io/6-developer-guide/mcp-server/)
+- [Getting Started](https://docs.limacharlie.io/6-developer-guide/extensions/building-extensions/): Building Extensions
+- [User Interface](https://docs.limacharlie.io/6-developer-guide/extensions/building-ui/): Building the User Interface
+- [Schema & Data Types](https://docs.limacharlie.io/6-developer-guide/extensions/schema-data-types/): Schema Data Types
+- [Grant Program](https://docs.limacharlie.io/6-developer-guide/grant-program/): Developer Grant Program
+
+## Administration
+
+- [Overview](https://docs.limacharlie.io/7-administration/): Platform Management
+- [API Keys](https://docs.limacharlie.io/7-administration/access/api-keys/)
+- [User Access](https://docs.limacharlie.io/7-administration/access/user-access/)
+- [Designing Access](https://docs.limacharlie.io/7-administration/access/designing-access/): Designing Access for Multi-Org Deployments
+- [SSO](https://docs.limacharlie.io/7-administration/access/sso/): Single Sign-On
+- [Options](https://docs.limacharlie.io/7-administration/billing/options/): Billing Options
+- [Custom Plans](https://docs.limacharlie.io/7-administration/billing/custom-plans/): Using Custom Billing Plans
+- [Estimating Data Ingestion](https://docs.limacharlie.io/7-administration/billing/data-estimation/)
+- [Overview](https://docs.limacharlie.io/7-administration/config-hive/): Config Hive
+- [Secrets](https://docs.limacharlie.io/7-administration/config-hive/secrets/): Config Hive: Secrets
+- [Lookups](https://docs.limacharlie.io/7-administration/config-hive/lookups/): Config Hive: Lookups
+- [D&R Rules](https://docs.limacharlie.io/7-administration/config-hive/dr-rules/): Config Hive: Detection & Response Rules
+- [YARA](https://docs.limacharlie.io/7-administration/config-hive/yara/): Config Hive: Yara
+- [Cloud Sensors](https://docs.limacharlie.io/7-administration/config-hive/cloud-sensors/): Config Hive: Cloud Sensors
+
+## Reference
+
+- [Overview](https://docs.limacharlie.io/8-reference/): Reference
+- [Endpoint Commands](https://docs.limacharlie.io/8-reference/endpoint-commands/): Reference: Endpoint Agent Commands
+- [Detection Operators](https://docs.limacharlie.io/8-reference/detection-logic-operators/): Detection Logic Operators
+- [Response Actions](https://docs.limacharlie.io/8-reference/response-actions/)
+- [EDR Events](https://docs.limacharlie.io/8-reference/edr-events/): Reference: EDR Events
+- [Platform Events](https://docs.limacharlie.io/8-reference/platform-events/): Reference: Platform Events
+- [Schedule Events](https://docs.limacharlie.io/8-reference/schedule-events/): Reference: Schedule Events
+- [Event Schemas](https://docs.limacharlie.io/8-reference/event-schemas/)
+- [Sensor Selectors](https://docs.limacharlie.io/8-reference/sensor-selector-expressions/): Reference: Sensor Selector Expressions
+- [ID Schema](https://docs.limacharlie.io/8-reference/id-schema/): Reference: ID Schema
+- [Permissions](https://docs.limacharlie.io/8-reference/permissions/): Reference: Permissions
+- [Error Codes](https://docs.limacharlie.io/8-reference/error-codes/): Reference: Error Codes
+- [Auth Resource Locator](https://docs.limacharlie.io/8-reference/authentication-resource-locator/): Reference: Authenticated Resource Locator
+- [YARA Modules](https://docs.limacharlie.io/8-reference/yara-modules/): YARA Modules & External Variables
+- [Latency](https://docs.limacharlie.io/8-reference/latency/): Understanding Latency
+- [Overview](https://docs.limacharlie.io/8-reference/faq/): Frequently Asked Questions
+- [General](https://docs.limacharlie.io/8-reference/faq/general/): FAQ - General
+- [Account Management](https://docs.limacharlie.io/8-reference/faq/account-management/): FAQ - Account Management
+- [Billing](https://docs.limacharlie.io/8-reference/faq/billing/): FAQ - Billing
+- [D&R Rules](https://docs.limacharlie.io/8-reference/faq/dr-rules/): FAQ - Detect and Respond Rules
+- [Sensor Installation](https://docs.limacharlie.io/8-reference/faq/sensor-installation/): FAQ - Sensor Installation
+- [Privacy](https://docs.limacharlie.io/8-reference/faq/privacy/): FAQ - Privacy
+- [Troubleshooting](https://docs.limacharlie.io/8-reference/faq/troubleshooting/): FAQ - Sensor Troubleshooting
+- [Invoices](https://docs.limacharlie.io/8-reference/faq/invoices/): FAQ - Invoices
+- [Sensor Removal](https://docs.limacharlie.io/8-reference/faq/sensor-removal/): FAQ - Sensor Removal
+
+## AI Sessions
+
+- [Overview](https://docs.limacharlie.io/9-ai-sessions/): AI Sessions
+- [D&R-Driven Sessions](https://docs.limacharlie.io/9-ai-sessions/dr-sessions/): D&R-Driven AI Sessions
+- [User Sessions](https://docs.limacharlie.io/9-ai-sessions/user-sessions/): User AI Sessions
+- [Tool Permissions & Profiles](https://docs.limacharlie.io/9-ai-sessions/tool-permissions/)
+- [Command Line Interface](https://docs.limacharlie.io/9-ai-sessions/cli/)
+- [Alternative Providers](https://docs.limacharlie.io/9-ai-sessions/alternative-providers/): Alternative AI Providers
+- [API Reference](https://docs.limacharlie.io/9-ai-sessions/api-reference/)
+- [TypeScript SDK](https://docs.limacharlie.io/9-ai-sessions/sdk/)
+
+## Release Notes
+
+- [Overview](https://docs.limacharlie.io/10-release-notes/): Release Notes
