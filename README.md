@@ -51,6 +51,27 @@ LimaCharlie is a Agentic SecOps Workspace providing:
 | **Python** | `pip install limacharlie` | [Python SDK](docs/6-developer-guide/sdks/python-sdk.md) |
 | **Go** | `go get github.com/refractionPOINT/go-limacharlie` | [Go SDK](docs/6-developer-guide/sdks/go-sdk.md) |
 
+## AI / LLM Consumption
+
+This site publishes an [`llms.txt`](https://llmstxt.org/) index at
+[`https://docs.limacharlie.io/llms.txt`](https://docs.limacharlie.io/llms.txt) — a
+machine-readable map of every documentation page, intended for LLMs, agents, and
+other automated consumers.
+
+It is generated at build time by the MkDocs hook in `hooks/llms_txt.py`
+(wired in via `hooks:` in `mkdocs.yml`) and written directly into the built
+`site/`. The file is **not** tracked in git — it is purely derived from
+`mkdocs.yml`'s nav and each page's first H1, so it stays in sync automatically.
+
+To preview it locally:
+
+```bash
+mkdocs build
+cat site/llms.txt
+```
+
+`mkdocs serve` also runs the hook on every rebuild.
+
 ## Resources
 
 - **Live Docs**: https://refractionpoint.github.io/documentation/
