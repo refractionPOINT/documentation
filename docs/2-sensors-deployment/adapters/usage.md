@@ -293,17 +293,17 @@ which would end up generating:
   "log_name": "http_logs",
   "timestamp": "..."
 }
-```yaml
+```
 
 #### Extraction
 
 LimaCharlie has a few core constructs that all events and sensors have.
 Namely:
 
-* Sensor ID
-* Hostname
-* Event Type
-* Event Time
+- Sensor ID
+- Hostname
+- Event Type
+- Event Time
 
 You may specify certain fields from the JSON logs to be extracted into these common fields.
 
@@ -312,7 +312,6 @@ This process is done by specifying the "path" to the relevant field in the JSON 
 For example, using this event:
 
 ```
-
 {
   "a": "x",
   "b": "y",
@@ -322,21 +321,20 @@ For example, using this event:
     }
   }
 }
-
 ```
 
 The following paths would yield the following results:
 
-* `a`: `x`
-* `b`: `y`
-* `c/d/e`: `z`
+- `a`: `x`
+- `b`: `y`
+- `c/d/e`: `z`
 
 The following extractors can be specified:
 
-* `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
-* `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
-* `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
-* `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
+- `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
+- `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
+- `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
+- `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
 
 ### Indexing
 
@@ -354,28 +352,24 @@ This is done by setting the `indexing` element in the `client_options`. This fie
 
 An index descriptor can have the following fields:
 
-* `events_included`: optionally, a list of event\_type that this descriptor applies to.
-* `events_excluded`: optionally, a list of event\_type this descriptor *does not* apply to.
-* `path`: the element path this descriptor targets, like `user/metadata/user_id`.
-* `regexp`: optionally, a regular expression used on the `path` field to extract the item to index, like `email: (.+)`.
-* `index_type`: the category of index the value extracted belongs to, like `user` or `file_hash`.
+- `events_included`: optionally, a list of event\_type that this descriptor applies to.
+- `events_excluded`: optionally, a list of event\_type this descriptor *does not* apply to.
+- `path`: the element path this descriptor targets, like `user/metadata/user_id`.
+- `regexp`: optionally, a regular expression used on the `path` field to extract the item to index, like `email: (.+)`.
+- `index_type`: the category of index the value extracted belongs to, like `user` or `file_hash`.
 
 Here is an example of a simple index descriptor:
 
 ```
-
 events_included:
-
-- PutObject
+  - PutObject
 path: userAgent
 index_type: user
-
 ```
 
 Put together in a client option, you could have:
 
 ```
-
 {
   "client_options": {
     ...,
@@ -390,21 +384,20 @@ Put together in a client option, you could have:
     }]
   }
 }
-
 ```
 
 #### Supported Indexes
 
 This is the list of currently supported index types:
 
-* `file_hash`
-* `file_path`
-* `file_name`
-* `domain`
-* `ip`
-* `user`
-* `service_name`
-* `package_name`
+- `file_hash`
+- `file_path`
+- `file_name`
+- `domain`
+- `ip`
+- `user`
+- `service_name`
+- `package_name`
 
 ### Sensor IDs
 
