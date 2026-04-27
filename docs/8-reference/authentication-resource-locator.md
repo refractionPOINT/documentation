@@ -20,10 +20,10 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
 [methodName,methodDest]
 ```
 
-* `methodName`: the transport to use, one of `http`, `https`, `gcs` and `github`.
-* `methodDest`: the actual destination of the transport. A domain and path for HTTP(S) and a bucket name and path for GCS.
-* `authType`: how to authenticate, one of `basic`, `bearer`, `token`, `gaia` or `otx`.
-* `authData`: the auth data, like `username:password` for `basic`, or access token values. If the value is a complex structure, like a `gaia` JSON service key, it must be base64-encoded.
+- `methodName`: the transport to use, one of `http`, `https`, `gcs` and `github`.
+- `methodDest`: the actual destination of the transport. A domain and path for HTTP(S) and a bucket name and path for GCS.
+- `authType`: how to authenticate, one of `basic`, `bearer`, `token`, `gaia` or `otx`.
+- `authData`: the auth data, like `username:password` for `basic`, or access token values. If the value is a complex structure, like a `gaia` JSON service key, it must be base64-encoded.
 
 ## Examples
 

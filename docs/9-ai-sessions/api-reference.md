@@ -46,6 +46,7 @@ POST /v1/register
 Register the authenticated user for the AI Sessions platform.
 
 **Response: 200 OK**
+
 ```json
 {
   "registered": true,
@@ -54,6 +55,7 @@ Register the authenticated user for the AI Sessions platform.
 ```
 
 **Error Responses:**
+
 - `401`: Invalid or missing JWT token
 - `403`: Email domain not in allowed list
 - `409`: User already registered
@@ -67,6 +69,7 @@ DELETE /v1/register
 Deregister the user and delete all associated data. This terminates all active sessions and deletes stored credentials.
 
 **Response: 200 OK**
+
 ```json
 {
   "deregistered": true
@@ -92,6 +95,7 @@ GET /v1/sessions
 | `cursor` | string | Pagination cursor |
 
 **Response: 200 OK**
+
 ```json
 {
   "sessions": [
@@ -117,6 +121,7 @@ POST /v1/sessions
 ```
 
 **Request Body:**
+
 ```json
 {
   "lc_credentials": {
@@ -129,6 +134,7 @@ POST /v1/sessions
 ```
 
 **Response: 201 Created**
+
 ```json
 {
   "session": {
@@ -141,6 +147,7 @@ POST /v1/sessions
 ```
 
 **Error Responses:**
+
 - `400`: Invalid request body
 - `403`: Not registered or no Claude credentials
 - `409`: Maximum concurrent sessions (10) reached
@@ -152,6 +159,7 @@ GET /v1/sessions/{sessionId}
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "session": {
@@ -177,6 +185,7 @@ DELETE /v1/sessions/{sessionId}
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "terminated": true
@@ -192,6 +201,7 @@ DELETE /v1/sessions/{sessionId}/record
 Delete a terminated session from history. Only sessions in the `ended` state can be deleted.
 
 **Response: 200 OK**
+
 ```json
 {
   "deleted": true
@@ -209,6 +219,7 @@ GET /v1/profiles
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "profiles": [
@@ -237,6 +248,7 @@ POST /v1/profiles
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Investigation",
@@ -261,6 +273,7 @@ POST /v1/profiles
 ```
 
 **Response: 201 Created**
+
 ```json
 {
   "profile": {
@@ -272,6 +285,7 @@ POST /v1/profiles
 ```
 
 **Error Responses:**
+
 - `400`: Invalid request body
 - `409`: Maximum profiles (10) reached
 
@@ -308,6 +322,7 @@ POST /v1/sessions/{sessionId}/capture-profile
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "My Session Config",
@@ -326,6 +341,7 @@ POST /v1/auth/claude/start
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "oauth_session_id": "oauth123",
@@ -341,6 +357,7 @@ GET /v1/auth/claude/url?session_id={oauth_session_id}
 ```
 
 **Response: 200 OK (URL Ready)**
+
 ```json
 {
   "status": "url_ready",
@@ -350,6 +367,7 @@ GET /v1/auth/claude/url?session_id={oauth_session_id}
 ```
 
 **Response: 200 OK (Pending)**
+
 ```json
 {
   "status": "pending",
@@ -364,6 +382,7 @@ POST /v1/auth/claude/code
 ```
 
 **Request Body:**
+
 ```json
 {
   "session_id": "oauth123",
@@ -372,6 +391,7 @@ POST /v1/auth/claude/code
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "success": true,
@@ -387,6 +407,7 @@ POST /v1/auth/claude/apikey
 ```
 
 **Request Body:**
+
 ```json
 {
   "api_key": "sk-ant-api03-xxxxx"
@@ -394,6 +415,7 @@ POST /v1/auth/claude/apikey
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "success": true,
@@ -408,6 +430,7 @@ GET /v1/auth/claude/status
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "has_credentials": true,
@@ -433,6 +456,7 @@ POST /v1/io/sessions/{sessionId}/upload
 ```
 
 **Request Body:**
+
 ```json
 {
   "filename": "data.csv",
@@ -442,6 +466,7 @@ POST /v1/io/sessions/{sessionId}/upload
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "upload_url": "https://storage.googleapis.com/...",
@@ -452,6 +477,7 @@ POST /v1/io/sessions/{sessionId}/upload
 ```
 
 **Error Responses:**
+
 - `413`: File size exceeds limit (100 MB)
 
 #### Notify Upload Complete
@@ -461,6 +487,7 @@ POST /v1/io/sessions/{sessionId}/upload/complete
 ```
 
 **Request Body:**
+
 ```json
 {
   "upload_id": "upload123"
@@ -468,6 +495,7 @@ POST /v1/io/sessions/{sessionId}/upload/complete
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "success": true,
@@ -482,6 +510,7 @@ POST /v1/io/sessions/{sessionId}/download
 ```
 
 **Request Body:**
+
 ```json
 {
   "path": "/workspace/output.txt"
@@ -489,6 +518,7 @@ POST /v1/io/sessions/{sessionId}/download
 ```
 
 **Response: 200 OK**
+
 ```json
 {
   "download_url": "https://storage.googleapis.com/...",
@@ -503,11 +533,13 @@ POST /v1/io/sessions/{sessionId}/download
 ### Connection
 
 **Endpoint:**
+
 ```
 wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws
 ```
 
 **Authentication:**
+
 - Header: `Authorization: Bearer <JWT>`
 - Query parameter: `?token=<JWT>`
 
@@ -748,6 +780,7 @@ Session has ended.
 ```
 
 **End Reasons:**
+
 - `completed`: Session completed normally
 - `failed`: Session encountered an execution error
 - `job_completed`: Session runner process exited
@@ -788,6 +821,7 @@ General error message.
 ```
 
 **Error Codes:**
+
 - `session_not_found`: Session no longer exists
 - `session_not_running`: Session is not in running state
 - `session_crashed`: Session process crashed

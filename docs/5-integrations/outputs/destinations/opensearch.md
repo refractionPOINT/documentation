@@ -2,10 +2,10 @@
 
 Output events and detections to [OpenSearch](https://opensearch.org/).
 
-* `addresses`: the IPs or DNS where to send the data to
-* `index`: the index name to send data to
-* `username`: user name if using username/password auth
-* `password`: password if using username/password auth
+- `addresses`: the IPs or DNS where to send the data to
+- `index`: the index name to send data to
+- `username`: user name if using username/password auth
+- `password`: password if using username/password auth
 
 Example:
 
@@ -18,5 +18,5 @@ index: limacharlie-events
 
 ## Related articles
 
-* [Elastic](elastic.md)
-* [ASW](scp.md)
+- [Elastic](elastic.md)
+- [ASW](scp.md)

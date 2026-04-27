@@ -22,11 +22,11 @@ The `data` portion of the records in this hive must have a single key called `se
 
 The `secret` hive requires the following permissions for the various operations:
 
-* `secret.get`
-* `secret.set`
-* `secret.del`
-* `secret.get.mtd`
-* `secret.set.mtd`
+- `secret.get`
+- `secret.set`
+- `secret.del`
+- `secret.get.mtd`
+- `secret.set.mtd`
 
 ## Secret Management
 
@@ -364,13 +364,13 @@ Using a secret in combination with an output has very few steps:
 Let's create a simple secret using the LimaCharlie CLI in a terminal. First, create a small file with the secret record in it:
 
 ```
-$ echo "my-secret-value" > my-secret
+echo "my-secret-value" > my-secret
 ```
 
 Next, set this secret in Hive via the LimaCharlie CLI:
 
 ```
-$ limacharlie hive set secret --key my-secret --data my-secret --data-key secret
+limacharlie hive set secret --key my-secret --data my-secret --data-key secret
 ```
 
 You should get a confirmation that the secret was created, including metadata of the secret and associated OID:

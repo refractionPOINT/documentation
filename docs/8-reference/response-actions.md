@@ -255,9 +255,9 @@ Removes the isolation status of a sensor that had it set using `isolate network`
 
 Reports the match as a detection. Think of it as an alert. Detections go a few places:
 
-* The `detection` Output stream
-* The organization's Detections page (if `insight` is enabled)
-* The D&R rule engine, for chaining detections
+- The `detection` Output stream
+- The organization's Detections page (if `insight` is enabled)
+- The D&R rule engine, for chaining detections
 
 The `name`, `metadata` and `detect_data` parameters support [string templates](../4-data-queries/template-transforms.md) like `detected {{ .cat }} on {{ .routing.hostname }}`, note that the context of the transform is the detection itself and not the original event, so you would refer to `.detect.event.USER_NAME` and not `.event.USER_NAME` for example.
 
@@ -321,8 +321,8 @@ This can be useful if a previous response action needs to finish running (i.e. a
 
 The `duration` parameter supports two types of values:
 
-* A string describing a duration, like `5s` for 5 seconds or `10ms` for 10 milliseconds, as defined by [this function call](https://pkg.go.dev/time#ParseDuration).
-* An integer representing a number of seconds.
+- A string describing a duration, like `5s` for 5 seconds or `10ms` for 10 milliseconds, as defined by [this function call](https://pkg.go.dev/time#ParseDuration).
+- An integer representing a number of seconds.
 
 Example:
 

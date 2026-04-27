@@ -12,17 +12,17 @@ A yara record in `hive` has a very basic format:
 
 The `data` portion of the records in this hive must have a single key called `rule` who's value will be the yara rule content used by various LimaCharlie components.
 
-A single rule record can contain a series of actual Yara rule, like this: https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar
+A single rule record can contain a series of actual Yara rule, like this: <https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar>
 
 ## Permissions
 
 The `yara` hive requires the following permissions for the various operations:
 
-* `yara.get`
-* `yara.set`
-* `yara.del`
-* `yara.get.mtd`
-* `yara.set.mtd`
+- `yara.get`
+- `yara.set`
+- `yara.del`
+- `yara.get.mtd`
+- `yara.set.mtd`
 
 ## Usage
 
@@ -272,7 +272,7 @@ Assuming you have a Yara rule in the `rule.yara` file.
 Load the rule in the LimaCharlie Hive via the CLI:
 
 ```
-$ limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
+limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
 ```
 
 You should get a confirmation that the rule was created, including metadata of the rule associated OID:

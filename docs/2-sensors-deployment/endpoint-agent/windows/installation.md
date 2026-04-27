@@ -5,12 +5,15 @@ This guide walks you through installing the LimaCharlie Endpoint Detection and R
 ## Supported Windows Versions
 
 **Desktop:**
+
 - Windows 7, 8, 8.1, 10, 11
 
 **Server:**
+
 - Windows Server 2008 R2, 2012, 2012 R2, 2016, 2019, 2022
 
 **Architectures:**
+
 - x64 (64-bit) - Most common
 - x86 (32-bit) - Legacy systems
 - ARM64 - Windows on ARM devices
@@ -138,6 +141,7 @@ msiexec /i "C:\Downloads\hcp_win_x64.msi" /qn INSTALLATIONKEY="YOUR_INSTALLATION
 ```
 
 Options explained:
+
 - `/i` - Install the package
 - `/qn` - Quiet mode with no user interface
 - `INSTALLATIONKEY` - The LimaCharlie installation key for enrollment
@@ -229,10 +233,13 @@ Remove-Item $InstallerPath -Force -ErrorAction SilentlyContinue
 
 1. Open PowerShell as Administrator
 2. If you haven't already, allow script execution:
+
    ```powershell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    ```
+
 3. Run the script with your Installation Key:
+
    ```powershell
    .\Install-LimaCharlie.ps1 -InstallationKey "YOUR_INSTALLATION_KEY_GOES_HERE"
    ```
@@ -256,6 +263,7 @@ Get-Service rphcpsvc | Select-Object Name, Status, StartType
 ```
 
 Expected output:
+
 ```
 Name     Status StartType
 ----     ------ ---------
@@ -353,7 +361,9 @@ if ($null -eq $service) {
 Run the installer with the clean uninstall flag:
 
 ```
+
 rphcp.exe -c
+
 ```
 
 This removes the service and deletes all identity files.
@@ -361,7 +371,9 @@ This removes the service and deletes all identity files.
 To uninstall but keep identity files (for potential reinstallation):
 
 ```
+
 rphcp.exe -r
+
 ```
 
 ### Using the MSI
@@ -373,7 +385,9 @@ rphcp.exe -r
 Or via command line:
 
 ```
+
 msiexec /x "path\to\installer.msi" /qn
+
 ```
 
 ### Using LimaCharlie Console

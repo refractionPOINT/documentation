@@ -4,8 +4,8 @@ Hybrid Analysis, aka Falcon Sandbox, is a powerful, free malware analysis servic
 
 LimaCharlie integrates with the following Hybrid Analysis API calls:
 
-* [Overview](https://www.hybrid-analysis.com/docs/api/v2#/Analysis%20Overview/get_overview__sha256_)
-* [Search](https://www.hybrid-analysis.com/docs/api/v2#/Search/post_search_hash)
+- [Overview](https://www.hybrid-analysis.com/docs/api/v2#/Analysis%20Overview/get_overview__sha256_)
+- [Search](https://www.hybrid-analysis.com/docs/api/v2#/Search/post_search_hash)
 
 ## Detection & Response Rules
 
@@ -156,9 +156,9 @@ resource: lcr://api/hybrid-analysis-overview
 
 The Search lookup provides a basic lookup of a hash value. This look accepts one of the following values:
 
-* MD5
-* SHA1
-* SHA256
+- MD5
+- SHA1
+- SHA256
 
 **D&R Rule:**
 

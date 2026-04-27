@@ -4,13 +4,13 @@ Output events and detections to a Google Cloud BigQuery Table.
 
 For a practical use case of this output, see this [tutorial on pushing Velociraptor data to BigQuery](../../tutorials/velociraptor-bigquery.md).
 
-* `schema`: describes the column names, data types, and other information; should match the text-formatted schema from bigquery
-* `table`: the table name where to send data.
-* `dataset`: the dataset name where to send data.
-* `project`: the project name where to send the data.
-* `secret_key`: the secret json key identifying a service account.
-* `sec_per_file`: the number of seconds after which a batch of data is loaded.
-* `custom_transform`: should align with the schema fields/formats
+- `schema`: describes the column names, data types, and other information; should match the text-formatted schema from bigquery
+- `table`: the table name where to send data.
+- `dataset`: the dataset name where to send data.
+- `project`: the project name where to send the data.
+- `secret_key`: the secret json key identifying a service account.
+- `sec_per_file`: the number of seconds after which a batch of data is loaded.
+- `custom_transform`: should align with the schema fields/formats
 
 Example:
 
@@ -41,10 +41,10 @@ custom_transform: |-
 
 ## Related articles
 
-* [Building Reports with BigQuery + Looker Studio](../../../4-data-queries/tutorials/bigquery-looker-studio.md)
-* [Google Cloud Pubsub](google-pubsub.md)
-* [Google Cloud Storage](google-cloud-storage.md)
-* [Google Workspace](../../../2-sensors-deployment/adapters/types/google-workspace.md)
-* [Google Cloud Storage](../../../2-sensors-deployment/adapters/types/google-cloud-storage.md)
-* [Tutorial: Ingesting Google Cloud Logs](../../../2-sensors-deployment/adapters/tutorials/google-cloud-logs.md)
-* [Google Cloud](../../extensions/cloud-cli/google-cloud.md)
+- [Building Reports with BigQuery + Looker Studio](../../../4-data-queries/tutorials/bigquery-looker-studio.md)
+- [Google Cloud Pubsub](google-pubsub.md)
+- [Google Cloud Storage](google-cloud-storage.md)
+- [Google Workspace](../../../2-sensors-deployment/adapters/types/google-workspace.md)
+- [Google Cloud Storage](../../../2-sensors-deployment/adapters/types/google-cloud-storage.md)
+- [Tutorial: Ingesting Google Cloud Logs](../../../2-sensors-deployment/adapters/tutorials/google-cloud-logs.md)
+- [Google Cloud](../../extensions/cloud-cli/google-cloud.md)

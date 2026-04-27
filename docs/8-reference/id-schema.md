@@ -12,30 +12,30 @@ For all components, a value of `0` indicates a wildcard that matches any value w
 
 The architecture is an 8 bit integer that identifies the exact architecture the sensor runs on. The important values are:
 
-* `1`: 32 bit (`x86`)
-* `2`: 64 bit (`x64`)
-* `3`: ARM (`arm`)
-* `4`: ARM64 (`arm64`)
-* `5`: Alpine 64 (`alpine64`)
-* `6`: Chrome (`chromium`)
-* `7`: Wireguard (`wireguard`)
-* `8`: ARML (`arml`)
-* `9`: lc-adapter (`usp_adapter`)
+- `1`: 32 bit (`x86`)
+- `2`: 64 bit (`x64`)
+- `3`: ARM (`arm`)
+- `4`: ARM64 (`arm64`)
+- `5`: Alpine 64 (`alpine64`)
+- `6`: Chrome (`chromium`)
+- `7`: Wireguard (`wireguard`)
+- `8`: ARML (`arml`)
+- `9`: lc-adapter (`usp_adapter`)
 
 Operating System Specifics
 
 Looking for more detailed version information on a specific operating system? Check out these vendor guides:
 
-* [Microsoft Windows](https://learn.microsoft.com/en-us/windows/win32/sysinfo/operating-system-version)
-* [RHEL](https://access.redhat.com/articles/3078)
-* [Ubuntu](https://wiki.ubuntu.com/Releases)
+- [Microsoft Windows](https://learn.microsoft.com/en-us/windows/win32/sysinfo/operating-system-version)
+- [RHEL](https://access.redhat.com/articles/3078)
+- [Ubuntu](https://wiki.ubuntu.com/Releases)
 
 ## Device IDs
 
 Given the breadth of platforms supported by LimaCharlie, it is not unusual for one "device" (laptop, server, mobile etc) to be visible from multiple sensors. A basic example of this might be:
 
-* We have a laptop, running macOS as its operating system and running a macOS sensor
-* The laptop is also running a Windows Virtual Machine, running a Windows sensor
+- We have a laptop, running macOS as its operating system and running a macOS sensor
+- The laptop is also running a Windows Virtual Machine, running a Windows sensor
 
 In this example, we're dealing with one piece of hardware, but two different sensors.
 

@@ -6,9 +6,9 @@ Yara configurations are synchronized with sensors every few minutes.
 
 There are three main sections to the YARA job:
 
-* Sources
-* Rules
-* Scan
+- Sources
+- Rules
+- Scan
 
 ## Where Does My YARA Scan?
 
@@ -16,11 +16,11 @@ Automated YARA scanners in LimaCharlie will run on all files loaded in memory (e
 
 Files on disk can be scanned using a Sensor command. You can trigger a Manual Scan that's run on-demand by:
 
-* Clicking the Run YARA scan button on the sensor details page,
-* Clicking the Scan button on the YARA Scanners page
-* Using the console
-* Within the Response section of a rule (sample below)
-* Using the LimaCharlie API
+- Clicking the Run YARA scan button on the sensor details page,
+- Clicking the Scan button on the YARA Scanners page
+- Using the console
+- Within the Response section of a rule (sample below)
+- Using the LimaCharlie API
 
 ## Rules
 
@@ -47,10 +47,10 @@ If you want to trigger a Yara scan as a response to one of your detections, you 
   extension action: scan
   extension name: ext-yara
   extension request:
-	sources: [ ]# Specify Yara Rule sources as strings
-	selector: ''
+ sources: [ ]# Specify Yara Rule sources as strings
+ selector: ''
         sid: '{{ .routing.sid }}' # Use a sensor selector OR a sid, **not both**
-	yara_scan_ttl: 86400 # "Default: 1 day (86,400 seconds)"
+ yara_scan_ttl: 86400 # "Default: 1 day (86,400 seconds)"
 ```
 
 ## Migrating D&R Rule from legacy Service to new Extension

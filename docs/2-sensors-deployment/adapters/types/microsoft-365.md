@@ -10,15 +10,15 @@ Microsoft 365 events can be ingested in LimaCharlie and observed as the `office3
 
 Microsoft 365 events are ingested via a cloud-to-cloud Adapter configured specifically to review M365 events. When creating an Adapter, the following data points are required:
 
-* `domain`: Office 365 domain
-* `tenant_id`: Office 365 tenant ID
-* `publisher_id`: Office 365 publisher ID (for single-tenant Apps, the PublisherID is the same as the Tenant ID)
-* `client_id`: Office 365 client ID
-* `client_secret`: Office 365 client secret
-* `endpoint`: Office 365 API endpoint
-* `content_types`: content types of events to ingest.
+- `domain`: Office 365 domain
+- `tenant_id`: Office 365 tenant ID
+- `publisher_id`: Office 365 publisher ID (for single-tenant Apps, the PublisherID is the same as the Tenant ID)
+- `client_id`: Office 365 client ID
+- `client_secret`: Office 365 client secret
+- `endpoint`: Office 365 API endpoint
+- `content_types`: content types of events to ingest.
 
-  + Options include:
+  - Options include:
 
     | Content Type | Description |
     |--------------|-------------|
@@ -28,7 +28,7 @@ Microsoft 365 events are ingested via a cloud-to-cloud Adapter configured specif
     | `Audit.General` | Activities from other workloads: Microsoft Teams, Power BI, Dynamics 365, Yammer, Stream, and other M365 services |
     | `DLP.All` | Data Loss Prevention events: policy matches, alerts when sensitive data is detected in documents or emails |
 
-  + *Default is all of the above*
+  - *Default is all of the above*
 
 For the complete list of audit activities by workload, see [Microsoft's audit log activities documentation](https://learn.microsoft.com/en-us/purview/audit-log-activities).
 
@@ -82,15 +82,15 @@ office365:
 
 To establish an Office 365 adapter, we will need to complete a few steps within the Azure portal. Ensure that you have the correct permissions to set up a new App registration.
 
-* Within the Microsoft Azure portal, create a new App registration. You can follow Microsoft's Quickstart guide [here](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-* The LimaCharlie connector requires a secret for Office 365 data. You can create one under `Certificates & secrets`. Be sure to copy this value and save it somewhere - you can only view it once.
+- Within the Microsoft Azure portal, create a new App registration. You can follow Microsoft's Quickstart guide [here](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
+- The LimaCharlie connector requires a secret for Office 365 data. You can create one under `Certificates & secrets`. Be sure to copy this value and save it somewhere - you can only view it once.
 
 ![image.png](../../../assets/images/image(73).png)
 
-* Additionally, you'll need to ensure that the app has the correct permissions to view Office 365 data via the Management API. Within `API Permissions`, configure the following permissions:
+- Additionally, you'll need to ensure that the app has the correct permissions to view Office 365 data via the Management API. Within `API Permissions`, configure the following permissions:
 
-  + `ActivityFeed.Read` (Delegated & Application)
-  + `ActivityFeed.ReadDlp` (Delegated & Application) *[if you want DLP permissions]*
+  - `ActivityFeed.Read` (Delegated & Application)
+  - `ActivityFeed.ReadDlp` (Delegated & Application) *[if you want DLP permissions]*
 
 ![image.png](../../../assets/images/image(74).png)
 
@@ -115,11 +115,11 @@ You can select a pre-existing Installation Key or create a new one, unique for t
 
 Finally, you will also need to select a "Content Type" to import. This is the type of events you want to bring in to LimaCharlie. The options are as follows:
 
-* `Audit.AzureActiveDirectory`
-* `Audit.Exchange`
-* `Audit.SharePoint`
-* `Audit.General`
-* `DLP.All`
+- `Audit.AzureActiveDirectory`
+- `Audit.Exchange`
+- `Audit.SharePoint`
+- `Audit.General`
+- `DLP.All`
 
 Without a value, the default is *all of the above*.
 

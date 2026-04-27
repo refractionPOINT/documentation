@@ -6,9 +6,9 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
 
 1. Install [Sysmon](https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon) on the endpoint.
 
-   * This can easily be done via LimaCharlie's Payload functionality, with a  rule, or manually.
-   * Please note that the LimaCharlie agent must be restarted in order for Sysmon data to show up in the timeline.
-   * Example rule to deploy Sysmon via payloads on Windows systems tagged with `deploy-sysmon`:
+   - This can easily be done via LimaCharlie's Payload functionality, with a  rule, or manually.
+   - Please note that the LimaCharlie agent must be restarted in order for Sysmon data to show up in the timeline.
+   - Example rule to deploy Sysmon via payloads on Windows systems tagged with `deploy-sysmon`:
 
      ```powershell
      detect:
@@ -42,6 +42,7 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
      - action: task
        command: restart
      ```
+
 2. Within the Organization where you wish to collect Sysmon data, go to the `Event Collection > Event Collection Rules` section.
 
 ![](../../assets/images/ingest-sysmon-1.png)

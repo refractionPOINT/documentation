@@ -10,10 +10,10 @@ BinLib requires subscribing to the `ext-reliable-tasking` Extension in order to 
 
 BinLib can be a powerful additional to your detection and response capabilities. Analysts can:
 
-* Look for historical evidence of malicious binaries
-* Tag previously-observed files for data enrichment (i.e. [MITRE ATT&CK Techniques](https://attack.mitre.org/matrices/enterprise/))
-* Compare observed hashes to known good or known bad lists
-* [YARA scan](../third-party/yara.md) and auto-tag for integration in detection & response rules
+- Look for historical evidence of malicious binaries
+- Tag previously-observed files for data enrichment (i.e. [MITRE ATT&CK Techniques](https://attack.mitre.org/matrices/enterprise/))
+- Compare observed hashes to known good or known bad lists
+- [YARA scan](../third-party/yara.md) and auto-tag for integration in detection & response rules
 
 ## Usage
 
@@ -107,17 +107,17 @@ The `search` operation searches the library for binary data points, including or
 
 Searchable fields include:
 
-* imp_hash
-* res_company_name
-* res_file_description
-* res_product_name
-* sha256
-* sig_authentihash
-* sig_hash
-* sig_issuer
-* sig_subject
-* size
-* type
+- imp_hash
+- res_company_name
+- res_file_description
+- res_product_name
+- sha256
+- sig_authentihash
+- sig_hash
+- sig_issuer
+- sig_subject
+- size
+- type
 
 Note that search criteria are ANDed. Binaries must meet ALL criteria to be returned.
 
@@ -155,8 +155,8 @@ The `untag` operation removes a tag from a binary.
 
 The `yara_scan` operation lets you run YARA scans across observed files. Scans require:
 
-* Criteria or hash to filter files to be scanned
-* [Rule name(s)](../../../7-administration/config-hive/yara.md) or rule(s)
+- Criteria or hash to filter files to be scanned
+- [Rule name(s)](../../../7-administration/config-hive/yara.md) or rule(s)
 
 You also have the option to tag hits on match.
 

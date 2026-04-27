@@ -26,9 +26,9 @@ We have provided a sample configuration profile for reference: [![MobileConfig i
 
 This profile includes the following permissions:
 
-* System Extension
-* Full Disk Access
-* Network Content Filter
+- System Extension
+- Full Disk Access
+- Network Content Filter
 
 ## Silent Installation Preference
 

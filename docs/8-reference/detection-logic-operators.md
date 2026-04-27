@@ -197,80 +197,80 @@ Checks if the event under evaluation is from a sensor of the given platform.
 Takes a `name` parameter for the platform name. The current platforms are:
 
 **Endpoint Platforms:**
-* `windows`
-* `linux`
-* `macos`
-* `ios`
-* `android`
-* `chrome`
+- `windows`
+- `linux`
+- `macos`
+- `ios`
+- `android`
+- `chrome`
 
 **Cloud & Service Platforms:**
-* `gcp` (Google Cloud Platform)
-* `aws` (Amazon Web Services)
-* `azure_ad` (Azure Active Directory)
-* `azure_event_hub_namespace`
-* `azure_key_vault`
-* `azure_kubernetes_service`
-* `azure_monitor`
-* `azure_network_security_group`
-* `azure_sql_audit`
-* `guard_duty` (AWS GuardDuty)
-* `k8s_pods` (Kubernetes)
+- `gcp` (Google Cloud Platform)
+- `aws` (Amazon Web Services)
+- `azure_ad` (Azure Active Directory)
+- `azure_event_hub_namespace`
+- `azure_key_vault`
+- `azure_kubernetes_service`
+- `azure_monitor`
+- `azure_network_security_group`
+- `azure_sql_audit`
+- `guard_duty` (AWS GuardDuty)
+- `k8s_pods` (Kubernetes)
 
 **Identity & Access Management:**
-* `1password`
-* `bitwarden`
-* `duo`
-* `entraid` (Microsoft Entra ID)
-* `okta`
-* `sublime`
+- `1password`
+- `bitwarden`
+- `duo`
+- `entraid` (Microsoft Entra ID)
+- `okta`
+- `sublime`
 
 **Security Products:**
-* `carbon_black`
-* `crowdstrike`
-* `cylance`
-* `falconcloud`
-* `msdefender` (Microsoft Defender)
-* `sentinel_one`
-* `sophos`
-* `trend_micro`
-* `trend_worryfree`
-* `wiz`
+- `carbon_black`
+- `crowdstrike`
+- `cylance`
+- `falconcloud`
+- `msdefender` (Microsoft Defender)
+- `sentinel_one`
+- `sophos`
+- `trend_micro`
+- `trend_worryfree`
+- `wiz`
 
 **Communication & Collaboration:**
-* `box`
-* `github`
-* `office365`
-* `slack`
-* `email`
+- `box`
+- `github`
+- `office365`
+- `slack`
+- `email`
 
 **IT & Business Services:**
-* `hubspot`
-* `itglue`
-* `mimecast`
-* `pandadoc`
-* `proofpoint`
-* `zendesk`
+- `hubspot`
+- `itglue`
+- `mimecast`
+- `pandadoc`
+- `proofpoint`
+- `zendesk`
 
 **Network & Infrastructure:**
-* `canary_token`
-* `fortigate`
-* `iis` (Internet Information Services)
-* `netscaler`
-* `paloalto_fw` (Palo Alto Firewall)
-* `zeek`
+- `canary_token`
+- `fortigate`
+- `iis` (Internet Information Services)
+- `netscaler`
+- `paloalto_fw` (Palo Alto Firewall)
+- `zeek`
 
 **Data Formats:**
-* `vpn`
-* `text`
-* `json`
-* `xml`
-* `cef` (Common Event Format)
-* `wel` (Windows Event Log)
-* `mac_unified_logging`
+- `vpn`
+- `text`
+- `json`
+- `xml`
+- `cef` (Common Event Format)
+- `wel` (Windows Event Log)
+- `mac_unified_logging`
 
 **Other:**
-* `lc_event` (LimaCharlie internal events)
+- `lc_event` (LimaCharlie internal events)
 
 Example:
 
@@ -526,10 +526,10 @@ The `sub domain` extracts specific components from a domain name. The value of `
 
 Some examples:
 
-* `0:2` means the first 2 components of the domain: `aa.bb` for `aa.bb.cc.dd`.
-* `-1` means the last component of the domain: `cc` for `aa.bb.cc`.
-* `1:` means all components starting at 1: `bb.cc` for `aa.bb.cc`.
-* `:` means to test the operator to every component individually.
+- `0:2` means the first 2 components of the domain: `aa.bb` for `aa.bb.cc.dd`.
+- `-1` means the last component of the domain: `cc` for `aa.bb.cc`.
+- `1:` means all components starting at 1: `bb.cc` for `aa.bb.cc`.
+- `:` means to test the operator to every component individually.
 
 ### is older than
 

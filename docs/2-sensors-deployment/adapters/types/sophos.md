@@ -8,19 +8,19 @@ This Adapter allows you to connect to Sophos Central to fetch event logs.
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
 
-* `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-* `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-* `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-* `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
 ### Adapter-specific Options
 
 Adapter Type: `sophos`
 
-* `tenantid`: your Sophos Central tenant ID
-* `clientid`: your Sophos Central client ID
-* `clientsecret`: your Sophos Central client secret
-* `url`: your Sophos Central URL (ex: `https://api-us01.central.sophos.com`)
+- `tenantid`: your Sophos Central tenant ID
+- `clientid`: your Sophos Central client ID
+- `clientsecret`: your Sophos Central client secret
+- `url`: your Sophos Central URL (ex: `https://api-us01.central.sophos.com`)
 
 ### Creating Your Credentials and Getting Your Tenant ID
 
@@ -47,6 +47,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
       "trackingId": "<uuid>"
    }
    ```
+
 4. Get your tenant ID -- you will need the `access_token` (JWT) from the last step.
 
    ```
@@ -65,6 +66,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
        }
    }
    ```
+
 5. Now you have all the pieces for your adapter:
 
    1. `client_id`

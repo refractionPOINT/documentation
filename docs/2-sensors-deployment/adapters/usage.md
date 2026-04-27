@@ -77,17 +77,17 @@ file:
 
 The Adapter runtime supports some custom behaviors to make it more suitable for specific deployment scenarios:
 
-* `healthcheck`: an integer that specifies a port to start an HTTP server on that can be used for healthchecks.
+- `healthcheck`: an integer that specifies a port to start an HTTP server on that can be used for healthchecks.
 
 ## Core Configuration
 
 All Adapter types support the same `client_options`, plus type-specific configurations. The following configurations are *required* for every Adapter:
 
-* `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-* `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-* `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-* `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
-* `client_options.hostname`: a hostname for the adapter.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.hostname`: a hostname for the adapter.
 
 ### Example
 
@@ -138,17 +138,17 @@ Data sent via USP can be formatted in many different ways. Data is processed in 
 
 The following configurations allow you to customize the way data is ingested by the platform, including mapping and redefining fields such as the event type path and time.
 
-* `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). The name of each group will be used as the key in the converted JSON parsing.
-* `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
-* `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
-* `client_options.mapping.hostname`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
-* `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
-* `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
-* `client_options.mapping.event_time_timezone`: specifies the timezone for parsing timestamps that don't include timezone information. Uses IANA timezone names (e.g., `America/New_York`, `Europe/London`, `UTC`). If not specified, timestamps without timezone info are treated as UTC.
-* `client_options.mapping.rename_only`: *deprecated*
-* `client_options.mapping.mappings`: *deprecated*
-* `client_options.mapping.transform`: a Transform to apply to events.
-* `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
+- `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). The name of each group will be used as the key in the converted JSON parsing.
+- `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
+- `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
+- `client_options.mapping.hostname`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
+- `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
+- `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
+- `client_options.mapping.event_time_timezone`: specifies the timezone for parsing timestamps that don't include timezone information. Uses IANA timezone names (e.g., `America/New_York`, `Europe/London`, `UTC`). If not specified, timestamps without timezone info are treated as UTC.
+- `client_options.mapping.rename_only`: *deprecated*
+- `client_options.mapping.mappings`: *deprecated*
+- `client_options.mapping.transform`: a Transform to apply to events.
+- `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
 
 ### Parsing
 
@@ -156,8 +156,8 @@ The following configurations allow you to customize the way data is ingested by 
 
 If the data ingested in LimaCharlie is text (a syslog line for example), you may automatically parse it into a JSON format. To do this, you need to define one of the following:
 
-* a grok pattern, using the `client_options.mapping.parsing_grok` option
-* a regular expression, using the `client_options.mapping.parsing_re` option
+- a grok pattern, using the `client_options.mapping.parsing_grok` option
+- a regular expression, using the `client_options.mapping.parsing_re` option
 
 #### Grok Patterns
 
@@ -167,8 +167,8 @@ Grok patterns use the following syntax:
 
 The grok pattern line must start with **message:** , followed by the patterns, as in the example below
 
-* `%{PATTERN_NAME:field_name}` - Extract a pattern into a named field
-* `%{PATTERN_NAME}` - Match a pattern without extraction
+- `%{PATTERN_NAME:field_name}` - Extract a pattern into a named field
+- `%{PATTERN_NAME}` - Match a pattern without extraction
 
 Custom patterns can be defined using the pattern name as a key
 
@@ -178,13 +178,13 @@ This means that the patterns should not include extracted field names called mes
 
 LimaCharlie includes standard Grok patterns for common data types:
 
-* `%{IP:field_name}` - IP addresses (IPv4/IPv6)
-* `%{NUMBER:field_name}` - Numeric values
-* `%{WORD:field_name}` - Single words (no whitespace)
-* `%{DATA:field_name}` - Any data up to delimiter
-* `%{GREEDYDATA:field_name}` - All remaining data
-* `%{TIMESTAMP_ISO8601:field_name}` - ISO 8601 timestamps
-* `%{LOGLEVEL:field_name}` - Log levels (DEBUG, INFO, WARN, ERROR)
+- `%{IP:field_name}` - IP addresses (IPv4/IPv6)
+- `%{NUMBER:field_name}` - Numeric values
+- `%{WORD:field_name}` - Single words (no whitespace)
+- `%{DATA:field_name}` - Any data up to delimiter
+- `%{GREEDYDATA:field_name}` - All remaining data
+- `%{TIMESTAMP_ISO8601:field_name}` - ISO 8601 timestamps
+- `%{LOGLEVEL:field_name}` - Log levels (DEBUG, INFO, WARN, ERROR)
 
 **Example Firewall Log Record:**
 
@@ -312,6 +312,7 @@ This process is done by specifying the "path" to the relevant field in the JSON 
 For example, using this event:
 
 ```
+
 {
   "a": "x",
   "b": "y",
@@ -321,6 +322,7 @@ For example, using this event:
     }
   }
 }
+
 ```
 
 The following paths would yield the following results:
@@ -361,15 +363,19 @@ An index descriptor can have the following fields:
 Here is an example of a simple index descriptor:
 
 ```
+
 events_included:
-  - PutObject
+
+- PutObject
 path: userAgent
 index_type: user
+
 ```
 
 Put together in a client option, you could have:
 
 ```
+
 {
   "client_options": {
     ...,
@@ -384,6 +390,7 @@ Put together in a client option, you could have:
     }]
   }
 }
+
 ```
 
 #### Supported Indexes

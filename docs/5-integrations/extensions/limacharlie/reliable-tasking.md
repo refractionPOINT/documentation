@@ -14,9 +14,9 @@ Once enabled, you will see a **Reliable Tasking** option under **Automation** wi
 
 Within the Reliable Tasking module, you can:
 
-* Task Sensor(s)
-* Untask Sensor(s)
-* List active task(s)
+- Task Sensor(s)
+- Untask Sensor(s)
+- List active task(s)
 
 ## Actions via REST API
 
@@ -35,24 +35,25 @@ All parameters are provided in the request body as URL-encoded form data. The `d
 
 **Required Parameters:**
 
-* `task`: The command to execute, similar to a command-line `task` (e.g., `"run --shell-command whoami"`, `"mem_map --pid 4"`)
+- `task`: The command to execute, similar to a command-line `task` (e.g., `"run --shell-command whoami"`, `"mem_map --pid 4"`)
 
 **Optional Parameters:**
 
-* `selector`: A [Sensor Selector Expression](../../../8-reference/sensor-selector-expressions.md) to specify which sensors should receive the task. If omitted, the task will be sent to all sensors in the organization.
-  * Examples:
-    * `"selector":"plat==windows"` - All Windows sensors
-    * `"selector":"sid=='abc-123-def'"` - A specific sensor by ID
-    * `"selector":"production in tags"` - All sensors with the "production" tag
-    * `"selector":"plat==linux and int_ip matches '^10\\.3\\..*'"` - Complex expressions using AND/OR logic
-* `context`: An identifier that will be reflected in the `investigation_id` of the corresponding `RECEIPT` or `_REP` event, allowing you to craft D&R rules based on the response
-* `ttl`: Time-to-live in seconds - how long the extension should try to keep sending the task to sensors that haven't acknowledged it. Defaults to 1 week (604800 seconds)
+- `selector`: A [Sensor Selector Expression](../../../8-reference/sensor-selector-expressions.md) to specify which sensors should receive the task. If omitted, the task will be sent to all sensors in the organization.
+  - Examples:
+    - `"selector":"plat==windows"` - All Windows sensors
+    - `"selector":"sid=='abc-123-def'"` - A specific sensor by ID
+    - `"selector":"production in tags"` - All sensors with the "production" tag
+    - `"selector":"plat==linux and int_ip matches '^10\\.3\\..*'"` - Complex expressions using AND/OR logic
+- `context`: An identifier that will be reflected in the `investigation_id` of the corresponding `RECEIPT` or `_REP` event, allowing you to craft D&R rules based on the response
+- `ttl`: Time-to-live in seconds - how long the extension should try to keep sending the task to sensors that haven't acknowledged it. Defaults to 1 week (604800 seconds)
 
 For more details on sensor selector syntax and available fields (`sid`, `plat`, `tags`, `hostname`, `int_ip`, etc.), see the [Sensor Selector Expressions reference](../../../8-reference/sensor-selector-expressions.md).
 
 **Additional Examples:**
 
 Target a specific sensor:
+
 ```python
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
@@ -61,6 +62,7 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 ```
 
 Target all Linux servers with a specific tag:
+
 ```python
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
@@ -69,6 +71,7 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 ```
 
 Target all sensors (no selector):
+
 ```python
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
 --header 'Authorization: Bearer $JWT' \
@@ -97,7 +100,7 @@ If you add a value to the `context` parameter in the extension request, this val
 
 The above example cURL command has a `context` of `version` so the below D&R rule looks for that value.
 
-#### Example detect block:
+#### Example detect block
 
 ```yaml
 op: contains
@@ -106,7 +109,7 @@ path: routing/investigation_id
 value: version
 ```
 
-#### Example respond block:
+#### Example respond block
 
 ```yaml
 - action: output

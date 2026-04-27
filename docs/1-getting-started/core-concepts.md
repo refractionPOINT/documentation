@@ -8,8 +8,8 @@ The LimaCharlie endpoint agent is a cross platform endpoint Sensor. It is a low-
 
 The sensor provides a wide range of advanced capability.
 
-* Flight Data Recorder (FDR) type functionality like Processes, Network Connections, Domain Name requests etc.
-* Host isolation, automated response rules, intelligent local caching of events for in-depth Incident Response (IR) as well as some forensic features like dumping memory.
+- Flight Data Recorder (FDR) type functionality like Processes, Network Connections, Domain Name requests etc.
+- Host isolation, automated response rules, intelligent local caching of events for in-depth Incident Response (IR) as well as some forensic features like dumping memory.
 
 Sensors are designed to limit the potential for abuse resulting from unauthorized access to the LimaCharlie platform. This is achieved by limiting open-ended commands which might enable an attacker to covertly upload malicious software to your hosts. This means the LimaCharlie sensor is extremely powerful but also keeps its "read-only" qualities on your infrastructure. Of course, all access and interactions with the hosts are also logged for audit both within the cloud and tamper-proof forwarding to your own infrastructure.
 
@@ -53,10 +53,10 @@ LimaCharlie can relay the data somewhere for longer term storage and analysis. W
 
 Output is also split between four categories:
 
-* event
-* detect
-* audit
-* deployment
+- event
+- detect
+- audit
+- deployment
 
 Selecting a Stream when creating an Output will select the relevant type of data to flow through it.
 
@@ -69,22 +69,26 @@ Understanding the core data structures in LimaCharlie is essential for working w
 ### The Four Core Structures
 
 #### 1. Events (`event` stream)
+
 **What**: Real-time telemetry from sensors and adapters
 **Structure**: Two top-level objects - `routing` (metadata) and `event` (event-specific data)
 **Examples**: Process execution (NEW_PROCESS), DNS queries (DNS_REQUEST), network connections (NETWORK_CONNECTIONS), Windows Event Logs (WEL)
 
 Events are the foundation of LimaCharlie. They capture what's happening on your endpoints and in your infrastructure. Every event includes:
+
 - `routing` object: Consistent metadata like sensor ID, timestamp, hostname, platform
 - `event` object: Event-type-specific data like file paths, command lines, network addresses
 
 [See complete Event Structure Reference](../8-reference/event-schemas.md#event-structure-reference)
 
 #### 2. Detections (`detect` stream)
+
 **What**: Alerts generated when D&R rules match events
 **Structure**: Includes original event's `routing`, the triggering `detect` (event data), plus detection metadata
 **Key Fields**: `cat` (detection name), `source`, `detect_id`, `priority`, `detect_mtd` (metadata), `detect_data` (extracted IOCs)
 
 When a D&R rule matches an event, LimaCharlie creates a Detection. Detections inherit the event's routing information and add:
+
 - Detection metadata: rule name, author, priority, tags
 - Extracted data: Structured IOCs pulled from the event
 - Links: References to documentation or playbooks
@@ -92,17 +96,20 @@ When a D&R rule matches an event, LimaCharlie creates a Detection. Detections in
 [See complete Detection Structure Reference](../3-detection-response/tutorials/writing-testing-rules.md#understanding-detection-structure)
 
 #### 3. Audit (`audit` stream)
+
 **What**: Platform management and operational events
 **Structure**: Flat object with `oid`, `ts` (timestamp), and audit-specific fields
 **Examples**: Configuration changes, user actions, API calls, sensor deployments
 
 Audit logs track what happens in your LimaCharlie organization:
+
 - Who performed actions (`ident` - identity)
 - What was affected (`entity` - object)
 - Action characteristics (`mtd` - metadata)
 - Error messages (`component`, `error`)
 
 #### 4. Deployment Events (`deployment` stream)
+
 **What**: Sensor deployment and lifecycle events
 **Structure**: Similar to events - `routing` and `event` objects
 **Examples**: Sensor installations, uninstallations, version updates
@@ -110,19 +117,25 @@ Audit logs track what happens in your LimaCharlie organization:
 ### Why These Structures Matter
 
 #### For D&R Rules
+
 D&R rules operate on Events and produce Detections. Understanding the Event structure helps you:
+
 - Access the right fields with `event/` and `routing/` paths
 - Filter by event type, platform, or sensor
 - Correlate related events using `routing/this` and `routing/parent`
 
 #### For LCQL Queries
+
 LCQL can query all three primary streams (event, detect, audit). Knowing the structure helps you:
+
 - Select the right fields for investigation
 - Join data across streams
 - Filter efficiently using the correct field paths
 
 #### For Outputs
+
 Each output stream type has a different structure. Understanding this helps you:
+
 - Configure the right stream for your destination
 - Build parsers for external systems
 - Filter data before sending it

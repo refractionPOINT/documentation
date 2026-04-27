@@ -8,10 +8,10 @@ Telemetry Platform (if applicable): `iis`
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
 
-* `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-* `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-* `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-* `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
 ### Adapter-specific Options
 
@@ -68,12 +68,12 @@ file:
 
 A few notes about the IIS platform parser:
 
-* The server IP address (identified in the logs as `s-ip` will be used as the hostname within LimaCharlie.
-* The `date` and `time` fields are combined to a single field represented as `ts`. The above configuration uses this field as the event time, unless removed.
-* The `sensor_seed_key` can be any value of your choosing, please make sure it's unique per web server.
-* You can specify multiple configurations in one file if you wish to collect logs from multiple folders.
-* The `no_follow: false` specification ensures that the Adapter monitors for new files and/or writes to existing files. You can exclude this option if you are going to ingest "dead" log files.
-* All IIS events will be represented as `IIS_WEBLOG` in the Adapter telemetry.
+- The server IP address (identified in the logs as `s-ip` will be used as the hostname within LimaCharlie.
+- The `date` and `time` fields are combined to a single field represented as `ts`. The above configuration uses this field as the event time, unless removed.
+- The `sensor_seed_key` can be any value of your choosing, please make sure it's unique per web server.
+- You can specify multiple configurations in one file if you wish to collect logs from multiple folders.
+- The `no_follow: false` specification ensures that the Adapter monitors for new files and/or writes to existing files. You can exclude this option if you are going to ingest "dead" log files.
+- All IIS events will be represented as `IIS_WEBLOG` in the Adapter telemetry.
 
 If you have any questions about collecting IIS web logs, please reach out to the LimaCharlie team.
 

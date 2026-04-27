@@ -6,26 +6,26 @@
 
 There are three "sub-categories" within detection and response rules contained in Hive.
 
-* `dr-general` pertains to rules that your Organization has created and/or controls.
-* `dr-managed` pertains to rules that you can use for detection, however are managed or curated by another party (i.e. Soteria rules).
-* `dr-service` is a protected namespace, and users will only ever have metadata permissions.
+- `dr-general` pertains to rules that your Organization has created and/or controls.
+- `dr-managed` pertains to rules that you can use for detection, however are managed or curated by another party (i.e. Soteria rules).
+- `dr-service` is a protected namespace, and users will only ever have metadata permissions.
 
 ### dr-general
 
-* `dr.list`
-* `dr.set`
-* `dr.del`
+- `dr.list`
+- `dr.set`
+- `dr.del`
 
 ### dr-managed
 
-* `dr.list.managed`
-* `dr.set.managed`
-* `dr.del.managed`
+- `dr.list.managed`
+- `dr.set.managed`
+- `dr.del.managed`
 
 ### dr-service
 
-* `dr.list` or `dr.list.managed` (metadata only)
-* `dr.set` or `dr.set.managed` (metadata only)
+- `dr.list` or `dr.list.managed` (metadata only)
+- `dr.set` or `dr.set.managed` (metadata only)
 
 ## Command-Line Usage
 

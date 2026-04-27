@@ -22,10 +22,10 @@ The following example of a response action will enumerate a list of instance wit
 
 To utilize `vultr-cli` capabilities, you will need:
 
-* A personal access token. To create one, click [here](https://my.vultr.com/settings/#settingsapi).
-* Your access token will need to have access control open to IPv6
+- A personal access token. To create one, click [here](https://my.vultr.com/settings/#settingsapi).
+- Your access token will need to have access control open to IPv6
   <!-- Screenshot of Vultr access control settings was unavailable during migration from document360 -->
-* Create a secret in the secrets manager in the following format:
+- Create a secret in the secrets manager in the following format:
 
   ```
   personalAccessToken

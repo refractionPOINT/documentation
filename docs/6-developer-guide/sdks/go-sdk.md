@@ -1744,7 +1744,7 @@ firehose --listen_interface 0.0.0.0:4444 --data_type event -n my-firehose --use-
 - **LCQL Query Language**: [LCQL Query Language](../../4-data-queries/index.md)
 - **Detection & Response Rules**: [Detection & Response Rules](../../3-detection-response/index.md)
 - **Community Support**: [community.limacharlie.com](https://community.limacharlie.com/)
-- **Commercial Support**: support@limacharlie.io
+- **Commercial Support**: <support@limacharlie.io>
 
 ---
 

@@ -15,10 +15,10 @@ Note: This example uses PowerShell backtick (`` ` ``) line continuation. On Linu
 
 Here's a breakdown of the above example:
 
-* `wel`: the method the Adapter should use to collect data locally. The `wel` value will use a native local Windows Event Logs subscription.
-* `client_options.identity.installation_key=....`: the Installation Key value from LimaCharlie.
-* `client_options.identity.oid=....`: the Organization ID from LimaCharlie the installation key above belongs to.
-* `client_options.platform=wel`: this indicates the type of data that will be received from this adapter. In this case it's `wel` events.
-* `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor ID generated for this Adapter later if you have to re-install the Adapter.
-* `client_options.hostname=....`: specifies the sensor hostname for the adapter.
-* `evt_sources=....`: a comma separated list of event channels to collect along with an XPath filter expression for each. The format is `CHANNEL_NAME:FILTER_EXPRESSION` where a filter of `*` means all events. Common channels: `security`, `system` and `application`.
+- `wel`: the method the Adapter should use to collect data locally. The `wel` value will use a native local Windows Event Logs subscription.
+- `client_options.identity.installation_key=....`: the Installation Key value from LimaCharlie.
+- `client_options.identity.oid=....`: the Organization ID from LimaCharlie the installation key above belongs to.
+- `client_options.platform=wel`: this indicates the type of data that will be received from this adapter. In this case it's `wel` events.
+- `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor ID generated for this Adapter later if you have to re-install the Adapter.
+- `client_options.hostname=....`: specifies the sensor hostname for the adapter.
+- `evt_sources=....`: a comma separated list of event channels to collect along with an XPath filter expression for each. The format is `CHANNEL_NAME:FILTER_EXPRESSION` where a filter of `*` means all events. Common channels: `security`, `system` and `application`.

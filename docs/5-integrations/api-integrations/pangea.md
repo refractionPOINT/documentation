@@ -4,16 +4,16 @@ Pangea is a collection of API-based security services that can quickly be added 
 
 LimaCharlie supports the following Pangea lookups:
 
-* [Domain](https://pangea.cloud/docs/api/domain-intel#reputation)
-  + Check malicious behavior on a domain
-* [File](https://pangea.cloud/docs/api/file-intel#reputation)
-  + Check for malicious behavior on a file
-* [IP](https://pangea.cloud/docs/api/ip-intel#reputation)
-  + Check for malicious behavior on an IP
-* [URL](https://pangea.cloud/docs/api/url-intel#reputation)
-  + Retrieve an intelligence report
-* [User](https://pangea.cloud/docs/user-intel/)
-  + Checks to see if any PII data or credentials have been exposed by an attack.
+- [Domain](https://pangea.cloud/docs/api/domain-intel#reputation)
+  - Check malicious behavior on a domain
+- [File](https://pangea.cloud/docs/api/file-intel#reputation)
+  - Check for malicious behavior on a file
+- [IP](https://pangea.cloud/docs/api/ip-intel#reputation)
+  - Check for malicious behavior on an IP
+- [URL](https://pangea.cloud/docs/api/url-intel#reputation)
+  - Retrieve an intelligence report
+- [User](https://pangea.cloud/docs/user-intel/)
+  - Checks to see if any PII data or credentials have been exposed by an attack.
 
 ## API Keys
 

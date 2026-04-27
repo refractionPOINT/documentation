@@ -8,7 +8,7 @@ A config template to alert on the common Defender events of interest is availabl
 
 Specifically, the template alerts on the following Defender events:
 
-* windows-defender-malware-detected (`event ID 1006`)
-* windows-defender-history-deleted (`event ID 1013`)
-* windows-defender-behavior-detected (`event ID 1015`)
-* windows-defender-activity-detected (`event ID 1116`)
+- windows-defender-malware-detected (`event ID 1006`)
+- windows-defender-history-deleted (`event ID 1013`)
+- windows-defender-behavior-detected (`event ID 1015`)
+- windows-defender-activity-detected (`event ID 1116`)

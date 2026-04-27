@@ -2,8 +2,8 @@
 
 Soteria's AWS ruleset provides coverage across multiple AWS telemetry streams, including:
 
-* [AWS CloudTrail](https://aws.amazon.com/cloudtrail/)
-* [AWS GuardDuty](https://aws.amazon.com/guardduty/)
+- [AWS CloudTrail](https://aws.amazon.com/cloudtrail/)
+- [AWS GuardDuty](https://aws.amazon.com/guardduty/)
 
 ## Data Access
 

@@ -8,10 +8,10 @@ Feel free to reach out to us on the [community forum](https://community.limachar
 
 Building functionality as a LimaCharlie Extension provides you specific convenience:
 
-* **Multi-tenancy**: LC organizations can subscribe to your extension and you can replicate the features you're building across tenants.
-* **Credentials handling**: you don't need to store any credentials from LC organizations. Every callback you receive will include an authenticated LimaCharlie SDK for the Organization relevant to the callback, with the permissions you requesed for the extension.
-* **Configuration**: you're always welcome to store some configuration wherever the extension lives, but as a convenience LC will provide you with a configuration JSON object for your extension (stored in Hive) and with a callback for you to validate the content of the configuration when a user makes a modification.
-* **GUI**: each extension defines its own Schema, a structure indicating to LimaCharlie what actions the extension exposes, how to call it and what to expect as a return value from actions. This information is then automatically interpreted by LimaCharlie to generate a custom user interface for your extension, making it extremely easy to expose new functionality in LimaCharlie without having to build any kind of UI (though you're always free to build one if you'd like).
+- **Multi-tenancy**: LC organizations can subscribe to your extension and you can replicate the features you're building across tenants.
+- **Credentials handling**: you don't need to store any credentials from LC organizations. Every callback you receive will include an authenticated LimaCharlie SDK for the Organization relevant to the callback, with the permissions you requesed for the extension.
+- **Configuration**: you're always welcome to store some configuration wherever the extension lives, but as a convenience LC will provide you with a configuration JSON object for your extension (stored in Hive) and with a callback for you to validate the content of the configuration when a user makes a modification.
+- **GUI**: each extension defines its own Schema, a structure indicating to LimaCharlie what actions the extension exposes, how to call it and what to expect as a return value from actions. This information is then automatically interpreted by LimaCharlie to generate a custom user interface for your extension, making it extremely easy to expose new functionality in LimaCharlie without having to build any kind of UI (though you're always free to build one if you'd like).
 
 ### Public/Private Limitations
 
@@ -35,8 +35,8 @@ That being said, don't worry, you don't need to know the underlying way the exte
 
 Want to get your hands on an example? We recommend using one of the following frameworks to get started.
 
-* Golang: https://github.com/refractionPOINT/lc-extension
-* Python: https://github.com/refractionPOINT/lc-extension/tree/master/python
+- Golang: <https://github.com/refractionPOINT/lc-extension>
+- Python: <https://github.com/refractionPOINT/lc-extension/tree/master/python>
 
 For a more step-by-step overview, let's dig into some of the core concepts of building an extension. We will reference Golang since it provides stricter typing, but conceptually it's the same across implementations.
 
@@ -46,11 +46,11 @@ To create an extension, start by creating a definition - accessible through the 
 
 The required aspects of your definition are as follows:
 
-* **Destination URL:** this is the HTTPS URL where your extension will be reachable at.
-* **Required Extensions:** this is the list of other extensions your extension assumes it will have access to. When an org subscribes and is missing one of those, the user will be prompted to subscribe to these.
-* **Shared Secret:** this is an arbitrary string that will be used by LimaCharlie and your extension to sign webhooks to your extension, allowing it to very the authenticity of the hook. Make it something at least 32 characters and random.
-* **Extension Flairs:** these are modifiers that will be applied to your extension. Namely the `segment` flair will isolate the resources the extension can access so that it can only see and modify things (like  rules) that it has created, making it great for extensions that need a narrow scope, you should enable it unless you know you need it off. The `bulk` flair tells LimaCharlie that it expects to make a lot of API calls to the LC cloud, which will increase the API quota for the extension.
-* **Permissions:** the list of permissions this extension requires on each organization subscribed to it. Use the least amount of permissions possible.
+- **Destination URL:** this is the HTTPS URL where your extension will be reachable at.
+- **Required Extensions:** this is the list of other extensions your extension assumes it will have access to. When an org subscribes and is missing one of those, the user will be prompted to subscribe to these.
+- **Shared Secret:** this is an arbitrary string that will be used by LimaCharlie and your extension to sign webhooks to your extension, allowing it to very the authenticity of the hook. Make it something at least 32 characters and random.
+- **Extension Flairs:** these are modifiers that will be applied to your extension. Namely the `segment` flair will isolate the resources the extension can access so that it can only see and modify things (like  rules) that it has created, making it great for extensions that need a narrow scope, you should enable it unless you know you need it off. The `bulk` flair tells LimaCharlie that it expects to make a lot of API calls to the LC cloud, which will increase the API quota for the extension.
+- **Permissions:** the list of permissions this extension requires on each organization subscribed to it. Use the least amount of permissions possible.
 
 ### Schema
 
@@ -114,9 +114,9 @@ field_name: {
 The `requirements` field references the field keys to define whether or not certain fields individually or as a set are required. You can think of the first array to join elements with an AND, while the nested array serves as an OR.
  For example:
 
-* `[['denominator'], ['numerator']]` means:
+- `[['denominator'], ['numerator']]` means:
    (denominator AND numerator),
-* `[['denominator'], ['numerator', 'default']]` means:
+- `[['denominator'], ['numerator', 'default']]` means:
    (denominator AND ( one of numerator OR default)).
 
 When getting started, we recommend utilizing the simplest data type applicable. This will enable you to get a grasp of the whole extensions framework and allow you to quickly test our your service. Such as `string`, `boolean`, `json`, etc.
@@ -135,15 +135,15 @@ At the core, the config schema is simply a list of fields.
 
 Every Request Schema exists as a key value pair of the request name, and a corresponding schema contents. The critical contents include the following fields:
 
-* **is_impersonated**: Whether or not the request impersonates the user through it's authentication
-* **is_user_facing**: Whether or not this request should be visisble to the user in the UI. It does not prevent this request from bieng used through the API or as a `supported_action` (more on that later).
-* **parameters**: This contains the data_type and other fields *(recall the same fields format as the config schema)*
+- **is_impersonated**: Whether or not the request impersonates the user through it's authentication
+- **is_user_facing**: Whether or not this request should be visisble to the user in the UI. It does not prevent this request from bieng used through the API or as a `supported_action` (more on that later).
+- **parameters**: This contains the data_type and other fields *(recall the same fields format as the config schema)*
 
 Other optional fields exist to facilitate the user experience, such as:
 
-* **short_description**
-* **long_description**
-* **messages**: Includes 3 nested fields, `in_progress`, `success`, `error` to provide additional context for each case.
+- **short_description**
+- **long_description**
+- **messages**: Includes 3 nested fields, `in_progress`, `success`, `error` to provide additional context for each case.
 
 #### Response Schema (optional)
 
@@ -163,9 +163,9 @@ This callback is used by LimaCharlie to check the validity of a change in config
 
 Events are events generated by the LimaCharlie platform outside your control. Currently, these 3 events are supported:
 
-* **subscribe**: called when an organization subscribes to an extension.
-* **unsubscribe**: called when an organization unsubscribes from an extension.
-* **update**: called once a day per organization subscribed to the extension. It is a convenient way to perform updates to an organization like when needing to update D&R rules used by the extension.
+- **subscribe**: called when an organization subscribes to an extension.
+- **unsubscribe**: called when an organization unsubscribes from an extension.
+- **update**: called once a day per organization subscribed to the extension. It is a convenient way to perform updates to an organization like when needing to update D&R rules used by the extension.
 
 Your extension will only receive these events if they were specified as of-interest in the extension's Schema.
 
@@ -175,7 +175,7 @@ The requests are the core way users, D&R rules or other extensions can interact 
 
 ## Simplified Frameworks
 
-The Golang implementation of Extensions provides 3 different simplified frameworks to make the job of producing a new extension more straight forward in specific cases: https://github.com/refractionPOINT/lc-extension/tree/master/simplified
+The Golang implementation of Extensions provides 3 different simplified frameworks to make the job of producing a new extension more straight forward in specific cases: <https://github.com/refractionPOINT/lc-extension/tree/master/simplified>
 
 ### D&R
 
@@ -183,7 +183,7 @@ This simplified framework, found in `dr.go` allows you to package D&R rules as a
 
 ### Lookup
 
-Similarl to the D&R simplified framework, but is used to package Lookups. Example: https://github.com/refractionPOINT/lc-extension/blob/master/examples/lookup/main.go
+Similarl to the D&R simplified framework, but is used to package Lookups. Example: <https://github.com/refractionPOINT/lc-extension/blob/master/examples/lookup/main.go>
 
 ### CLI
 

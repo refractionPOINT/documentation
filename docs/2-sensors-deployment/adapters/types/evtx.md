@@ -10,9 +10,9 @@ For real-time collection of Windows Event Logs, see the [Windows Event Logs](../
 
 Adapter Type: `evtx`
 
-* `client_options`: common configuration for adapter as defined [here](../usage.md).
-* `file_path`: path to the `.evtx` file to ingest.
-* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
+- `client_options`: common configuration for adapter as defined [here](../usage.md).
+- `file_path`: path to the `.evtx` file to ingest.
+- `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
 ### Configuration File Example
 

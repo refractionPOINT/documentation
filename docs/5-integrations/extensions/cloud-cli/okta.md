@@ -22,8 +22,8 @@ The following example returns a list of registered Okta applications.
 
 To make use of the Okta CLI, you will need:
 
-* An API key. More information about provisioning an API key can be found [here](https://developer.okta.com/docs/guides/create-an-api-token/main/).
-* Create a secret in the secrets manager in the following format:
+- An API key. More information about provisioning an API key can be found [here](https://developer.okta.com/docs/guides/create-an-api-token/main/).
+- Create a secret in the secrets manager in the following format:
 
 ```
 okta_domain/api_key

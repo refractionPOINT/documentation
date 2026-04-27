@@ -18,18 +18,18 @@ Pulses will be synced to rules and lookups automatically every 3 hours.
 
 After providing a valid API key, the Extension will automatically create [Detection & Response rules](https://doc.limacharlie.io/docs/detection-and-response) for your organization. The OTX rules make use of the following events:
 
-* Process Events
-  + [CODE_IDENTITY](../../../8-reference/edr-events.md#codeidentity)
-  + [EXISTING_PROCESS](../../../8-reference/edr-events.md#existingprocess)
-  + [MEM_HANDLES_REP](../../../8-reference/edr-events.md#memhandlesrep) (response to the [mem_handles](../../../8-reference/endpoint-commands.md#memhandles) Sensor command)
-  + [NEW_PROCESS](../../../8-reference/edr-events.md#newprocess)
-* Network Events
-  + [DNS_REQUEST](../../../8-reference/edr-events.md#dnsrequest)
-  + [HTTP_REQUEST](../../../8-reference/edr-events.md#httprequest)
-  + [NETWORK_CONNECTIONS](../../../8-reference/edr-events.md#networkconnections)
-  + [NEW_TCP4_CONNECTION](../../../8-reference/edr-events.md#newtcp4connection)
-  + [NEW_TCP6_CONNECTION](../../../8-reference/edr-events.md#newtcp6connection)
-  + [NEW_UDP4_CONNECTION](../../../8-reference/edr-events.md#newudp4connection)
-  + [NEW_UDP6_CONNECTION](../../../8-reference/edr-events.md#newudp6connection)
+- Process Events
+  - [CODE_IDENTITY](../../../8-reference/edr-events.md#codeidentity)
+  - [EXISTING_PROCESS](../../../8-reference/edr-events.md#existingprocess)
+  - [MEM_HANDLES_REP](../../../8-reference/edr-events.md#memhandlesrep) (response to the [mem_handles](../../../8-reference/endpoint-commands.md#memhandles) Sensor command)
+  - [NEW_PROCESS](../../../8-reference/edr-events.md#newprocess)
+- Network Events
+  - [DNS_REQUEST](../../../8-reference/edr-events.md#dnsrequest)
+  - [HTTP_REQUEST](../../../8-reference/edr-events.md#httprequest)
+  - [NETWORK_CONNECTIONS](../../../8-reference/edr-events.md#networkconnections)
+  - [NEW_TCP4_CONNECTION](../../../8-reference/edr-events.md#newtcp4connection)
+  - [NEW_TCP6_CONNECTION](../../../8-reference/edr-events.md#newtcp6connection)
+  - [NEW_UDP4_CONNECTION](../../../8-reference/edr-events.md#newudp4connection)
+  - [NEW_UDP6_CONNECTION](../../../8-reference/edr-events.md#newudp6connection)
 
 Please ensure that the events you are interested in using with OTX lookups are enabled in the **Sensors >** Event Collection menu.

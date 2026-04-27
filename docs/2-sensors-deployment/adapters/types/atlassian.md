@@ -2,11 +2,11 @@
 
 [Atlassian](https://www.atlassian.com/) makes a suite of products that help foster enterprise work management, IT service management, and Agile development. Atlassian's products include:
 
-* Bitbucket
-* Confluence
-* Jira Work Management (this includes a suite of products, include Jira Software, Service Management, and Product Discovery)
-* Opsgenie
-* Trello
+- Bitbucket
+- Confluence
+- Jira Work Management (this includes a suite of products, include Jira Software, Service Management, and Product Discovery)
+- Opsgenie
+- Trello
 
 Atlassian has [extensive documentation](https://confluence.atlassian.com/alldoc/atlassian-documentation-32243719.html) for both their Cloud and Data Center/Server editions.
 
@@ -50,16 +50,16 @@ Creating a Webhook Adapter requires a set of parameters, including organization 
 
 The mapping above is based on the expected webhook event from Jira. Note that in the mapping above, we make the following change:
 
-* `event_type_path` is mapped to the `webhookEvent` field
-* `event_time_path` is mapped to the `timestamp` field
+- `event_type_path` is mapped to the `webhookEvent` field
+- `event_time_path` is mapped to the `timestamp` field
 
 ### 2. Building the Webhook URL
 
 After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
 
-* Organization ID
-* Webhook name (from the config)
-* Secret (from the config)
+- Organization ID
+- Webhook name (from the config)
+- Secret (from the config)
 
 Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.io`, the format of the URL would be:
 
@@ -73,25 +73,25 @@ Within the Atlassian Admin window, navigate to **Jira Administration** > **Jira 
 
 ![image.png](../../../assets/images/image(178).png)
 
-* Choose an appropriate name to differentiate that this is a LimaCharlie webhook
-* Provide the webhook URL (see step 2 above)
-* (optional) Provide a description
-* (optional) Provide a JQL query to select certain issues that will trigger Webhooks. The default selection is *All issues*.
+- Choose an appropriate name to differentiate that this is a LimaCharlie webhook
+- Provide the webhook URL (see step 2 above)
+- (optional) Provide a description
+- (optional) Provide a JQL query to select certain issues that will trigger Webhooks. The default selection is *All issues*.
 
 Within the WebHook creation dialog, you can also select the granularity of events to send via the WebHook. High-level event categories include:
 
-* Issues
-  + Issue events
-  + Worklog
-  + Comment(s)
-  + Entity Properties
-  + Attachment
-  + Issue Link
-  + Filter
-* User-related
-* Jira configuration
-* Project-related
-* Jira Software-related
+- Issues
+  - Issue events
+  - Worklog
+  - Comment(s)
+  - Entity Properties
+  - Attachment
+  - Issue Link
+  - Filter
+- User-related
+- Jira configuration
+- Project-related
+- Jira Software-related
 
 By default, issues will be sent as JSON, which is natively accepted by LimaCharlie. Save your WebHook configuration, and perform an action that you know will trigger the event.
 

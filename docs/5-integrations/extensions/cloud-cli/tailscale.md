@@ -22,8 +22,8 @@ Returns the current Tailscale status.
 
 To utilize Tailscale's CLI capabilities, you will need:
 
-* An [auth key](https://tailscale.com/kb/1085/auth-keys)
-* Create a secret in the secrets manager in the following format:
+- An [auth key](https://tailscale.com/kb/1085/auth-keys)
+- Create a secret in the secrets manager in the following format:
 
 ```
 authKey

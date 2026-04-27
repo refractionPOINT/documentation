@@ -12,7 +12,7 @@ Once deployed, EPP can be used natively along with the rest of LimaCharlie's aut
 
 LimaCharlie Endpoint Protection integrates with third-party EDR solutions to provide a better view of security operations and extend agent's capabilities. Currently this extension applies to:
 
-* Microsoft Windows Defender
+- Microsoft Windows Defender
 
 The LimaCharlie agent communicates with Windows Defender to determine its status, transfer events, and trigger remediation commands. LimaCharlie Endpoint Protection codifies the best practices of collecting events and alerting on detections. When enabled, this extension creates a starter set of  rules. In addition to alerting, these rules can be customized to better align with the operational complexity of user's environments. The LC Endpoint Protection extension provides a reliable and cost efficient way of securing endpoints at scale.
 
@@ -34,14 +34,14 @@ The Endpoint Protection extension does two things once both sync settings are en
 
 1. Creates an artifact collection rule named `defender-log-streaming`
 
-   * This rule adds a WEL pattern that collects MS Defender logs, `wel://Microsoft-Windows-Windows Defender/Operational:*` so that LimaCharlie receives the events the Defender produces.
+   - This rule adds a WEL pattern that collects MS Defender logs, `wel://Microsoft-Windows-Windows Defender/Operational:*` so that LimaCharlie receives the events the Defender produces.
 
      > Note
      >
      > If you already have Defender logs coming in via the Artifact extension, you can uncheck the `Sync Extension Config` box to avoid duplicating entries.
 2. Creates D&R rules
 
-   * Generates several D&R rules that alert on various detections and actions taken by Defender.![](../../../assets/images/image(291).png)
+   - Generates several D&R rules that alert on various detections and actions taken by Defender.![](../../../assets/images/image(291).png)
 3. To apply the Artifact extension configuration and D&R rules, click `Apply Configuration`.
 
 When the SYNC toggles are on, the collection rules and D&R rules are continuously synchronized with LimaCharlie library of best practices.

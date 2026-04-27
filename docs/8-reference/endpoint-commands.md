@@ -72,6 +72,7 @@ Collect an artifact from a sensor by specifying a file path.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `file` (required): File path to collect from the sensor
 - `type` (optional): Artifact type (e.g., "pcap")
 - `payload_id` (optional): Idempotent payload ID for the request (auto-generated if not provided)
@@ -81,6 +82,7 @@ Collect an artifact from a sensor by specifying a file path.
 **Response Event:** FILE_GET_REP
 
 **Usage Example:**
+
 ```bash
 limacharlie sensor task <SID> artifact_get --file "C:\\Windows\\System32\\drivers\\etc\\hosts"
 ```
@@ -94,6 +96,7 @@ List files and directories at a specified path on the endpoint.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `dir_path` (required): Directory path to list
 - `depth` (optional): Recursion depth (default: 0 = no recursion)
 - `file_pattern` (optional): File pattern filter (e.g., "*.exe")
@@ -101,11 +104,13 @@ List files and directories at a specified path on the endpoint.
 **Response Event:** DIR_LIST_REP
 
 **Usage Example:**
+
 ```bash
 limacharlie sensor task <SID> dir_list --dir_path "C:\\Windows\\System32" --depth 1
 ```
 
 **Sample Response:**
+
 ```json
 {
   "event": {
@@ -129,6 +134,7 @@ Search for files matching a specific hash across a directory tree.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `dir_path` (required): Root directory to search
 - `hash` (required): Hash value to search for (MD5, SHA1, or SHA256)
 - `depth` (optional): Maximum recursion depth
@@ -136,6 +142,7 @@ Search for files matching a specific hash across a directory tree.
 **Response Event:** DIR_FINDHASH_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> dir_findhash --dir_path "/var" --hash <HASH_VALUE>
 ```
@@ -149,11 +156,13 @@ Perform DNS resolution on the endpoint to determine what DNS server responds.
 **Platforms:** macOS | Windows | Linux | Chrome | Edge
 
 **Parameters:**
+
 - `hostname` (required): Hostname to resolve
 
 **Response Event:** DNS_REQUEST
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> dns_resolve --hostname "example.com"
 ```
@@ -167,11 +176,13 @@ Retrieve a previously cached document from the sensor's local cache.
 **Platforms:** macOS | Windows
 
 **Parameters:**
+
 - `hash` (required): Hash of the cached document
 
 **Response Event:** GET_DOCUMENT_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> doc_cache_get --hash <DOC_HASH>
 ```
@@ -185,6 +196,7 @@ Add an exfiltration detection watch for specific event types and patterns.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `event` (required): Event type to monitor (e.g., "DNS_REQUEST", "NEW_PROCESS")
 - `operator` (required): Comparison operator ("is", "contains", "matches", etc.)
 - `path` (required): JSON path to the field to watch (e.g., "event/DOMAIN_NAME")
@@ -194,6 +206,7 @@ Add an exfiltration detection watch for specific event types and patterns.
 **Response Event:** EXFIL_ADD_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> exfil_add --event "DNS_REQUEST" --operator "contains" --path "event/DOMAIN_NAME" --value "malware" --expire 3600
 ```
@@ -207,11 +220,13 @@ Remove an exfiltration detection watch by its ID.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `id` (required): Watch ID to remove (from exfil_get response)
 
 **Response Event:** EXFIL_DEL_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> exfil_del --id <WATCH_ID>
 ```
@@ -229,6 +244,7 @@ List all active exfiltration detection watches on the sensor.
 **Response Event:** EXFIL_GET_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> exfil_get
 ```
@@ -242,11 +258,13 @@ Delete a file from the endpoint filesystem.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `file_path` (required): Path to the file to delete
 
 **Response Event:** FILE_DEL_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> file_del --file_path "/tmp/suspicious_file"
 ```
@@ -260,11 +278,13 @@ Retrieve a file from the endpoint and upload it to LimaCharlie cloud storage.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `file_path` (required): Path to the file to retrieve
 
 **Response Event:** FILE_GET_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> file_get --file_path "C:\\Windows\\System32\\calc.exe"
 ```
@@ -278,16 +298,19 @@ Calculate cryptographic hashes (MD5, SHA1, SHA256) for a file.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `file_path` (required): Path to the file to hash
 
 **Response Event:** FILE_HASH_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> file_hash --file_path "/etc/passwd"
 ```
 
 **Sample Response:**
+
 ```json
 {
   "event": {
@@ -309,16 +332,19 @@ Get detailed metadata about a file without retrieving its contents.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `file_path` (required): Path to the file
 
 **Response Event:** FILE_INFO_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> file_info --file_path "C:\\Program Files\\app.exe"
 ```
 
 **Sample Response:**
+
 ```json
 {
   "event": {
@@ -340,12 +366,14 @@ Move or rename a file on the endpoint filesystem.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `src_path` (required): Source file path
 - `dst_path` (required): Destination file path
 
 **Response Event:** FILE_MOV_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> file_mov --src_path "/tmp/file.txt" --dst_path "/tmp/renamed.txt"
 ```
@@ -359,11 +387,13 @@ Add a File Integrity Monitoring (FIM) watch for a specific path or pattern.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `file_path` (required): Path or pattern to monitor (supports wildcards)
 
 **Response Event:** FIM_ADD_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> fim_add --file_path "C:\\Windows\\System32\\*.dll"
 ```
@@ -377,11 +407,13 @@ Remove a File Integrity Monitoring watch.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `file_path` (required): Path pattern to stop monitoring
 
 **Response Event:** FIM_REMOVE (note: event name is FIM_REMOVE, not FIM_DEL_REP)
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> fim_del --file_path "C:\\Windows\\System32\\*.dll"
 ```
@@ -399,6 +431,7 @@ List all active File Integrity Monitoring watches on the sensor.
 **Response Event:** FIM_LIST_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> fim_get
 ```
@@ -416,6 +449,7 @@ Retrieve internal sensor debug data for troubleshooting.
 **Response Event:** DEBUG_DATA_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> get_debug_data
 ```
@@ -429,11 +463,13 @@ Scan for hidden or stealthy modules loaded in process memory that may not appear
 **Platforms:** Windows
 
 **Parameters:**
+
 - `pid` (optional): Specific process ID to scan (default: all processes)
 
 **Response Event:** HIDDEN_MODULE_DETECTED
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> hidden_module_scan --pid 1234
 ```
@@ -451,6 +487,7 @@ Export a dump of recent events from the sensor's local event cache.
 **Response Event:** HISTORY_DUMP_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> history_dump
 ```
@@ -464,12 +501,14 @@ Retrieve Windows Event Logs or macOS Unified Logs from the endpoint.
 **Platforms:** Windows (Event Logs) | macOS (Unified Logs)
 
 **Parameters:**
+
 - `source` (Windows required): Event log source name (e.g., "Security", "System")
 - `predicate` (macOS optional): Unified log filter predicate
 
 **Response Event:** LOG_GET_REP
 
 **Usage Example:**
+
 ```
 # Windows
 limacharlie sensor task <SID> log_get --source "Security"
@@ -487,12 +526,14 @@ Search process memory for specific string patterns.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `pid` (required): Process ID to scan
 - `strings` (required): String or list of strings to search for
 
 **Response Event:** MEM_FIND_STRING_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> mem_find_string --pid 1234 --strings "password"
 ```
@@ -506,12 +547,14 @@ Find handles (file, registry, process) held by a process on Windows.
 **Platforms:** Windows
 
 **Parameters:**
+
 - `pid` (optional): Specific process ID (default: all processes)
 - `needle` (optional): Handle name pattern to search for
 
 **Response Event:** MEM_FIND_HANDLE_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> mem_find_handle --pid 1234 --needle "malware.exe"
 ```
@@ -525,11 +568,13 @@ Get memory map of a process showing loaded modules and memory regions.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `pid` (required): Process ID to map
 
 **Response Event:** MEM_MAP_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> mem_map --pid 1234
 ```
@@ -543,6 +588,7 @@ Read raw memory from a process at a specific address.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `pid` (required): Process ID
 - `base_address` (required): Memory address to read from (hex format)
 - `size` (required): Number of bytes to read
@@ -550,6 +596,7 @@ Read raw memory from a process at a specific address.
 **Response Event:** MEM_READ_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> mem_read --pid 1234 --base_address 0x00400000 --size 1024
 ```
@@ -563,11 +610,13 @@ Extract all readable strings from a process's memory.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `pid` (required): Process ID to scan
 
 **Response Event:** MEM_STRINGS_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> mem_strings --pid 1234
 ```
@@ -585,11 +634,13 @@ Get current network connections on the endpoint (similar to netstat command).
 **Response Event:** NETWORK_CONNECTIONS
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> netstat
 ```
 
 **Sample Response:**
+
 ```json
 {
   "event": {
@@ -621,6 +672,7 @@ Get aggregated network statistics and active connections summary.
 **Response Event:** NETWORK_SUMMARY
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> network_summary
 ```
@@ -634,11 +686,13 @@ Terminate a running process.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `pid` (required): Process ID to terminate
 
 **Response Event:** OS_KILL_PROCESS_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_kill_process --pid 1234
 ```
@@ -654,11 +708,13 @@ List installed software packages on the endpoint.
 **Response Event:** OS_PACKAGES_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_packages
 ```
 
 **Sample Response:**
+
 ```json
 {
   "event": {
@@ -686,11 +742,13 @@ Get a list of all running processes with detailed information.
 **Response Event:** EXISTING_PROCESS (multiple events, one per process)
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_processes
 ```
 
 **Sample Response:**
+
 ```json
 {
   "event": {
@@ -712,11 +770,13 @@ Resume a suspended process.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `pid` (required): Process ID to resume
 
 **Response Event:** OS_RESUME_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_resume --pid 1234
 ```
@@ -734,6 +794,7 @@ List all services/daemons running on the endpoint.
 **Response Event:** OS_SERVICES_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_services
 ```
@@ -747,11 +808,13 @@ Suspend (pause) a running process.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `pid` (required): Process ID to suspend
 
 **Response Event:** OS_SUSPEND_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_suspend --pid 1234
 ```
@@ -769,6 +832,7 @@ List programs configured to run automatically at system startup.
 **Response Event:** OS_AUTORUNS_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_autoruns
 ```
@@ -786,6 +850,7 @@ List all loaded kernel drivers/modules.
 **Response Event:** OS_DRIVERS_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_drivers
 ```
@@ -803,11 +868,13 @@ Get detailed operating system version information.
 **Response Event:** OS_VERSION_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> os_version
 ```
 
 **Sample Response:**
+
 ```json
 {
   "event": {
@@ -831,6 +898,7 @@ Re-enable network connectivity for a sensor that was previously isolated.
 **Response Event:** None (sensor reconnects)
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> rejoin_network
 ```
@@ -844,11 +912,13 @@ Execute a command or script on the endpoint (out-of-band execution).
 **Platforms:** macOS | Linux
 
 **Parameters:**
+
 - `command` (required): Command line to execute
 
 **Response Event:** EXEC_OOB
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> run --command "ps aux | grep chrome"
 ```
@@ -866,6 +936,7 @@ Isolate a sensor from the network (except LimaCharlie cloud connectivity).
 **Response Event:** None (sensor becomes isolated)
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> segregate_network
 ```
@@ -879,6 +950,7 @@ Scan files or process memory with YARA rules.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `rule` (required): YARA rule content
 - `file_path` (optional): Specific file to scan
 - `pid` (optional): Specific process to scan
@@ -887,6 +959,7 @@ Scan files or process memory with YARA rules.
 **Response Event:** YARA_DETECTION
 
 **Usage Example:**
+
 ```
 # Scan a file
 limacharlie sensor task <SID> yara_scan --file_path "C:\\suspicious.exe" --rule "rule test { strings: $a = \"malware\" condition: $a }"
@@ -908,6 +981,7 @@ List available network interfaces for packet capture.
 **Response Event:** PCAP_INTERFACES_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> pcap_ifaces
 ```
@@ -921,12 +995,14 @@ Start capturing network packets on a specified interface.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `iface` (required): Network interface ID or name
 - `max_size` (optional): Maximum capture size in MB
 
 **Response Event:** PCAP_START_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> pcap_start --iface eth0 --max_size 100
 ```
@@ -940,11 +1016,13 @@ Stop an active packet capture and upload the PCAP file.
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
+
 - `iface` (optional): Specific interface to stop (default: all)
 
 **Response Event:** PCAP_STOP_REP, followed by EXPORT_COMPLETE
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> pcap_stop
 ```
@@ -958,11 +1036,13 @@ List Windows registry keys and values.
 **Platforms:** Windows
 
 **Parameters:**
+
 - `reg_path` (required): Registry path to list (e.g., "HKEY_LOCAL_MACHINE\\SOFTWARE")
 
 **Response Event:** REG_LIST_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> reg_list --reg_path "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
 ```
@@ -976,11 +1056,13 @@ Trigger an Endpoint Protection (EPP) scan on a file or directory.
 **Platforms:** Windows
 
 **Parameters:**
+
 - `file_path` (required): Path to scan
 
 **Response Event:** EPP_SCAN_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> epp_scan --file_path "C:\\Users\\Public"
 ```
@@ -998,6 +1080,7 @@ List EPP scan exclusions currently configured on the sensor.
 **Response Event:** EPP_LIST_EXCLUSIONS_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> epp_list_exclusions
 ```
@@ -1011,12 +1094,14 @@ Add a path or process to EPP scan exclusions.
 **Platforms:** Windows
 
 **Parameters:**
+
 - `file_path` (optional): File/directory path to exclude
 - `process` (optional): Process name to exclude
 
 **Response Event:** EPP_ADD_EXCLUSION_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> epp_add_exclusion --file_path "C:\\safe_app"
 ```
@@ -1030,12 +1115,14 @@ Remove a path or process from EPP scan exclusions.
 **Platforms:** Windows
 
 **Parameters:**
+
 - `file_path` (optional): File/directory path to remove from exclusions
 - `process` (optional): Process name to remove from exclusions
 
 **Response Event:** EPP_REM_EXCLUSION_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> epp_rem_exclusion --file_path "C:\\safe_app"
 ```
@@ -1053,6 +1140,7 @@ List files currently in EPP quarantine.
 **Response Event:** EPP_LIST_QUARANTINE_REP
 
 **Usage Example:**
+
 ```
 limacharlie sensor task <SID> epp_list_quarantine
 ```
@@ -1062,11 +1150,13 @@ limacharlie sensor task <SID> epp_list_quarantine
 ## Command Usage Notes
 
 **General Syntax:**
+
 ```bash
 limacharlie sensor task <SENSOR_ID> <COMMAND_NAME> [--param value ...]
 ```
 
 **Platform Abbreviations:**
+
 - macOS: Apple macOS and OS X
 - Windows: Microsoft Windows (7, 8, 10, 11, Server editions)
 - Linux: Linux distributions (Ubuntu, CentOS, Debian, etc.)
@@ -1075,12 +1165,14 @@ limacharlie sensor task <SENSOR_ID> <COMMAND_NAME> [--param value ...]
 
 **Response Events:**
 Most commands generate a response event (typically ending in `_REP`) that can be:
+
 - Viewed in the LimaCharlie web interface under Sensor > Timeline
 - Retrieved via API
 - Triggered on with D&R rules
 
 **Error Handling:**
 Response events typically include an `ERROR` field:
+
 - `ERROR: 0` indicates success
 - Non-zero ERROR values indicate specific error conditions
 

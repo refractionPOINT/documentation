@@ -8,9 +8,9 @@ This Adapter allows you to connect to the local Windows Event Logs API on Window
 
 Adapter Type: `wel`
 
-* `client_options`: common configuration for adapter as defined [here](../usage.md).
-* `evt_sources`: a comma separated list of elements in the format `SOURCE:FILTER`, where `SOURCE` is an Event Source name like `Application`, `System` or `Security` and `FILTER` is an `XPath` filter value as described in the documentation linked below.
-* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
+- `client_options`: common configuration for adapter as defined [here](../usage.md).
+- `evt_sources`: a comma separated list of elements in the format `SOURCE:FILTER`, where `SOURCE` is an Event Source name like `Application`, `System` or `Security` and `FILTER` is an `XPath` filter value as described in the documentation linked below.
+- `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
 ### Configuration File Example
 

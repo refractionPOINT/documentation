@@ -10,7 +10,7 @@ The execution of a playbook can be triggered through the following means:
 
 1. Interactively in the web app by going to the Extensions section for the Playbook extension.
 2. By issuing an `extension request` action through a [D&R rule](../../../3-detection-response/examples.md).
-3. By issuing an extension request on the API directly: https://api.limacharlie.io/static/swagger/#/Extensions/createExtensionRequest
+3. By issuing an extension request on the API directly: <https://api.limacharlie.io/static/swagger/#/Extensions/createExtensionRequest>
 4. By issuing an extension request through the Python CLI/SDK or Golang SDK.
 
 This means playbooks can be issued in a fully automated fashion based on events, detections, audit messages or any other [target](../../../3-detection-response/alternate-targets.md) of D&R rules. But it can also be used in an ad-hoc fashion triggered manually.
@@ -79,8 +79,8 @@ print(response)
 
 A playbook is a normal python script. The only required component is a top level function called `playbook` which takes 2 arguments:
 
-* `sdk`: an instance of the LC Python SDK (`Organization` from `limacharlie.sdk.organization`) pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise.
-* `data`: the optional JSON dictionary provided as context to your playbook.
+- `sdk`: an instance of the LC Python SDK (`Organization` from `limacharlie.sdk.organization`) pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise.
+- `data`: the optional JSON dictionary provided as context to your playbook.
 
 The function must return a dictionary with the following optional keys:
 
@@ -195,24 +195,24 @@ A single execution of a playbook is limited to 10 minutes.
 
 The current execution environment is based on the default libraries provided by the `python:slim` Dockerhub official container plus the following packages:
 
-* Python
-  + `weasyprint`
-  + `flask`
-  + `gunicorn`
-  + `flask`
-  + `limacharlie` (LimaCharlie SDK/CLI)
-  + `lcextension` (LimaCharlie Extension SDK)
-  + `scikit-learn` (Python Machine Learning kit)
-  + `jinja2`
-  + `markdown`
-  + `pillow`
-* NodeJS
-* AI
-  + Claude Code (`claude`) CLI tool
-  + Codex (`codex`) CLI tool
-  + Gemini CLI (`gemini`) CLI tool
+- Python
+  - `weasyprint`
+  - `flask`
+  - `gunicorn`
+  - `flask`
+  - `limacharlie` (LimaCharlie SDK/CLI)
+  - `lcextension` (LimaCharlie Extension SDK)
+  - `scikit-learn` (Python Machine Learning kit)
+  - `jinja2`
+  - `markdown`
+  - `pillow`
+- NodeJS
+- AI
+  - Claude Code (`claude`) CLI tool
+  - Codex (`codex`) CLI tool
+  - Gemini CLI (`gemini`) CLI tool
 
-Custom packages and execution environment tweaks are not available in self-serve mode, but they *may* be available on demand, get in touch with us at support@limacharlie.io.
+Custom packages and execution environment tweaks are not available in self-serve mode, but they *may* be available on demand, get in touch with us at <support@limacharlie.io>.
 
 ## Infrastructure as Code
 

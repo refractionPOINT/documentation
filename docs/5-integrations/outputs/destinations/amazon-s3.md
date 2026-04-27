@@ -4,16 +4,16 @@ Output events and detections to an Amazon S3 bucket.
 
 If you have your own visualization stack, or you just need the data archived, you can output directly to Amazon S3. This way you don't need any infrastructure.
 
-* `bucket`: the path to the AWS S3 bucket.
-* `key_id`:  the id of the AWS auth key.
-* `secret_key`: the AWS secret key to auth with.
-* `sec_per_file`: the number of seconds after which a file is cut and uploaded.
-* `is_compression`: if set to "true", data will be gzipped before upload.
-* `is_indexing`: *DEPRECATED* if set to "true", data is uploaded in a way that makes it searchable.
-* `region_name`: the region name of the bucket, it is recommended to set it, though not always required.
-* `endpoint_url`: optionally specify a custom endpoint URL, usually used with region\_name to output to S3-compatible 3rd party services.
-* `dir`: the directory prefix
-* `is_no_sharding`: do not add a shard directory at the root of the files generated.
+- `bucket`: the path to the AWS S3 bucket.
+- `key_id`:  the id of the AWS auth key.
+- `secret_key`: the AWS secret key to auth with.
+- `sec_per_file`: the number of seconds after which a file is cut and uploaded.
+- `is_compression`: if set to "true", data will be gzipped before upload.
+- `is_indexing`: *DEPRECATED* if set to "true", data is uploaded in a way that makes it searchable.
+- `region_name`: the region name of the bucket, it is recommended to set it, though not always required.
+- `endpoint_url`: optionally specify a custom endpoint URL, usually used with region\_name to output to S3-compatible 3rd party services.
+- `dir`: the directory prefix
+- `is_no_sharding`: do not add a shard directory at the root of the files generated.
 
 Example:
 
@@ -86,11 +86,11 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 
 ## Related articles
 
-* [AWS CloudTrail](../../../2-sensors-deployment/adapters/types/aws-cloudtrail.md)
-* [S3](../../../2-sensors-deployment/adapters/types/s3.md)
-* [AWS](../../extensions/cloud-cli/aws.md)
-* [AWS GuardDuty](../../../2-sensors-deployment/adapters/types/aws-guardduty.md)
+- [AWS CloudTrail](../../../2-sensors-deployment/adapters/types/aws-cloudtrail.md)
+- [S3](../../../2-sensors-deployment/adapters/types/s3.md)
+- [AWS](../../extensions/cloud-cli/aws.md)
+- [AWS GuardDuty](../../../2-sensors-deployment/adapters/types/aws-guardduty.md)
 
 ## What's Next
 
-* [Apache Kafka](apache-kafka.md)
+- [Apache Kafka](apache-kafka.md)

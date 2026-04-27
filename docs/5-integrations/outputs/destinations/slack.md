@@ -2,8 +2,8 @@
 
 Output detections and audit (only) to a Slack community and channel.
 
-* `slack_api_token`: the Bot User OAuth Token from your Slack App.
-* `slack_channel`: the channel to output to within the community (e.g. `#detections`).
+- `slack_api_token`: the Bot User OAuth Token from your Slack App.
+- `slack_channel`: the channel to output to within the community (e.g. `#detections`).
 
 Example:
 

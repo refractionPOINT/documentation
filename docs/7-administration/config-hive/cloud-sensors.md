@@ -4,11 +4,11 @@
 
 ## Permissions
 
-* `cloudsensor.get`
-* `cloudsensor.set`
-* `cloudsensor.del`
-* `cloudsensor.get.mtd`
-* `cloudsensor.set.mtd`
+- `cloudsensor.get`
+- `cloudsensor.set`
+- `cloudsensor.del`
+- `cloudsensor.get.mtd`
+- `cloudsensor.set.mtd`
 
 ## Command-Line Usage
 

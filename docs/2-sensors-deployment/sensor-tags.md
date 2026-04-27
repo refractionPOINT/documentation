@@ -5,10 +5,10 @@ Tags in LimaCharlie are simple strings that can be associated with any number of
 Tags appear in every event coming from a sensor under the `routing` component of the event. This greatly simplifies the writing of detection and response rules based on the presence of specific tags, at the cost of including more non-unique data per event.
 Tags can be used for a variety of purposes, including:
 
-* to classify endpoints
-* automate detection and response
-* create powerful workflows
-* trigger automations
+- to classify endpoints
+- automate detection and response
+- create powerful workflows
+- trigger automations
 
 ## Use Cases for Sensor Tags
 

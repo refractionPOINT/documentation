@@ -2,10 +2,10 @@
 
 Soteria's EDR ruleset provides coverage across Windows, Linux, and macOS. You can check the dynamic MITRE ATT&CK mapping here:
 
-* [All rules](https://mitre-attack.github.io/attack-navigator/#layerURL=https%3A%2F%2Fstorage.googleapis.com%2Fsoteria-detector-mapping%2F%2Fall.json)
-* [Windows](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//windows.json)
-* [Linux](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//linux.json)
-* [macOS](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//mac.json)
+- [All rules](https://mitre-attack.github.io/attack-navigator/#layerURL=https%3A%2F%2Fstorage.googleapis.com%2Fsoteria-detector-mapping%2F%2Fall.json)
+- [Windows](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//windows.json)
+- [Linux](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//linux.json)
+- [macOS](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//mac.json)
 
 ## Data access
 
@@ -13,20 +13,20 @@ Please note that Soteria won't get access to your data, and you won't be able to
 
 The following events are utilized by Soteria rules. Please ensure that they are configured within your Organization:
 
-* `CODE_IDENTITY`
-* `DNS_REQUEST`
-* `EXISTING_PROCESS`
-* `FILE_CREATE`
-* `FILE_MODIFIED`
-* `MODULE_LOAD`
-* `NETWORK_CONNECTIONS`
-* `NEW_DOCUMENT`
-* `NEW_NAMED_PIPE`
-* `NEW_PROCESS`
-* `REGISTRY_WRITE`
-* `REGISTRY_CREATE`
-* `SENSITIVE_PROCESS_ACCESS`
-* `THREAD_INJECTION`
+- `CODE_IDENTITY`
+- `DNS_REQUEST`
+- `EXISTING_PROCESS`
+- `FILE_CREATE`
+- `FILE_MODIFIED`
+- `MODULE_LOAD`
+- `NETWORK_CONNECTIONS`
+- `NEW_DOCUMENT`
+- `NEW_NAMED_PIPE`
+- `NEW_PROCESS`
+- `REGISTRY_WRITE`
+- `REGISTRY_CREATE`
+- `SENSITIVE_PROCESS_ACCESS`
+- `THREAD_INJECTION`
 
 This can also be done in the Add-ons Marketplace.
 

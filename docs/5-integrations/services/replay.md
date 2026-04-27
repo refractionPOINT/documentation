@@ -5,26 +5,26 @@ Replay allows you to run Detection & Response (D&R) rules against historical tra
 
 Rule Source:
 
-* Existing rule in the organization, by name.
-* Rule in the replay request.
+- Existing rule in the organization, by name.
+- Rule in the replay request.
 
 Traffic:
 
-* Sensor historical traffic.
-* Local events provided during request.
+- Sensor historical traffic.
+- Local events provided during request.
 
 ## Using
 
 Using the Replay API requires the [API key](../../7-administration/access/api-keys.md) to have the following permissions:
 
-* `insight.evt.get`
+- `insight.evt.get`
 
 The returned data from the API contains the following:
 
-* `responses`: a list of the actions that would have been taken by the rule (like `report`, `task`, etc).
-* `num_evals`: a number of evaluation operations performed by the rule. This is a rough estimate of the performance of the rule.
-* `num_events`: the number of events that were replayed.
-* `eval_time`: the number of seconds it took to replay the data.
+- `responses`: a list of the actions that would have been taken by the rule (like `report`, `task`, etc).
+- `num_evals`: a number of evaluation operations performed by the rule. This is a rough estimate of the performance of the rule.
+- `num_events`: the number of events that were replayed.
+- `eval_time`: the number of seconds it took to replay the data.
 
 ```json
 {

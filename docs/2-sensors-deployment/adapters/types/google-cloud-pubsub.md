@@ -8,10 +8,10 @@ This Adapter allows you to ingest events from a Google Cloud Pubsub subscription
 
 Adapter Type: `pubsub`
 
-* `client_options`: common configuration for adapter as defined [here](../usage.md).
-* `sub_name`: the name of the subscription to subscribe to.
-* `service_account_creds`: the string version of the JSON credentials for a (Google) Service Account to use accessing the subscription.
-* `project_name`: project name where the `sub_name` exists.
+- `client_options`: common configuration for adapter as defined [here](../usage.md).
+- `sub_name`: the name of the subscription to subscribe to.
+- `service_account_creds`: the string version of the JSON credentials for a (Google) Service Account to use accessing the subscription.
+- `project_name`: project name where the `sub_name` exists.
 
 ### CLI Deployment
 
@@ -28,14 +28,14 @@ This example assumes that the Adapter is running from a host that has [default c
 
 Here's the breakdown of the above example:
 
-* `lc_adapter`: simply the CLI Adapter.
-* `pubsub`: the method the Adapter should use to collect data locally.
-* `client_options.identity.installation_key=....`: the Installation Key value from LimaCharlie.
-* `client_options.identity.oid=....`: the Organization ID from LimaCharlie the installation key above belongs to.
-* `client_options.platform=gcp`: this indicates that the data read is logs from Google Cloud Platform.
-* `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor ID generated for this Adapter later if you have to re-install the Adapter.
-* `sub_name=usp`: the Subscription name to consume the logs from.
-* `project_name=monitored-proj`: the GCP Project name this Subscription belongs to.
+- `lc_adapter`: simply the CLI Adapter.
+- `pubsub`: the method the Adapter should use to collect data locally.
+- `client_options.identity.installation_key=....`: the Installation Key value from LimaCharlie.
+- `client_options.identity.oid=....`: the Organization ID from LimaCharlie the installation key above belongs to.
+- `client_options.platform=gcp`: this indicates that the data read is logs from Google Cloud Platform.
+- `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor ID generated for this Adapter later if you have to re-install the Adapter.
+- `sub_name=usp`: the Subscription name to consume the logs from.
+- `project_name=monitored-proj`: the GCP Project name this Subscription belongs to.
 
 ### Infrastructure as Code Deployment
 

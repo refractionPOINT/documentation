@@ -6,8 +6,8 @@ When running Sensor [console commands](../endpoint-commands.md), you may encount
 
 For example, the `os_users` Sensor command has two components:
 
-* `OS_USERS_REQ` is the *request* event sent to the Sensor to collect OS user information.
-* `OS_USERS_REP` is the *response* event sent back by the Sensor containing the information of interest.
+- `OS_USERS_REQ` is the *request* event sent to the Sensor to collect OS user information.
+- `OS_USERS_REP` is the *response* event sent back by the Sensor containing the information of interest.
 
 Please ensure that you are collecting the `*_REP` events in order to display output in the console.
 
@@ -33,9 +33,9 @@ If your network uses SSL inspection, we recommend you setup an exception for the
 
 Sensors since version 4.21.2 also generate a local log file able to be used to help pinpoint the level at which the connectivity fails. This log file is located:
 
-* Windows: `c:\windows\system32\hcp.log`
-* MacOS: `/usr/local/hcp.log`
-* Linux: `./hcp.log`
+- Windows: `c:\windows\system32\hcp.log`
+- MacOS: `/usr/local/hcp.log`
+- Linux: `./hcp.log`
 
 This log provides a simple line for each basic step of connectivity to the cloud. It only logs the first connection attempted to the cloud and rolls over every time the sensor starts. A successful connection should look like:
 
@@ -54,17 +54,17 @@ If you are having trouble getting your sensor connected to the cloud, we recomme
 1. Restart the LimaCharlie service.
 2. Check that the service is running.
 
-   * The service process should be called `rphcp`.
+   - The service process should be called `rphcp`.
 3. If the sensor still shows as not online, check the `hcp.log` file mentioned above:
 
-   * Check that the "configs applied" step is reached. If not, it may indicate the Installation Key provided is wrong or has a typo.
-   * Check that the proxy is mentioned in the log if you are using a proxy configuration.
-   * Check that the "ssl connected" step is reached. If not, this indicates a network configuration issue connecting to the cloud.
-   * Check that the "channel up" step is reached. If not, this could indicate one of a few things:
+   - Check that the "configs applied" step is reached. If not, it may indicate the Installation Key provided is wrong or has a typo.
+   - Check that the proxy is mentioned in the log if you are using a proxy configuration.
+   - Check that the "ssl connected" step is reached. If not, this indicates a network configuration issue connecting to the cloud.
+   - Check that the "channel up" step is reached. If not, this could indicate one of a few things:
 
-     + Your sensor was deleted (through API or Web interface) from the org. If so, reinstall to get a new identity.
-     + Your Organization may be out-of-quota if more sensors than the maximum number you've set in the Billing section are trying to connect at once. Increase your quota and wait a few minutes to fix it.
-     + If this is a brand new sensor install, make sure the Installation Key you're using still exists in your Org. Once deleted, an Installation Key cannot be used for NEW sensors, but old sensors that were installed using it will still work fine.
+     - Your sensor was deleted (through API or Web interface) from the org. If so, reinstall to get a new identity.
+     - Your Organization may be out-of-quota if more sensors than the maximum number you've set in the Billing section are trying to connect at once. Increase your quota and wait a few minutes to fix it.
+     - If this is a brand new sensor install, make sure the Installation Key you're using still exists in your Org. Once deleted, an Installation Key cannot be used for NEW sensors, but old sensors that were installed using it will still work fine.
 
 ## Sensor Not Responding
 
@@ -101,10 +101,10 @@ Upgrading sensors is done transparently for you once you click the button in the
 
 The LimaCharlie sensor outputs a status file on the endpoint which allows you to see the:
 
-* Sensor ID,
-* Organization ID,
-* Sensor version, and
-* the agent's service uptime.
+- Sensor ID,
+- Organization ID,
+- Sensor version, and
+- the agent's service uptime.
 
 You can find this log data at the following location, based on your platform:
 

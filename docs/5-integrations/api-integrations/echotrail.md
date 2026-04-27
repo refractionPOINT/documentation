@@ -4,9 +4,9 @@
 
 LimaCharlie has an integration available for EchoTrail's `insights` API lookup, accepting one of the following:
 
-* MD5 Hash
-* SHA256 Hash
-* Windows filename with extension
+- MD5 Hash
+- SHA256 Hash
+- Windows filename with extension
 
 ## Detection & Response Rule
 

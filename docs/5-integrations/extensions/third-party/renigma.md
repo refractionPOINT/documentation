@@ -35,6 +35,7 @@ You can submit a file or URL to the REnigma extension for processing in one of 2
       target: artifact_event
       artifact type: ext-binlib-bin
       ```
+
    2. Respond
 
       ```yaml
@@ -50,7 +51,7 @@ LimaCharlie Extensions allow users to expand and customize their security enviro
 
 ## Related Articles
 
-* [BinLib](../limacharlie/binlib.md)
-* [Artifacts](../limacharlie/artifact.md)
-* [Using Extensions](../using-extensions.md)
-* [Secure Annex](secureannex.md)
+- [BinLib](../limacharlie/binlib.md)
+- [Artifacts](../limacharlie/artifact.md)
+- [Using Extensions](../using-extensions.md)
+- [Secure Annex](secureannex.md)

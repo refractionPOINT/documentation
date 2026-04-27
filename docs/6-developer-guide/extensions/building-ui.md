@@ -18,12 +18,12 @@ Note that there are small changes to this structure depending on the layout sele
 
 ### Picking Your Layout Type
 
-* `auto` (default layout, it will pick one of the below)
-* `config` (use this if you have a configuration)
-* `editor` (very specific use-case for editing large code blocks like yaml)
-* `action` (use this to prioritize certain actions in the UI)
-* `description`
-* `key` (just a variation of description)
+- `auto` (default layout, it will pick one of the below)
+- `config` (use this if you have a configuration)
+- `editor` (very specific use-case for editing large code blocks like yaml)
+- `action` (use this to prioritize certain actions in the UI)
+- `description`
+- `key` (just a variation of description)
 
 For the action, and editor layouts, make sure you define one (or more) default actions as well. The editor UI for the action layout will show all the actions in-page, as opposed to a button on the top right. When set to the editor layout, the UI will automatically run the default action and display the results and a supported action.
 
@@ -31,18 +31,18 @@ For the action, and editor layouts, make sure you define one (or more) default a
 
 Every field has the following optional details to further adjust the UI.
 
-* **label**: Add a label if you want a more 'human-legible' label on this field
-* **placeholder**: Placeholder text on the input can serve as an example for the user
-* **description**: A description for this field can be added that will be available as a tooltip on the UI next to the field label
-* **display\_index**: The display index starts at 1 (not 0) and guides the GUI on the order to show the fields. A display index of 1, will display before a display index of 2.
-* **default\_value**: A default value for the field, will auto-populate the field with this value
+- **label**: Add a label if you want a more 'human-legible' label on this field
+- **placeholder**: Placeholder text on the input can serve as an example for the user
+- **description**: A description for this field can be added that will be available as a tooltip on the UI next to the field label
+- **display\_index**: The display index starts at 1 (not 0) and guides the GUI on the order to show the fields. A display index of 1, will display before a display index of 2.
+- **default\_value**: A default value for the field, will auto-populate the field with this value
 
 Some other configurations that conditionally apply to specific data\_types:
 
-* **filter**: Available on select primitive data\_types.
-* **enum\_values**: Details on the available enums, to support the enum data type.
-* **complex\_enum\_values**: Details to support the complex enum data type. Supports reference links, and categories.
-* **object**: An object that contains nested key-value pairs for more fields, and serves to detail the nested fields.
+- **filter**: Available on select primitive data\_types.
+- **enum\_values**: Details on the available enums, to support the enum data type.
+- **complex\_enum\_values**: Details to support the complex enum data type. Supports reference links, and categories.
+- **object**: An object that contains nested key-value pairs for more fields, and serves to detail the nested fields.
 
 For the complete list of all data types, please see the [page on data types](schema-data-types.md).
 

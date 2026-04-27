@@ -31,13 +31,13 @@ Webhook adapters can be created either through the webapp, API, or CLI. Before c
 
 Field descriptions:
 
-* `secret`: this secret value will be part of the URL to accept your webhooks. It enables you to prevent or revoke unauthorized access to a hook.
-* `signature_secret`, `signature_header`, `signature_scheme`: placeholders for generic webhook signature validation. If you require a specific format, please get in touch with us.
-* `client_options.hostname`: provide your own name for the webhook adapter.
-* `client_options.identity.oid`: the OID of the organization you wish to send to.
-* `client_options.identity.installation_key`: the installation key to be used for the adapter.
-* `client_options.platform`: the data format (typically `json` for webhooks).
-* `client_options.sensor_seed_key`: an arbitrary value used to generate a stable Sensor ID.
+- `secret`: this secret value will be part of the URL to accept your webhooks. It enables you to prevent or revoke unauthorized access to a hook.
+- `signature_secret`, `signature_header`, `signature_scheme`: placeholders for generic webhook signature validation. If you require a specific format, please get in touch with us.
+- `client_options.hostname`: provide your own name for the webhook adapter.
+- `client_options.identity.oid`: the OID of the organization you wish to send to.
+- `client_options.identity.installation_key`: the installation key to be used for the adapter.
+- `client_options.platform`: the data format (typically `json` for webhooks).
+- `client_options.sensor_seed_key`: an arbitrary value used to generate a stable Sensor ID.
 
 When the above configuration is provided to LimaCharlie, a webhook adapter will appear and be available for webhook event ingestion. Here's an example of creating the above record through the LimaCharlie CLI:
 
@@ -47,8 +47,8 @@ echo '{"sensor_type": "webhook", "webhook": {"secret": "some-secret-value-hard-t
 
 After creating the webhook, you will be provided with a geo-dependent URL, respective to your LimaCharlie Organization location. You can also retrieve your webhook URLs with either of the following commands:
 
-* REST API: [getOrgURLs](https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls)
-* Python SDK:
+- REST API: [getOrgURLs](https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls)
+- Python SDK:
 
 ```python
 python3 -c "from limacharlie.client import Client; from limacharlie.sdk.organization import Organization; print(Organization(Client()).get_urls()['hooks'])"
@@ -62,21 +62,21 @@ Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.i
 
 `https://9157798c50af372c.hook.limacharlie.io/OID/HOOKNAME/SECRET`, where:
 
-* OID is the Organization OID provided in the configuration above.
-* HOOKNAME is the name of the hook provided in the configuration above.
-* SECRET is the secret value provided in the configuration. You can provide the secret value in the URL or as an HTTP header named `lc-secret`.
+- OID is the Organization OID provided in the configuration above.
+- HOOKNAME is the name of the hook provided in the configuration above.
+- SECRET is the secret value provided in the configuration. You can provide the secret value in the URL or as an HTTP header named `lc-secret`.
 
 ## Supported Webhook Format
 
 When sending data via POST requests to the URL, the body of your request is expected to be one or many JSON events. Supported formats include:
 
-* Simple JSON object:
+- Simple JSON object:
 
-  + `{"some":"data"}`
-* List of JSON objects:
+  - `{"some":"data"}`
+- List of JSON objects:
 
-  + `[{"some":"data"},{"some":"data"}]`
-* Newline separated JSON objects like:
+  - `[{"some":"data"},{"some":"data"}]`
+- Newline separated JSON objects like:
 
 ```json
 {"some":"data"}

@@ -32,10 +32,10 @@ Each field in a schema is a `SchemaElement` with the following properties:
 
 Filters can be applied to restrict valid values for certain data types:
 
-* `min` and `max`: apply to `integer`, `time`, and `duration` types
-* `whitelist` and `blacklist`: apply to `event_name` and `string` types
-* `valid_re` and `invalid_re`: apply to `string` types only (regex validation)
-* `platforms`: applies to `sid` and `platform` types
+- `min` and `max`: apply to `integer`, `time`, and `duration` types
+- `whitelist` and `blacklist`: apply to `event_name` and `string` types
+- `valid_re` and `invalid_re`: apply to `string` types only (regex validation)
+- `platforms`: applies to `sid` and `platform` types
 
 !!! note
     Some filter combinations may not be fully supported for all types. Please reach out if a filter does not work as expected.

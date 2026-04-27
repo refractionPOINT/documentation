@@ -4,9 +4,9 @@
 
 ## Prerequisites
 
-* a Jamf Now account;
-* a provisioning profile that grants the necessary pre-authorizations (such as is [available here](installation.md)) for deployment on the clients;
-* a LimaCharlie Mac Sensor installer package (`.pkg`) that's configured as desired for deployment on the clients.
+- a Jamf Now account;
+- a provisioning profile that grants the necessary pre-authorizations (such as is [available here](installation.md)) for deployment on the clients;
+- a LimaCharlie Mac Sensor installer package (`.pkg`) that's configured as desired for deployment on the clients.
 
 ## Set up your account on Jamf Now
 

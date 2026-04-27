@@ -234,5 +234,5 @@ Standard (non-OTel) webhook requests to `/<OID>/<HOOKNAME>/<SECRET>` continue to
 
 ## Related Articles
 
-* [Webhook Adapter Tutorial](webhook-adapter.md)
-* [Cloud Sensors Config Hive](../../../7-administration/config-hive/cloud-sensors.md)
+- [Webhook Adapter Tutorial](webhook-adapter.md)
+- [Cloud Sensors Config Hive](../../../7-administration/config-hive/cloud-sensors.md)

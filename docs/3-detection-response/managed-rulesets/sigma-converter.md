@@ -8,7 +8,7 @@ For cases where you either have your own Sigma rules, or you would like to conve
 
 ## Converter Service
 
-The Converter service converts one or many Sigma rules into the LimaCharlie  rule format. It can accomplish this via the following HTTPS endpoints available at https://sigma.limacharlie.io/:
+The Converter service converts one or many Sigma rules into the LimaCharlie  rule format. It can accomplish this via the following HTTPS endpoints available at <https://sigma.limacharlie.io/>:
 
 ### Single Rule
 
@@ -16,8 +16,8 @@ Endpoint: `https://sigma.limacharlie.io/convert/rule`
  Verb: `POST`
  Form Parameters:
 
-* `rule`: the content of a literal Sigma rule to be converted.
-* `target`: optional [target](../alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.
+- `rule`: the content of a literal Sigma rule to be converted.
+- `target`: optional [target](../alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.
    Output Example:
 
 ```json
@@ -38,15 +38,15 @@ Endpoint: `https://sigma.limacharlie.io/convert/repo`
  Verb: `POST`
  Form Parameters:
 
-* `repo`: the source where to access the rules to convert, one of:
+- `repo`: the source where to access the rules to convert, one of:
 
-  + An HTTPS link to a direct resource like: `https://corp.com/my-rules.yaml`
-  + A GitHub link to a file or repo like:
+  - An HTTPS link to a direct resource like: `https://corp.com/my-rules.yaml`
+  - A GitHub link to a file or repo like:
 
     - `https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation/proc_creation_win_ad_find_discovery.yml`
     - `https://github.com/SigmaHQ/sigma/blob/master/rules/windows/process_creation`
-  + An [Authenticated Resource Locator](../../8-reference/authentication-resource-locator.md)
-* `target`: optional [target](../alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.
+  - An [Authenticated Resource Locator](../../8-reference/authentication-resource-locator.md)
+- `target`: optional [target](../alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.
 
 Output Example:
 

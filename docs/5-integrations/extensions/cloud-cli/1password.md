@@ -26,7 +26,7 @@ Returns a list of all items the account has read access to by default.
 
 To utilize 1Password's automated CLI capabilities, you will need to create and utilize a Service Account. More information can be found [here](https://developer.1password.com/docs/service-accounts/get-started/).
 
-* Create a secret in the secrets manager in the following format:
+- Create a secret in the secrets manager in the following format:
 
 ```
 serviceAccountToken

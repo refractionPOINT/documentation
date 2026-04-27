@@ -6,9 +6,9 @@ This Adapter allows you to connect to an Azure Event Hub to fetch structured dat
 
 [Azure Event Hubs](https://azure.microsoft.com/en-us/products/event-hubs) are fully managed, real-time data ingestion services that allow for event streaming from various Microsoft Azure services. LimaCharlie can ingest either structured known data (such as JSON or XML) *or* known Microsoft data types, including:
 
-* Azure Monitor (Platform: `azure_monitor`)
-* Entra ID [formerly Azure AD] (Platform: `azure_ad`)
-* Microsoft Defender (Platform: `msdefender`)
+- Azure Monitor (Platform: `azure_monitor`)
+- Entra ID [formerly Azure AD] (Platform: `azure_ad`)
+- Microsoft Defender (Platform: `msdefender`)
 
 Documentation for creating an event hub can be found here [here](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 
@@ -50,15 +50,15 @@ See: [Stream Azure platform logs to Event Hub](https://learn.microsoft.com/en-us
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
 
-* `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-* `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-* `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-* `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
 ### Adapter-specific Options
 
-* If using a binary Adapter, `azure_event_hub` will be the ingestion type.
-* `connection_string` - The connection string provided in Azure for connecting to the Azure Event Hub, including the `EntityPath=...` at the end which identifies the Hub Name (this component is sometimes now shown in the connection string provided by Azure).
+- If using a binary Adapter, `azure_event_hub` will be the ingestion type.
+- `connection_string` - The connection string provided in Azure for connecting to the Azure Event Hub, including the `EntityPath=...` at the end which identifies the Hub Name (this component is sometimes now shown in the connection string provided by Azure).
 
 ## Guided Deployment
 

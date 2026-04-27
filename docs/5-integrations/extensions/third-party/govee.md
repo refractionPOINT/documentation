@@ -45,16 +45,16 @@ Note that the only required fields here are the `device_id` and `device_model`. 
 
 **Required parameters:**
 
-* `device_id`: returned via the Govee API, see example response below
-* `device_model`: returned via the Govee API, see example response below
+- `device_id`: returned via the Govee API, see example response below
+- `device_model`: returned via the Govee API, see example response below
 
 **Optional parameters:**
 
-* `alert_color`: color of the light when alert fires, in [RGB format](https://htmlcolorcodes.com/color-picker/), default `255,0,0` (red)
-* `revert_color`: color of the light to return to, after alert fires, in [RGB format](https://htmlcolorcodes.com/color-picker/), default `255,255,255` (white)
-* `alert_brightness`: brightness of the light, default `100`
-* `revert_brightness`: brightness of the light to return to, after alert fires, default `10`
-* `duration`: duration of the alert in seconds, how long the light will remain at `alert_color` before returning to `revert_color`, default `30`
+- `alert_color`: color of the light when alert fires, in [RGB format](https://htmlcolorcodes.com/color-picker/), default `255,0,0` (red)
+- `revert_color`: color of the light to return to, after alert fires, in [RGB format](https://htmlcolorcodes.com/color-picker/), default `255,255,255` (white)
+- `alert_brightness`: brightness of the light, default `100`
+- `revert_brightness`: brightness of the light to return to, after alert fires, default `10`
+- `duration`: duration of the alert in seconds, how long the light will remain at `alert_color` before returning to `revert_color`, default `30`
 
 **Govee API sample request and response:**
 

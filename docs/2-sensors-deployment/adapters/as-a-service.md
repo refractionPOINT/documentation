@@ -22,8 +22,8 @@ This would create a service named `azure_collection` with the adapter config.
 
 Remember, adapter configurations can be provided via two methods:
 
-* In the command line, as part of a list of flags
-* Via a YAML config file
+- In the command line, as part of a list of flags
+- Via a YAML config file
 
 **Note:** The service will point to `lc_adapter.exe` based on its path at the creation of the service. If you wish to move the adapter to a permanent location, please do so before creating the service.
 

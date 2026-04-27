@@ -10,14 +10,14 @@ Additionally, the agent can also be deployed on various container cluster techno
 
 For the LimaCharlie agent to have full visibility into activities on the host system, the following configurations are required:
 
-* The container must run in **privileged mode** to access host-level resources.
-* The container must use **host networking** to observe network activity.
-* The container must use **host PID mode** to track running processes.
-* Various **host-level directories** must be mounted into the container, including:
+- The container must run in **privileged mode** to access host-level resources.
+- The container must use **host networking** to observe network activity.
+- The container must use **host PID mode** to track running processes.
+- Various **host-level directories** must be mounted into the container, including:
 
-  + The root filesystem (`rootfs`)
-  + Docker network namespaces (`netns`)
-  + The directory containing kernel modules and debug symbols
+  - The root filesystem (`rootfs`)
+  - Docker network namespaces (`netns`)
+  - The directory containing kernel modules and debug symbols
 
 Additionally, on newer Linux kernel versions (5.7+), the agent leverages **eBPF** for enhanced visibility and telemetry collection.
 
@@ -33,17 +33,17 @@ docker pull refractionpoint/limacharlie_sensor:latest
 
 Docker image is available in different flavors based on specific distributions:
 
-* `latest` - Default version based on CentOS Linux.
-* `alpine` - Based on Alpine Linux (smaller image size).
-* `centos` - Based on CentOS Linux.
+- `latest` - Default version based on CentOS Linux.
+- `alpine` - Based on Alpine Linux (smaller image size).
+- `centos` - Based on CentOS Linux.
 
 ## Available Environment Variables
 
 The agent supports several environment variables to control its behavior:
 
-* `LC_INSTALLATION_KEY` - Specifies the installation key required to authenticate the agent.
-* `HOST_FS` - Defines the path where the host's root filesystem is mounted within the container. Example: `/rootfs`.
-* `NET_NS` - Specifies the path to the host's network namespace directory. Example: `/netns`.
+- `LC_INSTALLATION_KEY` - Specifies the installation key required to authenticate the agent.
+- `HOST_FS` - Defines the path where the host's root filesystem is mounted within the container. Example: `/rootfs`.
+- `NET_NS` - Specifies the path to the host's network namespace directory. Example: `/netns`.
 
 These variables must be configured appropriately to ensure the agent functions as expected.
 

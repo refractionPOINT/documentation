@@ -1,10 +1,10 @@
 To view and operate the Query Console, the following permissions are required:
 
-* `insight.evt.get` for search
-* `org.get` for schema service access
-* `query.set` for saving queries
-* `query.get` for reading a list of queries (if you don't have this set you will see an error saying you need `query.get.mtd`, but this is the permission you need)
-* `query.del` for editing or deleting queries (editing is creating a new one and removing the old one)
+- `insight.evt.get` for search
+- `org.get` for schema service access
+- `query.set` for saving queries
+- `query.get` for reading a list of queries (if you don't have this set you will see an error saying you need `query.get.mtd`, but this is the permission you need)
+- `query.del` for editing or deleting queries (editing is creating a new one and removing the old one)
 
 ### UI Element Overview
 
@@ -21,11 +21,11 @@ To view and operate the Query Console, the following permissions are required:
 
    ![](../assets/images/image(340).png)
 
-   * Enter a time `16:00`, or day and time `2025-01-16 08:52:54`, using most common time formats.  For example:
+   - Enter a time `16:00`, or day and time `2025-01-16 08:52:54`, using most common time formats.  For example:
 
-     + From `33m` to `now` - last 33 minutes
-     + Around `2025-01-16 08:52:54` +- `15 minutes` - 15 minutes before and after the specified time stamp
-     + From `10am` to `1:30pm`
+     - From `33m` to `now` - last 33 minutes
+     - Around `2025-01-16 08:52:54` +- `15 minutes` - 15 minutes before and after the specified time stamp
+     - From `10am` to `1:30pm`
 
      **Note:** All times are shown according to the timezone selected by the user in User Settings.
 4. **Available Fields:** Managed data exploration
@@ -61,4 +61,4 @@ To view and operate the Query Console, the following permissions are required:
 
 ### What's Next
 
-* [LimaCharlie Query Language](lcql-examples.md)
+- [LimaCharlie Query Language](lcql-examples.md)

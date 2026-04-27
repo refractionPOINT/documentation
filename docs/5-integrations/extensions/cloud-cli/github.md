@@ -22,8 +22,8 @@ The following example returns a list of GitHub organizations.
 
 To utilize the GitHub CLI, you will need:
 
-* A [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-* Create a secret in the secrets manager in the following format:
+- A [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- Create a secret in the secrets manager in the following format:
 
 ```
 access_token

@@ -28,8 +28,8 @@ The following example would execute in response to AWS telemetry that 1) met cer
 
 To utilize AWS CLI capabilities, you will need:
 
-* You will need an AWS access key ID and AWS secret access key
-* Create a secret in the secrets manager in the following format:
+- You will need an AWS access key ID and AWS secret access key
+- Create a secret in the secrets manager in the following format:
 
   ```
   accessKeyID/secretAccessKey

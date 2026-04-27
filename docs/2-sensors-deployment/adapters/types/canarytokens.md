@@ -12,8 +12,8 @@ LimaCharlie published a blog post in April 2023 to discuss the Canarytoken integ
 
 Canarytoken alerts are ingested via a cloud-to-cloud webhook Adapter configured to receive JSON events. The LimaCharlie platform has pre-built mapping for Canarytoken alerts. A Canarytokens Adapter can be initially deployed in two ways:
 
-* Via the LimaCharlie web UI
-* Via the LimaCharlie CLI
+- Via the LimaCharlie web UI
+- Via the LimaCharlie CLI
 
 Regardless of which method utilized, Steps 2 and 3 will still be the same.
 
@@ -62,9 +62,9 @@ To create this webhook adapter, run the following command, replacing `<json_conf
 
 After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
 
-* Organization ID
-* Webhook name (from the config)
-* Secret (from the config)
+- Organization ID
+- Webhook name (from the config)
+- Secret (from the config)
 
 Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.io`, the format of the URL would be:
 

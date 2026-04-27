@@ -99,10 +99,10 @@ Click the Create Instance button.
 
 There is a lot you can customize here, but we'll skip over the more complex aspects you don't need to worry about here.
 
-* Give the instance a name.
-* Select a zone nearby the LimaCharlie datacenter you're using.
-* As a Machine Type, select e2-micro (the smallest and cheapest machine type).
-* In the Identity and API access section, select the Service Account you created earlier. This will set this service account as the default identity of the machine, which in turn means you won't have to specify your credentials to the LimaCharlie Adapter we're about to run.
+- Give the instance a name.
+- Select a zone nearby the LimaCharlie datacenter you're using.
+- As a Machine Type, select e2-micro (the smallest and cheapest machine type).
+- In the Identity and API access section, select the Service Account you created earlier. This will set this service account as the default identity of the machine, which in turn means you won't have to specify your credentials to the LimaCharlie Adapter we're about to run.
 
 Click Create. This may take a minute.
 

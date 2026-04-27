@@ -10,7 +10,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
 <div class="grid cards" markdown>
 
--   :material-rocket-launch:{ .lg .middle } __Getting Started__
+- :material-rocket-launch:{ .lg .middle } **Getting Started**
 
     ---
 
@@ -18,7 +18,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     [:octicons-arrow-right-24: Quickstart Guide](1-getting-started/quickstart.md)
 
--   :material-shield-check:{ .lg .middle } __Detection & Response__
+- :material-shield-check:{ .lg .middle } **Detection & Response**
 
     ---
 
@@ -26,7 +26,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     [:octicons-arrow-right-24: Detection Rules](3-detection-response/index.md)
 
--   :material-chip:{ .lg .middle } __Sensors & Deployment__
+- :material-chip:{ .lg .middle } **Sensors & Deployment**
 
     ---
 
@@ -34,7 +34,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     [:octicons-arrow-right-24: Sensor Documentation](2-sensors-deployment/index.md)
 
--   :material-database-search:{ .lg .middle } __Data & Queries__
+- :material-database-search:{ .lg .middle } **Data & Queries**
 
     ---
 
@@ -42,7 +42,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     [:octicons-arrow-right-24: Query Console](4-data-queries/index.md)
 
--   :material-connection:{ .lg .middle } __Integrations__
+- :material-connection:{ .lg .middle } **Integrations**
 
     ---
 
@@ -50,7 +50,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     [:octicons-arrow-right-24: Browse Integrations](5-integrations/index.md)
 
--   :material-code-braces:{ .lg .middle } __Developer Guide__
+- :material-code-braces:{ .lg .middle } **Developer Guide**
 
     ---
 
@@ -58,7 +58,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     [:octicons-arrow-right-24: SDKs & APIs](6-developer-guide/index.md)
 
--   :material-cog:{ .lg .middle } __Administration__
+- :material-cog:{ .lg .middle } **Administration**
 
     ---
 
@@ -66,7 +66,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     [:octicons-arrow-right-24: Admin Guide](7-administration/index.md)
 
--   :material-book-open-variant:{ .lg .middle } __Reference__
+- :material-book-open-variant:{ .lg .middle } **Reference**
 
     ---
 

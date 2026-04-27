@@ -26,9 +26,9 @@ Once enabled, you will see an Infrastructure as Code option under the **Organiza
 
 Within the Infrastructure As Code module, you can:
 
-* **Apply a New Config** to an existing organization. Changes are made additively, and are good for merging new configuration parameters into your organization.
-* **Edit the Entire Configuration** for an existing organization. This is your current configuration, and can be modified directly in the web UI.
-* Perform **Fetch**, **Push**, or **Push-from-file** operations.
+- **Apply a New Config** to an existing organization. Changes are made additively, and are good for merging new configuration parameters into your organization.
+- **Edit the Entire Configuration** for an existing organization. This is your current configuration, and can be modified directly in the web UI.
+- Perform **Fetch**, **Push**, or **Push-from-file** operations.
 
 ![](../../../assets/images/infra-3.png "image(241).png")
 
@@ -110,4 +110,4 @@ The REST interface for the Infrastructure extension mimics the CLI tool. The fol
 
 ## Related Articles
 
-* [Integrity](integrity.md)
+- [Integrity](integrity.md)

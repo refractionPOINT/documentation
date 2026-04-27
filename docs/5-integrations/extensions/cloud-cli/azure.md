@@ -22,8 +22,8 @@ The following example returns a list of virtual machines and their respective de
 
 To utilize the Azure CLI, you will need:
 
-* An application and a [service principal](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) with the appropriate permissions and a [client secret](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal#option-3-create-a-new-client-secret)
-* Create a secret in the secrets manager in the following format:
+- An application and a [service principal](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) with the appropriate permissions and a [client secret](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal#option-3-create-a-new-client-secret)
+- Create a secret in the secrets manager in the following format:
 
 ```
 appID/clientSecret/tenantID

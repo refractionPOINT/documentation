@@ -36,11 +36,11 @@ Each element in the list of schema is composed of a prefix and a value.
 
 Prefixes can be:
 
-* `evt` for an Event.
-* `dep` for a Deployment Event.
-* `det` for a Detection.
-* `art` for an Artifact Event.
-* `sched` for Scheduling Events.
+- `evt` for an Event.
+- `dep` for a Deployment Event.
+- `det` for a Detection.
+- `art` for an Artifact Event.
+- `sched` for Scheduling Events.
 
 The value is generally the Event Type except for Detections where it is the `cat` (detection name).
 
@@ -87,9 +87,9 @@ The `schema.elements` data returned is composed of a prefix and a value.
 
 The prefix is one of:
 
-* `i` indicating the element is an Integer.
-* `s` indicating the element is a String.
-* `b` indicating the element is a Boolean.
+- `i` indicating the element is an Integer.
+- `s` indicating the element is a String.
+- `b` indicating the element is a Boolean.
 
 The value is a path within the JSON. For example, the schema above would represent the following event:
 
@@ -236,14 +236,17 @@ detect:
 ### Platform-Specific Considerations
 
 #### Windows Events
+
 - Often include nested structures like `event/EVENT/System/EventID` for Windows Event Logs
 - Process events include detailed parent information in `event/PARENT`
 
 #### Linux Events
+
 - File paths use forward slashes
 - Process events may include user/group information
 
 #### Cloud Adapter Events
+
 - May have custom `event` structures based on the source system
 - `routing/event_type` reflects the adapter and event type (e.g., `WEL`, `AdvancedHunting-DeviceEvents`)
 

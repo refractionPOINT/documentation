@@ -6,19 +6,19 @@ An exception to this is outputs that use Google Cloud Platform mechanism where t
 
 Here is a list of the relevant regions for the various LimaCharlie datacenter.
 
-* USA: `us-central1`
-* Canada: `northamerica-northeast1`
-* Europe: `europe-west4`
-* UK: `europe-west2`
-* India: `asia-south1`
-* Australia: `australia-southeast1`
+- USA: `us-central1`
+- Canada: `northamerica-northeast1`
+- Europe: `europe-west4`
+- UK: `europe-west2`
+- India: `asia-south1`
+- Australia: `australia-southeast1`
 
 The supported GCP mechanism for free output are:
 
-* `gcs`
-* `pubsub`
-* `bigquery`
+- `gcs`
+- `pubsub`
+- `bigquery`
 
-Google Cloud Platform general region list: https://cloud.google.com/about/locations
+Google Cloud Platform general region list: <https://cloud.google.com/about/locations>
 
-IP ranges of GCP resources per region change over time. Google publishes these ranges as a JSON file here: https://www.gstatic.com/ipranges/cloud.json
+IP ranges of GCP resources per region change over time. Google publishes these ranges as a JSON file here: <https://www.gstatic.com/ipranges/cloud.json>

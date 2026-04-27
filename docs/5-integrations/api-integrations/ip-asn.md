@@ -19,8 +19,8 @@ metadata_rules:
 
 Step-by-step, this rule will do the following:
 
-* Upon seeing a `USER_LOGIN` event, retrieve the `event/SOURCE_IP` value and look it up via the `api/ip-asn` resource
-* Upon receiving a response from `api/ip-asn`, evaluate it using `metadata_rules` to see if the ASN matches 13335 (Cloudflare)
+- Upon seeing a `USER_LOGIN` event, retrieve the `event/SOURCE_IP` value and look it up via the `api/ip-asn` resource
+- Upon receiving a response from `api/ip-asn`, evaluate it using `metadata_rules` to see if the ASN matches 13335 (Cloudflare)
 
 The format of the metadata returned looks like this:
 

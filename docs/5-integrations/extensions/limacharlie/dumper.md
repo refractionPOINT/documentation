@@ -8,10 +8,10 @@ It supports multiple targets -- `memory` to dump the memory of the host, and `mf
 
 When enabled, dumper will be added to the Extensions view inside your Organization. It will accept the following parameters:
 
-* `sid` - a Sensor ID for the host to perform the memory dump
-* `target` - memory or mft
-* `retention` - the number of days the memory dump should be retained for (default is 30)
-* `ignore_cert` - ignore cert errors for payload and collection purposes (default `false`)
+- `sid` - a Sensor ID for the host to perform the memory dump
+- `target` - memory or mft
+- `retention` - the number of days the memory dump should be retained for (default is 30)
+- `ignore_cert` - ignore cert errors for payload and collection purposes (default `false`)
 
 Upon submission of a request, the extension will perform a full memory dump of a host and upload the resulting dumps to LimaCharlie's artifact ingestion system and delete the local dumps afterwards.
 

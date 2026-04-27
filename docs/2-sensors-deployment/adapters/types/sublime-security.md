@@ -10,7 +10,7 @@ Audit logs from Sublime can be ingested cloud-to-cloud via the API.
 
 Adapter Type: `sublime`
 
-* `api_key`: your Okta API key/token
+- `api_key`: your Okta API key/token
 
 ### CLI Deployment
 
@@ -97,16 +97,16 @@ Creating a Webhook Adapter requires a set of parameters, including organization 
 
 Note that in the mapping above, we make the following changes:
 
-* `event_type_path` is mapped to the rule name from the Sublime alert
-* `event_time_path` is mapped to the `created_at` field from the Sublime alert
+- `event_type_path` is mapped to the rule name from the Sublime alert
+- `event_time_path` is mapped to the `created_at` field from the Sublime alert
 
 #### 2. Building the Adapter URL
 
 After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
 
-* Organization ID
-* Webhook name (from the config)
-* Secret (from the config)
+- Organization ID
+- Webhook name (from the config)
+- Secret (from the config)
 
 Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.io`, the format of the URL would be:
 

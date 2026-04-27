@@ -6,12 +6,12 @@ Looking for Google Chronicle?
 
 If you already use Google Chronicle, we make it easy to send telemetry you've collected in LimaCharlie to Chronicle. You can get that set up by creating an Output in LimaCharlie to a GCS bucket.
 
-* `bucket`: the path to the GCS bucket.
-* `secret_key`: the secret json key identifying a service account.
-* `sec_per_file`: the number of seconds after which a file is cut and uploaded.
-* `is_compression`: if set to "true", data will be gzipped before upload.
-* `is_indexing`: if set to "true", data is uploaded in a way that makes it searchable.
-* `dir`: the directory prefix where to output the files on the remote host.
+- `bucket`: the path to the GCS bucket.
+- `secret_key`: the secret json key identifying a service account.
+- `sec_per_file`: the number of seconds after which a file is cut and uploaded.
+- `is_compression`: if set to "true", data will be gzipped before upload.
+- `is_indexing`: if set to "true", data is uploaded in a way that makes it searchable.
+- `dir`: the directory prefix where to output the files on the remote host.
 
 Example:
 
@@ -35,15 +35,15 @@ is_compression: "true"
 
 ## Related articles
 
-* [Building Reports with BigQuery + Looker Studio](../../../4-data-queries/tutorials/bigquery-looker-studio.md)
-* [Google Cloud Pubsub](google-pubsub.md)
-* [Google Cloud BigQuery](bigquery.md)
-* [Google Workspace](../../../2-sensors-deployment/adapters/types/google-workspace.md)
-* [Google Cloud Storage](../../../2-sensors-deployment/adapters/types/google-cloud-storage.md)
-* [Google Cloud Pubsub](../../../2-sensors-deployment/adapters/types/google-cloud-pubsub.md)
-* [Tutorial: Ingesting Google Cloud Logs](../../../2-sensors-deployment/adapters/tutorials/google-cloud-logs.md)
-* [Google Cloud](../../extensions/cloud-cli/google-cloud.md)
+- [Building Reports with BigQuery + Looker Studio](../../../4-data-queries/tutorials/bigquery-looker-studio.md)
+- [Google Cloud Pubsub](google-pubsub.md)
+- [Google Cloud BigQuery](bigquery.md)
+- [Google Workspace](../../../2-sensors-deployment/adapters/types/google-workspace.md)
+- [Google Cloud Storage](../../../2-sensors-deployment/adapters/types/google-cloud-storage.md)
+- [Google Cloud Pubsub](../../../2-sensors-deployment/adapters/types/google-cloud-pubsub.md)
+- [Tutorial: Ingesting Google Cloud Logs](../../../2-sensors-deployment/adapters/tutorials/google-cloud-logs.md)
+- [Google Cloud](../../extensions/cloud-cli/google-cloud.md)
 
 ## What's Next
 
-* [Humio](humio.md)
+- [Humio](humio.md)

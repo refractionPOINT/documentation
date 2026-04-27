@@ -80,11 +80,11 @@ To do it, you will need to configure outputs. Here are some examples for configu
 
 Remember to select the type of data forwarded by this configuration (stream). The available options are as follows:
 
-* **event**: Contains all events coming back from sensors (not cloud detections). It is very verbose.
-* **detect**: Contains all detections reported from D&R rules or subscriptions. This is the option you would choose if you want detections to generate emails (you would also need to ensure that D&R rules are configured to generate detections).
-* **audit**: Contains auditing events about activity around the management of the platform in the cloud.
-* **deployment**: Contains all "deployment" events like sensor enrollment, cloned sensors etc.
-* **artifact**: Contains all "artifact" events of files collected through the Artifact Collection mechanism.
+- **event**: Contains all events coming back from sensors (not cloud detections). It is very verbose.
+- **detect**: Contains all detections reported from D&R rules or subscriptions. This is the option you would choose if you want detections to generate emails (you would also need to ensure that D&R rules are configured to generate detections).
+- **audit**: Contains auditing events about activity around the management of the platform in the cloud.
+- **deployment**: Contains all "deployment" events like sensor enrollment, cloned sensors etc.
+- **artifact**: Contains all "artifact" events of files collected through the Artifact Collection mechanism.
 
 While sending detections and events data from LimaCharlie into the SIEM is the most common way we see our users set up the integration between these two systems, you can also bring in the data into LimaCharlie from SIEM or build other custom workflows. Contact our support team if you need help with your use case or if you have further questions.
 

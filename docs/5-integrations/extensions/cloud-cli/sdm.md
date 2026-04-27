@@ -22,8 +22,8 @@ The following response action returns a list of all users in your Organization.
 
 To utilize StrongDM's CLI capabilities, you will need:
 
-* An admin or service account token. More information on provisioning this token can be found [here](https://www.strongdm.com/docs/admin/tokens-and-keys/).
-* Create a secret in the secrets manager in the following format:
+- An admin or service account token. More information on provisioning this token can be found [here](https://www.strongdm.com/docs/admin/tokens-and-keys/).
+- Create a secret in the secrets manager in the following format:
 
 ```
 token
