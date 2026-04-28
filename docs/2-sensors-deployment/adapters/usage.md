@@ -369,7 +369,7 @@ index_type: user
 
 Put together in a client option, you could have:
 
-```json
+```text
 {
   "client_options": {
     ...,

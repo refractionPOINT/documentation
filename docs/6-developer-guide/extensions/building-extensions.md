@@ -104,7 +104,7 @@ Here's an example high-level structure of a schema.
 
 While hidden in the example above, each `field` key-value pair shares the same structure and has a minimal implementation as such:
 
-```yaml
+```text
 field_name: {
   data_type: "string",
   description: "",
