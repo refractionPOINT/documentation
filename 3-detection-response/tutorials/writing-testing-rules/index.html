@@ -11980,7 +11980,7 @@ to apply the following constraints:</p>
 </ol>
 <p>LC supports a lot of different event types, this means that the first thing we should strive to
 do to try to make the rule fail as quickly as possible is to filter all events we don't care about.</p>
-<p>In this case, we only care about <a href="../../../8-reference/edr-events/#codeidentity">CODE_IDENTITY</a> events. We also know that
+<p>In this case, we only care about <a href="../../../8-reference/edr-events/#code_identity">CODE_IDENTITY</a> events. We also know that
 our rule will use more than one criteria, and those criteria will be AND-ed together because we only
 want to match when they all match.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">and</span>

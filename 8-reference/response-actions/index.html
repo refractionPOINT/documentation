@@ -12159,7 +12159,7 @@
 <p>The <code>extension request</code> parameters will vary depending on the extension (see the relevant extension's schema). The <code>extension request</code> parameter is a <a href="../../4-data-queries/template-transforms/">transform</a>.</p>
 <p>You can also specify a <code>based on report: true</code> parameter. When true (defaults to false), the transform for the <code>extension request</code> will be based on the latest <code>report</code> action's report instead of the original event. This means you MUST have a <code>report</code> action <em>before</em> the <code>extension request</code>.</p>
 <h3 id="isolate-network">isolate network<a class="headerlink" href="#isolate-network" title="Anchor link to this section">&para;</a></h3>
-<p>Isolates the sensor from the network in a persistent fashion (if the sensor/host reboots, it will remain isolated). Only works on platforms supporting the <code>segregate_network</code> <a href="../endpoint-commands/#segregatenetwork">sensor command</a>.</p>
+<p>Isolates the sensor from the network in a persistent fashion (if the sensor/host reboots, it will remain isolated). Only works on platforms supporting the <code>segregate_network</code> <a href="../endpoint-commands/#segregate_network">sensor command</a>.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>- action: isolate network
 </span></code></pre></div>
 <p>When the network isolation feature is used, LimaCharlie will block connections to all destinations other than the LimaCharlie cloud (so that you can perform an investigation, take remediation actions, and then ultimately remove the isolation to resume normal network operation). The host will maintain internet connectivity to allow for you to perform those actions.</p>
@@ -12167,7 +12167,7 @@
 <p>The <code>segregate_network</code> command is stateless, so if the endpoint reboots, it will not be in effect. The isolate network command in <abbr title="Detection &amp; Response">D&amp;R</abbr> rules is stateful, so it sets a flag in the cloud to make sure the endpoint remains isolated even after reboots.</p>
 </blockquote>
 <h3 id="seal">seal<a class="headerlink" href="#seal" title="Anchor link to this section">&para;</a></h3>
-<p>Seals the sensor in a persistent fashion (if the sensor/host reboots, it will remain sealed). Only works on platforms supporting the <code>seal</code> <a href="../endpoint-commands/#seal">sensor command</a>.</p>
+<p>Seals the sensor in a persistent fashion (if the sensor/host reboots, it will remain sealed). Only works on platforms supporting the <code>seal</code> <a href="../endpoint-commands/">sensor command</a>.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>- action: seal
 </span></code></pre></div>
 <p>Sealing a sensor enables tamper resistance, preventing direct modifications to the installed <abbr title="Endpoint Detection &amp; Response">EDR</abbr>.</p>
