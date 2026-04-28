@@ -11697,7 +11697,7 @@
 <p>The Govee <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> allows you to trigger color changes on your <a href="https://developer.govee.com/docs/support-product-model">supported Govee lights</a> via a rule response action. It requires you to configure a Govee API key in the extension.</p>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Anchor link to this section">&para;</a></h2>
 <ol>
-<li>Request an API key from Govee by following their instructions <a href="https://developer.govee.com/reference/apply-you-govee-api-key">here</a></li>
+<li>Request an API key from Govee by following their <a href="https://developer.govee.com/reference/apply-you-govee-api-key">Apply for a Govee API key instructions</a></li>
 <li>Get the Device ID (device) and model (sku) of the device you'd like to target by requesting a list of your supported devices from the Govee API:</li>
 </ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>--location<span class="w"> </span><span class="s1">&#39;https://openapi.api.govee.com/router/api/v1/user/devices&#39;</span><span class="w"> </span>--header<span class="w"> </span><span class="s1">&#39;Govee-API-Key: YOUR_GOVEE_API_KEY&#39;</span>

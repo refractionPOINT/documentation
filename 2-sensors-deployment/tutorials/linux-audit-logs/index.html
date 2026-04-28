@@ -11718,7 +11718,7 @@
 
 
 <h1 id="ingesting-linux-audit-logs">Ingesting Linux Audit Logs<a class="headerlink" href="#ingesting-linux-audit-logs" title="Anchor link to this section">&para;</a></h1>
-<p>One data source of common interest on Linux systems is the <code>audit.log</code> file. By default, this file stores entries from the Audit system, which contains information about logins, privilege escalations, and other account-related events. You can find more information about Audit Log files <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-understanding_audit_log_files">here</a>.</p>
+<p>One data source of common interest on Linux systems is the <code>audit.log</code> file. By default, this file stores entries from the Audit system, which contains information about logins, privilege escalations, and other account-related events. See <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-understanding_audit_log_files">Audit Log file documentation</a>.</p>
 <p>There are a few techniques to ingest Linux Audit logs into LimaCharlie:</p>
 <ol>
 <li>Pull the raw logs using Artifacts and/or the File System navigator <em>(<abbr title="Endpoint Detection &amp; Response">EDR</abbr> sensors only)</em></li>
@@ -11755,7 +11755,7 @@
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="nt">file_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/auth.log</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">no_follow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div>
-<p>More details on configuration files and adapter usage can be found <a href="../../adapters/usage/">here</a>.</p>
+<p>See <a href="../../adapters/usage/">adapter configuration and usage</a> for more detail.</p>
 <p><strong>Step 3:</strong> Run the adapter, providing the <code>file</code> option and the appropriate config file.</p>
 <p><code>$ ./lc_adapter file /tmp/config.yml</code></p>
 <p>The adapter should load the config and display options to the terminal.</p>

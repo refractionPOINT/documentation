@@ -11741,12 +11741,12 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Anchor link to this section">&para;</a></h2>
 <p>This <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> allows you to ingest the logs from the pods running in a Kubernetes cluster.</p>
 <p>The adapter relies on local filesystem access to the standard Kubernetes pod logging structure. This means the adapter is best run as a Daemon Set in Kubernetes with the pod logs location mounted (usually <code>/var/log/pods</code>).</p>
-<p>A public Docker container is available <a href="https://hub.docker.com/r/refractionpoint/lc-adapter-k8s-pods">here</a> as <code>refractionpoint/lc-adapter-k8s-pods</code>.</p>
+<p>A <a href="https://hub.docker.com/r/refractionpoint/lc-adapter-k8s-pods">public Docker container</a> is available as <code>refractionpoint/lc-adapter-k8s-pods</code>.</p>
 <h2 id="configurations">Configurations<a class="headerlink" href="#configurations" title="Anchor link to this section">&para;</a></h2>
 <p><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Type: <code>k8s_pods</code></p>
 <p>The following fields are required for configuration:</p>
 <ul>
-<li><code>client_options</code>: common configuration for adapter as defined <a href="../../usage/">here</a>.</li>
+<li><code>client_options</code>: see <a href="../../usage/">common adapter configuration</a>.</li>
 <li><code>root</code>: The root of the Kubernetes directory storing logs, usually <code>/var/log/pods</code>.</li>
 </ul>
 <h3 id="infrastructure-as-code-deployment"><abbr title="Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure...">Infrastructure as Code</abbr> Deployment<a class="headerlink" href="#infrastructure-as-code-deployment" title="Anchor link to this section">&para;</a></h3>

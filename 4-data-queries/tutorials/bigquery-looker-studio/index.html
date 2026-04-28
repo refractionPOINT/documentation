@@ -11686,7 +11686,7 @@
 </span></code></pre></div>
 <p>The nice part about this type of hierarchy is that I can build out multiple tables of process details within the same dataset, and then link/analyze them as needed. We'll focus on the <code>network_connections</code> data for now, but we could also look at exporting other process details into the same dataset.</p>
 <p><img alt="image.png" src="../../../assets/images/image%2897%29.png" /></p>
-<p>Within the Google Cloud Console, we also want to create a Service Account and gather an API key. More details on that can be found <a href="https://cloud.google.com/iam/docs/service-accounts-create">here</a>.</p>
+<p>Within the Google Cloud Console, we also want to create a Service Account and gather an API key. See Google Cloud's <a href="https://cloud.google.com/iam/docs/service-accounts-create">service account creation guide</a> for more detail.</p>
 <p>Copy the API key and keep it somewhere safe, we'll need to configure it in the output.</p>
 <h2 id="creating-the-bigquery-output">Creating the BigQuery Output<a class="headerlink" href="#creating-the-bigquery-output" title="Anchor link to this section">&para;</a></h2>
 <p>Creating an Output within LimaCharlie is straightforward. Navigate to <code>Outputs</code> in the web UI, select <code>Add Output</code>, and select <code>Events</code>.</p>

@@ -11683,7 +11683,7 @@
 
 <h1 id="digitalocean">DigitalOcean<a class="headerlink" href="#digitalocean" title="Anchor link to this section">&para;</a></h1>
 <p>The DigitalOcean <abbr title="Command-line Interface">CLI</abbr>, or <code>doctl</code>, is the official <abbr title="Command-line Interface">CLI</abbr> for the DigitalOcean API. With this component of the Cloud <abbr title="Command-line Interface">CLI</abbr> <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr>, you can interact with DigitalOcean directly from LimaCharlie.</p>
-<p>This extension makes use of DigitalOcean's official <abbr title="Command-line Interface">CLI</abbr> tool, which can be found <a href="https://github.com/digitalocean/doctl">here</a>. Reference documentation can be found <a href="https://docs.digitalocean.com/reference/doctl/reference/">here</a>.</p>
+<p>This extension uses <a href="https://github.com/digitalocean/doctl">DigitalOcean's official <code>doctl</code> <abbr title="Command-line Interface">CLI</abbr> tool</a>. <a href="https://docs.digitalocean.com/reference/doctl/reference/">Reference documentation</a> is also available.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Anchor link to this section">&para;</a></h2>
 <p>The following example of a response action will enumerate a list of compute droplets within a DigitalOcean instance.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
@@ -11697,7 +11697,7 @@
 <h2 id="credentials">Credentials<a class="headerlink" href="#credentials" title="Anchor link to this section">&para;</a></h2>
 <p>To utilize <code>doctl</code> capabilities, you will need:</p>
 <ul>
-<li>A personal access token. More information on this can be found <a href="https://docs.digitalocean.com/reference/api/create-personal-access-token/">here</a>.</li>
+<li>A personal access token. See DigitalOcean's <a href="https://docs.digitalocean.com/reference/api/create-personal-access-token/">create-personal-access-token reference</a>.</li>
 <li>Create a secret in the secrets manager in the following format:</li>
 </ul>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>personalAccessToken

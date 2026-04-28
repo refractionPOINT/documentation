@@ -11892,7 +11892,7 @@
 <h3 id="preparing-office-365-details">Preparing Office 365 details<a class="headerlink" href="#preparing-office-365-details" title="Anchor link to this section">&para;</a></h3>
 <p>To establish an Office 365 adapter, we will need to complete a few steps within the Azure portal. Ensure that you have the correct permissions to set up a new App registration.</p>
 <ul>
-<li>Within the Microsoft Azure portal, create a new App registration. You can follow Microsoft's Quickstart guide <a href="https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">here</a>.</li>
+<li>Within the Microsoft Azure portal, create a new App registration. See Microsoft's <a href="https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app">App registration Quickstart</a>.</li>
 <li>The LimaCharlie connector requires a secret for Office 365 data. You can create one under <code>Certificates &amp; secrets</code>. Be sure to copy this value and save it somewhere - you can only view it once.</li>
 </ul>
 <p><img alt="image.png" src="../../../../assets/images/image%2873%29.png" /></p>
@@ -11971,7 +11971,7 @@
 </span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OneDrive File Accessed by Anonymous User</span>
 </span></code></pre></div>
-<p>Note that in the detection above, we pivot on the <code>FileAccessed</code> event, which is associated with SharePoint activity. Available event types will depend on source activity and events ingested. More information on audit log activities can be found <a href="https://learn.microsoft.com/en-us/purview/audit-log-activities">here</a>.</p>
+<p>Note that in the detection above, we pivot on the <code>FileAccessed</code> event, which is associated with SharePoint activity. Available event types will depend on source activity and events ingested. See Microsoft's <a href="https://learn.microsoft.com/en-us/purview/audit-log-activities">audit log activities reference</a>.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 

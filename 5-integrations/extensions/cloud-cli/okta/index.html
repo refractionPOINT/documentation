@@ -11893,7 +11893,7 @@
 
 <h1 id="okta">Okta<a class="headerlink" href="#okta" title="Anchor link to this section">&para;</a></h1>
 <p>The Okta <abbr title="Command-line Interface">CLI</abbr> allows you to interact with your Okta instance(s) via the command line. With this component of the Cloud <abbr title="Command-line Interface">CLI</abbr> <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr>, you can interact with Okta directly from LimaCharlie.</p>
-<p>This extension makes use of the Okta <abbr title="Command-line Interface">CLI</abbr>, which can be found <a href="https://cli.okta.com/manual/">here</a>.</p>
+<p>This extension uses <a href="https://cli.okta.com/manual/">the Okta <abbr title="Command-line Interface">CLI</abbr></a>.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Anchor link to this section">&para;</a></h2>
 <p>The following example returns a list of registered Okta applications.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
@@ -11907,7 +11907,7 @@
 <h2 id="credentials">Credentials<a class="headerlink" href="#credentials" title="Anchor link to this section">&para;</a></h2>
 <p>To make use of the Okta <abbr title="Command-line Interface">CLI</abbr>, you will need:</p>
 <ul>
-<li>An API key. More information about provisioning an API key can be found <a href="https://developer.okta.com/docs/guides/create-an-api-token/main/">here</a>.</li>
+<li>An API key. See Okta's <a href="https://developer.okta.com/docs/guides/create-an-api-token/main/">Create an API token guide</a>.</li>
 <li>Create a secret in the secrets manager in the following format:</li>
 </ul>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>okta_domain/api_key

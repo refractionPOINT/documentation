@@ -11771,7 +11771,7 @@
 <p>A template string allows you to customize the value of a configuration based on the context. For example to adjust the Detection Name a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule to include a value from the detection itself. Transforms can also be used to select, modify, or remove fields upon data ingestion from an <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr>.</p>
 <p>A transform allows you to change the shape of JSON data in flight to suit better your usage. This can mean moving, renaming, removing and adding fields in JSON. For example, it can allow you to create an Output that works with <code>DNS_REQUEST</code> events, but outputs only specific fields from the event.</p>
 <h2 id="template-strings">Template Strings<a class="headerlink" href="#template-strings" title="Anchor link to this section">&para;</a></h2>
-<p>Template strings in LimaCharlie use the format defined by "text templates" found <a href="https://pkg.go.dev/text/template">here</a>. A useful guide provided by Hashicorp is also available <a href="https://learn.hashicorp.com/tutorials/nomad/go-template-syntax">here</a>.</p>
+<p>Template strings in LimaCharlie use the <a href="https://pkg.go.dev/text/template">Go <code>text/template</code> format</a>. <a href="https://learn.hashicorp.com/tutorials/nomad/go-template-syntax">Hashicorp's Go template syntax tutorial</a> is also a useful reference.</p>
 <p>The most basic example for a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule customizing the detection name looks like this:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Evil executable on {{ .routing.hostname }}</span>
@@ -11843,7 +11843,7 @@
 <p>Key names are the literal key names in the output. Values support one of 3 types:</p>
 <ol>
 <li>Template Strings, as described above. In this case, the template string will be generated and placed at the same place as the key in the transform object.</li>
-<li>A <code>gjson</code> selector. The selector syntaxt is defined <a href="https://github.com/tidwall/gjson/blob/master/SYNTAX.md">here</a>. It makes it possible to select subsets of input object and map it within the resulting object as defined by the transform.</li>
+<li>A <code>gjson</code> selector. See the <a href="https://github.com/tidwall/gjson/blob/master/SYNTAX.md">gjson syntax reference</a> for the selector syntax. It makes it possible to select subsets of input object and map it within the resulting object as defined by the transform.</li>
 <li>Other JSON objects which will be present in the output.</li>
 </ol>
 <p>Let's look at an example, let's say this is the Input to our transform:</p>
@@ -12050,7 +12050,7 @@
 <ul>
 <li><code>parsejson</code>: this modifier takes no arguments, it takes in as input a string that represents a JSON object and outputs the decoded JSON object.</li>
 <li><code>extract</code>: this modifier takes a single argument, <code>re</code> which is a regular expression that uses "named capture groups" (as defined in the <a href="https://github.com/google/re2/wiki/Syntax">re2 documentation</a>). The group names become the keys of the output JSON object with the matching values.</li>
-<li><code>parsetime</code>: this modifier takes two arguments, <code>from</code> and <code>to</code>. It will convert an input string from a given time format (as defined in the Go <code>time</code> library format <a href="https://pkg.go.dev/time#pkg-constants">here</a>) and outputs the resulting time in the <code>to</code> format. Beyond the time constants from the previous link, LimaCharlie also supports a <code>from</code> format of:</li>
+<li><code>parsetime</code>: this modifier takes two arguments, <code>from</code> and <code>to</code>. It converts an input string from a given time format (using the <a href="https://pkg.go.dev/time#pkg-constants">Go <code>time</code> library format constants</a>) and outputs the resulting time in the <code>to</code> format. Beyond those time constants, LimaCharlie also supports a <code>from</code> format of:</li>
 <li><code>epoch_s</code>: a second based epoch timestamp</li>
 <li><code>epoch_ms</code>: a millisecond based epoch timestamp</li>
 </ul>

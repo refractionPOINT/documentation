@@ -11683,7 +11683,7 @@
 
 <h1 id="sublime">Sublime<a class="headerlink" href="#sublime" title="Anchor link to this section">&para;</a></h1>
 <p>The Sublime Security <abbr title="Command-line Interface">CLI</abbr> brings the power of Sublime's email platform to the command-line. With this component of the Cloud <abbr title="Command-line Interface">CLI</abbr> <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr>, you can interact with Sublime's email platform directly from LimaCharlie.</p>
-<p>This extension makes use of Tailscale's native <abbr title="Command-line Interface">CLI</abbr>, which can be found <a href="https://docs.sublimesecurity.com/reference/analysis-api-cli">here</a>. The <abbr title="Command-line Interface">CLI</abbr> is a Python package - the source code can be found <a href="https://github.com/sublime-security/sublime-cli">here</a>.</p>
+<p>This extension uses <a href="https://docs.sublimesecurity.com/reference/analysis-api-cli">Sublime Security's native <abbr title="Command-line Interface">CLI</abbr></a>. The <abbr title="Command-line Interface">CLI</abbr> is a Python package — its <a href="https://github.com/sublime-security/sublime-cli">source code</a> is on GitHub.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Anchor link to this section">&para;</a></h2>
 <p>The following response action returns information about the currently authentication Sublime Security user.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
@@ -11697,7 +11697,7 @@
 <h2 id="credentials">Credentials<a class="headerlink" href="#credentials" title="Anchor link to this section">&para;</a></h2>
 <p>To utilize Sublime's <abbr title="Command-line Interface">CLI</abbr> capabilities, you will need:</p>
 <ul>
-<li>You will need an API key. More information about provisioning an API key can be found <a href="https://docs.sublimesecurity.com/reference/authentication">here</a>.</li>
+<li>You will need an API key. See Sublime Security's <a href="https://docs.sublimesecurity.com/reference/authentication">authentication reference</a> for provisioning details.</li>
 <li>Create a secret in the secrets manager in the following format:</li>
 </ul>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>api_key

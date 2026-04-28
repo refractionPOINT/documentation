@@ -11592,7 +11592,7 @@
 <li>Upon seeing a <code>CONNECTED</code> event, retrieve the <code>routing/ext_ip</code> value and send it to MaxMind via the <code>api/ip-geo</code> resource</li>
 <li>Upon receiving a response from <code>api/ip-geo</code>, evaluate it using <code>metadata_rules</code> to see if the country associated with the IP is located in the EU</li>
 </ul>
-<p>The format of the metadata returned is documented <a href="https://github.com/maxmind/MaxMind-DB-Reader-python">here</a> and looks like this:</p>
+<p>The format of the metadata returned is documented in the <a href="https://github.com/maxmind/MaxMind-DB-Reader-python">MaxMind DB Reader (Python) repository</a> and looks like this:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;country&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&quot;geoname_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2750405</span><span class="p">,</span>

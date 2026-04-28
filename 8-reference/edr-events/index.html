@@ -15311,7 +15311,7 @@
 </span><span id="__span-50-10"><a id="__codelineno-50-10" name="__codelineno-50-10" href="#__codelineno-50-10"></a><span class="p">}</span>
 </span></code></pre></div>
 <h3 id="receipt">RECEIPT<a class="headerlink" href="#receipt" title="Anchor link to this section">&para;</a></h3>
-<p>This event is used as a generic response to some commands. The contents of a <code>RECEIPT</code> event usually contain an <code>ERROR</code> code that you can use to determine if the command was successful (<code>ERROR</code> codes can be explored <a href="../error-codes/">here</a>). It's often a good idea to issue the original command with an <code>investigation_id</code> which will get echoed in the <code>RECEIPT</code> related to that command to make it easier to track.</p>
+<p>This event is used as a generic response to some commands. The contents of a <code>RECEIPT</code> event usually contain an <code>ERROR</code> code that you can use to determine if the command was successful (see <a href="../error-codes/">Error Codes</a> for the complete list). It's often a good idea to issue the original command with an <code>investigation_id</code> which will get echoed in the <code>RECEIPT</code> related to that command to make it easier to track.</p>
 <p><strong>Platforms:</strong></p>
 <h3 id="registry_create">REGISTRY_CREATE<a class="headerlink" href="#registry_create" title="Anchor link to this section">&para;</a></h3>
 <p>This event is generated whenever a registry key / value is created on a Windows OS.</p>
@@ -15379,7 +15379,7 @@
 </span></code></pre></div>
 <h3 id="remote_process_handle">REMOTE_PROCESS_HANDLE<a class="headerlink" href="#remote_process_handle" title="Anchor link to this section">&para;</a></h3>
 <p>Generated whenever a process opens a handle to another process with access flags like <code>VM_READ</code>, <code>VM_WRITE</code>, or <code>PROCESS_CREATE_THREAD</code>.</p>
-<p>The <code>ACCESS_FLAGS</code> is the access mask as defined <a href="https://docs.microsoft.com/en-us/windows/desktop/procthread/process-security-and-access-rights">here</a>.</p>
+<p>The <code>ACCESS_FLAGS</code> is the access mask as defined in Microsoft's <a href="https://docs.microsoft.com/en-us/windows/desktop/procthread/process-security-and-access-rights">Process Security and Access Rights reference</a>.</p>
 <p><strong>Platforms:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-57-1"><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="p">{</span>
 </span><span id="__span-57-2"><a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a><span class="w">  </span><span class="nt">&quot;ACCESS_FLAGS&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">136208</span><span class="p">,</span>
