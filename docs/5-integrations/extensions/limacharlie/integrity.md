@@ -116,5 +116,5 @@ The following REST API actions can be sent to interact with the Integrity extens
 
 ## Related Articles
 
-* [Reference: Endpoint Agent Commands](../../../8-reference/endpoint-commands.md)
-* [Detection and Response Examples](../../../3-detection-response/examples.md)
+- [Reference: Endpoint Agent Commands](../../../8-reference/endpoint-commands.md)
+- [Detection and Response Examples](../../../3-detection-response/examples.md)

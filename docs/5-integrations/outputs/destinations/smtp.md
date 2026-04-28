@@ -4,9 +4,9 @@ One option to export data from LimaCharlie is via SMTP, allowing you to send ema
 
 To utilize SMTP output, you will need:
 
-* An SMTP server that utilizes SSL
-* Username and password to send through the SMTP server (if applicable)
-* A destination email, to receive output
+- An SMTP server that utilizes SSL
+- Username and password to send through the SMTP server (if applicable)
+- A destination email, to receive output
 
 ## Webapp Configuration
 
@@ -14,16 +14,16 @@ To utilize SMTP output, you will need:
 
 Output individually each event, detection, audit, deployment or log through an email.
 
-* `dest_host`: the IP or DNS (and optionally port) of the SMTP server to use to send the email.
-* `dest_email`: the email address to send the email to.
-* `from_email`: the email address set in the From field.
-* `username`: the username (if any) used to authenticate to the SMTP server.
-* `password`: the password (if any) used to authenticate to the SMTP server.
-* `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the email to verify authenticity. This is a required field. See "Webhook Details" section below.
-* `is_readable`: if 'true' the email format will be HTML and designed to be readable by a human instead of a machine.
-* `is_starttls`: if 'true', use the Start TLS method of securing the connection instead of pure SSL.
-* `is_authlogin`: if 'true', authenticate using `AUTH LOGIN` instead of `AUTH PLAIN`.
-* `subject`: is specified, use this as the alternate "subject" line.
+- `dest_host`: the IP or DNS (and optionally port) of the SMTP server to use to send the email.
+- `dest_email`: the email address to send the email to.
+- `from_email`: the email address set in the From field.
+- `username`: the username (if any) used to authenticate to the SMTP server.
+- `password`: the password (if any) used to authenticate to the SMTP server.
+- `secret_key`: an arbitrary shared secret used to compute an HMAC (SHA256) signature of the email to verify authenticity. This is a required field. See "Webhook Details" section below.
+- `is_readable`: if 'true' the email format will be HTML and designed to be readable by a human instead of a machine.
+- `is_starttls`: if 'true', use the Start TLS method of securing the connection instead of pure SSL.
+- `is_authlogin`: if 'true', authenticate using `AUTH LOGIN` instead of `AUTH PLAIN`.
+- `subject`: is specified, use this as the alternate "subject" line.
 
 Example:
 
@@ -42,8 +42,8 @@ subject: LC Detection- <Name>
 
 ## Related articles
 
-* [IMAP](../../../2-sensors-deployment/adapters/types/imap.md)
+- [IMAP](../../../2-sensors-deployment/adapters/types/imap.md)
 
 ## What's Next
 
-* [Splunk](splunk.md)
+- [Splunk](splunk.md)

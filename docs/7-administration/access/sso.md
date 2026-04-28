@@ -18,11 +18,11 @@ LimaCharlie's single sign-on functionality lets companies add their own SSO opti
 
 The high-level user experience is as follows:
 
-* For organizations that choose to use SSO, the SSO will be enforced. Users going to custom branded versions of the LimaCharlie site will be presented with only the option to login through SSO, if their domain has the SSO configuration.
+- For organizations that choose to use SSO, the SSO will be enforced. Users going to custom branded versions of the LimaCharlie site will be presented with only the option to login through SSO, if their domain has the SSO configuration.
 
 ![](../../assets/images/sso-1.png)
 
-* The same user going to the non-branded site would still be presented with all other authentication options. However, a user would only be able to use the authentification option approved for their domain.
+- The same user going to the non-branded site would still be presented with all other authentication options. However, a user would only be able to use the authentification option approved for their domain.
 
 ![](../../assets/images/sso-2.png)
 
@@ -30,8 +30,8 @@ In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Wo
 
 ## Related Articles
 
-* [User Access](user-access.md)
+- [User Access](user-access.md)
 
 ## What's Next
 
-* [Reference: Permissions](../../8-reference/permissions.md)
+- [Reference: Permissions](../../8-reference/permissions.md)

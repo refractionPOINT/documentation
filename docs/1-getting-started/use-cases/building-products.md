@@ -10,9 +10,9 @@ For cybersecurity startups and builders, the Agentic SecOps Workspace offers a r
 
 The Agentic SecOps Workspace provides the tools and infrastructure needed to secure any given organization—and is designed to be flexible and highly customizable. Because of this, the ASW enables many different types of solutions. Individual builders' use cases can vary significantly. Nevertheless, all startups and product developers using the platform will benefit from the following three recommendations:
 
-* Focus on Your Core Value
-* Reduce Up-front Costs
-* Build to Scale
+- Focus on Your Core Value
+- Reduce Up-front Costs
+- Build to Scale
 
 ### Focus on Your Core Value
 

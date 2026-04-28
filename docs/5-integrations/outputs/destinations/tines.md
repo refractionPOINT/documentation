@@ -2,7 +2,7 @@
 
 Output events and detections to [Tines](https://tines.io/).
 
-* `dest_host`: the Tines-provided `Webhook URL`
+- `dest_host`: the Tines-provided `Webhook URL`
 
 Example:
 
@@ -16,4 +16,4 @@ Detections or events sent to Tines via an output can be used to subsequently cre
 
 ## What's Next
 
-* [Webhook](webhook.md)
+- [Webhook](webhook.md)

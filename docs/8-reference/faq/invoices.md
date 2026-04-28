@@ -10,8 +10,8 @@ Please note that our pricing is transparent and is available via our [Pricing we
 
 LimaCharlie offers two types of invoices:
 
-* Individual Organization
-* Unified billing
+- Individual Organization
+- Unified billing
 
 We'll examine each in detail.
 
@@ -19,10 +19,10 @@ We'll examine each in detail.
 
 Your invoice will include a detailed breakdown of usage for your LimaCharlie tenant organization. You'll see individual line items for each LimaCharlie product utilized, along with your actual usage for the period. For example:
 
-* Sensors
-* Output usage
-* Artifact ingestion
-* Replay usage
+- Sensors
+- Output usage
+- Artifact ingestion
+- Replay usage
 
 Invoices cover both lines for standard billable items like Sensor quota which are pre-paid for the following month, as well as consumption-based items (e.g. per-gigabyte costs incurred throughout the prior period) which are post-paid after the month has ended.
 

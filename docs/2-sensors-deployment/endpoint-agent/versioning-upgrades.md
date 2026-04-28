@@ -25,10 +25,10 @@ You can upgrade to any of these version labels for your organization by using th
 
 In addition to using version labels, you can upgrade your organization to a specific sensor version using semantic version strings (e.g., `4.33.20`). This is useful when:
 
-* You need to pin your organization to a specific tested version
-* You want to maintain version consistency across multiple organizations
-* You need to rollback to a previous version for compatibility reasons
-* You're testing a specific version before broader deployment
+- You need to pin your organization to a specific tested version
+- You want to maintain version consistency across multiple organizations
+- You need to rollback to a previous version for compatibility reasons
+- You're testing a specific version before broader deployment
 
 To upgrade or manage sensors using the API:
 
@@ -60,11 +60,11 @@ curl -X POST "https://api.limacharlie.io/v1/modules/{oid}?is_sleep=true" \
 
 To manage the versioning of sensors, you can leverage LimaCharlie's **System** Tags:
 
-* `lc:latest`: Tags the Sensor to receive the most recent version.
+- `lc:latest`: Tags the Sensor to receive the most recent version.
 
-  + This tag is primarily intended for testing `latest` sensor version against a small set of representative sensors before org-wide upgrades to `latest`.
-* `lc:stable`: Tags the sensor to receive a stable version.
-* `lc:experimental`: Tags the sensor to receive the experimental version.
+  - This tag is primarily intended for testing `latest` sensor version against a small set of representative sensors before org-wide upgrades to `latest`.
+- `lc:stable`: Tags the sensor to receive a stable version.
+- `lc:experimental`: Tags the sensor to receive the experimental version.
 
 These tags can be applied to individual sensors to alter version behavior, and updates take effect within 10 minutes. This method also enables staging deployments to test updates on a small group of sensors before organization-wide rollouts.
 

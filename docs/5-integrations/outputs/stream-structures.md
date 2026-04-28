@@ -184,6 +184,7 @@ The `detect_data` field contains **structured IOCs** extracted by the D&R rule. 
 Example `detect_data` for different detection types:
 
 **Malware Detection**:
+
 ```json
 "detect_data": {
   "file_path": "C:\\Users\\admin\\Downloads\\malware.exe",
@@ -194,6 +195,7 @@ Example `detect_data` for different detection types:
 ```
 
 **Network IOC**:
+
 ```json
 "detect_data": {
   "destination_ip": "198.51.100.42",
@@ -263,6 +265,7 @@ Audit logs track actions within the LimaCharlie platform:
 ### Entity Object Examples
 
 **D&R Rule**:
+
 ```json
 "entity": {
   "type": "dr_rule",
@@ -272,6 +275,7 @@ Audit logs track actions within the LimaCharlie platform:
 ```
 
 **Sensor**:
+
 ```json
 "entity": {
   "type": "sensor",
@@ -281,6 +285,7 @@ Audit logs track actions within the LimaCharlie platform:
 ```
 
 **Output**:
+
 ```json
 "entity": {
   "type": "output",
@@ -408,6 +413,7 @@ event_black_list: |
 ```
 
 **Format Notes**:
+
 - Use the pipe (`|`) operator for multiline strings in YAML
 - Each event type on its own line
 - No hyphens or list syntax
@@ -478,6 +484,7 @@ rule_tag_black_list: |
 ### 2. Optimize Event Stream Volume
 
 Event streams can be high-volume. Consider:
+
 - Filtering by `event_type` to send only relevant events
 - Using separate outputs for different event types
 - Sampling high-frequency events if full fidelity isn't needed
@@ -493,6 +500,7 @@ Audit logs are critical for compliance and should be stored in tamper-proof, lon
 ### 5. Monitor Deployment Stream
 
 Use deployment events to track sensor health and detect:
+
 - Unexpected uninstalls (potential evasion)
 - Sensors stuck on old versions (patch management)
 - Gaps in coverage (missing sensors)

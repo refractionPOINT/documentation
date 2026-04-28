@@ -8,8 +8,8 @@ Have multiple organizations?
 
 Similar to detection & response rules, false positive rules are created on a per tenant level. This means that if you have more than one organization you want to apply the rule to, you will want to:
 
-* re-create the same rule in multiple organizations, or
-* using our infrastructure as code functionality, push your FP rules to multiple tenants within seconds.
+- re-create the same rule in multiple organizations, or
+- using our infrastructure as code functionality, push your FP rules to multiple tenants within seconds.
 
 ## Use Cases
 

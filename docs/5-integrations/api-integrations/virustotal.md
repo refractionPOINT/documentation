@@ -22,10 +22,10 @@ metadata_rules:
 
 Step-by-step, this rule will do the following:
 
-* Upon seeing a `CODE_IDENTITY` event, retrieve the `event/HASH` value and send it to VirusTotal via the `api/vt` resource.
-* Upon receiving a response from `api/vt`, evaluate it using `metadata_rules` to see if the length of the response is greater than 1 (in this case meaning that more than 1 vendor reporting a hash is bad).
+- Upon seeing a `CODE_IDENTITY` event, retrieve the `event/HASH` value and send it to VirusTotal via the `api/vt` resource.
+- Upon receiving a response from `api/vt`, evaluate it using `metadata_rules` to see if the length of the response is greater than 1 (in this case meaning that more than 1 vendor reporting a hash is bad).
 
 ## Related Articles
 
-* [VirusTotal Integration](../tutorials/virustotal-integration.md)
-* [Extensions](../extensions/using-extensions.md)
+- [VirusTotal Integration](../tutorials/virustotal-integration.md)
+- [Extensions](../extensions/using-extensions.md)

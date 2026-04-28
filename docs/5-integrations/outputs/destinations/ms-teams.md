@@ -4,8 +4,8 @@ Output detections and audit (only) to a Microsoft Teams channel via webhook.
 
 Messages are delivered as [Adaptive Cards](https://learn.microsoft.com/en-us/adaptive-cards/).
 
-* `webhook_url`: the Microsoft Teams Workflow webhook URL.
-* `message`: (optional) a template string for custom message formatting.
+- `webhook_url`: the Microsoft Teams Workflow webhook URL.
+- `message`: (optional) a template string for custom message formatting.
 
 Example:
 

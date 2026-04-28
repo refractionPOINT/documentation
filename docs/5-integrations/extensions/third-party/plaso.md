@@ -12,9 +12,9 @@ These timelines are invaluable tools for digital forensic investigators and anal
 
 The primary tools in the Plaso suite used for this process are [log2timeline](https://plaso.readthedocs.io/en/latest/sources/user/Using-log2timeline.html), [psort](https://plaso.readthedocs.io/en/latest/sources/user/Using-psort.html), and [psteal](https://plaso.readthedocs.io/en/latest/sources/user/Using-psteal.html).
 
-* `log2timeline` - bulk forensic artifact parser
-* `psort` - builds timelines based on output from `log2timeline`
-* `psteal` - Simply a wrapper for `log2timeline` and `psort`
+- `log2timeline` - bulk forensic artifact parser
+- `psort` - builds timelines based on output from `log2timeline`
+- `psteal` - Simply a wrapper for `log2timeline` and `psort`
 
 The `ext-plaso` extension within LimaCharlie allows you to run `log2timeline` and `psort` (using the `psteal` wrapper) against artifacts obtained from an endpoint, such as event logs, registry hives, and various other forensic artifacts. When executed, Plaso will parse and extract information from all acquired evidence artifacts that it has support for. Supported parsers are found [here](https://plaso.readthedocs.io/en/latest/sources/user/Parsers-and-plugins.html).
 
@@ -32,8 +32,8 @@ The `ext-plaso` extension runs `psteal` (`log2timeline` + `psort`) against the a
 
 Upon running `psteal.py`, a `.plaso` file and a `.csv` file are generated. They will be uploaded as LimaCharlie artifacts.
 
-* Resulting `.plaso` file contains the raw output of `log2timeline.py`
-* Resulting `.csv` file contains the CSV formatted version of the `.plaso` file contents
+- Resulting `.plaso` file contains the raw output of `log2timeline.py`
+- Resulting `.csv` file contains the CSV formatted version of the `.plaso` file contents
 
 2. ```bash
    pinfo.py $artifact_id.plaso -w $artifact_id_pinfo.json --output_format json
@@ -43,11 +43,11 @@ After `psteal.py` runs, information is gathered from the resulting `.plaso` file
 
 The following events will be pushed to the `ext-plaso` sensor timeline:
 
-* `job_queued`: indicates that `ext-plaso` has received and queued a request to process data
-* `job_started`: indicates that `ext-plaso` has started processing the data
-* `pinfo`: contains the `pinfo.py` output summarizing the results of the plaso file generation
-* `plaso`: contains the `artifact_id` of the plaso file that was uploaded to LimaCharlie
-* `csv`: contains the `artifact_id` of the CSV file that was uploaded to LimaCharlie
+- `job_queued`: indicates that `ext-plaso` has received and queued a request to process data
+- `job_started`: indicates that `ext-plaso` has started processing the data
+- `pinfo`: contains the `pinfo.py` output summarizing the results of the plaso file generation
+- `plaso`: contains the `artifact_id` of the plaso file that was uploaded to LimaCharlie
+- `csv`: contains the `artifact_id` of the CSV file that was uploaded to LimaCharlie
 
 ## Usage & Automation
 
@@ -83,12 +83,13 @@ If you use the LimaCharlie [Velociraptor](velociraptor.md) extension, a good use
      extension request:
          artifact_id: '{{ .routing.log_id }}'
    ```
+
 2. Launch a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Velociraptor extension. This instructs Velociraptor to gather all endpoint artifacts defined in [this KAPE Target file](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape).
 
    **Argument options:**
 
-   * `EventLogs=Y` - EventLogs only, quicker processing time for proof of concept
-   * `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](../../../assets/images/velociraptor-ext-3.png)
+   - `EventLogs=Y` - EventLogs only, quicker processing time for proof of concept
+   - `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](../../../assets/images/velociraptor-ext-3.png)
 3. Once Velociraptor collects, zips, and uploads the evidence, the previously created D&R rule will send the triage `.zip` to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
 
 ### MFT Processing
@@ -121,6 +122,7 @@ If you use the LimaCharlie [Dumper](../limacharlie/dumper.md) extension, a good 
      extension request:
          artifact_id: '{{ .routing.log_id }}'
    ```
+
 2. Launch an MFT dump in the LimaCharlie Dumper extension.
    ![](../../../assets/images/plaso-ext-1.png)
 3. Once dumper is complete and uploads the evidence, the previously created D&R rule will send the zipped MFT CSV to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
@@ -131,11 +133,11 @@ Running the extension generates the following useful outputs:
 
 ![image.png](../../../assets/images/image(254).png)
 
-* `pinfo` on `ext-plaso` sensor timeline
+- `pinfo` on `ext-plaso` sensor timeline
    First and foremost, after the completion of a processing job by `ext-plaso`, it is highly encouraged to analyze the resulting `pinfo` event on the `ext-plaso` sensor timeline. This event provides a detailed summary with metrics of the processing that occurred, as well as any relevant errors you should be aware of.
 
-  + Pay close attention to fields such as `warnings_by_parser` or `warnings_by_path_spec` which may reveal parser errors that were encountered.
-  + Sample output of `pinfo` showing counts of parsed artifacts nested under `storage_counters` -- this provides insight as to which, and how many events will be present in your CSV timeline.
+  - Pay close attention to fields such as `warnings_by_parser` or `warnings_by_path_spec` which may reveal parser errors that were encountered.
+  - Sample output of `pinfo` showing counts of parsed artifacts nested under `storage_counters` -- this provides insight as to which, and how many events will be present in your CSV timeline.
 
 ```
 "amcache": 986,
@@ -182,7 +184,7 @@ Running the extension generates the following useful outputs:
 
 ![image.png](../../../assets/images/image(253).png)
 
-* `plaso` artifact
+- `plaso` artifact
    The downloadable `.plaso` file contains the raw output of `log2timeline.py` and can be [imported into Timesketch](https://timesketch.org/guides/user/upload-data/) as a timeline.
-* `csv` artifact
+- `csv` artifact
    The downloadable `.csv` file can be easily viewed in any CSV viewer, but a highly recommended tool for this is [Timeline Explorer](https://ericzimmerman.github.io/) from Eric Zimmerman.

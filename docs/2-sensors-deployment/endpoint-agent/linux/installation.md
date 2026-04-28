@@ -60,8 +60,8 @@ echo "limacharlie limacharlie/installation_key string INSTALLATION_KEY_HERE" | s
 
 Debian packages are offered for the various architectures the Linux sensor supports, like:
 
-* **x64**: <https://downloads.limacharlie.io/sensor/linux/deb64>
-* **arm64**: <https://downloads.limacharlie.io/sensor/linux/debarm64>
+- **x64**: <https://downloads.limacharlie.io/sensor/linux/deb64>
+- **arm64**: <https://downloads.limacharlie.io/sensor/linux/debarm64>
 
 ### Custom Installation
 
@@ -91,8 +91,8 @@ sudo ./lc_linux_installer.sh <PATH_TO_LC_SENSOR> <YOUR_INSTALLATION_KEY>
 
 You may also pass the value `-` instead of the `INSTALLATION_KEY` like: `-d -`. This will make the installer look for the installation key in an alternate place in the following order:
 
-* Environment variable `LC_INSTALLATION_KEY`
-* Text file in current working directory: `lc_installation_key.txt`
+- Environment variable `LC_INSTALLATION_KEY`
+- Text file in current working directory: `lc_installation_key.txt`
 
 ### Disabling Netlink
 

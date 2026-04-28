@@ -8,7 +8,7 @@ LimaCharlie can ingest and natively parse Azure Monitor Logs.
 
 Azure Monitor logs can be ingested via:
 
-* [Azure Event Hub](../azure-event-hub.md)
-* LimaCharlie [Webhooks](../../tutorials/webhook-adapter.md)
+- [Azure Event Hub](../azure-event-hub.md)
+- LimaCharlie [Webhooks](../../tutorials/webhook-adapter.md)
 
 Upon ingestion, the log `category` field is used to define the Event Type.

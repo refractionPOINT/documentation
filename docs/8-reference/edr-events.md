@@ -358,10 +358,10 @@ Generated when a file is deleted.
 
 > Best Practices:
 >
-> * Utilize this selectively (ex. deploy on only suspect systems)
-> * Use Exfil watch rules to specify paths that are of high interest
-> * Consider using File Integrity Monitoring (FIM)
-> * Look for this on an ad-hoc basis from the Sensor Console. ex.
+> - Utilize this selectively (ex. deploy on only suspect systems)
+> - Use Exfil watch rules to specify paths that are of high interest
+> - Consider using File Integrity Monitoring (FIM)
+> - Look for this on an ad-hoc basis from the Sensor Console. ex.
 >
 >   ```
 >   history_dump -e FILE_DELETE
@@ -445,10 +445,10 @@ Generated when a file is modified.
 
 > Best Practices:
 >
-> * Utilize this selectively (ex. deploy on only suspect systems)
-> * Use Exfil watch rules to specify paths that are of high interest
-> * Consider using File Integrity Monitoring (FIM)
-> * Look for this on an ad-hoc basis from the Sensor Console. ex.
+> - Utilize this selectively (ex. deploy on only suspect systems)
+> - Use Exfil watch rules to specify paths that are of high interest
+> - Consider using File Integrity Monitoring (FIM)
+> - Look for this on an ad-hoc basis from the Sensor Console. ex.
 >
 >   ```
 >   history_dump -e FILE_MODIFIED
@@ -484,14 +484,14 @@ Generated when a new process is observed interacting with certain file types.
 
 The `RULE_NAME` component is the class of file extension involved:
 
-* Rule 1: `.doc`, `.docm`, `.docx`
-* Rule 2: `.xlt`, `.xlsm`, `.xlsx`
-* Rule 3: `.ppt`, `.pptm`, `.pptx`, `.ppts`
-* Rule 4: `.pdf`
-* Rule 5: `.rtf`
-* Rule 50: `.zip`
-* Rule 51: `.rar`
-* Rule 64: `.locky`, `.aesir`
+- Rule 1: `.doc`, `.docm`, `.docx`
+- Rule 2: `.xlt`, `.xlsm`, `.xlsx`
+- Rule 3: `.ppt`, `.pptm`, `.pptx`, `.ppts`
+- Rule 4: `.pdf`
+- Rule 5: `.rtf`
+- Rule 50: `.zip`
+- Rule 51: `.rar`
+- Rule 64: `.locky`, `.aesir`
 
 **Platforms:**
 
@@ -980,35 +980,35 @@ Generated when a file is created that matches a set list of locations and extens
 
 The following file patterns are considered "documents":
 
-* `.bat`
-* `.js`
-* `.ps1`
-* `.sh`
-* `.py`
-* `.exe`
-* `.scr`
-* `.pdf`
-* `.doc`
-* `.docm`
-* `.docx`
-* `.ppt`
-* `.pptm`
-* `.pptx`
-* `.xlt`
-* `.xlsm`
-* `.xlsx`
-* `.vbs`
-* `.rtf`
-* `.hta`
-* `.lnk`
-* `.xsl`
-* `.com`
-* `.png`
-* `.jpg`
-* `.asp`
-* `.aspx`
-* `.php`
-* `\windows\system32\`
+- `.bat`
+- `.js`
+- `.ps1`
+- `.sh`
+- `.py`
+- `.exe`
+- `.scr`
+- `.pdf`
+- `.doc`
+- `.docm`
+- `.docx`
+- `.ppt`
+- `.pptm`
+- `.pptx`
+- `.xlt`
+- `.xlsm`
+- `.xlsx`
+- `.vbs`
+- `.rtf`
+- `.hta`
+- `.lnk`
+- `.xsl`
+- `.com`
+- `.png`
+- `.jpg`
+- `.asp`
+- `.aspx`
+- `.php`
+- `\windows\system32\`
 
 **Platforms:**
 

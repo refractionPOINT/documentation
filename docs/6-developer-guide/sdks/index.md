@@ -12,7 +12,7 @@ The Python SDK offers a full-featured interface for security automation, data an
 pip install limacharlie
 ```
 
-* Repo — <https://github.com/refractionPOINT/python-limacharlie>
+- Repo — <https://github.com/refractionPOINT/python-limacharlie>
 
 ### [Go SDK](go-sdk.md)
 
@@ -22,7 +22,7 @@ The Go SDK provides a type-safe client library for building security automation,
 go get github.com/refractionPOINT/go-limacharlie/limacharlie
 ```
 
-* Repo — <https://github.com/refractionPOINT/go-limacharlie>
+- Repo — <https://github.com/refractionPOINT/go-limacharlie>
 
 ## Authentication
 

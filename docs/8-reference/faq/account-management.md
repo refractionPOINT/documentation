@@ -20,12 +20,12 @@ To wipe the configuration, you can use Templates / Infrastructure as Code functi
 
 You can transfer ownership of an organization to any other entity. The request needs to be initiated by the current owner (billing or legal contact) of the organization. To do so, contact [support@limacharlie.io](mailto:support@limacharlie.io).
 
-## I Created an Account and Have Been Given Access, but I Do Not Seem to Have Access to Other Organizations.
+## I Created an Account and Have Been Given Access, but I Do Not Seem to Have Access to Other Organizations
 
 With LimaCharlie's granular role-based access control you can be granted access in one of two ways:
 
-* On a per-organization basis
-* To a set of organizations using [Organization Groups](../../7-administration/access/user-access.md)
+- On a per-organization basis
+- To a set of organizations using [Organization Groups](../../7-administration/access/user-access.md)
 
 You'll want to ask the person who granted access if they added you to the individual organizations, or if they'd set up an organization group.  Either method works, but they'll have to ensure that either you're added to each organization individually, or that they set up a group.
 

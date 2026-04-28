@@ -14,8 +14,8 @@ Adapter Type: `k8s_pods`
 
 The following fields are required for configuration:
 
-* `client_options`: common configuration for adapter as defined [here](../usage.md).
-* `root`: The root of the Kubernetes directory storing logs, usually `/var/log/pods`.
+- `client_options`: common configuration for adapter as defined [here](../usage.md).
+- `root`: The root of the Kubernetes directory storing logs, usually `/var/log/pods`.
 
 ### Infrastructure as Code Deployment
 

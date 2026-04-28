@@ -12,6 +12,7 @@ You can white label the LimaCharlie installer for Windows by using an MSI wrappe
 Without a digital code signing certificate the installer will show a warning that it is from an unknown publisher.
 
 ![UAC Signed](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/uac-signed.png)
+
 - vs -
 ![UAC Warning](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/uac-warning.png)
 
@@ -26,9 +27,9 @@ Without a digital code signing certificate the installer will show a warning tha
 
 5. Select the executable
 
-* Set the `Setup executable input file name` to be the LimaCharlie EXE that you'd downloaded
-* Optionally, specify a MSI output file name of your choosing (e.g. Acme\_Installer.msi)
-* Set the MSI platform architecture to match the executable (i.e. x86 for 32-bit, and x64 for 64-bit)
+- Set the `Setup executable input file name` to be the LimaCharlie EXE that you'd downloaded
+- Optionally, specify a MSI output file name of your choosing (e.g. Acme\_Installer.msi)
+- Set the MSI platform architecture to match the executable (i.e. x86 for 32-bit, and x64 for 64-bit)
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_2_-__Select_the_executable.png)
 
@@ -42,13 +43,13 @@ Without a digital code signing certificate the installer will show a warning tha
 
 8. Specify Application IDs
 
-* In the Upgrade Code section, click the "Create New" button next to generate a code. This will be used to allow uninstallation.
+- In the Upgrade Code section, click the "Create New" button next to generate a code. This will be used to allow uninstallation.
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_5_-_Application_Ids.png)
 
 9. Specify Properties (optional: customize options here to have the installer show your brand)
 
-* You can change the drop-down menu of each line item from "Executable" to "Manual" in order to set your own values for the Product Name, Manufacturer, Version, Comments, and Product icon
+- You can change the drop-down menu of each line item from "Executable" to "Manual" in order to set your own values for the Product Name, Manufacturer, Version, Comments, and Product icon
 
 *Original*
 
@@ -64,8 +65,8 @@ Without a digital code signing certificate the installer will show a warning tha
 
 11. Specify Parameters
 
-* In the "Install arguments" box, enter "-i", add a space and then enter your [installation key](../../installation-keys.md)
-* -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
+- In the "Install arguments" box, enter "-i", add a space and then enter your [installation key](../../installation-keys.md)
+- -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_8b_-_Parameters_-_filled.png)
 

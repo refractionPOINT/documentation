@@ -1,6 +1,7 @@
 # LimaCharlie Python SDK Documentation
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Installation](#installation)
 3. [Authentication](#authentication)
@@ -22,6 +23,7 @@
 The LimaCharlie Python SDK provides a comprehensive interface for interacting with the LimaCharlie Agentic SecOps Workspace. This SDK enables programmatic access to all platform features including sensor management, detection and response rules, real-time event streaming, and artifact collection.
 
 ### Key Features
+
 - **Organization Management**: Create, configure, and manage LimaCharlie organizations
 - **Sensor Operations**: Deploy, monitor, and control endpoint sensors
 - **Detection & Response**: Create and manage detection rules with automated response actions
@@ -32,20 +34,24 @@ The LimaCharlie Python SDK provides a comprehensive interface for interacting wi
 - **Infrastructure as Code**: Pull/push org configuration as version-controlled YAML files
 
 ### SDK Version
+
 Current version: 5.0.0
 
 ## Installation
 
 ### Requirements
+
 - Python 3.9 or higher
 - pip package manager
 
 ### Install via pip
+
 ```bash
 pip install limacharlie
 ```
 
 ### Install from source
+
 ```bash
 git clone https://github.com/refractionPOINT/python-limacharlie.git
 cd python-limacharlie
@@ -53,6 +59,7 @@ pip install -e ".[dev]"
 ```
 
 ### Dependencies
+
 Core dependencies (automatically installed):
 
 - `requests` - HTTP client

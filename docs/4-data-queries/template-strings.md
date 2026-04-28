@@ -19,16 +19,16 @@ The most basic example for a D&R rule customizing the detection name looks like 
 
 Template strings also support some LimaCharlie-specific functions:
 
-* `token`: applies an MD5 hashing function on the value provided.
-* `anon`: applies an MD5 hashing function on a secret seed value, plus the value provided.
-* `json`: marshals the input into a JSON string representation.
-* `prettyjson`: same as `json` but with indentation and newlines.
-* `parsetime`: parse a time format to another.
-* `split`: split a string based on a seperator param.
-* `join`: join a list into a string joined by another string.
-* `replace`: replace all string into the other.
-* `base`: return the file name in a file path.
-* `dir`: return the base directory path from a file path.
+- `token`: applies an MD5 hashing function on the value provided.
+- `anon`: applies an MD5 hashing function on a secret seed value, plus the value provided.
+- `json`: marshals the input into a JSON string representation.
+- `prettyjson`: same as `json` but with indentation and newlines.
+- `parsetime`: parse a time format to another.
+- `split`: split a string based on a seperator param.
+- `join`: join a list into a string joined by another string.
+- `replace`: replace all string into the other.
+- `base`: return the file name in a file path.
+- `dir`: return the base directory path from a file path.
 
 The `token` and `anon` functions can be used to partially anonymize data anywhere a template string is supported, for example:
 
@@ -39,9 +39,9 @@ The `token` and `anon` functions can be used to partially anonymize data anywher
 
 Other examples:
 
-* `Full Data: {{prettyjson .event.OBJECT }}`
-* `Original time:{{parsetime "{\"from\":\"2006/01/02 15:04:05\", \"to\":\"2006-01-02 15:04:05 MST\"}" .event.timestamp}}`
-* `Packages: {{join "," .event.PACKAGES}}`
+- `Full Data: {{prettyjson .event.OBJECT }}`
+- `Original time:{{parsetime "{\"from\":\"2006/01/02 15:04:05\", \"to\":\"2006-01-02 15:04:05 MST\"}" .event.timestamp}}`
+- `Packages: {{join "," .event.PACKAGES}}`
 
 ### Template Strings and Adapter Transforms
 
@@ -49,8 +49,8 @@ Template strings can also be used with in conjunction the `client_options.mappin
 
 The following options are available in Adapter configurations:
 
-* `+` to add a field
-* `-` to remove a field
+- `+` to add a field
+- `-` to remove a field
 
 Both support template strings, meaning you can add/remove values from the JSON data to replace/supplement other fields.
 
@@ -342,11 +342,11 @@ or
 
 Beyond the built-in modifiers for `gjson` (as seen in their [playground](https://gjson.dev/), LimaCharlie also implements several new modifiers:
 
-* `parsejson`: this modifier takes no arguments, it takes in as input a string that represents a JSON object and outputs the decoded JSON object.
-* `extract`: this modifier takes a single argument, `re` which is a regular expression that uses "named capture groups" (as defined in the [re2 documentation](https://github.com/google/re2/wiki/Syntax)). The group names become the keys of the output JSON object with the matching values.
-* `parsetime`: this modifier takes two arguments, `from` and `to`. It will convert an input string from a given time format (as defined in the Go `time` library format [here](https://pkg.go.dev/time#pkg-constants)) and outputs the resulting time in the `to` format. Beyond the time constants from the previous link, LimaCharlie also supports a `from` format of:
-  + `epoch_s`: a second based epoch timestamp
-  + `epoch_ms`: a millisecond based epoch timestamp
+- `parsejson`: this modifier takes no arguments, it takes in as input a string that represents a JSON object and outputs the decoded JSON object.
+- `extract`: this modifier takes a single argument, `re` which is a regular expression that uses "named capture groups" (as defined in the [re2 documentation](https://github.com/google/re2/wiki/Syntax)). The group names become the keys of the output JSON object with the matching values.
+- `parsetime`: this modifier takes two arguments, `from` and `to`. It will convert an input string from a given time format (as defined in the Go `time` library format [here](https://pkg.go.dev/time#pkg-constants)) and outputs the resulting time in the `to` format. Beyond the time constants from the previous link, LimaCharlie also supports a `from` format of:
+  - `epoch_s`: a second based epoch timestamp
+  - `epoch_ms`: a millisecond based epoch timestamp
 
 For example:
 The transform:

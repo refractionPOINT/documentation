@@ -24,10 +24,10 @@ When enabled, you will see an **Artifact Collection** option under **Sensors** m
 
 Within the Artifact Collection page, you can configure:
 
-* Artifact collection rules for files.
-* Artifact collection rules to stream Windows Event Log (WEL) events.
-* Artifact collection rules to stream Mac Unified Log (MUL) events.
-* PCAP capture rules to capture network traffic (Only available on Linux)
+- Artifact collection rules for files.
+- Artifact collection rules to stream Windows Event Log (WEL) events.
+- Artifact collection rules to stream Mac Unified Log (MUL) events.
+- PCAP capture rules to capture network traffic (Only available on Linux)
 
 The following screenshot provides examples of capturing Windows Security and Sysmon Windows Event Logs via Artifact Collection. Rather than using an Adapter, capturing WEL events via the `wel://` pattern adds the corresponding events to the sensor telemetry, creating a real-time stream of Windows Event Log data. However, you can also specify the pattern to collect the specific `.evtx` files.
 

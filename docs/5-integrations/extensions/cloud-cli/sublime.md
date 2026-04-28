@@ -22,8 +22,8 @@ The following response action returns information about the currently authentica
 
 To utilize Sublime's CLI capabilities, you will need:
 
-* You will need an API key. More information about provisioning an API key can be found [here](https://docs.sublimesecurity.com/reference/authentication).
-* Create a secret in the secrets manager in the following format:
+- You will need an API key. More information about provisioning an API key can be found [here](https://docs.sublimesecurity.com/reference/authentication).
+- Create a secret in the secrets manager in the following format:
 
 ```
 api_key

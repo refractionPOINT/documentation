@@ -14,8 +14,8 @@ These are called "stateful" rules.
 
 To detect events in a tree you can use the following parameters:
 
-* `with child`: matches children of the initial event
-* `with descendant`: matches descendants (children, grandchildren, etc.) of the initial event
+- `with child`: matches children of the initial event
+- `with descendant`: matches descendants (children, grandchildren, etc.) of the initial event
 
 Aside from how deep they match, the `with child` and `with descendant` parameters operate identically: they declare a nested stateful rule.
 

@@ -22,14 +22,14 @@ Once the extension is enabled, you will see an **Event Collection** option under
 
 There are three rule options within the Exfil extension:
 
-* **Event Collection Rules** manage events sent by the Sensor to the LimaCharlie cloud.
-* **Performance Rules** are useful for high I/O servers, but may impact event accuracy. This feature is available only on Windows Sensors.
-* **Watch Rules** allow for conditional operators for an event, allowing you to specify a list of sensors to help manage high-volume events. Conditional operators for Watch Rule events include:
+- **Event Collection Rules** manage events sent by the Sensor to the LimaCharlie cloud.
+- **Performance Rules** are useful for high I/O servers, but may impact event accuracy. This feature is available only on Windows Sensors.
+- **Watch Rules** allow for conditional operators for an event, allowing you to specify a list of sensors to help manage high-volume events. Conditional operators for Watch Rule events include:
 
-  + The **event** itself, such as `MODULE_LOAD`.
-  + The **path** within the event component to be evaluated, such as `FILE_PATH`.
-  + The **operator** to evaluate or compare that should be done between the path and the value.
-  + The **value** to be used in comparison with the operator.
+  - The **event** itself, such as `MODULE_LOAD`.
+  - The **path** within the event component to be evaluated, such as `FILE_PATH`.
+  - The **operator** to evaluate or compare that should be done between the path and the value.
+  - The **value** to be used in comparison with the operator.
 
 A sample **Watch Rule** might be
 

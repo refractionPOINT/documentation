@@ -11,6 +11,7 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 ## Adapter Types
 
 ### Cloud Providers
+
 - [AWS CloudTrail](types/aws-cloudtrail.md)
 - [AWS GuardDuty](types/aws-guardduty.md)
 - [AWS S3](types/s3.md)
@@ -19,12 +20,14 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 - [GCP Storage](types/google-cloud-storage.md)
 
 ### Identity & Access
+
 - [Okta](types/okta.md)
 - [Microsoft Entra ID](types/microsoft-entra-id.md)
 - [Duo](types/duo.md)
 - [1Password](types/1password.md)
 
 ### Security Tools
+
 - [CrowdStrike](types/crowdstrike.md)
 - [Microsoft Defender](types/microsoft-defender.md)
 - [SentinelOne](types/sentinelone.md)
@@ -32,6 +35,7 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 - [Carbon Black](types/carbon-black.md)
 
 ### Generic Formats
+
 - [Syslog](types/syslog.md)
 - [JSON](types/json.md)
 - [File](types/file.md)

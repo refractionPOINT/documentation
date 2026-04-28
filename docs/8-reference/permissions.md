@@ -8,8 +8,8 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 
 ### Naming Convention
 
-* **Category**: Functional area (e.g. sensor, org, dr)
-* **Action**: Operation type (e.g. get, list, set, del, ctrl)
+- **Category**: Functional area (e.g. sensor, org, dr)
+- **Action**: Operation type (e.g. get, list, set, del, ctrl)
 
 ## Core Permissions
 

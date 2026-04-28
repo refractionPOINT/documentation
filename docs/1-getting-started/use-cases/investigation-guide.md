@@ -10,7 +10,7 @@ Use colon-separated tags to categorize events, detections, and entities within y
 
 MITRE ATT&CK tags should be validated against the authoritative MITRE STIX data rather than hardcoded lists.
 
-**Authoritative Source:** https://github.com/mitre-attack/attack-stix-data
+**Authoritative Source:** <https://github.com/mitre-attack/attack-stix-data>
 
 **Tag Formats:**
 
@@ -105,6 +105,7 @@ Document how entities were discovered and validated in the `context` field:
 **Pattern:** `Provenance: [how discovered]. Validation: [how confirmed]. Attribution: [threat intel correlation].`
 
 **Example:**
+
 ```json
 {
   "type": "ip",
@@ -126,16 +127,19 @@ Document how entities were discovered and validated in the `context` field:
 ### Entity Context Templates
 
 **For IPs:**
+
 ```
 Provenance: [discovered in which event type]. Geo: [country/ASN]. TI: [threat intel match]. Historical: [seen before in org?].
 ```
 
 **For Hashes:**
+
 ```
 Provenance: [file name and path]. AV: [detection ratio]. Sandbox: [behavior summary]. First seen: [date].
 ```
 
 **For Domains:**
+
 ```
 Provenance: [DNS query or URL]. Registration: [age, registrar]. TI: [threat intel match]. Resolution: [IP addresses].
 ```
@@ -147,7 +151,9 @@ Provenance: [DNS query or URL]. Registration: [age, registrar]. TI: [threat inte
 Use structured note types for consistent documentation:
 
 ### Observation Notes
+
 Record raw facts without interpretation:
+
 ```
 [TIMESTAMP] [HOST] [EVENT_TYPE]
 Observed: [description of what was seen]
@@ -156,7 +162,9 @@ Related atoms: [list of event atoms]
 ```
 
 ### Hypothesis Notes
+
 Document working theories:
+
 ```
 HYPOTHESIS: [statement]
 
@@ -173,7 +181,9 @@ Alternative explanations:
 ```
 
 ### Finding Notes
+
 Document confirmed discoveries:
+
 ```
 FINDING: [definitive statement]
 
@@ -189,7 +199,9 @@ Confidence: [high/medium/low]
 ```
 
 ### Attack Chain Summary Note
+
 Document the full attack narrative:
+
 ```
 ATTACK CHAIN:
 [Phase 1] → [Phase 2] → [Phase 3] → ...
@@ -219,11 +231,13 @@ Defense gaps: [what failed]
 ### Closure Criteria
 
 **For `closed_false_positive`:**
+
 - [ ] Benign explanation documented in conclusion
 - [ ] Finding note with FP rationale
 - [ ] Consider FP rule if pattern is common
 
 **For `closed_true_positive`:**
+
 - [ ] All action item notes resolved
 - [ ] Containment/eradication verified
 - [ ] Root cause identified
@@ -238,12 +252,14 @@ Defense gaps: [what failed]
 ### Summary Field (Executive Audience)
 
 Write for non-technical stakeholders:
+
 ```
 On [date], [attack type] was detected on [target]. The attacker [brief action summary].
 Impact: [what was affected]. Status: [current state]. Attribution: [if known].
 ```
 
 **Example:**
+
 ```
 On November 15, 2024, a targeted spearphishing attack compromised a Finance department workstation.
 The attacker harvested credentials and moved laterally to 15 servers, exfiltrating approximately 50GB
@@ -254,6 +270,7 @@ Attribution: Financially-motivated actor (medium confidence).
 ### Conclusion Field (Technical Closure)
 
 Document technical determination:
+
 ```
 CLASSIFICATION: [true positive/false positive] - [incident type]
 ROOT CAUSE: [initial access method]
@@ -364,4 +381,3 @@ Consistent tagging enables searching across multiple investigations:
 | Phishing-originated attacks | `root-cause:phishing` |
 | MFA gaps | `gap:no-mfa` |
 | Specific customer (MSSP) | `customer:acme-corp` |
-

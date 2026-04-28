@@ -64,10 +64,10 @@ Our transparent pricing and quota-based approach allows you to easily mix and ma
 
 If you set the quota to 100 vSensors, you can have concurrently:
 
-* 50 Windows Sensors + 50 Linux Sensors, OR
-* 20 Windows Sensors + 30 Linux Sensors + 50 macOS Sensors, OR
-* 100 macOS Sensors
-* Or any other combination as long as the total number of sensors does not exceed the quota of 100 vSensors.
+- 50 Windows Sensors + 50 Linux Sensors, OR
+- 20 Windows Sensors + 30 Linux Sensors + 50 macOS Sensors, OR
+- 100 macOS Sensors
+- Or any other combination as long as the total number of sensors does not exceed the quota of 100 vSensors.
 
 ### Sensors Over Quota
 

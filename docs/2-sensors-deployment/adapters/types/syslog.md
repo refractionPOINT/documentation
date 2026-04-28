@@ -16,13 +16,13 @@ Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/
 
 All Adapters have the same common client configuration options, found [here](../usage.md). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
 
-* `port`: port to listen for syslog from.
-* `iface`: the interface name to listen for new connections/packets from, defaults to all.
-* `is_udp`: if `true`, listen over UDP instead of TCP. Cannot be combined with SSL/TLS.
-* `ssl_cert`: path to a file with the SSL cert to use to receive logs over TCP.
-* `ssl_key`: path to a file with the SSL key to use to receive logs over TCP.
-* `mutual_tls_cert`: path to a CA certificate file for mutual TLS client authentication.
-* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
+- `port`: port to listen for syslog from.
+- `iface`: the interface name to listen for new connections/packets from, defaults to all.
+- `is_udp`: if `true`, listen over UDP instead of TCP. Cannot be combined with SSL/TLS.
+- `ssl_cert`: path to a file with the SSL cert to use to receive logs over TCP.
+- `ssl_key`: path to a file with the SSL key to use to receive logs over TCP.
+- `mutual_tls_cert`: path to a CA certificate file for mutual TLS client authentication.
+- `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
 ### Collecting Syslog via Docker
 
@@ -41,20 +41,20 @@ docker run --rm -it -p 1514:1514 refractionpoint/lc-adapter:latest syslog port=1
 
 Here's a breakdown of the above example:
 
-* `docker run --rm`: run a container and don't keep the contents around when it's stopped.
-* `-it`: make the container interactive so you can ctrl-c to stop it.
-* `-p 1514:1514`: allow the container to listen on port `1514` on the local host and use the same port within the container.
-* `refractionpoint/lc-adapter:latest`: this is the name of the public container provided by LimaCharlie.
-* `syslog`: the method the Adapter should use to collect data locally. The `syslog` value will operate as a syslog endpoint on the TCP port specified.
-* `port=1514`: the TCP port the Adapter should listen on. By default this is a normal TCP connection (not SSL), although SSL options exist.
-* `client_options.identity.installation_key=....`: the Installation Key from LimaCharlie.
-* `client_options.identity.`OID`=....`: the Organization ID from LimaCharlie the installation key above belongs to.
-* `client_options.platform=text`: this indicates the type of data that will be received from this adapter. In this case it's syslog, so `text` lines.
-* `client_options.mapping.parsing_grok=....`: this is the grok expression describing how to interpret the text lines and how to convert them to JSON.
-* `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor generated for this Adapter later if you have to re-install the Adapter.
-* `client_options.mapping.rename_only=true`: only rename the field in mapping below, so keep the other original fields.
-* `client_options.mapping.mapping[0].src_field=....`: the source field of the first mapping record.
-* `client_options.mapping.mapping[0].dst_field=....`: the destination field of the first mapping record.
+- `docker run --rm`: run a container and don't keep the contents around when it's stopped.
+- `-it`: make the container interactive so you can ctrl-c to stop it.
+- `-p 1514:1514`: allow the container to listen on port `1514` on the local host and use the same port within the container.
+- `refractionpoint/lc-adapter:latest`: this is the name of the public container provided by LimaCharlie.
+- `syslog`: the method the Adapter should use to collect data locally. The `syslog` value will operate as a syslog endpoint on the TCP port specified.
+- `port=1514`: the TCP port the Adapter should listen on. By default this is a normal TCP connection (not SSL), although SSL options exist.
+- `client_options.identity.installation_key=....`: the Installation Key from LimaCharlie.
+- `client_options.identity.`OID`=....`: the Organization ID from LimaCharlie the installation key above belongs to.
+- `client_options.platform=text`: this indicates the type of data that will be received from this adapter. In this case it's syslog, so `text` lines.
+- `client_options.mapping.parsing_grok=....`: this is the grok expression describing how to interpret the text lines and how to convert them to JSON.
+- `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor generated for this Adapter later if you have to re-install the Adapter.
+- `client_options.mapping.rename_only=true`: only rename the field in mapping below, so keep the other original fields.
+- `client_options.mapping.mapping[0].src_field=....`: the source field of the first mapping record.
+- `client_options.mapping.mapping[0].dst_field=....`: the destination field of the first mapping record.
 
 To test it, assuming we're on the same Debian box as the container, pipe the syslog to the container:
 
@@ -107,8 +107,8 @@ syslog:
 This step will depend on the type of syslog daemon you are using (syslog, rsyslog, syslog-ng, etc.) Within the daemon configuration file, configure the desired facility(-ies) to direct to the local listener. In the following example, we configured `auth` and `authpriv` events to write to both `/var/log/audit.log` and `127.0.0.1:1514`.
 
 ```
-auth,authpriv.*			/var/log/auth.log
-auth,authpriv.*			@@127.0.0.1:1514
+auth,authpriv.*   /var/log/auth.log
+auth,authpriv.*   @@127.0.0.1:1514
 ```
 
 After applying the appropriate configuration, restart the syslog daemon.

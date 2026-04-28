@@ -27,9 +27,9 @@ The following example disables the user account with the provided user ID.
 
 ## Credentials
 
-* Per the Microsoft 365 CLI documentation, there are multiple login or authentication mechanisms available. The current LimaCharlie implementation utilizes a client secret for authentication. More information on provisioning client secrets can be found [here](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app).
-* Upon invocation, LimaCharlie will first run the `m365 login` command with the credentials provided.
-* Create a secret in the secrets manager in the following format:
+- Per the Microsoft 365 CLI documentation, there are multiple login or authentication mechanisms available. The current LimaCharlie implementation utilizes a client secret for authentication. More information on provisioning client secrets can be found [here](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app).
+- Upon invocation, LimaCharlie will first run the `m365 login` command with the credentials provided.
+- Create a secret in the secrets manager in the following format:
 
   ```
   appID/clientSecret/tenantID

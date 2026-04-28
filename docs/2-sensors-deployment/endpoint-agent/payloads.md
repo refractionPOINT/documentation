@@ -8,10 +8,10 @@ Those payloads can be any executable or script natively understood by the endpoi
 
 We encourage you to look at LimaCharlie native functionality first as it has several advantages:
 
-* Usually has better performance.
-* Data returned is always well structured JSON.
-* Can be tasked automatically and [Detection & Response Rules](../../3-detection-response/index.md) can be created from their data.
-* Data returned is indexed and searchable.
+- Usually has better performance.
+- Data returned is always well structured JSON.
+- Can be tasked automatically and [Detection & Response Rules](../../3-detection-response/index.md) can be created from their data.
+- Data returned is indexed and searchable.
 
 It is possible to set the Payload's file extension on the endpoint by making the Payload name end with that extension. For example, naming a Payload `extract_everything.bat`, the Payload will be sent as a batch file (`.bat`) and executed as such.  This is also true for PowerShell files (`.ps1`).
 
@@ -37,5 +37,5 @@ Note that the signed URLs are only valid for a few minutes.
 
 Payloads are managed with two permissions:
 
-* `payload.ctrl` allows you to create and delete payloads.
-* `payload.use` allows you to run a given payload.
+- `payload.ctrl` allows you to create and delete payloads.
+- `payload.use` allows you to run a given payload.

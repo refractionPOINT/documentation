@@ -8,16 +8,16 @@ This guide covers how to collect system logs into LimaCharlie using USP adapters
 
 The file adapter monitors log files for changes and streams new entries to LimaCharlie. It supports glob patterns for monitoring multiple files and handles log rotation automatically.
 
-#### Key Features:
+#### Key Features
 
-* Glob pattern support (/var/log/*.log)
-* Automatic log rotation handling (with inode-based detection)
-* Polling mode for reliable collection on BSD, network filesystems, and across log rotations
-* Backfill support for historical data
-* Multi-line JSON parsing
-* Grok pattern parsing for structured log extraction
+- Glob pattern support (/var/log/*.log)
+- Automatic log rotation handling (with inode-based detection)
+- Polling mode for reliable collection on BSD, network filesystems, and across log rotations
+- Backfill support for historical data
+- Multi-line JSON parsing
+- Grok pattern parsing for structured log extraction
 
-#### Basic Configuration:
+#### Basic Configuration
 
 ```yaml
 file:
@@ -36,14 +36,14 @@ file:
 
 The syslog adapter runs as a syslog server, accepting logs via TCP or UDP. This is useful for centralizing logs from multiple systems or integrating with existing syslog infrastructure.
 
-#### Key Features:
+#### Key Features
 
-* TCP and UDP support
-* TLS encryption support
-* Mutual TLS authentication
-* RFC 3164/5424 syslog format support
+- TCP and UDP support
+- TLS encryption support
+- Mutual TLS authentication
+- RFC 3164/5424 syslog format support
 
-#### Basic Configuration:
+#### Basic Configuration
 
 ```yaml
 syslog:
@@ -62,8 +62,8 @@ syslog:
 
 LimaCharlie supports two methods for parsing unstructured log data:
 
-* **parsing_grok**: Uses Grok patterns (recommended) - pre-built patterns for common log formats, easier to read and maintain
-* **parsing_re**: Uses regular expressions - for custom formats or when Grok patterns don't meet specific needs
+- **parsing_grok**: Uses Grok patterns (recommended) - pre-built patterns for common log formats, easier to read and maintain
+- **parsing_re**: Uses regular expressions - for custom formats or when Grok patterns don't meet specific needs
 
 Grok patterns are built on regular expressions but provide named patterns for common elements like timestamps, IP addresses, and log formats. Use Grok when possible for better maintainability.
 
@@ -274,21 +274,21 @@ file:
 
 ## Best Practices
 
-* **Use JSON format when possible** - Modern logs often support JSON output, which provides better structure and parsing.
-* **Configure appropriate Grok patterns** - Grok provides pre-built patterns for common log formats and is easier to maintain than regex. Use `parsing_grok` over `parsing_re` when possible.
-* **Set sensor_seed_key appropriately** - Use descriptive names that identify the log source for easier management.
-* **Monitor file permissions** - Ensure the adapter has read access to log files.
-* **Use backfill carefully** - Only enable for initial historical data collection to avoid duplicates.
-* **Enable polling when needed** - Set `poll: true` if the adapter stops collecting after log rotation, or when running on FreeBSD/BSD systems or network filesystems. See the [File Adapter documentation](adapters/types/file.md#polling-mode) for details.
-* **Implement proper field mapping** - Extract hostname, timestamps, and event types for better searchability.
-* **Pattern testing** - Test Grok patterns against sample log lines before deployment. Common patterns include %{COMMONAPACHELOG}, %{SYSLOGTIMESTAMP}, and %{NGINXACCESS}.
+- **Use JSON format when possible** - Modern logs often support JSON output, which provides better structure and parsing.
+- **Configure appropriate Grok patterns** - Grok provides pre-built patterns for common log formats and is easier to maintain than regex. Use `parsing_grok` over `parsing_re` when possible.
+- **Set sensor_seed_key appropriately** - Use descriptive names that identify the log source for easier management.
+- **Monitor file permissions** - Ensure the adapter has read access to log files.
+- **Use backfill carefully** - Only enable for initial historical data collection to avoid duplicates.
+- **Enable polling when needed** - Set `poll: true` if the adapter stops collecting after log rotation, or when running on FreeBSD/BSD systems or network filesystems. See the [File Adapter documentation](adapters/types/file.md#polling-mode) for details.
+- **Implement proper field mapping** - Extract hostname, timestamps, and event types for better searchability.
+- **Pattern testing** - Test Grok patterns against sample log lines before deployment. Common patterns include %{COMMONAPACHELOG}, %{SYSLOGTIMESTAMP}, and %{NGINXACCESS}.
 
 ## Troubleshooting
 
 Common issues:
 
-* **File permission errors**: Check that the adapter process has read access to log files
-* **Parse failures**: Validate Grok patterns against actual log formats
-* **Missing logs**: Verify file paths and glob patterns
-* **Adapter stops collecting after log rotation**: Set `poll: true` in your file adapter configuration. This switches from filesystem event notifications to polling, which reliably detects new data after log rotation tools (e.g. `newsyslog`, `logrotate`) replace the file. This is especially common on FreeBSD and other BSD systems
-* **Connection issues**: Check network connectivity and authentication credentials
+- **File permission errors**: Check that the adapter process has read access to log files
+- **Parse failures**: Validate Grok patterns against actual log formats
+- **Missing logs**: Verify file paths and glob patterns
+- **Adapter stops collecting after log rotation**: Set `poll: true` in your file adapter configuration. This switches from filesystem event notifications to polling, which reliably detects new data after log rotation tools (e.g. `newsyslog`, `logrotate`) replace the file. This is especially common on FreeBSD and other BSD systems
+- **Connection issues**: Check network connectivity and authentication credentials

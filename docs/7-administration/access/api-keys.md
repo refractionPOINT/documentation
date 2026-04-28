@@ -1,6 +1,6 @@
 # API Keys
 
-LimaCharlie Cloud has a concept of API keys. Those are secret keys that can be created and named, and then in turn be used to retrieve a JWT that can be associated with the LC REST API at https://api.limacharlie.io.
+LimaCharlie Cloud has a concept of API keys. Those are secret keys that can be created and named, and then in turn be used to retrieve a JWT that can be associated with the LC REST API at <https://api.limacharlie.io>.
 
 This allows construction of headless applications able to securely acquire time-restricted REST authentication tokens it can then use.
 
@@ -8,7 +8,7 @@ The list of available permissions can be programmatically retrieved from this UR
 
 ## Managing
 
-The API Keys are managed through the Organization view of the https://limacharlie.io web interface.
+The API Keys are managed through the Organization view of the <https://limacharlie.io> web interface.
 
 ## Getting a JWT
 
@@ -94,8 +94,8 @@ Below is a list of privileges required for some common tasks.
 
 When "going Live" through the web UI, the following is required by the user:
 
-* `output.*`: for the creation of the real-time output via HTTP to the browser.
-* `sensor.task`: to send the commands (both manually for the console and to populate the various tabs) to the Sensor.
+- `output.*`: for the creation of the real-time output via HTTP to the browser.
+- `sensor.task`: to send the commands (both manually for the console and to populate the various tabs) to the Sensor.
 
 ## Flair
 
@@ -108,8 +108,8 @@ Flairs are used to modify the behavior of an API key or provide some usage hints
 
 The following flairs are currently supported:
 
-* `bulk`: indicates to the REST API that this key is meant to do a large amount of calls, the API gateway tweaks the API call limits accordingly.
-* `segment`: indicates that only resources created by this key will be visible by this key. This is useful to provide access to a 3rd party in a limited fashion.
+- `bulk`: indicates to the REST API that this key is meant to do a large amount of calls, the API gateway tweaks the API call limits accordingly.
+- `segment`: indicates that only resources created by this key will be visible by this key. This is useful to provide access to a 3rd party in a limited fashion.
 
 ## Allowed IP Range
 

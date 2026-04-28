@@ -4,10 +4,10 @@ Installation keys are Base64-encoded strings provided to Sensors and Adapters in
 
 There are four components of an Installation Key:
 
-* Organization ID **(**OID**)**: The Organization ID that this key should enroll into.
-* **Installer ID (IID)**: Installer ID that is generated and associated with every Installation Key.
-* **Tags**: A list of Tags automatically applied to sensors enrolling with the key.
-* **Description**: The description used to help you differentiate uses of various keys.
+- Organization ID **(**OID**)**: The Organization ID that this key should enroll into.
+- **Installer ID (IID)**: Installer ID that is generated and associated with every Installation Key.
+- **Tags**: A list of Tags automatically applied to sensors enrolling with the key.
+- **Description**: The description used to help you differentiate uses of various keys.
 
 ## Management
 

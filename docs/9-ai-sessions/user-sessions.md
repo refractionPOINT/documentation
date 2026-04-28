@@ -22,6 +22,7 @@ Before using AI Sessions, you must register. Registration is available to LimaCh
 Navigate to the AI Sessions section in the LimaCharlie web console and click "Register".
 
 **Via API:**
+
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/register \
   -H "Authorization: Bearer $LC_JWT"
@@ -49,12 +50,14 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/apikey \
 If you have a Claude Max subscription, you can authenticate via OAuth:
 
 1. Start the OAuth flow:
+
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/start \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
 2. Poll for the authorization URL:
+
 ```bash
 curl https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id=<oauth_session_id> \
   -H "Authorization: Bearer $LC_JWT"
@@ -62,6 +65,7 @@ curl https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id=<oauth_ses
 
 3. Visit the URL in your browser and authorize
 4. Submit the authorization code:
+
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/code \
   -H "Authorization: Bearer $LC_JWT" \
@@ -211,6 +215,7 @@ curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/record
 ### Uploading Files
 
 1. Request an upload URL:
+
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload \
   -H "Authorization: Bearer $LC_JWT" \
@@ -223,6 +228,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/uploa
 ```
 
 2. Upload the file to the signed URL:
+
 ```bash
 curl -X PUT "{upload_url}" \
   -H "Content-Type: text/csv" \
@@ -230,6 +236,7 @@ curl -X PUT "{upload_url}" \
 ```
 
 3. Notify that upload is complete:
+
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload/complete \
   -H "Authorization: Bearer $LC_JWT" \
@@ -242,6 +249,7 @@ The file will be available in the session at the `target_path` returned in step 
 ### Downloading Files
 
 1. Request a download URL:
+
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/download \
   -H "Authorization: Bearer $LC_JWT" \
@@ -250,6 +258,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/downl
 ```
 
 2. Download the file from the signed URL:
+
 ```bash
 curl -o output.txt "{download_url}"
 ```

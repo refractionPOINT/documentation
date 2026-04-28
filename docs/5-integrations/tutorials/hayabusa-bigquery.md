@@ -69,6 +69,7 @@ BigQuery dataset containing Hayabusa results:
                "extra": "event.results.ExtraFieldInfo",
                }
                ```
+
             2. **Specific Event Types**: `hayabusa_event`
             3. **Sensor**: `ext-hayabusa`
 4. You are now ready to send Hayabusa events to BigQuery!

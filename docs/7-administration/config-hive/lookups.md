@@ -6,17 +6,17 @@ Lookups are dictionaries/maps/key-value-pairs where the key is a string. The loo
 
 Lookup data can be ingested by specifying one of the following root keys indicating the format of the lookupd data:
 
-* `lookup_data`: represented direct as parsed JSON.
-* `newline_content`: a string where each key is separated by a newline, LimaCharlie will assume the metadata is empty.
-* `yaml_content`: a string in YAML format that contains a dictionary with the string keys and dictionary metadata like the `lookup_data`.
+- `lookup_data`: represented direct as parsed JSON.
+- `newline_content`: a string where each key is separated by a newline, LimaCharlie will assume the metadata is empty.
+- `yaml_content`: a string in YAML format that contains a dictionary with the string keys and dictionary metadata like the `lookup_data`.
 
 ## Permissions
 
-* `lookup.get`
-* `lookup.set`
-* `lookup.del`
-* `lookup.get.mtd`
-* `lookup.set.mtd`
+- `lookup.get`
+- `lookup.set`
+- `lookup.del`
+- `lookup.get.mtd`
+- `lookup.set.mtd`
 
 ## Usage
 

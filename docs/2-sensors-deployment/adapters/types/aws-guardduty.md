@@ -12,10 +12,10 @@ Telemetry Platform: `guard_duty`
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
 
-* `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-* `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-* `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-* `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
 
 ### Adapter-specific Options
 
@@ -23,9 +23,9 @@ All adapters support the same `client_options`, which you should always specify 
 
 If collecting GuardDuty logs via an S3 bucket, you will need the following parameters:
 
-* `bucket_name` - The name of the S3 bucket holding the data)
-* `secret_key` - The API key for AWS that has access to the respective bucket.
-* `access_key` - The AWS access key for the API key
+- `bucket_name` - The name of the S3 bucket holding the data)
+- `secret_key` - The API key for AWS that has access to the respective bucket.
+- `access_key` - The AWS access key for the API key
 
 The following command will create an Adapter using the (1) Adapter binary and (2) logs stored in an S3 bucket:
 
@@ -43,10 +43,10 @@ client_options.hostname=guardduty-logs
 
 If collecting GuardDuty logs via an SQS queue, you will need the following parameters:
 
-* `secret_key` - The API key for AWS that has access to the respective bucket.
-* `access_key` - The AWS access key for the API key
-* `region` - The AWS region where the SQS instance lives
-* `queue_url` - The URL to the SQS instance
+- `secret_key` - The API key for AWS that has access to the respective bucket.
+- `access_key` - The AWS access key for the API key
+- `region` - The AWS region where the SQS instance lives
+- `queue_url` - The URL to the SQS instance
 
 The following command will create an Adapter using the (1) Adapter binary and (2) logs stored in an SQS queue:
 

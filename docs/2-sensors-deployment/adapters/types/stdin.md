@@ -8,8 +8,8 @@ This Adapter allows you to ingest data piped into the adapter's standard input. 
 
 Adapter Type: `stdin`
 
-* `client_options`: common configuration for adapter as defined [here](../usage.md).
-* `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
+- `client_options`: common configuration for adapter as defined [here](../usage.md).
+- `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
 ### Configuration File Example
 

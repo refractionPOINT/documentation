@@ -57,7 +57,7 @@ Open the Terminal and run the following commands
 ❌ The following result would indicate that the uninstall was not successful:
 
 ```
-*	*	N7N82884NH	com.refractionpoint.rphcp.extension (1.0.241204/1.0.241204)	RPHCP	[activated enabled]
+* * N7N82884NH com.refractionpoint.rphcp.extension (1.0.241204/1.0.241204) RPHCP [activated enabled]
 ```
 
 **Run Command #2**

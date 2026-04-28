@@ -28,8 +28,8 @@ In LimaCharlie, Exfil (Event Collection) is a configuration extension that deter
 
 ## Related Articles
 
-* [Mac Unified Logging](../adapters/types/mac-unified-logging.md)
+- [Mac Unified Logging](../adapters/types/mac-unified-logging.md)
 
 ## What's Next
 
-* [Log Collection Guide](../log-collection-guide.md)
+- [Log Collection Guide](../log-collection-guide.md)

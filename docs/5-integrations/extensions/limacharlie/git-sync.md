@@ -4,14 +4,14 @@ The Git Sync Extension is a tool that automates the management of Infrastructure
 
 **Key features:**
 
-* **Centralized Configuration:** Stores all IaC configurations in a single Git repository.
-* **Recurring Apply:** Can automatically sync IaC changes between Git and LC organizations at regular intervals.
-* **Recurring Export:** Can automatically export IaC from LC organizations to GitHub at regular intervals.
-* **Export Request:** Allows you to export the configuration of an Organization into the Git repository.
-* **Automated Deployment:** Helps automate the deployment process, reducing manual effort.
-* MSSP**-Friendly:** Designed to accommodate multiple organizations within a single repository, allowing for global configurations to be shared between orgs.
-* **Flexible Configuration:** Allows for customization and additional configuration directories.
-* **Transparent Operations:** Tracks operations through an extension Sensor.
+- **Centralized Configuration:** Stores all IaC configurations in a single Git repository.
+- **Recurring Apply:** Can automatically sync IaC changes between Git and LC organizations at regular intervals.
+- **Recurring Export:** Can automatically export IaC from LC organizations to GitHub at regular intervals.
+- **Export Request:** Allows you to export the configuration of an Organization into the Git repository.
+- **Automated Deployment:** Helps automate the deployment process, reducing manual effort.
+- MSSP**-Friendly:** Designed to accommodate multiple organizations within a single repository, allowing for global configurations to be shared between orgs.
+- **Flexible Configuration:** Allows for customization and additional configuration directories.
+- **Transparent Operations:** Tracks operations through an extension Sensor.
 
 By using `ext-git-sync`, you can streamline your IaC workflows, improve consistency, and reduce the risk of errors.
 
@@ -150,15 +150,15 @@ This guide walks you through the process of configuring Git synchronization betw
 
 ### Step 0: Making a Git Sync specific SSH Key
 
-* First create the directory
+- First create the directory
 
 `mkdir -p ~/.ssh/gitsync`
 
-* Set appropriate permissions for the directory
+- Set appropriate permissions for the directory
 
 `chmod 700 ~/.ssh/gitsync`
 
-* Now generate the SSH key
+- Now generate the SSH key
 
 `ssh-keygen -t ed25519 -C "limacharlie-gitsync" -f ~/.ssh/gitsync/id_ed25519`
 
@@ -205,8 +205,8 @@ This guide walks you through the process of configuring Git synchronization betw
 
 If you encounter synchronization issues:
 
-* Verify that the deploy key has proper write permissions
-* Ensure the correct SSH URL format is used (should begin with `git@github.com:`)
-* Check that the private key in Secret Manager matches the public key added to GitHub
+- Verify that the deploy key has proper write permissions
+- Ensure the correct SSH URL format is used (should begin with `git@github.com:`)
+- Check that the private key in Secret Manager matches the public key added to GitHub
 
 [Infrastructure](infrastructure.md)

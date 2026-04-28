@@ -35,11 +35,11 @@ For a full overview of types of sensors and their capabilities, check out Sensor
 
 The setup flow should make this process straightforward. For example's sake, let's say we're installing a sensor on a Windows 10 (64 bit) machine we have in front of us.
 
-* Choose the Windows sensor type
-* Create an Installation Key - this registers the executable to communicate securely with your organization
-* Choose the `64 bit (.exe)` installer
-* Follow the on-screen instructions to execute the installer properly
-* See immediate feedback when the sensor registers successfully with the cloud
+- Choose the Windows sensor type
+- Create an Installation Key - this registers the executable to communicate securely with your organization
+- Choose the `64 bit (.exe)` installer
+- Follow the on-screen instructions to execute the installer properly
+- See immediate feedback when the sensor registers successfully with the cloud
 
 Potential Issues
 
@@ -47,11 +47,11 @@ Since sensors are executables that talk to the cloud, antivirus software and net
 
 With a Windows sensor connected to the cloud, you should gain a lot of visibility into the endpoint. If we view the new sensor inside the web application, we'll have access to views such as:
 
-* `Timeline`: the viewer for telemetry events being collected from the endpoint
-* `Processes`: the list of processes running on the endpoint, their level of network activity, and commands to manipulate processes (i.e. kill / pause / resume process, or view modules)
-* `File System`: an explorer for the endpoint's file system, right in the browser
-* `Console`: a safe shell-like environment for issuing commands
-* `Live Feed`: a running view of the live output of all the sensor's events
+- `Timeline`: the viewer for telemetry events being collected from the endpoint
+- `Processes`: the list of processes running on the endpoint, their level of network activity, and commands to manipulate processes (i.e. kill / pause / resume process, or view modules)
+- `File System`: an explorer for the endpoint's file system, right in the browser
+- `Console`: a safe shell-like environment for issuing commands
+- `Live Feed`: a running view of the live output of all the sensor's events
 
 With telemetry coming in from the cloud, let's add rules to detect potentially malicious activity.
 
@@ -71,15 +71,15 @@ Security data generated from sensors is yours to do with as you wish. For exampl
 
 From the Outputs page in your organization, click `Add Output` to open the setup flow for new outputs. Again, the setup flow should make this process straightforward.
 
-* Choose the Detections stream
-* Choose the Amazon S3 destination
-* Configure the Output and ensure it connects securely to the correct bucket:
-  + Output Name
-  + Bucket Name
-  + Key ID
-  + Secret Key
-  + Region
-* Optionally, you can view samples of the detection stream's data (assuming recent detections have occurred)
+- Choose the Detections stream
+- Choose the Amazon S3 destination
+- Configure the Output and ensure it connects securely to the correct bucket:
+  - Output Name
+  - Bucket Name
+  - Key ID
+  - Secret Key
+  - Region
+- Optionally, you can view samples of the detection stream's data (assuming recent detections have occurred)
 
 With this output in place you can extend the life of your detections beyond the 1 year LimaCharlie retains them, and stage them for any tool that can pull from S3.
 

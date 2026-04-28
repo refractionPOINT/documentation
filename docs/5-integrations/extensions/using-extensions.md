@@ -38,8 +38,8 @@ The LimaCharlie webapp automatically displays a machine-generated user interface
 
 Extensions can be interacted with using a few different APIs:
 
-* Getting the schema for an Extension: [https://api.limacharlie.io/static/swagger/#/Extension-Schema](https://api.limacharlie.io/static/swagger/#/Extension-Request)
-* Making requests to an Extension: https://api.limacharlie.io/static/swagger/#/Extension-Request
+- Getting the schema for an Extension: [https://api.limacharlie.io/static/swagger/#/Extension-Schema](https://api.limacharlie.io/static/swagger/#/Extension-Request)
+- Making requests to an Extension: <https://api.limacharlie.io/static/swagger/#/Extension-Request>
 
 LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
 

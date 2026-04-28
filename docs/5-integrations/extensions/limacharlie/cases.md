@@ -53,8 +53,8 @@ If both are disabled, all detections in the org group into one case during the w
 
 - `auto_grouping_window_minutes` (default `1440`, range `1`--`10080`) -- maximum time span used to group detections.
 - `auto_grouping_window_mode` (default `sliding`):
-    - `sliding` -- the window resets on each new detection. A case stays groupable as long as matching detections keep arriving within the window of its most recent activity.
-    - `fixed` -- detections are bucketed by wall-clock boundaries of size `window_minutes`. Two detections group only if they fall in the same bucket.
+  - `sliding` -- the window resets on each new detection. A case stays groupable as long as matching detections keep arriving within the window of its most recent activity.
+  - `fixed` -- detections are bucketed by wall-clock boundaries of size `window_minutes`. Two detections group only if they fall in the same bucket.
 
 **Reopening closed cases** -- `auto_grouping_reopen_closed` (default `true`) controls whether a matching detection can reopen an already `resolved` or `closed` case. When true, the case is reopened and a `case_reopened` event with `source=auto_grouping` is added to its audit trail. When false, a matching detection against a closed case creates a new case instead.
 

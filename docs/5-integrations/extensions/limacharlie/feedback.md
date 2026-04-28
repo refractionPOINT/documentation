@@ -253,6 +253,7 @@ The response event includes `choice: "answered"` and a `text` field with the res
 A D&R rule can request human approval before taking automated action. The response is dispatched to a playbook that performs the action.
 
 **Detection:**
+
 ```yaml
 op: is
 event: NEW_PROCESS
@@ -261,6 +262,7 @@ value: /usr/bin/suspicious-tool
 ```
 
 **Response:**
+
 ```yaml
 - action: extension request
   extension name: ext-feedback

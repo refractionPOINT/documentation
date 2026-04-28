@@ -36,11 +36,11 @@ Within the Output Destination menu, select `Google Cloud BigQuery`. You'll be pr
 
 The following values must be provided in order for the Output to work:
 
-* Name (choose your own name)
-* Dataset (from the previous section)
-* Table (from the previous section)
-* Project (from the previous section)
-* Secret Key (the API key from the GCP service account)
+- Name (choose your own name)
+- Dataset (from the previous section)
+- Table (from the previous section)
+- Project (from the previous section)
+- Secret Key (the API key from the GCP service account)
 
 Where to Store the Secret?
 
@@ -48,7 +48,7 @@ The secret key for this output can be inserted directly in the web app helper, h
 
 Within the `Advanced Options`, we'll need to provide the following details:
 
-* Custom Transform - we don't want to include *all* the details from the `NETWORK_CONNECTIONS` event. For this output, we are interested in processes making network connections and the users associated with them. Thus, we'll apply the following transform to pare this down:
+- Custom Transform - we don't want to include *all* the details from the `NETWORK_CONNECTIONS` event. For this output, we are interested in processes making network connections and the users associated with them. Thus, we'll apply the following transform to pare this down:
 
 ```json
 {

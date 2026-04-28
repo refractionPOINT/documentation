@@ -26,8 +26,8 @@ The following example stops the specified GCP compute instance.
 
 To utilize Google Cloud CLI capabilities, you will need:
 
-* A GCP service account JSON key. More information on service account keys can be found [here](https://cloud.google.com/iam/docs/keys-create-delete).
-* Create a secret in the secrets manager in the following format:
+- A GCP service account JSON key. More information on service account keys can be found [here](https://cloud.google.com/iam/docs/keys-create-delete).
+- Create a secret in the secrets manager in the following format:
 
   ```json
   {

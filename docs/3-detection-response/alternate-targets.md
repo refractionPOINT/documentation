@@ -2,13 +2,13 @@
 
 Detection & Response rules run against `edr` events by default, however, there are 7 other targets:
 
-* `detection`
-* `deployment`
-* `artifact`
-* `artifact_event`
-* `schedule`
-* `audit`
-* `billing`
+- `detection`
+- `deployment`
+- `artifact`
+- `artifact_event`
+- `schedule`
+- `audit`
+- `billing`
 
 This article is to give some ideas of what they're used for, and how they're used.
 
@@ -107,17 +107,17 @@ case sensitive: false
 
 ### Supported Operators
 
-* `is`
-* `and`
-* `or`
-* `exists`
-* `contains`
-* `starts with`
-* `ends with`
-* `is greater than`
-* `is lower than`
-* `matches`
-* `string distance`
+- `is`
+- `and`
+- `or`
+- `exists`
+- `contains`
+- `starts with`
+- `ends with`
+- `is greater than`
+- `is lower than`
+- `matches`
+- `string distance`
 
 ### Supported Resources
 
@@ -129,9 +129,9 @@ The only response action supported for the `artifact` target is the `report` act
 
 ### Special Parameters
 
-* `artifact path`: matches the start of the artifact's `path` string, e.g. `/auth.log`
-* `artifact type`: matches the artifact's `type` string, e.g. `pcap`, `zeek`, `auth`, `wel`
-* `artifact source`: matches the artifact's `source` string, e.g. `hostname-123`
+- `artifact path`: matches the start of the artifact's `path` string, e.g. `/auth.log`
+- `artifact type`: matches the artifact's `type` string, e.g. `pcap`, `zeek`, `auth`, `wel`
+- `artifact source`: matches the artifact's `source` string, e.g. `hostname-123`
 
 > Note: for duplicate Windows Event Log ingestions, the rule engine will use the log's `EventRecordID` to ensure a rule will not run more than once over the same record.
 

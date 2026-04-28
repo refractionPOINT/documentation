@@ -55,21 +55,21 @@ Outputting your data to Google BigQuery is another option, and is [outlined here
 
 Several events will be pushed to the `ext-hayabusa` Sensor timeline:
 
-* `hayabusa_results`: contains the results summary from the Hayabusa output
-* `hayabusa_artifact`: contains the `artifact_id` of the CSV file that was uploaded to LimaCharlie
-* `hayabusa_event`: many of these will be sent to the timeline if you check the checkbox or parameter for `Send to timeline`, and it contains the raw contents of the Hayabusa CSV output in JSON format
+- `hayabusa_results`: contains the results summary from the Hayabusa output
+- `hayabusa_artifact`: contains the `artifact_id` of the CSV file that was uploaded to LimaCharlie
+- `hayabusa_event`: many of these will be sent to the timeline if you check the checkbox or parameter for `Send to timeline`, and it contains the raw contents of the Hayabusa CSV output in JSON format
 
 ## Arguments
 
-* `artifact_id`: ID of the LimaCharlie artifact to process
-* `profile`: either `minimal`, `standard`, `verbose`, `all-field-info`, `all-field-info-verbose`, `super-verbose`, `timesketch-minimal`, or `timesketch-verbose`
+- `artifact_id`: ID of the LimaCharlie artifact to process
+- `profile`: either `minimal`, `standard`, `verbose`, `all-field-info`, `all-field-info-verbose`, `super-verbose`, `timesketch-minimal`, or `timesketch-verbose`
 
-  + Default: `timesketch-verbose`
-  + [More details](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#7-timesketch-minimal-profile-output)
-* `min_rule_level`: `informational`, `low`, `medium`, `high`, or `critical`, [more details](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#dfir-timeline-commands-1)
+  - Default: `timesketch-verbose`
+  - [More details](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#7-timesketch-minimal-profile-output)
+- `min_rule_level`: `informational`, `low`, `medium`, `high`, or `critical`, [more details](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#dfir-timeline-commands-1)
 
-  + Default: `informational`
-* `send_to_timeline`: whether or not to ingest the Hayabusa results into the sensor timeline as events, boolean, default `true`
+  - Default: `informational`
+- `send_to_timeline`: whether or not to ingest the Hayabusa results into the sensor timeline as events, boolean, default `true`
 
 ## Usage
 
@@ -83,9 +83,9 @@ Kick off a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Ve
 
 **Argument options:**
 
-* `EventLogs=Y`
+- `EventLogs=Y`
    ![](../../../assets/images/hayabusa-2.png)
-* `KapeTriage=Y` - this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using `EventLogs=Y`.
+- `KapeTriage=Y` - this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using `EventLogs=Y`.
 
 Configure a D&R rule to look for these events upon ingestion, and then trigger the Hayabusa extension:
 

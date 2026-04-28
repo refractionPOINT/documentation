@@ -13,9 +13,9 @@ If these occur, a [sensor\_clone](../../../8-reference/platform-events.md#sensor
 
 Preparing sensors to run properly from templates can be done by creating a special `hcp_vdi` (macOS and Linux) or `hcp_vdi.dat` (Windows) file in the relevant configuration directory:
 
-* Windows: `%SYSTEMROOT%\system32\`
-* macOS: `/usr/local/`
-* Linux: usually `/etc/` but fundamentally the current working directory of the sensor execution.
+- Windows: `%SYSTEMROOT%\system32\`
+- macOS: `/usr/local/`
+- Linux: usually `/etc/` but fundamentally the current working directory of the sensor execution.
 
 The contents of the `hcp_vdi` file should be a string representation of the second-based epoch timestamp when you want the sensors to begin enrolling. For example if the current time is `1696876542`, setting a value of `1696882542` will mean the sensor will only attempt to enroll in 10 minutes in the future. This allows you to install the sensor without risking it enrolling right away before the base image is created.
 

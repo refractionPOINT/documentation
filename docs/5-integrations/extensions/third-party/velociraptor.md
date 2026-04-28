@@ -28,12 +28,12 @@ Velociraptor will generate a ZIP file with all collected data, which is automati
 
 #### Arguments
 
-* **Artifacts** - Select one or more Velociraptor artifacts you wish to collect
-* **Sensor Selector** - Select either a single sensor by selecting it's Sensor ID from the dropdown or use a [Sensor Selector Expression](../../../8-reference/sensor-selector-expressions.md) to cast a wider net such as `plat==windows`
-* **Arguments (optional)** - See below
-* **Collection Seconds (optional)** - Define how long (in seconds) the Extension will wait for a targeted endpoint to come online and be processed for collection.
-* **Retention Days (optional)** - Define how long the collected artifact will be retained by the platform.
-* **Ignore SSL Errors (optional)** - Tells the endpoint to ignore SSL errors while running and collecting. This can be useful if the endpoint is behind a MITM proxy or firewall performing SSL interception.
+- **Artifacts** - Select one or more Velociraptor artifacts you wish to collect
+- **Sensor Selector** - Select either a single sensor by selecting it's Sensor ID from the dropdown or use a [Sensor Selector Expression](../../../8-reference/sensor-selector-expressions.md) to cast a wider net such as `plat==windows`
+- **Arguments (optional)** - See below
+- **Collection Seconds (optional)** - Define how long (in seconds) the Extension will wait for a targeted endpoint to come online and be processed for collection.
+- **Retention Days (optional)** - Define how long the collected artifact will be retained by the platform.
+- **Ignore SSL Errors (optional)** - Tells the endpoint to ignore SSL errors while running and collecting. This can be useful if the endpoint is behind a MITM proxy or firewall performing SSL interception.
 
 ##### Arguments (optional)
 
