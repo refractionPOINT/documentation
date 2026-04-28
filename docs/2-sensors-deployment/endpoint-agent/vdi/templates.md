@@ -23,7 +23,7 @@ A shortcut for creating this file is to invoke the LimaCharlie EDR binary (like 
 
 Example `hcp_vdi.dat` file content:
 
-```
+```text
 1696882542
 ```
 

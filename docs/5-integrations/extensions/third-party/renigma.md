@@ -28,7 +28,7 @@ You can submit a file or URL to the REnigma extension for processing in one of 2
 
    1. Detect:
 
-      ```
+      ```yaml
       event: ingest
       op: exists
       path: /

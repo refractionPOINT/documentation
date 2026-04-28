@@ -363,13 +363,13 @@ Using a secret in combination with an output has very few steps:
 
 Let's create a simple secret using the LimaCharlie CLI in a terminal. First, create a small file with the secret record in it:
 
-```
+```text
 echo "my-secret-value" > my-secret
 ```
 
 Next, set this secret in Hive via the LimaCharlie CLI:
 
-```
+```bash
 limacharlie hive set secret --key my-secret --data my-secret --data-key secret
 ```
 

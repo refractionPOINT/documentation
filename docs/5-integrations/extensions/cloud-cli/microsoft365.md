@@ -31,6 +31,6 @@ The following example disables the user account with the provided user ID.
 - Upon invocation, LimaCharlie will first run the `m365 login` command with the credentials provided.
 - Create a secret in the secrets manager in the following format:
 
-  ```
+  ```text
   appID/clientSecret/tenantID
   ```

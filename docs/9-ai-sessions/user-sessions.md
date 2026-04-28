@@ -274,7 +274,7 @@ curl -o output.txt "{download_url}"
 
 Use Claude to investigate a security incident step by step:
 
-```
+```text
 You: I need to investigate suspicious activity on sensor abc123.
      The user reported strange popup windows.
 
@@ -295,7 +295,7 @@ Claude: I'll investigate this sensor. Let me start by gathering some
 
 Perform quick analysis tasks:
 
-```
+```text
 You: Analyze this list of IP addresses and tell me which ones
      appear in threat intelligence feeds.
 
@@ -314,7 +314,7 @@ Claude: I'll analyze each IP address against available threat
 
 Explore your LimaCharlie environment:
 
-```
+```text
 You: Show me how to create a D&R rule that detects PowerShell
      downloading files from the internet.
 

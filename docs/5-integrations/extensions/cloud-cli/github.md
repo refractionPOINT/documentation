@@ -25,6 +25,6 @@ To utilize the GitHub CLI, you will need:
 - A [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 - Create a secret in the secrets manager in the following format:
 
-```
+```text
 access_token
 ```

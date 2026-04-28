@@ -25,6 +25,6 @@ To utilize the Azure CLI, you will need:
 - An application and a [service principal](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal) with the appropriate permissions and a [client secret](https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-service-principal-portal#option-3-create-a-new-client-secret)
 - Create a secret in the secrets manager in the following format:
 
-```
+```text
 appID/clientSecret/tenantID
 ```

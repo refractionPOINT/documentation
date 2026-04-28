@@ -10,7 +10,7 @@ OpenTelemetry SDKs and collectors export telemetry by sending HTTP POST requests
 
 The URL pattern is:
 
-```
+```text
 https://<hook-domain>/<OID>/<HOOKNAME>/<SECRET>/v1/<signal>
 ```
 
@@ -67,7 +67,7 @@ limacharlie org urls
 
 This returns a domain like `9157798c50af372c.hook.limacharlie.io`. Your full OTLP base endpoint is:
 
-```
+```text
 https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret
 ```
 

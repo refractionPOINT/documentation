@@ -27,7 +27,7 @@ Output individually each event, detection, audit, deployment or log through an e
 
 Example:
 
-```
+```text
 dest_host: smtp.gmail.com
 dest_email: soc@corp.com
 from_email: lc@corp.com

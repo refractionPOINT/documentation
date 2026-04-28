@@ -25,13 +25,13 @@ The Pangea API key (known as a token within the Pangea platform) is added via th
 
 The API key follows this format:
 
-```
+```text
 domain/token
 ```
 
 Example:
 
-```
+```text
 aws.us.pangea.cloud/pts_7kb33fyz313372vuu5zgnotarealtoken
 ```
 

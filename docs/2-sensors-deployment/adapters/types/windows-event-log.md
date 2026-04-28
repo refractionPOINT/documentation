@@ -40,25 +40,25 @@ wel:
 
 Security Events (High Priority):
 
-```
+```text
   Security:'*[System[(Level=1 or Level=2 or Level=3)]]'
 ```
 
 Logon Events Only:
 
-```
+```text
   Security:'*[System[(EventID=4624 or EventID=4625 or EventID=4634)]]'
 ```
 
 System Errors:
 
-```
+```text
   System:'*[System[(Level=1 or Level=2)]]'
 ```
 
 Specific Provider:
 
-```
+```text
   Application:'*[System[Provider[@Name="Microsoft-Windows-ApplicationError"]]]'
 ```
 

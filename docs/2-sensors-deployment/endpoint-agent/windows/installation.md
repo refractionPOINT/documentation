@@ -264,7 +264,7 @@ Get-Service rphcpsvc | Select-Object Name, Status, StartType
 
 Expected output:
 
-```
+```text
 Name     Status StartType
 ----     ------ ---------
 rphcpsvc Running Automatic
@@ -274,7 +274,7 @@ rphcpsvc Running Automatic
 
 Run this command:
 
-```
+```text
 sc query rphcpsvc
 ```
 
@@ -364,7 +364,7 @@ Run the installer with the clean uninstall flag:
 
 rphcp.exe -c
 
-```
+```text
 
 This removes the service and deletes all identity files.
 
@@ -374,7 +374,7 @@ To uninstall but keep identity files (for potential reinstallation):
 
 rphcp.exe -r
 
-```
+```text
 
 ### Using the MSI
 
@@ -388,7 +388,7 @@ Or via command line:
 
 msiexec /x "path\to\installer.msi" /qn
 
-```
+```text
 
 ### Using LimaCharlie Console
 

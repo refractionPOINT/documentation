@@ -33,7 +33,7 @@ Assuming you have an empty git repository, you can configure the extension to ex
 
 For applying org configs from a git repository, the repo must adhere to the following structure. The root of the repository must contain an `orgs` directory with `[org-id]` child directories, each containing an `index.yaml` .
 
-```
+```text
 .
 └── orgs [required]
     └── a326700d-3cd7-49d1-ad08-20b396d8549d [required]
@@ -44,7 +44,7 @@ The `index.yaml` determines which other files in the repo are included in the co
 
 For instance, assume all of the configurations for this org were unique to this org and could be nested inside of the org's directory.
 
-```
+```text
 .
 └── orgs
     └── a326700d-3cd7-49d1-ad08-20b396d8549d
@@ -93,7 +93,7 @@ include:
 
 Now, assume you have a global rule set you want to apply across many orgs. You could structure the repo similar to the example below.
 
-```
+```text
 .
 ├── hives
 │   ├── dr-general.yaml
@@ -120,7 +120,7 @@ include:
 
 Configuration exports will be placed in a separate `exports` subdirectory to avoid overwriting configurations that are pushed across multiple organizations.
 
-```
+```text
 .
 └── exports
     └── orgs

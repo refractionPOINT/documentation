@@ -8,7 +8,7 @@ Output events and detections to a Pubsub topic.
 
 Example:
 
-```
+```text
 project: my-project
 topic: telemetry
 secret_key: {

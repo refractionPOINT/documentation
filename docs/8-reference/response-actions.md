@@ -190,7 +190,7 @@ You can also specify a `based on report: true` parameter. When true (defaults to
 
 Isolates the sensor from the network in a persistent fashion (if the sensor/host reboots, it will remain isolated). Only works on platforms supporting the `segregate_network` [sensor command](endpoint-commands.md#segregatenetwork).
 
-```
+```text
 - action: isolate network
 ```
 
@@ -202,7 +202,7 @@ When the network isolation feature is used, LimaCharlie will block connections t
 
 Seals the sensor in a persistent fashion (if the sensor/host reboots, it will remain sealed). Only works on platforms supporting the `seal` [sensor command](endpoint-commands.md#seal).
 
-```
+```text
 - action: seal
 ```
 
@@ -214,7 +214,7 @@ Sealing a sensor enables tamper resistance, preventing direct modifications to t
 
 Removes the seal status of a sensor that had it set using `seal`.
 
-```
+```text
 - action: unseal
 ```
 
@@ -237,7 +237,7 @@ Example:
 
 Removes the isolation status of a sensor that had it set using `isolate network`.
 
-```
+```text
 - action: rejoin network
 ```
 

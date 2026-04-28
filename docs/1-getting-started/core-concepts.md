@@ -144,7 +144,7 @@ Each output stream type has a different structure. Understanding this helps you:
 
 This is the most common data transformation in LimaCharlie:
 
-```
+```text
 1. Sensor generates Event
    {routing: {...}, event: {FILE_PATH: "evil.exe", ...}}
 

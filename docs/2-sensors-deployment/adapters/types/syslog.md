@@ -58,7 +58,7 @@ Here's a breakdown of the above example:
 
 To test it, assuming we're on the same Debian box as the container, pipe the syslog to the container:
 
-```
+```text
 journalctl -f -q | netcat 127.0.0.1 1514
 ```
 
@@ -106,7 +106,7 @@ syslog:
 
 This step will depend on the type of syslog daemon you are using (syslog, rsyslog, syslog-ng, etc.) Within the daemon configuration file, configure the desired facility(-ies) to direct to the local listener. In the following example, we configured `auth` and `authpriv` events to write to both `/var/log/audit.log` and `127.0.0.1:1514`.
 
-```
+```text
 auth,authpriv.*   /var/log/auth.log
 auth,authpriv.*   @@127.0.0.1:1514
 ```
@@ -117,7 +117,7 @@ After applying the appropriate configuration, restart the syslog daemon.
 
 Utilizing a tool like `netcat`, you can listen on the appropriate port to confirm that messages are being sent. The following command will spawn a `netcat` listener on port 1514:
 
-```
+```text
 nc -l -p 1514
 ```
 
@@ -125,7 +125,7 @@ nc -l -p 1514
 
 Execute the binary Adapter with the syslog configuration file in order to start the LimaCharlie listener. If started correctly, you should see the following messages in `stdout`:
 
-```
+```text
 DBG <date>: usp-client connecting
 DBG <date>: usp-client connected
 DBG <date>: listening for connections on :1514

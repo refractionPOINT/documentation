@@ -8,7 +8,7 @@ Note that the connection string should end with `;EntityPath=your-hub-name` whic
 
 Example:
 
-```
+```text
 connection_string: Endpoint=sb://lc-test.servicebus.windows.net/;SharedAccessKeyName=lc;SharedAccessKey=jidnfisnjfnsdnfdnfjd=;EntityPath=test-hub
 ```
 

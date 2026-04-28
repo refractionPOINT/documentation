@@ -17,7 +17,7 @@ If you have your own visualization stack, or you just need the data archived, yo
 
 Example:
 
-```
+```text
 bucket: my-bucket-name
 key_id: AKIAABCDEHPUXHHHHSSQ
 secret_key: fonsjifnidn8anf4fh74y3yr34gf3hrhgh8er

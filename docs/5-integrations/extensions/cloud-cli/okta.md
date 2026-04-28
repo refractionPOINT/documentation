@@ -25,7 +25,7 @@ To make use of the Okta CLI, you will need:
 - An API key. More information about provisioning an API key can be found [here](https://developer.okta.com/docs/guides/create-an-api-token/main/).
 - Create a secret in the secrets manager in the following format:
 
-```
+```text
 okta_domain/api_key
 ```
 
@@ -39,13 +39,13 @@ Fetches a user from your Okta organization.
 
 #### Command
 
-```
+```bash
 user get USERID
 ```
 
 #### Example Input
 
-```
+```bash
 user get 00untroxqpl08VcNC5d7
 ```
 
@@ -108,13 +108,13 @@ Lists users that do not have a status of "DEPROVISIONED" (by default), up to the
 
 #### Command
 
-```
+```bash
 user list OPTIONAL_FILTER
 ```
 
 #### Example Input
 
-```
+```bash
 user list
 ```
 
@@ -165,19 +165,19 @@ Deactivates a user.
 
 #### Command
 
-```
+```bash
 user deactivate USERID
 ```
 
 #### Example Input
 
-```
+```bash
 user deactivate 00up0nl0lftw7331WSz
 ```
 
 #### Example Output
 
-```
+```text
 None
 ```
 
@@ -189,19 +189,19 @@ Activates a user.
 
 #### Command
 
-```
+```bash
 user activate USERID
 ```
 
 #### Example Input
 
-```
+```bash
 user activate 00up0nl0lftw7331WSz
 ```
 
 #### Example Output
 
-```
+```text
 None
 ```
 
@@ -211,19 +211,19 @@ This operation transitions the user to the status of "PASSWORD\_EXPIRED" so that
 
 #### Command
 
-```
+```bash
 user expire-password USERID
 ```
 
 #### Example Input
 
-```
+```bash
 user expire-password 00up0nl0lftw7331WSz
 ```
 
 #### Example Output
 
-```
+```text
 None
 ```
 
@@ -235,19 +235,19 @@ Suspends a user. The user will have a status of "SUSPENDED" when the process is 
 
 #### Command
 
-```
+```bash
 user suspend USERID
 ```
 
 #### Example Input
 
-```
+```bash
 user suspend 00up0nl0lftw7331WSz
 ```
 
 #### Example Output
 
-```
+```text
 None
 ```
 
@@ -259,19 +259,19 @@ Unsuspends a user and returns them to the "ACTIVE" state. This operation can onl
 
 #### Command
 
-```
+```bash
 user unsuspend USERID
 ```
 
 #### Example Input
 
-```
+```bash
 user unsuspend 00up0nl0lftw7331WSz
 ```
 
 #### Example Output
 
-```
+```text
 None
 ```
 
@@ -281,18 +281,18 @@ Unlocks a user with a "LOCKED\_OUT" status and returns them to "ACTIVE" status. 
 
 #### Command
 
-```
+```bash
 user unlock USERID
 ```
 
 #### Example Input
 
-```
+```bash
 user unlock 00up0nl0lftw7331WSz
 ```
 
 #### Example Output
 
-```
+```text
 None
 ```

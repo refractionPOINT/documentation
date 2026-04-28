@@ -139,7 +139,7 @@ Running the extension generates the following useful outputs:
   - Pay close attention to fields such as `warnings_by_parser` or `warnings_by_path_spec` which may reveal parser errors that were encountered.
   - Sample output of `pinfo` showing counts of parsed artifacts nested under `storage_counters` -- this provides insight as to which, and how many events will be present in your CSV timeline.
 
-```
+```text
 "amcache": 986,
 "appcompatcache": 4096,
 "bagmru": 29,

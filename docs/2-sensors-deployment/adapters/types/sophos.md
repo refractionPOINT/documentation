@@ -30,7 +30,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 2. Get your client ID and client secret from the credentials you just created
 3. Get your JWT -- be sure to replace the values with the client ID and secret from the last step
 
-   ```
+   ```bash
    curl -XPOST -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&scope=token" https://id.sophos.com/api/v2/oauth2/token
    ```
 
@@ -50,7 +50,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 
 4. Get your tenant ID -- you will need the `access_token` (JWT) from the last step.
 
-   ```
+   ```bash
    curl -XGET -H "Authorization: Bearer YOUR_JWT_HERE" https://api.central.sophos.com/whoami/v1
    ```
 

@@ -67,7 +67,7 @@ Or ask Claude: *"List my LimaCharlie organizations"*
 
 If your MCP client supports OAuth authentication, configure it to use the LimaCharlie MCP endpoint:
 
-```
+```text
 https://mcp.limacharlie.io/mcp
 ```
 

@@ -10,7 +10,7 @@ Within your project of choice, begin by creating a new dataset. For the purposes
 
 Let's examine this hierarchy for a moment:
 
-```
+```text
 ├── limacharlie-bq-testing    # project
 │   ├── windows_process_details    # dataset
 │   │   ├── network_connections    # table

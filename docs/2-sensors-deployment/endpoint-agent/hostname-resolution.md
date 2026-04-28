@@ -15,7 +15,7 @@ This method allows the endpoint agent to better resolve its hostname in large en
 
 In some environments the reverse DNS lookup is undesirable (for example, when it is slow, unreliable, or returns a hostname that is not meaningful for the deployment). The reverse DNS step can be disabled by setting the following environment variable on the host before the Endpoint Agent starts:
 
-```
+```text
 LC_DISABLE_REVERSE_DNS_HOSTNAME=1
 ```
 

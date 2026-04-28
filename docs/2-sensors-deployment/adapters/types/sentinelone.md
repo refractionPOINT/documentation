@@ -20,7 +20,7 @@ Adapter Type: `sentinel_one`
 - `start_time` - optional start time to fetch past events.
 - `urls` - Advanced, CLI only: a comma-separated list of REST API paths to scrub. If omitted, by default the adapter brings activities, alerts, and threats:
 
-  ```
+  ```text
   /web/api/v2.1/activities,
   /web/api/v2.1/cloud-detection/alerts,
   /web/api/v2.1/threats

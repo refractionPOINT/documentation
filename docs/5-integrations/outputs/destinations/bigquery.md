@@ -14,7 +14,7 @@ For a practical use case of this output, see this [tutorial on pushing Velocirap
 
 Example:
 
-```
+```text
 schema: event_type:STRING, oid:STRING, sid:STRING
 table: alerts
 dataset: limacharlie_data

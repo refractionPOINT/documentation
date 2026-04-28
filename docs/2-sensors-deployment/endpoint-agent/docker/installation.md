@@ -102,7 +102,7 @@ services:
 
 To start the container, run:
 
-```
+```bash
 docker-compose up -d
 ```
 

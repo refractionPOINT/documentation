@@ -10,7 +10,7 @@ Output events and detections over SFTP.
 
 Example:
 
-```
+```text
 dest_host: storage.corp.com
 dir: /uploads/
 username: storage_user

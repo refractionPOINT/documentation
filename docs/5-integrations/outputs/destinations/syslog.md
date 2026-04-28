@@ -12,7 +12,7 @@ Output events and detections to a syslog target.
 
 Example:
 
-```
+```text
 dest_host: storage.corp.com
 is_tls: "true"
 is_strict_tls: "true"
