@@ -11711,7 +11711,7 @@
 <p>Use colon-separated tags to categorize events, detections, and entities within your timeline. This section defines the format patterns - actual values are either format-based (you define them) or fetched dynamically from authoritative sources.</p>
 <h3 id="mitre-attck-tags-dynamic">MITRE ATT&amp;CK <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr> (Dynamic)<a class="headerlink" href="#mitre-attck-tags-dynamic" title="Anchor link to this section">&para;</a></h3>
 <p>MITRE ATT&amp;CK tags should be validated against the authoritative MITRE STIX data rather than hardcoded lists.</p>
-<p><strong>Authoritative Source:</strong> https://github.com/mitre-attack/attack-stix-data</p>
+<p><strong>Authoritative Source:</strong> <a href="https://github.com/mitre-attack/attack-stix-data">https://github.com/mitre-attack/attack-stix-data</a></p>
 <p><strong><abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr> Formats:</strong></p>
 <table>
 <thead>
@@ -11874,14 +11874,14 @@
 <h3 id="ioc-provenance">IOC Provenance<a class="headerlink" href="#ioc-provenance" title="Anchor link to this section">&para;</a></h3>
 <p>Document how entities were discovered and validated in the <code>context</code> field:</p>
 <p><strong>Pattern:</strong> <code>Provenance: [how discovered]. Validation: [how confirmed]. Attribution: [threat intel correlation].</code></p>
-<p><strong>Example:</strong>
+<p><strong>Example:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ip&quot;</span><span class="p">,</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;203.0.113.50&quot;</span><span class="p">,</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provenance: Extracted from C2 beacon traffic. Validation: Cross-referenced with TI feed (58/72 VirusTotal). Attribution: Matches APT29 infrastructure per CISA AA24-001.&quot;</span><span class="p">,</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">&quot;verdict&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious&quot;</span>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="verdict-assignment">Verdict Assignment<a class="headerlink" href="#verdict-assignment" title="Anchor link to this section">&para;</a></h3>
 <table>
 <thead>
@@ -11910,27 +11910,27 @@
 </tbody>
 </table>
 <h3 id="entity-context-templates">Entity Context Templates<a class="headerlink" href="#entity-context-templates" title="Anchor link to this section">&para;</a></h3>
-<p><strong>For IPs:</strong>
+<p><strong>For IPs:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Provenance: [discovered in which event type]. Geo: [country/ASN]. TI: [threat intel match]. Historical: [seen before in org?].
-</span></code></pre></div></p>
-<p><strong>For Hashes:</strong>
+</span></code></pre></div>
+<p><strong>For Hashes:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Provenance: [file name and path]. AV: [detection ratio]. Sandbox: [behavior summary]. First seen: [date].
-</span></code></pre></div></p>
-<p><strong>For Domains:</strong>
+</span></code></pre></div>
+<p><strong>For Domains:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Provenance: [DNS query or URL]. Registration: [age, registrar]. TI: [threat intel match]. Resolution: [IP addresses].
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h2 id="note-taking-templates">Note-Taking Templates<a class="headerlink" href="#note-taking-templates" title="Anchor link to this section">&para;</a></h2>
 <p>Use structured note types for consistent documentation:</p>
 <h3 id="observation-notes">Observation Notes<a class="headerlink" href="#observation-notes" title="Anchor link to this section">&para;</a></h3>
-<p>Record raw facts without interpretation:
+<p>Record raw facts without interpretation:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>[TIMESTAMP] [HOST] [EVENT_TYPE]
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Observed: [description of what was seen]
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Key data: [relevant field values]
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>Related atoms: [list of event atoms]
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="hypothesis-notes">Hypothesis Notes<a class="headerlink" href="#hypothesis-notes" title="Anchor link to this section">&para;</a></h3>
-<p>Document working theories:
+<p>Document working theories:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>HYPOTHESIS: [statement]
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Supporting evidence:
@@ -11943,9 +11943,9 @@
 </span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
 </span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>Alternative explanations:
 </span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>- [alternative 1]
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="finding-notes">Finding Notes<a class="headerlink" href="#finding-notes" title="Anchor link to this section">&para;</a></h3>
-<p>Document confirmed discoveries:
+<p>Document confirmed discoveries:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>FINDING: [definitive statement]
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Evidence:
@@ -11957,9 +11957,9 @@
 </span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>- Data at risk: [description]
 </span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
 </span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>Confidence: [high/medium/low]
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="attack-chain-summary-note">Attack Chain Summary Note<a class="headerlink" href="#attack-chain-summary-note" title="Anchor link to this section">&para;</a></h3>
-<p>Document the full attack narrative:
+<p>Document the full attack narrative:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>ATTACK CHAIN:
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>[Phase 1] → [Phase 2] → [Phase 3] → ...
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
@@ -11968,7 +11968,7 @@
 </span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
 </span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>Root cause: [initial access method]
 </span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>Defense gaps: [what failed]
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h2 id="investigation-workflow">Investigation Workflow<a class="headerlink" href="#investigation-workflow" title="Anchor link to this section">&para;</a></h2>
 <h3 id="status-transitions">Status Transitions<a class="headerlink" href="#status-transitions" title="Anchor link to this section">&para;</a></h3>
@@ -12007,39 +12007,43 @@
 </tbody>
 </table>
 <h3 id="closure-criteria">Closure Criteria<a class="headerlink" href="#closure-criteria" title="Anchor link to this section">&para;</a></h3>
-<p><strong>For <code>closed_false_positive</code>:</strong>
-- [ ] Benign explanation documented in conclusion
-- [ ] Finding note with FP rationale
-- [ ] Consider FP rule if pattern is common</p>
-<p><strong>For <code>closed_true_positive</code>:</strong>
-- [ ] All action item notes resolved
-- [ ] Containment/eradication verified
-- [ ] Root cause identified
-- [ ] Summary field completed
-- [ ] Conclusion field completed
-- [ ] All entities have verdicts assigned</p>
+<p><strong>For <code>closed_false_positive</code>:</strong></p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Benign explanation documented in conclusion</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Finding note with FP rationale</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Consider FP rule if pattern is common</li>
+</ul>
+<p><strong>For <code>closed_true_positive</code>:</strong></p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> All action item notes resolved</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Containment/eradication verified</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Root cause identified</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Summary field completed</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Conclusion field completed</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> All entities have verdicts assigned</li>
+</ul>
 <hr />
 <h2 id="summary-and-conclusion-fields">Summary and Conclusion Fields<a class="headerlink" href="#summary-and-conclusion-fields" title="Anchor link to this section">&para;</a></h2>
 <h3 id="summary-field-executive-audience">Summary Field (Executive Audience)<a class="headerlink" href="#summary-field-executive-audience" title="Anchor link to this section">&para;</a></h3>
-<p>Write for non-technical stakeholders:
+<p>Write for non-technical stakeholders:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>On [date], [attack type] was detected on [target]. The attacker [brief action summary].
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Impact: [what was affected]. Status: [current state]. Attribution: [if known].
-</span></code></pre></div></p>
-<p><strong>Example:</strong>
+</span></code></pre></div>
+<p><strong>Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>On November 15, 2024, a targeted spearphishing attack compromised a Finance department workstation.
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>The attacker harvested credentials and moved laterally to 15 servers, exfiltrating approximately 50GB
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>of financial data over 72 hours. Containment was achieved by isolating affected systems.
 </span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>Attribution: Financially-motivated actor (medium confidence).
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="conclusion-field-technical-closure">Conclusion Field (Technical Closure)<a class="headerlink" href="#conclusion-field-technical-closure" title="Anchor link to this section">&para;</a></h3>
-<p>Document technical determination:
+<p>Document technical determination:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>CLASSIFICATION: [true positive/false positive] - [incident type]
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>ROOT CAUSE: [initial access method]
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>ATTRIBUTION: [threat actor/campaign] ([confidence level])
 </span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>IMPACT: [data affected], [systems affected]
 </span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>DWELL TIME: [duration from first access to detection]
 </span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>CONTAINMENT: [status and date]
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h2 id="example-complete-tagged-timeline">Example: Complete Tagged Timeline<a class="headerlink" href="#example-complete-tagged-timeline" title="Anchor link to this section">&para;</a></h2>
 <p><em>Note: MITRE technique IDs shown are illustrative. Validate against the authoritative STIX source.</em></p>

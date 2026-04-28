@@ -11751,8 +11751,8 @@
 </span></code></pre></div>
 <h4 id="step-3-configure-syslog-output-to-send-messages-to-a-local-listener">Step 3: Configure syslog output to send messages to a local listener<a class="headerlink" href="#step-3-configure-syslog-output-to-send-messages-to-a-local-listener" title="Anchor link to this section">&para;</a></h4>
 <p>This step will depend on the type of syslog daemon you are using (syslog, rsyslog, syslog-ng, etc.) Within the daemon configuration file, configure the desired facility(-ies) to direct to the local listener. In the following example, we configured <code>auth</code> and <code>authpriv</code> events to write to both <code>/var/log/audit.log</code> and <code>127.0.0.1:1514</code>.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>auth,authpriv.*         /var/log/auth.log
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>auth,authpriv.*         @@127.0.0.1:1514
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>auth,authpriv.*   /var/log/auth.log
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>auth,authpriv.*   @@127.0.0.1:1514
 </span></code></pre></div>
 <p>After applying the appropriate configuration, restart the syslog daemon.</p>
 <h4 id="step-4-confirm-that-syslog-messages-are-sent-to-the-correct-location">Step 4: Confirm that syslog messages are sent to the correct location<a class="headerlink" href="#step-4-confirm-that-syslog-messages-are-sent-to-the-correct-location" title="Anchor link to this section">&para;</a></h4>

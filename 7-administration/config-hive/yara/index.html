@@ -11761,7 +11761,7 @@
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>The <code>data</code> portion of the records in this hive must have a single key called <code>rule</code> who's value will be the yara rule content used by various LimaCharlie components.</p>
-<p>A single rule record can contain a series of actual Yara rule, like this: https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar</p>
+<p>A single rule record can contain a series of actual Yara rule, like this: <a href="https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar">https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar</a></p>
 <h2 id="permissions">Permissions<a class="headerlink" href="#permissions" title="Anchor link to this section">&para;</a></h2>
 <p>The <code>yara</code> hive requires the following permissions for the various operations:</p>
 <ul>
@@ -11990,7 +11990,7 @@
 <p>Let's create a new Yara rule using the LimaCharlie <abbr title="Command-line Interface">CLI</abbr> in a terminal.
 Assuming you have a Yara rule in the <code>rule.yara</code> file.</p>
 <p>Load the rule in the LimaCharlie Hive via the <abbr title="Command-line Interface">CLI</abbr>:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$ limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
 </span></code></pre></div>
 <p>You should get a confirmation that the rule was created, including metadata of the rule associated <abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="p">{</span>

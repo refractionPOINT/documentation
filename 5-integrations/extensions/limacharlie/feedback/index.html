@@ -12706,13 +12706,13 @@
 <p>The response event includes <code>choice: "answered"</code> and a <code>text</code> field with the respondent's answer.</p>
 <h3 id="dr-rule-example"><abbr title="Detection &amp; Response">D&amp;R</abbr> Rule Example<a class="headerlink" href="#dr-rule-example" title="Anchor link to this section">&para;</a></h3>
 <p>A <abbr title="Detection &amp; Response">D&amp;R</abbr> rule can request human approval before taking automated action. The response is dispatched to a playbook that performs the action.</p>
-<p><strong>Detection:</strong>
+<p><strong>Detection:</strong></p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is</span>
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NEW_PROCESS</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">event/FILE_PATH</span>
 </span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/usr/bin/suspicious-tool</span>
-</span></code></pre></div></p>
-<p><strong>Response:</strong>
+</span></code></pre></div>
+<p><strong>Response:</strong></p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-feedback</span>
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">request_simple_approval</span>
@@ -12729,7 +12729,7 @@
 </span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">      </span><span class="nt">sid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">routing.sid</span>
 </span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">    </span><span class="nt">timeout_seconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
 </span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">    </span><span class="nt">timeout_choice</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;denied&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <p>The <code>timeout_seconds: 300</code> and <code>timeout_choice: "denied"</code> ensure the rule auto-denies if no one responds within 5 minutes, preventing the workflow from hanging indefinitely.</p>
 <h3 id="playbook-example">Playbook Example<a class="headerlink" href="#playbook-example" title="Anchor link to this section">&para;</a></h3>
 <p>A playbook can request approval during execution:</p>

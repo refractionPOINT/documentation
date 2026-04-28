@@ -11563,10 +11563,12 @@
 <h2 id="is-there-an-method-for-base64-decoding-and-inspection-within-detect-respond-rules">Is there an method for base64 decoding and inspection within Detect &amp; Respond rules?<a class="headerlink" href="#is-there-an-method-for-base64-decoding-and-inspection-within-detect-respond-rules" title="Anchor link to this section">&para;</a></h2>
 <p>Base64 decoding is not currently supported directly within <abbr title="Detection &amp; Response">D&amp;R</abbr> rules.</p>
 <p>You can have your <abbr title="Detection &amp; Response">D&amp;R</abbr> rule detect base64 content and send it as an action to a Python playbook, where you can perform the necessary decoding and analysis.</p>
-<p>Why isn't this feature available? Base64 decoding in security contexts is rarely straightforward - it typically involves:
-- Extracting substrings rather than decoding entire fields
-- Handling special alphabets and custom encoding schemes
-- Managing different starting offsets</p>
+<p>Why isn't this feature available? Base64 decoding in security contexts is rarely straightforward - it typically involves:</p>
+<ul>
+<li>Extracting substrings rather than decoding entire fields</li>
+<li>Handling special alphabets and custom encoding schemes</li>
+<li>Managing different starting offsets</li>
+</ul>
 <p>While a basic full-field decoding parameter could potentially be added to operators, the complexity and variety of real-world base64 usage patterns make this a challenging feature to implement
 generically.</p>
 <!-- Glossary definitions for tooltip abbreviations -->

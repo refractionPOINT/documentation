@@ -12776,22 +12776,22 @@
 <li>Case management systems</li>
 </ul>
 <p>Example <code>detect_data</code> for different detection types:</p>
-<p><strong>Malware Detection</strong>:
+<p><strong>Malware Detection</strong>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&quot;detect_data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;file_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;C:\\Users\\admin\\Downloads\\malware.exe&quot;</span><span class="p">,</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;file_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5d41402abc4b2a76b9719d911017c592&quot;</span><span class="p">,</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;process_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4812</span><span class="p">,</span>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">&quot;parent_process&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;explorer.exe&quot;</span>
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
-</span></code></pre></div></p>
-<p><strong>Network IOC</strong>:
+</span></code></pre></div>
+<p><strong>Network IOC</strong>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&quot;detect_data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;destination_ip&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;198.51.100.42&quot;</span><span class="p">,</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;destination_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8443</span><span class="p">,</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;domain&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;malicious.example.com&quot;</span><span class="p">,</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">&quot;bytes_sent&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1048576</span>
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="use-cases_1">Use Cases<a class="headerlink" href="#use-cases_1" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li><strong>Incident Response</strong>: Feed high-priority detections to SOAR platforms</li>
@@ -12893,27 +12893,27 @@
 </tbody>
 </table>
 <h3 id="entity-object-examples">Entity Object Examples<a class="headerlink" href="#entity-object-examples" title="Anchor link to this section">&para;</a></h3>
-<p><strong><abbr title="Detection &amp; Response">D&amp;R</abbr> Rule</strong>:
+<p><strong><abbr title="Detection &amp; Response">D&amp;R</abbr> Rule</strong>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dr_rule&quot;</span><span class="p">,</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;detect-lateral-movement&quot;</span><span class="p">,</span>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&quot;hive&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dr-general&quot;</span>
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
-</span></code></pre></div></p>
-<p><strong><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr></strong>:
+</span></code></pre></div>
+<p><strong><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr></strong>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sensor&quot;</span><span class="p">,</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">&quot;sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bb4b30af-aaaa-aaaa-aaaa-f014ada33345&quot;</span><span class="p">,</span>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">&quot;hostname&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workstation-01&quot;</span>
 </span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">}</span>
-</span></code></pre></div></p>
-<p><strong>Output</strong>:
+</span></code></pre></div>
+<p><strong>Output</strong>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&quot;entity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;output&quot;</span><span class="p">,</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;splunk-events&quot;</span><span class="p">,</span>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">&quot;stream&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;event&quot;</span>
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="use-cases_2">Use Cases<a class="headerlink" href="#use-cases_2" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li><strong>Compliance</strong>: Track all configuration changes for SOC 2, ISO 27001</li>
@@ -13029,11 +13029,13 @@
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">  </span><span class="no">DNS_REQUEST</span>
 </span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">  </span><span class="no">CONNECTED</span>
 </span></code></pre></div>
-<p><strong>Format Notes</strong>:
-- Use the pipe (<code>|</code>) operator for multiline strings in YAML
-- Each event type on its own line
-- No hyphens or list syntax
-- Empty lines and whitespace are automatically trimmed</p>
+<p><strong>Format Notes</strong>:</p>
+<ul>
+<li>Use the pipe (<code>|</code>) operator for multiline strings in YAML</li>
+<li>Each event type on its own line</li>
+<li>No hyphens or list syntax</li>
+<li>Empty lines and whitespace are automatically trimmed</li>
+</ul>
 <h3 id="category-filtering">Category Filtering<a class="headerlink" href="#category-filtering" title="Anchor link to this section">&para;</a></h3>
 <p>Filter detections by category:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Only send specific detection categories</span>
@@ -13081,19 +13083,23 @@
 <li><strong>deployment</strong>: Asset management, sensor lifecycle tracking</li>
 </ul>
 <h3 id="2-optimize-event-stream-volume">2. Optimize Event Stream Volume<a class="headerlink" href="#2-optimize-event-stream-volume" title="Anchor link to this section">&para;</a></h3>
-<p>Event streams can be high-volume. Consider:
-- Filtering by <code>event_type</code> to send only relevant events
-- Using separate outputs for different event types
-- Sampling high-frequency events if full fidelity isn't needed</p>
+<p>Event streams can be high-volume. Consider:</p>
+<ul>
+<li>Filtering by <code>event_type</code> to send only relevant events</li>
+<li>Using separate outputs for different event types</li>
+<li>Sampling high-frequency events if full fidelity isn't needed</li>
+</ul>
 <h3 id="3-parse-detection-iocs">3. Parse Detection IOCs<a class="headerlink" href="#3-parse-detection-iocs" title="Anchor link to this section">&para;</a></h3>
 <p>Always extract and process <code>detect_data</code> - it contains pre-parsed IOCs ready for enrichment and response.</p>
 <h3 id="4-retain-audit-logs-separately">4. Retain Audit Logs Separately<a class="headerlink" href="#4-retain-audit-logs-separately" title="Anchor link to this section">&para;</a></h3>
 <p>Audit logs are critical for compliance and should be stored in tamper-proof, long-term storage separate from operational data.</p>
 <h3 id="5-monitor-deployment-stream">5. Monitor Deployment Stream<a class="headerlink" href="#5-monitor-deployment-stream" title="Anchor link to this section">&para;</a></h3>
-<p>Use deployment events to track sensor health and detect:
-- Unexpected uninstalls (potential evasion)
-- Sensors stuck on old versions (patch management)
-- Gaps in coverage (missing sensors)</p>
+<p>Use deployment events to track sensor health and detect:</p>
+<ul>
+<li>Unexpected uninstalls (potential evasion)</li>
+<li>Sensors stuck on old versions (patch management)</li>
+<li>Gaps in coverage (missing sensors)</li>
+</ul>
 <hr />
 <h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Anchor link to this section">&para;</a></h2>
 <ul>

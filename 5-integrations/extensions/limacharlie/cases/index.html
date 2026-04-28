@@ -12796,11 +12796,9 @@
 <p><strong>Time window</strong> -- how far apart in time detections can be and still group:</p>
 <ul>
 <li><code>auto_grouping_window_minutes</code> (default <code>1440</code>, range <code>1</code>--<code>10080</code>) -- maximum time span used to group detections.</li>
-<li><code>auto_grouping_window_mode</code> (default <code>sliding</code>):<ul>
+<li><code>auto_grouping_window_mode</code> (default <code>sliding</code>):</li>
 <li><code>sliding</code> -- the window resets on each new detection. A case stays groupable as long as matching detections keep arriving within the window of its most recent activity.</li>
 <li><code>fixed</code> -- detections are bucketed by wall-clock boundaries of size <code>window_minutes</code>. Two detections group only if they fall in the same bucket.</li>
-</ul>
-</li>
 </ul>
 <p><strong>Reopening closed cases</strong> -- <code>auto_grouping_reopen_closed</code> (default <code>true</code>) controls whether a matching detection can reopen an already <code>resolved</code> or <code>closed</code> case. When true, the case is reopened and a <code>case_reopened</code> event with <code>source=auto_grouping</code> is added to its audit trail. When false, a matching detection against a closed case creates a new case instead.</p>
 <p>When a detection is grouped into an existing case:</p>

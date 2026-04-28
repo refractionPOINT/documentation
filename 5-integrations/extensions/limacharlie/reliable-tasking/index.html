@@ -11720,24 +11720,24 @@
 </ul>
 <p>For more details on sensor selector syntax and available fields (<code>sid</code>, <code>plat</code>, <code>tags</code>, <code>hostname</code>, <code>int_ip</code>, etc.), see the <a href="../../../../8-reference/sensor-selector-expressions/"><abbr title="Many components in LimaCharlie require selecting a set of Sensors based on some characteristics. The selector expression is a text field that describes what matching characteristics the selector is looking for, like `plat==windows`, to select all Windows sensors.">Sensor Selector</abbr> Expressions reference</a>.</p>
 <p><strong>Additional Examples:</strong></p>
-<p>Target a specific sensor:
+<p>Target a specific sensor:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="s1">&#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39;</span> \
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Authorization: Bearer $JWT&#39;</span> \
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/x-www-form-urlencoded&#39;</span> \
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="o">--</span><span class="n">data</span> <span class="s1">&#39;oid=$YOUR_OID&amp;action=task&amp;data={&quot;task&quot;:&quot;os_version&quot;,&quot;selector&quot;:&quot;sid==&#39;</span>\<span class="s1">&#39;&#39;</span><span class="n">sensor</span><span class="o">-</span><span class="mi">123</span><span class="o">-</span><span class="n">abc</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="s2">&quot;,&quot;</span><span class="n">ttl</span><span class="s2">&quot;:86400}&#39;</span>
-</span></code></pre></div></p>
-<p>Target all Linux servers with a specific tag:
+</span></code></pre></div>
+<p>Target all Linux servers with a specific tag:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="s1">&#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39;</span> \
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Authorization: Bearer $JWT&#39;</span> \
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/x-www-form-urlencoded&#39;</span> \
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="o">--</span><span class="n">data</span> <span class="s1">&#39;oid=$YOUR_OID&amp;action=task&amp;data={&quot;task&quot;:&quot;file_get -f /etc/passwd&quot;,&quot;selector&quot;:&quot;plat==linux and production in tags&quot;,&quot;context&quot;:&quot;audit-2024&quot;,&quot;ttl&quot;:172800}&#39;</span>
-</span></code></pre></div></p>
-<p>Target all sensors (no selector):
+</span></code></pre></div>
+<p>Target all sensors (no selector):</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="s1">&#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39;</span> \
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Authorization: Bearer $JWT&#39;</span> \
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/x-www-form-urlencoded&#39;</span> \
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="o">--</span><span class="n">data</span> <span class="s1">&#39;oid=$YOUR_OID&amp;action=task&amp;data={&quot;task&quot;:&quot;os_version&quot;,&quot;ttl&quot;:3600}&#39;</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h4 id="list-tasks"><strong>List Tasks</strong><a class="headerlink" href="#list-tasks" title="Anchor link to this section">&para;</a></h4>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="s1">&#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39;</span> \
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Authorization: Bearer $JWT&#39;</span> \
@@ -11750,13 +11750,13 @@
 <p>If you're using reliable tasks to issue commands across your sensors, you're probably going to want to view or act on the responses from these commands as well.</p>
 <p>If you add a value to the <code>context</code> parameter in the extension request, this value will be reflected in the <code>investigation_id</code> of the corresponding <code>RECEIPT</code> or <code>_REP</code> event, allowing you to craft a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule based on the response.</p>
 <p>The above example cURL command has a <code>context</code> of <code>version</code> so the below <abbr title="Detection &amp; Response">D&amp;R</abbr> rule looks for that value.</p>
-<h4 id="example-detect-block">Example detect block:<a class="headerlink" href="#example-detect-block" title="Anchor link to this section">&para;</a></h4>
+<h4 id="example-detect-block">Example detect block<a class="headerlink" href="#example-detect-block" title="Anchor link to this section">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contains</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RECEIPT</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">routing/investigation_id</span>
 </span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">version</span>
 </span></code></pre></div>
-<h4 id="example-respond-block">Example respond block:<a class="headerlink" href="#example-respond-block" title="Anchor link to this section">&para;</a></h4>
+<h4 id="example-respond-block">Example respond block<a class="headerlink" href="#example-respond-block" title="Anchor link to this section">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tasks-output</span><span class="w">         </span><span class="c1"># Send responses to the specified output</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>

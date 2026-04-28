@@ -11866,7 +11866,7 @@
 <h2 id="collection-methods">Collection Methods<a class="headerlink" href="#collection-methods" title="Anchor link to this section">&para;</a></h2>
 <h3 id="file-adapter-recommended-for-log-files">File <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> (Recommended for Log Files)<a class="headerlink" href="#file-adapter-recommended-for-log-files" title="Anchor link to this section">&para;</a></h3>
 <p>The file adapter monitors log files for changes and streams new entries to LimaCharlie. It supports glob patterns for monitoring multiple files and handles log rotation automatically.</p>
-<h4 id="key-features">Key Features:<a class="headerlink" href="#key-features" title="Anchor link to this section">&para;</a></h4>
+<h4 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li>Glob pattern support (/var/log/*.log)</li>
 <li>Automatic log rotation handling (with inode-based detection)</li>
@@ -11875,7 +11875,7 @@
 <li>Multi-line JSON parsing</li>
 <li>Grok pattern parsing for structured log extraction</li>
 </ul>
-<h4 id="basic-configuration">Basic Configuration:<a class="headerlink" href="#basic-configuration" title="Anchor link to this section">&para;</a></h4>
+<h4 id="basic-configuration">Basic Configuration<a class="headerlink" href="#basic-configuration" title="Anchor link to this section">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">file</span><span class="p">:</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">client_options</span><span class="p">:</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">identity</span><span class="p">:</span>
@@ -11889,14 +11889,14 @@
 </span></code></pre></div>
 <h3 id="syslog-adapter">Syslog <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr><a class="headerlink" href="#syslog-adapter" title="Anchor link to this section">&para;</a></h3>
 <p>The syslog adapter runs as a syslog server, accepting logs via TCP or UDP. This is useful for centralizing logs from multiple systems or integrating with existing syslog infrastructure.</p>
-<h4 id="key-features_1">Key Features:<a class="headerlink" href="#key-features_1" title="Anchor link to this section">&para;</a></h4>
+<h4 id="key-features_1">Key Features<a class="headerlink" href="#key-features_1" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li>TCP and UDP support</li>
 <li>TLS encryption support</li>
 <li>Mutual TLS authentication</li>
 <li>RFC 3164/5424 syslog format support</li>
 </ul>
-<h4 id="basic-configuration_1">Basic Configuration:<a class="headerlink" href="#basic-configuration_1" title="Anchor link to this section">&para;</a></h4>
+<h4 id="basic-configuration_1">Basic Configuration<a class="headerlink" href="#basic-configuration_1" title="Anchor link to this section">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">syslog</span><span class="p">:</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">client_options</span><span class="p">:</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">identity</span><span class="p">:</span>

@@ -11808,13 +11808,15 @@
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">export_complete</span>
 </span></code></pre></div>
 <p><strong>Respond:</strong></p>
-<p><div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">generate</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-plaso</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">extension request</span><span class="p">:</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">artifact_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.routing.log_id</span><span class="nv"> </span><span class="s">}}&#39;</span>
 </span></code></pre></div>
-2. Launch a <code>Windows.KapeFiles.Targets</code> artifact collection in the LimaCharlie Velociraptor extension. This instructs Velociraptor to gather all endpoint artifacts defined in <a href="https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape">this KAPE Target file</a>.</p>
+<ol>
+<li>Launch a <code>Windows.KapeFiles.Targets</code> artifact collection in the LimaCharlie Velociraptor extension. This instructs Velociraptor to gather all endpoint artifacts defined in <a href="https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape">this KAPE Target file</a>.</li>
+</ol>
 <p><strong>Argument options:</strong></p>
 <ul>
 <li><code>EventLogs=Y</code> - EventLogs only, quicker processing time for proof of concept</li>
@@ -11839,15 +11841,17 @@
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">export_complete</span>
 </span></code></pre></div>
 <p><strong>Respond:</strong></p>
-<p><div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">generate</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-plaso</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">extension request</span><span class="p">:</span>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">      </span><span class="nt">artifact_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.routing.log_id</span><span class="nv"> </span><span class="s">}}&#39;</span>
 </span></code></pre></div>
-2. Launch an MFT dump in the LimaCharlie Dumper extension.
-   <img alt="" src="../../../../assets/images/plaso-ext-1.png" />
-3. Once dumper is complete and uploads the evidence, the previously created <abbr title="Detection &amp; Response">D&amp;R</abbr> rule will send the zipped MFT CSV to <code>ext-plaso</code> for processing. Watch the <code>ext-plaso</code> sensor timeline for status and the Artifacts page for the resulting <code>.plaso</code> &amp; <code>.csv</code> output files. See <a href="#working-with-the-output">Working with the Output</a>.</p>
+<ol>
+<li>Launch an MFT dump in the LimaCharlie Dumper extension.
+   <img alt="" src="../../../../assets/images/plaso-ext-1.png" /></li>
+<li>Once dumper is complete and uploads the evidence, the previously created <abbr title="Detection &amp; Response">D&amp;R</abbr> rule will send the zipped MFT CSV to <code>ext-plaso</code> for processing. Watch the <code>ext-plaso</code> sensor timeline for status and the Artifacts page for the resulting <code>.plaso</code> &amp; <code>.csv</code> output files. See <a href="#working-with-the-output">Working with the Output</a>.</li>
+</ol>
 <h2 id="working-with-the-output">Working with the Output<a class="headerlink" href="#working-with-the-output" title="Anchor link to this section">&para;</a></h2>
 <p>Running the extension generates the following useful outputs:</p>
 <p><img alt="image.png" src="../../../../assets/images/image%28254%29.png" /></p>

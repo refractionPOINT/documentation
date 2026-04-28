@@ -11938,48 +11938,60 @@
 <p><strong>What</strong>: Real-time telemetry from sensors and adapters
 <strong>Structure</strong>: Two top-level objects - <code>routing</code> (metadata) and <code>event</code> (event-specific data)
 <strong>Examples</strong>: Process execution (NEW_PROCESS), DNS queries (DNS_REQUEST), network connections (NETWORK_CONNECTIONS), Windows Event Logs (WEL)</p>
-<p>Events are the foundation of LimaCharlie. They capture what's happening on your endpoints and in your infrastructure. Every event includes:
-- <code>routing</code> object: Consistent metadata like sensor ID, timestamp, hostname, platform
-- <code>event</code> object: Event-type-specific data like file paths, command lines, network addresses</p>
+<p>Events are the foundation of LimaCharlie. They capture what's happening on your endpoints and in your infrastructure. Every event includes:</p>
+<ul>
+<li><code>routing</code> object: Consistent metadata like sensor ID, timestamp, hostname, platform</li>
+<li><code>event</code> object: Event-type-specific data like file paths, command lines, network addresses</li>
+</ul>
 <p><a href="../../8-reference/event-schemas/#event-structure-reference">See complete Event Structure Reference</a></p>
 <h4 id="2-detections-detect-stream">2. Detections (<code>detect</code> stream)<a class="headerlink" href="#2-detections-detect-stream" title="Anchor link to this section">&para;</a></h4>
 <p><strong>What</strong>: Alerts generated when <abbr title="Detection &amp; Response">D&amp;R</abbr> rules match events
 <strong>Structure</strong>: Includes original event's <code>routing</code>, the triggering <code>detect</code> (event data), plus detection metadata
 <strong>Key Fields</strong>: <code>cat</code> (detection name), <code>source</code>, <code>detect_id</code>, <code>priority</code>, <code>detect_mtd</code> (metadata), <code>detect_data</code> (extracted IOCs)</p>
-<p>When a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule matches an event, LimaCharlie creates a Detection. Detections inherit the event's routing information and add:
-- Detection metadata: rule name, author, priority, tags
-- Extracted data: Structured IOCs pulled from the event
-- Links: References to documentation or playbooks</p>
+<p>When a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule matches an event, LimaCharlie creates a Detection. Detections inherit the event's routing information and add:</p>
+<ul>
+<li>Detection metadata: rule name, author, priority, tags</li>
+<li>Extracted data: Structured IOCs pulled from the event</li>
+<li>Links: References to documentation or playbooks</li>
+</ul>
 <p><a href="../../3-detection-response/tutorials/writing-testing-rules/#understanding-detection-structure">See complete Detection Structure Reference</a></p>
 <h4 id="3-audit-audit-stream">3. Audit (<code>audit</code> stream)<a class="headerlink" href="#3-audit-audit-stream" title="Anchor link to this section">&para;</a></h4>
 <p><strong>What</strong>: Platform management and operational events
 <strong>Structure</strong>: Flat object with <code>oid</code>, <code>ts</code> (timestamp), and audit-specific fields
 <strong>Examples</strong>: Configuration changes, user actions, API calls, sensor deployments</p>
-<p>Audit logs track what happens in your LimaCharlie organization:
-- Who performed actions (<code>ident</code> - identity)
-- What was affected (<code>entity</code> - object)
-- Action characteristics (<code>mtd</code> - metadata)
-- Error messages (<code>component</code>, <code>error</code>)</p>
+<p>Audit logs track what happens in your LimaCharlie organization:</p>
+<ul>
+<li>Who performed actions (<code>ident</code> - identity)</li>
+<li>What was affected (<code>entity</code> - object)</li>
+<li>Action characteristics (<code>mtd</code> - metadata)</li>
+<li>Error messages (<code>component</code>, <code>error</code>)</li>
+</ul>
 <h4 id="4-deployment-events-deployment-stream">4. Deployment Events (<code>deployment</code> stream)<a class="headerlink" href="#4-deployment-events-deployment-stream" title="Anchor link to this section">&para;</a></h4>
 <p><strong>What</strong>: <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> deployment and lifecycle events
 <strong>Structure</strong>: Similar to events - <code>routing</code> and <code>event</code> objects
 <strong>Examples</strong>: <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> installations, uninstallations, version updates</p>
 <h3 id="why-these-structures-matter">Why These Structures Matter<a class="headerlink" href="#why-these-structures-matter" title="Anchor link to this section">&para;</a></h3>
 <h4 id="for-dr-rules">For <abbr title="Detection &amp; Response">D&amp;R</abbr> Rules<a class="headerlink" href="#for-dr-rules" title="Anchor link to this section">&para;</a></h4>
-<p><abbr title="Detection &amp; Response">D&amp;R</abbr> rules operate on Events and produce Detections. Understanding the Event structure helps you:
-- Access the right fields with <code>event/</code> and <code>routing/</code> paths
-- Filter by event type, platform, or sensor
-- Correlate related events using <code>routing/this</code> and <code>routing/parent</code></p>
+<p><abbr title="Detection &amp; Response">D&amp;R</abbr> rules operate on Events and produce Detections. Understanding the Event structure helps you:</p>
+<ul>
+<li>Access the right fields with <code>event/</code> and <code>routing/</code> paths</li>
+<li>Filter by event type, platform, or sensor</li>
+<li>Correlate related events using <code>routing/this</code> and <code>routing/parent</code></li>
+</ul>
 <h4 id="for-lcql-queries">For <abbr title="LimaCharlie Query Language (LCQL) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie. Telemetry ingested via sensors are searchable via LCQL.">LCQL</abbr> Queries<a class="headerlink" href="#for-lcql-queries" title="Anchor link to this section">&para;</a></h4>
-<p><abbr title="LimaCharlie Query Language (LCQL) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie. Telemetry ingested via sensors are searchable via LCQL.">LCQL</abbr> can query all three primary streams (event, detect, audit). Knowing the structure helps you:
-- Select the right fields for investigation
-- Join data across streams
-- Filter efficiently using the correct field paths</p>
+<p><abbr title="LimaCharlie Query Language (LCQL) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie. Telemetry ingested via sensors are searchable via LCQL.">LCQL</abbr> can query all three primary streams (event, detect, audit). Knowing the structure helps you:</p>
+<ul>
+<li>Select the right fields for investigation</li>
+<li>Join data across streams</li>
+<li>Filter efficiently using the correct field paths</li>
+</ul>
 <h4 id="for-outputs">For Outputs<a class="headerlink" href="#for-outputs" title="Anchor link to this section">&para;</a></h4>
-<p>Each output stream type has a different structure. Understanding this helps you:
-- Configure the right stream for your destination
-- Build parsers for external systems
-- Filter data before sending it</p>
+<p>Each output stream type has a different structure. Understanding this helps you:</p>
+<ul>
+<li>Configure the right stream for your destination</li>
+<li>Build parsers for external systems</li>
+<li>Filter data before sending it</li>
+</ul>
 <h3 id="data-flow-event-detection">Data Flow: Event → Detection<a class="headerlink" href="#data-flow-event-detection" title="Anchor link to this section">&para;</a></h3>
 <p>This is the most common data transformation in LimaCharlie:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. Sensor generates Event

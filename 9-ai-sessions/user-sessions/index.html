@@ -12362,10 +12362,10 @@
 <p>Before using AI Sessions, you must register. Registration is available to LimaCharlie users with approved email domains.</p>
 <p><strong>Via Web UI:</strong>
 Navigate to the AI Sessions section in the LimaCharlie web console and click "Register".</p>
-<p><strong>Via API:</strong>
+<p><strong>Via API:</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/register<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="step-2-store-claude-credentials">Step 2: Store Claude Credentials<a class="headerlink" href="#step-2-store-claude-credentials" title="Anchor link to this section">&para;</a></h3>
 <p>AI Sessions uses a Bring Your Own Key (BYOK) model. You provide your Anthropic credentials—either an API key or via Claude Max OAuth.</p>
 <h4 id="option-a-api-key">Option A: API Key<a class="headerlink" href="#option-a-api-key" title="Anchor link to this section">&para;</a></h4>
@@ -12381,28 +12381,26 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
 <h4 id="option-b-claude-max-oauth">Option B: Claude Max OAuth<a class="headerlink" href="#option-b-claude-max-oauth" title="Anchor link to this section">&para;</a></h4>
 <p>If you have a Claude Max subscription, you can authenticate via OAuth:</p>
 <ol>
-<li>
-<p>Start the OAuth flow:
+<li>Start the OAuth flow:</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/auth/claude/start<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Poll for the authorization URL:
+</span></code></pre></div>
+<ol>
+<li>Poll for the authorization URL:</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id<span class="o">=</span>&lt;oauth_session_id&gt;<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span>
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Visit the URL in your browser and authorize</p>
-</li>
-<li>Submit the authorization code:
+</span></code></pre></div>
+<ol>
+<li>Visit the URL in your browser and authorize</li>
+<li>Submit the authorization code:</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/auth/claude/code<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;session_id&quot;: &quot;&lt;oauth_session_id&gt;&quot;, &quot;code&quot;: &quot;&lt;authorization_code&gt;&quot;}&#39;</span>
-</span></code></pre></div></li>
-</ol>
+</span></code></pre></div>
 <h3 id="step-3-create-a-session">Step 3: Create a Session<a class="headerlink" href="#step-3-create-a-session" title="Anchor link to this section">&para;</a></h3>
 <p>Create a new session to start working with Claude:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/sessions<span class="w"> </span><span class="se">\</span>
@@ -12614,8 +12612,8 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
 <h2 id="file-transfer">File Transfer<a class="headerlink" href="#file-transfer" title="Anchor link to this section">&para;</a></h2>
 <h3 id="uploading-files">Uploading Files<a class="headerlink" href="#uploading-files" title="Anchor link to this section">&para;</a></h3>
 <ol>
-<li>
-<p>Request an upload URL:
+<li>Request an upload URL:</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/io/sessions/<span class="o">{</span>sessionId<span class="o">}</span>/upload<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -12624,41 +12622,37 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="s1">    &quot;content_type&quot;: &quot;text/csv&quot;,</span>
 </span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="s1">    &quot;size&quot;: 1024</span>
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="s1">  }&#39;</span>
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Upload the file to the signed URL:
+</span></code></pre></div>
+<ol>
+<li>Upload the file to the signed URL:</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span><span class="s2">&quot;{upload_url}&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: text/csv&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span>--data-binary<span class="w"> </span>@data.csv
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Notify that upload is complete:
+</span></code></pre></div>
+<ol>
+<li>Notify that upload is complete:</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/io/sessions/<span class="o">{</span>sessionId<span class="o">}</span>/upload/complete<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;upload_id&quot;: &quot;{upload_id}&quot;}&#39;</span>
-</span></code></pre></div></p>
-</li>
-</ol>
+</span></code></pre></div>
 <p>The file will be available in the session at the <code>target_path</code> returned in step 1.</p>
 <h3 id="downloading-files">Downloading Files<a class="headerlink" href="#downloading-files" title="Anchor link to this section">&para;</a></h3>
 <ol>
-<li>
-<p>Request a download URL:
+<li>Request a download URL:</li>
+</ol>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://ai-sessions.limacharlie.io/v1/io/sessions/<span class="o">{</span>sessionId<span class="o">}</span>/download<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$LC_JWT</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;path&quot;: &quot;/workspace/output.txt&quot;}&#39;</span>
-</span></code></pre></div></p>
-</li>
-<li>
-<p>Download the file from the signed URL:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>curl<span class="w"> </span>-o<span class="w"> </span>output.txt<span class="w"> </span><span class="s2">&quot;{download_url}&quot;</span>
-</span></code></pre></div></p>
-</li>
+</span></code></pre></div>
+<ol>
+<li>Download the file from the signed URL:</li>
 </ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>curl<span class="w"> </span>-o<span class="w"> </span>output.txt<span class="w"> </span><span class="s2">&quot;{download_url}&quot;</span>
+</span></code></pre></div>
 <h3 id="file-size-limits">File Size Limits<a class="headerlink" href="#file-size-limits" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li>Maximum file size: 100 MB</li>

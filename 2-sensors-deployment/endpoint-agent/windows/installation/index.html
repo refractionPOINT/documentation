@@ -12012,14 +12012,20 @@
 <h1 id="windows-agent-installation">Windows Agent Installation<a class="headerlink" href="#windows-agent-installation" title="Anchor link to this section">&para;</a></h1>
 <p>This guide walks you through installing the LimaCharlie Endpoint Detection and Response (<abbr title="Endpoint Detection &amp; Response">EDR</abbr>) sensor on Windows systems. The sensor provides deep visibility into your Windows endpoints, enabling real-time threat detection and response.</p>
 <h2 id="supported-windows-versions">Supported Windows Versions<a class="headerlink" href="#supported-windows-versions" title="Anchor link to this section">&para;</a></h2>
-<p><strong>Desktop:</strong>
-- Windows 7, 8, 8.1, 10, 11</p>
-<p><strong>Server:</strong>
-- Windows Server 2008 R2, 2012, 2012 R2, 2016, 2019, 2022</p>
-<p><strong>Architectures:</strong>
-- x64 (64-bit) - Most common
-- x86 (32-bit) - Legacy systems
-- ARM64 - Windows on ARM devices</p>
+<p><strong>Desktop:</strong></p>
+<ul>
+<li>Windows 7, 8, 8.1, 10, 11</li>
+</ul>
+<p><strong>Server:</strong></p>
+<ul>
+<li>Windows Server 2008 R2, 2012, 2012 R2, 2016, 2019, 2022</li>
+</ul>
+<p><strong>Architectures:</strong></p>
+<ul>
+<li>x64 (64-bit) - Most common</li>
+<li>x86 (32-bit) - Legacy systems</li>
+<li>ARM64 - Windows on ARM devices</li>
+</ul>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Anchor link to this section">&para;</a></h2>
 <p>Before installing the LimaCharlie sensor, ensure you have:</p>
 <ol>
@@ -12172,10 +12178,12 @@
 <p>Example with a specific MSI:</p>
 <div class="language-batch highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>msiexec /i <span class="s2">&quot;C:\Downloads\hcp_win_x64.msi&quot;</span> /qn INSTALLATIONKEY=<span class="s2">&quot;YOUR_INSTALLATION_KEY_GOES_HERE&quot;</span>
 </span></code></pre></div>
-<p>Options explained:
-- <code>/i</code> - Install the package
-- <code>/qn</code> - Quiet mode with no user interface
-- <code>INSTALLATIONKEY</code> - The LimaCharlie installation key for enrollment</p>
+<p>Options explained:</p>
+<ul>
+<li><code>/i</code> - Install the package</li>
+<li><code>/qn</code> - Quiet mode with no user interface</li>
+<li><code>INSTALLATIONKEY</code> - The LimaCharlie installation key for enrollment</li>
+</ul>
 <h3 id="method-3-powershell-script-automated">Method 3: PowerShell Script (Automated)<a class="headerlink" href="#method-3-powershell-script-automated" title="Anchor link to this section">&para;</a></h3>
 <p>This script automates the download and installation process. It detects your system architecture and downloads the correct installer.</p>
 <blockquote>
@@ -12258,13 +12266,15 @@
 <p><strong>To run the script:</strong></p>
 <ol>
 <li>Open PowerShell as Administrator</li>
-<li>If you haven't already, allow script execution:
-   <div class="language-powershell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">Set-ExecutionPolicy</span> <span class="n">-ExecutionPolicy</span> <span class="n">RemoteSigned</span> <span class="n">-Scope</span> <span class="n">CurrentUser</span>
-</span></code></pre></div></li>
-<li>Run the script with your <abbr title="Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.">Installation Key</abbr>:
-   <div class="language-powershell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">.\</span><span class="nb">Install-LimaCharlie</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-InstallationKey</span> <span class="s2">&quot;YOUR_INSTALLATION_KEY_GOES_HERE&quot;</span>
-</span></code></pre></div></li>
+<li>If you haven't already, allow script execution:</li>
 </ol>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">Set-ExecutionPolicy</span> <span class="n">-ExecutionPolicy</span> <span class="n">RemoteSigned</span> <span class="n">-Scope</span> <span class="n">CurrentUser</span>
+</span></code></pre></div>
+<ol>
+<li>Run the script with your <abbr title="Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.">Installation Key</abbr>:</li>
+</ol>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">.\</span><span class="nb">Install-LimaCharlie</span><span class="p">.</span><span class="n">ps1</span> <span class="n">-InstallationKey</span> <span class="s2">&quot;YOUR_INSTALLATION_KEY_GOES_HERE&quot;</span>
+</span></code></pre></div>
 <h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Anchor link to this section">&para;</a></h2>
 <p>After installation, verify that the sensor is running correctly using any of these methods:</p>
 <h3 id="windows-services-gui">Windows Services GUI<a class="headerlink" href="#windows-services-gui" title="Anchor link to this section">&para;</a></h3>
@@ -12277,11 +12287,11 @@
 <p>Run this command to check the service status:</p>
 <div class="language-powershell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">Get-Service</span> <span class="n">rphcpsvc</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">Name</span><span class="p">,</span> <span class="n">Status</span><span class="p">,</span> <span class="n">StartType</span>
 </span></code></pre></div>
-<p>Expected output:
+<p>Expected output:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Name     Status StartType
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>----     ------ ---------
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>rphcpsvc Running Automatic
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h3 id="command-prompt">Command Prompt<a class="headerlink" href="#command-prompt" title="Anchor link to this section">&para;</a></h3>
 <p>Run this command:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sc query rphcpsvc
@@ -12289,7 +12299,7 @@
 <p>Look for <code>STATE : 4  RUNNING</code> in the output.</p>
 <h3 id="verification-script">Verification Script<a class="headerlink" href="#verification-script" title="Anchor link to this section">&para;</a></h3>
 <p>Save and run this PowerShell script for a quick status check:</p>
-<p><div class="language-powershell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c"># Verify LimaCharlie installation</span>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c"># Verify LimaCharlie installation</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">$service</span> <span class="p">=</span> <span class="nb">Get-Service</span> <span class="n">-Name</span> <span class="s2">&quot;rphcpsvc&quot;</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">if</span> <span class="p">(</span><span class="nv">$null</span> <span class="o">-eq</span> <span class="nv">$service</span><span class="p">)</span> <span class="p">{</span>
 </span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="nb">Write-Host</span> <span class="s2">&quot;LimaCharlie sensor is NOT installed.&quot;</span> <span class="n">-ForegroundColor</span> <span class="n">Red</span>
@@ -12364,12 +12374,12 @@
 </span><span id="__span-10-73"><a id="__codelineno-10-73" name="__codelineno-10-73" href="#__codelineno-10-73"></a>
 </span><span id="__span-10-74"><a id="__codelineno-10-74" name="__codelineno-10-74" href="#__codelineno-10-74"></a><span class="n">Run</span> <span class="n">the</span> <span class="n">installer</span> <span class="n">with</span> <span class="n">the</span> <span class="n">clean</span> <span class="n">uninstall</span> <span class="n">flag</span><span class="p">:</span>
 </span></code></pre></div>
-rphcp.exe -c
+<p>rphcp.exe -c</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>This removes the service and deletes all identity files.
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>To uninstall but keep identity files (for potential reinstallation):
 </span></code></pre></div>
-rphcp.exe -r
+<p>rphcp.exe -r</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>### Using the MSI
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>1. Open **Control Panel** &gt; **Programs** &gt; **Programs and Features**
@@ -12378,8 +12388,8 @@ rphcp.exe -r
 </span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
 </span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>Or via command line:
 </span></code></pre></div>
-msiexec /x "path\to\installer.msi" /qn
-```</p>
+<p>msiexec /x "path\to\installer.msi" /qn</p>
+<p>```</p>
 <h3 id="using-limacharlie-console">Using LimaCharlie Console<a class="headerlink" href="#using-limacharlie-console" title="Anchor link to this section">&para;</a></h3>
 <p>You can remotely uninstall the sensor from the LimaCharlie web application:</p>
 <ol>

@@ -13199,29 +13199,33 @@
 <h3 id="artifact_get">artifact_get<a class="headerlink" href="#artifact_get" title="Anchor link to this section">&para;</a></h3>
 <p>Collect an artifact from a sensor by specifying a file path.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>file</code> (required): File path to collect from the sensor
-- <code>type</code> (optional): Artifact type (e.g., "pcap")
-- <code>payload_id</code> (optional): Idempotent payload ID for the request (auto-generated if not provided)
-- <code>days_retention</code> (optional): Number of days the artifact should be retained (default: 30)
-- <code>is_ignore_cert</code> (optional): If set, the sensor will ignore SSL certificate mismatches during artifact upload</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file</code> (required): File path to collect from the sensor</li>
+<li><code>type</code> (optional): Artifact type (e.g., "pcap")</li>
+<li><code>payload_id</code> (optional): Idempotent payload ID for the request (auto-generated if not provided)</li>
+<li><code>days_retention</code> (optional): Number of days the artifact should be retained (default: 30)</li>
+<li><code>is_ignore_cert</code> (optional): If set, the sensor will ignore SSL certificate mismatches during artifact upload</li>
+</ul>
 <p><strong>Response Event:</strong> FILE_GET_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>artifact_get<span class="w"> </span>--file<span class="w"> </span><span class="s2">&quot;C:\\Windows\\System32\\drivers\\etc\\hosts&quot;</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="dir_list">dir_list<a class="headerlink" href="#dir_list" title="Anchor link to this section">&para;</a></h3>
 <p>List files and directories at a specified path on the endpoint.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>dir_path</code> (required): Directory path to list
-- <code>depth</code> (optional): Recursion depth (default: 0 = no recursion)
-- <code>file_pattern</code> (optional): File pattern filter (e.g., "*.exe")</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>dir_path</code> (required): Directory path to list</li>
+<li><code>depth</code> (optional): Recursion depth (default: 0 = no recursion)</li>
+<li><code>file_pattern</code> (optional): File pattern filter (e.g., "*.exe")</li>
+</ul>
 <p><strong>Response Event:</strong> DIR_LIST_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>dir_list<span class="w"> </span>--dir_path<span class="w"> </span><span class="s2">&quot;C:\\Windows\\System32&quot;</span><span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span>
-</span></code></pre></div></p>
-<p><strong>Sample Response:</strong>
+</span></code></pre></div>
+<p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&quot;DIRECTORY_LIST&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -13233,103 +13237,119 @@
 </span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="p">]</span>
 </span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="dir_findhash">dir_findhash<a class="headerlink" href="#dir_findhash" title="Anchor link to this section">&para;</a></h3>
 <p>Search for files matching a specific hash across a directory tree.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>dir_path</code> (required): Root directory to search
-- <code>hash</code> (required): Hash value to search for (MD5, SHA1, or SHA256)
-- <code>depth</code> (optional): Maximum recursion depth</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>dir_path</code> (required): Root directory to search</li>
+<li><code>hash</code> (required): Hash value to search for (MD5, SHA1, or SHA256)</li>
+<li><code>depth</code> (optional): Maximum recursion depth</li>
+</ul>
 <p><strong>Response Event:</strong> DIR_FINDHASH_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>limacharlie sensor task &lt;SID&gt; dir_findhash --dir_path &quot;/var&quot; --hash &lt;HASH_VALUE&gt;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="dns_resolve">dns_resolve<a class="headerlink" href="#dns_resolve" title="Anchor link to this section">&para;</a></h3>
 <p>Perform DNS resolution on the endpoint to determine what DNS server responds.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux | Chrome | Edge</p>
-<p><strong>Parameters:</strong>
-- <code>hostname</code> (required): Hostname to resolve</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>hostname</code> (required): Hostname to resolve</li>
+</ul>
 <p><strong>Response Event:</strong> DNS_REQUEST</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>limacharlie sensor task &lt;SID&gt; dns_resolve --hostname &quot;example.com&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="doc_cache_get">doc_cache_get<a class="headerlink" href="#doc_cache_get" title="Anchor link to this section">&para;</a></h3>
 <p>Retrieve a previously cached document from the sensor's local cache.</p>
 <p><strong>Platforms:</strong> macOS | Windows</p>
-<p><strong>Parameters:</strong>
-- <code>hash</code> (required): Hash of the cached document</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>hash</code> (required): Hash of the cached document</li>
+</ul>
 <p><strong>Response Event:</strong> GET_DOCUMENT_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>limacharlie sensor task &lt;SID&gt; doc_cache_get --hash &lt;DOC_HASH&gt;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="exfil_add">exfil_add<a class="headerlink" href="#exfil_add" title="Anchor link to this section">&para;</a></h3>
 <p>Add an exfiltration detection watch for specific event types and patterns.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>event</code> (required): Event type to monitor (e.g., "DNS_REQUEST", "NEW_PROCESS")
-- <code>operator</code> (required): Comparison operator ("is", "contains", "matches", etc.)
-- <code>path</code> (required): JSON path to the field to watch (e.g., "event/DOMAIN_NAME")
-- <code>value</code> (required): Value or pattern to match
-- <code>expire</code> (optional): TTL in seconds for the watch (default: permanent)</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>event</code> (required): Event type to monitor (e.g., "DNS_REQUEST", "NEW_PROCESS")</li>
+<li><code>operator</code> (required): Comparison operator ("is", "contains", "matches", etc.)</li>
+<li><code>path</code> (required): JSON path to the field to watch (e.g., "event/DOMAIN_NAME")</li>
+<li><code>value</code> (required): Value or pattern to match</li>
+<li><code>expire</code> (optional): TTL in seconds for the watch (default: permanent)</li>
+</ul>
 <p><strong>Response Event:</strong> EXFIL_ADD_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>limacharlie sensor task &lt;SID&gt; exfil_add --event &quot;DNS_REQUEST&quot; --operator &quot;contains&quot; --path &quot;event/DOMAIN_NAME&quot; --value &quot;malware&quot; --expire 3600
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="exfil_del">exfil_del<a class="headerlink" href="#exfil_del" title="Anchor link to this section">&para;</a></h3>
 <p>Remove an exfiltration detection watch by its ID.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>id</code> (required): Watch ID to remove (from exfil_get response)</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> (required): Watch ID to remove (from exfil_get response)</li>
+</ul>
 <p><strong>Response Event:</strong> EXFIL_DEL_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limacharlie sensor task &lt;SID&gt; exfil_del --id &lt;WATCH_ID&gt;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="exfil_get">exfil_get<a class="headerlink" href="#exfil_get" title="Anchor link to this section">&para;</a></h3>
 <p>List all active exfiltration detection watches on the sensor.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EXFIL_GET_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>limacharlie sensor task &lt;SID&gt; exfil_get
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="file_del">file_del<a class="headerlink" href="#file_del" title="Anchor link to this section">&para;</a></h3>
 <p>Delete a file from the endpoint filesystem.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (required): Path to the file to delete</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (required): Path to the file to delete</li>
+</ul>
 <p><strong>Response Event:</strong> FILE_DEL_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>limacharlie sensor task &lt;SID&gt; file_del --file_path &quot;/tmp/suspicious_file&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="file_get">file_get<a class="headerlink" href="#file_get" title="Anchor link to this section">&para;</a></h3>
 <p>Retrieve a file from the endpoint and upload it to LimaCharlie cloud storage.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (required): Path to the file to retrieve</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (required): Path to the file to retrieve</li>
+</ul>
 <p><strong>Response Event:</strong> FILE_GET_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>limacharlie sensor task &lt;SID&gt; file_get --file_path &quot;C:\\Windows\\System32\\calc.exe&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="file_hash">file_hash<a class="headerlink" href="#file_hash" title="Anchor link to this section">&para;</a></h3>
 <p>Calculate cryptographic hashes (MD5, SHA1, SHA256) for a file.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (required): Path to the file to hash</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (required): Path to the file to hash</li>
+</ul>
 <p><strong>Response Event:</strong> FILE_HASH_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>limacharlie sensor task &lt;SID&gt; file_hash --file_path &quot;/etc/passwd&quot;
-</span></code></pre></div></p>
-<p><strong>Sample Response:</strong>
+</span></code></pre></div>
+<p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="nt">&quot;FILE_PATH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/etc/passwd&quot;</span><span class="p">,</span>
@@ -13339,18 +13359,20 @@
 </span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="nt">&quot;SHA256&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;jkl012...&quot;</span>
 </span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="file_info">file_info<a class="headerlink" href="#file_info" title="Anchor link to this section">&para;</a></h3>
 <p>Get detailed metadata about a file without retrieving its contents.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (required): Path to the file</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (required): Path to the file</li>
+</ul>
 <p><strong>Response Event:</strong> FILE_INFO_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie sensor task &lt;SID&gt; file_info --file_path &quot;C:\\Program Files\\app.exe&quot;
-</span></code></pre></div></p>
-<p><strong>Sample Response:</strong>
+</span></code></pre></div>
+<p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="nt">&quot;FILE_PATH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;C:\\Program Files\\app.exe&quot;</span><span class="p">,</span>
@@ -13360,154 +13382,174 @@
 </span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="nt">&quot;ACCESSED&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1581000000</span>
 </span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="file_mov">file_mov<a class="headerlink" href="#file_mov" title="Anchor link to this section">&para;</a></h3>
 <p>Move or rename a file on the endpoint filesystem.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>src_path</code> (required): Source file path
-- <code>dst_path</code> (required): Destination file path</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>src_path</code> (required): Source file path</li>
+<li><code>dst_path</code> (required): Destination file path</li>
+</ul>
 <p><strong>Response Event:</strong> FILE_MOV_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>limacharlie sensor task &lt;SID&gt; file_mov --src_path &quot;/tmp/file.txt&quot; --dst_path &quot;/tmp/renamed.txt&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="fim_add">fim_add<a class="headerlink" href="#fim_add" title="Anchor link to this section">&para;</a></h3>
 <p>Add a File Integrity Monitoring (FIM) watch for a specific path or pattern.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (required): Path or pattern to monitor (supports wildcards)</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (required): Path or pattern to monitor (supports wildcards)</li>
+</ul>
 <p><strong>Response Event:</strong> FIM_ADD_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>limacharlie sensor task &lt;SID&gt; fim_add --file_path &quot;C:\\Windows\\System32\\*.dll&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="fim_del">fim_del<a class="headerlink" href="#fim_del" title="Anchor link to this section">&para;</a></h3>
 <p>Remove a File Integrity Monitoring watch.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (required): Path pattern to stop monitoring</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (required): Path pattern to stop monitoring</li>
+</ul>
 <p><strong>Response Event:</strong> FIM_REMOVE (note: event name is FIM_REMOVE, not FIM_DEL_REP)</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie sensor task &lt;SID&gt; fim_del --file_path &quot;C:\\Windows\\System32\\*.dll&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="fim_get">fim_get<a class="headerlink" href="#fim_get" title="Anchor link to this section">&para;</a></h3>
 <p>List all active File Integrity Monitoring watches on the sensor.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> FIM_LIST_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>limacharlie sensor task &lt;SID&gt; fim_get
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="get_debug_data">get_debug_data<a class="headerlink" href="#get_debug_data" title="Anchor link to this section">&para;</a></h3>
 <p>Retrieve internal sensor debug data for troubleshooting.</p>
 <p><strong>Platforms:</strong> Windows</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> DEBUG_DATA_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>limacharlie sensor task &lt;SID&gt; get_debug_data
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="hidden_module_scan">hidden_module_scan<a class="headerlink" href="#hidden_module_scan" title="Anchor link to this section">&para;</a></h3>
 <p>Scan for hidden or stealthy modules loaded in process memory that may not appear in normal module lists.</p>
 <p><strong>Platforms:</strong> Windows</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (optional): Specific process ID to scan (default: all processes)</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (optional): Specific process ID to scan (default: all processes)</li>
+</ul>
 <p><strong>Response Event:</strong> HIDDEN_MODULE_DETECTED</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>limacharlie sensor task &lt;SID&gt; hidden_module_scan --pid 1234
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="history_dump">history_dump<a class="headerlink" href="#history_dump" title="Anchor link to this section">&para;</a></h3>
 <p>Export a dump of recent events from the sensor's local event cache.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux | Chrome | Edge</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> HISTORY_DUMP_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>limacharlie sensor task &lt;SID&gt; history_dump
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="log_get">log_get<a class="headerlink" href="#log_get" title="Anchor link to this section">&para;</a></h3>
 <p>Retrieve Windows Event Logs or macOS Unified Logs from the endpoint.</p>
 <p><strong>Platforms:</strong> Windows (Event Logs) | macOS (Unified Logs)</p>
-<p><strong>Parameters:</strong>
-- <code>source</code> (Windows required): Event log source name (e.g., "Security", "System")
-- <code>predicate</code> (macOS optional): Unified log filter predicate</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>source</code> (Windows required): Event log source name (e.g., "Security", "System")</li>
+<li><code>predicate</code> (macOS optional): Unified log filter predicate</li>
+</ul>
 <p><strong>Response Event:</strong> LOG_GET_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a># Windows
 </span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>limacharlie sensor task &lt;SID&gt; log_get --source &quot;Security&quot;
 </span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
 </span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a># macOS
 </span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>limacharlie sensor task &lt;SID&gt; log_get --predicate &quot;eventType == logEvent&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="mem_find_string">mem_find_string<a class="headerlink" href="#mem_find_string" title="Anchor link to this section">&para;</a></h3>
 <p>Search process memory for specific string patterns.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (required): Process ID to scan
-- <code>strings</code> (required): String or list of strings to search for</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (required): Process ID to scan</li>
+<li><code>strings</code> (required): String or list of strings to search for</li>
+</ul>
 <p><strong>Response Event:</strong> MEM_FIND_STRING_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>limacharlie sensor task &lt;SID&gt; mem_find_string --pid 1234 --strings &quot;password&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="mem_find_handle">mem_find_handle<a class="headerlink" href="#mem_find_handle" title="Anchor link to this section">&para;</a></h3>
 <p>Find handles (file, registry, process) held by a process on Windows.</p>
 <p><strong>Platforms:</strong> Windows</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (optional): Specific process ID (default: all processes)
-- <code>needle</code> (optional): Handle name pattern to search for</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (optional): Specific process ID (default: all processes)</li>
+<li><code>needle</code> (optional): Handle name pattern to search for</li>
+</ul>
 <p><strong>Response Event:</strong> MEM_FIND_HANDLE_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>limacharlie sensor task &lt;SID&gt; mem_find_handle --pid 1234 --needle &quot;malware.exe&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="mem_map">mem_map<a class="headerlink" href="#mem_map" title="Anchor link to this section">&para;</a></h3>
 <p>Get memory map of a process showing loaded modules and memory regions.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (required): Process ID to map</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (required): Process ID to map</li>
+</ul>
 <p><strong>Response Event:</strong> MEM_MAP_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>limacharlie sensor task &lt;SID&gt; mem_map --pid 1234
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="mem_read">mem_read<a class="headerlink" href="#mem_read" title="Anchor link to this section">&para;</a></h3>
 <p>Read raw memory from a process at a specific address.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (required): Process ID
-- <code>base_address</code> (required): Memory address to read from (hex format)
-- <code>size</code> (required): Number of bytes to read</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (required): Process ID</li>
+<li><code>base_address</code> (required): Memory address to read from (hex format)</li>
+<li><code>size</code> (required): Number of bytes to read</li>
+</ul>
 <p><strong>Response Event:</strong> MEM_READ_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>limacharlie sensor task &lt;SID&gt; mem_read --pid 1234 --base_address 0x00400000 --size 1024
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="mem_strings">mem_strings<a class="headerlink" href="#mem_strings" title="Anchor link to this section">&para;</a></h3>
 <p>Extract all readable strings from a process's memory.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (required): Process ID to scan</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (required): Process ID to scan</li>
+</ul>
 <p><strong>Response Event:</strong> MEM_STRINGS_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>limacharlie sensor task &lt;SID&gt; mem_strings --pid 1234
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="netstat">netstat<a class="headerlink" href="#netstat" title="Anchor link to this section">&para;</a></h3>
 <p>Get current network connections on the endpoint (similar to netstat command).</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> NETWORK_CONNECTIONS</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>limacharlie sensor task &lt;SID&gt; netstat
-</span></code></pre></div></p>
-<p><strong>Sample Response:</strong>
+</span></code></pre></div>
+<p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="p">{</span>
 </span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="w">    </span><span class="nt">&quot;NETWORK_ACTIVITY&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -13523,35 +13565,37 @@
 </span><span id="__span-29-13"><a id="__codelineno-29-13" name="__codelineno-29-13" href="#__codelineno-29-13"></a><span class="w">    </span><span class="p">]</span>
 </span><span id="__span-29-14"><a id="__codelineno-29-14" name="__codelineno-29-14" href="#__codelineno-29-14"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-29-15"><a id="__codelineno-29-15" name="__codelineno-29-15" href="#__codelineno-29-15"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="network_summary">network_summary<a class="headerlink" href="#network_summary" title="Anchor link to this section">&para;</a></h3>
 <p>Get aggregated network statistics and active connections summary.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> NETWORK_SUMMARY</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>limacharlie sensor task &lt;SID&gt; network_summary
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_kill_process">os_kill_process<a class="headerlink" href="#os_kill_process" title="Anchor link to this section">&para;</a></h3>
 <p>Terminate a running process.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (required): Process ID to terminate</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (required): Process ID to terminate</li>
+</ul>
 <p><strong>Response Event:</strong> OS_KILL_PROCESS_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>limacharlie sensor task &lt;SID&gt; os_kill_process --pid 1234
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_packages">os_packages<a class="headerlink" href="#os_packages" title="Anchor link to this section">&para;</a></h3>
 <p>List installed software packages on the endpoint.</p>
 <p><strong>Platforms:</strong> Windows (via registry) | macOS (future) | Linux (future)</p>
 <p><strong>Response Event:</strong> OS_PACKAGES_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>limacharlie sensor task &lt;SID&gt; os_packages
-</span></code></pre></div></p>
-<p><strong>Sample Response:</strong>
+</span></code></pre></div>
+<p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="p">{</span>
 </span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="w">    </span><span class="nt">&quot;PACKAGES&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -13563,17 +13607,17 @@
 </span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="w">    </span><span class="p">]</span>
 </span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_processes">os_processes<a class="headerlink" href="#os_processes" title="Anchor link to this section">&para;</a></h3>
 <p>Get a list of all running processes with detailed information.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EXISTING_PROCESS (multiple events, one per process)</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>limacharlie sensor task &lt;SID&gt; os_processes
-</span></code></pre></div></p>
-<p><strong>Sample Response:</strong>
+</span></code></pre></div>
+<p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="p">{</span>
 </span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="w">    </span><span class="nt">&quot;PROCESS_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1234</span><span class="p">,</span>
@@ -13583,64 +13627,68 @@
 </span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="w">    </span><span class="nt">&quot;USER_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DOMAIN\\user&quot;</span>
 </span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_resume">os_resume<a class="headerlink" href="#os_resume" title="Anchor link to this section">&para;</a></h3>
 <p>Resume a suspended process.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (required): Process ID to resume</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (required): Process ID to resume</li>
+</ul>
 <p><strong>Response Event:</strong> OS_RESUME_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>limacharlie sensor task &lt;SID&gt; os_resume --pid 1234
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_services">os_services<a class="headerlink" href="#os_services" title="Anchor link to this section">&para;</a></h3>
 <p>List all services/daemons running on the endpoint.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_SERVICES_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>limacharlie sensor task &lt;SID&gt; os_services
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_suspend">os_suspend<a class="headerlink" href="#os_suspend" title="Anchor link to this section">&para;</a></h3>
 <p>Suspend (pause) a running process.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>pid</code> (required): Process ID to suspend</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>pid</code> (required): Process ID to suspend</li>
+</ul>
 <p><strong>Response Event:</strong> OS_SUSPEND_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>limacharlie sensor task &lt;SID&gt; os_suspend --pid 1234
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_autoruns">os_autoruns<a class="headerlink" href="#os_autoruns" title="Anchor link to this section">&para;</a></h3>
 <p>List programs configured to run automatically at system startup.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_AUTORUNS_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>limacharlie sensor task &lt;SID&gt; os_autoruns
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_drivers">os_drivers<a class="headerlink" href="#os_drivers" title="Anchor link to this section">&para;</a></h3>
 <p>List all loaded kernel drivers/modules.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_DRIVERS_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>limacharlie sensor task &lt;SID&gt; os_drivers
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="os_version">os_version<a class="headerlink" href="#os_version" title="Anchor link to this section">&para;</a></h3>
 <p>Get detailed operating system version information.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_VERSION_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>limacharlie sensor task &lt;SID&gt; os_version
-</span></code></pre></div></p>
-<p><strong>Sample Response:</strong>
+</span></code></pre></div>
+<p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="p">{</span>
 </span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a><span class="w">    </span><span class="nt">&quot;OS_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Windows 11&quot;</span><span class="p">,</span>
@@ -13648,162 +13696,184 @@
 </span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a><span class="w">    </span><span class="nt">&quot;ARCHITECTURE&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;x64&quot;</span>
 </span><span id="__span-42-6"><a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-42-7"><a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a><span class="p">}</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="rejoin_network">rejoin_network<a class="headerlink" href="#rejoin_network" title="Anchor link to this section">&para;</a></h3>
 <p>Re-enable network connectivity for a sensor that was previously isolated.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux | Chrome | Edge</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> None (sensor reconnects)</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>limacharlie sensor task &lt;SID&gt; rejoin_network
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="run">run<a class="headerlink" href="#run" title="Anchor link to this section">&para;</a></h3>
 <p>Execute a command or script on the endpoint (out-of-band execution).</p>
 <p><strong>Platforms:</strong> macOS | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>command</code> (required): Command line to execute</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>command</code> (required): Command line to execute</li>
+</ul>
 <p><strong>Response Event:</strong> EXEC_OOB</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>limacharlie sensor task &lt;SID&gt; run --command &quot;ps aux | grep chrome&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="segregate_network">segregate_network<a class="headerlink" href="#segregate_network" title="Anchor link to this section">&para;</a></h3>
 <p>Isolate a sensor from the network (except LimaCharlie cloud connectivity).</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux | Chrome | Edge</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> None (sensor becomes isolated)</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>limacharlie sensor task &lt;SID&gt; segregate_network
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="yara_scan">yara_scan<a class="headerlink" href="#yara_scan" title="Anchor link to this section">&para;</a></h3>
 <p>Scan files or process memory with YARA rules.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>rule</code> (required): YARA rule content
-- <code>file_path</code> (optional): Specific file to scan
-- <code>pid</code> (optional): Specific process to scan
-- <code>process_expr</code> (optional): Process name pattern to scan</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>rule</code> (required): YARA rule content</li>
+<li><code>file_path</code> (optional): Specific file to scan</li>
+<li><code>pid</code> (optional): Specific process to scan</li>
+<li><code>process_expr</code> (optional): Process name pattern to scan</li>
+</ul>
 <p><strong>Response Event:</strong> YARA_DETECTION</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a># Scan a file
 </span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>limacharlie sensor task &lt;SID&gt; yara_scan --file_path &quot;C:\\suspicious.exe&quot; --rule &quot;rule test { strings: $a = \&quot;malware\&quot; condition: $a }&quot;
 </span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>
 </span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a># Scan process memory
 </span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>limacharlie sensor task &lt;SID&gt; yara_scan --pid 1234 --rule &quot;rule test { strings: $a = \&quot;malware\&quot; condition: $a }&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="pcap_ifaces">pcap_ifaces<a class="headerlink" href="#pcap_ifaces" title="Anchor link to this section">&para;</a></h3>
 <p>List available network interfaces for packet capture.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> PCAP_INTERFACES_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>limacharlie sensor task &lt;SID&gt; pcap_ifaces
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="pcap_start">pcap_start<a class="headerlink" href="#pcap_start" title="Anchor link to this section">&para;</a></h3>
 <p>Start capturing network packets on a specified interface.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>iface</code> (required): Network interface ID or name
-- <code>max_size</code> (optional): Maximum capture size in MB</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iface</code> (required): Network interface ID or name</li>
+<li><code>max_size</code> (optional): Maximum capture size in MB</li>
+</ul>
 <p><strong>Response Event:</strong> PCAP_START_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>limacharlie sensor task &lt;SID&gt; pcap_start --iface eth0 --max_size 100
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="pcap_stop">pcap_stop<a class="headerlink" href="#pcap_stop" title="Anchor link to this section">&para;</a></h3>
 <p>Stop an active packet capture and upload the PCAP file.</p>
 <p><strong>Platforms:</strong> macOS | Windows | Linux</p>
-<p><strong>Parameters:</strong>
-- <code>iface</code> (optional): Specific interface to stop (default: all)</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iface</code> (optional): Specific interface to stop (default: all)</li>
+</ul>
 <p><strong>Response Event:</strong> PCAP_STOP_REP, followed by EXPORT_COMPLETE</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>limacharlie sensor task &lt;SID&gt; pcap_stop
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="reg_list">reg_list<a class="headerlink" href="#reg_list" title="Anchor link to this section">&para;</a></h3>
 <p>List Windows registry keys and values.</p>
 <p><strong>Platforms:</strong> Windows</p>
-<p><strong>Parameters:</strong>
-- <code>reg_path</code> (required): Registry path to list (e.g., "HKEY_LOCAL_MACHINE\SOFTWARE")</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>reg_path</code> (required): Registry path to list (e.g., "HKEY_LOCAL_MACHINE\SOFTWARE")</li>
+</ul>
 <p><strong>Response Event:</strong> REG_LIST_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>limacharlie sensor task &lt;SID&gt; reg_list --reg_path &quot;HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="epp_scan">epp_scan<a class="headerlink" href="#epp_scan" title="Anchor link to this section">&para;</a></h3>
 <p>Trigger an Endpoint Protection (EPP) scan on a file or directory.</p>
 <p><strong>Platforms:</strong> Windows</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (required): Path to scan</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (required): Path to scan</li>
+</ul>
 <p><strong>Response Event:</strong> EPP_SCAN_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>limacharlie sensor task &lt;SID&gt; epp_scan --file_path &quot;C:\\Users\\Public&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="epp_list_exclusions">epp_list_exclusions<a class="headerlink" href="#epp_list_exclusions" title="Anchor link to this section">&para;</a></h3>
 <p>List EPP scan exclusions currently configured on the sensor.</p>
 <p><strong>Platforms:</strong> Windows</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EPP_LIST_EXCLUSIONS_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>limacharlie sensor task &lt;SID&gt; epp_list_exclusions
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="epp_add_exclusion">epp_add_exclusion<a class="headerlink" href="#epp_add_exclusion" title="Anchor link to this section">&para;</a></h3>
 <p>Add a path or process to EPP scan exclusions.</p>
 <p><strong>Platforms:</strong> Windows</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (optional): File/directory path to exclude
-- <code>process</code> (optional): Process name to exclude</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (optional): File/directory path to exclude</li>
+<li><code>process</code> (optional): Process name to exclude</li>
+</ul>
 <p><strong>Response Event:</strong> EPP_ADD_EXCLUSION_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>limacharlie sensor task &lt;SID&gt; epp_add_exclusion --file_path &quot;C:\\safe_app&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="epp_rem_exclusion">epp_rem_exclusion<a class="headerlink" href="#epp_rem_exclusion" title="Anchor link to this section">&para;</a></h3>
 <p>Remove a path or process from EPP scan exclusions.</p>
 <p><strong>Platforms:</strong> Windows</p>
-<p><strong>Parameters:</strong>
-- <code>file_path</code> (optional): File/directory path to remove from exclusions
-- <code>process</code> (optional): Process name to remove from exclusions</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>file_path</code> (optional): File/directory path to remove from exclusions</li>
+<li><code>process</code> (optional): Process name to remove from exclusions</li>
+</ul>
 <p><strong>Response Event:</strong> EPP_REM_EXCLUSION_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>limacharlie sensor task &lt;SID&gt; epp_rem_exclusion --file_path &quot;C:\\safe_app&quot;
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h3 id="epp_list_quarantine">epp_list_quarantine<a class="headerlink" href="#epp_list_quarantine" title="Anchor link to this section">&para;</a></h3>
 <p>List files currently in EPP quarantine.</p>
 <p><strong>Platforms:</strong> Windows</p>
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EPP_LIST_QUARANTINE_REP</p>
-<p><strong>Usage Example:</strong>
+<p><strong>Usage Example:</strong></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>limacharlie sensor task &lt;SID&gt; epp_list_quarantine
-</span></code></pre></div></p>
+</span></code></pre></div>
 <hr />
 <h2 id="command-usage-notes">Command Usage Notes<a class="headerlink" href="#command-usage-notes" title="Anchor link to this section">&para;</a></h2>
-<p><strong>General Syntax:</strong>
+<p><strong>General Syntax:</strong></p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SENSOR_ID&gt;<span class="w"> </span>&lt;COMMAND_NAME&gt;<span class="w"> </span><span class="o">[</span>--param<span class="w"> </span>value<span class="w"> </span>...<span class="o">]</span>
-</span></code></pre></div></p>
-<p><strong>Platform Abbreviations:</strong>
-- macOS: Apple macOS and OS X
-- Windows: Microsoft Windows (7, 8, 10, 11, Server editions)
-- Linux: Linux distributions (Ubuntu, CentOS, Debian, etc.)
-- Chrome: Chrome browser extension sensor
-- Edge: Microsoft Edge browser extension sensor</p>
+</span></code></pre></div>
+<p><strong>Platform Abbreviations:</strong></p>
+<ul>
+<li>macOS: Apple macOS and OS X</li>
+<li>Windows: Microsoft Windows (7, 8, 10, 11, Server editions)</li>
+<li>Linux: Linux distributions (Ubuntu, CentOS, Debian, etc.)</li>
+<li>Chrome: Chrome browser extension sensor</li>
+<li>Edge: Microsoft Edge browser extension sensor</li>
+</ul>
 <p><strong>Response Events:</strong>
-Most commands generate a response event (typically ending in <code>_REP</code>) that can be:
-- Viewed in the LimaCharlie web interface under <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> &gt; Timeline
-- Retrieved via API
-- Triggered on with <abbr title="Detection &amp; Response">D&amp;R</abbr> rules</p>
+Most commands generate a response event (typically ending in <code>_REP</code>) that can be:</p>
+<ul>
+<li>Viewed in the LimaCharlie web interface under <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> &gt; Timeline</li>
+<li>Retrieved via API</li>
+<li>Triggered on with <abbr title="Detection &amp; Response">D&amp;R</abbr> rules</li>
+</ul>
 <p><strong>Error Handling:</strong>
-Response events typically include an <code>ERROR</code> field:
-- <code>ERROR: 0</code> indicates success
-- Non-zero ERROR values indicate specific error conditions</p>
+Response events typically include an <code>ERROR</code> field:</p>
+<ul>
+<li><code>ERROR: 0</code> indicates success</li>
+<li>Non-zero ERROR values indicate specific error conditions</li>
+</ul>
 <p><strong>Permissions:</strong>
 Some commands require elevated privileges (root/administrator) on the endpoint to execute successfully.</p>
 <p><strong>Timeouts:</strong>
