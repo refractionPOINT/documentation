@@ -2,7 +2,7 @@
 
 The Agentic SecOps Workspace accelerates building, customizing, integrating, and scaling security operations. By handling the infrastructure-intensive aspects of security engineering, LimaCharlie takes on the heavy lifting making it easy for developers to focus on their core projects.
 
-#### SecOps development problems
+## SecOps development problems
 
 Innovating new security products and modifying existing ones is crucial for protecting organizations from evolving cyberthreats. Unfortunately, the process of building better cybersecurity solutions is often hampered by:
 
@@ -11,7 +11,7 @@ Innovating new security products and modifying existing ones is crucial for prot
 - **Scalability issues:** While your solution works well at a small scale there are serious concerns over whether it can scale effectively as your business grows.
 - **Lack of control:** Your project relies on third-party or open source tooling that lacks the flexibility you need to succeed.
 
-#### LimaCharlie's solution
+## LimaCharlie's solution
 
 The Agentic SecOps Workspace delivers core security capabilities in the form of "primitives" that can be modified to accommodate specific needs. It offers infrastructure-as-code and other resources that can improve a developer's mean-time-to-market, including:
 

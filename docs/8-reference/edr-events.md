@@ -355,7 +355,7 @@ Generated when a file is deleted.
 > Be Aware:
 >
 > When adding this event to an event collection rule, you will be monitoring system-wide. This could result in a large number of events.
-
+>
 > Best Practices:
 >
 > - Utilize this selectively (ex. deploy on only suspect systems)
@@ -442,7 +442,7 @@ Generated when a file is modified.
 > Be Aware:
 >
 > When adding this event to an event collection rule, you will be monitoring system-wide. This could result in a large number of events.
-
+>
 > Best Practices:
 >
 > - Utilize this selectively (ex. deploy on only suspect systems)

@@ -197,6 +197,7 @@ Checks if the event under evaluation is from a sensor of the given platform.
 Takes a `name` parameter for the platform name. The current platforms are:
 
 **Endpoint Platforms:**
+
 - `windows`
 - `linux`
 - `macos`
@@ -205,6 +206,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `chrome`
 
 **Cloud & Service Platforms:**
+
 - `gcp` (Google Cloud Platform)
 - `aws` (Amazon Web Services)
 - `azure_ad` (Azure Active Directory)
@@ -218,6 +220,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `k8s_pods` (Kubernetes)
 
 **Identity & Access Management:**
+
 - `1password`
 - `bitwarden`
 - `duo`
@@ -226,6 +229,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `sublime`
 
 **Security Products:**
+
 - `carbon_black`
 - `crowdstrike`
 - `cylance`
@@ -238,6 +242,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `wiz`
 
 **Communication & Collaboration:**
+
 - `box`
 - `github`
 - `office365`
@@ -245,6 +250,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `email`
 
 **IT & Business Services:**
+
 - `hubspot`
 - `itglue`
 - `mimecast`
@@ -253,6 +259,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `zendesk`
 
 **Network & Infrastructure:**
+
 - `canary_token`
 - `fortigate`
 - `iis` (Internet Information Services)
@@ -261,6 +268,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `zeek`
 
 **Data Formats:**
+
 - `vpn`
 - `text`
 - `json`
@@ -270,6 +278,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `mac_unified_logging`
 
 **Other:**
+
 - `lc_event` (LimaCharlie internal events)
 
 Example:
@@ -304,7 +313,7 @@ The value is supplied via the `path` parameter and the lookup is defined in the 
 Supports the [file name](#file-name) and [sub domain](#sub-domain) transforms.
 
 > API-based lookups, like VirusTotal and IP Geolocation, work a little bit differently. For more information, see [Using API-based lookups](../5-integrations/api-integrations/index.md).
-
+>
 > You can create your own lookups and optionally publish them in the add-on marketplace. To learn more, see [Lookups](../7-administration/config-hive/lookups.md) and [Lookup Manager](../5-integrations/extensions/limacharlie/lookup-manager.md).
 
 ### scope

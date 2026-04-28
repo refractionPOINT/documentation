@@ -2,7 +2,7 @@
 
 LimaCharlie's Agentic SecOps Workspace provides a comprehensive approach to combating ransomware, focusing on early detection during the reconnaissance stage and rapid response in the event of a detonation. By gathering telemetry from a wide range of sources, enabling widespread deployment, and leveraging real-time response capabilities, LimaCharlie empowers organizations to effectively detect, stop, and mitigate ransomware attacks, minimizing damage and ensuring business continuity.
 
-#### Problems with uncovering adversary techniques
+## Problems with uncovering adversary techniques
 
 Ransomware attacks have become increasingly sophisticated and targeted, posing a significant threat to organizations of all sizes. The challenges in effectively combating ransomware include:
 
@@ -10,7 +10,7 @@ Ransomware attacks have become increasingly sophisticated and targeted, posing a
 - **Difficulty in correlating data:** Malicious actors often move around and attempt to hide their presence, making it difficult to identify and correlate their activities across various systems and data sources.
 - **Rapid spread and damage:** In the event of a successful ransomware detonation, the malware can spread rapidly, encrypting files and causing significant damage before security teams can respond.
 
-#### LimaCharlie's solution
+## LimaCharlie's solution
 
 LimaCharlie's Agentic SecOps Workspace offers a comprehensive approach to combating ransomware, focusing on early detection during the reconnaissance stage and rapid response in the event of a detonation:
 

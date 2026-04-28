@@ -9,7 +9,7 @@ on the simple case where it is applied to Sensor events.
 
 For a full list of all rule operators and detailed documentation see the [Detection and Response](../examples.md) section.
 
-### Life of a Rule
+## Life of a Rule
 
 D&R rules are generally applied on a per-event basis. When the rule is applied, the "detection"
 component of the rule is processed to determine if it matches. If there is a match, the "response"

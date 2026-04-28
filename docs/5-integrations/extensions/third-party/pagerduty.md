@@ -4,9 +4,9 @@ The PagerDuty Extension allows you to trigger events within PagerDuty. It requir
 
 Some more detailed information is available [here](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/).
 
-### REST
+## REST
 
-#### Trigger Event
+### Trigger Event
 
 ```json
 {

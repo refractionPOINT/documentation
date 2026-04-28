@@ -255,7 +255,7 @@ Newly added users start with **Unset** privileges (basic org information only). 
 3. Use the tables above to determine which permissions to grant based on your intended use case
 
 > **Tip:** Follow the principle of least privilege — grant only the permissions needed for your use case. For read-only investigation workflows, avoid granting write permissions like `dr.set` or `sensor.task`.
-
+>
 > **Note:** Permissions granted through [Organization Groups](../7-administration/access/user-access.md#access-via-organization-groups) are additive on top of per-organization permissions and cannot reduce existing access.
 
 For the full list of available permissions, see the [Permissions Reference](../8-reference/permissions.md).

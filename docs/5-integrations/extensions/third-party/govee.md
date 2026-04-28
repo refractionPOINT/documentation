@@ -2,7 +2,7 @@
 
 The Govee Extension allows you to trigger color changes on your [supported Govee lights](https://developer.govee.com/docs/support-product-model) via a rule response action. It requires you to configure a Govee API key in the extension.
 
-### Setup
+## Setup
 
 1. Request an API key from Govee by following their instructions [here](https://developer.govee.com/reference/apply-you-govee-api-key)
 2. Get the Device ID (device) and model (sku) of the device you'd like to target by requesting a list of your supported devices from the Govee API:

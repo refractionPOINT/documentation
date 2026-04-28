@@ -27,7 +27,7 @@ Within the LimaCharlie web application, you can create an AWS CloudTrail Cloud C
 
 After providing an Installation Key, you will be guided through connecting either an S3 bucket or SQS queue to ingest AWS CloudTrail events.
 
-#### Collecting AWS CloudTrail Logs via an S3 Bucket
+### Collecting AWS CloudTrail Logs via an S3 Bucket
 
 If collecting CloudTrail logs via an S3 bucket, you will need the following parameters:
 

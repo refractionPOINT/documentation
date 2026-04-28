@@ -2,7 +2,7 @@
 
 LimaCharlie's sleeper mode is not just about cost-efficiency; it's about transforming your entire network into a dynamic, responsive security infrastructure. By pre-deploying sensors and strategically activating them during incidents, you gain the element of surprise, optimize resource allocation, and ultimately, mitigate the impact of cyberattacks with unmatched agility.
 
-#### Traditional sensor deployment problems
+## Traditional sensor deployment problems
 
 Traditional IR relies on reactive deployment of sensors, leaving critical blind spots during early stages of an incident. Delays in gaining visibility slow down response times and increase damage potential.
 
@@ -10,7 +10,7 @@ Traditional IR relies on reactive deployment of sensors, leaving critical blind 
 - **Manual processes:** Delayed response times caused by the need to manually deploy sensors after an incident has been detected.
 - **Delayed response:** Increased potential for damage and lateral movement of threats while waiting for sensor deployment and data collection.
 
-#### LimaCharlie's solution
+### LimaCharlie's solution
 
 Sleeper mode transforms your entire network into a pre-wired security grid. Sensors sit silently, consuming minimal resources while collecting basic system information and detecting critical events. This provides:
 

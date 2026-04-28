@@ -2,7 +2,7 @@
 
 LimaCharlie's Agentic SecOps Workspace provides a cost-effective and flexible alternative or supplement to traditional Security Information and Event Management (SIEM) offering essential capabilities while addressing the challenges of high costs, vendor lock-in, and complexity. By leveraging LimaCharlie's interoperability, automation, and detection and response () capabilities, security teams can optimize their operations and maintain a robust posture without the high costs and limitations of legacy SIEM solutions.
 
-#### SIEM problems
+## SIEM problems
 
 The capabilities of SIEM solutions are essential for managing logs, correlating events, monitoring and alerting, and storing telemetry data. However, traditional SIEMs often present several challenges for organizations:
 
@@ -10,7 +10,7 @@ The capabilities of SIEM solutions are essential for managing logs, correlating 
 - **Vendor lock-in:** Many SIEMs are proprietary, closed systems that make it difficult for organizations to switch providers or integrate with other security tools.
 - **Complexity:** SIEMs can be complex to set up and manage, requiring specialized skills and resources that may strain already overburdened security teams.
 
-#### LimaCharlie's solution
+## LimaCharlie's solution
 
 LimaCharlie's Agentic SecOps Workspace offers a cost-effective alternative to traditional SIEMs, providing essential capabilities while addressing the challenges of high costs, vendor lock-in, and complexity:
 

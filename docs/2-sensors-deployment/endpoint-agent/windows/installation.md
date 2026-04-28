@@ -62,7 +62,7 @@ Choose the correct download for your system architecture:
 | 32-bit (x86) | [https://downloads.limacharlie.io/sensor/windows/msi32](https://downloads.limacharlie.io/sensor/windows/msi32) |
 
 > **Note about downloaded filenames:** The downloaded file will have a versioned name like `hcp_win_x64_release_4.33.23.exe`. You can rename it to `rphcp.exe` for convenience, or use the original filename in commands.
-
+>
 > **How do I know which architecture I need?**
 >
 > On Windows 10/11: Go to **Settings** > **System** > **About** and look at **System type**.

@@ -16,7 +16,7 @@ After you have subscribed to the extension, setup the Twilio authentication in t
 
 Authentication in Twilio uses two components--a SID and a token. The LimaCharlie Twilio secret will combine both components in a single field like `SID/TOKEN`.
 
-#### Detection & Response
+### Detection & Response
 
 Example Response portion of a  rule that sends a message out via Twilio as the response action:
 

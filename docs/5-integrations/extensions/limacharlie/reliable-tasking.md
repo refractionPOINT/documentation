@@ -22,7 +22,7 @@ Within the Reliable Tasking module, you can:
 
 The following REST API actions can be sent to interact with the Reliable Tasking extension:
 
-#### **Create a Task**
+### **Create a Task**
 
 ```powershell
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
@@ -100,7 +100,7 @@ If you add a value to the `context` parameter in the extension request, this val
 
 The above example cURL command has a `context` of `version` so the below D&R rule looks for that value.
 
-#### Example detect block
+### Example detect block
 
 ```yaml
 op: contains
