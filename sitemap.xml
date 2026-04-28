@@ -593,10 +593,6 @@
          <lastmod>2026-04-28</lastmod>
     </url>
     <url>
-         <loc>https://docs.limacharlie.io/5-integrations/add-ons/</loc>
-         <lastmod>2026-04-28</lastmod>
-    </url>
-    <url>
          <loc>https://docs.limacharlie.io/5-integrations/api-integrations/</loc>
          <lastmod>2026-04-28</lastmod>
     </url>
@@ -693,10 +689,6 @@
          <lastmod>2026-04-28</lastmod>
     </url>
     <url>
-         <loc>https://docs.limacharlie.io/5-integrations/extensions/labs/playbook/</loc>
-         <lastmod>2026-04-28</lastmod>
-    </url>
-    <url>
          <loc>https://docs.limacharlie.io/5-integrations/extensions/limacharlie/</loc>
          <lastmod>2026-04-28</lastmod>
     </url>
@@ -746,6 +738,10 @@
     </url>
     <url>
          <loc>https://docs.limacharlie.io/5-integrations/extensions/limacharlie/payload-manager/</loc>
+         <lastmod>2026-04-28</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.limacharlie.io/5-integrations/extensions/limacharlie/playbook/</loc>
          <lastmod>2026-04-28</lastmod>
     </url>
     <url>
@@ -926,10 +922,6 @@
     </url>
     <url>
          <loc>https://docs.limacharlie.io/5-integrations/outputs/destinations/webhook/</loc>
-         <lastmod>2026-04-28</lastmod>
-    </url>
-    <url>
-         <loc>https://docs.limacharlie.io/5-integrations/services/dumper/</loc>
          <lastmod>2026-04-28</lastmod>
     </url>
     <url>

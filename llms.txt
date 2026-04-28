@@ -144,68 +144,67 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 ## Integrations
 
 - [Overview](https://docs.limacharlie.io/5-integrations/): Integrations
-- [Add-ons](https://docs.limacharlie.io/5-integrations/add-ons/)
 - [Overview](https://docs.limacharlie.io/5-integrations/outputs/): Outputs
 - [Stream Structures](https://docs.limacharlie.io/5-integrations/outputs/stream-structures/): Output Stream Structures
 - [Testing](https://docs.limacharlie.io/5-integrations/outputs/testing/): Testing Outputs
 - [Allowlisting](https://docs.limacharlie.io/5-integrations/outputs/allowlisting/): Adding Outputs to an Allow List
 - [Billing](https://docs.limacharlie.io/5-integrations/outputs/billing/): Output Billing
-- [Amazon S3](https://docs.limacharlie.io/5-integrations/outputs/destinations/amazon-s3/)
 - [Splunk](https://docs.limacharlie.io/5-integrations/outputs/destinations/splunk/)
 - [Elastic](https://docs.limacharlie.io/5-integrations/outputs/destinations/elastic/)
-- [BigQuery](https://docs.limacharlie.io/5-integrations/outputs/destinations/bigquery/): Google Cloud BigQuery
-- [Syslog](https://docs.limacharlie.io/5-integrations/outputs/destinations/syslog/)
-- [Webhook](https://docs.limacharlie.io/5-integrations/outputs/destinations/webhook/)
-- [Webhook Bulk](https://docs.limacharlie.io/5-integrations/outputs/destinations/webhook-bulk/): Webhook (Bulk)
-- [Slack](https://docs.limacharlie.io/5-integrations/outputs/destinations/slack/)
-- [Telegram](https://docs.limacharlie.io/5-integrations/outputs/destinations/telegram/)
-- [Microsoft Teams](https://docs.limacharlie.io/5-integrations/outputs/destinations/ms-teams/)
-- [SMTP](https://docs.limacharlie.io/5-integrations/outputs/destinations/smtp/)
+- [OpenSearch](https://docs.limacharlie.io/5-integrations/outputs/destinations/opensearch/)
+- [Humio](https://docs.limacharlie.io/5-integrations/outputs/destinations/humio/)
 - [Apache Kafka](https://docs.limacharlie.io/5-integrations/outputs/destinations/apache-kafka/)
+- [Syslog](https://docs.limacharlie.io/5-integrations/outputs/destinations/syslog/)
 - [Azure Event Hub](https://docs.limacharlie.io/5-integrations/outputs/destinations/azure-event-hub/)
+- [Google Pub/Sub](https://docs.limacharlie.io/5-integrations/outputs/destinations/google-pubsub/): Google Cloud Pubsub
+- [Amazon S3](https://docs.limacharlie.io/5-integrations/outputs/destinations/amazon-s3/)
 - [Azure Storage Blob](https://docs.limacharlie.io/5-integrations/outputs/destinations/azure-storage-blob/)
 - [Google Cloud Storage](https://docs.limacharlie.io/5-integrations/outputs/destinations/google-cloud-storage/)
-- [Google Pub/Sub](https://docs.limacharlie.io/5-integrations/outputs/destinations/google-pubsub/): Google Cloud Pubsub
-- [Humio](https://docs.limacharlie.io/5-integrations/outputs/destinations/humio/)
-- [OpenSearch](https://docs.limacharlie.io/5-integrations/outputs/destinations/opensearch/)
-- [ASW](https://docs.limacharlie.io/5-integrations/outputs/destinations/scp/): SCP
+- [BigQuery](https://docs.limacharlie.io/5-integrations/outputs/destinations/bigquery/): Google Cloud BigQuery
+- [SCP](https://docs.limacharlie.io/5-integrations/outputs/destinations/scp/)
 - [SFTP](https://docs.limacharlie.io/5-integrations/outputs/destinations/sftp/)
+- [Slack](https://docs.limacharlie.io/5-integrations/outputs/destinations/slack/)
+- [Microsoft Teams](https://docs.limacharlie.io/5-integrations/outputs/destinations/ms-teams/)
+- [Telegram](https://docs.limacharlie.io/5-integrations/outputs/destinations/telegram/)
+- [SMTP](https://docs.limacharlie.io/5-integrations/outputs/destinations/smtp/)
 - [Tines](https://docs.limacharlie.io/5-integrations/outputs/destinations/tines/)
+- [Webhook](https://docs.limacharlie.io/5-integrations/outputs/destinations/webhook/)
+- [Webhook Bulk](https://docs.limacharlie.io/5-integrations/outputs/destinations/webhook-bulk/): Webhook (Bulk)
 - [Overview](https://docs.limacharlie.io/5-integrations/extensions/): Extensions
 - [Using Extensions](https://docs.limacharlie.io/5-integrations/extensions/using-extensions/)
 - [Overview](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/): LimaCharlie Extensions
-- [Git Sync](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/git-sync/)
-- [Reliable Tasking](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/reliable-tasking/)
-- [YARA Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/yara-manager/)
 - [Artifact](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/artifact/)
 - [BinLib](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/binlib/)
-- [Infrastructure](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/infrastructure/)
-- [Usage Alerts](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/usage-alerts/)
+- [Cases](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/cases/)
 - [Dumper](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/dumper/)
 - [EPP](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/epp/): Endpoint Protection
 - [Exfil](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/exfil/): Exfil (Event Collection)
+- [Feedback](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/feedback/)
+- [Git Sync](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/git-sync/)
+- [Infrastructure](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/infrastructure/)
 - [Integrity](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/integrity/)
 - [Lookup Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/lookup-manager/)
 - [Payload Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/payload-manager/)
+- [Playbook (LABS)](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/playbook/): Playbook [LABS]
+- [Reliable Tasking](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/reliable-tasking/)
 - [Sensor Cull](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/sensor-cull/)
-- [Cases](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/cases/)
-- [Feedback](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/feedback/)
+- [Usage Alerts](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/usage-alerts/)
+- [YARA Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/yara-manager/)
 - [Overview](https://docs.limacharlie.io/5-integrations/extensions/third-party/): Third-Party Extensions
-- [Velociraptor](https://docs.limacharlie.io/5-integrations/extensions/third-party/velociraptor/)
-- [Zeek](https://docs.limacharlie.io/5-integrations/extensions/third-party/zeek/)
-- [YARA](https://docs.limacharlie.io/5-integrations/extensions/third-party/yara/)
-- [Hayabusa](https://docs.limacharlie.io/5-integrations/extensions/third-party/hayabusa/)
 - [Atomic Red Team](https://docs.limacharlie.io/5-integrations/extensions/third-party/atomic-red-team/)
+- [Govee](https://docs.limacharlie.io/5-integrations/extensions/third-party/govee/)
+- [Hayabusa](https://docs.limacharlie.io/5-integrations/extensions/third-party/hayabusa/)
+- [NIMS](https://docs.limacharlie.io/5-integrations/extensions/third-party/nims/)
 - [OTX](https://docs.limacharlie.io/5-integrations/extensions/third-party/otx/)
 - [PagerDuty](https://docs.limacharlie.io/5-integrations/extensions/third-party/pagerduty/)
 - [Plaso](https://docs.limacharlie.io/5-integrations/extensions/third-party/plaso/)
-- [Strelka](https://docs.limacharlie.io/5-integrations/extensions/third-party/strelka/)
-- [Twilio](https://docs.limacharlie.io/5-integrations/extensions/third-party/twilio/)
-- [Govee](https://docs.limacharlie.io/5-integrations/extensions/third-party/govee/)
-- [NIMS](https://docs.limacharlie.io/5-integrations/extensions/third-party/nims/)
 - [Renigma](https://docs.limacharlie.io/5-integrations/extensions/third-party/renigma/)
 - [SecureAnnex](https://docs.limacharlie.io/5-integrations/extensions/third-party/secureannex/): Secure Annex
-- [Playbook](https://docs.limacharlie.io/5-integrations/extensions/labs/playbook/): Playbook [LABS]
+- [Strelka](https://docs.limacharlie.io/5-integrations/extensions/third-party/strelka/)
+- [Twilio](https://docs.limacharlie.io/5-integrations/extensions/third-party/twilio/)
+- [Velociraptor](https://docs.limacharlie.io/5-integrations/extensions/third-party/velociraptor/)
+- [YARA](https://docs.limacharlie.io/5-integrations/extensions/third-party/yara/)
+- [Zeek](https://docs.limacharlie.io/5-integrations/extensions/third-party/zeek/)
 - [Overview](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/): Cloud CLI
 - [1Password](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/1password/)
 - [AWS](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/aws/)
@@ -220,16 +219,15 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Tailscale](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/tailscale/)
 - [Vultr](https://docs.limacharlie.io/5-integrations/extensions/cloud-cli/vultr/)
 - [Overview](https://docs.limacharlie.io/5-integrations/api-integrations/): API Integrations
-- [VirusTotal](https://docs.limacharlie.io/5-integrations/api-integrations/virustotal/)
-- [GreyNoise](https://docs.limacharlie.io/5-integrations/api-integrations/greynoise/)
-- [Hybrid Analysis](https://docs.limacharlie.io/5-integrations/api-integrations/hybrid-analysis/)
 - [AlphaMountain](https://docs.limacharlie.io/5-integrations/api-integrations/alphamountain/)
 - [EchoTrail](https://docs.limacharlie.io/5-integrations/api-integrations/echotrail/)
+- [GreyNoise](https://docs.limacharlie.io/5-integrations/api-integrations/greynoise/)
+- [Hybrid Analysis](https://docs.limacharlie.io/5-integrations/api-integrations/hybrid-analysis/)
 - [IP ASN](https://docs.limacharlie.io/5-integrations/api-integrations/ip-asn/)
 - [IP Geolocation](https://docs.limacharlie.io/5-integrations/api-integrations/ip-geolocation/)
 - [Pangea](https://docs.limacharlie.io/5-integrations/api-integrations/pangea/)
+- [VirusTotal](https://docs.limacharlie.io/5-integrations/api-integrations/virustotal/)
 - [Replay](https://docs.limacharlie.io/5-integrations/services/replay/)
-- [Dumper](https://docs.limacharlie.io/5-integrations/services/dumper/)
 - [VirusTotal Integration](https://docs.limacharlie.io/5-integrations/tutorials/virustotal-integration/)
 - [Human-in-the-Loop Response](https://docs.limacharlie.io/5-integrations/tutorials/human-in-the-loop-response/): Human-in-the-Loop Response Automation
 - [Hayabusa BigQuery](https://docs.limacharlie.io/5-integrations/tutorials/hayabusa-bigquery/): Hayabusa to BigQuery
