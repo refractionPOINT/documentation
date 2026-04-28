@@ -11640,17 +11640,17 @@
 <p>YARA rule sources defined in the YARA manager configuration will be synced every 24 hours, and can be manually synced by clicking the <code>Manual Sync</code> button on the extension page.</p>
 <p>If you add rule sources and want them to become available immediately, you will need to click the <code>Manual Sync</code> button to trigger the initial sync of the rules.</p>
 <p>Rule sources can be either direct links (URLs) to a given YARA rule or <a href="../../../../8-reference/authentication-resource-locator/">ARLs</a>.</p>
-<h3 id="option-1-predefined-yara-rules">Option 1: Predefined YARA rules<a class="headerlink" href="#option-1-predefined-yara-rules" title="Anchor link to this section">&para;</a></h3>
+<h2 id="option-1-predefined-yara-rules">Option 1: Predefined YARA rules<a class="headerlink" href="#option-1-predefined-yara-rules" title="Anchor link to this section">&para;</a></h2>
 <p>LimaCharlie provides a list of YARA rule repositories, available in the configuration menu. To leverage these rules select "Predefined" and a list of LimaCharlie and Community rules will populate. By selecting one or more of these repositories, the respective rules will be automatically imported and will appear in your YARA rules under Automation → YARA Rules.</p>
 <p><img alt="Option 1: Predefined YARA rules LimaCharlie provides a list of YARA rule repositories, available in the configuration me" src="../../../../assets/images/image%28322%29.png" /></p>
-<h3 id="option-2-publicly-available-yara-rules">Option 2: Publicly available YARA rules<a class="headerlink" href="#option-2-publicly-available-yara-rules" title="Anchor link to this section">&para;</a></h3>
+<h2 id="option-2-publicly-available-yara-rules">Option 2: Publicly available YARA rules<a class="headerlink" href="#option-2-publicly-available-yara-rules" title="Anchor link to this section">&para;</a></h2>
 <p>An example of setting up a rule using this repo: <a href="https://github.com/Yara-Rules/rules">Yara-Rules</a></p>
 <p>For an <code>Email and General Phishing Exploit</code> rule we could use the following URL, which is a link to a single YARA rule.</p>
 <p><a href="https://raw.githubusercontent.com/Yara-Rules/rules/master/email/Email_generic_phishing.yar">https://raw.githubusercontent.com/Yara-Rules/rules/master/email/Email_generic_phishing.yar</a></p>
 <p>For creating a rule out of multiple YARA rules, we could use the following ARL, which is a link to a directory of YARA rules.</p>
 <p><code>[github,Yara-Rules/rules/email]</code></p>
 <p>Giving the rule configuration a name, the URL or ARL, and clicking the Save button will create the new rule source to sync to your YARA rules.</p>
-<h3 id="option-3-private-yara-repository">Option 3: Private YARA Repository<a class="headerlink" href="#option-3-private-yara-repository" title="Anchor link to this section">&para;</a></h3>
+<h2 id="option-3-private-yara-repository">Option 3: Private YARA Repository<a class="headerlink" href="#option-3-private-yara-repository" title="Anchor link to this section">&para;</a></h2>
 <p>To use a YARA rule from a private Gihub repository you will need to make use of an <a href="../../../../8-reference/authentication-resource-locator/">Authentication Resource Locator</a>.</p>
 <p><strong>Step 1: Create a token in GitHub</strong>
 In GitHub go to <em>Settings</em> and click <em>Developer settings</em> in the left hand side bar.</p>

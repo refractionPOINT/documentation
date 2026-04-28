@@ -12027,19 +12027,19 @@
 <p>Use this method when your MCP client doesn't support OAuth.</p>
 <h3 id="multi-org-access-jwt">Multi-Org Access (JWT)<a class="headerlink" href="#multi-org-access-jwt" title="Anchor link to this section">&para;</a></h3>
 <p>To access all organizations associated with your user account, authenticate using a JWT generated from your <strong>User API Key</strong>.</p>
-<p><strong>Step 1: Get your User API Key</strong></p>
+<h4 id="step-1-get-your-user-api-key">Step 1: Get your User API Key<a class="headerlink" href="#step-1-get-your-user-api-key" title="Anchor link to this section">&para;</a></h4>
 <ol>
 <li>Go to <a href="https://app.limacharlie.io">app.limacharlie.io</a> → <strong>User Profile</strong> (top-right menu)</li>
 <li>Navigate to <strong>API Keys</strong></li>
 <li>Generate a User API Key</li>
 </ol>
-<p><strong>Step 2: Generate a JWT</strong></p>
+<h4 id="step-2-generate-a-jwt">Step 2: Generate a JWT<a class="headerlink" href="#step-2-generate-a-jwt" title="Anchor link to this section">&para;</a></h4>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;https://jwt.limacharlie.io&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/x-www-form-urlencoded&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;uid=YOUR_USER_ID&amp;secret=YOUR_USER_API_KEY&quot;</span>
 </span></code></pre></div>
 <p>This returns a JWT valid for 1 hour. See <a href="../../7-administration/access/api-keys/">API Keys</a> for details.</p>
-<p><strong>Step 3: Configure your MCP client</strong></p>
+<h4 id="step-3-configure-your-mcp-client">Step 3: Configure your MCP client<a class="headerlink" href="#step-3-configure-your-mcp-client" title="Anchor link to this section">&para;</a></h4>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nt">&quot;limacharlie&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>

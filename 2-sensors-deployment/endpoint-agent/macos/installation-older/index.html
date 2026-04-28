@@ -1452,6 +1452,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#ensure-the-process-is-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ensure the process is running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure-the-kernel-extension-is-loaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ensure the Kernel Extension is loaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-note-on-permissions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -11561,6 +11583,28 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#ensure-the-process-is-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ensure the process is running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure-the-kernel-extension-is-loaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ensure the Kernel Extension is loaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-note-on-permissions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -11742,14 +11786,14 @@
 <p>The installation is now complete and you should see a message indicating that the installation was successful.</p>
 <h2 id="verifying-installation">Verifying Installation<a class="headerlink" href="#verifying-installation" title="Anchor link to this section">&para;</a></h2>
 <p>To verify that the sensor was installed successfully, you can log into the LimaCharlie web application and see if the device has appeared in the Sensors section. Additionally, you can check the following on the device itself:</p>
-<p><strong>Ensure the process is running</strong></p>
+<h3 id="ensure-the-process-is-running">Ensure the process is running<a class="headerlink" href="#ensure-the-process-is-running" title="Anchor link to this section">&para;</a></h3>
 <p>In a Terminal, run the command:</p>
 <blockquote>
 <p>sudo launchctl list | grep com.refractionpoint.rphcp</p>
 </blockquote>
 <p><img alt="Successful installation verification" src="https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/macOS_10.14/Installed_correctly.png" /></p>
 <p>If the agent is running, this command should return a record as shown above.</p>
-<p><strong>Ensure the Kernel <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> is loaded</strong></p>
+<h3 id="ensure-the-kernel-extension-is-loaded">Ensure the Kernel <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> is loaded<a class="headerlink" href="#ensure-the-kernel-extension-is-loaded" title="Anchor link to this section">&para;</a></h3>
 <p>You can confirm that the kernel extension is loaded by running the command:</p>
 <blockquote>
 <p>kextstat | grep com.refractionpoint.</p>

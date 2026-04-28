@@ -12064,7 +12064,7 @@
 <h3 id="overpass-the-hash">Overpass-the-Hash<a class="headerlink" href="#overpass-the-hash" title="Anchor link to this section">&para;</a></h3>
 <p><code>-12h | plat == windows | WEL | event/EVENT/System/EventID == "4624" and event/EVENT/EventData/LogonType == "9" and event/EVENT/EventData/AuthenticationPackageName == "Negotiate" and event/EVENT/EventData/LogonProcess == "seclogo"</code></p>
 <h3 id="taskkill-from-a-non-system-account">Taskkill from a Non-System Account<a class="headerlink" href="#taskkill-from-a-non-system-account" title="Anchor link to this section">&para;</a></h3>
-<p><em>Requires process auditing to be enabled</em></p>
+<h4 id="requires-process-auditing-to-be-enabled">Requires process auditing to be enabled<a class="headerlink" href="#requires-process-auditing-to-be-enabled" title="Anchor link to this section">&para;</a></h4>
 <p><code>-12h | plat == windows | WEL | event/EVENT/System/EventID == "4688" and event/EVENT/EventData/NewProcessName contains "taskkill" and event/EVENT/EventData/SubjectUserName not ends with "!"</code></p>
 <h3 id="logons-by-specific-logontype">Logons by Specific LogonType<a class="headerlink" href="#logons-by-specific-logontype" title="Anchor link to this section">&para;</a></h3>
 <p><code>-24h | plat == windows | WEL | event/EVENT/System/EventID == "4624" AND event/EVENT/EventData/LogonType == "10"</code></p>

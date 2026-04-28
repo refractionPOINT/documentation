@@ -1159,6 +1159,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Journalctl">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-pipe-to-stdin-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Pipe to Stdin Adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-2-output-to-file-and-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: Output to File and Monitor
+      
+    </span>
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11758,6 +11786,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Journalctl">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-pipe-to-stdin-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Pipe to Stdin Adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-2-output-to-file-and-monitor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: Output to File and Monitor
+      
+    </span>
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11995,7 +12051,7 @@
 </span></code></pre></div>
 <h2 id="journalctl">Journalctl<a class="headerlink" href="#journalctl" title="Anchor link to this section">&para;</a></h2>
 <p>Modern logging solution that can output in JSON format for structured parsing.</p>
-<p><strong>Method 1: Pipe to Stdin <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr></strong></p>
+<h3 id="method-1-pipe-to-stdin-adapter">Method 1: Pipe to Stdin <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr><a class="headerlink" href="#method-1-pipe-to-stdin-adapter" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Stream journalctl JSON output into the stdin adapter</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>journalctl<span class="w"> </span>-f<span class="w"> </span>-q<span class="w"> </span>--output<span class="o">=</span>json<span class="w"> </span><span class="p">|</span><span class="w"> </span>/path/to/lc_adapter<span class="w"> </span>stdin<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span>client_options.identity.installation_key<span class="o">=</span><span class="nv">$INSTALLATION_KEY</span><span class="w"> </span><span class="se">\</span>
@@ -12004,7 +12060,7 @@
 </span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span>client_options.sensor_seed_key<span class="o">=</span>journalctl-logs<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span>client_options.hostname<span class="o">=</span>my-server
 </span></code></pre></div>
-<p><strong>Method 2: Output to File and Monitor</strong></p>
+<h2 id="method-2-output-to-file-and-monitor">Method 2: Output to File and Monitor<a class="headerlink" href="#method-2-output-to-file-and-monitor" title="Anchor link to this section">&para;</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Create a systemd service to write journal to file</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/systemd/system/journal-export.service<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="s">[Unit]</span>

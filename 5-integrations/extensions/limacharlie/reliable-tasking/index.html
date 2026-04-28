@@ -7078,6 +7078,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Actions via REST API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a Task
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -7088,6 +7105,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Capturing Task Responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-detect-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example detect block
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -11551,6 +11585,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Actions via REST API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a Task
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11561,6 +11612,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Capturing Task Responses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-detect-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example detect block
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -11694,7 +11762,7 @@
 </ul>
 <h2 id="actions-via-rest-api">Actions via REST API<a class="headerlink" href="#actions-via-rest-api" title="Anchor link to this section">&para;</a></h2>
 <p>The following REST API actions can be sent to interact with the Reliable Tasking extension:</p>
-<h4 id="create-a-task"><strong>Create a Task</strong><a class="headerlink" href="#create-a-task" title="Anchor link to this section">&para;</a></h4>
+<h3 id="create-a-task"><strong>Create a Task</strong><a class="headerlink" href="#create-a-task" title="Anchor link to this section">&para;</a></h3>
 <div class="language-powershell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">curl </span><span class="p">-</span><span class="n">-location</span> <span class="s1">&#39;https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking&#39;</span> <span class="p">\</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p">-</span><span class="n">-header</span> <span class="s1">&#39;Authorization: Bearer $JWT&#39;</span> <span class="p">\</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">-</span><span class="n">-header</span> <span class="s1">&#39;Content-Type: application/x-www-form-urlencoded&#39;</span> <span class="p">\</span>
@@ -11750,7 +11818,7 @@
 <p>If you're using reliable tasks to issue commands across your sensors, you're probably going to want to view or act on the responses from these commands as well.</p>
 <p>If you add a value to the <code>context</code> parameter in the extension request, this value will be reflected in the <code>investigation_id</code> of the corresponding <code>RECEIPT</code> or <code>_REP</code> event, allowing you to craft a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule based on the response.</p>
 <p>The above example cURL command has a <code>context</code> of <code>version</code> so the below <abbr title="Detection &amp; Response">D&amp;R</abbr> rule looks for that value.</p>
-<h4 id="example-detect-block">Example detect block<a class="headerlink" href="#example-detect-block" title="Anchor link to this section">&para;</a></h4>
+<h3 id="example-detect-block">Example detect block<a class="headerlink" href="#example-detect-block" title="Anchor link to this section">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">contains</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RECEIPT</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">routing/investigation_id</span>

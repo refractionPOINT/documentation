@@ -3293,6 +3293,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Adapter Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-enable-platform-sharing-in-google-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Enable Platform Sharing in Google Workspace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-verify-logs-appear-in-google-cloud-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Verify logs appear in Google Cloud Platform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-create-a-cloud-to-cloud-gcp-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Create a cloud-to-cloud GCP Adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -11485,6 +11524,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Adapter Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-enable-platform-sharing-in-google-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Enable Platform Sharing in Google Workspace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-verify-logs-appear-in-google-cloud-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Verify logs appear in Google Cloud Platform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-create-a-cloud-to-cloud-gcp-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Create a cloud-to-cloud GCP Adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -11597,16 +11675,16 @@
 <h2 id="adapter-deployment"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Deployment<a class="headerlink" href="#adapter-deployment" title="Anchor link to this section">&para;</a></h2>
 <p>Prior to ingesting Google Workspace Audit logs in LimaCharlie, you must first configure logs to be written to <abbr title="Google Cloud Platform">GCP</abbr>. Afterwards, a cloud-to-cloud <abbr title="Google Cloud Platform">GCP</abbr> <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> can be deployed to ingest these events into LimaCharlie.</p>
 <p>The following steps help prepare this:</p>
-<p><strong>Step 1: Enable Platform Sharing in Google Workspace</strong></p>
+<h3 id="step-1-enable-platform-sharing-in-google-workspace">Step 1: Enable Platform Sharing in Google Workspace<a class="headerlink" href="#step-1-enable-platform-sharing-in-google-workspace" title="Anchor link to this section">&para;</a></h3>
 <p>In the Google Workspace admin console navigate to <a href="https://admin.google.com/u/1/ac/companyprofile/legal">Account -&gt; Account Settings -&gt; Legal and Compliance</a></p>
 <p>Verify that under "Sharing options", <code>Google Cloud Platform Sharing Options</code> is set to Enabled.</p>
 <p>For further details, refer to <a href="https://cloud.google.com/logging/docs/audit/gsuite-audit-logging">Google's documentation on Audit logs for Google Workspace</a></p>
-<p><strong>Step 2: Verify logs appear in Google Cloud Platform</strong></p>
+<h3 id="step-2-verify-logs-appear-in-google-cloud-platform">Step 2: Verify logs appear in Google Cloud Platform<a class="headerlink" href="#step-2-verify-logs-appear-in-google-cloud-platform" title="Anchor link to this section">&para;</a></h3>
 <p>In the <abbr title="Google Cloud Platform">GCP</abbr> Console go to the <a href="https://console.cloud.google.com/logs/query">Logs Explorer</a>.  Ensure you're at the organization level (and not in a particular folder).</p>
 <p>From the Resources drop-down, choose <code>Audited Resource</code>, then press Apply.</p>
 <p>You should see logging details related to Google Workspace, under the following log name(s):</p>
 <p><code>logName:admin.googleapis.com</code></p>
-<p><strong>Step 3: Create a cloud-to-cloud <abbr title="Google Cloud Platform">GCP</abbr> <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr></strong></p>
+<h3 id="step-3-create-a-cloud-to-cloud-gcp-adapter">Step 3: Create a cloud-to-cloud <abbr title="Google Cloud Platform">GCP</abbr> <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr><a class="headerlink" href="#step-3-create-a-cloud-to-cloud-gcp-adapter" title="Anchor link to this section">&para;</a></h3>
 <p>Once Google Workspace Audit logs are pushed to <abbr title="Google Cloud Platform">GCP</abbr>, events can be ingested via either <a href="../google-cloud-storage/">Google Cloud Storage</a> or <a href="../google-cloud-pubsub/">Google Cloud Pubsub</a>. Utilize the appropriate documentation to set up the desired <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr>.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->

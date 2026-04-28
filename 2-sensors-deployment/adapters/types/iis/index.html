@@ -3587,6 +3587,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#please-customize-according-to-your-environmentlimacharlie-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Please customize according to your environment/LimaCharlie organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11552,6 +11569,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#please-customize-according-to-your-environmentlimacharlie-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Please customize according to your environment/LimaCharlie organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11683,7 +11717,7 @@
 <h3 id="adapter-specific-options"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr>-specific Options<a class="headerlink" href="#adapter-specific-options" title="Anchor link to this section">&para;</a></h3>
 <p>IIS web logs often have a standardized schema, unless manually changed by administrators. The <code>iis</code> platform in LimaCharlie expects the following structure:</p>
 <p><code>#Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) sc-status sc-substatus sc-win32-status time-taken</code></p>
-<p><strong>Log Structure</strong></p>
+<h4 id="log-structure">Log Structure<a class="headerlink" href="#log-structure" title="Anchor link to this section">&para;</a></h4>
 <p>If your IIS logs are a different structure from above, please let us know and we can assist in customizing the parser!</p>
 <p>The structure of these fields is as follows:</p>
 <table>
@@ -11759,7 +11793,7 @@
 <h2 id="configuration-file">Configuration File<a class="headerlink" href="#configuration-file" title="Anchor link to this section">&para;</a></h2>
 <p>IIS logs are typically stored "on disk" of the web server, in files that roll daily. Thus, collecting IIS web logs would be done with a binary <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> that can monitor specific IIS log folder(s) for new files. The <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> type would be <code>file</code>, while the platform is <code>iis</code>.</p>
 <p>The following configuration file can be used as a starter to monitor IIS web log directories. Replace any values with <code>&lt; &gt;</code> characters with values unique to your <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> and/or deployment. <em>Do not include the</em> <code>&lt;</code> <em>or</em> <code>&gt;</code> <em>characters in your config file!</em></p>
-<p><em>Please customize according to your environment/LimaCharlie organization</em></p>
+<h3 id="please-customize-according-to-your-environmentlimacharlie-organization">Please customize according to your environment/LimaCharlie organization<a class="headerlink" href="#please-customize-according-to-your-environmentlimacharlie-organization" title="Anchor link to this section">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">file</span><span class="p">:</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">client_options</span><span class="p">:</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">identity</span><span class="p">:</span>
