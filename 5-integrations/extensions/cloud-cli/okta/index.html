@@ -11851,10 +11851,10 @@
 <h3 id="get-user-details">Get User Details<a class="headerlink" href="#get-user-details" title="Anchor link to this section">&para;</a></h3>
 <p>Fetches a user from your Okta organization.</p>
 <h4 id="command">Command<a class="headerlink" href="#command" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>user get USERID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>user<span class="w"> </span>get<span class="w"> </span>USERID
 </span></code></pre></div>
 <h4 id="example-input">Example Input<a class="headerlink" href="#example-input" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>user get 00untroxqpl08VcNC5d7
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>user<span class="w"> </span>get<span class="w"> </span>00untroxqpl08VcNC5d7
 </span></code></pre></div>
 <h4 id="example-output">Example Output<a class="headerlink" href="#example-output" title="Anchor link to this section">&para;</a></h4>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
@@ -11910,10 +11910,10 @@
 <p>This command takes an optional filter. If no filter is provided, all users are returned. For more information on Okta's query filters, visit <a href="https://developer.okta.com/docs/reference/user-query/#filter-users">https://developer.okta.com/docs/reference/user-query/#filter-users</a></p>
 </blockquote>
 <h4 id="command_1">Command<a class="headerlink" href="#command_1" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>user list OPTIONAL_FILTER
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>user<span class="w"> </span>list<span class="w"> </span>OPTIONAL_FILTER
 </span></code></pre></div>
 <h4 id="example-input_1">Example Input<a class="headerlink" href="#example-input_1" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>user list
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>user<span class="w"> </span>list
 </span></code></pre></div>
 <h4 id="example-output_1">Example Output<a class="headerlink" href="#example-output_1" title="Anchor link to this section">&para;</a></h4>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">[</span>
@@ -11957,10 +11957,10 @@
 <p>This operation can only be performed on users that do not have a "DEPROVISIONED" status.</p>
 </blockquote>
 <h4 id="command_2">Command<a class="headerlink" href="#command_2" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>user deactivate USERID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>user<span class="w"> </span>deactivate<span class="w"> </span>USERID
 </span></code></pre></div>
 <h4 id="example-input_2">Example Input<a class="headerlink" href="#example-input_2" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>user deactivate 00up0nl0lftw7331WSz
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>user<span class="w"> </span>deactivate<span class="w"> </span>00up0nl0lftw7331WSz
 </span></code></pre></div>
 <h4 id="example-output_2">Example Output<a class="headerlink" href="#example-output_2" title="Anchor link to this section">&para;</a></h4>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>None
@@ -11971,10 +11971,10 @@
 <p>This operation can only be performed on users with a "STAGED" status.</p>
 </blockquote>
 <h4 id="command_3">Command<a class="headerlink" href="#command_3" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>user activate USERID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>user<span class="w"> </span>activate<span class="w"> </span>USERID
 </span></code></pre></div>
 <h4 id="example-input_3">Example Input<a class="headerlink" href="#example-input_3" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>user activate 00up0nl0lftw7331WSz
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>user<span class="w"> </span>activate<span class="w"> </span>00up0nl0lftw7331WSz
 </span></code></pre></div>
 <h4 id="example-output_3">Example Output<a class="headerlink" href="#example-output_3" title="Anchor link to this section">&para;</a></h4>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>None
@@ -11982,10 +11982,10 @@
 <h3 id="expire-user-password">Expire User Password<a class="headerlink" href="#expire-user-password" title="Anchor link to this section">&para;</a></h3>
 <p>This operation transitions the user to the status of "PASSWORD_EXPIRED" so that the user is required to change their password at their next login.</p>
 <h4 id="command_4">Command<a class="headerlink" href="#command_4" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>user expire-password USERID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>user<span class="w"> </span>expire-password<span class="w"> </span>USERID
 </span></code></pre></div>
 <h4 id="example-input_4">Example Input<a class="headerlink" href="#example-input_4" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>user expire-password 00up0nl0lftw7331WSz
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>user<span class="w"> </span>expire-password<span class="w"> </span>00up0nl0lftw7331WSz
 </span></code></pre></div>
 <h4 id="example-output_4">Example Output<a class="headerlink" href="#example-output_4" title="Anchor link to this section">&para;</a></h4>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>None
@@ -11996,10 +11996,10 @@
 <p>This operation can only be performed on users with an "ACTIVE" status.</p>
 </blockquote>
 <h4 id="command_5">Command<a class="headerlink" href="#command_5" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>user suspend USERID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>user<span class="w"> </span><span class="nb">suspend</span><span class="w"> </span>USERID
 </span></code></pre></div>
 <h4 id="example-input_5">Example Input<a class="headerlink" href="#example-input_5" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>user suspend 00up0nl0lftw7331WSz
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>user<span class="w"> </span><span class="nb">suspend</span><span class="w"> </span>00up0nl0lftw7331WSz
 </span></code></pre></div>
 <h4 id="example-output_5">Example Output<a class="headerlink" href="#example-output_5" title="Anchor link to this section">&para;</a></h4>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>None
@@ -12010,10 +12010,10 @@
 <p>This operation can only be performed on users that have a "SUSPENDED" status.</p>
 </blockquote>
 <h4 id="command_6">Command<a class="headerlink" href="#command_6" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>user unsuspend USERID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>user<span class="w"> </span>unsuspend<span class="w"> </span>USERID
 </span></code></pre></div>
 <h4 id="example-input_6">Example Input<a class="headerlink" href="#example-input_6" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>user unsuspend 00up0nl0lftw7331WSz
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>user<span class="w"> </span>unsuspend<span class="w"> </span>00up0nl0lftw7331WSz
 </span></code></pre></div>
 <h4 id="example-output_6">Example Output<a class="headerlink" href="#example-output_6" title="Anchor link to this section">&para;</a></h4>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>None
@@ -12021,10 +12021,10 @@
 <h3 id="unlock-user">Unlock User<a class="headerlink" href="#unlock-user" title="Anchor link to this section">&para;</a></h3>
 <p>Unlocks a user with a "LOCKED_OUT" status and returns them to "ACTIVE" status. Users will be able to login with their current password.</p>
 <h4 id="command_7">Command<a class="headerlink" href="#command_7" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>user unlock USERID
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>user<span class="w"> </span>unlock<span class="w"> </span>USERID
 </span></code></pre></div>
 <h4 id="example-input_7">Example Input<a class="headerlink" href="#example-input_7" title="Anchor link to this section">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>user unlock 00up0nl0lftw7331WSz
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>user<span class="w"> </span>unlock<span class="w"> </span>00up0nl0lftw7331WSz
 </span></code></pre></div>
 <h4 id="example-output_7">Example Output<a class="headerlink" href="#example-output_7" title="Anchor link to this section">&para;</a></h4>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>None

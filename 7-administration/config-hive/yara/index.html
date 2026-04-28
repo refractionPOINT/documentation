@@ -11990,7 +11990,7 @@
 <p>Let's create a new Yara rule using the LimaCharlie <abbr title="Command-line Interface">CLI</abbr> in a terminal.
 Assuming you have a Yara rule in the <code>rule.yara</code> file.</p>
 <p>Load the rule in the LimaCharlie Hive via the <abbr title="Command-line Interface">CLI</abbr>:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>yara<span class="w"> </span>--key<span class="w"> </span>my-rule<span class="w"> </span>--data<span class="w"> </span>rule.yara<span class="w"> </span>--data-key<span class="w"> </span>rule
 </span></code></pre></div>
 <p>You should get a confirmation that the rule was created, including metadata of the rule associated <abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr>:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="p">{</span>

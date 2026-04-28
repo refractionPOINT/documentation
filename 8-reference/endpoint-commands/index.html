@@ -13250,7 +13250,7 @@
 </ul>
 <p><strong>Response Event:</strong> DIR_FINDHASH_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>limacharlie sensor task &lt;SID&gt; dir_findhash --dir_path &quot;/var&quot; --hash &lt;HASH_VALUE&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>dir_findhash<span class="w"> </span>--dir_path<span class="w"> </span><span class="s2">&quot;/var&quot;</span><span class="w"> </span>--hash<span class="w"> </span>&lt;HASH_VALUE&gt;
 </span></code></pre></div>
 <hr />
 <h3 id="dns_resolve">dns_resolve<a class="headerlink" href="#dns_resolve" title="Anchor link to this section">&para;</a></h3>
@@ -13262,7 +13262,7 @@
 </ul>
 <p><strong>Response Event:</strong> DNS_REQUEST</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>limacharlie sensor task &lt;SID&gt; dns_resolve --hostname &quot;example.com&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>dns_resolve<span class="w"> </span>--hostname<span class="w"> </span><span class="s2">&quot;example.com&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="doc_cache_get">doc_cache_get<a class="headerlink" href="#doc_cache_get" title="Anchor link to this section">&para;</a></h3>
@@ -13274,7 +13274,7 @@
 </ul>
 <p><strong>Response Event:</strong> GET_DOCUMENT_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>limacharlie sensor task &lt;SID&gt; doc_cache_get --hash &lt;DOC_HASH&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>doc_cache_get<span class="w"> </span>--hash<span class="w"> </span>&lt;DOC_HASH&gt;
 </span></code></pre></div>
 <hr />
 <h3 id="exfil_add">exfil_add<a class="headerlink" href="#exfil_add" title="Anchor link to this section">&para;</a></h3>
@@ -13290,7 +13290,7 @@
 </ul>
 <p><strong>Response Event:</strong> EXFIL_ADD_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>limacharlie sensor task &lt;SID&gt; exfil_add --event &quot;DNS_REQUEST&quot; --operator &quot;contains&quot; --path &quot;event/DOMAIN_NAME&quot; --value &quot;malware&quot; --expire 3600
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>exfil_add<span class="w"> </span>--event<span class="w"> </span><span class="s2">&quot;DNS_REQUEST&quot;</span><span class="w"> </span>--operator<span class="w"> </span><span class="s2">&quot;contains&quot;</span><span class="w"> </span>--path<span class="w"> </span><span class="s2">&quot;event/DOMAIN_NAME&quot;</span><span class="w"> </span>--value<span class="w"> </span><span class="s2">&quot;malware&quot;</span><span class="w"> </span>--expire<span class="w"> </span><span class="m">3600</span>
 </span></code></pre></div>
 <hr />
 <h3 id="exfil_del">exfil_del<a class="headerlink" href="#exfil_del" title="Anchor link to this section">&para;</a></h3>
@@ -13302,7 +13302,7 @@
 </ul>
 <p><strong>Response Event:</strong> EXFIL_DEL_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limacharlie sensor task &lt;SID&gt; exfil_del --id &lt;WATCH_ID&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>exfil_del<span class="w"> </span>--id<span class="w"> </span>&lt;WATCH_ID&gt;
 </span></code></pre></div>
 <hr />
 <h3 id="exfil_get">exfil_get<a class="headerlink" href="#exfil_get" title="Anchor link to this section">&para;</a></h3>
@@ -13311,7 +13311,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EXFIL_GET_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>limacharlie sensor task &lt;SID&gt; exfil_get
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>exfil_get
 </span></code></pre></div>
 <hr />
 <h3 id="file_del">file_del<a class="headerlink" href="#file_del" title="Anchor link to this section">&para;</a></h3>
@@ -13323,7 +13323,7 @@
 </ul>
 <p><strong>Response Event:</strong> FILE_DEL_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>limacharlie sensor task &lt;SID&gt; file_del --file_path &quot;/tmp/suspicious_file&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>file_del<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;/tmp/suspicious_file&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="file_get">file_get<a class="headerlink" href="#file_get" title="Anchor link to this section">&para;</a></h3>
@@ -13335,7 +13335,7 @@
 </ul>
 <p><strong>Response Event:</strong> FILE_GET_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>limacharlie sensor task &lt;SID&gt; file_get --file_path &quot;C:\\Windows\\System32\\calc.exe&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>file_get<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\Windows\\System32\\calc.exe&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="file_hash">file_hash<a class="headerlink" href="#file_hash" title="Anchor link to this section">&para;</a></h3>
@@ -13347,7 +13347,7 @@
 </ul>
 <p><strong>Response Event:</strong> FILE_HASH_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>limacharlie sensor task &lt;SID&gt; file_hash --file_path &quot;/etc/passwd&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>file_hash<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;/etc/passwd&quot;</span>
 </span></code></pre></div>
 <p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
@@ -13370,7 +13370,7 @@
 </ul>
 <p><strong>Response Event:</strong> FILE_INFO_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie sensor task &lt;SID&gt; file_info --file_path &quot;C:\\Program Files\\app.exe&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>file_info<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\Program Files\\app.exe&quot;</span>
 </span></code></pre></div>
 <p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
@@ -13394,7 +13394,7 @@
 </ul>
 <p><strong>Response Event:</strong> FILE_MOV_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>limacharlie sensor task &lt;SID&gt; file_mov --src_path &quot;/tmp/file.txt&quot; --dst_path &quot;/tmp/renamed.txt&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>file_mov<span class="w"> </span>--src_path<span class="w"> </span><span class="s2">&quot;/tmp/file.txt&quot;</span><span class="w"> </span>--dst_path<span class="w"> </span><span class="s2">&quot;/tmp/renamed.txt&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="fim_add">fim_add<a class="headerlink" href="#fim_add" title="Anchor link to this section">&para;</a></h3>
@@ -13406,7 +13406,7 @@
 </ul>
 <p><strong>Response Event:</strong> FIM_ADD_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>limacharlie sensor task &lt;SID&gt; fim_add --file_path &quot;C:\\Windows\\System32\\*.dll&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>fim_add<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\Windows\\System32\\*.dll&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="fim_del">fim_del<a class="headerlink" href="#fim_del" title="Anchor link to this section">&para;</a></h3>
@@ -13418,7 +13418,7 @@
 </ul>
 <p><strong>Response Event:</strong> FIM_REMOVE (note: event name is FIM_REMOVE, not FIM_DEL_REP)</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie sensor task &lt;SID&gt; fim_del --file_path &quot;C:\\Windows\\System32\\*.dll&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>fim_del<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\Windows\\System32\\*.dll&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="fim_get">fim_get<a class="headerlink" href="#fim_get" title="Anchor link to this section">&para;</a></h3>
@@ -13427,7 +13427,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> FIM_LIST_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>limacharlie sensor task &lt;SID&gt; fim_get
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>fim_get
 </span></code></pre></div>
 <hr />
 <h3 id="get_debug_data">get_debug_data<a class="headerlink" href="#get_debug_data" title="Anchor link to this section">&para;</a></h3>
@@ -13436,7 +13436,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> DEBUG_DATA_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>limacharlie sensor task &lt;SID&gt; get_debug_data
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>get_debug_data
 </span></code></pre></div>
 <hr />
 <h3 id="hidden_module_scan">hidden_module_scan<a class="headerlink" href="#hidden_module_scan" title="Anchor link to this section">&para;</a></h3>
@@ -13448,7 +13448,7 @@
 </ul>
 <p><strong>Response Event:</strong> HIDDEN_MODULE_DETECTED</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>limacharlie sensor task &lt;SID&gt; hidden_module_scan --pid 1234
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>hidden_module_scan<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span>
 </span></code></pre></div>
 <hr />
 <h3 id="history_dump">history_dump<a class="headerlink" href="#history_dump" title="Anchor link to this section">&para;</a></h3>
@@ -13457,7 +13457,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> HISTORY_DUMP_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>limacharlie sensor task &lt;SID&gt; history_dump
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>history_dump
 </span></code></pre></div>
 <hr />
 <h3 id="log_get">log_get<a class="headerlink" href="#log_get" title="Anchor link to this section">&para;</a></h3>
@@ -13470,11 +13470,11 @@
 </ul>
 <p><strong>Response Event:</strong> LOG_GET_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a># Windows
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>limacharlie sensor task &lt;SID&gt; log_get --source &quot;Security&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Windows</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>log_get<span class="w"> </span>--source<span class="w"> </span><span class="s2">&quot;Security&quot;</span>
 </span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
-</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a># macOS
-</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>limacharlie sensor task &lt;SID&gt; log_get --predicate &quot;eventType == logEvent&quot;
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># macOS</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>log_get<span class="w"> </span>--predicate<span class="w"> </span><span class="s2">&quot;eventType == logEvent&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="mem_find_string">mem_find_string<a class="headerlink" href="#mem_find_string" title="Anchor link to this section">&para;</a></h3>
@@ -13487,7 +13487,7 @@
 </ul>
 <p><strong>Response Event:</strong> MEM_FIND_STRING_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>limacharlie sensor task &lt;SID&gt; mem_find_string --pid 1234 --strings &quot;password&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>mem_find_string<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span><span class="w"> </span>--strings<span class="w"> </span><span class="s2">&quot;password&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="mem_find_handle">mem_find_handle<a class="headerlink" href="#mem_find_handle" title="Anchor link to this section">&para;</a></h3>
@@ -13500,7 +13500,7 @@
 </ul>
 <p><strong>Response Event:</strong> MEM_FIND_HANDLE_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>limacharlie sensor task &lt;SID&gt; mem_find_handle --pid 1234 --needle &quot;malware.exe&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>mem_find_handle<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span><span class="w"> </span>--needle<span class="w"> </span><span class="s2">&quot;malware.exe&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="mem_map">mem_map<a class="headerlink" href="#mem_map" title="Anchor link to this section">&para;</a></h3>
@@ -13512,7 +13512,7 @@
 </ul>
 <p><strong>Response Event:</strong> MEM_MAP_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>limacharlie sensor task &lt;SID&gt; mem_map --pid 1234
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>mem_map<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span>
 </span></code></pre></div>
 <hr />
 <h3 id="mem_read">mem_read<a class="headerlink" href="#mem_read" title="Anchor link to this section">&para;</a></h3>
@@ -13526,7 +13526,7 @@
 </ul>
 <p><strong>Response Event:</strong> MEM_READ_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>limacharlie sensor task &lt;SID&gt; mem_read --pid 1234 --base_address 0x00400000 --size 1024
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>mem_read<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span><span class="w"> </span>--base_address<span class="w"> </span>0x00400000<span class="w"> </span>--size<span class="w"> </span><span class="m">1024</span>
 </span></code></pre></div>
 <hr />
 <h3 id="mem_strings">mem_strings<a class="headerlink" href="#mem_strings" title="Anchor link to this section">&para;</a></h3>
@@ -13538,7 +13538,7 @@
 </ul>
 <p><strong>Response Event:</strong> MEM_STRINGS_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>limacharlie sensor task &lt;SID&gt; mem_strings --pid 1234
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>mem_strings<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span>
 </span></code></pre></div>
 <hr />
 <h3 id="netstat">netstat<a class="headerlink" href="#netstat" title="Anchor link to this section">&para;</a></h3>
@@ -13547,7 +13547,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> NETWORK_CONNECTIONS</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>limacharlie sensor task &lt;SID&gt; netstat
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>netstat
 </span></code></pre></div>
 <p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="p">{</span>
@@ -13573,7 +13573,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> NETWORK_SUMMARY</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>limacharlie sensor task &lt;SID&gt; network_summary
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>network_summary
 </span></code></pre></div>
 <hr />
 <h3 id="os_kill_process">os_kill_process<a class="headerlink" href="#os_kill_process" title="Anchor link to this section">&para;</a></h3>
@@ -13585,7 +13585,7 @@
 </ul>
 <p><strong>Response Event:</strong> OS_KILL_PROCESS_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>limacharlie sensor task &lt;SID&gt; os_kill_process --pid 1234
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_kill_process<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span>
 </span></code></pre></div>
 <hr />
 <h3 id="os_packages">os_packages<a class="headerlink" href="#os_packages" title="Anchor link to this section">&para;</a></h3>
@@ -13593,7 +13593,7 @@
 <p><strong>Platforms:</strong> Windows (via registry) | macOS (future) | Linux (future)</p>
 <p><strong>Response Event:</strong> OS_PACKAGES_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>limacharlie sensor task &lt;SID&gt; os_packages
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_packages
 </span></code></pre></div>
 <p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="p">{</span>
@@ -13615,7 +13615,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EXISTING_PROCESS (multiple events, one per process)</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>limacharlie sensor task &lt;SID&gt; os_processes
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_processes
 </span></code></pre></div>
 <p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="p">{</span>
@@ -13638,7 +13638,7 @@
 </ul>
 <p><strong>Response Event:</strong> OS_RESUME_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>limacharlie sensor task &lt;SID&gt; os_resume --pid 1234
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_resume<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span>
 </span></code></pre></div>
 <hr />
 <h3 id="os_services">os_services<a class="headerlink" href="#os_services" title="Anchor link to this section">&para;</a></h3>
@@ -13647,7 +13647,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_SERVICES_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>limacharlie sensor task &lt;SID&gt; os_services
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_services
 </span></code></pre></div>
 <hr />
 <h3 id="os_suspend">os_suspend<a class="headerlink" href="#os_suspend" title="Anchor link to this section">&para;</a></h3>
@@ -13659,7 +13659,7 @@
 </ul>
 <p><strong>Response Event:</strong> OS_SUSPEND_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>limacharlie sensor task &lt;SID&gt; os_suspend --pid 1234
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_suspend<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span>
 </span></code></pre></div>
 <hr />
 <h3 id="os_autoruns">os_autoruns<a class="headerlink" href="#os_autoruns" title="Anchor link to this section">&para;</a></h3>
@@ -13668,7 +13668,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_AUTORUNS_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>limacharlie sensor task &lt;SID&gt; os_autoruns
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_autoruns
 </span></code></pre></div>
 <hr />
 <h3 id="os_drivers">os_drivers<a class="headerlink" href="#os_drivers" title="Anchor link to this section">&para;</a></h3>
@@ -13677,7 +13677,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_DRIVERS_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>limacharlie sensor task &lt;SID&gt; os_drivers
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_drivers
 </span></code></pre></div>
 <hr />
 <h3 id="os_version">os_version<a class="headerlink" href="#os_version" title="Anchor link to this section">&para;</a></h3>
@@ -13686,7 +13686,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> OS_VERSION_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>limacharlie sensor task &lt;SID&gt; os_version
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>os_version
 </span></code></pre></div>
 <p><strong>Sample Response:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="p">{</span>
@@ -13704,7 +13704,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> None (sensor reconnects)</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>limacharlie sensor task &lt;SID&gt; rejoin_network
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>rejoin_network
 </span></code></pre></div>
 <hr />
 <h3 id="run">run<a class="headerlink" href="#run" title="Anchor link to this section">&para;</a></h3>
@@ -13716,7 +13716,7 @@
 </ul>
 <p><strong>Response Event:</strong> EXEC_OOB</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>limacharlie sensor task &lt;SID&gt; run --command &quot;ps aux | grep chrome&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>run<span class="w"> </span>--command<span class="w"> </span><span class="s2">&quot;ps aux | grep chrome&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="segregate_network">segregate_network<a class="headerlink" href="#segregate_network" title="Anchor link to this section">&para;</a></h3>
@@ -13725,7 +13725,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> None (sensor becomes isolated)</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>limacharlie sensor task &lt;SID&gt; segregate_network
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>segregate_network
 </span></code></pre></div>
 <hr />
 <h3 id="yara_scan">yara_scan<a class="headerlink" href="#yara_scan" title="Anchor link to this section">&para;</a></h3>
@@ -13740,11 +13740,11 @@
 </ul>
 <p><strong>Response Event:</strong> YARA_DETECTION</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a># Scan a file
-</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>limacharlie sensor task &lt;SID&gt; yara_scan --file_path &quot;C:\\suspicious.exe&quot; --rule &quot;rule test { strings: $a = \&quot;malware\&quot; condition: $a }&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="c1"># Scan a file</span>
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>yara_scan<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\suspicious.exe&quot;</span><span class="w"> </span>--rule<span class="w"> </span><span class="s2">&quot;rule test { strings: </span><span class="nv">$a</span><span class="s2"> = \&quot;malware\&quot; condition: </span><span class="nv">$a</span><span class="s2"> }&quot;</span>
 </span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>
-</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a># Scan process memory
-</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>limacharlie sensor task &lt;SID&gt; yara_scan --pid 1234 --rule &quot;rule test { strings: $a = \&quot;malware\&quot; condition: $a }&quot;
+</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="c1"># Scan process memory</span>
+</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>yara_scan<span class="w"> </span>--pid<span class="w"> </span><span class="m">1234</span><span class="w"> </span>--rule<span class="w"> </span><span class="s2">&quot;rule test { strings: </span><span class="nv">$a</span><span class="s2"> = \&quot;malware\&quot; condition: </span><span class="nv">$a</span><span class="s2"> }&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="pcap_ifaces">pcap_ifaces<a class="headerlink" href="#pcap_ifaces" title="Anchor link to this section">&para;</a></h3>
@@ -13753,7 +13753,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> PCAP_INTERFACES_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>limacharlie sensor task &lt;SID&gt; pcap_ifaces
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>pcap_ifaces
 </span></code></pre></div>
 <hr />
 <h3 id="pcap_start">pcap_start<a class="headerlink" href="#pcap_start" title="Anchor link to this section">&para;</a></h3>
@@ -13766,7 +13766,7 @@
 </ul>
 <p><strong>Response Event:</strong> PCAP_START_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>limacharlie sensor task &lt;SID&gt; pcap_start --iface eth0 --max_size 100
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>pcap_start<span class="w"> </span>--iface<span class="w"> </span>eth0<span class="w"> </span>--max_size<span class="w"> </span><span class="m">100</span>
 </span></code></pre></div>
 <hr />
 <h3 id="pcap_stop">pcap_stop<a class="headerlink" href="#pcap_stop" title="Anchor link to this section">&para;</a></h3>
@@ -13778,7 +13778,7 @@
 </ul>
 <p><strong>Response Event:</strong> PCAP_STOP_REP, followed by EXPORT_COMPLETE</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>limacharlie sensor task &lt;SID&gt; pcap_stop
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>pcap_stop
 </span></code></pre></div>
 <hr />
 <h3 id="reg_list">reg_list<a class="headerlink" href="#reg_list" title="Anchor link to this section">&para;</a></h3>
@@ -13790,7 +13790,7 @@
 </ul>
 <p><strong>Response Event:</strong> REG_LIST_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>limacharlie sensor task &lt;SID&gt; reg_list --reg_path &quot;HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>reg_list<span class="w"> </span>--reg_path<span class="w"> </span><span class="s2">&quot;HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_scan">epp_scan<a class="headerlink" href="#epp_scan" title="Anchor link to this section">&para;</a></h3>
@@ -13802,7 +13802,7 @@
 </ul>
 <p><strong>Response Event:</strong> EPP_SCAN_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>limacharlie sensor task &lt;SID&gt; epp_scan --file_path &quot;C:\\Users\\Public&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_scan<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\Users\\Public&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_list_exclusions">epp_list_exclusions<a class="headerlink" href="#epp_list_exclusions" title="Anchor link to this section">&para;</a></h3>
@@ -13811,7 +13811,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EPP_LIST_EXCLUSIONS_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>limacharlie sensor task &lt;SID&gt; epp_list_exclusions
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_list_exclusions
 </span></code></pre></div>
 <hr />
 <h3 id="epp_add_exclusion">epp_add_exclusion<a class="headerlink" href="#epp_add_exclusion" title="Anchor link to this section">&para;</a></h3>
@@ -13824,7 +13824,7 @@
 </ul>
 <p><strong>Response Event:</strong> EPP_ADD_EXCLUSION_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>limacharlie sensor task &lt;SID&gt; epp_add_exclusion --file_path &quot;C:\\safe_app&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_add_exclusion<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\safe_app&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_rem_exclusion">epp_rem_exclusion<a class="headerlink" href="#epp_rem_exclusion" title="Anchor link to this section">&para;</a></h3>
@@ -13837,7 +13837,7 @@
 </ul>
 <p><strong>Response Event:</strong> EPP_REM_EXCLUSION_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>limacharlie sensor task &lt;SID&gt; epp_rem_exclusion --file_path &quot;C:\\safe_app&quot;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_rem_exclusion<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\safe_app&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_list_quarantine">epp_list_quarantine<a class="headerlink" href="#epp_list_quarantine" title="Anchor link to this section">&para;</a></h3>
@@ -13846,7 +13846,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EPP_LIST_QUARANTINE_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>limacharlie sensor task &lt;SID&gt; epp_list_quarantine
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_list_quarantine
 </span></code></pre></div>
 <hr />
 <h2 id="command-usage-notes">Command Usage Notes<a class="headerlink" href="#command-usage-notes" title="Anchor link to this section">&para;</a></h2>

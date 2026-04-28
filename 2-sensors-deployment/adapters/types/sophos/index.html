@@ -11739,7 +11739,7 @@
 <li>Get your client ID and client secret from the credentials you just created</li>
 <li>Get your JWT -- be sure to replace the values with the client ID and secret from the last step</li>
 </ol>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl -XPOST -H &quot;Content-Type:application/x-www-form-urlencoded&quot; -d &quot;grant_type=client_credentials&amp;client_id=YOUR_CLIENT_ID&amp;client_secret=YOUR_CLIENT_SECRET&amp;scope=token&quot; https://id.sophos.com/api/v2/oauth2/token
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-XPOST<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type:application/x-www-form-urlencoded&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;grant_type=client_credentials&amp;client_id=YOUR_CLIENT_ID&amp;client_secret=YOUR_CLIENT_SECRET&amp;scope=token&quot;</span><span class="w"> </span>https://id.sophos.com/api/v2/oauth2/token
 </span></code></pre></div>
 <p>Response content -- grab the <code>access_token</code> from the output:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
@@ -11755,7 +11755,7 @@
 <ol>
 <li>Get your tenant ID -- you will need the <code>access_token</code> (JWT) from the last step.</li>
 </ol>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl -XGET -H &quot;Authorization: Bearer YOUR_JWT_HERE&quot; https://api.central.sophos.com/whoami/v1
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-XGET<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_JWT_HERE&quot;</span><span class="w"> </span>https://api.central.sophos.com/whoami/v1
 </span></code></pre></div>
 <p>Response content -- grab the <code>id</code> (<code>tenant_id</code>) and <code>dataRegion</code> (<code>url</code>) from the output. You will need these for your LimaCharlie Sophos adapter configuration.</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
