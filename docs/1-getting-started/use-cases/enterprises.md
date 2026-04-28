@@ -10,7 +10,7 @@ For enterprises and other large organizations, the Agentic SecOps Workspace is a
 
 The Agentic SecOps Workspace is a comprehensive platform for cybersecurity operations—but it doesn't have to be implemented all at once. The ASW's public cloud-like delivery model eliminates adoption hurdles for enterprises. Easily scaled and API-first, the ASW enables teams to integrate the platform into their security operations gradually, leveraging its capabilities progressively as they go. Here are three recommended first steps to help enterprises realize value from the ASW quickly.
 
-#### 1. Centralize telemetry data to improve visibility and streamline operations
+### 1. Centralize telemetry data to improve visibility and streamline operations
 
 The Agentic SecOps Workspace allows enterprises to bring all of their telemetry data into one place—improving visibility, eliminating coverage gaps, and enabling streamlined SecOps workflows. Here is a general outline of what that looks like:
 

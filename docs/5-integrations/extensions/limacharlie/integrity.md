@@ -78,7 +78,7 @@ FIM is partially supported on systems without eBPF. Specified file expressions a
 
 The following REST API actions can be sent to interact with the Integrity extension:
 
-**List Rules**
+### List Rules
 
 ```json
 {
@@ -86,7 +86,7 @@ The following REST API actions can be sent to interact with the Integrity extens
 }
 ```
 
-**Add Rule**
+### Add Rule
 
 ```json
 {
@@ -105,7 +105,7 @@ The following REST API actions can be sent to interact with the Integrity extens
 }
 ```
 
-**Remove Rule**
+### Remove Rule
 
 ```json
 {

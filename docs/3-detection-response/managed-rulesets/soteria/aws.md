@@ -25,7 +25,7 @@ To enable Soteria's AWS ruleset, navigate to the **Extensions** section of the *
 
 ![soteria aws 1](../../../assets/images/soteria-aws-1.png)
 
-*Please note: Pricing may reflect when the screenshot was taken, not the actual pricing*
+#### Please note: Pricing may reflect when the screenshot was taken, not the actual pricing
 
 Under the Organization dropdown, select a tenant (organization) you want to subscribe to **soteria-rules-aws** and click **Subscribe**.
 

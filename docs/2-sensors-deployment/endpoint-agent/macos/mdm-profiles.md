@@ -58,7 +58,7 @@ While any Apple / user approved MDM provider may be used, we have provided speci
 
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-1-General.png)
 
-4. Add a Privacy Preferences Policy Control configuration and set the parameters as follows:
+1. Add a Privacy Preferences Policy Control configuration and set the parameters as follows:
 
 Identifier:
 com.refractionpoint.rphcp.extension
@@ -77,7 +77,7 @@ Allow
 
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-2-PPPC.png)
 
-5. Add a System Extensions configuration and set the parameters as follows:
+1. Add a System Extensions configuration and set the parameters as follows:
 
 Enter your desired display name
 
@@ -89,7 +89,7 @@ Allowed System Extensions: com.refractionpoint.rphcp.extension
 
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-2-SystemExtensions.png)
 
-6. Add a Content Filter configuration and set the parameters as follows:
+1. Add a Content Filter configuration and set the parameters as follows:
 
 Enter your desired filter name
 
@@ -114,4 +114,4 @@ anchor apple generic and identifier "com.refractionpoint.rphcp.client" and (cert
 
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/JamfPro-4-ContentFilter.png)
 
-7. Deploy the configuration profile to your devices.
+1. Deploy the configuration profile to your devices.

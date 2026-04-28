@@ -34,11 +34,11 @@ Because you are able to adjust your organization quota on demand, this will trig
 
 Customers who are set up on Unified Billing receive one invoice that contain a roll-up summary of all of their LimaCharlie organizations so that they can pay them all together. The Unified invoice includes one line item per tenant organization. Those tenant organizations include a reference to their sub-invoice number; you can refer to those for detailed line-level information related to each organization.
 
-*Example Unified invoice*
+#### Example Unified invoice
 
 Your browser does not support PDF. Click [here](../../assets/images/EXAMPLE---Unified---Invoice-ABC1234D-0011.pdf) to download.
 
-*Example individual Tenant invoice*
+#### Example individual Tenant invoice
 
 Your browser does not support PDF. Click [here](../../assets/images/EXAMPLE---Alpha-Customer---Invoice-BCDE9876-0035.pdf) to download.
 

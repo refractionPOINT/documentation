@@ -28,7 +28,7 @@ file: // The root of the config is the adapter collection method.
   file_path: /var/log/syslog
 ```
 
-### Multi-Adapter
+## Multi-Adapter
 
 It is possible to execute multiple instances of adapters of the same type within the same adapter process, for example to have a single adapter process monitor files in multiple directories with slightly different configurations.
 

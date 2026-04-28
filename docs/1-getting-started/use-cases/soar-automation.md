@@ -2,7 +2,7 @@
 
 The Agentic SecOps Workspace makes building, modifying, or streamlining your security orchestration, automation, and response (SOAR) operations simple. Lower your costs and increase your response time by aggregating SOAR tooling, integrating resources, and normalizing telemetry with the Agentic SecOps Workspace.
 
-#### SOAR/Automation problems
+## SOAR/Automation problems
 
 Security orchestration, automation, and response (SOAR) solutions play a key role in detecting and responding to cyber threats. However, adopting a standalone SOAR solution may also create new challenges including:
 
@@ -11,7 +11,7 @@ Security orchestration, automation, and response (SOAR) solutions play a key rol
 - **Unnecessary detection friction:** Security tools detect suspicious activity and send events to the SIEM, generating an alert for the analyst to investigate. After investigation, various manual procedures are invoked to remediate the alert.
 - **Inefficient manual processes:** Critical time is lost as analysts coordinate transferring crucial information into various tools and performing response actions.
 
-#### LimaCharlie's solutions
+## LimaCharlie's solutions
 
 The Agentic SecOps Workspace consolidates and integrates SOAR tooling in a single place. It offers a more efficient, customizable way to implement SOAR by integrating the security stack, normalizing data, and expanding automation capabilities.
 

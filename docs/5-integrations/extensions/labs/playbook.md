@@ -91,7 +91,7 @@ The function must return a dictionary with the following optional keys:
 
 This allows your playbook to return information about its execution, return data, errors or generate a detection. The python `print()` statement is not currently being returned to the caller or otherwise accessible, so you will want to use the `data` in order to return information about the execution of your playbook.
 
-#### Example playbook
+### Example playbook
 
 The following is a sample playbook that sends a webhook to an external product with a secret stored in LimaCharlie, and it returns the data as the response from the playbook.
 

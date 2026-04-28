@@ -29,7 +29,7 @@ The BinLib page in the web app offers an easy way to get started with some of th
 
 ### check_hash
 
-*Accepted Values: MD5, SHA1, SHA256*
+#### Accepted Values: MD5, SHA1, SHA256
 
 The `check_hash` operation lets you search to see if a particular hash has been observed in your Organization. Output includes a boolean if the hash was found and three hash values, if available.
 
@@ -48,9 +48,9 @@ Sample Output:
 
 ### get_hash_data
 
-*Accepted Values: MD5, SHA1, SHA256*
+#### Accepted Values: MD5, SHA1, SHA256
 
-**Careful Downloading Binaries**
+#### Careful Downloading Binaries
 
 LimaCharlie does not filter the binaries observed by your organization. You must exercise caution if downloading a malicious file. We recommend downloading potential malicious binaries to an isolated analysis system.
 
@@ -72,7 +72,7 @@ Sample Output:
 
 ### get_hash_metadata
 
-*Accepted Values: MD5, SHA1, SHA256*
+#### Accepted Values: MD5, SHA1, SHA256
 
 The `get_hash_metadata` operation obtains the metadata for a hash of interest, including signing details, file type, and additional hashes.
 

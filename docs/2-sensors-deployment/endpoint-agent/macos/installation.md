@@ -24,7 +24,7 @@ When running the installer from the command line, you can pass the following arg
 
 > chmod +x lc\_sensor
 
-3. Run the installer via the command line. You'll pass the argument -i and your Installation Key.
+1. Run the installer via the command line. You'll pass the argument -i and your Installation Key.
 
 > sudo ./lc\_sensor -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
@@ -36,23 +36,23 @@ The sensor will be installed as a launchctl service. Installation will trigger t
 
 ![Installation success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/02-Installation_success.png)
 
-4. An application (`RPHCP.app`) will be installed in the /Applications folder and will automatically launch. You will be prompted to grant permissions for system extensions to be installed.
+1. An application (`RPHCP.app`) will be installed in the /Applications folder and will automatically launch. You will be prompted to grant permissions for system extensions to be installed.
 
 ![Permissions required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/03-Permissions_Required.png)
 
-5. Click the "Open System Preferences" button
+1. Click the "Open System Preferences" button
 
 ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/04-System_Extension_Required.png)
 
-6. Unlock the preference pane using the padlock in the bottom left corner, then click the Allow button next to `System software from application "RPHCP" was blocked from loading.`
+1. Unlock the preference pane using the padlock in the bottom left corner, then click the Allow button next to `System software from application "RPHCP" was blocked from loading.`
 
 ![Unlocked](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/06-Allow_System_Software_Unlocked.png)
 
-7. You'll be prompted to allow the application to Filter Network Content. Click the Allow button.
+1. You'll be prompted to allow the application to Filter Network Content. Click the Allow button.
 
 ![Network filter](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/07--Network_Filter.png)
 
-8. You'll be prompted to grant Full Disk Access. Check the checkbox next to the RPHCP app in System Preferences -> Privacy -> Full Disk Access
+1. You'll be prompted to grant Full Disk Access. Check the checkbox next to the RPHCP app in System Preferences -> Privacy -> Full Disk Access
 
 ![Full disk access](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/08-Full_Disk_Access.png)
 
@@ -100,13 +100,13 @@ To uninstall the sensor:
 
 ![Uninstall progress](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/1-Uninstall_Progress.png)
 
-2. You will be prompted for credentials to modify system extensions. Enteryour password and press OK.
+1. You will be prompted for credentials to modify system extensions. Enteryour password and press OK.
 
 ![Uninstall permissions](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/2-Uninstaller_Permissions.png)
 
 The related system extension will be removed and the `RPHCP.app` will be removed from the /Applications folder.
 
-3. You should see a message indicating that the uninstallation was successful.
+1. You should see a message indicating that the uninstallation was successful.
 
 ![Uninstall success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/3-Uninstall_Success.png)
 

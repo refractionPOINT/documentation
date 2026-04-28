@@ -78,7 +78,7 @@ IR mode is designed to give a balance between recording all events, while mainta
 
 The following REST API actions can be sent to interact with the Exfil extension:
 
-**List Rules**
+### List Rules
 
 ```json
 {
@@ -88,7 +88,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 ### Event Collection Rules
 
-**Add Event Collection Rule**
+#### Add Event Collection Rule
 
 ```json
 {
@@ -107,7 +107,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 }
 ```
 
-**Remove Event Collection Rule**
+#### Remove Event Collection Rule
 
 ```json
 {
@@ -118,7 +118,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 ### Watch Rules
 
-**Add Watch Rule**
+#### Add Watch Rule
 
 ```json
 {
@@ -139,7 +139,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 }
 ```
 
-**Remove Watch Rule**
+#### Remove Watch Rule
 
 ```json
 {
@@ -150,7 +150,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 
 ### Performance Rules
 
-**Add Performance Rule**
+#### Add Performance Rule
 
 ```json
 {
@@ -165,7 +165,7 @@ The following REST API actions can be sent to interact with the Exfil extension:
 }
 ```
 
-**Remove Performance Rule**
+#### Remove Performance Rule
 
 ```json
 {

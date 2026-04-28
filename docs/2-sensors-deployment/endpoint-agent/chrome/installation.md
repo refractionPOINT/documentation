@@ -31,10 +31,10 @@ If the extension continues to fail to connect, please provide the LimaCharlie su
 
 ![image.png](../../../assets/images/image(38).png)
 
-4. Click the `background.html` link in the LimaCharlie Sensor entry.
+1. Click the `background.html` link in the LimaCharlie Sensor entry.
 
 ![image.png](../../../assets/images/image(39).png)
 
-5. In the window that opens, click Console and provide us with a screenshot of what appears for analysis.
+1. In the window that opens, click Console and provide us with a screenshot of what appears for analysis.
 
 Please also include your Organization ID, which can be found within the LimaCharlie web interface in the REST API section under `OID`.

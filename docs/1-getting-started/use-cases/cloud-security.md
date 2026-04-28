@@ -2,7 +2,7 @@
 
 The Agentic SecOps Workspace simplifies the difficult task of securing cloud resources and managing complex cloud-based or hybrid infrastructure. LimaCharlie brings better visibility, robust interoperability, and better options for storing data to cloud and hybrid environments.
 
-#### Cloud security problems
+## Cloud security problems
 
 Organizations are increasingly embracing the benefits of cloud services and solutions. As your business infrastructure integrates with cloud resources securing your environment becomes more complex, leading to:
 
@@ -10,7 +10,7 @@ Organizations are increasingly embracing the benefits of cloud services and solu
 - **Data volume challenges:** Cloud environments can generate a high volume of logs forcing security teams to make trade-offs when it comes to data ingest cost and visibility.
 - **Multi-cloud challenges:** Many organizations use multiple cloud platforms causing visibility challenges across platforms.
 
-#### LimaCharlie's solution
+## LimaCharlie's solution
 
 LimaCharlie simplifies management of cloud and multi-cloud environments by unifying them on a single platform. In addition to making integrations easier and bringing scalability to security operations, the Agentic SecOps Workspace offers:
 

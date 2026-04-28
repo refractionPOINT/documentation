@@ -68,7 +68,7 @@ More details on configuration files and adapter usage can be found [here](../ada
 
 The adapter should load the config and display options to the terminal.
 
-*Note: This is not a persistent install; utilize your operating system's init/systemctl capabilities to create a persistent adapter*
+### Note: This is not a persistent install; utilize your operating system's init/systemctl capabilities to create a persistent adapter
 
 **Step 4:** Returning to the LimaCharlie web UI, you should start to see events flowing in almost instantaneously.
 

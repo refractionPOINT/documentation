@@ -19,7 +19,7 @@ IIS web logs often have a standardized schema, unless manually changed by admini
 
 `#Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) sc-status sc-substatus sc-win32-status time-taken`
 
-**Log Structure**
+#### Log Structure
 
 If your IIS logs are a different structure from above, please let us know and we can assist in customizing the parser!
 
@@ -49,7 +49,7 @@ IIS logs are typically stored "on disk" of the web server, in files that roll da
 
 The following configuration file can be used as a starter to monitor IIS web log directories. Replace any values with `< >` characters with values unique to your Organization and/or deployment. *Do not include the* `<` *or* `>` *characters in your config file!*
 
-*Please customize according to your environment/LimaCharlie organization*
+### Please customize according to your environment/LimaCharlie organization
 
 ```yaml
 file:

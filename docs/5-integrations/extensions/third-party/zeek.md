@@ -51,7 +51,7 @@ Upon running Zeek, several JSON log files are generated. The log files are parse
 
 ### Via Automatic PCAP Collection
 
-**Note: This is only available on Linux sensors**
+#### Note: This is only available on Linux sensors
 
 Enable PCAP collection on your Linux sensors via a PCAP capture rule within the artifact collection extension.
 

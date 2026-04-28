@@ -45,7 +45,7 @@ POST /v1/register
 
 Register the authenticated user for the AI Sessions platform.
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -68,7 +68,7 @@ DELETE /v1/register
 
 Deregister the user and delete all associated data. This terminates all active sessions and deletes stored credentials.
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -94,7 +94,7 @@ GET /v1/sessions
 | `limit` | integer | Max results (default 50, max 200) |
 | `cursor` | string | Pagination cursor |
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -133,7 +133,7 @@ POST /v1/sessions
 }
 ```
 
-**Response: 201 Created**
+##### Response: 201 Created
 
 ```json
 {
@@ -158,7 +158,7 @@ POST /v1/sessions
 GET /v1/sessions/{sessionId}
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -184,7 +184,7 @@ GET /v1/sessions/{sessionId}
 DELETE /v1/sessions/{sessionId}
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -200,7 +200,7 @@ DELETE /v1/sessions/{sessionId}/record
 
 Delete a terminated session from history. Only sessions in the `ended` state can be deleted.
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -218,7 +218,7 @@ Delete a terminated session from history. Only sessions in the `ended` state can
 GET /v1/profiles
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -272,7 +272,7 @@ POST /v1/profiles
 }
 ```
 
-**Response: 201 Created**
+##### Response: 201 Created
 
 ```json
 {
@@ -340,7 +340,7 @@ POST /v1/sessions/{sessionId}/capture-profile
 POST /v1/auth/claude/start
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -356,7 +356,7 @@ POST /v1/auth/claude/start
 GET /v1/auth/claude/url?session_id={oauth_session_id}
 ```
 
-**Response: 200 OK (URL Ready)**
+##### Response: 200 OK (URL Ready)
 
 ```json
 {
@@ -366,7 +366,7 @@ GET /v1/auth/claude/url?session_id={oauth_session_id}
 }
 ```
 
-**Response: 200 OK (Pending)**
+##### Response: 200 OK (Pending)
 
 ```json
 {
@@ -390,7 +390,7 @@ POST /v1/auth/claude/code
 }
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -414,7 +414,7 @@ POST /v1/auth/claude/apikey
 }
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -429,7 +429,7 @@ POST /v1/auth/claude/apikey
 GET /v1/auth/claude/status
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -465,7 +465,7 @@ POST /v1/io/sessions/{sessionId}/upload
 }
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -494,7 +494,7 @@ POST /v1/io/sessions/{sessionId}/upload/complete
 }
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {
@@ -517,7 +517,7 @@ POST /v1/io/sessions/{sessionId}/download
 }
 ```
 
-**Response: 200 OK**
+##### Response: 200 OK
 
 ```json
 {

@@ -4,7 +4,7 @@ The LimaCharlie Linux Sensor interfaces with the kernel to acquire deep visibili
 
 The Sensor current supports all Linux distributions (including ARM and MIPS).
 
-**Linux Distribution Support**
+## Linux Distribution Support
 
 Our Linux Sensor fully utilizes eBPF, which requires at least Linux 4.4 or above. Use the command `uname -r` to check your kernel version to determine support.
 

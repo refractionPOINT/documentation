@@ -25,7 +25,7 @@ Without a digital code signing certificate the installer will show a warning tha
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_1_-_First_screen_after_launch.png)
 
-5. Select the executable
+1. Select the executable
 
 - Set the `Setup executable input file name` to be the LimaCharlie EXE that you'd downloaded
 - Optionally, specify a MSI output file name of your choosing (e.g. Acme\_Installer.msi)
@@ -33,37 +33,37 @@ Without a digital code signing certificate the installer will show a warning tha
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_2_-__Select_the_executable.png)
 
-6. Set the visibility in Apps & features
+1. Set the visibility in Apps & features
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_3_-_Visibility_in_Apps_&_features.png)
 
-7. Set the Security and User Context
+1. Set the Security and User Context
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_4_-_Security_and_User_Context.png)
 
-8. Specify Application IDs
+1. Specify Application IDs
 
 - In the Upgrade Code section, click the "Create New" button next to generate a code. This will be used to allow uninstallation.
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_5_-_Application_Ids.png)
 
-9. Specify Properties (optional: customize options here to have the installer show your brand)
+1. Specify Properties (optional: customize options here to have the installer show your brand)
 
 - You can change the drop-down menu of each line item from "Executable" to "Manual" in order to set your own values for the Product Name, Manufacturer, Version, Comments, and Product icon
 
-*Original*
+### Original
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_6a_-_Properties_-_Defaults.png)
 
-*Customized*
+### Customized
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_6b_-_Properties_-_Customized.png)
 
-10. Specify More Properties (optional)
+1. Specify More Properties (optional)
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_7_-_More_properties.png)
 
-11. Specify Parameters
+1. Specify Parameters
 
 - In the "Install arguments" box, enter "-i", add a space and then enter your [installation key](../../installation-keys.md)
 - -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
@@ -72,15 +72,15 @@ Without a digital code signing certificate the installer will show a warning tha
 
 To provide the option to uninstall, set the Uninstall argument to "-c" (note that you do not need to specify your Installation Key for uninstallation).
 
-12. Actions
+1. Actions
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_9_-_Actions.png)
 
-13. Summary
+1. Summary
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_10_-_Summary.png)
 
-14. Status
+1. Status
 
 ![exemsi](https://storage.googleapis.com/limacharlie-io/doc/white-label/exemsi-instructions/MSI_Wrapper_-_11_-_Status.png)
 

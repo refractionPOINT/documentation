@@ -2,7 +2,7 @@
 
 The Govee Extension allows you to trigger color changes on your [supported Govee lights](https://developer.govee.com/docs/support-product-model) via a rule response action. It requires you to configure a Govee API key in the extension.
 
-### Setup
+## Setup
 
 1. Request an API key from Govee by following their instructions [here](https://developer.govee.com/reference/apply-you-govee-api-key)
 2. Get the Device ID (device) and model (sku) of the device you'd like to target by requesting a list of your supported devices from the Govee API:
@@ -11,8 +11,8 @@ The Govee Extension allows you to trigger color changes on your [supported Govee
 curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --header 'Govee-API-Key: YOUR_GOVEE_API_KEY'
 ```
 
-3. Decide what RGB color(s) you want to use. By default, the extension will alert with red (`255,0,0`), and revert back to white (`255,255,255`) when the alert `duration` has ended.
-4. Add your Govee API key to the extension configuration:
+1. Decide what RGB color(s) you want to use. By default, the extension will alert with red (`255,0,0`), and revert back to white (`255,255,255`) when the alert `duration` has ended.
+2. Add your Govee API key to the extension configuration:
     ![govee](../../../assets/images/govee.png)
 
 ### Usage

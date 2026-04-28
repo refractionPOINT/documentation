@@ -6,7 +6,7 @@ The ASW delivers core cybersecurity capabilities and infrastructure via a public
 
 For cybersecurity startups and builders, the Agentic SecOps Workspace offers a robust foundation to create valuable products and services. The ASW helps innovators get to market faster, build genuinely independent businesses, increase their probability of success, and scale successful offerings with ease.
 
-### 3 ways to go to market more effectively
+## 3 ways to go to market more effectively
 
 The Agentic SecOps Workspace provides the tools and infrastructure needed to secure any given organization—and is designed to be flexible and highly customizable. Because of this, the ASW enables many different types of solutions. Individual builders' use cases can vary significantly. Nevertheless, all startups and product developers using the platform will benefit from the following three recommendations:
 

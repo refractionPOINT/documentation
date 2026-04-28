@@ -24,7 +24,7 @@ When running the installer from the command line, you can pass the following arg
 
 > chmod +x hcp\_osx\_x64\_release\_4.23.0
 
-3. Run the installer via the command line. You'll pass the argument -i and your Installation Key.
+1. Run the installer via the command line. You'll pass the argument -i and your Installation Key.
 
 > sudo ./hcp\_osx\_x64\_release\_4.23.0 -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
@@ -36,12 +36,12 @@ The sensor will be installed as a launchctl service. Installation will trigger t
 
 ![Installation success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/02-Installation_success.png)
 
-4. You will be prompted to grant permissions for system extensions to be installed.
+1. You will be prompted to grant permissions for system extensions to be installed.
 
 ![Permissions required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/macOS_10.14/03_Older_Systems-System_Extension_Notice.png)
 
-5. Click the "Open System Preferences" button
-6. Unlock the preference pane using the padlock in the bottom left corner, then click the Allow button next to `System software from developer "Refraction Point, Inc" was blocked from loading.`
+1. Click the "Open System Preferences" button
+2. Unlock the preference pane using the padlock in the bottom left corner, then click the Allow button next to `System software from developer "Refraction Point, Inc" was blocked from loading.`
 
 ![Unlocked](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/macOS_10.14/04-Older_Systems-System_Software_Approval.png)
 
@@ -51,7 +51,7 @@ The installation is now complete and you should see a message indicating that th
 
 To verify that the sensor was installed successfully, you can log into the LimaCharlie web application and see if the device has appeared in the Sensors section. Additionally, you can check the following on the device itself:
 
-**Ensure the process is running**
+### Ensure the process is running
 
 In a Terminal, run the command:
 
@@ -61,7 +61,7 @@ In a Terminal, run the command:
 
 If the agent is running, this command should return a record as shown above.
 
-**Ensure the Kernel Extension is loaded**
+### Ensure the Kernel Extension is loaded
 
 You can confirm that the kernel extension is loaded by running the command:
 
@@ -91,6 +91,6 @@ You'll pass the argument -c
 
 ![Uninstall progress](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/macOS_10.14/Installed_correctly.png)
 
-2. You should see a message indicating that the uninstallation was successful.
+1. You should see a message indicating that the uninstallation was successful.
 
 ![Uninstall success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/3-Uninstall_Success.png)

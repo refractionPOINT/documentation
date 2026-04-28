@@ -113,11 +113,11 @@ Via web browser, navigate to one of the below test URLs that corresponds to the 
 
 No website will open; you should get a "Your connection is not private" type of message instead.
 
-**Display the SSL Certificate**
+### Display the SSL Certificate
 
 By clicking near the URL bar on the exclamation mark, you will open a small menu and you can click "Certificate status"/"Certificate validity"/"Certificate is not valid" which will display the certificate information.
 
-**Confirm the SHA-1 and SHA-256 fingerprints**
+### Confirm the SHA-1 and SHA-256 fingerprints
 
 The SHA-1 and SHA-256 fingerprints should match the values below that correspond to the region your organization is in.
 

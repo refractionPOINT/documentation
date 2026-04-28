@@ -29,7 +29,7 @@ uses inline:
 
 ```bash
 npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false}') \
+  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false, "MD024": {"siblings_only": true}}') \
   "docs/**/*.md"
 ```
 
@@ -88,6 +88,16 @@ conflict with mkdocs-material extensions we use repo-wide:
   inside tabs as inconsistent code-block style. Disabling avoids the
   false positives.
 
+**Tuned** — these rules are configured rather than at default settings:
+
+- `MD024` (no-duplicate-heading) is set to `{ siblings_only: true }`.
+  Many reference pages legitimately have repeated subheadings like
+  `#### Parameters` or `#### Example Output` under each documented
+  command. With the default (whole-document scope), every repetition
+  is flagged. `siblings_only` only flags duplicates under the same
+  parent heading, which catches genuine bugs while allowing the
+  legitimate pattern.
+
 **Substantive (manual)** — these need editorial judgment and meaningfully
 improve doc quality and AI / LLM readability. Prioritize these:
 
@@ -142,7 +152,7 @@ Run the linter today to see where we stand:
 
 ```bash
 npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false}') \
+  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false, "MD024": {"siblings_only": true}}') \
   "docs/**/*.md" 2> mdlint.out || true
 grep -oE 'MD[0-9]+/[a-z-]+' mdlint.out | sort | uniq -c | sort -rn
 ```

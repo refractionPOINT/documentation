@@ -85,13 +85,13 @@ Use this method when your MCP client doesn't support OAuth.
 
 To access all organizations associated with your user account, authenticate using a JWT generated from your **User API Key**.
 
-**Step 1: Get your User API Key**
+#### Step 1: Get your User API Key
 
 1. Go to [app.limacharlie.io](https://app.limacharlie.io) → **User Profile** (top-right menu)
 2. Navigate to **API Keys**
 3. Generate a User API Key
 
-**Step 2: Generate a JWT**
+#### Step 2: Generate a JWT
 
 ```bash
 curl -X POST "https://jwt.limacharlie.io" \
@@ -101,7 +101,7 @@ curl -X POST "https://jwt.limacharlie.io" \
 
 This returns a JWT valid for 1 hour. See [API Keys](../7-administration/access/api-keys.md) for details.
 
-**Step 3: Configure your MCP client**
+#### Step 3: Configure your MCP client
 
 ```json
 {
@@ -255,7 +255,7 @@ Newly added users start with **Unset** privileges (basic org information only). 
 3. Use the tables above to determine which permissions to grant based on your intended use case
 
 > **Tip:** Follow the principle of least privilege — grant only the permissions needed for your use case. For read-only investigation workflows, avoid granting write permissions like `dr.set` or `sensor.task`.
-
+>
 > **Note:** Permissions granted through [Organization Groups](../7-administration/access/user-access.md#access-via-organization-groups) are additive on top of per-organization permissions and cannot reduce existing access.
 
 For the full list of available permissions, see the [Permissions Reference](../8-reference/permissions.md).

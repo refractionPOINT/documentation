@@ -10,7 +10,7 @@ Set up the installation script by following these steps:
 
 ![Screenshot of MS Intune -> Devices | Configuration](../../../assets/images/Configurations.png)
 
-2. Choose [Policies](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/configuration), click the Create button and choose New Policy
+1. Choose [Policies](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/configuration), click the Create button and choose New Policy
 
    1. Set the Platform to be macOS
 
@@ -18,7 +18,7 @@ Set up the installation script by following these steps:
 
    3. Click Create
 
-3. Enter the custom policy details as follows:
+2. Enter the custom policy details as follows:
 
    1. Name: LimaCharlie
 
@@ -40,9 +40,9 @@ Set up the installation script by following these steps:
 
 ![Screenshot of MS Intune -> Devices | Scripts](../../../assets/images/Scripts.png)
 
-2. Choose [Platform scripts](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/scripts), click the Add button and choose macOS
+1. Choose [Platform scripts](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/scripts), click the Add button and choose macOS
 
-3. Set up the script with the following parameters:
+2. Set up the script with the following parameters:
 
 Name: Install LimaCharlie
 

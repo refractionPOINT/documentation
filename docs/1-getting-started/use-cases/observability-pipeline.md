@@ -2,7 +2,7 @@
 
 The Agentic SecOps Workspace (ASW) creates a scalable, versatile, and actionable observability pipeline by collecting and standardizing telemetry from the full security stack. Stream data from any input, route it to any output. The ASW provides visibility into telemetry sources and empowers users to create automated responses to actionable events in the pipeline.
 
-#### Observability pipeline problems
+## Observability pipeline problems
 
 Creating an observability pipeline can be a daunting task as users try to integrate a complex and diverse technological environment into a single pipeline solution. When successful, ingesting, managing, and storing data can create significant costs, including:
 
@@ -12,7 +12,7 @@ Creating an observability pipeline can be a daunting task as users try to integr
 - **High SIEM costs:** Data ingestion adds considerable costs to SIEM operations. As an organization expands its digital footprint these costs can increase rapidly.
 - **Vendor lock-in constraints:** Many organizations find themselves trapped with security vendors who deliberately create dependencies through restrictive contracts, proprietary data formats, and closed ecosystems — limiting flexibility, driving up costs, and forcing security decisions based on vendor limitations rather than actual security needs.
 
-#### LimaCharlie's solutions
+### LimaCharlie's solutions
 
 The Agentic SecOps Workspace unifies telemetry collection by using an API-first approach for integrating the security stack. It creates a natural observability pipeline that scales without limit, facilitates automated responses, and greatly reduces data costs across the board. With the ASW you get a fully interactive observability pipeline that can facilitate countless other critical security operations as well.
 

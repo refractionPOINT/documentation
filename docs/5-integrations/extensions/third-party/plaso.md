@@ -35,7 +35,7 @@ Upon running `psteal.py`, a `.plaso` file and a `.csv` file are generated. They 
 - Resulting `.plaso` file contains the raw output of `log2timeline.py`
 - Resulting `.csv` file contains the CSV formatted version of the `.plaso` file contents
 
-2. ```bash
+1. ```bash
    pinfo.py $artifact_id.plaso -w $artifact_id_pinfo.json --output_format json
    ```
 
