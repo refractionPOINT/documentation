@@ -12,101 +12,101 @@ These are the events emitted by the endpoint agent for each supported operating 
 
 | EDR Event Type | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- |
-| [AUTORUN\_CHANGE](#autorunchange) |  | ☑️ |  |  |  |
-| [CLOUD\_NOTIFICATION](#cloudnotification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [CODE\_IDENTITY](#codeidentity) | ☑️ | ☑️ | ☑️ |  |  |
+| [AUTORUN\_CHANGE](#autorun_change) |  | ☑️ |  |  |  |
+| [CLOUD\_NOTIFICATION](#cloud_notification) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [CODE\_IDENTITY](#code_identity) | ☑️ | ☑️ | ☑️ |  |  |
 | [CONNECTED](#connected) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [DATA\_DROPPED](#datadropped) | ☑️ | ☑️ | ☑️ |  |  |
-| [DEBUG\_DATA\_REP](#getdebugdata) |  | ☑️ |  |  |  |
-| [DELETED\_SENSOR](#deletedsensor) | ☑️ | ☑️ | ☑️ |  |  |
-| [DIR\_FINDHASH\_REP](#dirfindhash) | ☑️ | ☑️ | ☑️ |  |  |
-| [DIR\_LIST\_REP](#dirlist) | ☑️ | ☑️ | ☑️ |  |  |
-| [DNS\_REQUEST](#dnsrequest) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [DRIVER\_CHANGE](#driverchange) |  | ☑️ |  |  |  |
-| [EXEC\_OOB](#execoob) | ☑️ |  | ☑️ |  |  |
-| [EXISTING\_PROCESS](#existingprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [EXPORT\_COMPLETE](#exportcomplete) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM\_ADD](#fimadd) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM\_REMOVE](#fimremove) | ☑️ | ☑️ | ☑️ |  |  |
-| [FIM\_HIT](#fimhit) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_CREATE](#filecreate) | ☑️ | ☑️ |  |  |  |
-| [FILE\_DEL\_REP](#filedel) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_DELETE](#filedelete) | ☑️ | ☑️ |  |  |  |
-| [FILE\_GET\_REP](#fileget) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_HASH\_REP](#filehash) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_INFO\_REP](#fileinfo) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_MODIFIED](#filemodified) | ☑️ | ☑️ |  |  |  |
-| [FILE\_MOV\_REP](#filemov) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_TYPE\_ACCESSED](#filetypeaccessed) | ☑️ | ☑️ |  |  |  |
-| [GET\_DOCUMENT\_REP](#doccacheget) | ☑️ | ☑️ |  |  |  |
-| [GET\_EXFIL\_EVENT\_REP](#exfilget) | ☑️ | ☑️ | ☑️ |  |  |
-| [HIDDEN\_MODULE\_DETECTED](#hiddenmoduledetected) |  | ☑️ |  |  |  |
-| [HISTORY\_DUMP\_REP](#historydump) | ☑️ | ☑️ | ☑️ |  |  |
-| [HTTP\_REQUEST](#httprequest) |  |  |  | ☑️ | ☑️ |
-| [HTTP\_REQUEST\_HEADERS](#httprequestheaders) |  |  |  | ☑️ |  |
-| [HTTP\_RESPONSE\_HEADERS](#httpresponseheaders) |  |  |  | ☑️ |  |
-| [INGEST](#ingest) | ☑️ | ☑️ | ☑️ |  |  |
-| [LOG\_GET\_REP](#logget) |  |  |  |  |  |
-| [LOG\_LIST\_REP](#loglist) |  |  |  |  |  |
-| [MEM\_FIND\_HANDLES\_REP](#memfindhandle) |  | ☑️ |  |  |  |
-| [MEM\_FIND\_STRING\_REP](#memfindstring) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM\_HANDLES\_REP](#memhandles) |  | ☑️ |  |  |  |
-| [MEM\_MAP\_REP](#memmap) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM\_READ\_REP](#memread) | ☑️ | ☑️ | ☑️ |  |  |
-| [MEM\_STRINGS\_REP](#memstrings) | ☑️ | ☑️ | ☑️ |  |  |
-| [MODULE\_LOAD](#moduleload) |  | ☑️ | ☑️ |  |  |
-| [MODULE\_MEM\_DISK\_MISMATCH](#modulememdiskmismatch) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETSTAT\_REP](#netstat) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETWORK\_CONNECTIONS](#networkconnections) | ☑️ | ☑️ | ☑️ |  |  |
-| [NETWORK\_SUMMARY](#networksummary) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_DOCUMENT](#newdocument) | ☑️ | ☑️ |  |  |  |
-| [NEW\_NAMED\_PIPE](#newnamedpipe) |  | ☑️ |  |  |  |
-| [NEW\_PROCESS](#newprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_REMOTE\_THREAD](#newremotethread) |  | ☑️ |  |  |  |
-| [NEW\_TCP4\_CONNECTION](#newtcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_TCP6\_CONNECTION](#newtcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_UDP4\_CONNECTION](#newudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [NEW\_UDP6\_CONNECTION](#newudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [OPEN\_NAMED\_PIPE](#opennamedpipe) |  | ☑️ |  |  |  |
-| [OS\_AUTORUNS\_REP](#osautoruns) | ☑️ | ☑️ |  |  |  |
-| [OS\_DRIVERS\_REP](#osdrivers) |  | ☑️ |  |  |  |
-| [OS\_KILL\_PROCESS\_REP](#oskillprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_PACKAGES\_REP](#ospackages) |  | ☑️ |  |  |  |
-| [OS\_PROCESSES\_REP](#osprocesses) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_RESUME\_REP](#osresume) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_SERVICES\_REP](#osservices) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_SUSPEND\_REP](#ossuspend) | ☑️ | ☑️ | ☑️ |  |  |
-| [OS\_USERS\_REP](#osusers) |  | ☑️ |  |  |  |
-| [OS\_VERSION\_REP](#osversion) | ☑️ | ☑️ | ☑️ |  |  |
-| [PCAP\_LIST\_INTERFACES\_REP](#pcapifaces) |  |  | ☑️ |  |  |
-| [PROCESS\_ENVIRONMENT](#processenvironment) |  | ☑️ | ☑️ |  |  |
+| DATA\_DROPPED | ☑️ | ☑️ | ☑️ |  |  |
+| [DEBUG\_DATA\_REP](#debug_data_rep) |  | ☑️ |  |  |  |
+| DELETED\_SENSOR | ☑️ | ☑️ | ☑️ |  |  |
+| [DIR\_FINDHASH\_REP](#dir_findhash_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [DIR\_LIST\_REP](#dir_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [DNS\_REQUEST](#dns_request) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [DRIVER\_CHANGE](#driver_change) |  | ☑️ |  |  |  |
+| EXEC\_OOB | ☑️ |  | ☑️ |  |  |
+| [EXISTING\_PROCESS](#existing_process) | ☑️ | ☑️ | ☑️ |  |  |
+| EXPORT\_COMPLETE | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM\_ADD](#fim_add) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM\_REMOVE](#fim_remove) | ☑️ | ☑️ | ☑️ |  |  |
+| [FIM\_HIT](#fim_hit) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_CREATE](#file_create) | ☑️ | ☑️ |  |  |  |
+| [FILE\_DEL\_REP](#file_del_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_DELETE](#file_delete) | ☑️ | ☑️ |  |  |  |
+| [FILE\_GET\_REP](#file_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_HASH\_REP](#file_hash_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_INFO\_REP](#file_info_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_MODIFIED](#file_modified) | ☑️ | ☑️ |  |  |  |
+| [FILE\_MOV\_REP](#file_mov_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [FILE\_TYPE\_ACCESSED](#file_type_accessed) | ☑️ | ☑️ |  |  |  |
+| [GET\_DOCUMENT\_REP](#get_document_rep) | ☑️ | ☑️ |  |  |  |
+| [GET\_EXFIL\_EVENT\_REP](#get_exfil_event_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [HIDDEN\_MODULE\_DETECTED](#hidden_module_detected) |  | ☑️ |  |  |  |
+| [HISTORY\_DUMP\_REP](#history_dump_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [HTTP\_REQUEST](#http_request) |  |  |  | ☑️ | ☑️ |
+| [HTTP\_REQUEST\_HEADERS](#http_request_headers) |  |  |  | ☑️ |  |
+| [HTTP\_RESPONSE\_HEADERS](#http_response_headers) |  |  |  | ☑️ |  |
+| INGEST | ☑️ | ☑️ | ☑️ |  |  |
+| [LOG\_GET\_REP](#log_get_rep) |  |  |  |  |  |
+| [LOG\_LIST\_REP](#log_list_rep) |  |  |  |  |  |
+| [MEM\_FIND\_HANDLES\_REP](#mem_find_handles_rep) |  | ☑️ |  |  |  |
+| [MEM\_FIND\_STRING\_REP](#mem_find_string_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM\_HANDLES\_REP](#mem_handles_rep) |  | ☑️ |  |  |  |
+| [MEM\_MAP\_REP](#mem_map_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM\_READ\_REP](#mem_read_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [MEM\_STRINGS\_REP](#mem_strings_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [MODULE\_LOAD](#module_load) |  | ☑️ | ☑️ |  |  |
+| MODULE\_MEM\_DISK\_MISMATCH | ☑️ | ☑️ | ☑️ |  |  |
+| [NETSTAT\_REP](#netstat_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [NETWORK\_CONNECTIONS](#network_connections) | ☑️ | ☑️ | ☑️ |  |  |
+| NETWORK\_SUMMARY | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_DOCUMENT](#new_document) | ☑️ | ☑️ |  |  |  |
+| [NEW\_NAMED\_PIPE](#new_named_pipe) |  | ☑️ |  |  |  |
+| [NEW\_PROCESS](#new_process) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_REMOTE\_THREAD](#new_remote_thread) |  | ☑️ |  |  |  |
+| [NEW\_TCP4\_CONNECTION](#new_tcp4_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_TCP6\_CONNECTION](#new_tcp6_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_UDP4\_CONNECTION](#new_udp4_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [NEW\_UDP6\_CONNECTION](#new_udp6_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [OPEN\_NAMED\_PIPE](#open_named_pipe) |  | ☑️ |  |  |  |
+| [OS\_AUTORUNS\_REP](#os_autoruns_rep) | ☑️ | ☑️ |  |  |  |
+| [OS\_DRIVERS\_REP](#os_drivers_rep) |  | ☑️ |  |  |  |
+| [OS\_KILL\_PROCESS\_REP](#os_kill_process_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_PACKAGES\_REP](#os_packages_rep) |  | ☑️ |  |  |  |
+| [OS\_PROCESSES\_REP](#os_processes_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_RESUME\_REP](#os_resume_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_SERVICES\_REP](#os_services_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_SUSPEND\_REP](#os_suspend_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [OS\_USERS\_REP](#os_users_rep) |  | ☑️ |  |  |  |
+| [OS\_VERSION\_REP](#os_version_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [PCAP\_LIST\_INTERFACES\_REP](#pcap_list_interfaces_rep) |  |  | ☑️ |  |  |
+| [PROCESS\_ENVIRONMENT](#process_environment) |  | ☑️ | ☑️ |  |  |
 | [RECEIPT](#receipt) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [REGISTRY\_CREATE](#registrycreate) |  | ☑️ |  |  |  |
-| [REGISTRY\_DELETE](#registrydelete) |  | ☑️ |  |  |  |
-| [REGISTRY\_LIST\_REP](#reglist) |  | ☑️ |  |  |  |
-| [REGISTRY\_WRITE](#registrywrite) |  | ☑️ |  |  |  |
-| [REJOIN\_NETWORK](#rejoinnetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [REMOTE\_PROCESS\_HANDLE](#remoteprocesshandle) |  | ☑️ |  |  |  |
-| [SEGREGATE\_NETWORK](#segregatenetwork) | ☑️ | ☑️ | ☑️ | ☑️ |  |
-| [SENSITIVE\_PROCESS\_ACCESS](#sensitiveprocessaccess) |  | ☑️ |  |  |  |
-| [SERVICE\_CHANGE](#servicechange) | ☑️ | ☑️ | ☑️ |  |  |
-| [SHUTTING\_DOWN](#shuttingdown) | ☑️ | ☑️ | ☑️ |  |  |
-| [SSH\_LOGIN](#sshlogin) | ☑️ |  |  |  |  |
-| [SSH\_LOGOUT](#sshlogout) | ☑️ |  |  |  |  |
-| [STARTING\_UP](#startingup) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_PROCESS](#terminateprocess) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_TCP4\_CONNECTION](#terminatetcp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_TCP6\_CONNECTION](#terminatetcp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_UDP4\_CONNECTION](#terminateudp4connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [TERMINATE\_UDP6\_CONNECTION](#terminateudp6connection) | ☑️ | ☑️ | ☑️ |  |  |
-| [THREAD\_INJECTION](#threadinjection) |  | ☑️ |  |  |  |
-| [USER\_LOGIN](#userlogin) | ☑️ |  |  |  |  |
-| [USER\_LOGOUT](#userlogout) | ☑️ |  |  |  |  |
-| [USER\_OBSERVED](#userobserved) | ☑️ | ☑️ | ☑️ |  |  |
-| [VOLUME\_MOUNT](#volumemount) | ☑️ | ☑️ |  |  |  |
-| [VOLUME\_UNMOUNT](#volumeunmount) | ☑️ | ☑️ |  |  |  |
-| [WEL](#wel) |  | ☑️ |  |  |  |
-| [YARA\_DETECTION](#yaradetection) | ☑️ | ☑️ | ☑️ |  |  |
+| [REGISTRY\_CREATE](#registry_create) |  | ☑️ |  |  |  |
+| [REGISTRY\_DELETE](#registry_delete) |  | ☑️ |  |  |  |
+| [REGISTRY\_LIST\_REP](#registry_list_rep) |  | ☑️ |  |  |  |
+| [REGISTRY\_WRITE](#registry_write) |  | ☑️ |  |  |  |
+| [REJOIN\_NETWORK](#rejoin_network) | ☑️ | ☑️ | ☑️ | ☑️ |  |
+| [REMOTE\_PROCESS\_HANDLE](#remote_process_handle) |  | ☑️ |  |  |  |
+| [SEGREGATE\_NETWORK](#segregate_network) | ☑️ | ☑️ | ☑️ | ☑️ |  |
+| [SENSITIVE\_PROCESS\_ACCESS](#sensitive_process_access) |  | ☑️ |  |  |  |
+| [SERVICE\_CHANGE](#service_change) | ☑️ | ☑️ | ☑️ |  |  |
+| [SHUTTING\_DOWN](#shutting_down) | ☑️ | ☑️ | ☑️ |  |  |
+| [SSH\_LOGIN](#ssh_login) | ☑️ |  |  |  |  |
+| [SSH\_LOGOUT](#ssh_logout) | ☑️ |  |  |  |  |
+| [STARTING\_UP](#starting_up) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_PROCESS](#terminate_process) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_TCP4\_CONNECTION](#terminate_tcp4_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_TCP6\_CONNECTION](#terminate_tcp6_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_UDP4\_CONNECTION](#terminate_udp4_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [TERMINATE\_UDP6\_CONNECTION](#terminate_udp6_connection) | ☑️ | ☑️ | ☑️ |  |  |
+| [THREAD\_INJECTION](#thread_injection) |  | ☑️ |  |  |  |
+| [USER\_LOGIN](#user_login) | ☑️ |  |  |  |  |
+| [USER\_LOGOUT](#user_logout) | ☑️ |  |  |  |  |
+| [USER\_OBSERVED](#user_observed) | ☑️ | ☑️ | ☑️ |  |  |
+| [VOLUME\_MOUNT](#volume_mount) | ☑️ | ☑️ |  |  |  |
+| [VOLUME\_UNMOUNT](#volume_unmount) | ☑️ | ☑️ |  |  |  |
+| WEL |  | ☑️ |  |  |  |
+| [YARA\_DETECTION](#yara_detection) | ☑️ | ☑️ | ☑️ |  |  |
 
 ## Event Descriptions
 
