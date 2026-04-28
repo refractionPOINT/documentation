@@ -29,7 +29,7 @@ uses inline:
 
 ```bash
 npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false}') \
+  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false}') \
   "docs/**/*.md"
 ```
 
@@ -75,9 +75,18 @@ changes. Examples:
 
 - `MD004` (bullet style consistency)
 - `MD031` / `MD032` (blank lines around fences/lists)
-- `MD046` (code block style)
 - `MD060` (table column alignment)
 - `MD029` (ordered list prefix)
+
+**Disabled** — these rules are turned off in our config because they
+conflict with mkdocs-material extensions we use repo-wide:
+
+- `MD046` (code block style) — disabled. Our docs use the
+  `pymdownx.tabbed` extension (`=== "Tab"` blocks) which requires
+  4-space indentation for tab content. Markdownlint reads CommonMark,
+  doesn't recognize the extension, and reports the indented fences
+  inside tabs as inconsistent code-block style. Disabling avoids the
+  false positives.
 
 **Substantive (manual)** — these need editorial judgment and meaningfully
 improve doc quality and AI / LLM readability. Prioritize these:
@@ -133,7 +142,7 @@ Run the linter today to see where we stand:
 
 ```bash
 npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false}') \
+  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false}') \
   "docs/**/*.md" 2> mdlint.out || true
 grep -oE 'MD[0-9]+/[a-z-]+' mdlint.out | sort | uniq -c | sort -rn
 ```
