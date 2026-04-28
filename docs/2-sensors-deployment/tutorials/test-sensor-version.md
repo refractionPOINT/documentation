@@ -10,7 +10,7 @@ Alternatively, you can tag a sensor with `lc:stable`. Similarly, the sensor vers
 
 You can tag a Sensor by opening the sensors list, selecting a sensor you would like to test, and navigating to the `tags` field on the sensor `Overview`.
 
-![](../../assets/images/image(314).png)
+![Alternatively, you can tag a sensor with lc:stable](../../assets/images/image(314).png)
 
 Simply type `lc:stable` and click `Update Tags`.
 

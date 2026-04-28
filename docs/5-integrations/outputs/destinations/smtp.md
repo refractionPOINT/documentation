@@ -10,7 +10,7 @@ To utilize SMTP output, you will need:
 
 ## Webapp Configuration
 
-![](../../../assets/images/smtp(1).png)
+![smtp](../../../assets/images/smtp(1).png)
 
 Output individually each event, detection, audit, deployment or log through an email.
 

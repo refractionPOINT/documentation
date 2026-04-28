@@ -388,6 +388,6 @@ You should get a confirmation that the secret was created, including metadata of
 
 Next, create an output in the web app, using the value `hive://secret/my-secret` as the Secret Key value.
 
-![](../../assets/images/secret.png)
+![secret](../../assets/images/secret.png)
 
 And that's it! The output should start as expected, however when viewing the output's configuration, the secret should refer to the `hive` ARN, rather than the actual credentials.

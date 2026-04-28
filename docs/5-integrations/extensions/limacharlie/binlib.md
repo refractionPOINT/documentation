@@ -19,13 +19,13 @@ BinLib can be a powerful additional to your detection and response capabilities.
 
 First, subscribe your tenant to the [BinLib](https://app.limacharlie.io/add-ons/extension-detail/binlib) extension.
 
-![](../../../assets/images/binlib-1.png)
+![binlib 1](../../../assets/images/binlib-1.png)
 
 To perform one of the following operations against your own library, choose the command and select **Run Request.**
 
 The BinLib page in the web app offers an easy way to get started with some of the core requests exposed by the extension: Check Hash, Search, and Yara Scan.
 
-![](../../../assets/images/binlib-2.png)
+![binlib 2](../../../assets/images/binlib-2.png)
 
 ### check_hash
 
@@ -123,7 +123,7 @@ Note that search criteria are ANDed. Binaries must meet ALL criteria to be retur
 
 Search results can be downloaded as a CSV.
 
-![](../../../assets/images/binlib-3.png)
+![binlib 3](../../../assets/images/binlib-3.png)
 
 ### tag
 
@@ -131,7 +131,7 @@ The `tag` operation allows you to add tag(s) to a hash, allowing for additional 
 
 The below example Tags the Google Installer with the `google` tag.
 
-![](../../../assets/images/binlib-4.png)
+![binlib 4](../../../assets/images/binlib-4.png)
 
 Successful tagging yields an `updated` event:
 
@@ -162,7 +162,7 @@ You also have the option to tag hits on match.
 
 Note that search criteria are ANDed. Binaries must meet ALL criteria to be returned.
 
-![](../../../assets/images/binlib-5.png)
+![binlib 5](../../../assets/images/binlib-5.png)
 
 ## Automating
 

@@ -4,7 +4,7 @@ A common use case for rules is to use them to compare telemetry against known ma
 
 To configure a threat feed, it must first be enabled within the Add-ons Marketplace. First, select a threat feed from the plethora available for free. In the following example, we will enable `crimeware-ips`.
 
-![](../../assets/images/crimeware-ips(1).png)
+![crimeware ips](../../assets/images/crimeware-ips(1).png)
 
 Select `Subscribe`, which will make the feed available to the respective Organization.
 

@@ -25,7 +25,7 @@ is_indexing: "true"
 is_compression: "true"
 ```
 
-![](../../../assets/images/aws.png)
+![aws](../../../assets/images/aws.png)
 
 If the `is_indexing` option is enabled, data uploaded to S3 will be in a specific format enabling some indexed queries.
 

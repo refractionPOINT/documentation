@@ -77,14 +77,14 @@ If you use the LimaCharlie Velociraptor extension, a good use case of this exten
 
 Go to Extensions / Velociraptor, and run Collect Artifact request.
 
-![](../../../assets/images/hayabusa-1.png)
+![hayabusa 1](../../../assets/images/hayabusa-1.png)
 
 Kick off a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Velociraptor extension
 
 **Argument options:**
 
 - `EventLogs=Y`
-   ![](../../../assets/images/hayabusa-2.png)
+   ![hayabusa 2](../../../assets/images/hayabusa-2.png)
 - `KapeTriage=Y` - this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using `EventLogs=Y`.
 
 Configure a D&R rule to look for these events upon ingestion, and then trigger the Hayabusa extension:

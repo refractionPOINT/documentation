@@ -18,9 +18,9 @@ LimaCharlie provides a curated list of several publicly available JSON lookups f
 
 More details and the contents of each of these lookups can be found [here](https://github.com/refractionpoint/lc-public-lookups).
 
-![](../../../assets/images/image-(1).png "Screenshot 2024-10-22 at 13.23.35(2).png")
+![image (1).png "Screenshot 2024 10 22 at 13.23.35(2).png"](../../../assets/images/image-(1).png "Screenshot 2024-10-22 at 13.23.35(2).png")
 
-![](../../../assets/images/image-(2).png "Screenshot 2024-10-22 at 13.23.45(1).png")
+![image (2).png "Screenshot 2024 10 22 at 13.23.45(1).png"](../../../assets/images/image-(2).png "Screenshot 2024-10-22 at 13.23.45(1).png")
 
 ### Option 2: Publicly available Lookups
 

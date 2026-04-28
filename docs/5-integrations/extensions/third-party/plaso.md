@@ -89,7 +89,7 @@ If you use the LimaCharlie [Velociraptor](velociraptor.md) extension, a good use
    **Argument options:**
 
    - `EventLogs=Y` - EventLogs only, quicker processing time for proof of concept
-   - `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![](../../../assets/images/velociraptor-ext-3.png)
+   - `KapeTriage=Y` - full [KapeTriage](https://github.com/EricZimmerman/KapeFiles/blob/master/Targets/Compound/KapeTriage.tkape) files collection ![velociraptor ext 3](../../../assets/images/velociraptor-ext-3.png)
 3. Once Velociraptor collects, zips, and uploads the evidence, the previously created D&R rule will send the triage `.zip` to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
 
 ### MFT Processing
@@ -124,7 +124,7 @@ If you use the LimaCharlie [Dumper](../limacharlie/dumper.md) extension, a good 
    ```
 
 2. Launch an MFT dump in the LimaCharlie Dumper extension.
-   ![](../../../assets/images/plaso-ext-1.png)
+   ![plaso ext 1](../../../assets/images/plaso-ext-1.png)
 3. Once dumper is complete and uploads the evidence, the previously created D&R rule will send the zipped MFT CSV to `ext-plaso` for processing. Watch the `ext-plaso` sensor timeline for status and the Artifacts page for the resulting `.plaso` & `.csv` output files. See [Working with the Output](#working-with-the-output).
 
 ## Working with the Output

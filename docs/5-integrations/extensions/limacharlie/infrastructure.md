@@ -10,7 +10,7 @@ The Infrastructure Extension allows you to perform infrastructure-as-code (IaC) 
 
 To enable the Infrastructure extension, navigate to the [Infrastructure extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-infrastructure) in the marketplace. Select the organization you wish to enable the extension for, and select **Subscribe**.
 
-![](../../../assets/images/infra-1.png "image(234).png")
+![infra 1.png "image(234).png"](../../../assets/images/infra-1.png "image(234).png")
 
 After clicking **Subscribe**, the Infrastructure extension should be available almost immediately.
 
@@ -22,7 +22,7 @@ After clicking **Subscribe**, the Infrastructure extension should be available a
 
 Once enabled, you will see an Infrastructure as Code option under the **Organization Settings** within the LimaCharlie web UI. The extension also becomes available via the REST API.
 
-![](../../../assets/images/infra-2.png "image(240).png")
+![infra 2.png "image(240).png"](../../../assets/images/infra-2.png "image(240).png")
 
 Within the Infrastructure As Code module, you can:
 
@@ -30,7 +30,7 @@ Within the Infrastructure As Code module, you can:
 - **Edit the Entire Configuration** for an existing organization. This is your current configuration, and can be modified directly in the web UI.
 - Perform **Fetch**, **Push**, or **Push-from-file** operations.
 
-![](../../../assets/images/infra-3.png "image(241).png")
+![infra 3.png "image(241).png"](../../../assets/images/infra-3.png "image(241).png")
 
 ## Actions via REST API
 

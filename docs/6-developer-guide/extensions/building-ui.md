@@ -8,10 +8,10 @@ The Extensions UI uses the information provided in the schema to auto-determine 
 
 Generally the top of the extension page will show the extension label and it's short description. If it exists, it will also show a button for quick access to this extension's "associated sensor".
 
-![](../../assets/images/ext-1.png)
+![ext 1](../../assets/images/ext-1.png)
 
 In the top right, any actions (as defined in your request schema) will be displayed as a dropdown and button.
-![](../../assets/images/ext-2.png)
+![ext 2](../../assets/images/ext-2.png)
 
 Note that there are small changes to this structure depending on the layout selected, however all variations should be intuitive as they do not deviate much from this general page structure.
  Beyond this, main content of the page is determined by the layout.
@@ -53,7 +53,7 @@ If your extension requires it, there are more opportunities to adjust the UI in 
 ### Multiple Layouts as Tabs
 
 In the schema, it is possible to define several views to utilize a combination of layout types. This may be useful in order to guide a user on how you want them to use your extension.
-![](../../assets/images/ext-3.png)
+![ext 3](../../assets/images/ext-3.png)
 
 ### Setting Supported Actions
 

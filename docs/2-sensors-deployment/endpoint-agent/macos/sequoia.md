@@ -38,27 +38,27 @@ The sensor will be installed as a launchctl service. Installation will trigger t
 
    You will be prompted to grant permissions for system extensions to be installed. Click the "**Open System Settings**" button
 
-![](../../../assets/images/2-Endpoint_Extension_Installation_Dialog.png)
+![Endpoint Extension Installation Dialog](../../../assets/images/2-Endpoint_Extension_Installation_Dialog.png)
 
 6. Ensure the toggle for "Allow in the Background" next to "Refraction Point, Inc." is toggled On.
 
-![](../../../assets/images/2.5-Login_Items_and_Extensions.png)
+![Login Items and Extensions](../../../assets/images/2.5-Login_Items_and_Extensions.png)
 
 7. Click the "i" info icon next to "Endpoint Security Extensions", then ensure the toggle next to "RPHCP" is on.
 
-![](../../../assets/images/3-Endpoint_Extension_Enablement.png)
+![Endpoint Extension Enablement](../../../assets/images/3-Endpoint_Extension_Enablement.png)
 
-![](../../../assets/images/EndpointSecurityExtension-Enabled.png)
+![EndpointSecurityExtension Enabled](../../../assets/images/EndpointSecurityExtension-Enabled.png)
 
 8. After enabling that toggle you'll need to click the "Allow" button to allow RPHCP to filter network content.
 
-![](../../../assets/images/4-Network_Filter_Enablement.png)
+![Network Filter Enablement](../../../assets/images/4-Network_Filter_Enablement.png)
 
 8. You'll be prompted to grant Full Disk Access. Check the checkbox next to the RPHCP app in System Preferences -> Privacy -> Full Disk Access
 
-![](../../../assets/images/5-Full_Disk_Access_Permission_Dialog.png)
+![Full Disk Access Permission Dialog](../../../assets/images/5-Full_Disk_Access_Permission_Dialog.png)
 
-![](../../../assets/images/6-Full_Disk-Access_Enablement.png)
+![Full Disk Access Enablement](../../../assets/images/6-Full_Disk-Access_Enablement.png)
 
 The installation is now complete and you should see a message indicating that the installation was successful.
 
@@ -82,7 +82,7 @@ You can also check the /Applications folder and launch the RPHCP.app.
 
 You can confirm the network filter was properly installed and enabled by going to System Settings → Network → VPN & Filters. You should expect to see "RPHCP" in the list with the status showing as Enabled.
 
-![](../../../assets/images/7-Network_Filter_Confirmation(1).png)
+![Network Filter Confirmation](../../../assets/images/7-Network_Filter_Confirmation(1).png)
 
 The application will show a message to indicate if the required permissions have been granted.
 

@@ -23,17 +23,17 @@ Soteria's AWS rules can be activated via two means.
 
 To enable Soteria's AWS ruleset, navigate to the **Extensions** section of the **Add-On Marketplace** and search for Soteria. You can also directly select `soteria-rules-aws`.
 
-![](../../../assets/images/soteria-aws-1.png)
+![soteria aws 1](../../../assets/images/soteria-aws-1.png)
 
 *Please note: Pricing may reflect when the screenshot was taken, not the actual pricing*
 
 Under the Organization dropdown, select a tenant (organization) you want to subscribe to **soteria-rules-aws** and click **Subscribe**.
 
-![](../../../assets/images/soteria-aws-2.png)
+![soteria aws 2](../../../assets/images/soteria-aws-2.png)
 
 You can also manage add-ons from the **Subscriptions** menu under **Billing**.
 
-![](../../../assets/images/soteria-aws-3.png)
+![soteria aws 3](../../../assets/images/soteria-aws-3.png)
 
 ### Infrastructure as Code
 
