@@ -68,18 +68,26 @@ changes. Examples:
 
 - `MD004` (bullet style consistency)
 - `MD031` / `MD032` (blank lines around fences/lists)
-- `MD060` (table column alignment)
 - `MD029` (ordered list prefix)
 
-**Disabled** — these rules are turned off in our config because they
-conflict with mkdocs-material extensions we use repo-wide:
+**Disabled** — these rules are turned off in our config:
 
-- `MD046` (code block style) — disabled. Our docs use the
-  `pymdownx.tabbed` extension (`=== "Tab"` blocks) which requires
-  4-space indentation for tab content. Markdownlint reads CommonMark,
-  doesn't recognize the extension, and reports the indented fences
-  inside tabs as inconsistent code-block style. Disabling avoids the
-  false positives.
+- `MD046` (code block style) — Our docs use the `pymdownx.tabbed`
+  extension (`=== "Tab"` blocks) which requires 4-space indentation
+  for tab content. Markdownlint reads CommonMark, doesn't recognize
+  the extension, and reports the indented fences inside tabs as
+  inconsistent code-block style. Disabling avoids the false
+  positives.
+
+- `MD060` (table column alignment) and `MD059` (descriptive link
+  text) — both new in markdownlint v0.40.0 (the version CI's
+  `markdownlint-cli2-action@v22` bundles). Each fires on substantial
+  pre-existing content that wasn't part of the original cleanup
+  initiative — ~1,400 table-alignment violations and ~109
+  generic-link-text cases ("here", "click here", etc.). Disabled
+  for now so CI stays green on the stable backlog. Each is a good
+  candidate for a dedicated follow-up PR using the same per-rule
+  workflow described above.
 
 **Tuned** — these rules are configured rather than at default settings:
 
