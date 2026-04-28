@@ -14,7 +14,7 @@ Output events and detections to a Kafka target.
 
 Example:
 
-```
+```text
 dest_host: kafka.corp.com
 is_tls: "true"
 is_strict_tls: "true"

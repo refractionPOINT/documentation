@@ -39,7 +39,7 @@ Click the Preview Logs button in the top right to be taken to the main logging i
 
 For this example, let's use the following log filter:
 
-```
+```text
 logName:cloudaudit.googleapis.com
 protoPayload.serviceName!="k8s.io"
 protoPayload.serviceName!="compute.googleapis.com"

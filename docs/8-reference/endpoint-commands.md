@@ -143,7 +143,7 @@ Search for files matching a specific hash across a directory tree.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> dir_findhash --dir_path "/var" --hash <HASH_VALUE>
 ```
 
@@ -163,7 +163,7 @@ Perform DNS resolution on the endpoint to determine what DNS server responds.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> dns_resolve --hostname "example.com"
 ```
 
@@ -183,7 +183,7 @@ Retrieve a previously cached document from the sensor's local cache.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> doc_cache_get --hash <DOC_HASH>
 ```
 
@@ -207,7 +207,7 @@ Add an exfiltration detection watch for specific event types and patterns.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> exfil_add --event "DNS_REQUEST" --operator "contains" --path "event/DOMAIN_NAME" --value "malware" --expire 3600
 ```
 
@@ -227,7 +227,7 @@ Remove an exfiltration detection watch by its ID.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> exfil_del --id <WATCH_ID>
 ```
 
@@ -245,7 +245,7 @@ List all active exfiltration detection watches on the sensor.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> exfil_get
 ```
 
@@ -265,7 +265,7 @@ Delete a file from the endpoint filesystem.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> file_del --file_path "/tmp/suspicious_file"
 ```
 
@@ -285,7 +285,7 @@ Retrieve a file from the endpoint and upload it to LimaCharlie cloud storage.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> file_get --file_path "C:\\Windows\\System32\\calc.exe"
 ```
 
@@ -305,7 +305,7 @@ Calculate cryptographic hashes (MD5, SHA1, SHA256) for a file.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> file_hash --file_path "/etc/passwd"
 ```
 
@@ -339,7 +339,7 @@ Get detailed metadata about a file without retrieving its contents.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> file_info --file_path "C:\\Program Files\\app.exe"
 ```
 
@@ -374,7 +374,7 @@ Move or rename a file on the endpoint filesystem.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> file_mov --src_path "/tmp/file.txt" --dst_path "/tmp/renamed.txt"
 ```
 
@@ -394,7 +394,7 @@ Add a File Integrity Monitoring (FIM) watch for a specific path or pattern.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> fim_add --file_path "C:\\Windows\\System32\\*.dll"
 ```
 
@@ -414,7 +414,7 @@ Remove a File Integrity Monitoring watch.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> fim_del --file_path "C:\\Windows\\System32\\*.dll"
 ```
 
@@ -432,7 +432,7 @@ List all active File Integrity Monitoring watches on the sensor.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> fim_get
 ```
 
@@ -450,7 +450,7 @@ Retrieve internal sensor debug data for troubleshooting.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> get_debug_data
 ```
 
@@ -470,7 +470,7 @@ Scan for hidden or stealthy modules loaded in process memory that may not appear
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> hidden_module_scan --pid 1234
 ```
 
@@ -488,7 +488,7 @@ Export a dump of recent events from the sensor's local event cache.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> history_dump
 ```
 
@@ -509,7 +509,7 @@ Retrieve Windows Event Logs or macOS Unified Logs from the endpoint.
 
 **Usage Example:**
 
-```
+```bash
 # Windows
 limacharlie sensor task <SID> log_get --source "Security"
 
@@ -534,7 +534,7 @@ Search process memory for specific string patterns.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> mem_find_string --pid 1234 --strings "password"
 ```
 
@@ -555,7 +555,7 @@ Find handles (file, registry, process) held by a process on Windows.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> mem_find_handle --pid 1234 --needle "malware.exe"
 ```
 
@@ -575,7 +575,7 @@ Get memory map of a process showing loaded modules and memory regions.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> mem_map --pid 1234
 ```
 
@@ -597,7 +597,7 @@ Read raw memory from a process at a specific address.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> mem_read --pid 1234 --base_address 0x00400000 --size 1024
 ```
 
@@ -617,7 +617,7 @@ Extract all readable strings from a process's memory.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> mem_strings --pid 1234
 ```
 
@@ -635,7 +635,7 @@ Get current network connections on the endpoint (similar to netstat command).
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> netstat
 ```
 
@@ -673,7 +673,7 @@ Get aggregated network statistics and active connections summary.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> network_summary
 ```
 
@@ -693,7 +693,7 @@ Terminate a running process.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_kill_process --pid 1234
 ```
 
@@ -709,7 +709,7 @@ List installed software packages on the endpoint.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_packages
 ```
 
@@ -743,7 +743,7 @@ Get a list of all running processes with detailed information.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_processes
 ```
 
@@ -777,7 +777,7 @@ Resume a suspended process.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_resume --pid 1234
 ```
 
@@ -795,7 +795,7 @@ List all services/daemons running on the endpoint.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_services
 ```
 
@@ -815,7 +815,7 @@ Suspend (pause) a running process.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_suspend --pid 1234
 ```
 
@@ -833,7 +833,7 @@ List programs configured to run automatically at system startup.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_autoruns
 ```
 
@@ -851,7 +851,7 @@ List all loaded kernel drivers/modules.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_drivers
 ```
 
@@ -869,7 +869,7 @@ Get detailed operating system version information.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> os_version
 ```
 
@@ -899,7 +899,7 @@ Re-enable network connectivity for a sensor that was previously isolated.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> rejoin_network
 ```
 
@@ -919,7 +919,7 @@ Execute a command or script on the endpoint (out-of-band execution).
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> run --command "ps aux | grep chrome"
 ```
 
@@ -937,7 +937,7 @@ Isolate a sensor from the network (except LimaCharlie cloud connectivity).
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> segregate_network
 ```
 
@@ -960,7 +960,7 @@ Scan files or process memory with YARA rules.
 
 **Usage Example:**
 
-```
+```bash
 # Scan a file
 limacharlie sensor task <SID> yara_scan --file_path "C:\\suspicious.exe" --rule "rule test { strings: $a = \"malware\" condition: $a }"
 
@@ -982,7 +982,7 @@ List available network interfaces for packet capture.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> pcap_ifaces
 ```
 
@@ -1003,7 +1003,7 @@ Start capturing network packets on a specified interface.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> pcap_start --iface eth0 --max_size 100
 ```
 
@@ -1023,7 +1023,7 @@ Stop an active packet capture and upload the PCAP file.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> pcap_stop
 ```
 
@@ -1043,7 +1043,7 @@ List Windows registry keys and values.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> reg_list --reg_path "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
 ```
 
@@ -1063,7 +1063,7 @@ Trigger an Endpoint Protection (EPP) scan on a file or directory.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> epp_scan --file_path "C:\\Users\\Public"
 ```
 
@@ -1081,7 +1081,7 @@ List EPP scan exclusions currently configured on the sensor.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> epp_list_exclusions
 ```
 
@@ -1102,7 +1102,7 @@ Add a path or process to EPP scan exclusions.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> epp_add_exclusion --file_path "C:\\safe_app"
 ```
 
@@ -1123,7 +1123,7 @@ Remove a path or process from EPP scan exclusions.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> epp_rem_exclusion --file_path "C:\\safe_app"
 ```
 
@@ -1141,7 +1141,7 @@ List files currently in EPP quarantine.
 
 **Usage Example:**
 
-```
+```bash
 limacharlie sensor task <SID> epp_list_quarantine
 ```
 

@@ -157,7 +157,7 @@ client = Client(
 
 ### Architecture
 
-```
+```text
 limacharlie
 ├── client.Client              # HTTP client with JWT and retry logic
 ├── sdk/

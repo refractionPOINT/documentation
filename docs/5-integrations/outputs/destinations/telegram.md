@@ -9,7 +9,7 @@ Output detections and audit (only) to a Telegram chat, group, or channel.
 
 Example:
 
-```
+```text
 bot_token: 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 chat_id: -1001234567890
 parse_mode: Markdown

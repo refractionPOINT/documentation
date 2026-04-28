@@ -13,13 +13,13 @@ This document provides a complete reference for the AI Sessions REST API and Web
 
 All API requests require a valid LimaCharlie JWT token in the Authorization header:
 
-```
+```text
 Authorization: Bearer <LC-JWT>
 ```
 
 For WebSocket connections, you can also pass the token as a query parameter:
 
-```
+```text
 wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws?token=<LC-JWT>
 ```
 
@@ -39,7 +39,7 @@ wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws?token=<LC-JWT>
 
 #### Register User
 
-```
+```text
 POST /v1/register
 ```
 
@@ -62,7 +62,7 @@ Register the authenticated user for the AI Sessions platform.
 
 #### Deregister User
 
-```
+```text
 DELETE /v1/register
 ```
 
@@ -82,7 +82,7 @@ Deregister the user and delete all associated data. This terminates all active s
 
 #### List Sessions
 
-```
+```text
 GET /v1/sessions
 ```
 
@@ -116,7 +116,7 @@ GET /v1/sessions
 
 #### Create Session
 
-```
+```text
 POST /v1/sessions
 ```
 
@@ -154,7 +154,7 @@ POST /v1/sessions
 
 #### Get Session
 
-```
+```text
 GET /v1/sessions/{sessionId}
 ```
 
@@ -180,7 +180,7 @@ GET /v1/sessions/{sessionId}
 
 #### Terminate Session
 
-```
+```text
 DELETE /v1/sessions/{sessionId}
 ```
 
@@ -194,7 +194,7 @@ DELETE /v1/sessions/{sessionId}
 
 #### Delete Session Record
 
-```
+```text
 DELETE /v1/sessions/{sessionId}/record
 ```
 
@@ -214,7 +214,7 @@ Delete a terminated session from history. Only sessions in the `ended` state can
 
 #### List Profiles
 
-```
+```text
 GET /v1/profiles
 ```
 
@@ -243,7 +243,7 @@ GET /v1/profiles
 
 #### Create Profile
 
-```
+```text
 POST /v1/profiles
 ```
 
@@ -291,19 +291,19 @@ POST /v1/profiles
 
 #### Get Profile
 
-```
+```text
 GET /v1/profiles/{profileId}
 ```
 
 #### Update Profile
 
-```
+```text
 PUT /v1/profiles/{profileId}
 ```
 
 #### Delete Profile
 
-```
+```text
 DELETE /v1/profiles/{profileId}
 ```
 
@@ -311,13 +311,13 @@ DELETE /v1/profiles/{profileId}
 
 #### Set Default Profile
 
-```
+```text
 POST /v1/profiles/{profileId}/default
 ```
 
 #### Capture Session as Profile
 
-```
+```text
 POST /v1/sessions/{sessionId}/capture-profile
 ```
 
@@ -336,7 +336,7 @@ POST /v1/sessions/{sessionId}/capture-profile
 
 #### Start OAuth Flow
 
-```
+```text
 POST /v1/auth/claude/start
 ```
 
@@ -352,7 +352,7 @@ POST /v1/auth/claude/start
 
 #### Get OAuth URL
 
-```
+```text
 GET /v1/auth/claude/url?session_id={oauth_session_id}
 ```
 
@@ -377,7 +377,7 @@ GET /v1/auth/claude/url?session_id={oauth_session_id}
 
 #### Submit OAuth Code
 
-```
+```text
 POST /v1/auth/claude/code
 ```
 
@@ -402,7 +402,7 @@ POST /v1/auth/claude/code
 
 #### Store API Key
 
-```
+```text
 POST /v1/auth/claude/apikey
 ```
 
@@ -425,7 +425,7 @@ POST /v1/auth/claude/apikey
 
 #### Get Credential Status
 
-```
+```text
 GET /v1/auth/claude/status
 ```
 
@@ -441,7 +441,7 @@ GET /v1/auth/claude/status
 
 #### Delete Credentials
 
-```
+```text
 DELETE /v1/auth/claude
 ```
 
@@ -451,7 +451,7 @@ DELETE /v1/auth/claude
 
 #### Request Upload URL
 
-```
+```text
 POST /v1/io/sessions/{sessionId}/upload
 ```
 
@@ -482,7 +482,7 @@ POST /v1/io/sessions/{sessionId}/upload
 
 #### Notify Upload Complete
 
-```
+```text
 POST /v1/io/sessions/{sessionId}/upload/complete
 ```
 
@@ -505,7 +505,7 @@ POST /v1/io/sessions/{sessionId}/upload/complete
 
 #### Request Download URL
 
-```
+```text
 POST /v1/io/sessions/{sessionId}/download
 ```
 
@@ -534,7 +534,7 @@ POST /v1/io/sessions/{sessionId}/download
 
 **Endpoint:**
 
-```
+```text
 wss://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/ws
 ```
 

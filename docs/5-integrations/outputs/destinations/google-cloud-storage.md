@@ -15,7 +15,7 @@ If you already use Google Chronicle, we make it easy to send telemetry you've co
 
 Example:
 
-```
+```text
 bucket: my-bucket-name
 secret_key: {
   "type": "service_account",

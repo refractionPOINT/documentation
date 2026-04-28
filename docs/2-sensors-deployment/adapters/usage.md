@@ -15,7 +15,7 @@ Configurations can be provided to the adapter in one of three ways:
 
 Here's an example config as a config file for an adapter using the `file` method of collection:
 
-```
+```yaml
 file: // The root of the config is the adapter collection method.
   client_options:
     identity:
@@ -188,7 +188,7 @@ LimaCharlie includes standard Grok patterns for common data types:
 
 **Example Firewall Log Record:**
 
-```
+```text
 2024-01-01 12:00:00 ACCEPT TCP 192.168.1.100:54321 10.0.0.5:443 packets=1 bytes=78
 ```
 
@@ -249,19 +249,19 @@ The timezone must be a valid [IANA timezone name](https://en.wikipedia.org/wiki/
 
 **With this log line as an example:**
 
-```
+```text
 Nov 09 10:57:09 penguin PackageKit[21212]: daemon quit
 ```
 
 **you could apply the following regular expression as** `parsing_re`**:**
 
-```
+```text
 (?P<date>... \d\d \d\d:\d\d:\d\d) (?P<host>.+) (?P<exe>.+?)\[(?P<pid>\d+)\]: (?P<msg>.*)
 ```
 
 which would result in the following event in LimaCharlie:
 
-```
+```json
 {
   "date": "Nov 09 10:57:09",
   "host": "penguin",
@@ -275,19 +275,19 @@ which would result in the following event in LimaCharlie:
 
 Alternatively you can specify a regular expression that does NOT contain Named Groups, like this:
 
-```
+```text
 (?:<\d+>\s*)?(\w+)=(".*?"|\S+)
 ```
 
 When in this mode, LimaCharlie assumes the regular expression will generate a list of matches where each match has 2 submatches, and submatch index 1 is the Key name, and submatch index 2 is the value. This is compatible with logs like CEF for example where the log could look like:
 
-```
+```text
 <20>hostname=my-host log_name=http_logs timestamp=....
 ```
 
 which would end up generating:
 
-```
+```json
 {
   "hostname" : "my-host",
   "log_name": "http_logs",
@@ -311,7 +311,7 @@ This process is done by specifying the "path" to the relevant field in the JSON 
 
 For example, using this event:
 
-```
+```json
 {
   "a": "x",
   "b": "y",
@@ -360,7 +360,7 @@ An index descriptor can have the following fields:
 
 Here is an example of a simple index descriptor:
 
-```
+```yaml
 events_included:
   - PutObject
 path: userAgent
@@ -369,7 +369,7 @@ index_type: user
 
 Put together in a client option, you could have:
 
-```
+```text
 {
   "client_options": {
     ...,
@@ -455,7 +455,7 @@ Exit codes:
 
 Example successful output:
 
-```
+```text
 starting
 loading config from file: config.yaml
 found 1 configs to run
@@ -478,7 +478,7 @@ Event 1:
 
 Example error output when no events are parsed (e.g., regex doesn't match):
 
-```
+```text
 starting
 loading config from file: config.yaml
 found 1 configs to run

@@ -4,7 +4,7 @@ This tutorial walks through building an end-to-end workflow that detects a crede
 
 ## What You Will Build
 
-```
+```text
 NEW_PROCESS event (mimikatz.exe)
         |
         v

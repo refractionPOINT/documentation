@@ -67,7 +67,7 @@ WantedBy=multi-user.target
 
 Your adapter command may differ depending on your use case--this is an example of a [file](types/file.md) adapter to ingest logs from a JSON file.
 
-```
+```bash
 /path/to/adapter-directory/lc-adapter file file_path=/path/to/logs.json client_options.identity.installation_key=<INSTALLATION KEY> client_options.identity.oid=<ORG ID> client_options.platform=json client_options.sensor_seed_key=<SENSOR SEED KEY> client_options.mapping.event_type_path=<EVENT TYPE FIELD> client_options.hostname=<HOSTNAME>
 ```
 

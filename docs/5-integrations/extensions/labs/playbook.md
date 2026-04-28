@@ -218,7 +218,7 @@ Custom packages and execution environment tweaks are not available in self-serve
 
 Example:
 
-```
+```yaml
 hives:
     playbook:
         my-playbook:

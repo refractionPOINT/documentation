@@ -69,7 +69,7 @@ For example, if we had the following data:
 
 And we wanted to rename the `d` value to `c` on ingestion, remove the d value, and add a field called `hostname`, we could use the following configuration:
 
-```
+```text
 ...
    client_options:
      mapping:

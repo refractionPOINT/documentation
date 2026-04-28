@@ -39,7 +39,7 @@ target: artifact_event
 
 ## Results
 
-```
+```text
 /opt/zeek/bin/zeek -C LogAscii::use_json=T --no-checksums --readfile /path/to/your.pcap
 ```
 
@@ -67,7 +67,7 @@ All PCAPs uploaded will trigger the [D&R rule below](#dr-rule).
 
 If you have already generated a PCAP on a system or systems, you can manually ingest those as artifacts by running the following in your sensor console:
 
-```
+```text
 artifact_get --file /path/to/your.pcap --type pcap
 ```
 

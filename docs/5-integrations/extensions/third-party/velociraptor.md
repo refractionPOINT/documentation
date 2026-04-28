@@ -41,7 +41,7 @@ These are optional arguments (or parameters) passed directly to the Velociraptor
 
 For example, to run a [Linux.Triage.UAC](https://triage.velocidex.com/docs/linux.triage.uac/) collection targeting all categories, specify:
 
-```
+```text
 "Targets=[\"_All\"]"
 ```
 

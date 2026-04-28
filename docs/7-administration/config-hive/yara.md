@@ -271,7 +271,7 @@ Assuming you have a Yara rule in the `rule.yara` file.
 
 Load the rule in the LimaCharlie Hive via the CLI:
 
-```
+```bash
 limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
 ```
 
@@ -290,6 +290,6 @@ You should get a confirmation that the rule was created, including metadata of t
 
 Next, assuming you want to issue a scan command directly to a Sensor (via the Console or a rule):
 
-```
+```text
 yara_scan hive://yara/my-rule
 ```

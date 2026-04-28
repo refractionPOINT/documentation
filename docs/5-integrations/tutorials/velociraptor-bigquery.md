@@ -59,7 +59,7 @@ BigQuery dataset containing Velociraptor hunt results:
 
       1. Detection
 
-         ```
+         ```yaml
          event: velociraptor_collection
          op: exists
          path: event/collection
@@ -86,7 +86,7 @@ Once the data arrives in BigQuery, it will be in three simple columns: `sid`, `j
 
 Let's say we wanted to split out all results of a `Windows.System.Pslist` hunt so that each process, from each system, is returned in it's own row. Here is an example notebook to accomplish this:
 
-```
+```sql
 SELECT
   sid,
   json_extract_scalar(obj, '$.Name') as Name,
@@ -110,7 +110,7 @@ This results in the following view of our data
 
 Suppose we wanted to perform some stacking analysis to identify the rarest combinations of `Exe` and `CommandLine`; the following query could help:
 
-```
+```sql
 SELECT
   json_extract_scalar(obj, '$.Exe') as Exe,
   json_extract_scalar(obj, '$.CommandLine') as CommandLine,
@@ -130,7 +130,7 @@ This results in the following view of our data
 
 Now let's say you wanted to look for only processes that are `Authenticode` = `untrusted`, you would use a query such as this:
 
-```
+```sql
 SELECT
   sid,
   json_extract_scalar(obj, '$.Name') as Name,
@@ -157,7 +157,7 @@ Here are some brief examples of `WHERE` statements to perform specific filtering
 
 This example checks for the presence of a string `mimikatz` appearing anywhere within `CommandLine`
 
-```
+```text
 WHERE
   STRPOS(json_extract_scalar(obj, '$.CommandLine'), 'mimikatz') > 0 AND
 ```
@@ -166,7 +166,7 @@ WHERE
 
 This example checks for the presence of an integer `0` in a numeric field `GroupID`
 
-```
+```text
 WHERE
   CAST(json_extract_scalar(obj, '$.GroupID') AS INT64) = 0
 ```
@@ -175,7 +175,7 @@ WHERE
 
 In the `Windows.System.Pslist` examples above, there are a few columns which contain nested JSON such as `Authenticode` and `Hash`. To expand these objects in their entirety in the corresponding column/row, we'd write a query like this:
 
-```
+```sql
 SELECT
   json_extract(obj, '$.Authenticode') as Authenticode, # json_extract to unpack nested json
   json_extract_scalar(obj, '$.Authenticode.Trusted') as Trusted,

@@ -33,7 +33,7 @@ There are three rule options within the Exfil extension:
 
 A sample **Watch Rule** might be
 
-```
+```text
 Event: MODULE_LOAD
 Path: FILE_PATH
 Operator: ends with

@@ -6,7 +6,7 @@ This document provides details of how to install, verify, and uninstall the Lima
 
 When running the installer from the command line, you can pass the following arguments:
 
-```
+```text
 -v: display build version.
 -q: quiet; do not display banner.
 -d <INSTALLATION_KEY>: the installation key to use to enroll, no permanent installation.

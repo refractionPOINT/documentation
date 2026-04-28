@@ -50,7 +50,7 @@ A bare identifier matches the entire Claude Code tool of that name. Common built
 
 The `Bash` tool accepts a scoping specifier that restricts which commands are covered. Only the `prefix:*` form is recognised, mirroring the official Claude Code CLI syntax:
 
-```
+```text
 Bash(git:*)            # any command starting with "git "
 Bash(npm install:*)    # any command starting with "npm install "
 Bash(kubectl get:*)    # read-only kubectl verbs
@@ -126,7 +126,7 @@ The first time a user registers for AI Sessions, two profiles are provisioned au
 
 - **Default** — a read-only safe baseline. `permission_mode: acceptEdits`, no `denied_tools`, and `allowed_tools` limited to:
 
-    ```
+    ```text
     Read
     Bash(cat:*) Bash(head:*) Bash(tail:*) Bash(less:*)
     Bash(grep:*) Bash(sed:*) Bash(awk:*) Bash(jq:*)

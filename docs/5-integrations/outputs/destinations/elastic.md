@@ -11,7 +11,7 @@ Output events and detections to [Elastic](https://www.elastic.co/).
 
 Example:
 
-```
+```text
 addresses: 11.10.10.11,11.10.11.11
 username: some
 password: pass1234

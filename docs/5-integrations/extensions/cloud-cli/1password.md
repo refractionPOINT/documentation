@@ -28,6 +28,6 @@ To utilize 1Password's automated CLI capabilities, you will need to create and u
 
 - Create a secret in the secrets manager in the following format:
 
-```
+```text
 serviceAccountToken
 ```

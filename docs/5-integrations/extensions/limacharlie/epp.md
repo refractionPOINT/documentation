@@ -72,7 +72,7 @@ Select a Windows Sensor. Open the Sensor Console As you type "epp" you'll see th
 >
 > The EPP solution relies on some new events. They are now defaults, and the extension adds them to existing orgs. In rare case you may need to add them manually to Sensor / Event Collection / Event Collection or your Infra As Code. Here is the list:
 >
-> ```
+> ```text
 > EPP_STATUS_REP,EPP_LIST_EXCLUSIONS_REP,EPP_ADD_EXCLUSION_REP,EPP_REM_EXCLUSION_REP,
 > EPP_LIST_QUARANTINE_REP,EPP_SCAN_REP
 > ```

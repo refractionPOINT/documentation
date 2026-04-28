@@ -56,7 +56,7 @@ These tags follow a consistent format pattern. You define the values based on yo
 
 Use `phase:` tags chronologically to visualize attack progression through MITRE ATT&CK tactics:
 
-```
+```text
 [phase:initial-access] → [phase:execution] → [phase:persistence] → [phase:credential-access] → [phase:lateral-movement] → [phase:exfiltration]
 ```
 
@@ -128,19 +128,19 @@ Document how entities were discovered and validated in the `context` field:
 
 **For IPs:**
 
-```
+```text
 Provenance: [discovered in which event type]. Geo: [country/ASN]. TI: [threat intel match]. Historical: [seen before in org?].
 ```
 
 **For Hashes:**
 
-```
+```text
 Provenance: [file name and path]. AV: [detection ratio]. Sandbox: [behavior summary]. First seen: [date].
 ```
 
 **For Domains:**
 
-```
+```text
 Provenance: [DNS query or URL]. Registration: [age, registrar]. TI: [threat intel match]. Resolution: [IP addresses].
 ```
 
@@ -154,7 +154,7 @@ Use structured note types for consistent documentation:
 
 Record raw facts without interpretation:
 
-```
+```text
 [TIMESTAMP] [HOST] [EVENT_TYPE]
 Observed: [description of what was seen]
 Key data: [relevant field values]
@@ -165,7 +165,7 @@ Related atoms: [list of event atoms]
 
 Document working theories:
 
-```
+```text
 HYPOTHESIS: [statement]
 
 Supporting evidence:
@@ -184,7 +184,7 @@ Alternative explanations:
 
 Document confirmed discoveries:
 
-```
+```text
 FINDING: [definitive statement]
 
 Evidence:
@@ -202,7 +202,7 @@ Confidence: [high/medium/low]
 
 Document the full attack narrative:
 
-```
+```text
 ATTACK CHAIN:
 [Phase 1] → [Phase 2] → [Phase 3] → ...
 
@@ -253,14 +253,14 @@ Defense gaps: [what failed]
 
 Write for non-technical stakeholders:
 
-```
+```text
 On [date], [attack type] was detected on [target]. The attacker [brief action summary].
 Impact: [what was affected]. Status: [current state]. Attribution: [if known].
 ```
 
 **Example:**
 
-```
+```text
 On November 15, 2024, a targeted spearphishing attack compromised a Finance department workstation.
 The attacker harvested credentials and moved laterally to 15 servers, exfiltrating approximately 50GB
 of financial data over 72 hours. Containment was achieved by isolating affected systems.
@@ -271,7 +271,7 @@ Attribution: Financially-motivated actor (medium confidence).
 
 Document technical determination:
 
-```
+```text
 CLASSIFICATION: [true positive/false positive] - [incident type]
 ROOT CAUSE: [initial access method]
 ATTRIBUTION: [threat actor/campaign] ([confidence level])

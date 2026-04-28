@@ -25,6 +25,6 @@ To utilize `doctl` capabilities, you will need:
 - A personal access token. More information on this can be found [here](https://docs.digitalocean.com/reference/api/create-personal-access-token/).
 - Create a secret in the secrets manager in the following format:
 
-  ```
+  ```text
   personalAccessToken
   ```

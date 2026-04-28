@@ -8,7 +8,7 @@ Output individually each event, detection, audit, deployment or artifact through
 
 Example:
 
-```
+```text
 dest_host: https://webhooks.corp.com/new_detection
 secret_key: this-is-my-secret-shared-key
 auth_header_name: x-my-special-auth
@@ -17,7 +17,7 @@ auth_header_value: 4756345846583498
 
 Example [hook to Google Chat](https://developers.google.com/chat/how-tos/webhooks):
 
-```
+```text
 dest_host: https://chat.googleapis.com/v1/spaces/AAAA4-AAAB/messages?key=afsdfgfdgfE6vySjMm-dfdssss&token=pBh2oZWr7NTSj9jisenfijsnvfisnvijnfsdivndfgyOYQ%3D
 secret_key: gchat-hook-sig42
 custom_transform: |

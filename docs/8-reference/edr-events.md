@@ -363,7 +363,7 @@ Generated when a file is deleted.
 > - Consider using File Integrity Monitoring (FIM)
 > - Look for this on an ad-hoc basis from the Sensor Console. ex.
 >
->   ```
+>   ```text
 >   history_dump -e FILE_DELETE
 >   ```
 
@@ -450,7 +450,7 @@ Generated when a file is modified.
 > - Consider using File Integrity Monitoring (FIM)
 > - Look for this on an ad-hoc basis from the Sensor Console. ex.
 >
->   ```
+>   ```text
 >   history_dump -e FILE_MODIFIED
 >   ```
 
@@ -511,7 +511,7 @@ Response event for the `fim_add` sensor command. An `ERROR: 0` implies the path 
 
 **Output:**
 
-```
+```text
 "event": {
   "ERROR":0
 }
@@ -527,7 +527,7 @@ An `ERROR: 3` response implies the provided path was not found in the list of FI
 
 **Output:**
 
-```
+```text
 "event": {
   "ERROR":0
 }
@@ -1207,7 +1207,7 @@ List of packages installed on the system. This is currently Windows only but wil
 
 **Sample Event:**
 
-```
+```text
 "PACKAGES": [
   {
     "PACKAGE_NAME": "Microsoft Windows Driver Development Kit Uninstall"

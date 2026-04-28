@@ -10,7 +10,7 @@ Output events and detections over SCP (SSH file transfer).
 
 Example:
 
-```
+```text
 dest_host: storage.corp.com
 dir: /uploads/
 username: storage_user

@@ -10,13 +10,13 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
 
 ### With authentication
 
-```
+```text
 [methodName,methodDest,authType,authData]
 ```
 
 ### Without authentication
 
-```
+```text
 [methodName,methodDest]
 ```
 

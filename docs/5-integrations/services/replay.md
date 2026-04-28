@@ -51,13 +51,13 @@ The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives yo
 
 Sample command line to query one sensor:
 
-```
+```bash
 limacharlie replay run --detect-file ./test_detect.yaml --respond-file ./test_respond.yaml --start 1556568500 --end 1556568600
 ```
 
 Sample command line to query an entire organization:
 
-```
+```bash
 limacharlie replay run --name my-rule-name --start 1555359000 --end 1556568600
 ```
 

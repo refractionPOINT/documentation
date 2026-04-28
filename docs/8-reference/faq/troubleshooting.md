@@ -39,7 +39,7 @@ Sensors since version 4.21.2 also generate a local log file able to be used to h
 
 This log provides a simple line for each basic step of connectivity to the cloud. It only logs the first connection attempted to the cloud and rolls over every time the sensor starts. A successful connection should look like:
 
-```
+```text
 hcp launched
 configs applied
 conn started

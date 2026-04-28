@@ -97,14 +97,14 @@ Here's an example high-level structure of a schema.
 **The Field Configuration**
  Notice that for both the `config_schema` and the `request_schema` there is a recurring object structure that looks like the following:
 
-```
+```text
 "fields": { .. }, // key-value pair
 "requirements": [[]],
 ```
 
 While hidden in the example above, each `field` key-value pair shares the same structure and has a minimal implementation as such:
 
-```
+```text
 field_name: {
   data_type: "string",
   description: "",

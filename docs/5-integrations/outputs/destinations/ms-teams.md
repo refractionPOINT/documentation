@@ -9,7 +9,7 @@ Messages are delivered as [Adaptive Cards](https://learn.microsoft.com/en-us/ada
 
 Example:
 
-```
+```text
 webhook_url: https://<environment-id>.<region>.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/...
 ```
 

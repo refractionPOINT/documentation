@@ -10,7 +10,7 @@ Output batches of events, detections, audits, deployments or artifacts through a
 
 Example:
 
-```
+```text
 dest_host: https://webhooks.corp.com/new_detection
 secret_key: this-is-my-secret-shared-key
 auth_header_name: x-my-special-auth

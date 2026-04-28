@@ -8,7 +8,7 @@ Output events and detections to a Blob Container in Azure Storage Blobs.
 
 Example:
 
-```
+```text
 blob_container: testlcdatabucket
 account_name: lctestdata
 secret_key: dkndsgnlngfdlgfd

@@ -7,7 +7,7 @@ Output detections and audit (only) to a Slack community and channel.
 
 Example:
 
-```
+```text
 slack_api_token: xoxb-your-bot-token
 slack_channel: #detections
 ```

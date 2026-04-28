@@ -27,6 +27,6 @@ To utilize `vultr-cli` capabilities, you will need:
   <!-- Screenshot of Vultr access control settings was unavailable during migration from document360 -->
 - Create a secret in the secrets manager in the following format:
 
-  ```
+  ```text
   personalAccessToken
   ```
