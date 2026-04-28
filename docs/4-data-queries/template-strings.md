@@ -8,7 +8,7 @@ A transform allows you to change the shape of JSON data in flight to suit better
 
 ## Template Strings
 
-Template strings in LimaCharlie use the format defined by "text templates" found [here](https://pkg.go.dev/text/template). A useful guide provided by Hashicorp is also available [here](https://learn.hashicorp.com/tutorials/nomad/go-template-syntax).
+Template strings in LimaCharlie use the [Go `text/template` format](https://pkg.go.dev/text/template). [Hashicorp's Go template syntax tutorial](https://learn.hashicorp.com/tutorials/nomad/go-template-syntax) is also a useful reference.
 
 The most basic example for a D&R rule customizing the detection name looks like this:
 
@@ -102,7 +102,7 @@ This object is in the shape of the final JSON you would like to transform to.
 Key names are the literal key names in the output. Values support one of 3 types:
 
 1. Template Strings, as described above. In this case, the template string will be generated and placed at the same place as the key in the transform object.
-2. A `gjson` selector. The selector syntaxt is defined [here](https://github.com/tidwall/gjson/blob/master/SYNTAX.md). It makes it possible to select subsets of input object and map it within the resulting object as defined by the transform.
+2. A `gjson` selector. See the [gjson syntax reference](https://github.com/tidwall/gjson/blob/master/SYNTAX.md) for the selector syntax. It makes it possible to select subsets of input object and map it within the resulting object as defined by the transform.
 3. Other JSON objects which will be present in the output.
 
 Let's look at an example, let's say this is the Input to our transform:
@@ -344,7 +344,7 @@ Beyond the built-in modifiers for `gjson` (as seen in their [playground](https:/
 
 - `parsejson`: this modifier takes no arguments, it takes in as input a string that represents a JSON object and outputs the decoded JSON object.
 - `extract`: this modifier takes a single argument, `re` which is a regular expression that uses "named capture groups" (as defined in the [re2 documentation](https://github.com/google/re2/wiki/Syntax)). The group names become the keys of the output JSON object with the matching values.
-- `parsetime`: this modifier takes two arguments, `from` and `to`. It will convert an input string from a given time format (as defined in the Go `time` library format [here](https://pkg.go.dev/time#pkg-constants)) and outputs the resulting time in the `to` format. Beyond the time constants from the previous link, LimaCharlie also supports a `from` format of:
+- `parsetime`: this modifier takes two arguments, `from` and `to`. It converts an input string from a given time format (using the [Go `time` library format constants](https://pkg.go.dev/time#pkg-constants)) and outputs the resulting time in the `to` format. Beyond those time constants, LimaCharlie also supports a `from` format of:
   - `epoch_s`: a second based epoch timestamp
   - `epoch_ms`: a millisecond based epoch timestamp
 

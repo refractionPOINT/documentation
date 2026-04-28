@@ -4,7 +4,7 @@ The Govee Extension allows you to trigger color changes on your [supported Govee
 
 ## Setup
 
-1. Request an API key from Govee by following their instructions [here](https://developer.govee.com/reference/apply-you-govee-api-key)
+1. Request an API key from Govee by following their [Apply for a Govee API key instructions](https://developer.govee.com/reference/apply-you-govee-api-key)
 2. Get the Device ID (device) and model (sku) of the device you'd like to target by requesting a list of your supported devices from the Govee API:
 
 ```bash

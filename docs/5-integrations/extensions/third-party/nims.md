@@ -8,7 +8,7 @@ The LimaCharlie NIMS extension allows you to send detections from LimaCharlie to
 
 Once you subscribe an org to the extension, it creates a D&R rule that sends all detections from your org to your NIMS alert database. Because Notion databases do have a limit on the number of records, the extension also has the ability to purge old alerts that are 1) not associated with any incidents, and 2) older than the specified number of days. A D&R rule is also created to perform this cleanup automatically (or not) based on your configuration.
 
-More information about NIMS, including the template and corresponding docs, can be found [here](https://nims-template.notion.site/).
+[More information about NIMS, including the template and corresponding docs](https://nims-template.notion.site/), is available on the project's Notion page.
 
 ## Configuration
 
@@ -21,7 +21,7 @@ In order to use this extension, you will need 3 pieces of data:
 ### Find your database IDs
 
 1. Navigate to the Alert database within NIMS under `Databases`
-2. Right click on the database and click `Copy link`[![link](https://github.com/shortstack/nims-webhook/raw/main/screenshots/link.png)](https://github.com/shortstack/nims-webhook/blob/main/screenshots/link.png)
+2. Right click on the database and click `Copy link`[![NIMS database link button screenshot](https://github.com/shortstack/nims-webhook/raw/main/screenshots/link.png)](https://github.com/shortstack/nims-webhook/blob/main/screenshots/link.png)
 3. Locate the database ID in the URL
 
    - The database ID is the long string of letters and numbers in the URL after the last `/` and before the `?` or `#` if present

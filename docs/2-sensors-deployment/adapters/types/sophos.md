@@ -26,7 +26,7 @@ Adapter Type: `sophos`
 
 Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 
-1. Add a new credential [here](https://cloud.sophos.com/manage/config/settings/credentials)
+1. Add a new credential in [Sophos Central Settings → Credentials](https://cloud.sophos.com/manage/config/settings/credentials)
 2. Get your client ID and client secret from the credentials you just created
 3. Get your JWT -- be sure to replace the values with the client ID and secret from the last step
 

@@ -16,7 +16,7 @@ The primary tools in the Plaso suite used for this process are [log2timeline](ht
 - `psort` - builds timelines based on output from `log2timeline`
 - `psteal` - Simply a wrapper for `log2timeline` and `psort`
 
-The `ext-plaso` extension within LimaCharlie allows you to run `log2timeline` and `psort` (using the `psteal` wrapper) against artifacts obtained from an endpoint, such as event logs, registry hives, and various other forensic artifacts. When executed, Plaso will parse and extract information from all acquired evidence artifacts that it has support for. Supported parsers are found [here](https://plaso.readthedocs.io/en/latest/sources/user/Parsers-and-plugins.html).
+The `ext-plaso` extension within LimaCharlie allows you to run `log2timeline` and `psort` (using the `psteal` wrapper) against artifacts obtained from an endpoint, such as event logs, registry hives, and various other forensic artifacts. When executed, Plaso will parse and extract information from all acquired evidence artifacts that it has support for. See the [Plaso parsers and plugins reference](https://plaso.readthedocs.io/en/latest/sources/user/Parsers-and-plugins.html) for the full list of supported parsers.
 
 ## Extension Configuration
 

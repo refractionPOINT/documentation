@@ -14,7 +14,7 @@ To enable the Artifact extension, navigate to the [Artifact extension page](http
 
 After clicking **Subscribe**, the Artifact extension should be available almost immediately.
 
-> Note that the Artifact extension first requires enabling of the Reliable Tasking extension. You can find more on that extension [here](reliable-tasking.md).
+> Note that the Artifact extension first requires enabling the [Reliable Tasking extension](reliable-tasking.md).
 
 ## Using the Artifact Extension
 

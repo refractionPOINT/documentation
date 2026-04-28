@@ -29,7 +29,7 @@ To understand the impact on your organization, check the **Metered Usage** secti
 
 ## What is Usage-Based Billing?
 
-Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. You can find more information about our billing options [here](../../7-administration/billing/options.md).
+Along with our predictable per endpoint pricing model, LimaCharlie offers a pure usage-based billing model for our Endpoint Detection & Response (EDR) capability. Pricing within this model is calculated solely on the time the Sensor is connected, events processed, and events stored. See [billing options](../../7-administration/billing/options.md) for more detail.
 
 We acknowledge that some might not need the entirety of available components all the time, and might benefit from having access to an Endpoint Agent on an ad-hoc basis. This approach enables the following:
 

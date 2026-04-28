@@ -2,7 +2,7 @@
 
 **Atomic Red Team** is a library of tests mapped to the MITRE ATT&CK framework, provided by Red Canary. With this Extension, LimaCharlie users can use Atomic Red Team to quickly, portably, and reproducibly test their environments.
 
-Find more information about it [here](https://atomicredteam.io/).
+See [the Atomic Red Team project site](https://atomicredteam.io/) for more information.
 
 ## Enabling the Atomic Red Team Extension
 

@@ -8,7 +8,7 @@ Every 24 hours, LimaCharlie will sync all of the lookups in the configuration. L
 
 Lookup sources can be either direct links (URLs) to a given lookup or [ARLs](../../../8-reference/authentication-resource-locator.md).
 
-Example JSON lookup: [link](https://loldrivers.io/api/drivers.json)
+Example JSON lookup: [LOLDrivers API](https://loldrivers.io/api/drivers.json)
 
 ## Usage
 
@@ -16,7 +16,7 @@ Example JSON lookup: [link](https://loldrivers.io/api/drivers.json)
 
 LimaCharlie provides a curated list of several publicly available JSON lookups for use within your organization. These are provided in the lookup manager GUI.
 
-More details and the contents of each of these lookups can be found [here](https://github.com/refractionpoint/lc-public-lookups).
+See [lc-public-lookups](https://github.com/refractionpoint/lc-public-lookups) for the contents of each public lookup.
 
 ![image (1).png "Screenshot 2024 10 22 at 13.23.35(2).png"](../../../assets/images/image-(1).png "Screenshot 2024-10-22 at 13.23.35(2).png")
 

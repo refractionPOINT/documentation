@@ -73,7 +73,7 @@ LimaCharlie also provides several publicly available lookups for use in your Org
 
 ### Automatically via the Lookup Manager
 
-If your lookups change frequently and you wish to keep them up to date, LimaCharlie offers the lookup manager extension as a mechanism to automatically update your lookups every 24 hours. Documentation on the lookup manager can be found [here](../../5-integrations/extensions/limacharlie/lookup-manager.md).
+If your lookups change frequently and you wish to keep them up to date, LimaCharlie offers the lookup manager extension as a mechanism to automatically update your lookups every 24 hours. See the [Lookup Manager documentation](../../5-integrations/extensions/limacharlie/lookup-manager.md).
 
 ## Programmatic Management
 

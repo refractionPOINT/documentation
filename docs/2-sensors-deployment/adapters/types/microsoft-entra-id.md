@@ -58,9 +58,9 @@ If utilizing the helper, only two fields are required:
 - Name for the adapter
 - Connection string to the Azure Event Hub
 
-You can find more information about Azure Event Hub Adapters [here](azure-event-hub.md).
+See the [Azure Event Hub Adapter documentation](azure-event-hub.md) for more information.
 
-Documentation for creating an event hub can be found here [here](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
+Microsoft has [documentation for creating an Event Hub](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 
 ### Entra ID API
 

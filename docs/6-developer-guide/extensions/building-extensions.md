@@ -121,7 +121,7 @@ The `requirements` field references the field keys to define whether or not cert
 
 When getting started, we recommend utilizing the simplest data type applicable. This will enable you to get a grasp of the whole extensions framework and allow you to quickly test our your service. Such as `string`, `boolean`, `json`, etc.
 
-Afterwards, we recommend you define the data_type and other optional fields further, so that the UI may adapt to your defined data types. For more details, please see the [page on data types](schema-data-types.md) or review the code definitions [here](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go).
+Afterwards, we recommend you define the data_type and other optional fields further, so that the UI may adapt to your defined data types. For more details, see the [data types reference](schema-data-types.md) or the [lc-extension SDK source](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go).
 
 #### Config Schema (optional)
 

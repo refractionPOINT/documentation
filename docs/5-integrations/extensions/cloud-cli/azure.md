@@ -2,7 +2,7 @@
 
 The Azure CLI is a set of commands used to create and manage Azure resources. With this component of the Cloud CLI Extension, you can interact with Azure directly from LimaCharlie.
 
-This extension makes use of the Azure CLI, which can be found [here](https://learn.microsoft.com/en-us/cli/azure/get-started-with-azure-cli).
+This extension uses [the Azure CLI](https://learn.microsoft.com/en-us/cli/azure/get-started-with-azure-cli).
 
 ## Example
 

@@ -25,7 +25,7 @@ This is currently only supported on Windows, macOS, and Chrome sensors.
 
 ### Manually in the GUI
 
-You can trigger an extension request manually within the web app by clicking the `Get extensions from endpoint` button. This will allow you to choose a sensor, or sensors via a Sensor Selector, to get extensions from. More examples of sensor selectors can be found [here](../../../8-reference/sensor-selector-expressions.md).
+You can trigger an extension request manually within the web app by clicking the `Get extensions from endpoint` button. This will allow you to choose a sensor, or sensors via a Sensor Selector, to get extensions from. See [sensor selector expression examples](../../../8-reference/sensor-selector-expressions.md).
 
 The extensions are gathered from endpoints via the reliable tasking extension, which appends `secureannex_extensions` to the investigation ID of the `RECEIPT` or `OS_PACKAGES_REP` event in order to trigger an extension request to query Secure Annex. The results will be in the timeline of the `ext-secureannex` sensor.
 

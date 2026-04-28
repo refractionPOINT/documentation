@@ -4,7 +4,7 @@ The Windows Sensor can listen, alert, and automate based on various Defender eve
 
 This is done by ingesting [artifacts from the Defender Event Log Source](../../5-integrations/extensions/limacharlie/artifact.md) and using [Detection & Response rules](../../3-detection-response/index.md) to take the appropriate action.
 
-A config template to alert on the common Defender events of interest is available [here](https://github.com/refractionPOINT/templates/blob/master/anti-virus/windows-defender.yaml). The template can be used in conjunction with [Infrastructure Extension](../../5-integrations/extensions/limacharlie/infrastructure.md) or its user interface in the [web app](https://app.limacharlie.io).
+A [config template alerting on common Defender events of interest](https://github.com/refractionPOINT/templates/blob/master/anti-virus/windows-defender.yaml) is available. The template can be used in conjunction with [Infrastructure Extension](../../5-integrations/extensions/limacharlie/infrastructure.md) or its user interface in the [web app](https://app.limacharlie.io).
 
 Specifically, the template alerts on the following Defender events:
 

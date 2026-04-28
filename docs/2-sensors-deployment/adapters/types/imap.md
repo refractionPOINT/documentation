@@ -8,7 +8,7 @@ This Adapter allows you to ingest emails as events from an IMAP server.
 
 Adapter Type: `imap`
 
-- `client_options`: common configuration for adapter as defined [here](../usage.md).
+- `client_options`: see [common adapter configuration](../usage.md).
 - `server`: the domain and port of the IMAP server, like `imap.gmail.com:993`.
 - `username`: the user name to log in to IMAP as.
 - `password`: the password for the above user name.

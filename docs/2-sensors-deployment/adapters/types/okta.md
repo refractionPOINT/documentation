@@ -22,7 +22,7 @@ Adapter Type: `okta`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](../deployment.md).
+[Adapter downloads](../deployment.md) are available on the deployment page.
 
 ```bash
 chmod +x /path/to/lc_adapter

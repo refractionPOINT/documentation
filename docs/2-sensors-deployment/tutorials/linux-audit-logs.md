@@ -1,6 +1,6 @@
 # Ingesting Linux Audit Logs
 
-One data source of common interest on Linux systems is the `audit.log` file. By default, this file stores entries from the Audit system, which contains information about logins, privilege escalations, and other account-related events. You can find more information about Audit Log files [here](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-understanding_audit_log_files).
+One data source of common interest on Linux systems is the `audit.log` file. By default, this file stores entries from the Audit system, which contains information about logins, privilege escalations, and other account-related events. See [Audit Log file documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-understanding_audit_log_files).
 
 There are a few techniques to ingest Linux Audit logs into LimaCharlie:
 
@@ -60,7 +60,7 @@ file:
   no_follow: false
 ```
 
-More details on configuration files and adapter usage can be found [here](../adapters/usage.md).
+See [adapter configuration and usage](../adapters/usage.md) for more detail.
 
 **Step 3:** Run the adapter, providing the `file` option and the appropriate config file.
 

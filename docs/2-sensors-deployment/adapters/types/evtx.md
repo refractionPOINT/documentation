@@ -10,7 +10,7 @@ For real-time collection of Windows Event Logs, see the [Windows Event Logs](../
 
 Adapter Type: `evtx`
 
-- `client_options`: common configuration for adapter as defined [here](../usage.md).
+- `client_options`: see [common adapter configuration](../usage.md).
 - `file_path`: path to the `.evtx` file to ingest.
 - `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
@@ -30,7 +30,7 @@ evtx:
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](../deployment.md).
+[Adapter downloads](../deployment.md) are available on the deployment page.
 
 ```bash
 /path/to/lc_adapter evtx \

@@ -6,7 +6,7 @@ Canarytokens can be ingested in LimaCharlie via a Webhook Adapter, and are recog
 
 ## A Little More
 
-LimaCharlie published a blog post in April 2023 to discuss the Canarytoken integration. You can read more about that [here](https://limacharlie.io/blog/early-warnings-with-limacharlie-and-canarytokens).
+LimaCharlie published a [blog post about the Canarytoken integration](https://limacharlie.io/blog/early-warnings-with-limacharlie-and-canarytokens) in April 2023.
 
 ## Adapter Deployment
 
@@ -27,7 +27,7 @@ Click **Complete Cloud Installation** to create the cloud-to-cloud Adapter. Proc
 
 ### 1b. Initial deployment via the LimaCharlie CLI
 
-A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The following step is modified from the generic Webhook Adapter created documentation, found [here](../tutorials/webhook-adapter.md).
+A Canarytokens Adapter can be deployed via the LimaCharlie CLI. The step is adapted from the [generic Webhook Adapter creation guide](../tutorials/webhook-adapter.md).
 
 The following configuration can be modified to easily configure a Webhook Adapter for receiving Canarytokens events.
 

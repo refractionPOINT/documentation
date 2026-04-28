@@ -22,7 +22,7 @@ Jira events are ingested via a cloud-to-cloud webhook Adapter, configured to rec
 
 ### 1. Creating the LimaCharlie Webhook Adapter
 
-The following steps are modified from the generic webhook adapter creation documentation, found [here](../tutorials/webhook-adapter.md).
+These steps are adapted from the [generic webhook adapter creation guide](../tutorials/webhook-adapter.md).
 
 Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details. The following configuration has been provided to configure a webhook Adapter for ingesting Jira events:
 

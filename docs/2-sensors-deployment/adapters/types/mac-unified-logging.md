@@ -20,7 +20,7 @@ All adapters support the same `client_options`, which you should always specify 
 
 ## CLI Deployment
 
-Adapter downloads can be found [here](../deployment.md).
+[Adapter downloads](../deployment.md) are available on the deployment page.
 
 ```bash
 chmod +x /path/to/lc_adapter
