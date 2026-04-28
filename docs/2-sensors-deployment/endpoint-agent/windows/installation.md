@@ -52,7 +52,7 @@ Choose the correct download for your system architecture:
 | 32-bit (x86) | [https://downloads.limacharlie.io/sensor/windows/32](https://downloads.limacharlie.io/sensor/windows/32) |
 | ARM64 | [https://downloads.limacharlie.io/sensor/windows/arm64](https://downloads.limacharlie.io/sensor/windows/arm64) |
 
-> **Note:** ARM64 Windows devices currently use the x64 sensor running under emulation.
+> **Note:** A native ARM64 build is available for Windows on ARM devices (sensor 4.33.26 or later). Earlier sensor versions ran under x64 emulation; this is no longer required.
 
 ### MSI Installer Downloads
 
@@ -60,6 +60,7 @@ Choose the correct download for your system architecture:
 |--------------|---------------|
 | 64-bit (x64) | [https://downloads.limacharlie.io/sensor/windows/msi64](https://downloads.limacharlie.io/sensor/windows/msi64) |
 | 32-bit (x86) | [https://downloads.limacharlie.io/sensor/windows/msi32](https://downloads.limacharlie.io/sensor/windows/msi32) |
+| ARM64 | [https://downloads.limacharlie.io/sensor/windows/msiarm64](https://downloads.limacharlie.io/sensor/windows/msiarm64) |
 
 > **Note about downloaded filenames:** The downloaded file will have a versioned name like `hcp_win_x64_release_4.33.23.exe`. You can rename it to `rphcp.exe` for convenience, or use the original filename in commands.
 >
