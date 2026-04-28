@@ -16,7 +16,7 @@ All versions of Debian and CentOS starting around Debian 5 should be supported. 
 
 ### Deb Package
 
-If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](../../index.md#downloading-the-agents).
+If you are deploying on a Debian Linux system, we recommend using the `.deb` package. You can find a link to the Debian package for various architectures at [Downloading the Agent](../../index.md).
 
 The deb package will install the LimaCharlie sensor using a `systemd` service, or if unavailable a `system V` service.
 

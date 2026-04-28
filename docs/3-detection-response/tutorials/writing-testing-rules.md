@@ -102,7 +102,7 @@ to apply the following constraints:
 LC supports a lot of different event types, this means that the first thing we should strive to
 do to try to make the rule fail as quickly as possible is to filter all events we don't care about.
 
-In this case, we only care about [CODE_IDENTITY](../../8-reference/edr-events.md#codeidentity) events. We also know that
+In this case, we only care about [CODE_IDENTITY](../../8-reference/edr-events.md#code_identity) events. We also know that
 our rule will use more than one criteria, and those criteria will be AND-ed together because we only
 want to match when they all match.
 

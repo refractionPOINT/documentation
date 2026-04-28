@@ -93,7 +93,7 @@ When a D&R rule matches an event, LimaCharlie creates a Detection. Detections in
 - Extracted data: Structured IOCs pulled from the event
 - Links: References to documentation or playbooks
 
-[See complete Detection Structure Reference](../3-detection-response/tutorials/writing-testing-rules.md#understanding-detection-structure)
+[See complete Detection Structure Reference](../3-detection-response/tutorials/writing-testing-rules.md)
 
 #### 3. Audit (`audit` stream)
 

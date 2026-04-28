@@ -6,10 +6,10 @@ The methodology is the same as described above, but you need to be careful to st
 
 The most common mistake is to install the Sensor directly in the template, and then instantiate the rest of the infrastructure from this template. This will result in "cloned sensors", sensors running using the same Sensor ID on different hosts/VMs/Containers.
 
-If these occur, a [sensor\_clone](../../../8-reference/platform-events.md#sensorclone) event will be generated as well as an error in your dashboard. If this happens you have two choices:
+If these occur, a [sensor\_clone](../../../8-reference/platform-events.md#sensor_clone) event will be generated as well as an error in your dashboard. If this happens you have two choices:
 
 1. Fix the installation process and re-deploy.
-2. Run a de-duplication process with a Detection & Response rule [like this](../../../3-detection-response/examples.md#deduplicate-cloned-sensors).
+2. Run a de-duplication process with a Detection & Response rule [like this](../../../3-detection-response/examples.md#de-duplicate-cloned-sensors).
 
 Preparing sensors to run properly from templates can be done by creating a special `hcp_vdi` (macOS and Linux) or `hcp_vdi.dat` (Windows) file in the relevant configuration directory:
 

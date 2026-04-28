@@ -510,7 +510,7 @@ Use deployment events to track sensor health and detect:
 ## Related Documentation
 
 - [Event Structure Reference](../../8-reference/event-schemas.md#event-structure-reference)
-- [Detection Structure](../../3-detection-response/tutorials/writing-testing-rules.md#understanding-detection-structure)
+- [Detection Structure](../../3-detection-response/tutorials/writing-testing-rules.md)
 - [LimaCharlie Data Structures](../../1-getting-started/core-concepts.md#limacharlie-data-structures)
 - [Output Destinations](destinations/amazon-s3.md) - Configuration guides for specific destinations
 - [Testing Outputs](testing.md) - How to validate output configurations

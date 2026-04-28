@@ -6,7 +6,7 @@
 2. [D&R Rule Fundamentals](#dr-rule-fundamentals)
 3. [Target Types](#target-types)
 4. [Detection Operators](#detection-operators)
-5. [Rule Structure & Configuration](#rule-structure--configuration)
+5. [Rule Structure & Configuration](#rule-structure-configuration) <!-- markdownlint-disable-line MD051 -->
 6. [Response Actions](#response-actions)
 7. [Advanced Features](#advanced-features)
 8. [Cybersecurity Examples by Target Type](#cybersecurity-examples-by-target-type)
