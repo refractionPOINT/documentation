@@ -11507,17 +11507,17 @@
 <h1 id="ingesting-windows-event-logs">Ingesting Windows Event Logs<a class="headerlink" href="#ingesting-windows-event-logs" title="Anchor link to this section">&para;</a></h1>
 <p>You can enable real-time Windows Event Log (WEL) ingestion using the LimaCharlie <abbr title="Endpoint Detection &amp; Response">EDR</abbr> <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr>.</p>
 <p>First, navigate to the <abbr title="In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events,...">Exfil</abbr> Control section of LimaCharlie and ensure that <code>WEL</code> events are enabled for your Windows rules.</p>
-<p><img alt="" src="../../../assets/images/ingest-wel-1.png" /></p>
+<p><img alt="ingest wel 1" src="../../../assets/images/ingest-wel-1.png" /></p>
 <p>Next, navigate to the <code>Artifact Collection</code> section and set up an artifact collection rule for the Windows Event Log(s) of interest.</p>
-<p><img alt="" src="../../../assets/images/ingest-wel-2.png" /></p>
+<p><img alt="ingest wel 2" src="../../../assets/images/ingest-wel-2.png" /></p>
 <p>To ingest WEL real-time events in the timeline, use the <code>wel://[Log Name]</code> format. For example, to ingest the System event log, you'd use the following pattern:</p>
 <p><code>wel://system:*</code></p>
-<p><img alt="" src="../../../assets/images/ingest-wel-3.png" /></p>
+<p><img alt="ingest wel 3" src="../../../assets/images/ingest-wel-3.png" /></p>
 <p>Difference between <code>.evtx</code> versus <code>wel://</code> ingestion</p>
 <p>If you specify the file on disk, via the <code>evtx</code> file extension (as seen in the image above), LimaCharlie will upload the entire Windows Event Log file from disk. This will be represented as a collected artifact, not as real-time events on the sensor's timeline. This method incurs regular artifact ingestion costs for "Telemetry Sources" as seen on our <a href="https://limacharlie.io/pricing">pricing</a> page.</p>
 <p>If you ingest Windows Event Logs with a <code>wel://</code> pattern, they are streamed in real-time as first-class telemetry alongside the native <abbr title="Endpoint Detection &amp; Response">EDR</abbr> events, and are included in the flat rate price of the sensor.</p>
 <p>After you apply those, you should start seeing your Windows Event Log data coming through for your endpoints. You can verify this by going into the Timeline view and choosing <code>WEL</code> event type.</p>
-<p><img alt="" src="../../../assets/images/ingest-wel-4.png" /></p>
+<p><img alt="ingest wel 4" src="../../../assets/images/ingest-wel-4.png" /></p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 

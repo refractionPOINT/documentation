@@ -11626,17 +11626,17 @@
 <p>We will explore these techniques in this tutorial. Adapters can also be configured as syslog listeners; that will be covered in another tutorial.</p>
 <h2 id="file-system-browser">File System Browser<a class="headerlink" href="#file-system-browser" title="Anchor link to this section">&para;</a></h2>
 <p>Our Windows, Linux, and macOS <abbr title="Endpoint Detection &amp; Response">EDR</abbr> sensors offer file system navigation capabilities. If you need a single, ad-hoc collection of the <code>auth.log</code>, you can use the File System capability to navigate to <code>/var/log</code>, and download <code>auth.log</code>.</p>
-<p><img alt="" src="../../../assets/images/audit-1.png" /></p>
+<p><img alt="audit 1" src="../../../assets/images/audit-1.png" /></p>
 <h2 id="artifact-collection">Artifact Collection<a class="headerlink" href="#artifact-collection" title="Anchor link to this section">&para;</a></h2>
 <p>If you don't need to stream Linux Audit log(s), but instead want to maintain a copy of them for posterity, Artifact collection would be your best method. This is an automated collection technique, but won't stream the events to your <strong>Timeline</strong>.</p>
 <p><strong>Step 1:</strong> Within the Navigation Pane, select <code>Artifact Collection</code>.</p>
-<p><img alt="" src="../../../assets/images/audit-2.png" /></p>
+<p><img alt="audit 2" src="../../../assets/images/audit-2.png" /></p>
 <p><strong>Step 2:</strong> Create a simple artifact collection rule for <code>/var/log/auth.log</code>. In this example, we chose a retention period of 30 days; however, you should choose the correct retention period for your use case.</p>
-<p><img alt="" src="../../../assets/images/audit-3.png" /></p>
+<p><img alt="audit 3" src="../../../assets/images/audit-3.png" /></p>
 <p>click <strong>Save</strong></p>
-<p><img alt="" src="../../../assets/images/audit-4.png" /></p>
+<p><img alt="audit 4" src="../../../assets/images/audit-4.png" /></p>
 <p><strong>Step 3:</strong> Saving the artifact rule will then populate to the appropriate sensor(s), and you should see the <code>auth.log</code> in the Artifacts menu, once it is collected by the <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr>.</p>
-<p><img alt="" src="../../../assets/images/audit-5%281%29.png" /></p>
+<p><img alt="audit 5" src="../../../assets/images/audit-5%281%29.png" /></p>
 <p>Want more logs?</p>
 <p>Want more than just the most recent <code>auth.log</code>? Specify a regular expression to capture all archived copies of the log files. However, be careful on retention and make sure you're not unnecessarily duplicating data!</p>
 <h2 id="file-adapter-ingestion">File <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Ingestion<a class="headerlink" href="#file-adapter-ingestion" title="Anchor link to this section">&para;</a></h2>

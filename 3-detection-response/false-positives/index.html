@@ -11887,15 +11887,15 @@
 <p>The originating event for the detection can still be accessed at the <code>detect</code> path. This means that if ignoring something based on the event content, we only need to add <code>detect/</code> to the front of the <code>path</code> (see <a href="#ignore-detections-for-specific-file-name">example</a>).</p>
 <h2 id="create-a-false-positive-rule-from-detections">Create a False Positive Rule From Detections<a class="headerlink" href="#create-a-false-positive-rule-from-detections" title="Anchor link to this section">&para;</a></h2>
 <p>This is the quickest and the most common way to create a FP rule. On every detection, you can click the <code>Mark False Positive</code> button.</p>
-<p><img alt="" src="../../assets/images/fp-rules-1.png" /></p>
+<p><img alt="fp rules 1" src="../../assets/images/fp-rules-1.png" /></p>
 <p>Clicking the button will pre-populate the details of the event and automatically generate a draft false positive rule which you can edit before saving.</p>
 <p>After the rule is saved, it will appear in the <strong>False Positives Rules</strong> section and can be edited/deleted there.</p>
 <h2 id="create-a-false-positive-rule-from-scratch">Create a False Positive rule from scratch<a class="headerlink" href="#create-a-false-positive-rule-from-scratch" title="Anchor link to this section">&para;</a></h2>
 <p>While creating FP rule from detections is a common and easy way to reduce the number of false positives, you do not need to wait for the detection to happen before creating a FP rule. The <code>False Positive Rules</code> section under <code>Automation</code> allows you to create a false positive rule from scratch.</p>
 <p>To create a new false positive rule, click the <code>New Rule</code> button.</p>
-<p><img alt="" src="../../assets/images/fp-rules-2.png" /></p>
+<p><img alt="fp rules 2" src="../../assets/images/fp-rules-2.png" /></p>
 <p>This will open a rule editor allowing you to create a new rule.</p>
-<p><img alt="" src="../../assets/images/fp-rules-3.png" /></p>
+<p><img alt="fp rules 3" src="../../assets/images/fp-rules-3.png" /></p>
 <p>An FP rule is structured with the same format at the detection component of a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule. The main difference is that the rule applies to the content of a detection, as can be seen in the Detections section of the web app.</p>
 <p>You have the ability to set a rule name as well as an <strong>Expiry Date</strong> (optional). Setting an expiry date allows you to create a rule that will expire at a certain time.</p>
 <p>Please note that expiry times must be set in the user's preferred time (not in UTC).</p>

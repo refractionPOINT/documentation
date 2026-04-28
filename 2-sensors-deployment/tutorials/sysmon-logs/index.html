@@ -11553,16 +11553,16 @@
 <p>Within the <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> where you wish to collect Sysmon data, go to the <code>Event Collection &gt; Event Collection Rules</code> section.</p>
 </li>
 </ol>
-<p><img alt="" src="../../../assets/images/ingest-sysmon-1.png" /></p>
+<p><img alt="ingest sysmon 1" src="../../../assets/images/ingest-sysmon-1.png" /></p>
 <ol>
 <li>Ensure that for Windows systems, <code>WEL</code> events are collected.</li>
 </ol>
-<p><img alt="" src="../../../assets/images/ingest-sysmon-2.png" /></p>
+<p><img alt="ingest sysmon 2" src="../../../assets/images/ingest-sysmon-2.png" /></p>
 <ol>
 <li>Go to the <code>Artifact Collection</code> section and add a new collection rule with the following path to bring in all Sysmon events:</li>
 </ol>
 <p><code>wel://Microsoft-Windows-Sysmon/Operational:*</code></p>
-<p><img alt="" src="../../../assets/images/ingest-sysmon-3.png" /></p>
+<p><img alt="ingest sysmon 3" src="../../../assets/images/ingest-sysmon-3.png" /></p>
 <p><strong>Note:</strong> You can use tagging or other filters to narrow down the systems that logs are collected from.</p>
 <p>Event Filtering</p>
 <p>You can filter events by event ID to import select events. For example:</p>

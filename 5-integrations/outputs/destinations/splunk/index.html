@@ -11621,13 +11621,13 @@
 <p>Follow Splunk's guide to <a href="https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector">set up an HEC</a>, and as you do, set the source type to <code>_json</code>.</p>
 <h3 id="limacharlie-setup">LimaCharlie Setup<a class="headerlink" href="#limacharlie-setup" title="Anchor link to this section">&para;</a></h3>
 <p>From the <strong>Outputs</strong> view, click <code>Add Output</code>.</p>
-<p><img alt="" src="../../../../assets/images/splunk-1.png" /></p>
+<p><img alt="splunk 1" src="../../../../assets/images/splunk-1.png" /></p>
 <p>Choose the type of stream you want to output from LimaCharlie.</p>
-<p><img alt="" src="../../../../assets/images/splunk-2%281%29.png" /></p>
+<p><img alt="splunk 2" src="../../../../assets/images/splunk-2%281%29.png" /></p>
 <p>Set <code>Webhook</code> or <code>Webhook Bulk</code> as a destination.</p>
-<p><img alt="" src="../../../../assets/images/splunk-3.png" /></p>
+<p><img alt="splunk 3" src="../../../../assets/images/splunk-3.png" /></p>
 <p>Enter the output name.</p>
-<p><img alt="" src="../../../../assets/images/splunk-4.png" /></p>
+<p><img alt="splunk 4" src="../../../../assets/images/splunk-4.png" /></p>
 <p>Enter the <a href="https://docs.splunk.com/Documentation/Splunk/8.0.2/Data/UsetheHTTPEventCollector#Send_data_to_HTTP_Event_Collector">correct HEC URI</a> for your Splunk implementation as Destination Host. Use the  /services/collector/event  endpoint. Note if you are using Spunk Cloud, this will be the string from the URL <code>https://&lt;host&gt;.splunkcloud.com/</code>.</p>
 <p>Here is a sample Splunk HEC configuration:</p>
 <p>Destination Host = <code>https://host.domain.com:8088/services/collector/raw</code>
@@ -11641,7 +11641,7 @@
 <p><strong>Delete on Failure</strong> - when set to Yes, the system will completely delete the output configuration in case of failure. This is useful when you are configuring a temporary output needed for a short while and you don't want to have to worry about cleaning up later.</p>
 <p>You can choose to only send a specific list of event types by configuring an allow list in the <strong>Detection Category</strong> section. Alternatively, if you want to exclude certain event types, you can denote it in a deny list <strong>(Disallowed Detection Categories)</strong>.</p>
 <p><strong>Do not include routing</strong> flag allows users to forward only the original logs to outputs, excluding the routing label. This can be helpful for users wanting to use LimaCharlie for storage optimization since the routing label can add significant overhead.</p>
-<p><img alt="" src="../../../../assets/images/splunk-5.png" /></p>
+<p><img alt="splunk 5" src="../../../../assets/images/splunk-5.png" /></p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 

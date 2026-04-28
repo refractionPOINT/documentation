@@ -11621,9 +11621,9 @@
 <p>Every hour, LimaCharlie will sync all of the usage alert rules in the configuration. They can also be manually synced by clicking the <code>Sync Usage Alert Rules</code> button on the extension page. When a usage alert rule is added, it will <strong>not</strong> be automatically synced immediately, unless you click on <code>Sync Usage Alert Rules</code>.</p>
 <p><strong>NOTE</strong>: The maximum timeframe is currently 43200 minutes (30 days).</p>
 <h2 id="usage-gui">Usage - GUI<a class="headerlink" href="#usage-gui" title="Anchor link to this section">&para;</a></h2>
-<p>To define a new usage alert, simply click on the <code>Add New Usage Alert</code> button in the extension UI. Give it a name, like <code>Output data over threshold</code>, select a SKU (in this case, <code>output_data</code>), a timeframe, a limit, and click <code>Save</code>. <img alt="" src="../../../../assets/images/image%28275%29.png" title="image(275).png" /></p>
+<p>To define a new usage alert, simply click on the <code>Add New Usage Alert</code> button in the extension UI. Give it a name, like <code>Output data over threshold</code>, select a SKU (in this case, <code>output_data</code>), a timeframe, a limit, and click <code>Save</code>. <img alt="image(275).png &quot;image(275).png&quot;" src="../../../../assets/images/image%28275%29.png" title="image(275).png" /></p>
 <p>If you want it to be added immediately, click on the <code>Sync Usage Alert Rules</code> button. Otherwise, it will get pushed automatically at the next hour interval.</p>
-<p><img alt="" src="../../../../assets/images/image%28278%29.png" title="image(278).png" /></p>
+<p><img alt="image(278).png &quot;image(278).png&quot;" src="../../../../assets/images/image%28278%29.png" title="image(278).png" /></p>
 <p>This will create a managed <abbr title="Detection &amp; Response">D&amp;R</abbr> rule on the backend in the <code>dr-managed</code> hive and will sync automatically every hour.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">hives</span><span class="p">:</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nt">dr-managed</span><span class="p">:</span>

@@ -11849,10 +11849,10 @@
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Anchor link to this section">&para;</a></h2>
 <p>First, subscribe your tenant to the <a href="https://app.limacharlie.io/add-ons/extension-detail/binlib">BinLib</a> extension.</p>
-<p><img alt="" src="../../../../assets/images/binlib-1.png" /></p>
+<p><img alt="binlib 1" src="../../../../assets/images/binlib-1.png" /></p>
 <p>To perform one of the following operations against your own library, choose the command and select <strong>Run Request.</strong></p>
 <p>The BinLib page in the web app offers an easy way to get started with some of the core requests exposed by the extension: Check Hash, Search, and Yara Scan.</p>
-<p><img alt="" src="../../../../assets/images/binlib-2.png" /></p>
+<p><img alt="binlib 2" src="../../../../assets/images/binlib-2.png" /></p>
 <h3 id="check_hash">check_hash<a class="headerlink" href="#check_hash" title="Anchor link to this section">&para;</a></h3>
 <p><em>Accepted Values: MD5, SHA1, SHA256</em></p>
 <p>The <code>check_hash</code> operation lets you search to see if a particular hash has been observed in your <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr>. Output includes a boolean if the hash was found and three hash values, if available.</p>
@@ -11926,11 +11926,11 @@
 </ul>
 <p>Note that search criteria are ANDed. Binaries must meet ALL criteria to be returned.</p>
 <p>Search results can be downloaded as a CSV.</p>
-<p><img alt="" src="../../../../assets/images/binlib-3.png" /></p>
+<p><img alt="binlib 3" src="../../../../assets/images/binlib-3.png" /></p>
 <h3 id="tag">tag<a class="headerlink" href="#tag" title="Anchor link to this section">&para;</a></h3>
 <p>The <code>tag</code> operation allows you to add tag(s) to a hash, allowing for additional classification within binlib.</p>
 <p>The below example <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr> the Google Installer with the <code>google</code> tag.</p>
-<p><img alt="" src="../../../../assets/images/binlib-4.png" /></p>
+<p><img alt="binlib 4" src="../../../../assets/images/binlib-4.png" /></p>
 <p>Successful tagging yields an <code>updated</code> event:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -11952,7 +11952,7 @@
 </ul>
 <p>You also have the option to tag hits on match.</p>
 <p>Note that search criteria are ANDed. Binaries must meet ALL criteria to be returned.</p>
-<p><img alt="" src="../../../../assets/images/binlib-5.png" /></p>
+<p><img alt="binlib 5" src="../../../../assets/images/binlib-5.png" /></p>
 <h2 id="automating">Automating<a class="headerlink" href="#automating" title="Anchor link to this section">&para;</a></h2>
 <p>Here are some examples of useful rules that could be used to automate interactions with Binlib.</p>
 <h3 id="scan-all-acquired-files-with-yara">Scan all acquired files with Yara<a class="headerlink" href="#scan-all-acquired-files-with-yara" title="Anchor link to this section">&para;</a></h3>

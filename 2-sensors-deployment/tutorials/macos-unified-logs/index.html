@@ -11618,12 +11618,12 @@
 <h1 id="ingesting-macos-unified-logs">Ingesting MacOS Unified Logs<a class="headerlink" href="#ingesting-macos-unified-logs" title="Anchor link to this section">&para;</a></h1>
 <p>You can enable real-time MacOS Unified Logs (MUL) ingestion using the LimaCharlie <abbr title="Endpoint Detection &amp; Response">EDR</abbr> <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr>.</p>
 <p>First, navigate to the <abbr title="In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events,...">Exfil</abbr> Control section of LimaCharlie and ensure that <code>MUL</code> events are enabled for your Mac rules.</p>
-<p><img alt="" src="../../../assets/images/ingest-mac-1.png" /></p>
+<p><img alt="ingest mac 1" src="../../../assets/images/ingest-mac-1.png" /></p>
 <p>Next, navigate to the <code>Artifact Collection</code> section and set up an artifact collection rule for the MacOS Unified Log(s) of interest.</p>
-<p><img alt="" src="../../../assets/images/ingest-mac-2.png" /></p>
+<p><img alt="ingest mac 2" src="../../../assets/images/ingest-mac-2.png" /></p>
 <p>To ingest MUL real-time events in the timeline, use the <code>mul://[Predicate]</code> format, where the predicate is a standard <a href="https://www.macminivault.com/faq/introduction-to-macos-unified-logs/">MacOS MUL predicate</a>. For example, to ingest the Safari logs, you'd use the following pattern:</p>
 <p><code>mul://process == "Safari"</code></p>
-<p><img alt="" src="../../../assets/images/ingest-mac-3.png" /></p>
+<p><img alt="ingest mac 3" src="../../../assets/images/ingest-mac-3.png" /></p>
 <p>If you ingest MacOS Unified Logs with a <code>mul://</code> pattern, they are streamed in real-time as first-class telemetry alongside the native <abbr title="Endpoint Detection &amp; Response">EDR</abbr> events, and are included in the flat rate price of the sensor.</p>
 <p>After you apply those, you should start seeing your MacOS Unified Logs data coming through for your endpoints within 10 minutes. You can verify this by going into the Timeline view and choosing <code>MUL</code> event type.</p>
 <h2 id="endpoint-detection-response">Endpoint Detection &amp; Response<a class="headerlink" href="#endpoint-detection-response" title="Anchor link to this section">&para;</a></h2>

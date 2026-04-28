@@ -11757,12 +11757,12 @@
 </ol>
 <h3 id="show-artifact">Show Artifact<a class="headerlink" href="#show-artifact" title="Anchor link to this section">&para;</a></h3>
 <p>Simply choose an artifact from the list to inspect it's contents.</p>
-<p><img alt="" src="../../../../assets/images/velociraptor-ext-1.png" /></p>
+<p><img alt="velociraptor ext 1" src="../../../../assets/images/velociraptor-ext-1.png" /></p>
 <p>Result of the action</p>
-<p><img alt="" src="../../../../assets/images/velociraptor-ext-2.png" /></p>
+<p><img alt="velociraptor ext 2" src="../../../../assets/images/velociraptor-ext-2.png" /></p>
 <h3 id="collect-artifact">Collect Artifact<a class="headerlink" href="#collect-artifact" title="Anchor link to this section">&para;</a></h3>
 <p>This allows you to collect one or more Velociraptor <a href="https://docs.velociraptor.app/artifact_references/">Artifacts</a> from one or more endpoints via the <abbr title="Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.">Endpoint Agent</abbr>.
-<img alt="" src="../../../../assets/images/velociraptor-3.png" /></p>
+<img alt="velociraptor 3" src="../../../../assets/images/velociraptor-3.png" /></p>
 <p>Velociraptor will generate a ZIP file with all collected data, which is automatically ingested into LimaCharlie's Artifact system for download.</p>
 <h4 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Anchor link to this section">&para;</a></h4>
 <ul>
@@ -11782,9 +11782,9 @@
 <p>For <a href="https://github.com/Velocidex/velociraptor/blob/master/artifacts/definitions/Windows/KapeFiles/Targets.yaml">Windows.KapeFiles.Targets</a>, you can use <code>"HighLevelTargets=[\"_KapeTriage\"]"</code>.</p>
 <h2 id="monitoring-collections">Monitoring Collections<a class="headerlink" href="#monitoring-collections" title="Anchor link to this section">&para;</a></h2>
 <p>You are able to track Velociraptor hunts by viewing the Timeline for the <code>ext-velociraptor</code> sensor.</p>
-<p><img alt="" src="../../../../assets/images/velociraptor-ext-4.png" /></p>
+<p><img alt="velociraptor ext 4" src="../../../../assets/images/velociraptor-ext-4.png" /></p>
 <p>Once you see <code>artifact_uploaded</code> in the timeline, you can expect to find the artifact on the "Artifacts" screen.</p>
-<p><img alt="" src="../../../../assets/images/velociraptor-ext-5.png" /></p>
+<p><img alt="velociraptor ext 5" src="../../../../assets/images/velociraptor-ext-5.png" /></p>
 <h2 id="automating-collection-retrieval">Automating Collection Retrieval<a class="headerlink" href="#automating-collection-retrieval" title="Anchor link to this section">&para;</a></h2>
 <p>Let's say you wanted to automatically fetch new Velociraptor collections and send somewhere else for storage/processing. This can be accomplished via  rules which watch for the artifact upload and send to a tailored output.</p>
 <p>Example <abbr title="Detection &amp; Response">D&amp;R</abbr> rule</p>

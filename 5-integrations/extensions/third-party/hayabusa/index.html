@@ -11740,12 +11740,12 @@
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Anchor link to this section">&para;</a></h2>
 <p>If you use the LimaCharlie Velociraptor extension, a good use case of this extension would be to trigger Hayabusa analysis upon ingestion of a Velociraptor KAPE files artifact.</p>
 <p>Go to <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> / Velociraptor, and run Collect Artifact request.</p>
-<p><img alt="" src="../../../../assets/images/hayabusa-1.png" /></p>
+<p><img alt="hayabusa 1" src="../../../../assets/images/hayabusa-1.png" /></p>
 <p>Kick off a <code>Windows.KapeFiles.Targets</code> artifact collection in the LimaCharlie Velociraptor extension</p>
 <p><strong>Argument options:</strong></p>
 <ul>
 <li><code>EventLogs=Y</code>
-   <img alt="" src="../../../../assets/images/hayabusa-2.png" /></li>
+   <img alt="hayabusa 2" src="../../../../assets/images/hayabusa-2.png" /></li>
 <li><code>KapeTriage=Y</code> - this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using <code>EventLogs=Y</code>.</li>
 </ul>
 <p>Configure a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule to look for these events upon ingestion, and then trigger the Hayabusa extension:</p>
