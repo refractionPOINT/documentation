@@ -47,11 +47,11 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
 
 ![ingest sysmon 1](../../assets/images/ingest-sysmon-1.png)
 
-3. Ensure that for Windows systems, `WEL` events are collected.
+1. Ensure that for Windows systems, `WEL` events are collected.
 
 ![ingest sysmon 2](../../assets/images/ingest-sysmon-2.png)
 
-4. Go to the `Artifact Collection` section and add a new collection rule with the following path to bring in all Sysmon events:
+1. Go to the `Artifact Collection` section and add a new collection rule with the following path to bring in all Sysmon events:
 
 `wel://Microsoft-Windows-Sysmon/Operational:*`
 
@@ -67,7 +67,7 @@ You can filter events by event ID to import select events. For example:
 
 `wel://Microsoft-Windows-Sysmon/Operational:25`
 
-5. Allow up to 10 minutes for data to come into LimaCharlie after setting up a new Artifact Collection rule. Data will flow in real-time after that point.
-6. Navigate to the Timeline view of a Sensor to confirm that Sysmon logs are present. You can search for Event Type `WEL` and Search for `Microsoft-Windows-Sysmon` to validate the telemetry.
+1. Allow up to 10 minutes for data to come into LimaCharlie after setting up a new Artifact Collection rule. Data will flow in real-time after that point.
+2. Navigate to the Timeline view of a Sensor to confirm that Sysmon logs are present. You can search for Event Type `WEL` and Search for `Microsoft-Windows-Sysmon` to validate the telemetry.
 
 ![image.png](../../assets/images/image(96).png)

@@ -56,15 +56,15 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/start \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
-2. Poll for the authorization URL:
+1. Poll for the authorization URL:
 
 ```bash
 curl https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id=<oauth_session_id> \
   -H "Authorization: Bearer $LC_JWT"
 ```
 
-3. Visit the URL in your browser and authorize
-4. Submit the authorization code:
+1. Visit the URL in your browser and authorize
+2. Submit the authorization code:
 
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/code \
@@ -227,7 +227,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/uploa
   }'
 ```
 
-2. Upload the file to the signed URL:
+1. Upload the file to the signed URL:
 
 ```bash
 curl -X PUT "{upload_url}" \
@@ -235,7 +235,7 @@ curl -X PUT "{upload_url}" \
   --data-binary @data.csv
 ```
 
-3. Notify that upload is complete:
+1. Notify that upload is complete:
 
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload/complete \
@@ -257,7 +257,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/downl
   -d '{"path": "/workspace/output.txt"}'
 ```
 
-2. Download the file from the signed URL:
+1. Download the file from the signed URL:
 
 ```bash
 curl -o output.txt "{download_url}"

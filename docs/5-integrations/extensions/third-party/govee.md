@@ -11,8 +11,8 @@ The Govee Extension allows you to trigger color changes on your [supported Govee
 curl --location 'https://openapi.api.govee.com/router/api/v1/user/devices' --header 'Govee-API-Key: YOUR_GOVEE_API_KEY'
 ```
 
-3. Decide what RGB color(s) you want to use. By default, the extension will alert with red (`255,0,0`), and revert back to white (`255,255,255`) when the alert `duration` has ended.
-4. Add your Govee API key to the extension configuration:
+1. Decide what RGB color(s) you want to use. By default, the extension will alert with red (`255,0,0`), and revert back to white (`255,255,255`) when the alert `duration` has ended.
+2. Add your Govee API key to the extension configuration:
     ![govee](../../../assets/images/govee.png)
 
 ### Usage
