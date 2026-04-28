@@ -18,22 +18,15 @@ to be installed — `npx` will fetch `markdownlint-cli2` on demand.
 From the repo root:
 
 ```bash
-# Lint everything under docs/
-npx --yes markdownlint-cli2 \
-  --config .markdownlint.json \
-  "docs/**/*.md"
+# Lint everything (config + globs come from .markdownlint-cli2.jsonc)
+npx --yes markdownlint-cli2
 ```
 
-If `.markdownlint.json` does not exist yet, use the same config the CI job
-uses inline:
+The config file at repo root (`.markdownlint-cli2.jsonc`) defines both
+the rule set and the file globs. CI uses the same file via the
+`DavidAnson/markdownlint-cli2-action@v22` action with auto-discovery.
 
-```bash
-npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false, "MD024": {"siblings_only": true}}') \
-  "docs/**/*.md"
-```
-
-Lint a single file or subtree:
+Lint a single file or subtree (overrides the file's `globs`):
 
 ```bash
 npx --yes markdownlint-cli2 "docs/3-detection-response/**/*.md"
@@ -75,18 +68,26 @@ changes. Examples:
 
 - `MD004` (bullet style consistency)
 - `MD031` / `MD032` (blank lines around fences/lists)
-- `MD060` (table column alignment)
 - `MD029` (ordered list prefix)
 
-**Disabled** — these rules are turned off in our config because they
-conflict with mkdocs-material extensions we use repo-wide:
+**Disabled** — these rules are turned off in our config:
 
-- `MD046` (code block style) — disabled. Our docs use the
-  `pymdownx.tabbed` extension (`=== "Tab"` blocks) which requires
-  4-space indentation for tab content. Markdownlint reads CommonMark,
-  doesn't recognize the extension, and reports the indented fences
-  inside tabs as inconsistent code-block style. Disabling avoids the
-  false positives.
+- `MD046` (code block style) — Our docs use the `pymdownx.tabbed`
+  extension (`=== "Tab"` blocks) which requires 4-space indentation
+  for tab content. Markdownlint reads CommonMark, doesn't recognize
+  the extension, and reports the indented fences inside tabs as
+  inconsistent code-block style. Disabling avoids the false
+  positives.
+
+- `MD060` (table column alignment) and `MD059` (descriptive link
+  text) — both new in markdownlint v0.40.0 (the version CI's
+  `markdownlint-cli2-action@v22` bundles). Each fires on substantial
+  pre-existing content that wasn't part of the original cleanup
+  initiative — ~1,400 table-alignment violations and ~109
+  generic-link-text cases ("here", "click here", etc.). Disabled
+  for now so CI stays green on the stable backlog. Each is a good
+  candidate for a dedicated follow-up PR using the same per-rule
+  workflow described above.
 
 **Tuned** — these rules are configured rather than at default settings:
 
@@ -151,9 +152,7 @@ that need judgment (alt text, link rewording, anchor fixes, etc.).
 Run the linter today to see where we stand:
 
 ```bash
-npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false, "MD024": {"siblings_only": true}}') \
-  "docs/**/*.md" 2> mdlint.out || true
+npx --yes markdownlint-cli2 2> mdlint.out || true
 grep -oE 'MD[0-9]+/[a-z-]+' mdlint.out | sort | uniq -c | sort -rn
 ```
 

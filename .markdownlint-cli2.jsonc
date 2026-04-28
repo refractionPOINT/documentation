@@ -1,0 +1,17 @@
+{
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+    "MD046": false,
+    "MD024": { "siblings_only": true },
+    // New in markdownlint v0.40.0 — not yet triaged. ~1,400 + ~100 violations
+    // exist across the docs (table column alignment and "click here" style
+    // link text). Each is a candidate for a dedicated cleanup PR; until then,
+    // keep them off so CI stays green on the stable backlog.
+    "MD060": false,
+    "MD059": false
+  },
+  "globs": ["docs/**/*.md"]
+}

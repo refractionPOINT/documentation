@@ -15,6 +15,7 @@ Extensions built and maintained by LimaCharlie that extend the platform with add
 - [Integrity](integrity.md) - File integrity monitoring
 - [Lookup Manager](lookup-manager.md) - Lookup data management
 - [Payload Manager](payload-manager.md) - Payload deployment management
+- [Playbook](playbook.md) - Python playbooks for automation _(LABS)_
 - [Reliable Tasking](reliable-tasking.md) - Guaranteed task delivery to sensors
 - [Sensor Cull](sensor-cull.md) - Automatic cleanup of inactive sensors
 - [Usage Alerts](usage-alerts.md) - Usage threshold notifications
