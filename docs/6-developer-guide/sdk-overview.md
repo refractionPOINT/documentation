@@ -12,7 +12,7 @@ The CLI uses a `limacharlie <noun> <verb>` command pattern. Every command suppor
 
 Authenticating the CLI can be done in a few ways.
 
-**Option 1 - Logging In**
+### Option 1 - Logging In
 
 The simplest is to login to an Organization using an [API key](../7-administration/access/api-keys.md).
 
@@ -34,7 +34,7 @@ limacharlie auth use-org my-dev-org
 
 You can also specify a `UID` (User ID) during login to use a *user* API key representing the total set of permissions that user has (see User Profile in the web interface).
 
-**Option 2 - Environment Variables**
+### Option 2 - Environment Variables
 
 You can use the `LC_OID` and `LC_API_KEY` and `LC_UID` environment variables to replace the values used logging in. The environment variables will be used if no other credentials are specified.
 

@@ -228,7 +228,7 @@ limacharlie ai session attach --id "$SID"
 
 ### Flags
 
-**Session metadata**
+#### Session metadata
 
 | Flag | Description |
 |---|---|

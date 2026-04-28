@@ -85,13 +85,13 @@ Use this method when your MCP client doesn't support OAuth.
 
 To access all organizations associated with your user account, authenticate using a JWT generated from your **User API Key**.
 
-**Step 1: Get your User API Key**
+#### Step 1: Get your User API Key
 
 1. Go to [app.limacharlie.io](https://app.limacharlie.io) → **User Profile** (top-right menu)
 2. Navigate to **API Keys**
 3. Generate a User API Key
 
-**Step 2: Generate a JWT**
+#### Step 2: Generate a JWT
 
 ```bash
 curl -X POST "https://jwt.limacharlie.io" \
@@ -101,7 +101,7 @@ curl -X POST "https://jwt.limacharlie.io" \
 
 This returns a JWT valid for 1 hour. See [API Keys](../7-administration/access/api-keys.md) for details.
 
-**Step 3: Configure your MCP client**
+#### Step 3: Configure your MCP client
 
 ```json
 {

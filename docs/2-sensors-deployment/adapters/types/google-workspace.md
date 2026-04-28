@@ -10,7 +10,7 @@ Prior to ingesting Google Workspace Audit logs in LimaCharlie, you must first co
 
 The following steps help prepare this:
 
-**Step 1: Enable Platform Sharing in Google Workspace**
+### Step 1: Enable Platform Sharing in Google Workspace
 
 In the Google Workspace admin console navigate to [Account -> Account Settings -> Legal and Compliance](https://admin.google.com/u/1/ac/companyprofile/legal)
 
@@ -18,7 +18,7 @@ Verify that under "Sharing options", `Google Cloud Platform Sharing Options` is 
 
 For further details, refer to [Google's documentation on Audit logs for Google Workspace](https://cloud.google.com/logging/docs/audit/gsuite-audit-logging)
 
-**Step 2: Verify logs appear in Google Cloud Platform**
+### Step 2: Verify logs appear in Google Cloud Platform
 
 In the GCP Console go to the [Logs Explorer](https://console.cloud.google.com/logs/query).  Ensure you're at the organization level (and not in a particular folder).
 
@@ -28,6 +28,6 @@ You should see logging details related to Google Workspace, under the following 
 
 `logName:admin.googleapis.com`
 
-**Step 3: Create a cloud-to-cloud GCP Adapter**
+### Step 3: Create a cloud-to-cloud GCP Adapter
 
 Once Google Workspace Audit logs are pushed to GCP, events can be ingested via either [Google Cloud Storage](google-cloud-storage.md) or [Google Cloud Pubsub](google-cloud-pubsub.md). Utilize the appropriate documentation to set up the desired Adapter.

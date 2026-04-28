@@ -16,11 +16,11 @@ Tags can be used for a variety of purposes, including:
 
 You can use tags to classify an endpoint in a number of different ways based on what is important to you.  Some examples of classifications are shown below for inspiration.
 
-**Departments**
+#### Departments
 
 Create tags to classify endpoints based on what business department they belong to.  e.g. sales, finance, operations, development, support, legal, executives.
 
-**Usage Type**
+#### Usage Type
 
 You may wish to tag endpoints based on their type of usage.  e.g. workstation, server, production, staging.
 

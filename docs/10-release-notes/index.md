@@ -29,11 +29,11 @@ Enhancements to the AI Sessions experience with granular permission controls and
 
 ### Endpoint Agent
 
-**Stable: 4.33.10.5**
+#### Stable: 4.33.10.5
 
 - Fix an issue with the `epp_list_exclusions` command not showing all exclusions
 
-**Latest: 4.33.19**
+#### Latest: 4.33.19
 
 - Fix an issue with the `epp_list_exclusions` command not showing all exclusions
 - Change the compression algorithm for Debian installer packages from xz to gzip for better compatibility with older distributions

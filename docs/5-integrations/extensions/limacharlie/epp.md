@@ -52,19 +52,19 @@ Once the extension is enabled, it also extends the Web UI with Endpoint Protecti
 
 Endpoint Protection capabilities are used in three ways.
 
-**Verify Protection**
+### Verify Protection
 
 Select a Windows Sensor in the organization. In the Sensor Overview, there is a new section, "Endpoint Protection" that shows the current protection status. Verify that Defender is listed as active on the sensor.
 
 ![Verify Protection Select a Windows Sensor in the organization](../../../assets/images/image(333).png)
 
-**Perform Scan**
+### Perform Scan
 
 Select a Windows Sensor.
 
 Click on File System. Select the folder, and click on the scan icon  `Scan with EPP`
 
-**Endpoint Protection Commands**
+### Endpoint Protection Commands
 
 Select a Windows Sensor. Open the Sensor Console As you type "epp" you'll see the available commands. Try `epp_status`  - it will return the status.
 

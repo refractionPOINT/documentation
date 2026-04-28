@@ -88,7 +88,7 @@ When ingested with EDR telemetry, or as a separate Adapter, `WEL` type events ar
 
 ### Taskkill from a Non-System Account
 
-*Requires process auditing to be enabled*
+#### Requires process auditing to be enabled
 
 `-12h | plat == windows | WEL | event/EVENT/System/EventID == "4688" and event/EVENT/EventData/NewProcessName contains "taskkill" and event/EVENT/EventData/SubjectUserName not ends with "!"`
 

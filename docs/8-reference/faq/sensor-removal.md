@@ -48,7 +48,7 @@ You may optionally remove the log file located at: /usr/local/hcp.log
 
 Open the Terminal and run the following commands
 
-**Run Command #1**
+### Run Command #1
 
 `sudo systemextensionsctl list | grep rphcp`
 
@@ -60,7 +60,7 @@ Open the Terminal and run the following commands
 * * N7N82884NH com.refractionpoint.rphcp.extension (1.0.241204/1.0.241204) RPHCP [activated enabled]
 ```
 
-**Run Command #2**
+### Run Command #2
 
 `sudo cat /Library/SystemExtensions/db.plist | grep rphcp`
 

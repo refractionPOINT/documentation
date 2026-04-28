@@ -51,7 +51,7 @@ The installation is now complete and you should see a message indicating that th
 
 To verify that the sensor was installed successfully, you can log into the LimaCharlie web application and see if the device has appeared in the Sensors section. Additionally, you can check the following on the device itself:
 
-**Ensure the process is running**
+### Ensure the process is running
 
 In a Terminal, run the command:
 
@@ -61,7 +61,7 @@ In a Terminal, run the command:
 
 If the agent is running, this command should return a record as shown above.
 
-**Ensure the Kernel Extension is loaded**
+### Ensure the Kernel Extension is loaded
 
 You can confirm that the kernel extension is loaded by running the command:
 

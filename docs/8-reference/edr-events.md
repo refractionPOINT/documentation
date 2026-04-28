@@ -1541,7 +1541,7 @@ Event generated when the sensor shuts down. Note: this event may not be observed
 
 **Platforms:**
 
-**Event Data**
+#### Event Data
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -1576,7 +1576,7 @@ Event generated when the sensor starts.
 
 **Platforms:**
 
-**Event Data**
+#### Event Data
 
 | Field | Type | Notes |
 | --- | --- | --- |

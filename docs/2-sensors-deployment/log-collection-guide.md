@@ -169,7 +169,7 @@ file:
 
 Modern logging solution that can output in JSON format for structured parsing.
 
-**Method 1: Pipe to Stdin Adapter**
+### Method 1: Pipe to Stdin Adapter
 
 ```bash
 # Stream journalctl JSON output into the stdin adapter
@@ -181,7 +181,7 @@ journalctl -f -q --output=json | /path/to/lc_adapter stdin \
   client_options.hostname=my-server
 ```
 
-**Method 2: Output to File and Monitor**
+## Method 2: Output to File and Monitor
 
 ```bash
 # Create a systemd service to write journal to file
