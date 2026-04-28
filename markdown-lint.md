@@ -18,22 +18,15 @@ to be installed — `npx` will fetch `markdownlint-cli2` on demand.
 From the repo root:
 
 ```bash
-# Lint everything under docs/
-npx --yes markdownlint-cli2 \
-  --config .markdownlint.json \
-  "docs/**/*.md"
+# Lint everything (config + globs come from .markdownlint-cli2.jsonc)
+npx --yes markdownlint-cli2
 ```
 
-If `.markdownlint.json` does not exist yet, use the same config the CI job
-uses inline:
+The config file at repo root (`.markdownlint-cli2.jsonc`) defines both
+the rule set and the file globs. CI uses the same file via the
+`DavidAnson/markdownlint-cli2-action@v22` action with auto-discovery.
 
-```bash
-npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false, "MD024": {"siblings_only": true}}') \
-  "docs/**/*.md"
-```
-
-Lint a single file or subtree:
+Lint a single file or subtree (overrides the file's `globs`):
 
 ```bash
 npx --yes markdownlint-cli2 "docs/3-detection-response/**/*.md"
@@ -151,9 +144,7 @@ that need judgment (alt text, link rewording, anchor fixes, etc.).
 Run the linter today to see where we stand:
 
 ```bash
-npx --yes markdownlint-cli2 \
-  --config <(echo '{"default": true, "MD013": false, "MD033": false, "MD041": false, "MD046": false, "MD024": {"siblings_only": true}}') \
-  "docs/**/*.md" 2> mdlint.out || true
+npx --yes markdownlint-cli2 2> mdlint.out || true
 grep -oE 'MD[0-9]+/[a-z-]+' mdlint.out | sort | uniq -c | sort -rn
 ```
 
