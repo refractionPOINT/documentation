@@ -24,10 +24,7 @@ The LimaCharlie Go SDK provides a comprehensive client library for interacting w
   - [Hive Configuration Management](#hive-configuration-management)
 - [Data Structures](#data-structures)
 - [Error Handling](#error-handling)
-- [Advanced Features](#advanced-features)
-- [Examples](#examples)
 - [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
 - [Firehose CLI Tool](#firehose-cli-tool)
 
 ## Installation
