@@ -2,7 +2,7 @@
 
 [1Password](https://1password.com/) provides an events API to fetch audit logs. Events can be ingested directly via a cloud-to-cloud or CLI Adapter.
 
-See 1Password's official API documentation [here](https://developer.1password.com/docs/events-api/reference/).
+See [1Password's official Events API documentation](https://developer.1password.com/docs/events-api/reference/).
 
 1Password telemetry can be addressed via the `1password` platform.
 

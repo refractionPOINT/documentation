@@ -1,6 +1,6 @@
 # SOC Prime Rules
 
-To use SOC Prime rules in LimaCharlie, start by configuring lists in [SOC Prime](https://socprime.com/). You can learn how to do it [here](https://socprime.com/blog/enable-continuous-content-management-with-the-soc-prime-platform/).
+To use SOC Prime rules in LimaCharlie, start by configuring lists in [SOC Prime](https://socprime.com/). See [SOC Prime's continuous content management guide](https://socprime.com/blog/enable-continuous-content-management-with-the-soc-prime-platform/) for instructions.
 
 After the lists have been configured, you can finish the configuration in LimaCharlie. Note that currently the SOC Prime API is not available for free users. It is available only for paid users or if they requested a trial.
 

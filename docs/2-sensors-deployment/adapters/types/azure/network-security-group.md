@@ -1,6 +1,6 @@
 # Azure Network Security Group
 
-Azure Network security groups help filter network traffic between Azure resources in an Azure virtual network. More information on Azure network security groups can be found [here](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview).
+Azure Network security groups help filter network traffic between Azure resources in an Azure virtual network. See Microsoft's [Network security groups overview](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview) for more detail.
 
 LimaCharlie can ingest and natively parse Azure Network Security Group logs.
 

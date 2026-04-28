@@ -4,7 +4,7 @@ The Infrastructure Extension allows you to perform infrastructure-as-code (IaC) 
 
 > Scaling Organization Management
 >
-> If you're an managed service company or need to manage a large number of Organizations, consider LimaCharlie's MSSP setup. You can find more information about this [here](https://github.com/refractionPOINT/mssp-demo).
+> If you're a managed service company or need to manage a large number of Organizations, consider LimaCharlie's [MSSP demo setup](https://github.com/refractionPOINT/mssp-demo).
 
 ## Enabling the Infrastructure Extension
 
@@ -16,7 +16,7 @@ After clicking **Subscribe**, the Infrastructure extension should be available a
 
 > Where to start?
 >
-> IaC can be a powerful tool for rapidly deploying and managing Organizations within LimaCharlie. To help you discover more possibilities, we have provided several example templates/configurations [here](https://github.com/refractionPOINT/templates).
+> IaC can be a powerful tool for rapidly deploying and managing Organizations within LimaCharlie. We provide [example templates and configurations](https://github.com/refractionPOINT/templates) on GitHub.
 
 ## Using the Infrastructure Extension
 

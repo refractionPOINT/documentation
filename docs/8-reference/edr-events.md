@@ -1340,7 +1340,7 @@ Generated when a process starts. It lists all environment variables associated w
 
 ### RECEIPT
 
-This event is used as a generic response to some commands. The contents of a `RECEIPT` event usually contain an `ERROR` code that you can use to determine if the command was successful (`ERROR` codes can be explored [here](error-codes.md)). It's often a good idea to issue the original command with an `investigation_id` which will get echoed in the `RECEIPT` related to that command to make it easier to track.
+This event is used as a generic response to some commands. The contents of a `RECEIPT` event usually contain an `ERROR` code that you can use to determine if the command was successful (see [Error Codes](error-codes.md) for the complete list). It's often a good idea to issue the original command with an `investigation_id` which will get echoed in the `RECEIPT` related to that command to make it easier to track.
 
 **Platforms:**
 
@@ -1445,7 +1445,7 @@ Emitted after a sensor is allowed network connectivity again (after it was previ
 
 Generated whenever a process opens a handle to another process with access flags like `VM_READ`, `VM_WRITE`, or `PROCESS_CREATE_THREAD`.
 
-The `ACCESS_FLAGS` is the access mask as defined [here](https://docs.microsoft.com/en-us/windows/desktop/procthread/process-security-and-access-rights).
+The `ACCESS_FLAGS` is the access mask as defined in Microsoft's [Process Security and Access Rights reference](https://docs.microsoft.com/en-us/windows/desktop/procthread/process-security-and-access-rights).
 
 **Platforms:**
 

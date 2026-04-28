@@ -1,6 +1,6 @@
 # Sysmon Comparison
 
-System Monitor, or "Sysmon", is a Windows server and device driver that monitors and logs operating system activity. It is part of the Sysinternals toolkit. More information on Sysmon can be found [here](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon).
+System Monitor, or "Sysmon", is a Windows server and device driver that monitors and logs operating system activity. It is part of the Sysinternals toolkit. See Microsoft's [Sysmon download and reference page](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon).
 
 Many organizations deploy Sysmon and structure their detection events around Sysmon-specific event logs, which can offer granular insight into operating system changes. LimaCharlie's EDR telemetry can offer similar events, allowing you to write detections against these events directly.
 
@@ -28,4 +28,4 @@ Note, LC's Endpoint Agent is easily able to [consume Sysmon events](../../2-sens
 
 ## Executable Tracking
 
-Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality with LimaCharlie with BinLib. More information on that can be found [here](../../5-integrations/extensions/limacharlie/binlib.md).
+Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality in LimaCharlie with the [BinLib extension](../../5-integrations/extensions/limacharlie/binlib.md).

@@ -2,7 +2,7 @@
 
 The Tailscale CLI brings Tailscale's powerful software-defined networking, based on WireGuard, to the command line. This Extension allows you to interact with a Tailscale network(s) from LimaCharlie.
 
-This extension makes use of Tailscale's native CLI, which can be found [here](https://tailscale.com/kb/1031/install-linux).
+This extension uses [Tailscale's native CLI](https://tailscale.com/kb/1031/install-linux).
 
 ## Example
 

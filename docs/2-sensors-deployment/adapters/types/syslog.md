@@ -14,7 +14,7 @@ Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/
 
 ### Syslog-specific Configurations
 
-All Adapters have the same common client configuration options, found [here](../usage.md). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
+All Adapters share the [common client configuration options](../usage.md). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
 
 - `port`: port to listen for syslog from.
 - `iface`: the interface name to listen for new connections/packets from, defaults to all.

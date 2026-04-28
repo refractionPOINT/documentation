@@ -2,7 +2,7 @@
 
 The Okta CLI allows you to interact with your Okta instance(s) via the command line. With this component of the Cloud CLI Extension, you can interact with Okta directly from LimaCharlie.
 
-This extension makes use of the Okta CLI, which can be found [here](https://cli.okta.com/manual/).
+This extension uses [the Okta CLI](https://cli.okta.com/manual/).
 
 ## Example
 
@@ -22,7 +22,7 @@ The following example returns a list of registered Okta applications.
 
 To make use of the Okta CLI, you will need:
 
-- An API key. More information about provisioning an API key can be found [here](https://developer.okta.com/docs/guides/create-an-api-token/main/).
+- An API key. See Okta's [Create an API token guide](https://developer.okta.com/docs/guides/create-an-api-token/main/).
 - Create a secret in the secrets manager in the following format:
 
 ```text

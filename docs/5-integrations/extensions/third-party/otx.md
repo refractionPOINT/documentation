@@ -2,11 +2,11 @@
 
 AlienVault's Open Threat Exchange (OTX) is the "neighborhood watch of the global intelligence community." It enables private companies, independent security researchers, and government agencies to openly collaborate and share the latest information about emerging threats, attack methods, and malicious actors, promoting greater security across the entire community.
 
-More information about OTX can be found [here](https://otx.alienvault.com/).
+[More information about OTX](https://otx.alienvault.com/) is available on the AlienVault site.
 
 ## Enabling the OTX Extension
 
-Before utilizing the OTX extension, you will need an AlienVault OTX API Key. This can be found in your AlienVault OTX account [here](https://otx.alienvault.com/).
+Before utilizing the OTX extension, you will need an AlienVault OTX API Key from your [AlienVault OTX account](https://otx.alienvault.com/).
 
 To enable the OTX extension, navigate to the [OTX extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-otx). Select the Organization you wish to enable the extension for, and select **Subscribe**.
 

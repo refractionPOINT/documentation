@@ -82,7 +82,7 @@ office365:
 
 To establish an Office 365 adapter, we will need to complete a few steps within the Azure portal. Ensure that you have the correct permissions to set up a new App registration.
 
-- Within the Microsoft Azure portal, create a new App registration. You can follow Microsoft's Quickstart guide [here](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
+- Within the Microsoft Azure portal, create a new App registration. See Microsoft's [App registration Quickstart](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 - The LimaCharlie connector requires a secret for Office 365 data. You can create one under `Certificates & secrets`. Be sure to copy this value and save it somewhere - you can only view it once.
 
 ![image.png](../../../assets/images/image(73).png)
@@ -148,4 +148,4 @@ value: anon
   name: OneDrive File Accessed by Anonymous User
 ```
 
-Note that in the detection above, we pivot on the `FileAccessed` event, which is associated with SharePoint activity. Available event types will depend on source activity and events ingested. More information on audit log activities can be found [here](https://learn.microsoft.com/en-us/purview/audit-log-activities).
+Note that in the detection above, we pivot on the `FileAccessed` event, which is associated with SharePoint activity. Available event types will depend on source activity and events ingested. See Microsoft's [audit log activities reference](https://learn.microsoft.com/en-us/purview/audit-log-activities).

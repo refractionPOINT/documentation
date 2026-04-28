@@ -2,7 +2,7 @@
 
 The GitHub CLI is a tool that brings GitHub to the terminal, allowing you to interact with and control Git accounts, repositories, organizations, and users from the CLI. With this component of the Cloud CLI Extension, you can interact with GitHub directly from LimaCharlie.
 
-This extension makes use of the GitHub CLI, which can be found [here](https://cli.github.com/manual/).
+This extension uses [the GitHub CLI](https://cli.github.com/manual/).
 
 ## Example
 

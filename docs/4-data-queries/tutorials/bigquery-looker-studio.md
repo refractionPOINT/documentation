@@ -20,7 +20,7 @@ The nice part about this type of hierarchy is that I can build out multiple tabl
 
 ![image.png](../../assets/images/image(97).png)
 
-Within the Google Cloud Console, we also want to create a Service Account and gather an API key. More details on that can be found [here](https://cloud.google.com/iam/docs/service-accounts-create).
+Within the Google Cloud Console, we also want to create a Service Account and gather an API key. See Google Cloud's [service account creation guide](https://cloud.google.com/iam/docs/service-accounts-create) for more detail.
 
 Copy the API key and keep it somewhere safe, we'll need to configure it in the output.
 

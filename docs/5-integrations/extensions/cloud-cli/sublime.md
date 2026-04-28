@@ -2,7 +2,7 @@
 
 The Sublime Security CLI brings the power of Sublime's email platform to the command-line. With this component of the Cloud CLI Extension, you can interact with Sublime's email platform directly from LimaCharlie.
 
-This extension makes use of Tailscale's native CLI, which can be found [here](https://docs.sublimesecurity.com/reference/analysis-api-cli). The CLI is a Python package - the source code can be found [here](https://github.com/sublime-security/sublime-cli).
+This extension uses [Sublime Security's native CLI](https://docs.sublimesecurity.com/reference/analysis-api-cli). The CLI is a Python package — its [source code](https://github.com/sublime-security/sublime-cli) is on GitHub.
 
 ## Example
 
@@ -22,7 +22,7 @@ The following response action returns information about the currently authentica
 
 To utilize Sublime's CLI capabilities, you will need:
 
-- You will need an API key. More information about provisioning an API key can be found [here](https://docs.sublimesecurity.com/reference/authentication).
+- You will need an API key. See Sublime Security's [authentication reference](https://docs.sublimesecurity.com/reference/authentication) for provisioning details.
 - Create a secret in the secrets manager in the following format:
 
 ```text

@@ -1,6 +1,6 @@
 # Azure SQL Audit Logs
 
-Microsoft Azure SQL is a scalable, cloud-hosted database that integrates with the Azure ecosystem. More information on Azure SQL can be found [here](https://azure.microsoft.com/en-us/products/azure-sql/database).
+Microsoft Azure SQL is a scalable, cloud-hosted database that integrates with the Azure ecosystem. See Microsoft's [Azure SQL Database product page](https://azure.microsoft.com/en-us/products/azure-sql/database) for more detail.
 
 LimaCharlie can ingest and natively parse Azure SQL Server audit logs.
 

@@ -79,15 +79,15 @@ changes. Examples:
   inconsistent code-block style. Disabling avoids the false
   positives.
 
-- `MD060` (table column alignment) and `MD059` (descriptive link
-  text) — both new in markdownlint v0.40.0 (the version CI's
-  `markdownlint-cli2-action@v22` bundles). Each fires on substantial
-  pre-existing content that wasn't part of the original cleanup
-  initiative — ~1,400 table-alignment violations and ~109
-  generic-link-text cases ("here", "click here", etc.). Disabled
-  for now so CI stays green on the stable backlog. Each is a good
-  candidate for a dedicated follow-up PR using the same per-rule
-  workflow described above.
+- `MD060` (table column alignment) — new in markdownlint v0.40.0
+  (the version CI's `markdownlint-cli2-action@v22` bundles). Fires
+  on ~1,400 cases across the docs' tables. Disabled for now so CI
+  stays green; a candidate for a dedicated follow-up PR using the
+  same per-rule workflow as the rest of the cleanup.
+
+`MD059` (descriptive link text) is also new in v0.40.0; it was
+cleared by rewriting all 109 generic `[here]` / `[link]` references
+to use descriptive text and is now enforced.
 
 **Tuned** — these rules are configured rather than at default settings:
 

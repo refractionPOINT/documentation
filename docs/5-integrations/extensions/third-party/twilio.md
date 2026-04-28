@@ -4,7 +4,7 @@
 
 The [Twilio](https://www.twilio.com/) Extension allows you to send messages within Twilio. It requires you to setup the Twilio authentication in the **Integrations** section of your Organization.
 
-Some more detailed information is available [here](https://www.twilio.com/docs/sms/send-messages).
+See Twilio's [SMS send-messages reference](https://www.twilio.com/docs/sms/send-messages) for more detail.
 
 ## Setup
 

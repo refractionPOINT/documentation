@@ -4,4 +4,4 @@ The Developer Grant Program is designed to help fuel the growth of LimaCharlie a
 
 If you are looking to commercialize an idea we can help you get it into our marketplace and if there is traction there, we can further support you in growing.
 
-Interested parties can apply for the grant program [here](https://limacharlie.io/grant-program).
+Interested parties can [apply for the grant program](https://limacharlie.io/grant-program).

@@ -23,7 +23,7 @@ Adapter Type: `zendesk`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](../deployment.md#adapter-binaries).
+[Adapter binaries](../deployment.md#adapter-binaries) are available on the deployment page.
 
 ```bash
 chmod +x /path/to/lc_adapter

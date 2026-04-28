@@ -2,7 +2,7 @@
 
 The PagerDuty Extension allows you to trigger events within PagerDuty. It requires you to setup the PagerDuty access token in the Integrations section of your Organization.
 
-Some more detailed information is available [here](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/).
+See PagerDuty's [Events API v2 trigger reference](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/) for more detail.
 
 ## REST
 

@@ -22,7 +22,7 @@ Step-by-step, this rule will do the following:
 - Upon seeing a `CONNECTED` event, retrieve the `routing/ext_ip` value and send it to MaxMind via the `api/ip-geo` resource
 - Upon receiving a response from `api/ip-geo`, evaluate it using `metadata_rules` to see if the country associated with the IP is located in the EU
 
-The format of the metadata returned is documented [here](https://github.com/maxmind/MaxMind-DB-Reader-python) and looks like this:
+The format of the metadata returned is documented in the [MaxMind DB Reader (Python) repository](https://github.com/maxmind/MaxMind-DB-Reader-python) and looks like this:
 
 ```json
 {

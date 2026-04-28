@@ -10,7 +10,7 @@ InTune supports Windows and macOS package deployment.
 
 ## Windows Deployment via Intune
 
-Deploying Windows applications via Intune requires creating an Intune application package (`.intunewin` file extension). To do this, please utilize Microsoft's IntuneWinAppUtil.exe file. Usage and documentation on creating an `.intunewin` file can be found [here](https://learn.microsoft.com/en-us/mem/intune/apps/apps-win32-prepare).
+Deploying Windows applications via Intune requires creating an Intune application package (`.intunewin` file extension). To do this, please utilize Microsoft's IntuneWinAppUtil.exe file. See Microsoft's [`.intunewin` packaging documentation](https://learn.microsoft.com/en-us/mem/intune/apps/apps-win32-prepare).
 
 ### Intune Package Contents
 

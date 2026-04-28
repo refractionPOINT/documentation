@@ -10,7 +10,7 @@ This Adapter allows you to connect to an Azure Event Hub to fetch structured dat
 - Entra ID [formerly Azure AD] (Platform: `azure_ad`)
 - Microsoft Defender (Platform: `msdefender`)
 
-Documentation for creating an event hub can be found here [here](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
+Microsoft has [documentation for creating an Event Hub](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 
 ## Configuring Data Streams
 

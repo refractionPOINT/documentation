@@ -21,7 +21,7 @@ Typically, Sensors require access over port 443 and use pinned SSL certificates.
 
 If you need to install sensors without pinned certificates, an installation key must be created with a specific flag. This must be done via the REST API, by setting the `use_public_root_ca` flag to `true`.
 
-More details can be found [here](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Manager.py#L1386).
+See the [Python SDK Manager.replicantRequest source](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Manager.py#L1386) for more detail.
 
 ## Use of Tags
 

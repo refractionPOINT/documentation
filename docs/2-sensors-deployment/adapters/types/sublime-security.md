@@ -14,7 +14,7 @@ Adapter Type: `sublime`
 
 ### CLI Deployment
 
-Adapter downloads can be found [here](../deployment.md).
+[Adapter downloads](../deployment.md) are available on the deployment page.
 
 ```bash
 chmod +x /path/to/lc_adapter
@@ -69,7 +69,7 @@ Sublime Security logs are ingested via a cloud-to-cloud webhook Adapter configur
 
 #### 1. Creating the LimaCharlie Webhook Adapter
 
-The following steps are modified from the generic Webhook Adapter creation documentation, found [here](../tutorials/webhook-adapter.md).
+These steps are adapted from the [generic Webhook Adapter creation guide](../tutorials/webhook-adapter.md).
 
 Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details, among other parameters. The following configuration can be modified to easily configure a Webhook Adapter for ingesting Sublime Security events:
 

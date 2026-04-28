@@ -1,6 +1,6 @@
 # Azure Monitor
 
-Azure Monitor Logs are a feature of Azure Monitor that collect and organize log and performance data from monitored resources. More information on Azure Monitor Logs can be found [here](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs).
+Azure Monitor Logs are a feature of Azure Monitor that collect and organize log and performance data from monitored resources. See Microsoft's [Azure Monitor Logs reference](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/data-platform-logs) for more detail.
 
 LimaCharlie can ingest and natively parse Azure Monitor Logs.
 
