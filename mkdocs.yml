@@ -90,7 +90,7 @@ plugins:
         'docs/ext-zeek.md': '5-integrations/extensions/third-party/zeek.md'
         'docs/limacharlie-cli.md': '6-developer-guide/cli.md'
         'docs/payload-manager.md': '5-integrations/extensions/limacharlie/payload-manager.md'
-        'docs/playbook.md': '5-integrations/extensions/labs/playbook.md'
+        'docs/playbook.md': '5-integrations/extensions/limacharlie/playbook.md'
         'docs/sigma-rules.md': '3-detection-response/managed-rulesets/sigma-converter.md'
         'docs/soteria-aws-rules.md': '3-detection-response/managed-rulesets/soteria/aws.md'
         'docs/soteria-edr-rules.md': '3-detection-response/managed-rulesets/soteria/edr.md'
@@ -125,7 +125,11 @@ plugins:
         'docs/config-hive-secrets.md': '7-administration/config-hive/secrets.md'
         'docs/user-access.md': '7-administration/access/user-access.md'
         'docs/billing.md': '7-administration/billing/options.md'
-        'docs/add-ons.md': '5-integrations/add-ons/index.md'
+        'docs/add-ons.md': '5-integrations/index.md'
+        # 2026-04-28 integrations refactor
+        '5-integrations/add-ons/index.md': '5-integrations/index.md'
+        '5-integrations/extensions/labs/playbook.md': '5-integrations/extensions/limacharlie/playbook.md'
+        '5-integrations/services/dumper.md': '5-integrations/extensions/limacharlie/dumper.md'
         # FAQ
         'docs/faq-invoices.md': '8-reference/faq/invoices.md'
         # Developer guide
@@ -353,74 +357,75 @@ nav:
 
   - Integrations:
       - Overview: 5-integrations/index.md
-      - Add-ons: 5-integrations/add-ons/index.md
       - Outputs:
           - Overview: 5-integrations/outputs/index.md
           - Stream Structures: 5-integrations/outputs/stream-structures.md
           - Testing: 5-integrations/outputs/testing.md
           - Allowlisting: 5-integrations/outputs/allowlisting.md
           - Billing: 5-integrations/outputs/billing.md
-          - Destinations:
-              - Amazon S3: 5-integrations/outputs/destinations/amazon-s3.md
+          - 'Destinations — SIEM / Streaming':
               - Splunk: 5-integrations/outputs/destinations/splunk.md
               - Elastic: 5-integrations/outputs/destinations/elastic.md
-              - BigQuery: 5-integrations/outputs/destinations/bigquery.md
-              - Syslog: 5-integrations/outputs/destinations/syslog.md
-              - Webhook: 5-integrations/outputs/destinations/webhook.md
-              - Webhook Bulk: 5-integrations/outputs/destinations/webhook-bulk.md
-              - Slack: 5-integrations/outputs/destinations/slack.md
-              - Telegram: 5-integrations/outputs/destinations/telegram.md
-              - Microsoft Teams: 5-integrations/outputs/destinations/ms-teams.md
-              - SMTP: 5-integrations/outputs/destinations/smtp.md
+              - OpenSearch: 5-integrations/outputs/destinations/opensearch.md
+              - Humio: 5-integrations/outputs/destinations/humio.md
               - Apache Kafka: 5-integrations/outputs/destinations/apache-kafka.md
+              - Syslog: 5-integrations/outputs/destinations/syslog.md
               - Azure Event Hub: 5-integrations/outputs/destinations/azure-event-hub.md
+              - Google Pub/Sub: 5-integrations/outputs/destinations/google-pubsub.md
+          - 'Destinations — Storage':
+              - Amazon S3: 5-integrations/outputs/destinations/amazon-s3.md
               - Azure Storage Blob: 5-integrations/outputs/destinations/azure-storage-blob.md
               - Google Cloud Storage: 5-integrations/outputs/destinations/google-cloud-storage.md
-              - Google Pub/Sub: 5-integrations/outputs/destinations/google-pubsub.md
-              - Humio: 5-integrations/outputs/destinations/humio.md
-              - OpenSearch: 5-integrations/outputs/destinations/opensearch.md
-              - ASW: 5-integrations/outputs/destinations/scp.md
+              - BigQuery: 5-integrations/outputs/destinations/bigquery.md
+              - SCP: 5-integrations/outputs/destinations/scp.md
               - SFTP: 5-integrations/outputs/destinations/sftp.md
+          - 'Destinations — Messaging':
+              - Slack: 5-integrations/outputs/destinations/slack.md
+              - Microsoft Teams: 5-integrations/outputs/destinations/ms-teams.md
+              - Telegram: 5-integrations/outputs/destinations/telegram.md
+              - SMTP: 5-integrations/outputs/destinations/smtp.md
               - Tines: 5-integrations/outputs/destinations/tines.md
+          - 'Destinations — HTTP':
+              - Webhook: 5-integrations/outputs/destinations/webhook.md
+              - Webhook Bulk: 5-integrations/outputs/destinations/webhook-bulk.md
       - Extensions:
           - Overview: 5-integrations/extensions/index.md
           - Using Extensions: 5-integrations/extensions/using-extensions.md
           - LimaCharlie:
               - Overview: 5-integrations/extensions/limacharlie/index.md
-              - Git Sync: 5-integrations/extensions/limacharlie/git-sync.md
-              - Reliable Tasking: 5-integrations/extensions/limacharlie/reliable-tasking.md
-              - YARA Manager: 5-integrations/extensions/limacharlie/yara-manager.md
               - Artifact: 5-integrations/extensions/limacharlie/artifact.md
               - BinLib: 5-integrations/extensions/limacharlie/binlib.md
-              - Infrastructure: 5-integrations/extensions/limacharlie/infrastructure.md
-              - Usage Alerts: 5-integrations/extensions/limacharlie/usage-alerts.md
+              - Cases: 5-integrations/extensions/limacharlie/cases.md
               - Dumper: 5-integrations/extensions/limacharlie/dumper.md
               - EPP: 5-integrations/extensions/limacharlie/epp.md
               - Exfil: 5-integrations/extensions/limacharlie/exfil.md
+              - Feedback: 5-integrations/extensions/limacharlie/feedback.md
+              - Git Sync: 5-integrations/extensions/limacharlie/git-sync.md
+              - Infrastructure: 5-integrations/extensions/limacharlie/infrastructure.md
               - Integrity: 5-integrations/extensions/limacharlie/integrity.md
               - Lookup Manager: 5-integrations/extensions/limacharlie/lookup-manager.md
               - Payload Manager: 5-integrations/extensions/limacharlie/payload-manager.md
+              - Playbook (LABS): 5-integrations/extensions/limacharlie/playbook.md
+              - Reliable Tasking: 5-integrations/extensions/limacharlie/reliable-tasking.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
-              - Cases: 5-integrations/extensions/limacharlie/cases.md
-              - Feedback: 5-integrations/extensions/limacharlie/feedback.md
+              - Usage Alerts: 5-integrations/extensions/limacharlie/usage-alerts.md
+              - YARA Manager: 5-integrations/extensions/limacharlie/yara-manager.md
           - Third Party:
               - Overview: 5-integrations/extensions/third-party/index.md
-              - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
-              - Zeek: 5-integrations/extensions/third-party/zeek.md
-              - YARA: 5-integrations/extensions/third-party/yara.md
-              - Hayabusa: 5-integrations/extensions/third-party/hayabusa.md
               - Atomic Red Team: 5-integrations/extensions/third-party/atomic-red-team.md
+              - Govee: 5-integrations/extensions/third-party/govee.md
+              - Hayabusa: 5-integrations/extensions/third-party/hayabusa.md
+              - NIMS: 5-integrations/extensions/third-party/nims.md
               - OTX: 5-integrations/extensions/third-party/otx.md
               - PagerDuty: 5-integrations/extensions/third-party/pagerduty.md
               - Plaso: 5-integrations/extensions/third-party/plaso.md
-              - Strelka: 5-integrations/extensions/third-party/strelka.md
-              - Twilio: 5-integrations/extensions/third-party/twilio.md
-              - Govee: 5-integrations/extensions/third-party/govee.md
-              - NIMS: 5-integrations/extensions/third-party/nims.md
               - Renigma: 5-integrations/extensions/third-party/renigma.md
               - SecureAnnex: 5-integrations/extensions/third-party/secureannex.md
-          - Labs:
-              - Playbook: 5-integrations/extensions/labs/playbook.md
+              - Strelka: 5-integrations/extensions/third-party/strelka.md
+              - Twilio: 5-integrations/extensions/third-party/twilio.md
+              - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
+              - YARA: 5-integrations/extensions/third-party/yara.md
+              - Zeek: 5-integrations/extensions/third-party/zeek.md
           - Cloud CLI:
               - Overview: 5-integrations/extensions/cloud-cli/index.md
               - 1Password: 5-integrations/extensions/cloud-cli/1password.md
@@ -437,17 +442,16 @@ nav:
               - Vultr: 5-integrations/extensions/cloud-cli/vultr.md
       - API Integrations:
           - Overview: 5-integrations/api-integrations/index.md
-          - VirusTotal: 5-integrations/api-integrations/virustotal.md
-          - GreyNoise: 5-integrations/api-integrations/greynoise.md
-          - Hybrid Analysis: 5-integrations/api-integrations/hybrid-analysis.md
           - AlphaMountain: 5-integrations/api-integrations/alphamountain.md
           - EchoTrail: 5-integrations/api-integrations/echotrail.md
+          - GreyNoise: 5-integrations/api-integrations/greynoise.md
+          - Hybrid Analysis: 5-integrations/api-integrations/hybrid-analysis.md
           - IP ASN: 5-integrations/api-integrations/ip-asn.md
           - IP Geolocation: 5-integrations/api-integrations/ip-geolocation.md
           - Pangea: 5-integrations/api-integrations/pangea.md
+          - VirusTotal: 5-integrations/api-integrations/virustotal.md
       - Services:
           - Replay: 5-integrations/services/replay.md
-          - Dumper: 5-integrations/services/dumper.md
       - Tutorials:
           - VirusTotal Integration: 5-integrations/tutorials/virustotal-integration.md
           - Human-in-the-Loop Response: 5-integrations/tutorials/human-in-the-loop-response.md

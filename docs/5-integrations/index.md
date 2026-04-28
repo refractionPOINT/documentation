@@ -1,45 +1,42 @@
 # Integrations
 
-Connect LimaCharlie with your existing security infrastructure through outputs, extensions, and API integrations.
+LimaCharlie connects to external systems in three directions: outbound (sending data out), inbound (acting on external data), and enrichment (pulling context into detections). This section covers all three.
 
-## Outputs
+## Outbound — get data out of LimaCharlie
 
-Stream telemetry and detections to external destinations:
+[**Outputs**](outputs/index.md) stream telemetry, detections, audit logs, and deployment events to external destinations on a continuous basis. Use them to feed your SIEM, archive to object storage, or trigger external systems via webhook.
 
-- [Amazon S3](outputs/destinations/amazon-s3.md)
-- [Splunk](outputs/destinations/splunk.md)
-- [Elastic](outputs/destinations/elastic.md)
-- [Google BigQuery](outputs/destinations/bigquery.md)
-- [Webhook](outputs/destinations/webhook.md)
-- [And more...](outputs/index.md)
+Destination categories:
 
-## Extensions
+- **SIEM / streaming**: Splunk, Elastic, OpenSearch, Humio, Apache Kafka
+- **Object storage**: Amazon S3, Azure Storage Blob, Google Cloud Storage, BigQuery, SCP, SFTP
+- **Messaging**: Slack, Microsoft Teams, Telegram, SMTP, Tines
+- **HTTP**: Webhook (single), Webhook (bulk)
+- **Cloud streaming**: Azure Event Hub, Google Pub/Sub, syslog
 
-Expand LimaCharlie capabilities:
+See [Outputs](outputs/index.md) for the complete list and operational reference (testing, allowlisting, billing, stream structures).
 
-- **LimaCharlie Extensions**: Git Sync, Reliable Tasking, YARA Manager
-- **Third-Party**: Velociraptor, Zeek, Hayabusa, Atomic Red Team
-- **Cloud CLI**: AWS, Azure, GCP, Okta integrations
+## Inbound — let LimaCharlie act on external systems
 
-[Browse all extensions](extensions/index.md)
+[**Extensions**](extensions/index.md) add capabilities to LimaCharlie. Some collect or process data (Artifact, BinLib, Velociraptor, Zeek), some manage internal platform features (Git Sync, YARA Manager, Sensor Cull), some integrate workflow tools (PagerDuty, Twilio, Cases, Playbook).
 
-## API Integrations
+[**Cloud CLI**](extensions/cloud-cli/index.md) is one specific extension that runs cloud-provider CLIs (AWS, Azure, GCP, Okta, etc.) as D&R response actions. Use it to take action *in* a cloud service from a LimaCharlie detection — disable an Okta user, isolate an EC2 instance, revoke a GitHub token.
 
-Enrich your detections with threat intelligence:
+## Enrichment — pull external data into detections
 
-- [VirusTotal](api-integrations/virustotal.md)
-- [GreyNoise](api-integrations/greynoise.md)
-- [Hybrid Analysis](api-integrations/hybrid-analysis.md)
+[**API Integrations**](api-integrations/index.md) let D&R rules and lookups query external services for context: VirusTotal, GreyNoise, Hybrid Analysis, IP geolocation, etc. Cheap to set up, useful for adding signal to existing detections.
+
+Cloud CLI vs API Integrations: Cloud CLI runs commands *into* a cloud service (action). API Integrations *read* from an external service (lookup). They complement each other.
+
+## Tutorials
+
+End-to-end recipes combining several pieces:
+
+- [VirusTotal Integration](tutorials/virustotal-integration.md)
+- [Human-in-the-Loop Response](tutorials/human-in-the-loop-response.md)
+- [Hayabusa BigQuery](tutorials/hayabusa-bigquery.md)
+- [Velociraptor BigQuery](tutorials/velociraptor-bigquery.md)
 
 ## Services
 
-- [Replay](services/replay.md) - Historical data replay for testing
-- [Dumper](services/dumper.md) - Memory acquisition service
-
----
-
-## See Also
-
-- [Outputs Overview](outputs/index.md)
-- [Extensions](extensions/index.md)
-- [API Integrations](api-integrations/index.md)
+- [Replay](services/replay.md) — replay historical events through D&R rules for testing

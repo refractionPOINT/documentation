@@ -1,6 +1,6 @@
 # Human-in-the-Loop Response Automation
 
-This tutorial walks through building an end-to-end workflow that detects a credential dumping tool, asks a SOC analyst for approval before isolating the host, and executes the response via a Python playbook. It demonstrates how D&R rules, the [Feedback extension](../extensions/limacharlie/feedback.md), and [Playbooks](../extensions/labs/playbook.md) work together to implement human-in-the-loop security automation.
+This tutorial walks through building an end-to-end workflow that detects a credential dumping tool, asks a SOC analyst for approval before isolating the host, and executes the response via a Python playbook. It demonstrates how D&R rules, the [Feedback extension](../extensions/limacharlie/feedback.md), and [Playbooks](../extensions/limacharlie/playbook.md) work together to implement human-in-the-loop security automation.
 
 ## What You Will Build
 

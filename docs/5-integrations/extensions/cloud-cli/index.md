@@ -1,8 +1,15 @@
 # Cloud CLI
 
-The Cloud CLI extension allows you to trigger actions within other tools such as AWS, GCP, Azure, and more based on events generated in LimaCharlie.
+The Cloud CLI extension runs cloud-provider CLIs (AWS, Azure, GCP, Okta, etc.) as D&R response actions. Use it to take action *in* a cloud service when a LimaCharlie detection fires — for example, disable an Okta user, isolate an EC2 instance, or revoke a GitHub token directly from a rule.
 
-It uses the native CLI tools for each platform, enabling you to automate responses directly from D&R rules.
+It uses each platform's native CLI under the hood, so anything the CLI can do is available as an automated response.
+
+## When to use Cloud CLI vs API Integrations
+
+- **Cloud CLI** — *write* actions into an external service (run a command, change state).
+- **[API Integrations](../../api-integrations/index.md)** — *read* from an external service for enrichment (look up reputation, geolocation, etc.).
+
+Most setups end up using both: API integrations enrich detections with context, Cloud CLI acts on them.
 
 ## Supported Platforms
 
@@ -18,3 +25,9 @@ It uses the native CLI tools for each platform, enabling you to automate respons
 - [Sublime](sublime.md)
 - [Tailscale](tailscale.md)
 - [Vultr](vultr.md)
+
+## See Also
+
+- [Extensions Overview](../index.md)
+- [Using Extensions](../using-extensions.md)
+- [API Integrations](../../api-integrations/index.md)
