@@ -12,7 +12,7 @@ Details on manual uninstallation is found at the bottom of each respective OS' i
 
 ### Sensor Commands
 
-For macOS and Windows operating systems, you can uninstall a sensor with the `uninstall` command. More information on that can be found [here](../../8-reference/endpoint-commands.md#uninstall).
+For macOS and Windows operating systems, you can uninstall a sensor with the `uninstall` command. More information on that can be found [here](../../8-reference/endpoint-commands.md).
 
 On Windows, the command defaults to uninstalling the sensor as if installed from the direct installer exe. If an MSI was used for installation, you can add a `--msi` flag to the `uninstall` command to trigger an uninstallation that is compatible with MSI.
 

@@ -7,8 +7,8 @@ The following fields are available in this evaluation:
 - `sid`: the Sensor ID
 - `oid`: the Organization ID
 - `iid`: the Installation Key ID
-- `plat`: the Platform name (see [platforms](id-schema.md#platforms))
-- `ext_plat`: the Extended Platform name (see [platforms](id-schema.md#platforms))
+- `plat`: the Platform name (see [platforms](id-schema.md#platform))
+- `ext_plat`: the Extended Platform name (see [platforms](id-schema.md#platform))
 - `arch`: the Architecture name (see [architectures](id-schema.md#architecture))
 - `enroll`: the Enrollment as a second epoch timestamp
 - `hostname`: the hostname

@@ -76,7 +76,7 @@ respond:
 
 ### For User Sessions
 
-1. [Register](user-sessions.md#registration) for AI Sessions
+1. [Register](user-sessions.md#step-1-registration) for AI Sessions
 2. Store your Anthropic credentials (API key or OAuth)
 3. Create a session and start interacting
 

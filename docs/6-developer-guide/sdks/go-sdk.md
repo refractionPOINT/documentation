@@ -13,7 +13,7 @@ The LimaCharlie Go SDK provides a comprehensive client library for interacting w
 - [Client Initialization](#client-initialization)
 - [Core Components](#core-components)
   - [Sensor Management](#sensor-management)
-  - [Detection & Response Rules](#detection--response-rules)
+  - [Detection & Response Rules](#detection-response-rules) <!-- markdownlint-disable-line MD051 -->
   - [Artifacts](#artifacts)
   - [Events and Data Streaming](#events-and-data-streaming)
   - [Organization Management](#organization-management)

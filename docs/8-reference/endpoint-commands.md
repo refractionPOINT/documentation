@@ -8,53 +8,53 @@ For commands which emit a report/reply event type from the agent, the correspond
 | --- | --- | --- | --- | --- | --- | --- |
 | [artifact\_get](#artifact_get) | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | deny\_tree | N/A | ☑️ | ☑️ | ☑️ |  |  |
-| [dir\_find\_hash](#dir_findhash) | [DIR\_FINDHASH\_REP](edr-events.md#dirfindhashrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [dir\_list](#dir_list) | [DIR\_LIST\_REP](edr-events.md#dirlistrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [dns\_resolve](#dns_resolve) | [DNS\_REQUEST](edr-events.md#dnsrequest) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
-| [doc\_cache\_get](#doc_cache_get) | [GET\_DOCUMENT\_REP](edr-events.md#getdocumentrep) | ☑️ | ☑️ |  |  |  |
-| [get\_debug\_data](#get_debug_data) | [DEBUG\_DATA\_REP](edr-events.md#debugdatarep) | ☑️ | ☑️ | ☑️ |  |  |
-| [exfil\_add](#exfil_add) | [CLOUD\_NOTIFICATION](edr-events.md#cloudnotification) | ☑️ | ☑️ | ☑️ |  |  |
-| [exfil\_del](#exfil_del) | [CLOUD\_NOTIFICATION](edr-events.md#cloudnotification) | ☑️ | ☑️ | ☑️ |  |  |
-| [exfil\_get](#exfil_get) | [GET\_EXFIL\_EVENT\_REP](edr-events.md#getexfileventrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [file\_del](#file_del) | [FILE\_DEL\_REP](edr-events.md#filedelrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [file\_get](#file_get) | [FILE\_GET\_REP](edr-events.md#filegetrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [file\_hash](#file_hash) | [FILE\_HASH\_REP](edr-events.md#filehashrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [file\_info](#file_info) | [FILE\_INFO\_REP](edr-events.md#fileinforep) | ☑️ | ☑️ | ☑️ |  |  |
-| [file\_mov](#file_mov) | [FILE\_MOV\_REP](edr-events.md#filemovrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [fim\_add](#fim_add) | [FIM\_ADD](edr-events.md#fimadd) | ☑️ | ☑️ | ☑️ |  |  |
-| [fim\_del](#fim_del) | [FIM\_DEL](edr-events.md#fimdel) | ☑️ | ☑️ | ☑️ |  |  |
-| [fim\_get](#fim_get) | [FIM\_LIST\_REP](edr-events.md#fimlistrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [hidden\_module\_scan](#hidden_module_scan) | [HIDDEN\_MODULE\_DETECTED](edr-events.md#hiddenmoduledetected) |  | ☑️ | ☑️ |  |  |
-| [history\_dump](#history_dump) | [HISTORY\_DUMP\_REP](edr-events.md#historydumprep) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [dir\_find\_hash](#dir_findhash) | [DIR\_FINDHASH\_REP](edr-events.md#dir_findhash_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [dir\_list](#dir_list) | [DIR\_LIST\_REP](edr-events.md#dir_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [dns\_resolve](#dns_resolve) | [DNS\_REQUEST](edr-events.md#dns_request) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [doc\_cache\_get](#doc_cache_get) | [GET\_DOCUMENT\_REP](edr-events.md#get_document_rep) | ☑️ | ☑️ |  |  |  |
+| [get\_debug\_data](#get_debug_data) | [DEBUG\_DATA\_REP](edr-events.md#debug_data_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [exfil\_add](#exfil_add) | [CLOUD\_NOTIFICATION](edr-events.md#cloud_notification) | ☑️ | ☑️ | ☑️ |  |  |
+| [exfil\_del](#exfil_del) | [CLOUD\_NOTIFICATION](edr-events.md#cloud_notification) | ☑️ | ☑️ | ☑️ |  |  |
+| [exfil\_get](#exfil_get) | [GET\_EXFIL\_EVENT\_REP](edr-events.md#get_exfil_event_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [file\_del](#file_del) | [FILE\_DEL\_REP](edr-events.md#file_del_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [file\_get](#file_get) | [FILE\_GET\_REP](edr-events.md#file_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [file\_hash](#file_hash) | [FILE\_HASH\_REP](edr-events.md#file_hash_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [file\_info](#file_info) | [FILE\_INFO\_REP](edr-events.md#file_info_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [file\_mov](#file_mov) | [FILE\_MOV\_REP](edr-events.md#file_mov_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [fim\_add](#fim_add) | [FIM\_ADD](edr-events.md#fim_add) | ☑️ | ☑️ | ☑️ |  |  |
+| [fim\_del](#fim_del) | [FIM\_REMOVE](edr-events.md#fim_remove) | ☑️ | ☑️ | ☑️ |  |  |
+| [fim\_get](#fim_get) | [FIM\_LIST\_REP](edr-events.md#fim_list_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [hidden\_module\_scan](#hidden_module_scan) | [HIDDEN\_MODULE\_DETECTED](edr-events.md#hidden_module_detected) |  | ☑️ | ☑️ |  |  |
+| [history\_dump](#history_dump) | [HISTORY\_DUMP\_REP](edr-events.md#history_dump_rep) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | [log\_get](#log_get) | N/A |  | ☑️ |  |  |  |
 | logoff | N/A | ☑️ | ☑️ | ☑️ |  |  |
-| [mem\_find\_handle](#mem_find_handle) | [MEM\_FIND\_HANDLES\_REP](edr-events.md#memfindhandlesrep) |  | ☑️ |  |  |  |
-| [mem\_find\_string](#mem_find_string) | [MEM\_FIND\_STRING\_REP](edr-events.md#memfindstringrep) | ☑️ | ☑️ | ☑️ |  |  |
-| mem\_handles | [MEM\_HANDLES\_REP](edr-events.md#memhandlesrep) |  | ☑️ |  |  |  |
-| [mem\_map](#mem_map) | [MEM\_MAP\_REP](edr-events.md#memmaprep) | ☑️ | ☑️ | ☑️ |  |  |
-| [mem\_read](#mem_read) | [MEM\_READ\_REP](edr-events.md#memreadrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [mem\_strings](#mem_strings) | [MEM\_STRINGS\_REP](edr-events.md#memstringsrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [netstat](#netstat) | [NETSTAT\_REP](edr-events.md#netstatrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [os\_autoruns](#os_autoruns) | [OS\_AUTORUNS\_REP](edr-events.md#osautorunsrep) | ☑️ | ☑️ |  |  |  |
+| [mem\_find\_handle](#mem_find_handle) | [MEM\_FIND\_HANDLES\_REP](edr-events.md#mem_find_handles_rep) |  | ☑️ |  |  |  |
+| [mem\_find\_string](#mem_find_string) | [MEM\_FIND\_STRING\_REP](edr-events.md#mem_find_string_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| mem\_handles | [MEM\_HANDLES\_REP](edr-events.md#mem_handles_rep) |  | ☑️ |  |  |  |
+| [mem\_map](#mem_map) | [MEM\_MAP\_REP](edr-events.md#mem_map_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [mem\_read](#mem_read) | [MEM\_READ\_REP](edr-events.md#mem_read_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [mem\_strings](#mem_strings) | [MEM\_STRINGS\_REP](edr-events.md#mem_strings_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [netstat](#netstat) | [NETSTAT\_REP](edr-events.md#netstat_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [os\_autoruns](#os_autoruns) | [OS\_AUTORUNS\_REP](edr-events.md#os_autoruns_rep) | ☑️ | ☑️ |  |  |  |
 | [os\_drivers](#os_drivers) | N/A |  | ☑️ |  |  |  |
-| [os\_kill\_process](#os_kill_process) | [OS\_KILL\_PROCESS\_REP](edr-events.md#oskillprocessrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [os\_packages](#os_packages) | [OS\_PACKAGES\_REP](edr-events.md#ospackagesrep) |  | ☑️ | ☑️ | ☑️ | ☑️ |
-| [os\_processes](#os_processes) | [OS\_PROCESSES\_REP](edr-events.md#osprocessesrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [os\_resume](#os_resume) | [OS\_RESUME\_REP](edr-events.md#osresumerep) | ☑️ | ☑️ | ☑️ |  |  |
-| [os\_services](#os_services) | [OS\_SERVICES\_REP](edr-events.md#osservicesrep) | ☑️ | ☑️ | ☑️ |  |  |
-| [os\_suspend](#os_suspend) | [OS\_SUSPEND\_REP](edr-events.md#ossuspendrep) | ☑️ | ☑️ | ☑️ |  |  |
-| os\_users | [OS\_USERS\_REP](edr-events.md#osusersrep) |  | ☑️ |  |  |  |
-| [os\_version](#os_version) | [OS\_VERSION\_REP](edr-events.md#osversionrep) | ☑️ | ☑️ | ☑️ |  |  |
+| [os\_kill\_process](#os_kill_process) | [OS\_KILL\_PROCESS\_REP](edr-events.md#os_kill_process_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [os\_packages](#os_packages) | [OS\_PACKAGES\_REP](edr-events.md#os_packages_rep) |  | ☑️ | ☑️ | ☑️ | ☑️ |
+| [os\_processes](#os_processes) | [OS\_PROCESSES\_REP](edr-events.md#os_processes_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [os\_resume](#os_resume) | [OS\_RESUME\_REP](edr-events.md#os_resume_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [os\_services](#os_services) | [OS\_SERVICES\_REP](edr-events.md#os_services_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| [os\_suspend](#os_suspend) | [OS\_SUSPEND\_REP](edr-events.md#os_suspend_rep) | ☑️ | ☑️ | ☑️ |  |  |
+| os\_users | [OS\_USERS\_REP](edr-events.md#os_users_rep) |  | ☑️ |  |  |  |
+| [os\_version](#os_version) | [OS\_VERSION\_REP](edr-events.md#os_version_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | put | [RECEIPT](edr-events.md#receipt) | ☑️ | ☑️ | ☑️ |  |  |
-| [rejoin\_network](#rejoin_network) | [REJOIN\_NETWORK](edr-events.md#rejoinnetwork) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [rejoin\_network](#rejoin_network) | [REJOIN\_NETWORK](edr-events.md#rejoin_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | restart | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [run](#run) | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | seal |  |  | ☑️ |  |  |  |
-| [segregate\_network](#segregate_network) | [SEGREGATE\_NETWORK](edr-events.md#segregatenetwork) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
+| [segregate\_network](#segregate_network) | [SEGREGATE\_NETWORK](edr-events.md#segregate_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | set\_performance\_mode | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | shutdown |  | ☑️ | ☑️ | ☑️ |  |  |
 | uninstall | N/A | ☑️ | ☑️ | ☑️ |  |  |
-| [yara\_scan](#yara_scan) | [YARA\_DETECTION](edr-events.md#yaradetection) | ☑️ | ☑️ | ☑️ |  |  |
+| [yara\_scan](#yara_scan) | [YARA\_DETECTION](edr-events.md#yara_detection) | ☑️ | ☑️ | ☑️ |  |  |
 | yara\_update | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | epp\_status | [EPP\_STATUS\_REP] | ☑️ |  |  |  |  |
 | [epp\_scan](#epp_scan) | [EPP\_SCAN\_REP] | ☑️ |  |  |  |  |
