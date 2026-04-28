@@ -45,17 +45,17 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
 
 2. Within the Organization where you wish to collect Sysmon data, go to the `Event Collection > Event Collection Rules` section.
 
-![](../../assets/images/ingest-sysmon-1.png)
+![ingest sysmon 1](../../assets/images/ingest-sysmon-1.png)
 
 3. Ensure that for Windows systems, `WEL` events are collected.
 
-![](../../assets/images/ingest-sysmon-2.png)
+![ingest sysmon 2](../../assets/images/ingest-sysmon-2.png)
 
 4. Go to the `Artifact Collection` section and add a new collection rule with the following path to bring in all Sysmon events:
 
 `wel://Microsoft-Windows-Sysmon/Operational:*`
 
-![](../../assets/images/ingest-sysmon-3.png)
+![ingest sysmon 3](../../assets/images/ingest-sysmon-3.png)
 
 **Note:** You can use tagging or other filters to narrow down the systems that logs are collected from.
 

@@ -242,7 +242,7 @@ Then the resulting Output would be:
 
 When passing events to an output, you have the option to transform the original event in multiple ways. When creating an output, Custom Transforms are applied in the CUSTOM TRANSFORM area of the screenshot below. In this example we are transforming a detection event to pass via a custom webhook to a web application.
 
-![](../assets/images/image(310).png)
+![Output data transformation settings](../assets/images/image(310).png)
 
 ### Examples
 

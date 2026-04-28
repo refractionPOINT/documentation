@@ -52,7 +52,7 @@ BigQuery dataset containing Velociraptor hunt results:
                ```
 
             2. **Specific Event Types**: `velociraptor_collection`
-      3. ![](../../assets/images/velociraptor.png)
+      3. ![velociraptor](../../assets/images/velociraptor.png)
 4. We now need a  rule that will watch for Velociraptor collections send send them to the new tailored output
 
    1. Create a new D&R rule

@@ -58,7 +58,7 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
 **Note:** The path to the repo is NOT the same as the URL. Utilize the UI breadcrumbs for the correct path.
 For example, in the following screenshot:
 
-![](../assets/images/image-1734104784118.png)
+![image 1734104784118](../assets/images/image-1734104784118.png)
 
 The GitHub user is: *romainmarcoux*
 The repo name is: *malicious-domains*

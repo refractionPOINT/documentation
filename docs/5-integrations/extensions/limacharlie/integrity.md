@@ -6,7 +6,7 @@ The Integrity Extension helps you manage all aspects of file or registry integri
 
 To enable the Integrity extension, navigate to the [Integrity extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-integrity) in the marketplace. Select the Organization you wish to enable the extension for, and select **Subscribe**.
 
-![](../../../assets/images/integrity-1(1).png "image(242).png")
+![integrity 1(1).png "image(242).png"](../../../assets/images/integrity-1(1).png "image(242).png")
 
 After clicking **Subscribe**, the Infrastructure extension should be available almost immediately.
 
@@ -14,15 +14,15 @@ After clicking **Subscribe**, the Infrastructure extension should be available a
 
 Once enabled, you will see an **File/Reg Integrity** option under **Automation** within the LimaCharlie web UI.
 
-![](../../../assets/images/integrity-2.png "image(243).png")
+![integrity 2.png "image(243).png"](../../../assets/images/integrity-2.png "image(243).png")
 
 Selecting this option allows you to customize **File & Registry Integrity Monitoring** rules, as seen in the screenshot below.
 
-![](../../../assets/images/integrity-3.png "image(244).png")
+![integrity 3.png "image(244).png"](../../../assets/images/integrity-3.png "image(244).png")
 
 Selecting **Add Monitoring Rule** will allow you to create a FIM or RIM rule, specifying a platform, Tag(s), and pattern(s).
 
-![](../../../assets/images/integrity-4.png "image(245).png")
+![integrity 4.png "image(245).png"](../../../assets/images/integrity-4.png "image(245).png")
 
 ### Rule Patterns
 
@@ -30,7 +30,7 @@ Patterns are file or registry patterns and support wildcards (\*, ?, +). Windows
 
 When a FIM or RIM rule is tripped, you will see a `FIM_HIT` event in the Sensor(s) timeline.
 
-![](../../../assets/images/integrity-5.png)
+![integrity 5](../../../assets/images/integrity-5.png)
 
 ### Example Rule Patterns
 

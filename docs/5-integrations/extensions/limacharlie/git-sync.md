@@ -21,13 +21,13 @@ By using `ext-git-sync`, you can streamline your IaC workflows, improve consiste
 
 If you have a properly structured git repository containing org configurations, the extension can sync the running org configurations with the contents of the configs in git.
 
-![](../../../assets/images/d2-(1).png "pull_config(1).png")
+![d2 (1).png "pull config(1).png"](../../../assets/images/d2-(1).png "pull_config(1).png")
 
 ### Export TO Git
 
 Assuming you have an empty git repository, you can configure the extension to export the current org configuration to the repository. It will be placed in an `exports` subdirectory.
 
-![](../../../assets/images/d2-(2).png "push_config(1).png")
+![d2 (2).png "push config(1).png"](../../../assets/images/d2-(2).png "push_config(1).png")
 
 ## Git Repo Structure
 

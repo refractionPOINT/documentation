@@ -27,23 +27,23 @@ After the new user has created their LimaCharlie account, you can add them by in
 
 After adding the user, you have the ability to control what permissions they get in this tenant. To do so, click on their email and adjust their permissions in the modal that opens. (See information about user permissions above).
 
-![](../../assets/images/NewSS_1.png)
+![NewSS 1](../../assets/images/NewSS_1.png)
 
 ## Access via Organization Groups
 
 Groups allow you to grant permissions to a set of users on a group of organizations. To get started, navigate to the upper right section of the web app and select groups.
 
-![](../../assets/images/NewSS_2.png)
+![NewSS 2](../../assets/images/NewSS_2.png)
 
 From there, create a new group or click to edit an existing one.
 
-![](../../assets/images/NewSS_3.png)
+![NewSS 3](../../assets/images/NewSS_3.png)
 
 The user who creates a group becomes a group owner. Group owners manage the group but do not have permissions themselves.
 
 You can add multiple group owners.
 
-![](../../assets/images/NewSS4.png)
+![NewSS4](../../assets/images/NewSS4.png)
 
 In the **Users** section (left panel), you can add all existing users who should receive access to the organizations included in this group. Note that if you are a Group Owner and you want the permissions of this group to apply to yourself, you will need to add your email here as well.
 
@@ -51,25 +51,25 @@ Adding Accounts
 
 Note that all accounts will need to be *existing* LimaCharlie users.
 
-![](../../assets/images/NewSS_5.png)
+![NewSS 5](../../assets/images/NewSS_5.png)
 
 Group owners are allowed to manage the group, but are not affected by the permissions. Members are affected by the permissions but cannot modify the group.
 
 Under **Organizations** (left panel), select a list of organizations you have access to. Note that in order to add an organization to the group, you need to have the user.ctrl permission enabled for that organization.
 
-![](../../assets/images/NewSS_6.png)
+![NewSS 6](../../assets/images/NewSS_6.png)
 
 Last, select the permissions you want members of the group to have in the organizations included in this group.
 
 Permissions granted through the group are applied on top of permissions granted at the organization level. The permissions are additive, and a group cannot be used to subtract permissions granted at the organization level.
 
-![](../../assets/images/NewSS_7.png)
+![NewSS 7](../../assets/images/NewSS_7.png)
 
 To finish, click `Update Permissions` at the top right corner.
 
 To review activity that has occurred in this group, click on **Activity Logs** (left panel).
 
-![](../../assets/images/image(343).png)
+![To finish, click Update Permissions at the top right corner](../../assets/images/image(343).png)
 
 ## Verifying and Reviewing Access
 

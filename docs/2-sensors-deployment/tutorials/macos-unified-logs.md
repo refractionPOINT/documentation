@@ -4,17 +4,17 @@ You can enable real-time MacOS Unified Logs (MUL) ingestion using the LimaCharli
 
 First, navigate to the Exfil Control section of LimaCharlie and ensure that `MUL` events are enabled for your Mac rules.
 
-![](../../assets/images/ingest-mac-1.png)
+![ingest mac 1](../../assets/images/ingest-mac-1.png)
 
 Next, navigate to the `Artifact Collection` section and set up an artifact collection rule for the MacOS Unified Log(s) of interest.
 
-![](../../assets/images/ingest-mac-2.png)
+![ingest mac 2](../../assets/images/ingest-mac-2.png)
 
 To ingest MUL real-time events in the timeline, use the `mul://[Predicate]` format, where the predicate is a standard [MacOS MUL predicate](https://www.macminivault.com/faq/introduction-to-macos-unified-logs/). For example, to ingest the Safari logs, you'd use the following pattern:
 
 `mul://process == "Safari"`
 
-![](../../assets/images/ingest-mac-3.png)
+![ingest mac 3](../../assets/images/ingest-mac-3.png)
 
 If you ingest MacOS Unified Logs with a `mul://` pattern, they are streamed in real-time as first-class telemetry alongside the native EDR events, and are included in the flat rate price of the sensor.
 

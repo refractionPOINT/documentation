@@ -8,7 +8,7 @@ To view and operate the Query Console, the following permissions are required:
 
 ### UI Element Overview
 
-![](../assets/images/image(338).png)
+![Query console permissions requirement screen](../assets/images/image(338).png)
 
 1. **Source:** Select Events (everything that had been injected from endpoints and XDR sources, default), Detections, or Platform Audit events as the data source for the search.
 2. **Query editor:** Enter a LimaCharlie Query Language (LCQL) query to include:
@@ -19,7 +19,7 @@ To view and operate the Query Console, the following permissions are required:
    4. Projections (optional) - control output columns, sort results via `ORDER BY` and/or aggregate the data with `GROUP BY` , `COUNT`, `COUNT_UNIQUE`  and more. See LCQL reference and Examples for details.
 3. **Time period:** Set the searchable time period using three options: last [time period],  around [time frame], and absolute "from start→to finish".
 
-   ![](../assets/images/image(340).png)
+   ![Event Type - filter results to only return specific types of events](../assets/images/image(340).png)
 
    - Enter a time `16:00`, or day and time `2025-01-16 08:52:54`, using most common time formats.  For example:
 
@@ -34,7 +34,7 @@ To view and operate the Query Console, the following permissions are required:
    2. Event types - event types present in the returned portion of the query. As more data is churned to complete the specified time frame more event types may appear.
    3. Query fields - event fields present in the *portion of the result already fetched by the query*,  with a count of total occurrences. Clicking on the event field opens a details panel. From here you can add a term to the query.
 
-      ![](../assets/images/image(341).png)
+      ![Schema fields - a list of all the fields associated with ingested events](../assets/images/image(341).png)
    4. Table columns: control the columns displayed in Table View.
 
    Note: While the schema fields are always available, the event types and query fields are only shown for portion of the time frame *searched so far*.  As more data is churned in the background (to complete your selected time frame), more event types and fields may appear.
@@ -54,7 +54,7 @@ To view and operate the Query Console, the following permissions are required:
    2. **Event Details** allows you to click on an event and perform applicable event actions like **Build a D&R Rule**.
    3. **Download** all the events you've retrieved in a [.ndjson format](https://github.com/ndjson/ndjson-spec). The automatic download of the entire time range is coming soon.
 
-   ![](../assets/images/image(342).png)
+   ![A Tab Columns section appears in the Fields sidebar when table view is selected](../assets/images/image(342).png)
 8. **Saving Queries and Query Library.** A query can be saved in your private user library or shared via an org library. Use the library to browse queries and load the desired one to the query editor.
 
 ---

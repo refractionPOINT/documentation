@@ -8,7 +8,7 @@ There are two methods for updating sensors in your organization to the latest ve
 
 Upgrading sensors is done transparently for you once you click the "Update to Latest" button, located at `Sensors > Deployed Versions`.
 
-![](../../assets/images/image(316).png)
+![Manual sensor update via the Update to Latest button](../../assets/images/image(316).png)
 
 The new version should be in effect across the organization within about 20 minutes.
 
@@ -16,6 +16,6 @@ The new version should be in effect across the organization within about 20 minu
 
 You can also configure sensors in your organization to auto-update to the new version when it's released. To do it, tag applicable (or all) sensors in your fleet with the `lc:stable` tag (`lc:stable` tag means that the package it provides rarely changes).
 
-![](../../assets/images/image(315).png)
+![Automated sensor update settings](../../assets/images/image(315).png)
 
 This will ensure that when a new sensor version is released, it will be in effect across the organization within about 20 minutes.

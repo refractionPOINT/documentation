@@ -10,7 +10,7 @@ The Artifact Extension provides low-level collection capabilities which can be c
 
 To enable the Artifact extension, navigate to the [Artifact extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-artifact) in the marketplace. Select the Organization you wish to enable the extension for, and select **Subscribe.**
 
-![](../../../assets/images/artifact-1.png)
+![artifact 1](../../../assets/images/artifact-1.png)
 
 After clicking **Subscribe**, the Artifact extension should be available almost immediately.
 
@@ -20,7 +20,7 @@ After clicking **Subscribe**, the Artifact extension should be available almost 
 
 When enabled, you will see an **Artifact Collection** option under **Sensors** menu for the respective organization.
 
-![](../../../assets/images/artifact-2.png)
+![artifact 2](../../../assets/images/artifact-2.png)
 
 Within the Artifact Collection page, you can configure:
 
@@ -33,4 +33,4 @@ The following screenshot provides examples of capturing Windows Security and Sys
 
 More information on Artifact collections can be found below.
 
-![](../../../assets/images/artifact-3.png)
+![artifact 3](../../../assets/images/artifact-3.png)

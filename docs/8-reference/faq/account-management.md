@@ -8,7 +8,7 @@ By default, LimaCharlie has a limit of two organizations. If you need to create 
 
 Please navigate to the bottom of the Billing & Usage section of the organization you want to delete, and click Delete Organization button. Note that this action is final and cannot be undone.
 
-![](../../assets/images/account-3.png)
+![account 3](../../assets/images/account-3.png)
 
 ## Is There a Way to Wipe an Organization?
 
@@ -35,17 +35,17 @@ All dates and times displayed in the web app follow the user preferred time zone
 
 To set your time zone, navigate to the settings icon in the right hand corner and select `Manage User Settings`.
 
-![](../../assets/images/account-1.png)
+![account 1](../../assets/images/account-1.png)
 
 You can set your preferred time zone under `Display` section of the `User Settings`; all changes are saved automatically.
 
-![](../../assets/images/account-2.png)
+![account 2](../../assets/images/account-2.png)
 
 ## How Can I Unsubscribe/Cancel/Delete My Limacharlie Account?
 
 You can unsubscribe / cancel your subscription from app.limacharlie.io by logging in and going to the Billing & Usage under the Billing section. Click the Delete Organization button at the bottom of the page and follow the instructions on screen.
 
-![](../../assets/images/account-3.png)
+![account 3](../../assets/images/account-3.png)
 
 ## Why Didn't I Receive My Account Activation Email?
 

@@ -146,32 +146,32 @@ Users can opt in / out of collection of event types on a per-platform basis. The
 ## Examples of LimaCharlie Sensor Data
 
 1. Sensor Overview
-   ![](../../assets/images/sensor-01.png)
+   ![sensor 01](../../assets/images/sensor-01.png)
 2. Artifacts
-   ![](../../assets/images/sensor-03.png)
+   ![sensor 03](../../assets/images/sensor-03.png)
 3. Autoruns
-   ![](../../assets/images/sensor-04.png)
+   ![sensor 04](../../assets/images/sensor-04.png)
 4. Console
-   ![](../../assets/images/sensor-05.png)
+   ![sensor 05](../../assets/images/sensor-05.png)
 5. Detections
-   ![](../../assets/images/sensor-06a.png)
+   ![sensor 06a](../../assets/images/sensor-06a.png)
 6. Drivers
-   ![](../../assets/images/sensor-07.png)
+   ![sensor 07](../../assets/images/sensor-07.png)
 7. File System
-   ![](../../assets/images/sensor-08.png)
+   ![sensor 08](../../assets/images/sensor-08.png)
 8. File Integrity Monitoring
-   ![](../../assets/images/sensor-09(1).png)
+   ![sensor 09](../../assets/images/sensor-09(1).png)
 9. Network Connections
-   ![](../../assets/images/sensor-10.png)
+   ![sensor 10](../../assets/images/sensor-10.png)
 10. Packages
-    ![](../../assets/images/sensor-11.png)
+    ![sensor 11](../../assets/images/sensor-11.png)
 11. Processes
-    ![](../../assets/images/sensor-12.png)
+    ![sensor 12](../../assets/images/sensor-12.png)
 12. Services
-    ![](../../assets/images/sensor-13.png)
+    ![sensor 13](../../assets/images/sensor-13.png)
 13. Timeline with Event Details
-    ![](../../assets/images/sensor-14.png)
+    ![sensor 14](../../assets/images/sensor-14.png)
 14. Users
-    ![](../../assets/images/sensor-15.png)
+    ![sensor 15](../../assets/images/sensor-15.png)
 
 Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.

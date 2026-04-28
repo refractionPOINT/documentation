@@ -19,7 +19,7 @@ This means playbooks can be issued in a fully automated fashion based on events,
 
 The Playbook extension can be enabled by subscribing your organization to the ext-playbook add-on.
 
-![](../../../assets/images/image(317).png)
+![Enabling Extension The Playbook extension can be enabled by subscribing your organization to the ext-playbook add-on](../../../assets/images/image(317).png)
 
 ## Accessing Playbooks
 
@@ -27,9 +27,9 @@ Playbooks are created, modified, and deleted via the Playbooks option located wi
 
 > Note: If you are unable to see the Playbooks option, ensure your user account has the appropriate permissions enabled.
 >
-> ![](../../../assets/images/image(319).png)
+> ![Playbooks are created, modified, and deleted via the Playbooks option located within the Automation menu](../../../assets/images/image(319).png)
 
-![](../../../assets/images/image(321).png)
+![Playbooks option in the Automation menu](../../../assets/images/image(321).png)
 
 ## Usage
 

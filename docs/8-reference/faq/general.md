@@ -16,7 +16,7 @@ The LimaCharlie global infrastructure is built on the Google Cloud Platform (GCP
 
 When you set up an Organization for the first time, you can select the Data Residency Region of your choice:
 
-![](../../assets/images/new-org.png)
+![new org](../../assets/images/new-org.png)
 
 This provides you with the benefit of being able to select which GCP region you want your data in, and have assurance that it will always be processed in this location and never moved outside. This can be important for data residency requirements as it relates to regulatory compliance. For example, if you want to keep all of your information in the US, you can simply select the US region and know that your data will be both processed and stored there.
 
@@ -100,7 +100,7 @@ It is very common for users to bring different log, network and endpoint data in
 
 In LimaCharlie web app, you can track information such as detections and events over time and number of sensors online.
 
-![](../../assets/images/dashboard.png)
+![dashboard](../../assets/images/dashboard.png)
 
 In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 

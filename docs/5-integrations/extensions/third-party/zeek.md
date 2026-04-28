@@ -57,7 +57,7 @@ Enable PCAP collection on your Linux sensors via a PCAP capture rule within the 
 
 For example, if you have an interface `ens4` and would like to gather PCAPs of network traffic on that interface on TCP port 80, you would craft the following rule.
 
-![](../../../assets/images/zeek-2.png)
+![zeek 2](../../../assets/images/zeek-2.png)
 
 Once ~30MB of traffic has been collected, a PCAP will be uploaded as an artifact in LimaCharlie. Subsequent PCAPs will continue to be uploaded as additional PCAPs as they hit the size threshold.
 

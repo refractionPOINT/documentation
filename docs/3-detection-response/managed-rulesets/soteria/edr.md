@@ -38,17 +38,17 @@ Soteria's EDR rules can be activated via two means.
 
 To enable Soteria's EDR ruleset, navigate to the **Extensions** section of the Add-On Marketplace and search for Soteria. You can also directly select `soteria-rules-edr`.
 
-![](../../../assets/images/soteria-edr-1.png)
+![soteria edr 1](../../../assets/images/soteria-edr-1.png)
 
 *Please note: Pricing may reflect when the screenshot was taken, not the actual pricing*
 
 Under the Organization dropdown, select a tenant (organization) you want to subscribe to Soteria rules and click **Subscribe**.
 
-![](../../../assets/images/soteria-edr-2.png)
+![soteria edr 2](../../../assets/images/soteria-edr-2.png)
 
 You can also manage add-ons from the **Subscriptions** menu under **Billing**.
 
-![](../../../assets/images/soteria-edr-3.png)
+![soteria edr 3](../../../assets/images/soteria-edr-3.png)
 
 ### Infrastructure as Code
 

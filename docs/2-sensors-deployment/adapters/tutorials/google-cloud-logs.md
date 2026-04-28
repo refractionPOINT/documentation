@@ -120,7 +120,7 @@ Click the Create Installation Key button. Enter a name for the key. This name wi
 
 Click on the copy-to-clipboard button next to the Adapter Key column. **The value should be a UUID, keep note of it, you'll need it in the next step.**
 
-![](../../../assets/images/image(309).png)
+![Click the Create Installation Key button](../../../assets/images/image(309).png)
 
 ## Step 6: Run the Adapter
 

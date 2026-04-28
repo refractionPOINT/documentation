@@ -13,16 +13,16 @@ The interface defines 2 main actions:
 
 Simply choose an artifact from the list to inspect it's contents.
 
-![](../../../assets/images/velociraptor-ext-1.png)
+![velociraptor ext 1](../../../assets/images/velociraptor-ext-1.png)
 
 Result of the action
 
-![](../../../assets/images/velociraptor-ext-2.png)
+![velociraptor ext 2](../../../assets/images/velociraptor-ext-2.png)
 
 ### Collect Artifact
 
 This allows you to collect one or more Velociraptor [Artifacts](https://docs.velociraptor.app/artifact_references/) from one or more endpoints via the Endpoint Agent.
-![](../../../assets/images/velociraptor-3.png)
+![velociraptor 3](../../../assets/images/velociraptor-3.png)
 
 Velociraptor will generate a ZIP file with all collected data, which is automatically ingested into LimaCharlie's Artifact system for download.
 
@@ -53,11 +53,11 @@ For [Windows.KapeFiles.Targets](https://github.com/Velocidex/velociraptor/blob/m
 
 You are able to track Velociraptor hunts by viewing the Timeline for the `ext-velociraptor` sensor.
 
-![](../../../assets/images/velociraptor-ext-4.png)
+![velociraptor ext 4](../../../assets/images/velociraptor-ext-4.png)
 
 Once you see `artifact_uploaded` in the timeline, you can expect to find the artifact on the "Artifacts" screen.
 
-![](../../../assets/images/velociraptor-ext-5.png)
+![velociraptor ext 5](../../../assets/images/velociraptor-ext-5.png)
 
 ## Automating Collection Retrieval
 

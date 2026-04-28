@@ -20,11 +20,11 @@ The high-level user experience is as follows:
 
 - For organizations that choose to use SSO, the SSO will be enforced. Users going to custom branded versions of the LimaCharlie site will be presented with only the option to login through SSO, if their domain has the SSO configuration.
 
-![](../../assets/images/sso-1.png)
+![sso 1](../../assets/images/sso-1.png)
 
 - The same user going to the non-branded site would still be presented with all other authentication options. However, a user would only be able to use the authentification option approved for their domain.
 
-![](../../assets/images/sso-2.png)
+![sso 2](../../assets/images/sso-2.png)
 
 In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
 
