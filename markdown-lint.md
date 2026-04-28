@@ -2,11 +2,11 @@
 
 This repo's CI runs [`markdownlint-cli2`](https://github.com/DavidAnson/markdownlint-cli2)
 against every file under `docs/` (see `.github/workflows/link-checker.yml`,
-job `check-markdown`). The job is currently `continue-on-error: true`, so
-violations are reported but do not block merges.
+job `check-markdown`). The job is **enforced** — violations fail CI and
+block merges.
 
 This doc explains how to run the linter locally, interpret the output, and
-make progress on the backlog so the check can eventually be enforced.
+fix violations before pushing.
 
 ## Prerequisites
 
