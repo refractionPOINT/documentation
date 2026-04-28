@@ -308,10 +308,6 @@ UI betterment: quick filters for common platforms on the Sensor list, reliable n
 
 SentinelOne adapter: connects to SentinelOne MGMT API and sends alerts, threats, and other events of interest to LimaCharlie.
 
----
-
-## 2025-03-28
-
 ### Endpoint Agent v4.33.4
 
 - Fix missing pipe event for Windows
