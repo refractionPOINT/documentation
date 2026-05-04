@@ -304,7 +304,6 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Command Line Interface](https://docs.limacharlie.io/9-ai-sessions/cli/)
 - [Alternative Providers](https://docs.limacharlie.io/9-ai-sessions/alternative-providers/): Alternative AI Providers
 - [API Reference](https://docs.limacharlie.io/9-ai-sessions/api-reference/)
-- [TypeScript SDK](https://docs.limacharlie.io/9-ai-sessions/sdk/)
 
 ## Release Notes
 
