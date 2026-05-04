@@ -463,6 +463,7 @@ nav:
       - SDKs:
           - Overview: 6-developer-guide/sdks/index.md
           - Python SDK: 6-developer-guide/sdks/python-sdk.md
+          - Python SDK v4: 6-developer-guide/sdks/python-sdk-v4.md
           - Go SDK: 6-developer-guide/sdks/go-sdk.md
       - Command Line Interface: 6-developer-guide/sdk-overview.md
       - CLI Extension: 6-developer-guide/cli.md
