@@ -85,6 +85,8 @@ respond:
 - [D&R-Driven Sessions](dr-sessions.md) - Automated sessions triggered by D&R rules
 - [User Sessions](user-sessions.md) - Interactive sessions via web UI or API
 - [Tool Permissions & Profiles](tool-permissions.md) - How `allowed_tools`, `denied_tools`, and `permission_mode` work
+- [AI Skills](skills.md) - Reusable Claude Code skill definitions stored in your org
+- [AI Memory](memory.md) - Per-agent persistent memory with partial-merge writes
 - [API Reference](api-reference.md) - REST API and WebSocket protocol
 - [TypeScript SDK](sdk.md) - SDK for programmatic access
 
