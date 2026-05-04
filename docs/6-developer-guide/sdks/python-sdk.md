@@ -33,9 +33,9 @@ The LimaCharlie Python SDK provides a comprehensive interface for interacting wi
 - **Hive Storage**: Key-value configuration store for rules, secrets, playbooks, and more
 - **Infrastructure as Code**: Pull/push org configuration as version-controlled YAML files
 
-### SDK Version
-
-Current version: 5.0.0
+!!! note "Maintaining a v4 integration?"
+    See the [Python SDK v4](python-sdk-v4.md) page. v4 is deprecated and
+    will be removed in a future release.
 
 ## Installation
 
