@@ -32,7 +32,7 @@ respond:
 | Parameter | Description |
 |-----------|-------------|
 | `prompt` | The instructions for Claude. Supports [template strings](../4-data-queries/template-transforms.md) to include event data. |
-| `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). |
+| `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). To route through AWS Bedrock or Google Cloud Vertex AI instead, use definition mode with the `bedrock:` / `vertex:` blocks on an `ai_agent` Hive record — see [Alternative AI Providers](alternative-providers.md). |
 
 #### Optional Parameters (Inline Mode)
 
@@ -476,7 +476,9 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `prompt` | string | Yes | Instructions for Claude. |
-| `anthropic_secret` | string | No | Anthropic API key or `hive://secret/` reference. |
+| `anthropic_secret` | string | Conditional | Anthropic API key or `hive://secret/` reference. Required unless `bedrock:` or `vertex:` is set. See [Alternative AI Providers](alternative-providers.md). |
+| `bedrock` | object | Conditional | AWS Bedrock provider block (`region`, `access_key_id_secret`, `secret_access_key_secret`, `session_token_secret`, `bearer_token_secret`). Mutually exclusive with `anthropic_secret` and `vertex`. See [Alternative AI Providers](alternative-providers.md#amazon-bedrock). |
+| `vertex` | object | Conditional | Google Cloud Vertex AI provider block (`project_id`, `region`, `service_account_json_secret`). Mutually exclusive with `anthropic_secret` and `bedrock`. See [Alternative AI Providers](alternative-providers.md#google-cloud-vertex-ai). |
 | `lc_api_key_secret` | string | No | LimaCharlie API key or `hive://secret/` reference. |
 | `lc_uid_secret` | string | No | LimaCharlie User ID or `hive://secret/` reference. Required when `lc_api_key_secret` is a user API key. |
 | `name` | string | No | Session name. Supports template strings. |
@@ -484,7 +486,7 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 | `allowed_tools` | list | No | Tools Claude can use. |
 | `denied_tools` | list | No | Tools Claude cannot use. |
 | `permission_mode` | string | No | `acceptEdits`, `plan`, or `bypassPermissions`. |
-| `model` | string | No | Claude model identifier. |
+| `model` | string | No | Claude model identifier. When using Bedrock or Vertex, use the provider-specific model ID format (see [Alternative AI Providers](alternative-providers.md)). |
 | `max_turns` | integer | No | Maximum conversation turns. |
 | `max_budget_usd` | float | No | Maximum spend limit in USD. |
 | `ttl_seconds` | integer | No | Maximum session lifetime in seconds. |
