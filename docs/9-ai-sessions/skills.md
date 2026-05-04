@@ -2,7 +2,7 @@
 
 AI Skills let you store reusable [Claude Code skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) definitions in your LimaCharlie organization. A skill is a self-contained instruction set — a `SKILL.md` document plus optional supporting files — that Claude can load on demand when its description matches the work at hand. Storing skills in LimaCharlie means every AI Session your organization runs (D&R-driven, CLI-launched, or interactive) starts out with the same library of operational know-how, without having to bake it into individual prompts or session profiles.
 
-Each skill record is a one-to-one mapping of an on-disk Claude Code skill directory: the `SKILL.md` body lives in the record's `content` field, the YAML frontmatter is broken out into typed fields with the same names as the official spec, and any bundled scripts or reference docs go under a `files` map keyed by their path relative to the skill root.
+**The record format *is* the [Claude Code Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) format.** Every field below is the literal frontmatter key from the official `SKILL.md` schema, with the same type and the same semantics. The store is a one-to-one mapping of an on-disk Claude Code skill directory: the `SKILL.md` body lives in `content`, the YAML frontmatter keys live next to it, and any bundled scripts or reference docs go under a `files` map keyed by their path relative to the skill root. A skill authored against the upstream spec will load into LimaCharlie unchanged, and a skill exported from LimaCharlie will run as-is in any other Claude Code environment.
 
 ## When to use a skill
 
@@ -10,11 +10,11 @@ Each skill record is a one-to-one mapping of an on-disk Claude Code skill direct
 - **Bundle helper scripts and reference material.** A skill can ship its own shell helpers, queries, or markdown notes alongside the instructions; the agent reads them in when it loads the skill.
 - **Keep prompts terse.** Prompts and `ai_agent` records can stay focused on *what* to do; the *how* lives in the skill, where it can be reused.
 
-For the underlying skill model — when Claude decides to load a skill, the trigger budget for `description` + `when_to_use`, the `allowed-tools` grammar, etc. — see the upstream [Claude Code Skills documentation](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). The LimaCharlie store mirrors that schema verbatim.
+For the underlying skill model — when Claude decides to load a skill, the trigger budget for `description` + `when_to_use`, the `allowed-tools` grammar, etc. — see the upstream [Claude Code Skills documentation](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview). This page documents only the LimaCharlie storage envelope and the management surface; the field semantics themselves are owned by Claude Code.
 
 ## Record format
 
-A skill record has one required field, `content`, plus the optional frontmatter fields below. Fields use the same names as the on-disk `SKILL.md` frontmatter, so a skill can move between a developer's filesystem and the LimaCharlie hive without renaming anything.
+A skill record has one required field, `content`, plus the optional Claude Code frontmatter fields below. Names, types, and meanings are taken verbatim from the [official Claude Code skill spec](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview), so a skill can move between a developer's filesystem and the LimaCharlie hive without renaming or reshaping anything.
 
 ### Required
 
@@ -43,6 +43,8 @@ A skill record has one required field, `content`, plus the optional frontmatter 
 | `shell` | string | Shell used for `!` blocks. Either `bash` or `powershell`. |
 
 ### Bundled files
+
+`files` is the only field that does not appear in the upstream Claude Code frontmatter — on disk, supporting files simply live next to `SKILL.md` on the filesystem. In the hive there is no filesystem, so they ride along inside the same record:
 
 | Field | Type | Description |
 |---|---|---|
