@@ -32,7 +32,33 @@ Use the `add var` response action to set a variable, and `del var` to remove one
 
 A single variable name can hold **multiple values**. Each call to `add var` adds a value to the set. For example, calling `add var` with `name: seen-paths` and `value: <<event/FILE_PATH>>` across multiple events builds up a set of file paths.
 
-**Limits:** A sensor can hold up to 16 variable names, and each variable name can hold up to 32 values.
+#### TTL Behavior
+
+The `ttl` is **per value**, not per variable. Each value carries its own absolute expiration time, computed at insert time as `now + ttl`.
+
+- **Adding new values to the same variable:** each value gets its own independent TTL timer. Values added at different times expire at different times.
+- **Re-adding a value that already exists in the set:** the TTL is **reset** (the new expiration overwrites the old one). This is useful for keeping a value "alive" as long as related activity continues — re-issue `add var` with the same value on every relevant event and it will only expire after `ttl` seconds of silence.
+- **Mixing TTLs:** within a single variable, some values can be short-lived and others long-lived; they are tracked independently.
+- **Omitting `ttl`:** the value persists indefinitely. Combined with the limits below, indefinite values can fill the variable up — prefer a TTL whenever the data is naturally bounded in time.
+
+#### Limits and Overrun Behavior
+
+A sensor can hold up to **16 variable names**, and each variable name can hold up to **32 values**.
+
+These limits exist to keep per-sensor state bounded. **Exceeding either limit is destructive — it does not evict the oldest entry to make room.** Specifically:
+
+| Limit exceeded | Effect |
+|----------------|--------|
+| The 33rd unique value is added to a single variable | The **entire variable** (all of its values) is cleared, and `add var` returns an error. The new value is also lost. |
+| The 17th distinct variable name is added to a sensor | **All variables** for that sensor are cleared, and `add var` returns an error. |
+
+Because of this, you should design rule sets so the limits are not approached in normal operation:
+
+- Always set a `ttl` unless you are certain the value set is naturally bounded.
+- If you are using `<<event/...>>` lookbacks to populate a variable from a high-cardinality field (file paths, command lines, IPs), use a short TTL so the set self-prunes.
+- Do not split unrelated state across many small variables on the same sensor; combine related state where possible.
+
+Re-adding a value that is already present is **not** counted against the value limit (it just refreshes the existing entry's TTL), so refreshing a small fixed set of values with `add var` is safe.
 
 ### del var
 
@@ -45,9 +71,21 @@ A single variable name can hold **multiple values**. Each call to `add var` adds
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `name`    | Yes      | Name of the variable. |
-| `value`   | Yes      | Specific value to remove from the variable's set. Can be a literal or a lookback. |
+| `value`   | Yes      | Specific value to remove from the variable's set. Can be a literal or a lookback. An empty string (`value: ""`) removes **all** values for the variable — see below. |
 
-To remove all values for a variable, you must delete each value individually. Alternatively, use a short `ttl` on `add var` to let values expire naturally.
+#### Removing All Values for a Variable
+
+To clear an entire variable (for example, when you've forgotten what's in it, or want to reset state), set `value` to an empty string:
+
+```yaml
+- action: del var
+  name: my-variable
+  value: ""
+```
+
+This removes every value associated with `my-variable` for the sensor in a single action. It is the only way to clear a variable without enumerating its current values, since there is no API to list a sensor's variables (see [Visibility](#visibility) below).
+
+Alternatively, use a short `ttl` on `add var` so values expire naturally without explicit deletion.
 
 ### Using Lookbacks
 
@@ -267,6 +305,16 @@ Because sensor variables are stored in memory on the analytics node processing t
 ### State Persistence
 
 Variables are persisted when a sensor disconnects and restored when it reconnects. The TTL continues to count down during the disconnection — if a variable's TTL expires while the sensor is offline, it will not be restored.
+
+### Visibility
+
+Sensor variables are internal to the D&R engine and **not** exposed through any read API:
+
+- They do not appear in sensor info, the sensor's metadata, or audit events.
+- There is no way to enumerate the variables currently held for a sensor.
+- A specific variable's set can only be observed indirectly — by writing a rule that reads `[[variable_name]]` and reports the matching values.
+
+Because variables cannot be inspected externally, treat them as ephemeral, rule-internal state. If you need a piece of state that is observable, queryable, or shared with operators, use [tags](../8-reference/response-actions.md#add-tag-remove-tag) instead — they are slower (asynchronous) but visible in the sensor's metadata. Combined with the destructive overrun behavior described above, this also means: always set a `ttl`, and keep variable contents bounded.
 
 ---
 
