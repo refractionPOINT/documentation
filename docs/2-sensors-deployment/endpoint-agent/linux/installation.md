@@ -1,18 +1,36 @@
 # Linux Agent Installation
 
-The LimaCharlie Linux Sensor interfaces with the kernel to acquire deep visibility into the host's activity while taking measures to preserve the host's performance. We make full use of eBPF, which **requires Linux 4.4 or above**.
-
-The Sensor current supports all Linux distributions (including ARM and MIPS).
+The LimaCharlie Linux Sensor runs on every mainstream Linux distribution and architecture (x86_64, i386, ARM64, Alpine/musl). It is shipped as a single binary that adapts at runtime to the kernel features available on the host — there is no separate build or installer per mode. On modern kernels it uses eBPF for in-kernel telemetry; on older kernels it transparently falls back to lighter mechanisms.
 
 ## Linux Distribution Support
 
-Our Linux Sensor fully utilizes eBPF, which requires at least Linux 4.4 or above. Use the command `uname -r` to check your kernel version to determine support.
+The agent is regularly tested against current Debian, Ubuntu, CentOS/RHEL/Rocky/Alma, Amazon Linux, and Alpine releases on x86_64 and ARM64. Because of the diversity of the Linux ecosystem it usually runs unmodified on other distributions as well — if you need to validate a specific platform, contact us.
+
+### Kernel Feature Tiers
+
+The agent picks the most capable acquisition mode supported by the host kernel and degrades gracefully when newer features are not available. All tiers run **the same binary** — selection happens at startup.
+
+| Tier | Minimum kernel | Acquisition path | What you get |
+|------|----------------|------------------|--------------|
+| User-mode only | any (incl. 2.4 / 2.6 era) | `/proc` polling | Inventory of running processes, host metadata, live response, file integrity, USB monitoring, YARA scans, network isolation, and all detection-and-response features that operate from user space. **No real-time process / file / network / DNS kernel events.** |
+| User-mode + netlink connector | 2.6.15 | `/proc` polling + netlink `CN_PROC` connector | Adds real-time process create / exit notifications from the kernel. Process command-line and executable path are still scraped post-event from `/proc`, so very short-lived processes can be missed. |
+| User-mode + eBPF (default when available) | 5.7+ recommended | eBPF programs (CO-RE / BTF) attached for processes, files, network, DNS | Full in-kernel telemetry: process exec with reliable cmdline capture, file I/O, TCP / UDP connections, DNS queries — collected synchronously and attributed to the originating task. This is the mode used on supported modern systems. |
+
+The agent does **not** require eBPF, kernel headers, or `bpftool` to be installed on the target host — the eBPF programs are pre-compiled into the binary and loaded via libbpf using BTF when the kernel exposes it (`/sys/kernel/btf/vmlinux`). On kernels without BTF / CO-RE the agent automatically remains in the netlink or user-mode tier.
+
+Use `uname -r` to check the host kernel version. If it is below 5.4, expect the agent to run in netlink (2.6.15+) or user-mode-only (anything older) tier with reduced kernel telemetry but full agent control-plane functionality.
+
+### Forcing a lower tier
+
+The agent exposes one runtime override for compatibility scenarios (the eBPF tier has no opt-out — it is selected only when the kernel actually supports it):
+
+- `DISABLE_NETLINK` — set to any value in the sensor process environment to skip the netlink connector. Used when an unrelated component on the host already consumes netlink proc events or when the connector behaves unexpectedly. Has no effect when eBPF is in use.
 
 ## Installation Instructions
 
 ### System Requirements
 
-All versions of Debian and CentOS starting around Debian 5 should be supported. Due to the high diversity of the ecosystem it's also likely to be working on other distributions. If you need a specific platform, contact us.
+The agent runs on glibc-based distributions back to glibc 2.17 (RHEL 7 / CentOS 7 / Debian 8 era and newer). For older or non-glibc systems use the **Alpine / musl** build, which is statically linked and has no host libc dependency. Older distributions like RHEL 5 / 6 are not supported by the standard glibc build because of the libc baseline; the musl build can be evaluated for those cases but kernel telemetry will be limited to whatever the host kernel exposes (see the tier table above).
 
 ### Deb Package
 
@@ -96,7 +114,7 @@ You may also pass the value `-` instead of the `INSTALLATION_KEY` like: `-d -`. 
 
 ### Disabling Netlink
 
-By default, the Linux sensor makes use of Netlink if available. In some rare configurations this auto-detection may be unwanted and Netlink usage can be disabled by setting the environment variable `DISABLE_NETLINK` to any value on the sensor process.
+By default, when running on a kernel where eBPF is unavailable, the Linux sensor uses the netlink proc connector (`CN_PROC`) to receive real-time process events. In some rare configurations this auto-detection may be unwanted — for example when another agent on the host already consumes the same connector — and netlink usage can be disabled by setting the environment variable `DISABLE_NETLINK` to any value on the sensor process. With netlink disabled and no eBPF available, the agent falls back to user-mode `/proc` polling. This setting has no effect when eBPF is the active acquisition path.
 
 ## Uninstalling the Agent
 
