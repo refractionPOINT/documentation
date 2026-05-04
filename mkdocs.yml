@@ -531,7 +531,6 @@ nav:
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
-      - TypeScript SDK: 9-ai-sessions/sdk.md
 
   - Release Notes:
       - Overview: 10-release-notes/index.md

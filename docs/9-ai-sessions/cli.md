@@ -5,7 +5,7 @@ The [LimaCharlie Python SDK](../6-developer-guide/sdks/python-sdk.md) ships a `l
 These commands are available in the `cli-v2` release line of the CLI and talk to the same endpoints documented on the [API Reference](api-reference.md) page. Authentication reuses your existing LimaCharlie credentials — no separate AI Sessions token is required.
 
 !!! note
-    The CLI is complementary to the [web console](user-sessions.md) and the [TypeScript SDK](sdk.md). Anything you can do from the console (other than file upload/download, which is not yet wired into the CLI) you can do from the CLI.
+    The CLI is complementary to the [web console](user-sessions.md). Anything you can do from the console (other than file upload/download, which is not yet wired into the CLI) you can do from the CLI.
 
 ## Installation
 
