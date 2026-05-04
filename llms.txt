@@ -238,6 +238,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Overview](https://docs.limacharlie.io/6-developer-guide/): Developer Guide
 - [Overview](https://docs.limacharlie.io/6-developer-guide/sdks/): SDK Documentation
 - [Python SDK](https://docs.limacharlie.io/6-developer-guide/sdks/python-sdk/): LimaCharlie Python SDK Documentation
+- [Python SDK v4](https://docs.limacharlie.io/6-developer-guide/sdks/python-sdk-v4/): LimaCharlie Python SDK v4
 - [Go SDK](https://docs.limacharlie.io/6-developer-guide/sdks/go-sdk/): LimaCharlie Go SDK Documentation
 - [Command Line Interface](https://docs.limacharlie.io/6-developer-guide/sdk-overview/)
 - [CLI Extension](https://docs.limacharlie.io/6-developer-guide/cli/)
