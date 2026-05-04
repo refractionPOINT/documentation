@@ -14,7 +14,7 @@ The same three fields show up in every place an AI Session can be configured:
 
 | Location | Who owns it | Used by |
 |---|---|---|
-| **User Profile** (`POST /v1/profiles`) | The authenticated LimaCharlie user | [User Sessions](user-sessions.md) created via the web UI, the [CLI](cli.md) `ai chat`, or the TypeScript [SDK](sdk.md). |
+| **User Profile** (`POST /v1/profiles`) | The authenticated LimaCharlie user | [User Sessions](user-sessions.md) created via the web UI or the [CLI](cli.md) `ai chat`. |
 | **`ai_agent` Hive record** | The organization | [D&R-driven sessions](dr-sessions.md) and CLI `ai start-session --definition <name>` runs. |
 | **Inline `profile:` block** in a D&R `start ai agent` action | The organization | One-off overrides inside a specific D&R rule. |
 | **Per-session `allowed_tools` / `denied_tools`** in `POST /v1/sessions` | The authenticated user | Per-session override on top of the chosen Profile. |
