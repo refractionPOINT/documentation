@@ -1602,6 +1602,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Linux Distribution Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kernel-feature-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kernel Feature Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forcing-a-lower-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forcing a lower tier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11713,6 +11741,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Linux Distribution Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kernel-feature-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kernel Feature Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forcing-a-lower-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forcing a lower tier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -11928,13 +11984,51 @@
 
 
 <h1 id="linux-agent-installation">Linux Agent Installation<a class="headerlink" href="#linux-agent-installation" title="Anchor link to this section">&para;</a></h1>
-<p>The LimaCharlie Linux <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> interfaces with the kernel to acquire deep visibility into the host's activity while taking measures to preserve the host's performance. We make full use of eBPF, which <strong>requires Linux 4.4 or above</strong>.</p>
-<p>The <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> current supports all Linux distributions (including ARM and MIPS).</p>
+<p>The LimaCharlie Linux <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> runs on every mainstream Linux distribution and architecture (x86_64, i386, ARM64, Alpine/musl). It is shipped as a single binary that adapts at runtime to the kernel features available on the host — there is no separate build or installer per mode. On modern kernels it uses eBPF for in-kernel telemetry; on older kernels it transparently falls back to lighter mechanisms.</p>
 <h2 id="linux-distribution-support">Linux Distribution Support<a class="headerlink" href="#linux-distribution-support" title="Anchor link to this section">&para;</a></h2>
-<p>Our Linux <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> fully utilizes eBPF, which requires at least Linux 4.4 or above. Use the command <code>uname -r</code> to check your kernel version to determine support.</p>
+<p>The agent is regularly tested against current Debian, Ubuntu, CentOS/RHEL/Rocky/Alma, Amazon Linux, and Alpine releases on x86_64 and ARM64. Because of the diversity of the Linux ecosystem it usually runs unmodified on other distributions as well — if you need to validate a specific platform, contact us.</p>
+<h3 id="kernel-feature-tiers">Kernel Feature Tiers<a class="headerlink" href="#kernel-feature-tiers" title="Anchor link to this section">&para;</a></h3>
+<p>The agent picks the most capable acquisition mode supported by the host kernel and degrades gracefully when newer features are not available. All tiers run <strong>the same binary</strong> — selection happens at startup.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Minimum kernel</th>
+<th>Acquisition path</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User-mode only</td>
+<td>any (incl. 2.4 / 2.6 era)</td>
+<td><code>/proc</code> polling</td>
+<td>Inventory of running processes, host metadata, live response, file integrity, USB monitoring, YARA scans, network isolation, and all detection-and-response features that operate from user space. <strong>No real-time process / file / network / DNS kernel events.</strong></td>
+</tr>
+<tr>
+<td>User-mode + netlink connector</td>
+<td>2.6.15</td>
+<td><code>/proc</code> polling + netlink <code>CN_PROC</code> connector</td>
+<td>Adds real-time process create / exit notifications from the kernel. Process command-line and executable path are still scraped post-event from <code>/proc</code>, so very short-lived processes can be missed.</td>
+</tr>
+<tr>
+<td>User-mode + eBPF (default when available)</td>
+<td>5.7+ recommended</td>
+<td>eBPF programs (CO-RE / BTF) attached for processes, files, network, DNS</td>
+<td>Full in-kernel telemetry: process exec with reliable cmdline capture, file I/O, TCP / UDP connections, DNS queries — collected synchronously and attributed to the originating task. This is the mode used on supported modern systems.</td>
+</tr>
+</tbody>
+</table>
+<p>The agent does <strong>not</strong> require eBPF, kernel headers, or <code>bpftool</code> to be installed on the target host — the eBPF programs are pre-compiled into the binary and loaded via libbpf using BTF when the kernel exposes it (<code>/sys/kernel/btf/vmlinux</code>). On kernels without BTF / CO-RE the agent automatically remains in the netlink or user-mode tier.</p>
+<p>Use <code>uname -r</code> to check the host kernel version. If it is below 5.4, expect the agent to run in netlink (2.6.15+) or user-mode-only (anything older) tier with reduced kernel telemetry but full agent control-plane functionality.</p>
+<h3 id="forcing-a-lower-tier">Forcing a lower tier<a class="headerlink" href="#forcing-a-lower-tier" title="Anchor link to this section">&para;</a></h3>
+<p>The agent exposes one runtime override for compatibility scenarios (the eBPF tier has no opt-out — it is selected only when the kernel actually supports it):</p>
+<ul>
+<li><code>DISABLE_NETLINK</code> — set to any value in the sensor process environment to skip the netlink connector. Used when an unrelated component on the host already consumes netlink proc events or when the connector behaves unexpectedly. Has no effect when eBPF is in use.</li>
+</ul>
 <h2 id="installation-instructions">Installation Instructions<a class="headerlink" href="#installation-instructions" title="Anchor link to this section">&para;</a></h2>
 <h3 id="system-requirements">System Requirements<a class="headerlink" href="#system-requirements" title="Anchor link to this section">&para;</a></h3>
-<p>All versions of Debian and CentOS starting around Debian 5 should be supported. Due to the high diversity of the ecosystem it's also likely to be working on other distributions. If you need a specific platform, contact us.</p>
+<p>The agent runs on glibc-based distributions back to glibc 2.17 (RHEL 7 / CentOS 7 / Debian 8 era and newer). For older or non-glibc systems use the <strong>Alpine / musl</strong> build, which is statically linked and has no host libc dependency. Older distributions like RHEL 5 / 6 are not supported by the standard glibc build because of the libc baseline; the musl build can be evaluated for those cases but kernel telemetry will be limited to whatever the host kernel exposes (see the tier table above).</p>
 <h3 id="deb-package">Deb Package<a class="headerlink" href="#deb-package" title="Anchor link to this section">&para;</a></h3>
 <p>If you are deploying on a Debian Linux system, we recommend using the <code>.deb</code> package. You can find a link to the Debian package for various architectures at <a href="../../../">Downloading the Agent</a>.</p>
 <p>The deb package will install the LimaCharlie sensor using a <code>systemd</code> service, or if unavailable a <code>system V</code> service.</p>
@@ -11984,7 +12078,7 @@ You can invoke it like this:</p>
 <li>Text file in current working directory: <code>lc_installation_key.txt</code></li>
 </ul>
 <h3 id="disabling-netlink">Disabling Netlink<a class="headerlink" href="#disabling-netlink" title="Anchor link to this section">&para;</a></h3>
-<p>By default, the Linux sensor makes use of Netlink if available. In some rare configurations this auto-detection may be unwanted and Netlink usage can be disabled by setting the environment variable <code>DISABLE_NETLINK</code> to any value on the sensor process.</p>
+<p>By default, when running on a kernel where eBPF is unavailable, the Linux sensor uses the netlink proc connector (<code>CN_PROC</code>) to receive real-time process events. In some rare configurations this auto-detection may be unwanted — for example when another agent on the host already consumes the same connector — and netlink usage can be disabled by setting the environment variable <code>DISABLE_NETLINK</code> to any value on the sensor process. With netlink disabled and no eBPF available, the agent falls back to user-mode <code>/proc</code> polling. This setting has no effect when eBPF is the active acquisition path.</p>
 <h2 id="uninstalling-the-agent">Uninstalling the Agent<a class="headerlink" href="#uninstalling-the-agent" title="Anchor link to this section">&para;</a></h2>
 <p>For additional agent uninstall options, see <a href="../../uninstallation/"><abbr title="Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.">Endpoint Agent</abbr> Uninstallation</a></p>
 <p>Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (<code>dpkg</code> file), you should uninstall via the same mechanism. If you installed via the SystemV installation method, please utilize the bottom of <a href="https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97">this script</a>.</p>
