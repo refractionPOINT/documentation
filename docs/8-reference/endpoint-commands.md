@@ -46,6 +46,7 @@ For commands which emit a report/reply event type from the agent, the correspond
 | os\_users | [OS\_USERS\_REP](edr-events.md#os_users_rep) |  | ☑️ |  |  |  |
 | [os\_version](#os_version) | [OS\_VERSION\_REP](edr-events.md#os_version_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | put | [RECEIPT](edr-events.md#receipt) | ☑️ | ☑️ | ☑️ |  |  |
+| [reg\_list](#reg_list) | [REGISTRY\_LIST\_REP](edr-events.md#registry_list_rep) |  | ☑️ |  |  |  |
 | [rejoin\_network](#rejoin_network) | [REJOIN\_NETWORK](edr-events.md#rejoin_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | restart | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [run](#run) | N/A | ☑️ | ☑️ | ☑️ |  |  |
@@ -1031,20 +1032,22 @@ limacharlie sensor task <SID> pcap_stop
 
 ### reg_list
 
-List Windows registry keys and values.
+List Windows registry keys and values at the specified path.
 
 **Platforms:** Windows
 
 **Parameters:**
 
-- `reg_path` (required): Registry path to list (e.g., "HKEY_LOCAL_MACHINE\\SOFTWARE")
+- `<path>` (required, positional): Registry path to list. Use short hive prefixes such as `hklm`, `hku`, `hkcu`, `hkcr`, `hkcc`.
 
-**Response Event:** REG_LIST_REP
+**Response Event:** REGISTRY_LIST_REP
 
-**Usage Example:**
+**Usage Examples:**
 
 ```bash
-limacharlie sensor task <SID> reg_list --reg_path "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+limacharlie sensor task <SID> reg_list hklm\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
+limacharlie sensor task <SID> reg_list hklm\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging
+limacharlie sensor task <SID> reg_list hklm\Software\Policies\Microsoft\Windows\PowerShell\Transcription
 ```
 
 ---
