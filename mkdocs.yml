@@ -526,6 +526,7 @@ nav:
       - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
       - User Sessions: 9-ai-sessions/user-sessions.md
       - Tool Permissions & Profiles: 9-ai-sessions/tool-permissions.md
+      - Runner Environment: 9-ai-sessions/runner-environment.md
       - AI Skills: 9-ai-sessions/skills.md
       - AI Memory: 9-ai-sessions/memory.md
       - Command Line Interface: 9-ai-sessions/cli.md
