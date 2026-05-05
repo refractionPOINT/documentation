@@ -2,6 +2,13 @@
 
 > LimaCharlie LABS
 
+!!! warning "Python SDK v4 only"
+    The Playbook execution environment runs on the LimaCharlie **Python SDK v4**.
+    The recently released [Python SDK v5](../../../6-developer-guide/sdks/python-sdk.md)
+    is **not yet supported** in playbooks — write playbook code against v4 APIs.
+    See the [Python SDK v4 documentation](../../../6-developer-guide/sdks/python-sdk-v4.md)
+    for the supported `Manager` interface and module layout.
+
 The Playbook Extension allows you to execute Python playbooks within the context of your Organization in order to automate tasks and customize more complex detections.
 
 The playbooks themselves are managed in the playbook Hive Configurations and can be managed across tenants using the Infrastructure as Code extension.
@@ -54,13 +61,11 @@ Here is an example D&R rule starting a new invocation of a playbook.
 ### Python example
 
 ```python
-from limacharlie.client import Client
-from limacharlie.sdk.organization import Organization
-from limacharlie.sdk.extensions import Extensions
+import limacharlie
 
-client = Client()
-org = Organization(client)
-ext = Extensions(org)
+# Manager picks up credentials from the environment or ~/.limacharlie.
+man = limacharlie.Manager()
+ext = limacharlie.Extension(man)
 
 # Issue a request to the "ext-playbook" extension.
 response = ext.request("ext-playbook", "run_playbook", {
@@ -79,7 +84,7 @@ print(response)
 
 A playbook is a normal python script. The only required component is a top level function called `playbook` which takes 2 arguments:
 
-- `sdk`: an instance of the LC Python SDK (`Organization` from `limacharlie.sdk.organization`) pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise.
+- `sdk`: an instance of the LC Python SDK v4 `limacharlie.Manager`, pre-authenticated to the relevant Organization based on the credentials provided, if any, `None` otherwise.
 - `data`: the optional JSON dictionary provided as context to your playbook.
 
 The function must return a dictionary with the following optional keys:
@@ -98,11 +103,11 @@ The following is a sample playbook that sends a webhook to an external product w
 ```python
 import json
 import urllib.request
-from limacharlie.sdk.hive import Hive
+import limacharlie
 
 def playbook(sdk, data):
   # Get the secret we need from LimaCharlie.
-  mySecret = Hive(sdk, "secret").get("my-secret-name").data["secret"]
+  mySecret = limacharlie.Hive(sdk, "secret").get("my-secret-name").data["secret"]
 
   # Send the Webhook.
   request = urllib.request.Request("https://example.com/webhook", data=json.dumps(data).encode('utf-8'), headers={
@@ -134,8 +139,6 @@ When a playbook generates a detection, you can customize the detection category 
 The following example checks if a server sensor has missed a check-in and creates a detection with a custom category name:
 
 ```python
-from limacharlie.sdk.sensor import Sensor
-
 def playbook(sdk, data):
   if not sdk:
     return {"error": "LC API key required"}
@@ -146,13 +149,13 @@ def playbook(sdk, data):
   threshold = 3600  # 1 hour in seconds
 
   missing_sensors = []
-  for sensor_info in sdk.list_sensors():
-    sensor = Sensor(sdk, sensor_info["sid"])
-    info = sensor.get_info()
+  # Manager.sensors() is a v4 generator yielding Sensor objects.
+  for sensor in sdk.sensors():
+    info = sensor.getInfo()
     last_seen = info.get('last_seen', 0)
     if (current_time - last_seen) > threshold:
       missing_sensors.append({
-        "sid": info['sid'],
+        "sid": sensor.sid,
         "hostname": info.get('hostname', 'unknown')
       })
 
@@ -224,13 +227,12 @@ hives:
         my-playbook:
             data:
                 python: |-
-                    from limacharlie.sdk.sensor import Sensor
                     def playbook(sdk, data):
                         if not sdk:
                             return {"error": "LC API key required to list sensors"}
                         return {
                             "data": {
-                                "sensors": [Sensor(sdk, s["sid"]).get_info() for s in sdk.list_sensors()]
+                                "sensors": [s.getInfo() for s in sdk.sensors()]
                             }
                         }
             usr_mtd:
