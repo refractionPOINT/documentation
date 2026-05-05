@@ -85,6 +85,7 @@ respond:
 - [D&R-Driven Sessions](dr-sessions.md) - Automated sessions triggered by D&R rules
 - [User Sessions](user-sessions.md) - Interactive sessions via web UI or API
 - [Tool Permissions & Profiles](tool-permissions.md) - How `allowed_tools`, `denied_tools`, and `permission_mode` work
+- [Runner Environment](runner-environment.md) - CLI tools, language runtimes, and reference data pre-installed in the session container
 - [AI Skills](skills.md) - Reusable Claude Code skill definitions stored in your org
 - [AI Memory](memory.md) - Per-agent persistent memory with partial-merge writes
 - [API Reference](api-reference.md) - REST API and WebSocket protocol
