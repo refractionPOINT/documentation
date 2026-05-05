@@ -61,7 +61,28 @@ respond:
 
 In definition mode, all session configuration (prompt, anthropic key, profile, etc.) comes from the referenced AI agent record. No other parameters are required.
 
-You can optionally override `debounce_key` at the action level, even in definition mode:
+#### Per-rule Augmentation
+
+A rule using `definition:` can also supply its own `prompt:` and/or `data:` fields. When present, they are merged with the values on the `ai_agent` record so a single agent definition can be reused across many rules with per-rule, task-specific augmentation:
+
+- **`prompt`** — appended to the `ai_agent` record's prompt with a blank line separating them. The agent's prompt acts as the stable core; the rule's prompt adds rule-specific flavor.
+- **`data`** — extracted from the event rule-side (templates, `secret://` and gjson callbacks resolve as usual) and merged with the `ai_agent` record's own data extraction. The merged dictionary is appended to the prompt as a single JSON code block. **Rule keys override agent keys on collision**, so a rule can substitute or add specific fields for its trigger.
+
+```yaml
+respond:
+  - action: start ai agent
+    definition: hive://ai_agent/detection-investigator
+    debounce_key: "investigate-{{ .routing.sid }}"
+    # Appended to the ai_agent record's prompt
+    prompt: |
+      Focus specifically on credential-theft TTPs for this trigger.
+    # Merged with the ai_agent record's data: extraction; rule keys win
+    data:
+      trigger_rule: "credential-dumping-suspect"
+      detection_name: "{{ .detect.cat }}"
+```
+
+`debounce_key` can also be set at the action level even in definition mode (it overrides the value on the `ai_agent` record):
 
 ```yaml
 respond:
@@ -467,6 +488,9 @@ respond:
 ```
 
 This approach keeps D&R rules clean and lets you update the agent's behavior (prompt, model, tools, etc.) in one place without modifying every rule that uses it. The `debounce_key` can be overridden at the action level even in definition mode.
+
+!!! tip "Per-rule prompt and data augmentation"
+    Rules using `definition:` can additionally supply `prompt:` and/or `data:` to augment the referenced agent. The rule's prompt is appended to the agent's prompt (blank-line separated), and the rule's extracted data is merged into the agent's data extraction (rule keys override agent keys). See [Per-rule Augmentation](#per-rule-augmentation).
 
 !!! tip "Reuse the same definition from the CLI"
     The same `ai_agent` Hive record can be used as a template from the CLI with `limacharlie ai start-session --definition <name>`. Individual fields (prompt, model, budget, tool list, environment, credentials) can be overridden per run, so one definition doubles as both a D&R-driven agent and an ad-hoc CLI template. See [Command Line Interface](cli.md#limacharlie-ai-start-session) for the full list of override flags.
