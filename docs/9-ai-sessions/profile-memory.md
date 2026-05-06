@@ -18,7 +18,10 @@ When a session starts from a profile that has memories:
 
 1. The session manager loads the bank, decrypts it, and ships it inside the encrypted session config.
 2. The runner writes each memory to `/workspace/.memory/<path>` before Claude starts.
-3. While the session runs, the runner watches `/workspace/.memory/`. Whenever Claude writes, edits, or deletes a file there, the change is debounced and synced back to the bank — so anything the model "learns" persists for the next session that uses this profile.
+3. The runner injects a `## Profile Memory Bank` section into Claude's system prompt that lists the current entry paths and explains the persistence semantics — so the model knows the directory exists, what's in it, and that edits there persist across sessions. Without this section Claude has no reason to look in `.memory/`; the directory does not have any built-in convention in the Agent SDK.
+4. While the session runs, the runner watches `/workspace/.memory/`. Whenever Claude writes, edits, or deletes a file there, the change is debounced and synced back to the bank — so anything the model "learns" persists for the next session that uses this profile.
+
+The system-prompt section is only injected for user-based sessions (D&R / org-scoped sessions never carry a profile and never see the bank). For empty banks the section instructs Claude to create the first entry rather than listing entries.
 
 The directory belongs entirely to the bank: do not store transient files in `.memory/`, they will be wiped on the next session start.
 
