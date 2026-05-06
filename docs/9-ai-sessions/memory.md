@@ -2,6 +2,8 @@
 
 AI Memory is a per-agent key/value store for content that should outlive a single AI Session. Where [Skills](skills.md) capture *how* an agent works, memory captures *what it has learned* — facts about the environment, prior decisions, ongoing investigations, anything the agent should be able to recall the next time it runs.
 
+> Looking for the per-user equivalent for [User Sessions](user-sessions.md)? See [Profile Memory Bank](profile-memory.md) — a smaller, profile-scoped store that mounts directly into the session workspace.
+
 Each agent owns one record, keyed by an agent identifier you pick. Inside that record, individual memories are addressed by filesystem-style names (`notes/today`, `cases/INC-123/timeline`, `runtime/last-seen-host`, …). Writes are partial: setting a single named memory does not require reading the rest of the record back, and concurrent writes against different memory names on the same agent do not need to coordinate.
 
 ## How writes merge

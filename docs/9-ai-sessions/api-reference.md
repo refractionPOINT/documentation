@@ -259,6 +259,7 @@ POST /v1/profiles
   "model": "claude-sonnet-4-20250514",
   "max_turns": 100,
   "max_budget_usd": 10.0,
+  "system_prompt_suffix": "You are assisting the SOC team. Always cite sensor IDs in findings.",
   "mcp_servers": {
     "limacharlie": {
       "type": "http",
@@ -271,6 +272,12 @@ POST /v1/profiles
   "is_default": false
 }
 ```
+
+The `system_prompt_suffix` is free-form text appended to the agent's system prompt for sessions launched from this profile (max 16 KB). Snapshotted onto the session at creation time, so editing the profile later does not retroactively affect already-running sessions.
+
+**Profile-specific Error Responses:**
+
+- `400 system_prompt_suffix_too_long`: the supplied suffix exceeds 16384 bytes (also returned by `PUT /v1/profiles/{profileId}`)
 
 ##### Response: 201 Created
 
@@ -329,6 +336,73 @@ POST /v1/sessions/{sessionId}/capture-profile
   "description": "Captured from session abc123"
 }
 ```
+
+---
+
+### Profile Memory Bank
+
+Each profile can carry a small set of markdown files that get mounted into the runner's `/workspace/.memory/` whenever a session is launched from the profile. See [Profile Memory Bank](profile-memory.md) for an overview and limits.
+
+#### List memory entries
+
+```text
+GET /v1/profiles/{profileId}/memories
+```
+
+Returns metadata only — bodies are excluded so the response stays small for profiles with many entries.
+
+```json
+{
+  "memories": [
+    {
+      "path": "preferences.md",
+      "size": 412,
+      "content_hash": "9b2f…",
+      "created_at": "2026-05-01T10:14:32Z",
+      "updated_at": "2026-05-04T08:02:11Z"
+    }
+  ]
+}
+```
+
+#### Read a memory entry
+
+```text
+GET /v1/profiles/{profileId}/memories/content?path=<memory-path>
+```
+
+The `path` is URL-encoded; it must satisfy the [naming rules](profile-memory.md#layout-and-limits).
+
+#### Create or update a memory entry
+
+```text
+PUT /v1/profiles/{profileId}/memories/content?path=<memory-path>
+```
+
+**Request Body:**
+
+```json
+{
+  "content": "## Acme Corp\n- single-tenant deployment\n- compliance: SOC2"
+}
+```
+
+Returns `201` on insert, `200` on update or no-op (when the supplied content matches the existing body byte-for-byte).
+
+| Failure | Response |
+|---|---|
+| Invalid path | `400 invalid_memory_path` |
+| Body exceeds 64 KiB | `413 memory_content_too_large` |
+| Profile already holds 100 entries | `409 max_memories_reached` |
+| Profile aggregate would exceed 5 MiB | `409 memory_quota_exceeded` |
+
+#### Delete a memory entry
+
+```text
+DELETE /v1/profiles/{profileId}/memories/content?path=<memory-path>
+```
+
+Deleting an entry is also done implicitly when its profile is deleted — every entry in the bank is cascaded.
 
 ---
 
@@ -423,6 +497,76 @@ POST /v1/auth/claude/apikey
 }
 ```
 
+#### Store Bedrock Credentials
+
+```text
+POST /v1/auth/claude/bedrock
+```
+
+Routes Claude through AWS Bedrock for this user. The body matches the `BedrockConfig` struct used by the org-side `SessionRequest`. Supply either `(access_key_id + secret_access_key)` (with optional `session_token` for STS / SSO temporary credentials) or `bearer_token`. `region` is always required.
+
+**Request Body:**
+
+```json
+{
+  "region": "us-east-1",
+  "access_key_id": "AKIA...",
+  "secret_access_key": "...",
+  "session_token": "...",
+  "bearer_token": "..."
+}
+```
+
+##### Response: 200 OK
+
+```json
+{
+  "success": true,
+  "message": "Bedrock config stored successfully"
+}
+```
+
+**Error Responses:**
+
+- `400 invalid_bedrock_config`: missing `region`, missing both credential pair and bearer token, mismatched access-key pair, or `session_token` without the access-key pair
+- `400 not_registered`: user has not called `POST /v1/register` yet
+
+> Storing Bedrock credentials replaces any previously stored API key, OAuth token, or Vertex config — only one provider is active per user. See [Alternative AI Providers](alternative-providers.md#amazon-bedrock) for IAM, region, and model ID details.
+
+#### Store Vertex Credentials
+
+```text
+POST /v1/auth/claude/vertex
+```
+
+Routes Claude through Google Cloud Vertex AI for this user. `service_account_json` is the literal contents of the service-account JSON key — the entire downloaded file as a JSON string.
+
+**Request Body:**
+
+```json
+{
+  "project_id": "my-gcp-project",
+  "region": "us-east5",
+  "service_account_json": "{\"type\":\"service_account\",\"project_id\":\"...\",\"private_key\":\"...\"}"
+}
+```
+
+##### Response: 200 OK
+
+```json
+{
+  "success": true,
+  "message": "Vertex config stored successfully"
+}
+```
+
+**Error Responses:**
+
+- `400 invalid_vertex_config`: missing `project_id`, `region`, or `service_account_json`
+- `400 not_registered`: user has not called `POST /v1/register` yet
+
+> Storing Vertex credentials replaces any previously stored API key, OAuth token, or Bedrock config. The service-account JSON is encrypted at rest and is never returned by the status endpoint. See [Alternative AI Providers](alternative-providers.md#google-cloud-vertex-ai) for GCP-side setup, region selection, and model ID format.
+
 #### Get Credential Status
 
 ```text
@@ -438,6 +582,8 @@ GET /v1/auth/claude/status
   "created_at": "2025-01-15T10:30:00Z"
 }
 ```
+
+`credential_type` is one of `api_key`, `oauth`, `bedrock`, or `vertex` — whichever provider was most recently stored. Secrets themselves (API keys, OAuth tokens, AWS keys, service-account JSON) are never returned.
 
 #### Delete Credentials
 
