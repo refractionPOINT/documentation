@@ -167,6 +167,12 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/capture-
   -d '{"name": "My Session Config"}'
 ```
 
+### Profile Memory Bank
+
+Each profile can carry a small set of markdown files that are mounted into the session's workspace at `/workspace/.memory/` whenever a session is launched from that profile. Edits Claude makes there during the session are synced back automatically. This is the user-side analog of the org-scoped [AI Memory hive](memory.md).
+
+See [Profile Memory Bank](profile-memory.md) for the full reference, including REST endpoints, naming rules, and limits.
+
 ## Session Lifecycle
 
 ### Session States

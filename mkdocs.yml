@@ -529,6 +529,7 @@ nav:
       - Runner Environment: 9-ai-sessions/runner-environment.md
       - AI Skills: 9-ai-sessions/skills.md
       - AI Memory: 9-ai-sessions/memory.md
+      - Profile Memory Bank: 9-ai-sessions/profile-memory.md
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md

@@ -332,6 +332,73 @@ POST /v1/sessions/{sessionId}/capture-profile
 
 ---
 
+### Profile Memory Bank
+
+Each profile can carry a small set of markdown files that get mounted into the runner's `/workspace/.memory/` whenever a session is launched from the profile. See [Profile Memory Bank](profile-memory.md) for an overview and limits.
+
+#### List memory entries
+
+```text
+GET /v1/profiles/{profileId}/memories
+```
+
+Returns metadata only — bodies are excluded so the response stays small for profiles with many entries.
+
+```json
+{
+  "memories": [
+    {
+      "path": "preferences.md",
+      "size": 412,
+      "content_hash": "9b2f…",
+      "created_at": "2026-05-01T10:14:32Z",
+      "updated_at": "2026-05-04T08:02:11Z"
+    }
+  ]
+}
+```
+
+#### Read a memory entry
+
+```text
+GET /v1/profiles/{profileId}/memories/content?path=<memory-path>
+```
+
+The `path` is URL-encoded; it must satisfy the [naming rules](profile-memory.md#layout-and-limits).
+
+#### Create or update a memory entry
+
+```text
+PUT /v1/profiles/{profileId}/memories/content?path=<memory-path>
+```
+
+**Request Body:**
+
+```json
+{
+  "content": "## Acme Corp\n- single-tenant deployment\n- compliance: SOC2"
+}
+```
+
+Returns `201` on insert, `200` on update or no-op (when the supplied content matches the existing body byte-for-byte).
+
+| Failure | Response |
+|---|---|
+| Invalid path | `400 invalid_memory_path` |
+| Body exceeds 64 KiB | `413 memory_content_too_large` |
+| Profile already holds 100 entries | `409 max_memories_reached` |
+| Profile aggregate would exceed 5 MiB | `409 memory_quota_exceeded` |
+
+#### Delete a memory entry
+
+```text
+DELETE /v1/profiles/{profileId}/memories/content?path=<memory-path>
+```
+
+Deleting an entry is also done implicitly when its profile is deleted — every entry in the bank is cascaded.
+
+---
+
 ### Claude Authentication
 
 #### Start OAuth Flow
