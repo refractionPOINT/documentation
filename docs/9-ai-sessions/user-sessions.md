@@ -30,7 +30,9 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/register \
 
 ### Step 2: Store Claude Credentials
 
-AI Sessions uses a Bring Your Own Key (BYOK) model. You provide your Anthropic credentials—either an API key or via Claude Max OAuth.
+AI Sessions uses a Bring Your Own Key (BYOK) model. You provide credentials for one of four supported Claude providers — Anthropic API key, Claude Max OAuth, Amazon Bedrock, or Google Cloud Vertex AI. Only one provider is active per user at a time; storing a credential for a different provider replaces the previous one.
+
+The `credential_type` field returned by `GET /v1/auth/claude/status` is one of `api_key`, `oauth`, `bedrock`, or `vertex`.
 
 #### Option A: API Key
 
@@ -72,6 +74,56 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/code \
   -H "Content-Type: application/json" \
   -d '{"session_id": "<oauth_session_id>", "code": "<authorization_code>"}'
 ```
+
+#### Option C: Amazon Bedrock
+
+Route Claude through your AWS account. The Bedrock model IDs differ from the standard Anthropic IDs (e.g. `us.anthropic.claude-sonnet-4-5-20250929-v1:0`); set the appropriate ID on your profile via the `model` field.
+
+You must supply **either** the access-key pair (`access_key_id` + `secret_access_key`, with optional `session_token` for STS / SSO) **or** a `bearer_token`. `region` is always required.
+
+```bash
+# Access-key pair
+curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/bedrock \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "region": "us-east-1",
+    "access_key_id": "AKIA...",
+    "secret_access_key": "..."
+  }'
+
+# Bearer token
+curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/bedrock \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "region": "us-east-1",
+    "bearer_token": "..."
+  }'
+```
+
+The runner sets `CLAUDE_CODE_USE_BEDROCK=1` and the appropriate `AWS_*` environment variables on the Claude subprocess automatically.
+
+See [Alternative AI Providers — Amazon Bedrock](alternative-providers.md#amazon-bedrock) for the IAM permissions, region selection, and model ID format. Those instructions apply to the user-side flow too; only the credential entry path differs (this endpoint instead of an `ai_agent` Hive record).
+
+#### Option D: Google Cloud Vertex AI
+
+Route Claude through your GCP project. Authentication is a service-account JSON key with the appropriate Vertex AI permissions; the runner materializes it on disk and points `GOOGLE_APPLICATION_CREDENTIALS` at it for each session. Set the Vertex-style model ID on your profile (e.g. `claude-sonnet-4-5@20250929`).
+
+```bash
+curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/vertex \
+  -H "Authorization: Bearer $LC_JWT" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "my-gcp-project",
+    "region": "us-east5",
+    "service_account_json": "{\"type\":\"service_account\",\"project_id\":\"...\",\"private_key\":\"...\"}"
+  }'
+```
+
+`service_account_json` is the **literal contents** of the service-account JSON key file, embedded as a JSON string. The credential is encrypted at rest; it is never returned by `GET /v1/auth/claude/status`.
+
+See [Alternative AI Providers — Google Cloud Vertex AI](alternative-providers.md#google-cloud-vertex-ai) for GCP-side setup, region selection, and model ID format.
 
 ### Step 3: Create a Session
 
@@ -148,6 +200,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
 | `ttl_seconds` | integer | Maximum session lifetime in seconds |
 | `environment` | map | Environment variables passed to the session |
 | `mcp_servers` | map | MCP server configurations |
+| `system_prompt_suffix` | string | Free-form text appended to the agent's system prompt for sessions launched from this profile. Use it to attach a persona, project context, or house rules without forking the runner. Maximum 16 KB. The suffix is snapshotted onto the session at creation time, so editing the profile later does not retroactively affect already-running sessions. |
 
 ### Setting a Default Profile
 
