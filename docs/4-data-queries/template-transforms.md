@@ -54,7 +54,18 @@ The following options are available in Adapter configurations:
 
 Both support template strings, meaning you can add/remove values from the JSON data to replace/supplement other fields.
 
-For example, if we had the following data:
+#### Additive vs Replacement Mode
+
+A transform operates in one of two modes:
+
+- **Replacement mode** (default): when *no* keys in the transform are prefixed with `+` or `-`, the original event is discarded and the output is built from scratch using only the keys you defined. This is the same behavior described in the [Transforms](#transforms) section further down.
+- **Additive mode**: as soon as *any* key in the transform is prefixed with `+` or `-`, the entire transform switches to additive mode. The original event is preserved as the base, and the transform's keys add to, modify, or remove fields from it.
+
+Mixing prefixed and non-prefixed keys in the same transform is allowed: the presence of even a single `+`/`-` key flips the whole map to additive mode, and the non-prefixed keys still take effect (replacing the values at those paths). This is usually what you want when augmenting an event, but it's important to know if you ever expect a non-prefixed key to mean "rebuild the event from this only".
+
+#### Example: Renaming and Adding Fields
+
+If we had the following data:
 
 ```json
 { "event":
@@ -92,6 +103,40 @@ The resulting event to be ingested would be:
   }
 }
 ```
+
+#### Example: Parsing a Stringified JSON Field in Place
+
+A common case with adapters (especially log sources like Parquet, Teleport, or audit logs) is an event that contains a field whose value is a JSON-encoded string rather than a nested object. Without parsing, that field will arrive in LimaCharlie as an opaque string and will not be queryable as structured data.
+
+Combining additive mode with the [`@parsejson` modifier](#custom-modifiers) lets you decode that string in place without rewriting the rest of the event. For example, given an event like:
+
+```json
+{
+  "ts": "2026-01-15 12:00:00",
+  "user": "alice",
+  "event_data": "{\"action\":\"login\",\"src\":\"10.0.0.5\"}"
+}
+```
+
+The following adapter configuration replaces `event_data` with the decoded object while leaving every other field untouched:
+
+```yaml
+client_options:
+  mapping:
+    transform:
+      +event_data: "event_data|@parsejson"
+```
+
+If you want to keep the raw string and add the parsed copy alongside it, use a different output key:
+
+```yaml
+client_options:
+  mapping:
+    transform:
+      +event_data_parsed: "event_data|@parsejson"
+```
+
+Both forms stay in additive mode (because the key is prefixed with `+`), so all the surrounding fields in the event are preserved.
 
 ## Transforms
 
