@@ -216,6 +216,7 @@ nav:
       - Installation Keys: 2-sensors-deployment/installation-keys.md
       - Sensor Connectivity: 2-sensors-deployment/connectivity.md
       - Sensor Tags: 2-sensors-deployment/sensor-tags.md
+      - Asset Tags (lc:asset:*): 2-sensors-deployment/asset-tags.md
       - Log Collection Guide: 2-sensors-deployment/log-collection-guide.md
       - Telemetry Index: 2-sensors-deployment/telemetry-index.md
       - Endpoint Agents:
@@ -409,6 +410,7 @@ nav:
               - Reliable Tasking: 5-integrations/extensions/limacharlie/reliable-tasking.md
               - Sensor Cull: 5-integrations/extensions/limacharlie/sensor-cull.md
               - Usage Alerts: 5-integrations/extensions/limacharlie/usage-alerts.md
+              - Vulnerability Reporting: 5-integrations/extensions/limacharlie/vulnerability-reporting.md
               - YARA Manager: 5-integrations/extensions/limacharlie/yara-manager.md
           - Third Party:
               - Overview: 5-integrations/extensions/third-party/index.md
