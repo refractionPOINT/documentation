@@ -396,10 +396,6 @@ published per output approximately once per minute.
   events that immediately get dropped again.
 - **Live tail outputs are not reported.** Transient outputs whose names start
   with `tmp_live_` are excluded.
-- **Final flush on drain.** When the endpoint pod receives a shutdown signal
-  (e.g. Spot instance preemption), any drops accumulated since the last
-  emission are flushed as a final `output_drop` event on a best-effort basis
-  before teardown.
 
 `output_drop` events arrive on the deployment stream alongside the existing
 sensor lifecycle events and can be filtered, alerted on, or routed via
