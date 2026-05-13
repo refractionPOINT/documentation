@@ -344,6 +344,68 @@ Deployment events track sensor installations, removals, and updates:
 | `sensor_uninstalled` | Sensor removal | `action`, `reason`, `uninstall_time` |
 | `sensor_upgraded` | Sensor version update | `old_version`, `new_version`, `upgrade_method` |
 | `sensor_checkin` | Periodic sensor heartbeat | `last_seen`, `connectivity_status` |
+| `output_drop` | One or more records were dropped by an output that could not keep up or whose retries were exhausted | `output`, `module`, `stream`, `count`, `bytes` |
+
+### `output_drop` Events
+
+When an output cannot keep up with incoming data (saturated in-flight queue) or its
+per-record send fails after the platform's bounded retry budget, the affected
+records are dropped to protect the rest of the pipeline. Rather than emit one
+deployment event per dropped record — which would flood the stream under
+sustained pressure — drops are aggregated and a single summary event is
+published per output approximately once per minute.
+
+```json
+{
+  "routing": {
+    "oid": "8cbe27f4-aaaa-aaaa-aaaa-138cd51389cd",
+    "sid": "00000000-0000-0000-0000-000000000000",
+    "event_type": "output_drop",
+    "event_time": 1709308800123,
+    "event_id": "f3e7a1c2-aaaa-aaaa-aaaa-9d2b8f4c5e10",
+    "tags": []
+  },
+  "event": {
+    "output": "splunk-events",
+    "module": "webhook_bulk",
+    "stream": "event",
+    "count": 1742,
+    "bytes": 9483120
+  }
+}
+```
+
+**Event Body Fields**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `output` | string | Name of the output that dropped data |
+| `module` | string | Output module type (`webhook`, `s3`, `kafka`, etc.) |
+| `stream` | string | Stream the dropped records belonged to (`event`, `detect`, `audit`, `artifact`, `billing`) |
+| `count` | integer | Number of records dropped in the aggregation window |
+| `bytes` | integer | Total serialized bytes dropped in the window. May be 0 for saturation drops where the record is dropped before serialization. |
+
+**Behavior Notes**
+
+- **Aggregated, not per-record.** Drops are coalesced across an approximate
+  one-minute window per output, so a high-throughput output that's failing
+  on every record still produces at most ~1 event per minute on the
+  deployment stream — with `count` reflecting the full window's losses.
+- **Drops on the deployment stream itself are not reported.** This avoids a
+  feedback loop where a broken deployment-stream output would emit drop
+  events that immediately get dropped again.
+- **Live tail outputs are not reported.** Transient outputs whose names start
+  with `tmp_live_` are excluded.
+- **Final flush on drain.** When the endpoint pod receives a shutdown signal
+  (e.g. Spot instance preemption), any drops accumulated since the last
+  emission are flushed as a final `output_drop` event on a best-effort basis
+  before teardown.
+
+`output_drop` events arrive on the deployment stream alongside the existing
+sensor lifecycle events and can be filtered, alerted on, or routed via
+[D&R rules](../../3-detection-response/index.md) like any other deployment
+event — for example, paging an on-call when a specific high-value output
+starts losing data.
 
 ### Use Cases
 
@@ -351,6 +413,7 @@ Deployment events track sensor installations, removals, and updates:
 - **Compliance**: Ensure all required endpoints have sensors
 - **Lifecycle Management**: Track sensor versions and upgrades
 - **Alerting**: Detect unexpected sensor removals
+- **Output Health**: Catch outputs that are dropping data (`output_drop`) before users notice missing telemetry downstream
 
 ---
 
