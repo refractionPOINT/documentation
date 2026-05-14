@@ -28,6 +28,7 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 
 ### Security Tools
 
+- [Check Point Harmony](types/checkpoint-harmony.md)
 - [CrowdStrike](types/crowdstrike.md)
 - [Microsoft Defender](types/microsoft-defender.md)
 - [SentinelOne](types/sentinelone.md)
