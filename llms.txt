@@ -306,6 +306,12 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Command Line Interface](https://docs.limacharlie.io/9-ai-sessions/cli/)
 - [Alternative Providers](https://docs.limacharlie.io/9-ai-sessions/alternative-providers/): Alternative AI Providers
 - [API Reference](https://docs.limacharlie.io/9-ai-sessions/api-reference/)
+- [Overview](https://docs.limacharlie.io/9-ai-sessions/compliance/): Compliance
+- [Installation](https://docs.limacharlie.io/9-ai-sessions/compliance/installation/)
+- [Frameworks](https://docs.limacharlie.io/9-ai-sessions/compliance/frameworks/)
+- [Skills Reference](https://docs.limacharlie.io/9-ai-sessions/compliance/skills/)
+- [Case-Reviewer Agent](https://docs.limacharlie.io/9-ai-sessions/compliance/case-reviewer-agent/)
+- [Gap Analysis](https://docs.limacharlie.io/9-ai-sessions/compliance/gap-analysis/)
 
 ## Release Notes
 
