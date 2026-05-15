@@ -386,3 +386,4 @@ In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Wo
 - [Sensor Selectors](../8-reference/sensor-selector-expressions.md)
 - [Python SDK](../6-developer-guide/sdks/python-sdk.md)
 - [Go SDK](../6-developer-guide/sdks/go-sdk.md)
+- [Compliance Frameworks](../9-ai-sessions/compliance/frameworks.md) -- Scope-tag conventions per framework (`cde` for PCI, `ephi-host` for HIPAA, `cui` for CMMC, `fisma-scope` for NIST 800-53, etc.). The compliance reviewer agents key their in-scope check off these tags.

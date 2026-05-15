@@ -14,6 +14,7 @@ Automatically spawn AI sessions in response to detections, events, or any condit
 - **Threat hunting**: Automatically investigate suspicious activity patterns
 - **Enrichment**: Use Claude to correlate data from multiple sources
 - **Response automation**: Generate recommendations or take automated actions
+- **Compliance classification**: Classify in-scope cases against framework controls (PCI DSS, HIPAA, CMMC, SOC 2, NIST 800-53, ISO 27001, CIS v8) and write audit-grade documentation directly into the case record. See [Compliance](compliance/index.md).
 
 [Learn more about D&R-Driven Sessions](dr-sessions.md)
 
@@ -89,6 +90,7 @@ respond:
 - [AI Skills](skills.md) - Reusable Claude Code skill definitions stored in your org
 - [AI Memory](memory.md) - Per-agent persistent memory with partial-merge writes
 - [API Reference](api-reference.md) - REST API and WebSocket protocol
+- [Compliance](compliance/index.md) - The `lc-compliance` Claude Code plugin: per-framework case-reviewer agents (D&R-driven) plus four interactive skills for control lookups, gap analysis, and guided deploy
 
 ## Billing
 
