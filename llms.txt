@@ -65,6 +65,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Microsoft Entra ID](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-entra-id/)
 - [Duo](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/duo/)
 - [1Password](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/1password/)
+- [Check Point Harmony](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/checkpoint-harmony/)
 - [CrowdStrike](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/crowdstrike/): CrowdStrike Falcon Cloud
 - [Microsoft Defender](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-defender/)
 - [SentinelOne](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sentinelone/)
