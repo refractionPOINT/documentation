@@ -12233,7 +12233,7 @@
 <p>This <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> ingests events from <a href="https://www.checkpoint.com/harmony/">Check Point Harmony</a> into LimaCharlie via the Infinity Portal APIs. Two independent sources are supported:</p>
 <ul>
 <li><strong>Infinity Events</strong> — the unified Logs-as-a-Service stream covering Harmony Endpoint, Harmony Email &amp; Collaboration, Harmony Mobile, Harmony Connect, and Harmony Browse.</li>
-<li><strong>Restore Requests</strong> — polls the Harmony Email &amp; Collaboration (HEC) entity API to surface emails with pending, restored, or declined restore requests.</li>
+<li><strong>Emails</strong> — polls the Harmony Email &amp; Collaboration (HEC) entity API for the full, unfiltered email-entity feed: every email entity Harmony processes, with its security verdicts and quarantine/restore lifecycle flags inline.</li>
 </ul>
 <p>Both sources share a single set of Infinity Portal API credentials. At least one source must be enabled or the adapter will refuse to start.</p>
 <h2 id="deployment-configurations">Deployment Configurations<a class="headerlink" href="#deployment-configurations" title="Anchor link to this section">&para;</a></h2>
@@ -12248,7 +12248,7 @@
 <p><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Type: <code>harmony</code></p>
 <p><strong>Top-level credentials (always required):</strong></p>
 <ul>
-<li><code>client_id</code>: Infinity Portal Client ID. Create under <em>Global Settings → API Keys</em>. For Infinity Events the key must include the <em>Logs as a Service</em> service; for Restore Requests it must include the <em>Harmony Email &amp; Collaboration</em> service. A single key with both services attached is supported.</li>
+<li><code>client_id</code>: Infinity Portal Client ID. Create under <em>Global Settings → API Keys</em>. For Infinity Events the key must include the <em>Logs as a Service</em> service; for the Emails feed it must include the <em>Harmony Email &amp; Collaboration</em> service. A single key with both services attached is supported.</li>
 <li><code>access_key</code>: Infinity Portal Access Key paired with the Client ID above.</li>
 <li><code>url</code> <em>(optional)</em>: Infinity Portal gateway base URL. Defaults to <code>https://cloudinfra-gw.portal.checkpoint.com</code>. Use the regional variant (for example <code>https://cloudinfra-gw-us.portal.checkpoint.com</code>) if your tenant lives in a regional data center. Both <code>/app/laas-logs-api</code> and <code>/app/hec-api</code> share the same hostname per region.</li>
 </ul>
@@ -12261,23 +12261,22 @@
 <li><code>events.page_limit</code> <em>(optional)</em>: page size for the records-retrieval API. Defaults to <code>100</code>. The gateway rejects values below <code>10</code> with HTTP 400.</li>
 <li><code>events.limit</code> <em>(optional)</em>: cap on records returned per cloud service per poll. Defaults to <code>5000</code>.</li>
 </ul>
-<p><strong><code>restore_requests</code> block — HEC Restore Requests source:</strong></p>
+<p><strong><code>emails</code> block — HEC email-entity feed source:</strong></p>
 <ul>
-<li><code>restore_requests.enabled</code>: set to <code>true</code> to turn the source on.</li>
-<li><code>restore_requests.saas</code> <em>(optional)</em>: SaaS platforms to query. Only <code>office365_emails</code> and <code>google_mail</code> are supported by HEC for the restore-request flags. Defaults to both.</li>
-<li><code>restore_requests.poll_interval</code> <em>(optional)</em>: polling cadence. Defaults to <code>5m</code>.</li>
-<li><code>restore_requests.lookback</code> <em>(optional)</em>: how far back to search for restore-requested emails. Defaults to <code>720h</code> (30 days) — the typical quarantine retention window.</li>
-<li><code>restore_requests.include_resolved</code> <em>(optional)</em>: when <code>true</code>, also issues queries filtered on <code>isRestored</code> and <code>isRestoreDeclined</code>. The default (<code>false</code>) only queries <code>isRestoreRequested=true</code>, which assumes the flag stays set after the admin acts on the request. Enable this if your tenant clears the flag on resolution so the "restored" / "declined" transitions are still captured. Dedup eliminates any overlap.</li>
+<li><code>emails.enabled</code>: set to <code>true</code> to turn the source on.</li>
+<li><code>emails.saas</code> <em>(optional)</em>: SaaS platforms to query. Only <code>office365_emails</code> and <code>google_mail</code> are supported. Defaults to both.</li>
+<li><code>emails.poll_interval</code> <em>(optional)</em>: polling cadence. Defaults to <code>5m</code>.</li>
+<li><code>emails.lookback</code> <em>(optional)</em>: how far back each poll searches. Defaults to <code>1h</code>. Keep this short: the feed is unfiltered and high volume, and the HEC search/query endpoint silently truncates a window that exceeds its per-query record cap. A short lookback polled frequently — with dedup on <code>entityId</code>+<code>entityUpdated</code> — keeps the feed complete; a long lookback would drop the oldest events.</li>
 </ul>
+<p>No server-side filtering is applied. Every email entity is shipped once per <code>(entityId, entityUpdated)</code>, so state changes (verdict updates, quarantine, restore requested/restored/declined) re-emit while unchanged entities are not re-sent. Triage and alerting are expected to happen downstream in <abbr title="Detection &amp; Response">D&amp;R</abbr> rules.</p>
 <p>Each record emitted by the adapter carries adapter-added annotations to make filtering easier downstream:</p>
 <ul>
-<li><code>_lc_harmony_source</code> — <code>infinity_events</code> or <code>restore_requests</code>.</li>
+<li><code>_lc_harmony_source</code> — <code>infinity_events</code> or <code>emails</code>.</li>
 <li><code>_lc_harmony_service</code> — the Infinity Events cloud service (events source only).</li>
-<li><code>_lc_harmony_saas</code> — the HEC SaaS platform (restore_requests source only).</li>
-<li><code>_lc_harmony_state</code> — <code>pending</code>, <code>restored</code>, or <code>declined</code> (restore_requests source only).</li>
+<li><code>_lc_harmony_saas</code> — the HEC SaaS platform (emails source only).</li>
 </ul>
 <h3 id="cli-deployment"><abbr title="Command-line Interface">CLI</abbr> Deployment<a class="headerlink" href="#cli-deployment" title="Anchor link to this section">&para;</a></h3>
-<p><a href="../../deployment/"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> downloads</a> are available on the deployment page. The adapter accepts dot-notation flags for the nested <code>events.*</code> and <code>restore_requests.*</code> fields.</p>
+<p><a href="../../deployment/"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> downloads</a> are available on the deployment page. The adapter accepts dot-notation flags for the nested <code>events.*</code> and <code>emails.*</code> fields.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>/path/to/lc_adapter
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>/path/to/lc_adapter<span class="w"> </span>harmony<span class="w"> </span>client_options.identity.installation_key<span class="o">=</span><span class="nv">$INSTALLATION_KEY</span><span class="w"> </span><span class="se">\</span>
@@ -12289,7 +12288,7 @@
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nv">access_key</span><span class="o">=</span><span class="nv">$CHECKPOINT_ACCESS_KEY</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>events.enabled<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="s1">&#39;events.cloud_services=Harmony Endpoint,Harmony Email &amp; Collaboration&#39;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>restore_requests.enabled<span class="o">=</span><span class="nb">true</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>emails.enabled<span class="o">=</span><span class="nb">true</span>
 </span></code></pre></div>
 <h3 id="infrastructure-as-code-deployment"><abbr title="Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure...">Infrastructure as Code</abbr> Deployment<a class="headerlink" href="#infrastructure-as-code-deployment" title="Anchor link to this section">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># For cloud sensor deployment, store credentials as hive secrets:</span>
@@ -12323,13 +12322,12 @@
 </span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Mobile&quot;</span>
 </span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Connect&quot;</span>
 </span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Browse&quot;</span>
-</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>  <span class="n">restore_requests</span><span class="p">:</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>  <span class="n">emails</span><span class="p">:</span>
 </span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>    <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
 </span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>    <span class="c1"># Optional — defaults shown</span>
 </span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>    <span class="n">saas</span><span class="p">:</span>
 </span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>      <span class="o">-</span> <span class="s2">&quot;office365_emails&quot;</span>
 </span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>      <span class="o">-</span> <span class="s2">&quot;google_mail&quot;</span>
-</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>    <span class="n">include_resolved</span><span class="p">:</span> <span class="n">false</span>
 </span></code></pre></div>
 <h2 id="configuring-a-check-point-harmony-adapter-in-the-web-ui">Configuring a Check Point Harmony <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> in the Web UI<a class="headerlink" href="#configuring-a-check-point-harmony-adapter-in-the-web-ui" title="Anchor link to this section">&para;</a></h2>
 <h3 id="preparing-infinity-portal-credentials">Preparing Infinity Portal credentials<a class="headerlink" href="#preparing-infinity-portal-credentials" title="Anchor link to this section">&para;</a></h3>
@@ -12338,7 +12336,7 @@
 <li>Navigate to <em>Global Settings → API Keys → New</em>.</li>
 <li>Attach the services your adapter needs:<ul>
 <li><em>Logs as a Service</em> for the Infinity Events source.</li>
-<li><em>Harmony Email &amp; Collaboration</em> for the Restore Requests source.</li>
+<li><em>Harmony Email &amp; Collaboration</em> for the Emails source.</li>
 <li>A single key with both services attached is fine.</li>
 </ul>
 </li>
@@ -12381,38 +12379,36 @@
 <td><em>(optional)</em> Infinity Events query filter</td>
 </tr>
 <tr>
-<td>Restore Requests Enabled</td>
-<td>Toggle on to poll HEC for restore requests</td>
+<td>Emails Enabled</td>
+<td>Toggle on to poll the HEC email-entity feed</td>
 </tr>
 <tr>
-<td>Restore Requests Saas</td>
+<td>Emails Saas</td>
 <td><em>(optional)</em> Comma-separated SaaS platforms (<code>office365_emails</code>, <code>google_mail</code>)</td>
-</tr>
-<tr>
-<td>Restore Requests Include Resolved</td>
-<td>Toggle on if your tenant clears <code>isRestoreRequested</code> once resolved</td>
 </tr>
 </tbody>
 </table>
-<p>At least one of <em>Events Enabled</em> or <em>Restore Requests Enabled</em> must be on or the adapter will refuse to start.</p>
+<p>At least one of <em>Events Enabled</em> or <em>Emails Enabled</em> must be on or the adapter will refuse to start.</p>
 <p>Click <code>Complete Cloud Installation</code>. LimaCharlie will authenticate against the Infinity Portal and begin polling.</p>
 <h2 id="sample-rule">Sample Rule<a class="headerlink" href="#sample-rule" title="Anchor link to this section">&para;</a></h2>
 <p>When ingested, Harmony events can be referenced directly in <abbr title="Detection &amp; Response">D&amp;R</abbr> rules. The adapter annotates every record with <code>_lc_harmony_source</code> so you can pivot on the originating API:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Detection — flag any HEC restore request that lands in a declined state</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Detection — flag any email entity from the HEC feed</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">harmony_record</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">and</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nt">rules</span><span class="p">:</span>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is</span>
 </span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">event/_lc_harmony_source</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restore_requests</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">event/_lc_harmony_state</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">declined</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># Response</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Harmony Email Restore Request Declined</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">emails</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># Response</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Harmony Email Entity</span>
 </span></code></pre></div>
+<p>Because the emails feed is unfiltered, narrow the detection on the
+verdict/lifecycle fields carried inline on each entity (under
+<code>event/entityInfo</code> and the entity payload) to match only the cases you
+care about — for example a quarantined message or a declined restore
+request.</p>
 <h2 id="api-docs">API Docs<a class="headerlink" href="#api-docs" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li>Infinity Events (Logs-as-a-Service): <a href="https://app.swaggerhub.com/apis-docs/Check-Point/infinity-events">Check Point Infinity Events Reference</a></li>
