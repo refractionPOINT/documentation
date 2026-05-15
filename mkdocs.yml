@@ -482,6 +482,7 @@ nav:
           - User Access: 7-administration/access/user-access.md
           - Designing Access: 7-administration/access/designing-access.md
           - SSO: 7-administration/access/sso.md
+          - Session Lifetime Enforcement: 7-administration/access/session-lifetime.md
       - Billing:
           - Options: 7-administration/billing/options.md
           - Custom Plans: 7-administration/billing/custom-plans.md
