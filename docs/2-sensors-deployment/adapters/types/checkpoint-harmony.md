@@ -5,7 +5,7 @@
 This Adapter ingests events from [Check Point Harmony](https://www.checkpoint.com/harmony/) into LimaCharlie via the Infinity Portal APIs. Two independent sources are supported:
 
 - **Infinity Events** — the unified Logs-as-a-Service stream covering Harmony Endpoint, Harmony Email & Collaboration, Harmony Mobile, Harmony Connect, and Harmony Browse.
-- **Restore Requests** — polls the Harmony Email & Collaboration (HEC) entity API to surface emails with pending, restored, or declined restore requests.
+- **Emails** — polls the Harmony Email & Collaboration (HEC) entity API for the full, unfiltered email-entity feed: every email entity Harmony processes, with its security verdicts and quarantine/restore lifecycle flags inline.
 
 Both sources share a single set of Infinity Portal API credentials. At least one source must be enabled or the adapter will refuse to start.
 
@@ -24,7 +24,7 @@ Adapter Type: `harmony`
 
 **Top-level credentials (always required):**
 
-- `client_id`: Infinity Portal Client ID. Create under *Global Settings → API Keys*. For Infinity Events the key must include the *Logs as a Service* service; for Restore Requests it must include the *Harmony Email & Collaboration* service. A single key with both services attached is supported.
+- `client_id`: Infinity Portal Client ID. Create under *Global Settings → API Keys*. For Infinity Events the key must include the *Logs as a Service* service; for the Emails feed it must include the *Harmony Email & Collaboration* service. A single key with both services attached is supported.
 - `access_key`: Infinity Portal Access Key paired with the Client ID above.
 - `url` *(optional)*: Infinity Portal gateway base URL. Defaults to `https://cloudinfra-gw.portal.checkpoint.com`. Use the regional variant (for example `https://cloudinfra-gw-us.portal.checkpoint.com`) if your tenant lives in a regional data center. Both `/app/laas-logs-api` and `/app/hec-api` share the same hostname per region.
 
@@ -37,24 +37,24 @@ Adapter Type: `harmony`
 - `events.page_limit` *(optional)*: page size for the records-retrieval API. Defaults to `100`. The gateway rejects values below `10` with HTTP 400.
 - `events.limit` *(optional)*: cap on records returned per cloud service per poll. Defaults to `5000`.
 
-**`restore_requests` block — HEC Restore Requests source:**
+**`emails` block — HEC email-entity feed source:**
 
-- `restore_requests.enabled`: set to `true` to turn the source on.
-- `restore_requests.saas` *(optional)*: SaaS platforms to query. Only `office365_emails` and `google_mail` are supported by HEC for the restore-request flags. Defaults to both.
-- `restore_requests.poll_interval` *(optional)*: polling cadence. Defaults to `5m`.
-- `restore_requests.lookback` *(optional)*: how far back to search for restore-requested emails. Defaults to `720h` (30 days) — the typical quarantine retention window.
-- `restore_requests.include_resolved` *(optional)*: when `true`, also issues queries filtered on `isRestored` and `isRestoreDeclined`. The default (`false`) only queries `isRestoreRequested=true`, which assumes the flag stays set after the admin acts on the request. Enable this if your tenant clears the flag on resolution so the "restored" / "declined" transitions are still captured. Dedup eliminates any overlap.
+- `emails.enabled`: set to `true` to turn the source on.
+- `emails.saas` *(optional)*: SaaS platforms to query. Only `office365_emails` and `google_mail` are supported. Defaults to both.
+- `emails.poll_interval` *(optional)*: polling cadence. Defaults to `5m`.
+- `emails.lookback` *(optional)*: how far back each poll searches. Defaults to `1h`. Keep this short: the feed is unfiltered and high volume, and the HEC search/query endpoint silently truncates a window that exceeds its per-query record cap. A short lookback polled frequently — with dedup on `entityId`+`entityUpdated` — keeps the feed complete; a long lookback would drop the oldest events.
+
+No server-side filtering is applied. Every email entity is shipped once per `(entityId, entityUpdated)`, so state changes (verdict updates, quarantine, restore requested/restored/declined) re-emit while unchanged entities are not re-sent. Triage and alerting are expected to happen downstream in D&R rules.
 
 Each record emitted by the adapter carries adapter-added annotations to make filtering easier downstream:
 
-- `_lc_harmony_source` — `infinity_events` or `restore_requests`.
+- `_lc_harmony_source` — `infinity_events` or `emails`.
 - `_lc_harmony_service` — the Infinity Events cloud service (events source only).
-- `_lc_harmony_saas` — the HEC SaaS platform (restore_requests source only).
-- `_lc_harmony_state` — `pending`, `restored`, or `declined` (restore_requests source only).
+- `_lc_harmony_saas` — the HEC SaaS platform (emails source only).
 
 ### CLI Deployment
 
-[Adapter downloads](../deployment.md) are available on the deployment page. The adapter accepts dot-notation flags for the nested `events.*` and `restore_requests.*` fields.
+[Adapter downloads](../deployment.md) are available on the deployment page. The adapter accepts dot-notation flags for the nested `events.*` and `emails.*` fields.
 
 ```bash
 chmod +x /path/to/lc_adapter
@@ -68,7 +68,7 @@ client_id=$CHECKPOINT_CLIENT_ID \
 access_key=$CHECKPOINT_ACCESS_KEY \
 events.enabled=true \
 'events.cloud_services=Harmony Endpoint,Harmony Email & Collaboration' \
-restore_requests.enabled=true
+emails.enabled=true
 ```
 
 ### Infrastructure as Code Deployment
@@ -105,13 +105,12 @@ harmony:
       - "Harmony Mobile"
       - "Harmony Connect"
       - "Harmony Browse"
-  restore_requests:
+  emails:
     enabled: true
     # Optional — defaults shown
     saas:
       - "office365_emails"
       - "google_mail"
-    include_resolved: false
 ```
 
 ## Configuring a Check Point Harmony Adapter in the Web UI
@@ -122,7 +121,7 @@ harmony:
 2. Navigate to *Global Settings → API Keys → New*.
 3. Attach the services your adapter needs:
     - *Logs as a Service* for the Infinity Events source.
-    - *Harmony Email & Collaboration* for the Restore Requests source.
+    - *Harmony Email & Collaboration* for the Emails source.
     - A single key with both services attached is fine.
 4. Copy the resulting **Client ID** and **Access Key**. The Access Key is shown only once — save it somewhere safe.
 5. Note the **Authentication URL** shown next to the key. If it points at a regional gateway (`cloudinfra-gw-us.portal.checkpoint.com`, `cloudinfra-gw-eu.portal.checkpoint.com`, etc.) you will need to supply that hostname as the adapter's `url` value.
@@ -141,11 +140,10 @@ Pick or create an Installation Key for this adapter, then fill in the form:
 | Events Enabled | Toggle on to ingest Infinity Events. Defaults to on. |
 | Events Cloud Services | *(optional)* Comma-separated cloud services. Leave blank for the full Harmony suite. |
 | Events Filter | *(optional)* Infinity Events query filter |
-| Restore Requests Enabled | Toggle on to poll HEC for restore requests |
-| Restore Requests Saas | *(optional)* Comma-separated SaaS platforms (`office365_emails`, `google_mail`) |
-| Restore Requests Include Resolved | Toggle on if your tenant clears `isRestoreRequested` once resolved |
+| Emails Enabled | Toggle on to poll the HEC email-entity feed |
+| Emails Saas | *(optional)* Comma-separated SaaS platforms (`office365_emails`, `google_mail`) |
 
-At least one of *Events Enabled* or *Restore Requests Enabled* must be on or the adapter will refuse to start.
+At least one of *Events Enabled* or *Emails Enabled* must be on or the adapter will refuse to start.
 
 Click `Complete Cloud Installation`. LimaCharlie will authenticate against the Infinity Portal and begin polling.
 
@@ -154,21 +152,24 @@ Click `Complete Cloud Installation`. LimaCharlie will authenticate against the I
 When ingested, Harmony events can be referenced directly in D&R rules. The adapter annotates every record with `_lc_harmony_source` so you can pivot on the originating API:
 
 ```yaml
-# Detection — flag any HEC restore request that lands in a declined state
+# Detection — flag any email entity from the HEC feed
 event: harmony_record
 op: and
 rules:
   - op: is
     path: event/_lc_harmony_source
-    value: restore_requests
-  - op: is
-    path: event/_lc_harmony_state
-    value: declined
+    value: emails
 
 # Response
 - action: report
-  name: Harmony Email Restore Request Declined
+  name: Harmony Email Entity
 ```
+
+Because the emails feed is unfiltered, narrow the detection on the
+verdict/lifecycle fields carried inline on each entity (under
+`event/entityInfo` and the entity payload) to match only the cases you
+care about — for example a quarantined message or a declined restore
+request.
 
 ## API Docs
 
