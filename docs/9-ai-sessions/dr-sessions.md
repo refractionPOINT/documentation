@@ -566,3 +566,10 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 - Review the prompt for ambiguity
 - Check that `allowed_tools` includes necessary tools
 - Verify `denied_tools` isn't blocking required capabilities
+
+## See Also
+
+- [Compliance Case-Reviewer Agent](compliance/case-reviewer-agent.md) -- A production example of a D&R-driven session: classifies every new case against framework control citations on `case_created` events. Useful as a reference for prompt structure, scope-check patterns, debounce keys, and case-write workflows.
+- [Tool Permissions & Profiles](tool-permissions.md) -- Configure `allowed_tools` / `denied_tools` for D&R sessions.
+- [Runner Environment](runner-environment.md) -- What's pre-installed in the session container.
+- [Alternative AI Providers](alternative-providers.md) -- Route through AWS Bedrock or Google Cloud Vertex AI instead of Anthropic direct.

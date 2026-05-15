@@ -1124,3 +1124,5 @@ Unsubscribing from the extension removes the detection-forwarding D&R rules and 
 - [D&R Rules Overview](../../../3-detection-response/index.md) -- Detection rules that generate the detections ingested as cases
 - [Response Actions](../../../8-reference/response-actions.md) -- The `extension request` action used for D&R rule integration
 - [Using Extensions](../using-extensions.md) -- General extension subscription and management
+- [Compliance Case-Reviewer Agent](../../../9-ai-sessions/compliance/case-reviewer-agent.md) -- Per-framework AI agents (PCI, HIPAA, CMMC, SOC 2, NIST 800-53, ISO 27001, CIS v8) that classify in-scope cases against control citations on `case_created` events and write audit-grade documentation directly into the case record
+- [Compliance Plugin Overview](../../../9-ai-sessions/compliance/index.md) -- Installation and capabilities of the `lc-compliance` Claude Code plugin

@@ -533,6 +533,13 @@ nav:
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
+      - Compliance:
+          - Overview: 9-ai-sessions/compliance/index.md
+          - Installation: 9-ai-sessions/compliance/installation.md
+          - Frameworks: 9-ai-sessions/compliance/frameworks.md
+          - Skills Reference: 9-ai-sessions/compliance/skills.md
+          - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
+          - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
   - Release Notes:
       - Overview: 10-release-notes/index.md

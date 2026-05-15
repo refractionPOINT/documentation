@@ -173,3 +173,8 @@ The following REST API actions can be sent to interact with the Exfil extension:
   "name": "sql-servers"
 }
 ```
+
+## See Also
+
+- [Compliance Frameworks](../../../9-ai-sessions/compliance/frameworks.md) -- Exfil rules ship as part of every framework's recommended baseline. The `compliance-baseline-deploy` skill writes them under `data.exfil_rules.list` while preserving existing default rules (e.g., `default-chrome`, `default-linux`).
+- [Compliance Gap Analysis](../../../9-ai-sessions/compliance/gap-analysis.md) -- Section A of the gap report enumerates missing exfil events per framework and per platform, with the relevant control citations.
