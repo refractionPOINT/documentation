@@ -1,35 +1,52 @@
 # Using LimaCharlie
 
-## Required Skill
+## Required Tool
 
-**ALWAYS load the `lc-essentials:limacharlie-call` skill** before any LimaCharlie API operation. Never call LimaCharlie MCP tools directly.
+**ALWAYS use the `limacharlie` CLI via Bash** for all LimaCharlie API operations. The CLI is automatically installed on session start and handles authentication. Never call MCP tools directly.
+
+If auto-install failed, install manually:
+
+```bash
+pipx install limacharlie   # preferred (isolated environment)
+uv tool install limacharlie # alternative
+pip install --user limacharlie # fallback
+```
+
+On first use, verify authentication with `limacharlie auth whoami --output yaml`; if not authenticated, guide the user through `limacharlie auth login`.
 
 ## Critical Rules
 
-### 1. Never Call MCP Tools Directly
+### 1. Use the CLI Directly
 
-- **WRONG**: `mcp__plugin_lc-essentials_limacharlie__lc_call_tool(...)`
-- **CORRECT**: Use Task tool with `subagent_type="lc-essentials:limacharlie-api-executor"`
+- **WRONG**: `mcp__plugin_lc-essentials_limacharlie__lc_call_tool(...)` or spawning an api-executor agent
+- **CORRECT**: `Bash("limacharlie <noun> <verb> --oid <oid> --output yaml")`
+
+Always pass `--output yaml` for token-efficient, machine-readable output. Use `limacharlie <command> --ai-help` to discover a command's flags. Use `limacharlie api <endpoint>` only as an escape hatch for endpoints with no dedicated CLI command.
 
 ### 2. Never Write LCQL Queries Manually
 
-LCQL uses unique pipe-based syntax validated against org-specific schemas.
+LCQL uses unique pipe-based syntax validated against org-specific schemas. Manual queries WILL fail or produce incorrect results.
 
-- **ALWAYS**: `generate_lcql_query()` first, then `run_lcql_query()` with the generated query
-- Manual queries WILL fail or produce incorrect results
+1. `limacharlie ai generate-query --prompt "..." --oid <oid> --output yaml` — convert natural language to LCQL
+2. `limacharlie search validate --query "..." --oid <oid> --output yaml` — mandatory for ALL queries before execution
+3. `limacharlie search run --query "..." --start <ts> --end <ts> --oid <oid> --output yaml` — execute only after validation passes
+
+On validation failure, re-run the generate command with the error message — never fix queries manually.
 
 ### 3. Never Generate D&R Rules Manually
 
-Use AI generation tools:
-1. `generate_dr_rule_detection()` - Generate detection YAML
-2. `generate_dr_rule_respond()` - Generate response YAML
-3. `validate_dr_rule_components()` - Validate before deploy
+Use AI generation commands:
+
+1. `limacharlie ai generate-detection --description "..." --oid <oid> --output yaml` — generate detection YAML
+2. `limacharlie ai generate-response --description "..." --oid <oid> --output yaml` — generate response YAML
+3. `limacharlie dr validate --detect detect.yaml --respond respond.yaml --oid <oid>` — validate before deploy
 
 ### 4. Never Calculate Timestamps Manually
 
 LLMs consistently produce incorrect timestamp values.
 
 **ALWAYS use bash:**
+
 ```bash
 date +%s                           # Current time (seconds)
 date -d '1 hour ago' +%s           # 1 hour ago
@@ -39,14 +56,14 @@ date -d '2025-01-15 00:00:00 UTC' +%s  # Specific date
 
 ### 5. OID is UUID, NOT Organization Name
 
-- **WRONG**: `oid: "my-org-name"`
-- **CORRECT**: `oid: "c1ffedc0-ffee-4a1e-b1a5-abc123def456"`
-- Use `list_user_orgs` to map org names to UUIDs
+- **WRONG**: `--oid "my-org-name"`
+- **CORRECT**: `--oid "c1ffedc0-ffee-4a1e-b1a5-abc123def456"`
+- Use `limacharlie org list --output yaml` to map org names to UUIDs
 
 ### 6. Timestamp Milliseconds vs Seconds
 
 - Detection/event data: **milliseconds** (13 digits)
-- API parameters (`get_historic_events`, `get_historic_detections`): **seconds** (10 digits)
+- API parameters: **seconds** (10 digits)
 - **ALWAYS** divide by 1000 when using detection timestamps for API queries
 
 ### 7. Never Fabricate Data
@@ -59,6 +76,7 @@ date -d '2025-01-15 00:00:00 UTC' +%s  # Specific date
 ### 8. Spawn Agents in Parallel
 
 When processing multiple organizations or items:
+
 - Use a SINGLE message with multiple Task calls
 - Do NOT spawn agents sequentially
 - Each agent handles ONE item, parent aggregates results
@@ -71,11 +89,11 @@ Organizations can define SOPs (Standard Operating Procedures) in LimaCharlie tha
 
 At the beginning of every conversation involving LimaCharlie operations:
 
-1. **List all SOPs** using `list_sops` for each organization in scope
+1. **List all SOPs** using `limacharlie sop list --oid <oid> --output yaml` for each organization in scope
 2. **Store ONLY the name and description** of each SOP (ignore the `text` field - it may be truncated or large)
 3. Use this index to identify when an SOP might apply to current work
 
-**Important:** Do NOT read or use the full SOP content at this stage. The `list_sops` response may include a `text` field, but ignore it - always call `get_sop` when you need the actual procedure.
+**Important:** Do NOT read or use the full SOP content at this stage. The `sop list` response may include a `text` field, but ignore it - always call `limacharlie sop get` when you need the actual procedure.
 
 ### When Performing Tasks (Load Full Content)
 
@@ -84,16 +102,16 @@ Before executing any significant operation:
 1. **Check SOP relevance**: Compare the current task against stored SOP descriptions
 2. **If a match is found**:
    - Announce: "Following SOP: [sop-name] - [description]"
-   - **MUST call `get_sop`** to retrieve the full SOP content (do not skip this step)
+   - **MUST call `limacharlie sop get --key <name> --oid <oid> --output yaml`** to retrieve the full SOP content (do not skip this step)
    - Follow the procedure defined in the SOP
-3. **If multiple SOPs match**: Announce all matching SOPs, call `get_sop` for each, and follow all applicable procedures
+3. **If multiple SOPs match**: Announce all matching SOPs, fetch each with `limacharlie sop get`, and follow all applicable procedures
 
 ### Example Workflow
 
 1. User asks to investigate a malware alert
 2. LLM checks stored SOP index: "malware-response" matches (description: "Standard procedure for malware incidents")
 3. LLM announces: "Following SOP: malware-response - Standard procedure for malware incidents"
-4. LLM calls `get_sop(name="malware-response")` to load the full procedure
+4. LLM calls `limacharlie sop get --key malware-response --oid <oid> --output yaml` to load the full procedure
 5. LLM follows the documented steps from the loaded SOP content
 
 ## Sensor Selector Reference
@@ -137,7 +155,7 @@ Sensor selectors use [bexpr](https://github.com/hashicorp/go-bexpr) syntax to fi
 
 ### Example Selectors
 
-```
+```text
 plat == windows                           # All Windows sensors
 plat == windows and arch == x64           # 64-bit Windows only
 plat == linux and hostname contains "web" # Linux with "web" in hostname

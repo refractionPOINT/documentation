@@ -7,7 +7,7 @@ D&R-Driven AI Sessions allow you to automatically spawn Claude AI sessions in re
 When a D&R rule matches, the `start ai agent` response action launches a Claude session with:
 
 - A prompt containing the context you specify
-- Access to tools and MCP servers you configure
+- The auto-installed `limacharlie` CLI for LimaCharlie operations (authenticated via `lc_api_key_secret`), plus any built-in tools and external MCP servers you configure
 - Optional event data extracted and included automatically
 
 The session runs autonomously, performing the investigation or analysis you've defined, and the results can be captured via outputs or stored for later review.
@@ -200,19 +200,13 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
     environment:
       LOG_LEVEL: debug
       API_KEY: hive://secret/external-api-key
-
-    # MCP servers
-    mcp_servers:
-      limacharlie:
-        type: http
-        url: https://mcp.limacharlie.io
-        headers:
-          Authorization: hive://secret/lc-mcp-token
 ```
+
+> LimaCharlie itself does **not** need an `mcp_servers` entry — the session reaches LimaCharlie through the auto-installed `limacharlie` CLI, authenticated by the `lc_api_key_secret` you provide. The `mcp_servers` map below is only for *external/third-party* tools (threat-intel, ticketing, etc.).
 
 #### Profile Options
 
-> The full pattern grammar for `allowed_tools` and `denied_tools` (built-in Claude Code tool names, `Bash(prefix:*)` scoping, MCP `mcp__server__tool` names, and the `lc_call_tool` meta-tool form), along with the precedence rules and `permission_mode` semantics, lives on the dedicated [Tool Permissions & Profiles](tool-permissions.md) page. Unattended D&R agents typically want `permission_mode: bypassPermissions` so tool calls don't block on approval prompts.
+> The full pattern grammar for `allowed_tools` and `denied_tools` (built-in Claude Code tool names, `Bash(prefix:*)` scoping, and MCP `mcp__server__tool` names), along with the precedence rules and `permission_mode` semantics, lives on the dedicated [Tool Permissions & Profiles](tool-permissions.md) page. Unattended D&R agents typically want `permission_mode: bypassPermissions` so tool calls don't block on approval prompts.
 
 | Option | Type | Description |
 |--------|------|-------------|
@@ -225,21 +219,23 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
 | `one_shot` | boolean | When `true`, session completes all work for the initial prompt (including tools, skills, and subagents) then terminates automatically. Default: `true` for D&R-triggered sessions. |
 | `ttl_seconds` | integer | Maximum session lifetime in seconds. Capped at 24 hours. |
 | `environment` | map | Environment variables. Values can use `hive://secret/` |
-| `mcp_servers` | map | MCP server configurations (see below) |
+| `mcp_servers` | map | External/third-party MCP server configurations (see below). Not needed for LimaCharlie access. |
 
 ### MCP Server Configuration
 
-MCP (Model Context Protocol) servers extend Claude's capabilities by providing additional data sources and tools.
+MCP (Model Context Protocol) servers extend Claude's capabilities with *external/third-party* data sources and tools.
+
+> You do **not** configure LimaCharlie here. The session already has the auto-installed `limacharlie` CLI for all LimaCharlie operations (authenticated by `lc_api_key_secret`). Reserve `mcp_servers` for outside services such as threat-intel, ticketing, or custom enrichment tools.
 
 #### HTTP MCP Server
 
 ```yaml
 mcp_servers:
-  limacharlie:
+  virustotal:
     type: http
-    url: https://mcp.limacharlie.io
+    url: https://vt-mcp.example.com
     headers:
-      Authorization: hive://secret/lc-mcp-token
+      x-apikey: hive://secret/vt-api-key
 ```
 
 #### Stdio MCP Server
@@ -286,9 +282,9 @@ respond:
       user: "{{ .event.USER_NAME }}"
 ```
 
-### Example 2: Automated Triage with LimaCharlie MCP
+### Example 2: Automated Triage with the LimaCharlie CLI
 
-Use the LimaCharlie MCP server to query additional context:
+The session reaches LimaCharlie through the auto-installed `limacharlie` CLI — just provide `lc_api_key_secret` so the CLI is authenticated. No `mcp_servers` entry is needed for LimaCharlie itself:
 
 ```yaml
 detect:
@@ -301,7 +297,7 @@ detect:
 respond:
   - action: start ai agent
     prompt: |
-      A high-priority detection was triggered. Use the LimaCharlie MCP tools to:
+      A high-priority detection was triggered. Use the `limacharlie` CLI to:
 
       1. Get information about the sensor where this occurred
       2. Query recent events from the same sensor
@@ -319,12 +315,6 @@ respond:
     profile:
       max_turns: 100
       max_budget_usd: 10.0
-      mcp_servers:
-        limacharlie:
-          type: http
-          url: https://mcp.limacharlie.io
-          headers:
-            Authorization: hive://secret/lc-mcp-token
 ```
 
 ### Example 3: Threat Hunting Automation
@@ -457,13 +447,9 @@ ai_agent:
         - Write
         - Edit
 
-      # MCP servers
-      mcp_servers:
-        limacharlie:
-          type: http
-          url: https://mcp.limacharlie.io
-          headers:
-            Authorization: hive://secret/lc-mcp-token
+      # No mcp_servers entry is needed for LimaCharlie access — the
+      # auto-installed `limacharlie` CLI uses lc_api_key_secret above.
+      # Add mcp_servers only for external/third-party tools.
 
     usr_mtd:
       enabled: true
@@ -516,7 +502,7 @@ This approach keeps D&R rules clean and lets you update the agent's behavior (pr
 | `ttl_seconds` | integer | No | Maximum session lifetime in seconds. |
 | `one_shot` | boolean | No | Auto-terminate after initial task. |
 | `environment` | map | No | Environment variables (values can use `hive://secret/`). |
-| `mcp_servers` | map | No | MCP server configurations. |
+| `mcp_servers` | map | No | External/third-party MCP server configurations. Not needed for LimaCharlie access (handled by the auto-installed CLI). |
 
 ## Best Practices
 
