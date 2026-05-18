@@ -397,7 +397,7 @@ This action supports two modes: **inline mode** (all parameters in the rule) and
   definition: hive://ai_agent/my-triage-bot
 ```
 
-This action launches a fully-managed Claude Code session that can investigate events, query data via MCP servers, and generate reports.
+This action launches a fully-managed Claude Code session that can investigate events, query LimaCharlie data via the auto-installed `limacharlie` CLI, and generate reports.
 
 #### Required Parameters (Inline Mode)
 
@@ -422,7 +422,7 @@ This action launches a fully-managed Claude Code session that can investigate ev
 | `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. (Inline mode only.) |
 | `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. (Both modes.) |
 | `data` | Extract event fields to include in the prompt as JSON. (Inline mode only.) |
-| `profile` | Inline session configuration (tools, model, limits, MCP servers). (Inline mode only.) |
+| `profile` | Inline session configuration (tools, model, limits, external MCP servers). (Inline mode only.) |
 | `profile_name` | Reference a saved profile by name. (Inline mode only.) |
 
 #### Example: Inline Mode
@@ -457,12 +457,6 @@ respond:
       max_turns: 50
       max_budget_usd: 5.0
       one_shot: true
-      mcp_servers:
-        limacharlie:
-          type: http
-          url: https://mcp.limacharlie.io
-          headers:
-            Authorization: hive://secret/lc-mcp-token
 ```
 
 #### Example: Definition Mode
