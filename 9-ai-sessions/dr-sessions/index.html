@@ -11458,10 +11458,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-2-automated-triage-with-limacharlie-mcp" class="md-nav__link">
+  <a href="#example-2-automated-triage-with-the-limacharlie-cli" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example 2: Automated Triage with LimaCharlie MCP
+        Example 2: Automated Triage with the LimaCharlie CLI
       
     </span>
   </a>
@@ -12348,10 +12348,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-2-automated-triage-with-limacharlie-mcp" class="md-nav__link">
+  <a href="#example-2-automated-triage-with-the-limacharlie-cli" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example 2: Automated Triage with LimaCharlie MCP
+        Example 2: Automated Triage with the LimaCharlie CLI
       
     </span>
   </a>
@@ -12592,7 +12592,7 @@
 <p>When a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule matches, the <code>start ai agent</code> response action launches a Claude session with:</p>
 <ul>
 <li>A prompt containing the context you specify</li>
-<li>Access to tools and MCP servers you configure</li>
+<li>The auto-installed <code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr> for LimaCharlie operations (authenticated via <code>lc_api_key_secret</code>), plus any built-in tools and external MCP servers you configure</li>
 <li>Optional event data extracted and included automatically</li>
 </ul>
 <p>The session runs autonomously, performing the investigation or analysis you've defined, and the results can be captured via outputs or stored for later review.</p>
@@ -12784,18 +12784,13 @@
 </span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 </span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="w">      </span><span class="nt">LOG_LEVEL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">debug</span>
 </span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="w">      </span><span class="nt">API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://secret/external-api-key</span>
-</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a>
-</span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a><span class="w">    </span><span class="c1"># MCP servers</span>
-</span><span id="__span-9-32"><a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a><span class="w">    </span><span class="nt">mcp_servers</span><span class="p">:</span>
-</span><span id="__span-9-33"><a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a><span class="w">      </span><span class="nt">limacharlie</span><span class="p">:</span>
-</span><span id="__span-9-34"><a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a><span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
-</span><span id="__span-9-35"><a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a><span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://mcp.limacharlie.io</span>
-</span><span id="__span-9-36"><a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a><span class="w">        </span><span class="nt">headers</span><span class="p">:</span>
-</span><span id="__span-9-37"><a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a><span class="w">          </span><span class="nt">Authorization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://secret/lc-mcp-token</span>
 </span></code></pre></div>
+<blockquote>
+<p>LimaCharlie itself does <strong>not</strong> need an <code>mcp_servers</code> entry — the session reaches LimaCharlie through the auto-installed <code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr>, authenticated by the <code>lc_api_key_secret</code> you provide. The <code>mcp_servers</code> map below is only for <em>external/third-party</em> tools (threat-intel, ticketing, etc.).</p>
+</blockquote>
 <h4 id="profile-options">Profile Options<a class="headerlink" href="#profile-options" title="Anchor link to this section">&para;</a></h4>
 <blockquote>
-<p>The full pattern grammar for <code>allowed_tools</code> and <code>denied_tools</code> (built-in Claude Code tool names, <code>Bash(prefix:*)</code> scoping, MCP <code>mcp__server__tool</code> names, and the <code>lc_call_tool</code> meta-tool form), along with the precedence rules and <code>permission_mode</code> semantics, lives on the dedicated <a href="../tool-permissions/">Tool Permissions &amp; Profiles</a> page. Unattended <abbr title="Detection &amp; Response">D&amp;R</abbr> agents typically want <code>permission_mode: bypassPermissions</code> so tool calls don't block on approval prompts.</p>
+<p>The full pattern grammar for <code>allowed_tools</code> and <code>denied_tools</code> (built-in Claude Code tool names, <code>Bash(prefix:*)</code> scoping, and MCP <code>mcp__server__tool</code> names), along with the precedence rules and <code>permission_mode</code> semantics, lives on the dedicated <a href="../tool-permissions/">Tool Permissions &amp; Profiles</a> page. Unattended <abbr title="Detection &amp; Response">D&amp;R</abbr> agents typically want <code>permission_mode: bypassPermissions</code> so tool calls don't block on approval prompts.</p>
 </blockquote>
 <table>
 <thead>
@@ -12854,19 +12849,22 @@
 <tr>
 <td><code>mcp_servers</code></td>
 <td>map</td>
-<td>MCP server configurations (see below)</td>
+<td>External/third-party MCP server configurations (see below). Not needed for LimaCharlie access.</td>
 </tr>
 </tbody>
 </table>
 <h3 id="mcp-server-configuration">MCP Server Configuration<a class="headerlink" href="#mcp-server-configuration" title="Anchor link to this section">&para;</a></h3>
-<p>MCP (Model Context Protocol) servers extend Claude's capabilities by providing additional data sources and tools.</p>
+<p>MCP (Model Context Protocol) servers extend Claude's capabilities with <em>external/third-party</em> data sources and tools.</p>
+<blockquote>
+<p>You do <strong>not</strong> configure LimaCharlie here. The session already has the auto-installed <code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr> for all LimaCharlie operations (authenticated by <code>lc_api_key_secret</code>). Reserve <code>mcp_servers</code> for outside services such as threat-intel, ticketing, or custom enrichment tools.</p>
+</blockquote>
 <h4 id="http-mcp-server">HTTP MCP Server<a class="headerlink" href="#http-mcp-server" title="Anchor link to this section">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">mcp_servers</span><span class="p">:</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">limacharlie</span><span class="p">:</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">virustotal</span><span class="p">:</span>
 </span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://mcp.limacharlie.io</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://vt-mcp.example.com</span>
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="nt">headers</span><span class="p">:</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">      </span><span class="nt">Authorization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://secret/lc-mcp-token</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">      </span><span class="nt">x-apikey</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://secret/vt-api-key</span>
 </span></code></pre></div>
 <h4 id="stdio-mcp-server">Stdio MCP Server<a class="headerlink" href="#stdio-mcp-server" title="Anchor link to this section">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">mcp_servers</span><span class="p">:</span>
@@ -12904,8 +12902,8 @@
 </span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="w">      </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">.routing.hostname</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">      </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">.event.USER_NAME</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </span></code></pre></div>
-<h3 id="example-2-automated-triage-with-limacharlie-mcp">Example 2: Automated Triage with LimaCharlie MCP<a class="headerlink" href="#example-2-automated-triage-with-limacharlie-mcp" title="Anchor link to this section">&para;</a></h3>
-<p>Use the LimaCharlie MCP server to query additional context:</p>
+<h3 id="example-2-automated-triage-with-the-limacharlie-cli">Example 2: Automated Triage with the LimaCharlie <abbr title="Command-line Interface">CLI</abbr><a class="headerlink" href="#example-2-automated-triage-with-the-limacharlie-cli" title="Anchor link to this section">&para;</a></h3>
+<p>The session reaches LimaCharlie through the auto-installed <code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr> — just provide <code>lc_api_key_secret</code> so the <abbr title="Command-line Interface">CLI</abbr> is authenticated. No <code>mcp_servers</code> entry is needed for LimaCharlie itself:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nt">detect</span><span class="p">:</span>
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detection</span>
 </span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">  </span><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*&quot;</span>
@@ -12916,7 +12914,7 @@
 </span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="nt">respond</span><span class="p">:</span>
 </span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start ai agent</span>
 </span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">    </span><span class="nt">prompt</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">      </span><span class="no">A high-priority detection was triggered. Use the LimaCharlie MCP tools to:</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">      </span><span class="no">A high-priority detection was triggered. Use the `limacharlie` CLI to:</span>
 </span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
 </span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">      </span><span class="no">1. Get information about the sensor where this occurred</span>
 </span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">      </span><span class="no">2. Query recent events from the same sensor</span>
@@ -12934,12 +12932,6 @@
 </span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a><span class="w">    </span><span class="nt">profile</span><span class="p">:</span>
 </span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a><span class="w">      </span><span class="nt">max_turns</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 </span><span id="__span-13-28"><a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a><span class="w">      </span><span class="nt">max_budget_usd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span>
-</span><span id="__span-13-29"><a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a><span class="w">      </span><span class="nt">mcp_servers</span><span class="p">:</span>
-</span><span id="__span-13-30"><a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a><span class="w">        </span><span class="nt">limacharlie</span><span class="p">:</span>
-</span><span id="__span-13-31"><a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
-</span><span id="__span-13-32"><a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://mcp.limacharlie.io</span>
-</span><span id="__span-13-33"><a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a><span class="w">          </span><span class="nt">headers</span><span class="p">:</span>
-</span><span id="__span-13-34"><a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a><span class="w">            </span><span class="nt">Authorization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://secret/lc-mcp-token</span>
 </span></code></pre></div>
 <h3 id="example-3-threat-hunting-automation">Example 3: Threat Hunting Automation<a class="headerlink" href="#example-3-threat-hunting-automation" title="Anchor link to this section">&para;</a></h3>
 <p>Automatically investigate IoC matches from threat intelligence:</p>
@@ -13058,16 +13050,12 @@
 </span><span id="__span-16-47"><a id="__codelineno-16-47" name="__codelineno-16-47" href="#__codelineno-16-47"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Write</span>
 </span><span id="__span-16-48"><a id="__codelineno-16-48" name="__codelineno-16-48" href="#__codelineno-16-48"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Edit</span>
 </span><span id="__span-16-49"><a id="__codelineno-16-49" name="__codelineno-16-49" href="#__codelineno-16-49"></a>
-</span><span id="__span-16-50"><a id="__codelineno-16-50" name="__codelineno-16-50" href="#__codelineno-16-50"></a><span class="w">      </span><span class="c1"># MCP servers</span>
-</span><span id="__span-16-51"><a id="__codelineno-16-51" name="__codelineno-16-51" href="#__codelineno-16-51"></a><span class="w">      </span><span class="nt">mcp_servers</span><span class="p">:</span>
-</span><span id="__span-16-52"><a id="__codelineno-16-52" name="__codelineno-16-52" href="#__codelineno-16-52"></a><span class="w">        </span><span class="nt">limacharlie</span><span class="p">:</span>
-</span><span id="__span-16-53"><a id="__codelineno-16-53" name="__codelineno-16-53" href="#__codelineno-16-53"></a><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
-</span><span id="__span-16-54"><a id="__codelineno-16-54" name="__codelineno-16-54" href="#__codelineno-16-54"></a><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://mcp.limacharlie.io</span>
-</span><span id="__span-16-55"><a id="__codelineno-16-55" name="__codelineno-16-55" href="#__codelineno-16-55"></a><span class="w">          </span><span class="nt">headers</span><span class="p">:</span>
-</span><span id="__span-16-56"><a id="__codelineno-16-56" name="__codelineno-16-56" href="#__codelineno-16-56"></a><span class="w">            </span><span class="nt">Authorization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://secret/lc-mcp-token</span>
-</span><span id="__span-16-57"><a id="__codelineno-16-57" name="__codelineno-16-57" href="#__codelineno-16-57"></a>
-</span><span id="__span-16-58"><a id="__codelineno-16-58" name="__codelineno-16-58" href="#__codelineno-16-58"></a><span class="w">    </span><span class="nt">usr_mtd</span><span class="p">:</span>
-</span><span id="__span-16-59"><a id="__codelineno-16-59" name="__codelineno-16-59" href="#__codelineno-16-59"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-16-50"><a id="__codelineno-16-50" name="__codelineno-16-50" href="#__codelineno-16-50"></a><span class="w">      </span><span class="c1"># No mcp_servers entry is needed for LimaCharlie access — the</span>
+</span><span id="__span-16-51"><a id="__codelineno-16-51" name="__codelineno-16-51" href="#__codelineno-16-51"></a><span class="w">      </span><span class="c1"># auto-installed `limacharlie` CLI uses lc_api_key_secret above.</span>
+</span><span id="__span-16-52"><a id="__codelineno-16-52" name="__codelineno-16-52" href="#__codelineno-16-52"></a><span class="w">      </span><span class="c1"># Add mcp_servers only for external/third-party tools.</span>
+</span><span id="__span-16-53"><a id="__codelineno-16-53" name="__codelineno-16-53" href="#__codelineno-16-53"></a>
+</span><span id="__span-16-54"><a id="__codelineno-16-54" name="__codelineno-16-54" href="#__codelineno-16-54"></a><span class="w">    </span><span class="nt">usr_mtd</span><span class="p">:</span>
+</span><span id="__span-16-55"><a id="__codelineno-16-55" name="__codelineno-16-55" href="#__codelineno-16-55"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span></code></pre></div>
 <h4 id="step-2-reference-it-from-dr-rules">Step 2: Reference It from <abbr title="Detection &amp; Response">D&amp;R</abbr> Rules<a class="headerlink" href="#step-2-reference-it-from-dr-rules" title="Anchor link to this section">&para;</a></h4>
 <p>The <abbr title="Detection &amp; Response">D&amp;R</abbr> rule becomes minimal — just a reference to the agent definition:</p>
@@ -13209,7 +13197,7 @@
 <td><code>mcp_servers</code></td>
 <td>map</td>
 <td>No</td>
-<td>MCP server configurations.</td>
+<td>External/third-party MCP server configurations. Not needed for LimaCharlie access (handled by the auto-installed <abbr title="Command-line Interface">CLI</abbr>).</td>
 </tr>
 </tbody>
 </table>

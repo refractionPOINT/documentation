@@ -12711,7 +12711,7 @@ generated to be visible to chained <abbr title="Detection &amp; Response">D&amp;
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start ai agent</span>
 </span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">  </span><span class="nt">definition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://ai_agent/my-triage-bot</span>
 </span></code></pre></div>
-<p>This action launches a fully-managed Claude Code session that can investigate events, query data via MCP servers, and generate reports.</p>
+<p>This action launches a fully-managed Claude Code session that can investigate events, query LimaCharlie data via the auto-installed <code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr>, and generate reports.</p>
 <h4 id="required-parameters-inline-mode">Required Parameters (Inline Mode)<a class="headerlink" href="#required-parameters-inline-mode" title="Anchor link to this section">&para;</a></h4>
 <table>
 <thead>
@@ -12781,7 +12781,7 @@ generated to be visible to chained <abbr title="Detection &amp; Response">D&amp;
 </tr>
 <tr>
 <td><code>profile</code></td>
-<td>Inline session configuration (tools, model, limits, MCP servers). (Inline mode only.)</td>
+<td>Inline session configuration (tools, model, limits, external MCP servers). (Inline mode only.)</td>
 </tr>
 <tr>
 <td><code>profile_name</code></td>
@@ -12819,12 +12819,6 @@ generated to be visible to chained <abbr title="Detection &amp; Response">D&amp;
 </span><span id="__span-23-27"><a id="__codelineno-23-27" name="__codelineno-23-27" href="#__codelineno-23-27"></a><span class="w">      </span><span class="nt">max_turns</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
 </span><span id="__span-23-28"><a id="__codelineno-23-28" name="__codelineno-23-28" href="#__codelineno-23-28"></a><span class="w">      </span><span class="nt">max_budget_usd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
 </span><span id="__span-23-29"><a id="__codelineno-23-29" name="__codelineno-23-29" href="#__codelineno-23-29"></a><span class="w">      </span><span class="nt">one_shot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-23-30"><a id="__codelineno-23-30" name="__codelineno-23-30" href="#__codelineno-23-30"></a><span class="w">      </span><span class="nt">mcp_servers</span><span class="p">:</span>
-</span><span id="__span-23-31"><a id="__codelineno-23-31" name="__codelineno-23-31" href="#__codelineno-23-31"></a><span class="w">        </span><span class="nt">limacharlie</span><span class="p">:</span>
-</span><span id="__span-23-32"><a id="__codelineno-23-32" name="__codelineno-23-32" href="#__codelineno-23-32"></a><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span>
-</span><span id="__span-23-33"><a id="__codelineno-23-33" name="__codelineno-23-33" href="#__codelineno-23-33"></a><span class="w">          </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://mcp.limacharlie.io</span>
-</span><span id="__span-23-34"><a id="__codelineno-23-34" name="__codelineno-23-34" href="#__codelineno-23-34"></a><span class="w">          </span><span class="nt">headers</span><span class="p">:</span>
-</span><span id="__span-23-35"><a id="__codelineno-23-35" name="__codelineno-23-35" href="#__codelineno-23-35"></a><span class="w">            </span><span class="nt">Authorization</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hive://secret/lc-mcp-token</span>
 </span></code></pre></div>
 <h4 id="example-definition-mode">Example: Definition Mode<a class="headerlink" href="#example-definition-mode" title="Anchor link to this section">&para;</a></h4>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nt">respond</span><span class="p">:</span>
