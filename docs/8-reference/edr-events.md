@@ -359,7 +359,7 @@ Generated when a file is deleted.
 > Note:
 >
 > On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no `FILE_DELETE` events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.
-
+>
 > Be Aware:
 >
 > When adding this event to an event collection rule, you will be monitoring system-wide. This could result in a large number of events.
@@ -450,7 +450,7 @@ Generated when a file is modified.
 > Note:
 >
 > On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no `FILE_MODIFIED` events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.
-
+>
 > Be Aware:
 >
 > When adding this event to an event collection rule, you will be monitoring system-wide. This could result in a large number of events.
