@@ -1667,6 +1667,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rpm-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RPM Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12093,6 +12104,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rpm-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RPM Package
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12343,9 +12365,38 @@
 <li><strong>x64</strong>: <a href="https://downloads.limacharlie.io/sensor/linux/deb64">https://downloads.limacharlie.io/sensor/linux/deb64</a></li>
 <li><strong>arm64</strong>: <a href="https://downloads.limacharlie.io/sensor/linux/debarm64">https://downloads.limacharlie.io/sensor/linux/debarm64</a></li>
 </ul>
+<h3 id="rpm-package">RPM Package<a class="headerlink" href="#rpm-package" title="Anchor link to this section">&para;</a></h3>
+<p>If you are deploying on an RPM-based Linux distribution (RHEL, CentOS, Rocky, AlmaLinux, Fedora, openSUSE, Amazon Linux), use the <code>.rpm</code> package.</p>
+<p>The rpm package will install the LimaCharlie sensor as a <code>systemd</code> service.</p>
+<p>Unlike the <code>.deb</code> package, RPM has no native interactive prompt mechanism — the installation key cannot be requested at install time. Instead, the post-install scriptlet looks for the key in one of two locations, in this order:</p>
+<ol>
+<li>The <code>LC_INSTALLATION_KEY</code> environment variable.</li>
+<li>The file <code>/etc/limacharlie/installation_key</code>.</li>
+</ol>
+<p>If neither is present the package install will abort with an explanatory error before any system state is changed, so a missing key never leaves the host in a half-configured state.</p>
+<p><strong>Installing with the environment variable:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span><span class="nv">LC_INSTALLATION_KEY</span><span class="o">=</span>INSTALLATION_KEY_HERE<span class="w"> </span>rpm<span class="w"> </span>-i<span class="w"> </span>limacharlie.rpm
+</span></code></pre></div>
+<p>or with <code>dnf</code> / <code>yum</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span><span class="nv">LC_INSTALLATION_KEY</span><span class="o">=</span>INSTALLATION_KEY_HERE<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>./limacharlie.rpm
+</span></code></pre></div>
+<p><strong>Installing with the key file:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/limacharlie
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;INSTALLATION_KEY_HERE&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/limacharlie/installation_key<span class="w"> </span>&gt;/dev/null
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/etc/limacharlie/installation_key
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>sudo<span class="w"> </span>rpm<span class="w"> </span>-i<span class="w"> </span>limacharlie.rpm
+</span></code></pre></div>
+<p>The key file is read once during install. You can delete it afterwards if you don't want the key sitting on disk — the sensor's own enrollment files take over from there.</p>
+<p><strong>Uninstalling:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>sudo<span class="w"> </span>rpm<span class="w"> </span>-e<span class="w"> </span>limacharlie
+</span></code></pre></div>
+<p>or</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>remove<span class="w"> </span>limacharlie
+</span></code></pre></div>
+<p>Uninstall stops the service and removes the sensor binary, identity files, and the package staging directory.</p>
 <h3 id="custom-installation">Custom Installation<a class="headerlink" href="#custom-installation" title="Anchor link to this section">&para;</a></h3>
 <p>For non-Debian systems, download the installer using the following command:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">downloads</span><span class="o">.</span><span class="n">limacharlie</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">sensor</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="mi">64</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">lc_sensor</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">downloads</span><span class="o">.</span><span class="n">limacharlie</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">sensor</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="mi">64</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">lc_sensor</span>
 </span></code></pre></div>
 <blockquote>
 <p>Other Linux Versions</p>
@@ -12356,8 +12407,8 @@
 <p>This means you can wrap the executable using the specific service management technology used within your <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> by simply specifying the location of the installer, the <code>-d INSTALLATION_KEY</code> parameter and making sure the current working directory is the directory where you want the few sensor-related files written to disk to reside.</p>
 <p>A common methodology for Linux is to use <code>init.d</code>, if this is sufficient for your needs, see this <a href="https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh">sample install script</a>.
 You can invoke it like this:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>./lc_linux_installer.sh
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>sudo<span class="w"> </span>./lc_linux_installer.sh<span class="w"> </span>&lt;PATH_TO_LC_SENSOR&gt;<span class="w"> </span>&lt;YOUR_INSTALLATION_KEY&gt;
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>./lc_linux_installer.sh
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>sudo<span class="w"> </span>./lc_linux_installer.sh<span class="w"> </span>&lt;PATH_TO_LC_SENSOR&gt;<span class="w"> </span>&lt;YOUR_INSTALLATION_KEY&gt;
 </span></code></pre></div>
 <p>You may also pass the value <code>-</code> instead of the <code>INSTALLATION_KEY</code> like: <code>-d -</code>. This will make the installer look for the installation key in an alternate place in the following order:</p>
 <ul>
@@ -12371,12 +12422,12 @@ You can invoke it like this:</p>
 <p>Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (<code>dpkg</code> file), you should uninstall via the same mechanism. If you installed via the SystemV installation method, please utilize the bottom of <a href="https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97">this script</a>.</p>
 <h3 id="sensor-command"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Command<a class="headerlink" href="#sensor-command" title="Anchor link to this section">&para;</a></h3>
 <p>The <code>uninstall</code> command does not work for Linux systems. However, there is a chained command that can be run from the <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Console:</p>
-<div class="language-powershell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a> <span class="n">run</span> <span class="p">-</span><span class="n">-shell-command</span> <span class="s2">&quot;service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs&quot;</span>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a> <span class="n">run</span> <span class="p">-</span><span class="n">-shell-command</span> <span class="s2">&quot;service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs&quot;</span>
 </span></code></pre></div>
 <p>The above command removes LimaCharlie and associated files from the system when run remotely. Note that the above command could also be coupled with a rule for automated sensor uninstallation, if necessary.</p>
 <h3 id="debian-systems">Debian Systems<a class="headerlink" href="#debian-systems" title="Anchor link to this section">&para;</a></h3>
 <p>If the sensor was originally installed with the .deb file, this option is the cleanest uninstall method.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>apt<span class="w"> </span>remove<span class="w"> </span>limacharlie
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>apt<span class="w"> </span>remove<span class="w"> </span>limacharlie
 </span></code></pre></div>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
