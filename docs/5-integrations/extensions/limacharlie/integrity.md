@@ -118,3 +118,5 @@ The following REST API actions can be sent to interact with the Integrity extens
 
 - [Reference: Endpoint Agent Commands](../../../8-reference/endpoint-commands.md)
 - [Detection and Response Examples](../../../3-detection-response/examples.md)
+- [Compliance Frameworks](../../../9-ai-sessions/compliance/frameworks.md) -- FIM rules ship as part of every framework's recommended baseline (PCI DSS Req 11.5.x, HIPAA §164.312(c)(1), CMMC SI.L2-3.14.1, etc.). The Compliance plugin's `compliance-baseline-deploy` skill deploys these rules into `ext-integrity` automatically.
+- [Compliance Gap Analysis](../../../9-ai-sessions/compliance/gap-analysis.md) -- Surfaces missing FIM rules per framework and flags when `ext-integrity` is not subscribed.

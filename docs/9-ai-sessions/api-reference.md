@@ -260,11 +260,11 @@ POST /v1/profiles
   "max_turns": 100,
   "max_budget_usd": 10.0,
   "mcp_servers": {
-    "limacharlie": {
+    "virustotal": {
       "type": "http",
-      "url": "https://mcp.limacharlie.io",
+      "url": "https://vt-mcp.example.com",
       "headers": {
-        "Authorization": "Bearer token"
+        "x-apikey": "hive://secret/vt-api-key"
       }
     }
   },

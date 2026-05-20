@@ -81,6 +81,56 @@ Debian packages are offered for the various architectures the Linux sensor suppo
 - **x64**: <https://downloads.limacharlie.io/sensor/linux/deb64>
 - **arm64**: <https://downloads.limacharlie.io/sensor/linux/debarm64>
 
+### RPM Package
+
+If you are deploying on an RPM-based Linux distribution (RHEL, CentOS, Rocky, AlmaLinux, Fedora, openSUSE, Amazon Linux), use the `.rpm` package.
+
+The rpm package will install the LimaCharlie sensor as a `systemd` service.
+
+Unlike the `.deb` package, RPM has no native interactive prompt mechanism — the installation key cannot be requested at install time. Instead, the post-install scriptlet looks for the key in one of two locations, in this order:
+
+1. The `LC_INSTALLATION_KEY` environment variable.
+2. The file `/etc/limacharlie/installation_key`.
+
+If neither is present the package install will abort with an explanatory error before any system state is changed, so a missing key never leaves the host in a half-configured state.
+
+**Installing with the environment variable:**
+
+```bash
+sudo LC_INSTALLATION_KEY=INSTALLATION_KEY_HERE rpm -i limacharlie.rpm
+```
+
+or with `dnf` / `yum`:
+
+```bash
+sudo LC_INSTALLATION_KEY=INSTALLATION_KEY_HERE dnf install ./limacharlie.rpm
+```
+
+**Installing with the key file:**
+
+```bash
+sudo mkdir -p /etc/limacharlie
+echo "INSTALLATION_KEY_HERE" | sudo tee /etc/limacharlie/installation_key >/dev/null
+sudo chmod 600 /etc/limacharlie/installation_key
+sudo rpm -i limacharlie.rpm
+```
+
+The key file is read once during install. You can delete it afterwards if you don't want the key sitting on disk — the sensor's own enrollment files take over from there.
+
+**Uninstalling:**
+
+```bash
+sudo rpm -e limacharlie
+```
+
+or
+
+```bash
+sudo dnf remove limacharlie
+```
+
+Uninstall stops the service and removes the sensor binary, identity files, and the package staging directory.
+
 ### Custom Installation
 
 For non-Debian systems, download the installer using the following command:

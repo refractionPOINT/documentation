@@ -147,7 +147,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
 | `one_shot` | boolean | When `true`, session terminates after completing its initial work. Default: `false` for user sessions. |
 | `ttl_seconds` | integer | Maximum session lifetime in seconds |
 | `environment` | map | Environment variables passed to the session |
-| `mcp_servers` | map | MCP server configurations |
+| `mcp_servers` | map | External/third-party MCP server configurations. LimaCharlie access is handled by the auto-installed `limacharlie` CLI and does not need an entry here. |
 
 ### Setting a Default Profile
 

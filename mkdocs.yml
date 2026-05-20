@@ -271,6 +271,7 @@ nav:
               - Duo: 2-sensors-deployment/adapters/types/duo.md
               - 1Password: 2-sensors-deployment/adapters/types/1password.md
           - Security Tools:
+              - Check Point Harmony: 2-sensors-deployment/adapters/types/checkpoint-harmony.md
               - CrowdStrike: 2-sensors-deployment/adapters/types/crowdstrike.md
               - Microsoft Defender: 2-sensors-deployment/adapters/types/microsoft-defender.md
               - SentinelOne: 2-sensors-deployment/adapters/types/sentinelone.md
@@ -534,6 +535,13 @@ nav:
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
+      - Compliance:
+          - Overview: 9-ai-sessions/compliance/index.md
+          - Installation: 9-ai-sessions/compliance/installation.md
+          - Frameworks: 9-ai-sessions/compliance/frameworks.md
+          - Skills Reference: 9-ai-sessions/compliance/skills.md
+          - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
+          - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
   - Release Notes:
       - Overview: 10-release-notes/index.md
