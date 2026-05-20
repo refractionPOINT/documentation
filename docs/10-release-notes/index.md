@@ -11,8 +11,8 @@ Release notes for LimaCharlie platform components, organized by date.
 Major uplift to the Vulnerability Reporting extension and its surfaces.
 
 - **Canonical asset-tag namespace**: introduces the `lc:asset:*` tag convention (criticality, exposure, environment, owner, compliance) for cross-cutting asset metadata. The Vulnerability Reporting extension is the first consumer; the namespace is intended to be reused across LimaCharlie surfaces. See [Asset Tag Namespace](../2-sensors-deployment/asset-tags.md).
-- **Vulnerability Reporting extension**: new public-facing documentation covering setup, scan modes (`scheduled` / `manual` / `all`), per-criticality SLA windows, criticality-tag overrides, KEV + EPSS enrichment, and the full action surface. See [Vulnerability Reporting](../5-integrations/extensions/limacharlie/vulnerability-reporting.md).
-- **Lifecycle workflow (Phase 2)**: documented finding states (`open`, `in_progress`, `mitigated`, `accepted`, `false_positive`), accepted-exception expiries with auto-revert, and the new `vuln_finding.*` events that customers can route via Outputs to Jira, Slack, Cases, etc. The lifecycle ships in Phase 2 of the uplift; the documentation lands ahead of GA.
+- **Vulnerability Reporting extension**: new public-facing documentation covering setup, scan modes (`scheduled` / `manual` / `all`), criticality-tag overrides, KEV + EPSS enrichment, LC Risk scoring, and the full action surface. See [Vulnerability Reporting](../5-integrations/extensions/limacharlie/vulnerability-reporting.md).
+- **Finding resolutions**: documented the resolution model — every finding is implicitly **open** until an operator records `mitigated`, `accepted`, or `false_positive`. Accepted-exception expiries lapse back into the open count, and `vuln_finding.*` events (`created`, `closed`, `kev_match`, `state_changed`) can be routed via Outputs to Jira, Slack, Cases, etc.
 
 ---
 
