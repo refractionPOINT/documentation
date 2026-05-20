@@ -21,6 +21,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Installation Keys](https://docs.limacharlie.io/2-sensors-deployment/installation-keys/)
 - [Sensor Connectivity](https://docs.limacharlie.io/2-sensors-deployment/connectivity/)
 - [Sensor Tags](https://docs.limacharlie.io/2-sensors-deployment/sensor-tags/)
+- [Asset Tags (lc:asset:*)](https://docs.limacharlie.io/2-sensors-deployment/asset-tags/): Asset Tag Namespace (`lc:asset:*`)
 - [Log Collection Guide](https://docs.limacharlie.io/2-sensors-deployment/log-collection-guide/)
 - [Telemetry Index](https://docs.limacharlie.io/2-sensors-deployment/telemetry-index/): Telemetry
 - [Installation](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/windows/installation/): Windows Agent Installation
@@ -190,6 +191,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Reliable Tasking](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/reliable-tasking/)
 - [Sensor Cull](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/sensor-cull/)
 - [Usage Alerts](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/usage-alerts/)
+- [Vulnerability Reporting](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/vulnerability-reporting/)
 - [YARA Manager](https://docs.limacharlie.io/5-integrations/extensions/limacharlie/yara-manager/)
 - [Overview](https://docs.limacharlie.io/5-integrations/extensions/third-party/): Third-Party Extensions
 - [Atomic Red Team](https://docs.limacharlie.io/5-integrations/extensions/third-party/atomic-red-team/)
