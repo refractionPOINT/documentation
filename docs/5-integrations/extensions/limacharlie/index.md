@@ -19,6 +19,7 @@ Extensions built and maintained by LimaCharlie that extend the platform with add
 - [Reliable Tasking](reliable-tasking.md) - Guaranteed task delivery to sensors
 - [Sensor Cull](sensor-cull.md) - Automatic cleanup of inactive sensors
 - [Usage Alerts](usage-alerts.md) - Usage threshold notifications
+- [Vulnerability Reporting](vulnerability-reporting.md) - Per-endpoint software inventory, CVE resolution, KEV/EPSS enrichment
 - [YARA Manager](yara-manager.md) - YARA rule management
 
 ## See Also
