@@ -362,10 +362,10 @@ Generated when a file is deleted.
 > - Use Exfil watch rules to specify paths that are of high interest
 > - Consider using File Integrity Monitoring (FIM)
 > - Look for this on an ad-hoc basis from the Sensor Console. ex.
->
->   ```text
->   history_dump -e FILE_DELETE
->   ```
+
+```text
+history_dump -e FILE_DELETE
+```
 
 **Platforms:**
 
@@ -449,10 +449,10 @@ Generated when a file is modified.
 > - Use Exfil watch rules to specify paths that are of high interest
 > - Consider using File Integrity Monitoring (FIM)
 > - Look for this on an ad-hoc basis from the Sensor Console. ex.
->
->   ```text
->   history_dump -e FILE_MODIFIED
->   ```
+
+```text
+history_dump -e FILE_MODIFIED
+```
 
 **Platforms:**
 
