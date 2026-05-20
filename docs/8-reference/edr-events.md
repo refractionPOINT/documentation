@@ -29,13 +29,13 @@ These are the events emitted by the endpoint agent for each supported operating 
 | [FIM\_ADD](#fim_add) | ☑️ | ☑️ | ☑️ |  |  |
 | [FIM\_REMOVE](#fim_remove) | ☑️ | ☑️ | ☑️ |  |  |
 | [FIM\_HIT](#fim_hit) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_CREATE](#file_create) | ☑️ | ☑️ |  |  |  |
+| [FILE\_CREATE](#file_create) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_DEL\_REP](#file_del_rep) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_DELETE](#file_delete) | ☑️ | ☑️ |  |  |  |
+| [FILE\_DELETE](#file_delete) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_GET\_REP](#file_get_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_HASH\_REP](#file_hash_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_INFO\_REP](#file_info_rep) | ☑️ | ☑️ | ☑️ |  |  |
-| [FILE\_MODIFIED](#file_modified) | ☑️ | ☑️ |  |  |  |
+| [FILE\_MODIFIED](#file_modified) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_MOV\_REP](#file_mov_rep) | ☑️ | ☑️ | ☑️ |  |  |
 | [FILE\_TYPE\_ACCESSED](#file_type_accessed) | ☑️ | ☑️ |  |  |  |
 | [GET\_DOCUMENT\_REP](#get_document_rep) | ☑️ | ☑️ |  |  |  |
@@ -325,6 +325,10 @@ This event is similar to the NEW\_PROCESS event.  It gets emitted when a process
 
 Generated when a file is created.
 
+> Note:
+>
+> On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no `FILE_CREATE` events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.
+
 **Platforms:**
 
 ```json
@@ -351,6 +355,10 @@ Response event for the `file_del` sensor command.
 ### FILE\_DELETE
 
 Generated when a file is deleted.
+
+> Note:
+>
+> On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no `FILE_DELETE` events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.
 
 > Be Aware:
 >
@@ -438,6 +446,10 @@ Response event for the `file_info` sensor command.
 ### FILE\_MODIFIED
 
 Generated when a file is modified.
+
+> Note:
+>
+> On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no `FILE_MODIFIED` events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.
 
 > Be Aware:
 >
