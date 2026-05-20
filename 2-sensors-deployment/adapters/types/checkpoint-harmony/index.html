@@ -3096,6 +3096,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#migrating-from-emails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migrating from emails
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#api-docs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12114,6 +12125,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#migrating-from-emails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migrating from emails
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#api-docs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12233,9 +12255,10 @@
 <p>This <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> ingests events from <a href="https://www.checkpoint.com/harmony/">Check Point Harmony</a> into LimaCharlie via the Infinity Portal APIs. Two independent sources are supported:</p>
 <ul>
 <li><strong>Infinity Events</strong> — the unified Logs-as-a-Service stream covering Harmony Endpoint, Harmony Email &amp; Collaboration, Harmony Mobile, Harmony Connect, and Harmony Browse.</li>
-<li><strong>Emails</strong> — polls the Harmony Email &amp; Collaboration (HEC) entity API for the full, unfiltered email-entity feed: every email entity Harmony processes, with its security verdicts and quarantine/restore lifecycle flags inline.</li>
+<li><strong>Entities</strong> — polls the Harmony Email &amp; Collaboration (HEC) <code>search/query</code> entity API. A single source that runs a list of <em>named queries</em>: each query is one server-side-filtered feed. Restore requests on quarantined mail, recipient/subject/DLP watches, and the unfiltered email firehose are all expressed as different queries on the same engine — no Go code changes needed to add a new scenario.</li>
 </ul>
 <p>Both sources share a single set of Infinity Portal API credentials. At least one source must be enabled or the adapter will refuse to start.</p>
+<p>A previous <code>emails</code> firehose source has been folded into <code>entities</code> as a preset. See <a href="#migrating-from-emails">Migrating from <code>emails</code></a> below.</p>
 <h2 id="deployment-configurations">Deployment Configurations<a class="headerlink" href="#deployment-configurations" title="Anchor link to this section">&para;</a></h2>
 <p>All adapters support the same <code>client_options</code>, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> helpers in the web app, you will not need to specify these values.</p>
 <ul>
@@ -12248,10 +12271,11 @@
 <p><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Type: <code>harmony</code></p>
 <p><strong>Top-level credentials (always required):</strong></p>
 <ul>
-<li><code>client_id</code>: Infinity Portal Client ID. Create under <em>Global Settings → API Keys</em>. For Infinity Events the key must include the <em>Logs as a Service</em> service; for the Emails feed it must include the <em>Harmony Email &amp; Collaboration</em> service. A single key with both services attached is supported.</li>
+<li><code>client_id</code>: Infinity Portal Client ID. Create under <em>Global Settings → API Keys</em>. For Infinity Events the key must include the <em>Logs as a Service</em> service; for the Entities source it must include the <em>Harmony Email &amp; Collaboration</em> service. A single key with both services attached is supported.</li>
 <li><code>access_key</code>: Infinity Portal Access Key paired with the Client ID above.</li>
 <li><code>url</code> <em>(optional)</em>: Infinity Portal gateway base URL. Defaults to <code>https://cloudinfra-gw.portal.checkpoint.com</code>. Use the regional variant (for example <code>https://cloudinfra-gw-us.portal.checkpoint.com</code>) if your tenant lives in a regional data center. Both <code>/app/laas-logs-api</code> and <code>/app/hec-api</code> share the same hostname per region.</li>
 </ul>
+<p>All duration fields below are parsed with <a href="https://pkg.go.dev/time#ParseDuration"><code>time.ParseDuration</code></a> — for example <code>"60s"</code>, <code>"5m"</code>, <code>"1h30m"</code>, <code>"360h"</code>.</p>
 <p><strong><code>events</code> block — Infinity Events source:</strong></p>
 <ul>
 <li><code>events.enabled</code>: set to <code>true</code> to turn the source on.</li>
@@ -12261,73 +12285,205 @@
 <li><code>events.page_limit</code> <em>(optional)</em>: page size for the records-retrieval API. Defaults to <code>100</code>. The gateway rejects values below <code>10</code> with HTTP 400.</li>
 <li><code>events.limit</code> <em>(optional)</em>: cap on records returned per cloud service per poll. Defaults to <code>5000</code>.</li>
 </ul>
-<p><strong><code>emails</code> block — HEC email-entity feed source:</strong></p>
+<p>If a configured <code>cloud_service</code> is not provisioned for the tenant the gateway returns the query in state <code>Canceled</code>; the adapter logs one warning per poll and keeps going (it does not surface as an error). Remove the service from <code>cloud_services</code> to silence the warning.</p>
+<p><strong><code>entities</code> block — HEC entity-query source:</strong></p>
 <ul>
-<li><code>emails.enabled</code>: set to <code>true</code> to turn the source on.</li>
-<li><code>emails.saas</code> <em>(optional)</em>: SaaS platforms to query. Only <code>office365_emails</code> and <code>google_mail</code> are supported. Defaults to both.</li>
-<li><code>emails.poll_interval</code> <em>(optional)</em>: polling cadence. Defaults to <code>5m</code>.</li>
-<li><code>emails.lookback</code> <em>(optional)</em>: how far back each poll searches. Defaults to <code>1h</code>. Keep this short: the feed is unfiltered and high volume, and the HEC search/query endpoint silently truncates a window that exceeds its per-query record cap. A short lookback polled frequently — with dedup on <code>entityId</code>+<code>entityUpdated</code> — keeps the feed complete; a long lookback would drop the oldest events.</li>
+<li><code>entities.enabled</code>: set to <code>true</code> to turn the source on.</li>
+<li><code>entities.queries</code>: list of named queries. Each entry is one independent feed with its own dedup state and its own <code>_lc_harmony_query</code> annotation downstream.</li>
 </ul>
-<p>No server-side filtering is applied. Every email entity is shipped once per <code>(entityId, entityUpdated)</code>, so state changes (verdict updates, quarantine, restore requested/restored/declined) re-emit while unchanged entities are not re-sent. Triage and alerting are expected to happen downstream in <abbr title="Detection &amp; Response">D&amp;R</abbr> rules.</p>
-<p>Each record emitted by the adapter carries adapter-added annotations to make filtering easier downstream:</p>
+<p>Each <code>entities.queries</code> entry supports the following fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>— (required)</td>
+<td>Identifier for the feed. Must be unique within <code>entities.queries</code>. Appears in errors and as <code>_lc_harmony_query</code>.</td>
+</tr>
+<tr>
+<td><code>saas</code></td>
+<td><code>[office365_emails, google_mail]</code></td>
+<td>SaaS platforms to query, each independently. Only <code>office365_emails</code> and <code>google_mail</code> are supported.</td>
+</tr>
+<tr>
+<td><code>filter</code></td>
+<td><code>[]</code></td>
+<td>List of <code>{attr, op, value}</code> predicates passed through as <code>entityExtendedFilter</code>. ANDed by the gateway. Empty is allowed (then the query is bounded only by the entity window and, in cursor mode, the injected cursor predicate).</td>
+</tr>
+<tr>
+<td><code>cursor_field</code></td>
+<td><code>""</code></td>
+<td>Empty → window mode. Set to <code>entityPayload.&lt;k&gt;</code> or <code>entityInfo.&lt;k&gt;</code> (must reference a timestamp-typed field) → cursor mode. See <a href="#two-cursor-modes">Two cursor modes</a> below.</td>
+</tr>
+<tr>
+<td><code>include_splits</code></td>
+<td><code>false</code></td>
+<td>If <code>true</code>, ship <code>entityPayload.emailSplit == "split"</code> master records alongside their child copies (firehose semantics). Default skips them so a single email isn't double-emitted per query.</td>
+</tr>
+<tr>
+<td><code>lookback</code></td>
+<td><code>1h</code> (window) / <code>360h</code> (cursor)</td>
+<td>Floor on <code>entityFilter.startDate</code> (received time). Duration string.</td>
+</tr>
+<tr>
+<td><code>initial_lookback</code></td>
+<td><code>1h</code></td>
+<td>Cursor mode only: how far back the cursor starts on the first poll. Duration string.</td>
+</tr>
+<tr>
+<td><code>poll_interval</code></td>
+<td><code>5m</code></td>
+<td>Time between polls. Duration string.</td>
+</tr>
+</tbody>
+</table>
+<p>Each predicate in <code>filter</code> is one server-side <code>entityExtendedFilter</code> clause:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">filter</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">attr</span><span class="p">:</span><span class="w"> </span><span class="nv">&lt;saasAttrName&gt;</span><span class="p p-Indicator">,</span><span class="nt"> op</span><span class="p">:</span><span class="w"> </span><span class="nv">&lt;saasAttrOp&gt;</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&lt;saasAttrValue&gt;&quot;</span><span class="p p-Indicator">}</span>
+</span></code></pre></div>
+<p><code>attr</code> is a Check Point <a href="https://sc1.checkpoint.com/documents/Harmony_Email_and_Collaboration_API_Reference/Topics-HEC-Avanan-API-Reference-Guide/Managing-Secured-Entities/Search-query.htm">saasAttrName</a> (e.g. <code>entityPayload.subject</code>, <code>entityPayload.recipients</code>, <code>entityPayload.isRestoreRequested</code>). <code>op</code> is one of <code>is</code>, <code>isNot</code>, <code>contains</code>, <code>notContains</code>, <code>startsWith</code>, <code>isEmpty</code>, <code>isNotEmpty</code>, <code>greaterThan</code>, <code>lessThan</code>. <code>value</code> is a string; booleans are spelled as the string <code>"true"</code> / <code>"false"</code>. Unknown ops are rejected at startup so a typo fails loudly instead of silently matching nothing.</p>
+<h4 id="two-cursor-modes">Two cursor modes<a class="headerlink" href="#two-cursor-modes" title="Anchor link to this section">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>When to use</th>
+<th><code>entityFilter</code> sent</th>
+<th>Cursor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Window mode</strong> (<code>cursor_field</code> empty)</td>
+<td>The matching email is itself recent — content/recipient/detection filters, or the unfiltered firehose.</td>
+<td><code>saas</code> + <code>startDate</code> + <code>endDate</code> + <code>saasEntity</code> (received-time window).</td>
+<td>Rolling window + dedup.</td>
+</tr>
+<tr>
+<td><strong>Cursor mode</strong> (<code>cursor_field</code> set)</td>
+<td>The event of interest is decoupled in time from the email's receipt — e.g. a restore request on an old quarantined email.</td>
+<td><code>saas</code> + wide <code>startDate</code> only — no <code>endDate</code>, no <code>saasEntity</code>.</td>
+<td><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> auto-injects <code>{cursor_field} greaterThan {cursor}</code> and advances <code>cursor</code> to the newest value seen.</td>
+</tr>
+</tbody>
+</table>
+<p>A <em>filtered</em> query (non-empty <code>filter</code>) is bounded server-side by the predicates, so it scales independently of total mail volume. The <strong>unfiltered firehose preset</strong> (window mode, no <code>filter</code>, <code>include_splits: true</code>) is the exception: it is bounded only by the received-time window, so on a very high-volume tenant a long <code>lookback</code> can hit the gateway's per-query record ceiling (~10,000 records, oldest-first). Keep <code>lookback</code> short for that preset (the 1h default is intentional), or use a filtered query.</p>
+<blockquote>
+<p><strong>Restore requests require cursor mode.</strong> A window-mode query (or the firehose preset) cannot surface a restore request. The window filters on the email's <em>received</em> time, but the underlying quarantined email may have been received hours, days, or months before the restore was requested — so it isn't in any recent received-time window. Use the <code>restore_requests</code> preset below.</p>
+</blockquote>
+<h4 id="annotations">Annotations<a class="headerlink" href="#annotations" title="Anchor link to this section">&para;</a></h4>
+<p>Every record carries adapter-added annotations to make routing easy downstream:</p>
 <ul>
-<li><code>_lc_harmony_source</code> — <code>infinity_events</code> or <code>emails</code>.</li>
+<li><code>_lc_harmony_source</code> — <code>infinity_events</code> or <code>entities</code>.</li>
 <li><code>_lc_harmony_service</code> — the Infinity Events cloud service (events source only).</li>
-<li><code>_lc_harmony_saas</code> — the HEC SaaS platform (emails source only).</li>
+<li><code>_lc_harmony_query</code> — the entities query's <code>name</code> (entities source only).</li>
+<li><code>_lc_harmony_saas</code> — the HEC SaaS platform (entities source only).</li>
 </ul>
+<h4 id="example-presets">Example presets<a class="headerlink" href="#example-presets" title="Anchor link to this section">&para;</a></h4>
+<p>Quarantined-email restore requests — canonical cursor-mode preset, mirrors Check Point's own XSOAR <code>restore_requests</code>:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">harmony</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">queries</span><span class="p">:</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restore_requests</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="nt">saas</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">office365_emails</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">google_mail</span><span class="p p-Indicator">]</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="nt">filter</span><span class="p">:</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">attr</span><span class="p">:</span><span class="w"> </span><span class="nv">entityPayload.isRestoreRequested</span><span class="p p-Indicator">,</span><span class="nt"> op</span><span class="p">:</span><span class="w"> </span><span class="nv">is</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="p p-Indicator">}</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="nt">cursor_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entityPayload.restoreRequestTime</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="nt">lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">360h</span><span class="w">          </span><span class="c1"># 15 days — how old the underlying email may be</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="nt">initial_lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span><span class="w">    </span><span class="c1"># how far back the cursor starts on first poll</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nt">poll_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5m</span>
+</span></code></pre></div>
+<p>Email firehose (window mode, no filter, splits included) — equivalent to the old <code>emails</code> source:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">harmony</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">queries</span><span class="p">:</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">emails</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="nt">saas</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">office365_emails</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">google_mail</span><span class="p p-Indicator">]</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="nt">include_splits</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="nt">lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="nt">poll_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5m</span>
+</span></code></pre></div>
+<p>Subject / sender watch (window mode):</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">harmony</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">queries</span><span class="p">:</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">invoice_subject_watch</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="nt">saas</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">office365_emails</span><span class="p p-Indicator">]</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">        </span><span class="nt">filter</span><span class="p">:</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">attr</span><span class="p">:</span><span class="w"> </span><span class="nv">entityPayload.subject</span><span class="p p-Indicator">,</span><span class="nt">    op</span><span class="p">:</span><span class="w"> </span><span class="nv">contains</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INVOICE&quot;</span><span class="p p-Indicator">}</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">attr</span><span class="p">:</span><span class="w"> </span><span class="nv">entityPayload.fromDomain</span><span class="p p-Indicator">,</span><span class="nt"> op</span><span class="p">:</span><span class="w"> </span><span class="nv">is</span><span class="p p-Indicator">,</span><span class="nt">       value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;example.com&quot;</span><span class="p p-Indicator">}</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="nt">lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="nt">poll_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5m</span>
+</span></code></pre></div>
+<p>Multiple queries can be listed under one source — each runs independently, with its own dedup state and its own <code>_lc_harmony_query</code> annotation.</p>
 <h3 id="cli-deployment"><abbr title="Command-line Interface">CLI</abbr> Deployment<a class="headerlink" href="#cli-deployment" title="Anchor link to this section">&para;</a></h3>
-<p><a href="../../deployment/"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> downloads</a> are available on the deployment page. The adapter accepts dot-notation flags for the nested <code>events.*</code> and <code>emails.*</code> fields.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>/path/to/lc_adapter
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>/path/to/lc_adapter<span class="w"> </span>harmony<span class="w"> </span>client_options.identity.installation_key<span class="o">=</span><span class="nv">$INSTALLATION_KEY</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>client_options.identity.oid<span class="o">=</span><span class="nv">$OID</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>client_options.platform<span class="o">=</span>json<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>client_options.sensor_seed_key<span class="o">=</span><span class="nv">$SENSOR_NAME</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>client_options.hostname<span class="o">=</span><span class="nv">$SENSOR_NAME</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nv">client_id</span><span class="o">=</span><span class="nv">$CHECKPOINT_CLIENT_ID</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nv">access_key</span><span class="o">=</span><span class="nv">$CHECKPOINT_ACCESS_KEY</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>events.enabled<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="s1">&#39;events.cloud_services=Harmony Endpoint,Harmony Email &amp; Collaboration&#39;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>emails.enabled<span class="o">=</span><span class="nb">true</span>
+<p><a href="../../deployment/"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> downloads</a> are available on the deployment page. The adapter accepts dot-notation flags for the nested <code>events.*</code> and <code>entities.*</code> fields; <code>entities.queries</code> is passed as a single JSON string.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>/path/to/lc_adapter
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>/path/to/lc_adapter<span class="w"> </span>harmony<span class="w"> </span>client_options.identity.installation_key<span class="o">=</span><span class="nv">$INSTALLATION_KEY</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>client_options.identity.oid<span class="o">=</span><span class="nv">$OID</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>client_options.platform<span class="o">=</span>json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>client_options.sensor_seed_key<span class="o">=</span><span class="nv">$SENSOR_NAME</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>client_options.hostname<span class="o">=</span><span class="nv">$SENSOR_NAME</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nv">client_id</span><span class="o">=</span><span class="nv">$CHECKPOINT_CLIENT_ID</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="nv">access_key</span><span class="o">=</span><span class="nv">$CHECKPOINT_ACCESS_KEY</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>events.enabled<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="s1">&#39;events.cloud_services=Harmony Endpoint,Harmony Email &amp; Collaboration&#39;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>entities.enabled<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="s1">&#39;entities.queries=[{&quot;name&quot;:&quot;restore_requests&quot;,&quot;filter&quot;:[{&quot;attr&quot;:&quot;entityPayload.isRestoreRequested&quot;,&quot;op&quot;:&quot;is&quot;,&quot;value&quot;:&quot;true&quot;}],&quot;cursor_field&quot;:&quot;entityPayload.restoreRequestTime&quot;,&quot;lookback&quot;:&quot;360h&quot;,&quot;initial_lookback&quot;:&quot;1h&quot;,&quot;poll_interval&quot;:&quot;5m&quot;}]&#39;</span>
 </span></code></pre></div>
 <h3 id="infrastructure-as-code-deployment"><abbr title="Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure...">Infrastructure as Code</abbr> Deployment<a class="headerlink" href="#infrastructure-as-code-deployment" title="Anchor link to this section">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># For cloud sensor deployment, store credentials as hive secrets:</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">#   client_id: &quot;hive://secret/checkpoint-harmony-client-id&quot;</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">#   access_key: &quot;hive://secret/checkpoint-harmony-access-key&quot;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">sensor_type</span><span class="p">:</span> <span class="s2">&quot;harmony&quot;</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">harmony</span><span class="p">:</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  <span class="n">client_id</span><span class="p">:</span> <span class="s2">&quot;hive://secret/checkpoint-harmony-client-id&quot;</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  <span class="n">access_key</span><span class="p">:</span> <span class="s2">&quot;hive://secret/checkpoint-harmony-access-key&quot;</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  <span class="c1"># Optional: regional gateway (defaults to the global one if omitted)</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  <span class="c1"># url: &quot;https://cloudinfra-gw-us.portal.checkpoint.com&quot;</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  <span class="n">client_options</span><span class="p">:</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">identity</span><span class="p">:</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>      <span class="n">oid</span><span class="p">:</span> <span class="s2">&quot;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&quot;</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>      <span class="n">installation_key</span><span class="p">:</span> <span class="s2">&quot;YOUR_LC_INSTALLATION_KEY_HARMONY&quot;</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="n">hostname</span><span class="p">:</span> <span class="s2">&quot;checkpoint-harmony-adapter&quot;</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="n">platform</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="n">sensor_seed_key</span><span class="p">:</span> <span class="s2">&quot;checkpoint-harmony-sensor&quot;</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="n">mapping</span><span class="p">:</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>      <span class="n">event_type_path</span><span class="p">:</span> <span class="s2">&quot;_lc_harmony_source&quot;</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>      <span class="n">event_time_path</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span>
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    <span class="n">indexing</span><span class="p">:</span> <span class="p">[]</span>
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>  <span class="n">events</span><span class="p">:</span>
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    <span class="c1"># Optional — defaults to the full Harmony suite if omitted</span>
-</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    <span class="n">cloud_services</span><span class="p">:</span>
-</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Endpoint&quot;</span>
-</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Email &amp; Collaboration&quot;</span>
-</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Mobile&quot;</span>
-</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Connect&quot;</span>
-</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>      <span class="o">-</span> <span class="s2">&quot;Harmony Browse&quot;</span>
-</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>  <span class="n">emails</span><span class="p">:</span>
-</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>    <span class="n">enabled</span><span class="p">:</span> <span class="n">true</span>
-</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>    <span class="c1"># Optional — defaults shown</span>
-</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>    <span class="n">saas</span><span class="p">:</span>
-</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>      <span class="o">-</span> <span class="s2">&quot;office365_emails&quot;</span>
-</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>      <span class="o">-</span> <span class="s2">&quot;google_mail&quot;</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># For cloud sensor deployment, store credentials as hive secrets:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">#</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1">#   client_id: &quot;hive://secret/checkpoint-harmony-client-id&quot;</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1">#   access_key: &quot;hive://secret/checkpoint-harmony-access-key&quot;</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nt">sensor_type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;harmony&quot;</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="nt">harmony</span><span class="p">:</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;hive://secret/checkpoint-harmony-client-id&quot;</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="nt">access_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;hive://secret/checkpoint-harmony-access-key&quot;</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="c1"># Optional: regional gateway (defaults to the global one if omitted)</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="c1"># url: &quot;https://cloudinfra-gw-us.portal.checkpoint.com&quot;</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">  </span><span class="nt">client_options</span><span class="p">:</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="nt">identity</span><span class="p">:</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">      </span><span class="nt">oid</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&quot;</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">      </span><span class="nt">installation_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;YOUR_LC_INSTALLATION_KEY_HARMONY&quot;</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;checkpoint-harmony-adapter&quot;</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;json&quot;</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">    </span><span class="nt">sensor_seed_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;checkpoint-harmony-sensor&quot;</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="nt">mapping</span><span class="p">:</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">      </span><span class="nt">event_type_path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;_lc_harmony_source&quot;</span>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">      </span><span class="nt">event_time_path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;time&quot;</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">    </span><span class="nt">indexing</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">  </span><span class="nt">events</span><span class="p">:</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">    </span><span class="c1"># Optional — defaults to the full Harmony suite if omitted</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">    </span><span class="nt">cloud_services</span><span class="p">:</span>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Harmony</span><span class="nv"> </span><span class="s">Endpoint&quot;</span>
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Harmony</span><span class="nv"> </span><span class="s">Email</span><span class="nv"> </span><span class="s">&amp;</span><span class="nv"> </span><span class="s">Collaboration&quot;</span>
+</span><span id="__span-5-29"><a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Harmony</span><span class="nv"> </span><span class="s">Mobile&quot;</span>
+</span><span id="__span-5-30"><a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Harmony</span><span class="nv"> </span><span class="s">Connect&quot;</span>
+</span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Harmony</span><span class="nv"> </span><span class="s">Browse&quot;</span>
+</span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+</span><span id="__span-5-33"><a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-5-34"><a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="w">    </span><span class="nt">queries</span><span class="p">:</span>
+</span><span id="__span-5-35"><a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restore_requests</span>
+</span><span id="__span-5-36"><a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a><span class="w">        </span><span class="nt">saas</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">office365_emails</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">google_mail</span><span class="p p-Indicator">]</span>
+</span><span id="__span-5-37"><a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="w">        </span><span class="nt">filter</span><span class="p">:</span>
+</span><span id="__span-5-38"><a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">attr</span><span class="p">:</span><span class="w"> </span><span class="nv">entityPayload.isRestoreRequested</span><span class="p p-Indicator">,</span><span class="nt"> op</span><span class="p">:</span><span class="w"> </span><span class="nv">is</span><span class="p p-Indicator">,</span><span class="nt"> value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="p p-Indicator">}</span>
+</span><span id="__span-5-39"><a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="w">        </span><span class="nt">cursor_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entityPayload.restoreRequestTime</span>
+</span><span id="__span-5-40"><a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="w">        </span><span class="nt">lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">360h</span>
+</span><span id="__span-5-41"><a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="w">        </span><span class="nt">initial_lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span>
+</span><span id="__span-5-42"><a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="w">        </span><span class="nt">poll_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5m</span>
 </span></code></pre></div>
 <h2 id="configuring-a-check-point-harmony-adapter-in-the-web-ui">Configuring a Check Point Harmony <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> in the Web UI<a class="headerlink" href="#configuring-a-check-point-harmony-adapter-in-the-web-ui" title="Anchor link to this section">&para;</a></h2>
 <h3 id="preparing-infinity-portal-credentials">Preparing Infinity Portal credentials<a class="headerlink" href="#preparing-infinity-portal-credentials" title="Anchor link to this section">&para;</a></h3>
@@ -12336,7 +12492,7 @@
 <li>Navigate to <em>Global Settings → API Keys → New</em>.</li>
 <li>Attach the services your adapter needs:<ul>
 <li><em>Logs as a Service</em> for the Infinity Events source.</li>
-<li><em>Harmony Email &amp; Collaboration</em> for the Emails source.</li>
+<li><em>Harmony Email &amp; Collaboration</em> for the Entities source.</li>
 <li>A single key with both services attached is fine.</li>
 </ul>
 </li>
@@ -12379,40 +12535,62 @@
 <td><em>(optional)</em> Infinity Events query filter</td>
 </tr>
 <tr>
-<td>Emails Enabled</td>
-<td>Toggle on to poll the HEC email-entity feed</td>
+<td>Entities Enabled</td>
+<td>Toggle on to poll the HEC entity-query source</td>
 </tr>
 <tr>
-<td>Emails Saas</td>
-<td><em>(optional)</em> Comma-separated SaaS platforms (<code>office365_emails</code>, <code>google_mail</code>)</td>
+<td>Entities Queries</td>
+<td><em>(optional)</em> JSON array of named entity queries — see <a href="#adapter-specific-options"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr>-specific Options</a> above for the schema and presets.</td>
 </tr>
 </tbody>
 </table>
-<p>At least one of <em>Events Enabled</em> or <em>Emails Enabled</em> must be on or the adapter will refuse to start.</p>
+<p>At least one of <em>Events Enabled</em> or <em>Entities Enabled</em> must be on or the adapter will refuse to start.</p>
 <p>Click <code>Complete Cloud Installation</code>. LimaCharlie will authenticate against the Infinity Portal and begin polling.</p>
 <h2 id="sample-rule">Sample Rule<a class="headerlink" href="#sample-rule" title="Anchor link to this section">&para;</a></h2>
-<p>When ingested, Harmony events can be referenced directly in <abbr title="Detection &amp; Response">D&amp;R</abbr> rules. The adapter annotates every record with <code>_lc_harmony_source</code> so you can pivot on the originating API:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Detection — flag any email entity from the HEC feed</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">harmony_record</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">and</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nt">rules</span><span class="p">:</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">event/_lc_harmony_source</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">emails</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># Response</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Harmony Email Entity</span>
+<p>When ingested, Harmony events can be referenced directly in <abbr title="Detection &amp; Response">D&amp;R</abbr> rules. The adapter annotates every record with <code>_lc_harmony_source</code> so you can pivot on the originating API, and entities records additionally carry <code>_lc_harmony_query</code> so you can route per query:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Detection — flag restore requests from the entities source</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">harmony_record</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">and</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nt">rules</span><span class="p">:</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">event/_lc_harmony_source</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">entities</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">op</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">is</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">event/_lc_harmony_query</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">restore_requests</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="c1"># Response</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">report</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Harmony Restore Request</span>
 </span></code></pre></div>
-<p>Because the emails feed is unfiltered, narrow the detection on the
-verdict/lifecycle fields carried inline on each entity (under
-<code>event/entityInfo</code> and the entity payload) to match only the cases you
-care about — for example a quarantined message or a declined restore
-request.</p>
+<p>For the unfiltered firehose query, narrow the detection on the verdict/lifecycle fields carried inline on each entity (under <code>event/entityInfo</code> and the entity payload) to match only the cases you care about — for example a quarantined message or a declined restore request.</p>
+<h2 id="migrating-from-emails">Migrating from <code>emails</code><a class="headerlink" href="#migrating-from-emails" title="Anchor link to this section">&para;</a></h2>
+<p>The previous <code>emails</code> source has been removed. <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> configs carrying <code>harmony.emails: {enabled: true}</code> will fail Validate at startup with a clear message pointing to this guide.</p>
+<p><strong>Before:</strong></p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">harmony</span><span class="p">:</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">emails</span><span class="p">:</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nt">saas</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">office365_emails</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">google_mail</span><span class="p p-Indicator">]</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="nt">lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="nt">poll_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5m</span>
+</span></code></pre></div>
+<p><strong>After:</strong></p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">harmony</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">entities</span><span class="p">:</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="nt">queries</span><span class="p">:</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">emails</span><span class="w">              </span><span class="c1"># pick any name; appears as _lc_harmony_query</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">        </span><span class="nt">saas</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">office365_emails</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">google_mail</span><span class="p p-Indicator">]</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="nt">include_splits</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">      </span><span class="c1"># matches the old firehose semantics</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">        </span><span class="nt">lookback</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">        </span><span class="nt">poll_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5m</span>
+</span></code></pre></div>
+<p>Downstream rules / dashboards that filter on <code>_lc_harmony_source: emails</code> need to be updated to filter on <code>_lc_harmony_source: entities</code> (plus optionally <code>_lc_harmony_query: emails</code> if you want to scope to this specific feed).</p>
 <h2 id="api-docs">API Docs<a class="headerlink" href="#api-docs" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li>Infinity Events (Logs-as-a-Service): <a href="https://app.swaggerhub.com/apis-docs/Check-Point/infinity-events">Check Point Infinity Events Reference</a></li>
 <li>Harmony Email &amp; Collaboration entity API: <a href="https://sc1.checkpoint.com/documents/Infinity_Portal/WebAdminGuides/EN/Harmony-Email-and-Collaboration-Admin-Guide/Default.htm">HEC API Reference</a></li>
+<li>HEC <code>search/query</code> endpoint: <a href="https://sc1.checkpoint.com/documents/Harmony_Email_and_Collaboration_API_Reference/Topics-HEC-Avanan-API-Reference-Guide/Managing-Secured-Entities/Search-query.htm">Search query reference</a></li>
 <li>Infinity Portal authentication: <a href="https://app.swaggerhub.com/apis-docs/Check-Point/infinity-portal-auth/1.0">Infinity Portal API Authentication</a></li>
 </ul>
 <!-- Glossary definitions for tooltip abbreviations -->
