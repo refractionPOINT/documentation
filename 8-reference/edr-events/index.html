@@ -14126,7 +14126,7 @@
 <td><a href="#file_create">FILE_CREATE</a></td>
 <td>☑️</td>
 <td>☑️</td>
-<td></td>
+<td>☑️</td>
 <td></td>
 <td></td>
 </tr>
@@ -14142,7 +14142,7 @@
 <td><a href="#file_delete">FILE_DELETE</a></td>
 <td>☑️</td>
 <td>☑️</td>
-<td></td>
+<td>☑️</td>
 <td></td>
 <td></td>
 </tr>
@@ -14174,7 +14174,7 @@
 <td><a href="#file_modified">FILE_MODIFIED</a></td>
 <td>☑️</td>
 <td>☑️</td>
-<td></td>
+<td>☑️</td>
 <td></td>
 <td></td>
 </tr>
@@ -14912,6 +14912,10 @@
 <p><strong>Platforms:</strong></p>
 <h3 id="file_create">FILE_CREATE<a class="headerlink" href="#file_create" title="Anchor link to this section">&para;</a></h3>
 <p>Generated when a file is created.</p>
+<blockquote>
+<p>Note:</p>
+<p>On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no <code>FILE_CREATE</code> events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.</p>
+</blockquote>
 <p><strong>Platforms:</strong></p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">&quot;FILE_PATH&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;C:\\Users\\dev\\AppData\\Local\\Microsoft\\Windows\\WebCache\\V01tmp.log&quot;</span><span class="p">,</span>
@@ -14929,6 +14933,8 @@
 <h3 id="file_delete">FILE_DELETE<a class="headerlink" href="#file_delete" title="Anchor link to this section">&para;</a></h3>
 <p>Generated when a file is deleted.</p>
 <blockquote>
+<p>Note:</p>
+<p>On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no <code>FILE_DELETE</code> events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.</p>
 <p>Be Aware:</p>
 <p>When adding this event to an event collection rule, you will be monitoring system-wide. This could result in a large number of events.</p>
 <p>Best Practices:</p>
@@ -14991,6 +14997,8 @@
 <h3 id="file_modified">FILE_MODIFIED<a class="headerlink" href="#file_modified" title="Anchor link to this section">&para;</a></h3>
 <p>Generated when a file is modified.</p>
 <blockquote>
+<p>Note:</p>
+<p>On macOS and Linux, file events require the sensor's kernel acquisition component to be installed and active (system extension or kext on macOS, eBPF kernel module on Linux). Without it, no <code>FILE_MODIFIED</code> events are generated. On Windows the kernel acquisition driver provides full coverage; a user-mode fallback emits a reduced set when the driver is not loaded.</p>
 <p>Be Aware:</p>
 <p>When adding this event to an event collection rule, you will be monitoring system-wide. This could result in a large number of events.</p>
 <p>Best Practices:</p>
