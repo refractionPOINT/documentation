@@ -7407,6 +7407,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#watch-rule-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watch Rule Operators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#throughput-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12075,6 +12086,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#watch-rule-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watch Rule Operators
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#throughput-limits" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12300,6 +12322,41 @@
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Value: wininet.dll
 </span></code></pre></div>
 <p>The above rule would configures the sensor(s) to send <em>only</em> <code>MODULE_LOAD</code> events where the <code>FILE_PATH</code> ends with the value <code>wininet.dll</code>.</p>
+<h3 id="watch-rule-operators">Watch Rule Operators<a class="headerlink" href="#watch-rule-operators" title="Anchor link to this section">&para;</a></h3>
+<p>Watch Rules support exactly four operators. The configured <code>value</code> is compared <strong>literally</strong> (not as a pattern) against the string at <code>path</code> in the event:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Match condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is</code></td>
+<td>The field value exactly equals the configured value.</td>
+</tr>
+<tr>
+<td><code>contains</code></td>
+<td>The configured value appears anywhere in the field value.</td>
+</tr>
+<tr>
+<td><code>starts with</code></td>
+<td>The field value begins with the configured value.</td>
+</tr>
+<tr>
+<td><code>ends with</code></td>
+<td>The field value ends with the configured value.</td>
+</tr>
+</tbody>
+</table>
+<p>Additional behavior to be aware of:</p>
+<ul>
+<li><strong>No regular expressions, globs, or wildcards.</strong> A value such as <code>^/Users/[^/]+/(Downloads|Desktop)/</code> is matched character-for-character — including the <code>^</code>, <code>[</code>, <code>(</code>, etc. — and will not behave as a regex.</li>
+<li><strong>Case-insensitive.</strong> Both the configured value and the event field are lowercased before comparison, so <code>wininet.dll</code> and <code>WININET.DLL</code> match.</li>
+<li><strong>String fields only.</strong> Only string-typed event fields are evaluated; numeric fields at the configured <code>path</code> are skipped.</li>
+<li><strong>Unknown operators are dropped silently.</strong> A Watch Rule whose <code>operator</code> is anything other than the four values above will not match any event. Use one of the supported operators above (or combine multiple Watch Rules) to express the condition you need.</li>
+</ul>
 <blockquote>
 <p>Performance Rules</p>
 <p>Performance rules, applied via tag to a set of Sensors, are useful for high I/O systems. These rules can be set via the web application or REST API.</p>
