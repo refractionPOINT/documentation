@@ -225,7 +225,8 @@ value: web-server-2
 
     ```bash
     # Save your FP rule to a file, then:
-    limacharlie fp set --key suppress-known-app --input-file fp-rule.yaml
+    # (--enabled is required — new hive records are disabled by default.)
+    limacharlie fp set --key suppress-known-app --input-file fp-rule.yaml --enabled
     ```
 
 ### Delete an FP Rule

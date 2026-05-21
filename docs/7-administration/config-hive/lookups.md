@@ -200,13 +200,17 @@ If your lookups change frequently and you wish to keep them up to date, LimaChar
 
 Lookups support three data formats: `lookup_data` (key-value pairs), `newline_content` (newline-separated keys), and `yaml_content` (YAML string).
 
+!!! warning
+    New hive records are created **disabled by default** — D&R rules that reference the lookup will silently miss every key until you enable it. Each example below explicitly enables the lookup; drop the `enabled` portion to leave it disabled and enable it later via `limacharlie lookup enable --key …`.
+
 === "REST API"
 
     ```bash
     curl -s -X POST \
       "https://api.limacharlie.io/v1/hive/lookup/YOUR_OID/my-lookup/data" \
       -H "Authorization: Bearer $LC_JWT" \
-      -d '{"data": "{\"lookup_data\": {\"8.8.8.8\": {}, \"1.1.1.1\": {}}}"}'
+      -d 'data={"lookup_data":{"8.8.8.8":{},"1.1.1.1":{}}}' \
+      -d 'usr_mtd={"enabled":true}'
     ```
 
 === "Python"
@@ -219,12 +223,16 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
     client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
     org = Organization(client)
     hive = Hive(org, "lookup")
-    record = HiveRecord("my-lookup", data={
-        "lookup_data": {
-            "8.8.8.8": {},
-            "1.1.1.1": {},
-        }
-    })
+    record = HiveRecord(
+        "my-lookup",
+        data={
+            "lookup_data": {
+                "8.8.8.8": {},
+                "1.1.1.1": {},
+            }
+        },
+        enabled=True,
+    )
     hive.set(record)
     ```
 
@@ -245,6 +253,7 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
         org, _ := limacharlie.NewOrganization(client)
         hc := limacharlie.NewHiveClient(org)
 
+        enabled := true
         hc.Add(limacharlie.HiveArgs{
             HiveName:     "lookup",
             PartitionKey: "YOUR_OID",
@@ -255,6 +264,7 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
                     "1.1.1.1": map[string]interface{}{},
                 },
             },
+            Enabled: &enabled,
         })
     }
     ```
@@ -263,7 +273,7 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
 
     ```bash
     limacharlie lookup set --key my-lookup \
-      --input-file lookup.json
+      --input-file lookup.json --enabled
     ```
 
     Where `lookup.json` contains:
@@ -278,6 +288,8 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
         }
     }
     ```
+
+    The `--enabled` flag creates-and-enables the lookup in one shot. Omit it (and `usr_mtd.enabled` in the file) to leave the lookup disabled until you call `limacharlie lookup enable --key my-lookup`.
 
 ### Delete a Lookup
 

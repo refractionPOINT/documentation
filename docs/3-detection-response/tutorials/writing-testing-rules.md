@@ -381,5 +381,7 @@ Once your rule is done and you've evaluated various events for matches, you can 
 
 Now is the time to push the new rule to production, the easy part.
 
-Simply run `limacharlie dr set --key T1196 --input-file T1196.rule`
+Simply run `limacharlie dr set --key T1196 --input-file T1196.rule --enabled`
 and confirm it is operational by running `limacharlie dr list`.
+The `--enabled` flag creates the rule and enables it in one shot — without
+it the rule is stored disabled and would not fire on matching events.

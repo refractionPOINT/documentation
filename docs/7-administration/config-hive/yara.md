@@ -174,7 +174,9 @@ The data payload uses a `rule` key containing the YARA rule content.
             $s
     }
     """
-    record = HiveRecord("my-rule", data={"rule": yara_content})
+    # New hive records are disabled by default — pass enabled=True so
+    # the rule is picked up by YARA scans.
+    record = HiveRecord("my-rule", data={"rule": yara_content}, enabled=True)
     hive.set(record)
     ```
 

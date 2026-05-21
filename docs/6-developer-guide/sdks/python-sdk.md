@@ -436,7 +436,8 @@ for name, record in rules.items():
 record = hive.get("my-detection-rule")
 print(record.data)  # {'detect': {...}, 'respond': [...]}
 
-# Create or update a rule
+# Create or update a rule. New hive records are disabled by default,
+# so pass enabled=True if you want the rule to start firing immediately.
 new_rule = HiveRecord(
     name="my-new-rule",
     data={
@@ -449,7 +450,8 @@ new_rule = HiveRecord(
         "respond": [
             {"action": "report", "name": "mimikatz-detected"}
         ]
-    }
+    },
+    enabled=True,
 )
 hive.set(new_rule)
 

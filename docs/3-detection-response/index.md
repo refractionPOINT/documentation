@@ -161,8 +161,10 @@ Build custom detection logic with automated response actions.
 === "CLI"
 
     ```bash
-    # Save your rule to a YAML file, then:
-    limacharlie dr set --key my-new-rule --input-file rule.yaml
+    # Save your rule to a YAML file, then create-and-enable in one shot.
+    # (New hive records are disabled by default; --enabled mirrors the
+    # `enabled=True` / `IsEnabled: true` in the SDK examples above.)
+    limacharlie dr set --key my-new-rule --input-file rule.yaml --enabled
     ```
 
 ### Delete a Rule
