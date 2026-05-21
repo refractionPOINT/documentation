@@ -176,13 +176,17 @@ Using a secret in combination with an output has very few steps:
 
 ### Create / Update a Secret
 
+!!! warning
+    New hive records are created **disabled by default**. Each example below explicitly enables the secret — drop the `enabled` portion if you want the secret to start disabled and enable it later via `limacharlie secret enable --key …`.
+
 === "REST API"
 
     ```bash
     curl -s -X POST \
       "https://api.limacharlie.io/v1/hive/secret/YOUR_OID/my-secret/data" \
       -H "Authorization: Bearer $LC_JWT" \
-      -d '{"data": "{\"secret\": \"my-secret-value\"}"}'
+      -d 'data={"secret":"my-secret-value"}' \
+      -d 'usr_mtd={"enabled":true}'
     ```
 
 === "Python"
@@ -195,7 +199,11 @@ Using a secret in combination with an output has very few steps:
     client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
     org = Organization(client)
     hive = Hive(org, "secret")
-    record = HiveRecord("my-secret", data={"secret": "my-secret-value"})
+    record = HiveRecord(
+        "my-secret",
+        data={"secret": "my-secret-value"},
+        enabled=True,
+    )
     hive.set(record)
     ```
 
@@ -216,11 +224,13 @@ Using a secret in combination with an output has very few steps:
         org, _ := limacharlie.NewOrganization(client)
         hc := limacharlie.NewHiveClient(org)
 
+        enabled := true
         hc.Add(limacharlie.HiveArgs{
             HiveName:     "secret",
             PartitionKey: "YOUR_OID",
             Key:          "my-secret",
             Data:         limacharlie.Dict{"secret": "my-secret-value"},
+            Enabled:      &enabled,
         })
     }
     ```
@@ -229,7 +239,7 @@ Using a secret in combination with an output has very few steps:
 
     ```bash
     limacharlie secret set --key my-secret \
-      --input-file secret.json
+      --input-file secret.json --enabled
     ```
 
     Where `secret.json` contains:
@@ -241,6 +251,8 @@ Using a secret in combination with an output has very few steps:
         }
     }
     ```
+
+    The `--enabled` flag creates-and-enables the record in one shot. Omit it (and `usr_mtd.enabled` in the file) to leave the secret disabled until you call `limacharlie secret enable --key my-secret`.
 
 ### Delete a Secret
 

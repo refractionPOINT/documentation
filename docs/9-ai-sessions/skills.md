@@ -112,11 +112,13 @@ limacharlie ai-skill list
 # Get one skill (frontmatter, content, and any bundled files).
 limacharlie ai-skill get --key triage-lateral
 
-# Create or replace a skill from a YAML file.
-limacharlie ai-skill set --key triage-lateral --input-file triage.yaml
+# Create or replace a skill from a YAML file. New hive records are
+# disabled by default, so pass --enabled (or include usr_mtd.enabled:
+# true in the file) if you want the skill picked up by AI sessions.
+limacharlie ai-skill set --key triage-lateral --input-file triage.yaml --enabled
 
 # Or pipe it in.
-cat triage.yaml | limacharlie ai-skill set --key triage-lateral
+cat triage.yaml | limacharlie ai-skill set --key triage-lateral --enabled
 
 # Toggle without deleting the record.
 limacharlie ai-skill disable --key triage-lateral
@@ -156,6 +158,8 @@ client = Client(oid="YOUR_OID", api_key="YOUR_API_KEY")
 org = Organization(client)
 hive = Hive(org, "ai_skill")
 
+# enabled=True so the skill is picked up by AI sessions immediately —
+# new hive records are disabled by default.
 hive.set(HiveRecord("triage-lateral", data={
     "content": "...SKILL.md body...",
     "description": "Triage a lateral-movement detection end to end.",
@@ -163,7 +167,7 @@ hive.set(HiveRecord("triage-lateral", data={
     "files": {
         "scripts/check_lateral.sh": "#!/bin/bash\n...\n",
     },
-}))
+}, enabled=True))
 ```
 
 ## Related

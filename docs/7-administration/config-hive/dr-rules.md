@@ -238,9 +238,10 @@ The D&R rules hive is named `dr-general`. Managed rules use `dr-managed`.
 === "CLI"
 
     ```bash
-    limacharlie hive set dr-general --key my-rule --data rule.json
-    # Or use the D&R shortcut:
-    limacharlie dr set --key my-rule --input-file rule.yaml
+    # New rules are created disabled by default. Pass --enabled to
+    # create-and-enable in one shot, or omit and call `dr enable`
+    # afterwards.
+    limacharlie dr set --key my-rule --input-file rule.yaml --enabled
     ```
 
 ### Delete a Rule

@@ -18,6 +18,17 @@ Hive records can be:
 - Managed via the web interface, CLI, or API
 - Version controlled using the Git Sync extension
 
+!!! warning "New records are disabled by default"
+    Every new Hive record — D&R rules, FP rules, secrets, lookups, YARA sources, cloud sensors, AI skills, playbooks, etc. — is created **disabled** unless the request explicitly sets `usr_mtd.enabled: true`. A disabled record is stored normally but is skipped by every consumer that respects the flag (rules don't fire, lookups aren't queried, AI skills aren't enumerated). When debugging "the record exists but nothing happens", check `usr_mtd.enabled` first.
+
+    Enable a record at creation time by either:
+
+    1. Passing `--enabled` on the CLI `set` command (e.g. `limacharlie secret set --key … --input-file … --enabled`).
+    2. Including `usr_mtd.enabled: true` in the request body / input file.
+    3. Setting `enabled=True` (Python SDK) or `Enabled: &enabled` (Go SDK) on the record before calling `set` / `Add`.
+
+    Or call the matching `enable` subcommand after creation (`limacharlie <hive> enable --key …`).
+
 ---
 
 ## See Also
