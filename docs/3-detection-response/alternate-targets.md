@@ -38,9 +38,9 @@ rules:
 
 # Response
 - action: extension request
-  extension name: pagerduty
+  extension name: ext-pagerduty
   extension action: run
-  request:
+  extension request:
     group: '{{ "lc-alerts" }}'
     severity: '{{ "critical" }}'
     component: '{{ "vip-alert" }}'

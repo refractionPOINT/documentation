@@ -1375,11 +1375,12 @@ respond:
       escalation_reason: Detection on VIP endpoint
 
   - action: extension request
-    extension name: pagerduty
+    extension name: ext-pagerduty
     extension action: run
     extension request:
       severity: '{{ "critical" }}'
       summary: '{{ "Alert on VIP endpoint" }}'
+      source: '{{ "limacharlie.io" }}'
 ```
 
 #### Example 6: Alert Threshold Escalation
