@@ -42,6 +42,24 @@ Value: wininet.dll
 
 The above rule would configures the sensor(s) to send *only* `MODULE_LOAD` events where the `FILE_PATH` ends with the value `wininet.dll`.
 
+### Watch Rule Operators
+
+Watch Rules support exactly four operators. The configured `value` is compared **literally** (not as a pattern) against the string at `path` in the event:
+
+| Operator      | Match condition                                                |
+|---------------|----------------------------------------------------------------|
+| `is`          | The field value exactly equals the configured value.            |
+| `contains`    | The configured value appears anywhere in the field value.       |
+| `starts with` | The field value begins with the configured value.               |
+| `ends with`   | The field value ends with the configured value.                 |
+
+Additional behavior to be aware of:
+
+- **No regular expressions, globs, or wildcards.** A value such as `^/Users/[^/]+/(Downloads|Desktop)/` is matched character-for-character — including the `^`, `[`, `(`, etc. — and will not behave as a regex.
+- **Case-insensitive.** Both the configured value and the event field are lowercased before comparison, so `wininet.dll` and `WININET.DLL` match.
+- **String fields only.** Only string-typed event fields are evaluated; numeric fields at the configured `path` are skipped.
+- **Unknown operators are dropped silently.** A Watch Rule whose `operator` is anything other than the four values above will not match any event. Use one of the supported operators above (or combine multiple Watch Rules) to express the condition you need.
+
 > Performance Rules
 >
 > Performance rules, applied via tag to a set of Sensors, are useful for high I/O systems. These rules can be set via the web application or REST API.
