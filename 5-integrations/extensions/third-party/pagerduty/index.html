@@ -8025,6 +8025,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pass-through-parameters-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pass-through parameters block
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#migrating-dr-rule-from-legacy-service-to-new-extension" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12025,6 +12036,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pass-through-parameters-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pass-through parameters block
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#migrating-dr-rule-from-legacy-service-to-new-extension" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12181,16 +12203,94 @@
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">       </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.routing.hostname</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">.routing.sid</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">.cat</span><span class="nv"> </span><span class="s">}}&#39;</span>
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">       </span><span class="nt">details</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.event</span><span class="nv"> </span><span class="s">}}&#39;</span>
 </span></code></pre></div>
+<blockquote>
+<p><strong>Important — wrap literal strings in <code>{{ "..." }}</code>.</strong>
+Values under <code>extension request</code> are evaluated as templates. A bare string without <code>{{ }}</code> is interpreted as a <a href="https://github.com/tidwall/gjson">gjson</a> path against the event and, if it doesn't resolve, the key is silently dropped from the payload. That's why every literal above is written as <code>'{{ "..." }}'</code>. For required fields (<code>summary</code>, <code>source</code>, <code>severity</code>) this matters most — a dropped key will cause the request to be rejected with <code>missing one of &lt;field&gt;</code>.</p>
+</blockquote>
+<h3 id="pass-through-parameters-block">Pass-through <code>parameters</code> block<a class="headerlink" href="#pass-through-parameters-block" title="Anchor link to this section">&para;</a></h3>
+<p>For richer PagerDuty incidents you can supply an optional <code>parameters</code> block alongside the flat fields. Recognized keys are mapped to their proper place in the <a href="https://developer.pagerduty.com/docs/events-api-v2/trigger-events/">V2 event payload</a>; any key that isn't recognized is merged into <code>custom_details</code> so nothing is lost.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Where it goes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>custom_details</code></td>
+<td>object</td>
+<td><code>payload.custom_details</code></td>
+</tr>
+<tr>
+<td><code>links</code></td>
+<td>list of <code>{ href, text }</code></td>
+<td>top-level <code>links</code></td>
+</tr>
+<tr>
+<td><code>images</code></td>
+<td>list</td>
+<td>top-level <code>images</code></td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>string (ISO 8601)</td>
+<td><code>payload.timestamp</code></td>
+</tr>
+<tr>
+<td><code>client</code></td>
+<td>string</td>
+<td>top-level <code>client</code></td>
+</tr>
+<tr>
+<td><code>client_url</code></td>
+<td>string</td>
+<td>top-level <code>client_url</code></td>
+</tr>
+<tr>
+<td><code>dedup_key</code></td>
+<td>string</td>
+<td>top-level <code>dedup_key</code></td>
+</tr>
+</tbody>
+</table>
+<p>Example with a clickable link back to LimaCharlie and a dedup key tied to the detection:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-pagerduty</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">extension request</span><span class="p">:</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;warning&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;limacharlie.io&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.cat</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">.routing.hostname</span><span class="nv"> </span><span class="s">}}</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Threat</span><span class="nv"> </span><span class="s">level</span><span class="nv"> </span><span class="s">{{</span><span class="nv"> </span><span class="s">.detect_mtd.level</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="nt">custom_details</span><span class="p">:</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="nt">oid</span><span class="p">:</span><span class="w">   </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.routing.oid</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="nt">sid</span><span class="p">:</span><span class="w">   </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.routing.sid</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="nt">event</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.detect.event</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">      </span><span class="nt">links</span><span class="p">:</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">href</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.link</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">          </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;Open</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">LimaCharlie&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">      </span><span class="nt">client</span><span class="p">:</span><span class="w">     </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;LimaCharlie&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">      </span><span class="nt">client_url</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.link</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">      </span><span class="nt">dedup_key</span><span class="p">:</span><span class="w">  </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.cat</span><span class="nv"> </span><span class="s">}}-{{</span><span class="nv"> </span><span class="s">.routing.sid</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">  </span><span class="nt">suppression</span><span class="p">:</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="nt">is_global</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="nt">keys</span><span class="p">:</span>
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.cat</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">    </span><span class="nt">max_count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">    </span><span class="nt">period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1h</span>
+</span></code></pre></div>
 <h3 id="migrating-dr-rule-from-legacy-service-to-new-extension">Migrating <abbr title="Detection &amp; Response">D&amp;R</abbr> Rule from legacy Service to new <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr><a class="headerlink" href="#migrating-dr-rule-from-legacy-service-to-new-extension" title="Anchor link to this section">&para;</a></h3>
 <p><strong><em>Note: LimaCharlie has migrated from Services to <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr>. Legacy services are no longer supported.</em></strong></p>
 <p>The <a href="https://github.com/refractionPOINT/python-limacharlie">Python <abbr title="Command-line Interface">CLI</abbr></a> gives you a direct way to assess if any rules reference legacy PagerDuty service, preview the change and execute the conversion required in the rule "response".</p>
 <p>Command line to preview PagerDuty rule conversion:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>limacharlie<span class="w"> </span>extension<span class="w"> </span>convert_rules<span class="w"> </span>--name<span class="w"> </span>ext-pagerduty
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>limacharlie<span class="w"> </span>extension<span class="w"> </span>convert_rules<span class="w"> </span>--name<span class="w"> </span>ext-pagerduty
 </span></code></pre></div>
 <p>A dry-run response (default) will display the rule name being changed, a JSON of the service request rule and a JSON of the incoming extension request change.</p>
 <p>To execute the change in the rule, explicitly set <code>--dry-run</code> flag to <code>--no-dry-run</code></p>
 <p>Command line to execute PagerDuty rule conversion:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>limacharlie<span class="w"> </span>extension<span class="w"> </span>convert_rules<span class="w"> </span>--name<span class="w"> </span>ext-pagerduty<span class="w"> </span>--no-dry-run
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>limacharlie<span class="w"> </span>extension<span class="w"> </span>convert_rules<span class="w"> </span>--name<span class="w"> </span>ext-pagerduty<span class="w"> </span>--no-dry-run
 </span></code></pre></div>
 <p>LimaCharlie <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr>, which are granted specific permissions to interact with their infrastructure. <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.</p>
 <p>In LimaCharlie, an <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.</p>
