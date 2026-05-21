@@ -12675,8 +12675,10 @@ costs associated.</p>
 <p>Once your rule is done and you've evaluated various events for matches, you can move these to <a href="../../unit-tests/"><abbr title="Detection &amp; Response">D&amp;R</abbr> Rules Unit Tests</a> so that the tests are run during rule update.</p>
 <h2 id="publish-rule">Publish Rule<a class="headerlink" href="#publish-rule" title="Anchor link to this section">&para;</a></h2>
 <p>Now is the time to push the new rule to production, the easy part.</p>
-<p>Simply run <code>limacharlie dr set --key T1196 --input-file T1196.rule</code>
-and confirm it is operational by running <code>limacharlie dr list</code>.</p>
+<p>Simply run <code>limacharlie dr set --key T1196 --input-file T1196.rule --enabled</code>
+and confirm it is operational by running <code>limacharlie dr list</code>.
+The <code>--enabled</code> flag creates the rule and enables it in one shot — without
+it the rule is stored disabled and would not fire on matching events.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 

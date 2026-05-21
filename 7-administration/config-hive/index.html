@@ -12021,6 +12021,17 @@
 <li>Managed via the web interface, <abbr title="Command-line Interface">CLI</abbr>, or API</li>
 <li>Version controlled using the Git Sync extension</li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">New records are disabled by default</p>
+<p>Every new Hive record — <abbr title="Detection &amp; Response">D&amp;R</abbr> rules, FP rules, secrets, lookups, YARA sources, cloud sensors, AI skills, playbooks, etc. — is created <strong>disabled</strong> unless the request explicitly sets <code>usr_mtd.enabled: true</code>. A disabled record is stored normally but is skipped by every consumer that respects the flag (rules don't fire, lookups aren't queried, AI skills aren't enumerated). When debugging "the record exists but nothing happens", check <code>usr_mtd.enabled</code> first.</p>
+<p>Enable a record at creation time by either:</p>
+<ol>
+<li>Passing <code>--enabled</code> on the <abbr title="Command-line Interface">CLI</abbr> <code>set</code> command (e.g. <code>limacharlie secret set --key … --input-file … --enabled</code>).</li>
+<li>Including <code>usr_mtd.enabled: true</code> in the request body / input file.</li>
+<li>Setting <code>enabled=True</code> (Python SDK) or <code>Enabled: &amp;enabled</code> (Go SDK) on the record before calling <code>set</code> / <code>Add</code>.</li>
+</ol>
+<p>Or call the matching <code>enable</code> subcommand after creation (<code>limacharlie &lt;hive&gt; enable --key …</code>).</p>
+</div>
 <hr />
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Anchor link to this section">&para;</a></h2>
 <ul>

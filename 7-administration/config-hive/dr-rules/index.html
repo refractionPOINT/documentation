@@ -12562,9 +12562,10 @@ See <a href="../../access/api-keys/">API Keys</a> for setup instructions.</p>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>dr-general<span class="w"> </span>--key<span class="w"> </span>my-rule<span class="w"> </span>--data<span class="w"> </span>rule.json
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># Or use the D&amp;R shortcut:</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>limacharlie<span class="w"> </span>dr<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--key<span class="w"> </span>my-rule<span class="w"> </span>--input-file<span class="w"> </span>rule.yaml
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># New rules are created disabled by default. Pass --enabled to</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># create-and-enable in one shot, or omit and call `dr enable`</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># afterwards.</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>limacharlie<span class="w"> </span>dr<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--key<span class="w"> </span>my-rule<span class="w"> </span>--input-file<span class="w"> </span>rule.yaml<span class="w"> </span>--enabled
 </span></code></pre></div>
 </div>
 </div>
