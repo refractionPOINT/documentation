@@ -231,12 +231,15 @@ Takes a `name` parameter for the platform name. The current platforms are:
 **Security Products:**
 
 - `carbon_black`
+- `cortex_xdr` (Palo Alto Cortex XDR)
 - `crowdstrike`
 - `cylance`
 - `falconcloud`
+- `harmony` (Check Point Harmony)
 - `msdefender` (Microsoft Defender)
 - `sentinel_one`
 - `sophos`
+- `threatlocker`
 - `trend_micro`
 - `trend_worryfree`
 - `wiz`
@@ -251,6 +254,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 
 **IT & Business Services:**
 
+- `halopsa` (HaloPSA)
 - `hubspot`
 - `itglue`
 - `mimecast`
@@ -276,6 +280,7 @@ Takes a `name` parameter for the platform name. The current platforms are:
 - `cef` (Common Event Format)
 - `wel` (Windows Event Log)
 - `mac_unified_logging`
+- `otel` (OpenTelemetry)
 
 **Other:**
 

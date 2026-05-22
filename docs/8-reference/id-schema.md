@@ -100,6 +100,11 @@ The platform is a 32-bit integer (in its hex format) which identifies the exact 
 | 0x2B000000 | 721420288  | wiz                          | Wiz                          |
 | 0x2C000000 | 738197504  | bitwarden                    | Bitwarden                    |
 | 0x2D000000 | 754974720  | trend_micro                  | Trend Micro                  |
+| 0x2E000000 | 771751936  | otel                         | OpenTelemetry                |
+| 0x2F000000 | 788529152  | cortex_xdr                   | Cortex XDR                   |
+| 0x31000000 | 822083584  | harmony                      | Check Point Harmony          |
+| 0x32000000 | 838860800  | threatlocker                 | ThreatLocker                 |
+| 0x33000000 | 855638016  | halopsa                      | HaloPSA                      |
 | 0x10000000 | 268435456  | windows                      | Windows                      |
 | 0x20000000 | 536870912  | linux                        | Linux                        |
 | 0x30000000 | 805306368  | macos                        | MacOS                        |
