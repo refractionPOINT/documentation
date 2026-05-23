@@ -196,6 +196,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Overview](https://docs.limacharlie.io/5-integrations/extensions/third-party/): Third-Party Extensions
 - [Atomic Red Team](https://docs.limacharlie.io/5-integrations/extensions/third-party/atomic-red-team/)
 - [Govee](https://docs.limacharlie.io/5-integrations/extensions/third-party/govee/)
+- [HaloPSA](https://docs.limacharlie.io/5-integrations/extensions/third-party/halopsa/)
 - [Hayabusa](https://docs.limacharlie.io/5-integrations/extensions/third-party/hayabusa/)
 - [NIMS](https://docs.limacharlie.io/5-integrations/extensions/third-party/nims/)
 - [OTX](https://docs.limacharlie.io/5-integrations/extensions/third-party/otx/)
