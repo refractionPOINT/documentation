@@ -42,6 +42,23 @@ Value: wininet.dll
 
 The above rule would configures the sensor(s) to send *only* `MODULE_LOAD` events where the `FILE_PATH` ends with the value `wininet.dll`.
 
+### Watch Rule Fields
+
+When authoring Watch Rules outside of the web UI (REST API, hive, or git-sync), the schema is strict about types. The most common cause of a Watch Rule failing to apply is a scalar where a list is expected.
+
+| Field                | Type                                                        | Required |
+|----------------------|-------------------------------------------------------------|----------|
+| `event`              | string (single event name, e.g. `FILE_CREATE`)              | yes      |
+| `operator`           | enum: `is`, `contains`, `starts with`, `ends with`          | yes      |
+| `value`              | string                                                      | yes      |
+| `path`               | **list** of strings                                         | yes      |
+| `filters.platforms`  | **list** of strings (e.g. `[mac]`, `[windows]`, `[linux]`)  | yes      |
+| `filters.tags`       | **list** of strings                                         | optional |
+
+> Common gotcha
+>
+> `path`, `filters.platforms`, and `filters.tags` must be YAML lists, not bare scalars. `path: FILE_PATH` will fail validation; `path: [FILE_PATH]` (or the multi-line `- FILE_PATH` form) is correct. The same applies for `filters.platforms` and `filters.tags`.
+
 ### Watch Rule Operators
 
 Watch Rules support exactly four operators. The configured `value` is compared **literally** (not as a pattern) against the string at `path` in the event:
@@ -91,6 +108,46 @@ The afterburner mode does not address all possible causes or situations. To help
 4. `NEW_PROCESS`
 
 IR mode is designed to give a balance between recording all events, while maintaining basic D&R rule capabilities.
+
+## Configuration via Hive
+
+In addition to the web UI and the REST actions below, the full Exfil configuration is stored under the `extension_config` hive at the key `ext-exfil` and can be managed via [git-sync](git-sync.md) or directly with the LimaCharlie CLI.
+
+A complete, valid Watch Rule looks like:
+
+```yaml
+exfil_rules:
+  watch:
+    Mac User Downloads File Events:
+      event: FILE_CREATE
+      operator: contains
+      value: /Downloads/
+      path:
+        - FILE_PATH
+      filters:
+        platforms:
+          - mac
+        tags:
+          - file-watch
+```
+
+Note the YAML list form (`-`) used for `path`, `filters.platforms`, and `filters.tags`. See [Watch Rule Fields](#watch-rule-fields) for the full schema.
+
+### Validate Before Pushing
+
+If a hive `set` against `extension_config/ext-exfil` fails or times out without surfacing a clear error, the most likely cause is a schema-validation failure. You can dry-run any config against the live schema before writing it:
+
+```bash
+limacharlie hive validate \
+  --hive-name extension_config \
+  --key ext-exfil \
+  --input-file my-exfil-config.yaml \
+  --output yaml
+```
+
+An empty (`{}`) response means the record is valid and would be accepted by a subsequent `hive set`. Any other output is a description of the validation failure — fix the offending field and re-run `validate` until it returns empty.
+
+`validate` is read-only: it never modifies the stored configuration regardless of the result.
 
 ## Actions via REST API
 
