@@ -8,13 +8,13 @@ The HaloPSA LimaCharlie Extension exposes outbound HaloPSA actions to D&R rules 
 
 ### 1. Create a HaloPSA API application
 
-In HaloPSA, go to **Configuration → Integrations → HaloPSA API → View Applications → New**. Configure the application as follows:
+In HaloPSA, create an API application (under **Configuration → Integrations → HaloPSA API**) and configure it for the OAuth2 `client_credentials` flow:
 
 - **Authentication Method:** Client ID and Secret (Services)
-- **Login Type:** Log on as Agent (pick an agent that the API should impersonate)
+- **Login Type:** Log on as the **Application** (the API acts as itself, not as a specific agent)
 - **Permissions:** grant `read:tickets`, `edit:tickets`, `read:customers`, `edit:customers`, `read:assets`, `edit:assets`, `read:actions`, `edit:actions`
 
-Copy the **Client ID** and **Client Secret** — you will need them in the next step.
+Copy the **Client ID** and **Client Secret** — you will need them in the next step. Refer to HaloPSA's own product documentation for the current UI path; the labels above may differ slightly across HaloPSA versions.
 
 ### 2. Subscribe to the extension
 
@@ -70,7 +70,7 @@ Returns the created ticket, including its assigned `id`.
 
 ### `update_ticket`
 
-Update an existing ticket. Use to change status (which drives HaloPSA status → outcome → workflow transitions), reassign, set priority, or link assets.
+Update an existing ticket. Use to change status (which drives HaloPSA status → outcome → workflow transitions), reassign, set priority, or set the linked assets.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -80,7 +80,7 @@ Update an existing ticket. Use to change status (which drives HaloPSA status →
 | `status_id` | int | New status id. |
 | `agent_id` | int | New assignee. |
 | `priority_id` | int | New priority. |
-| `asset_ids` | list of int | Asset ids to link. |
+| `asset_ids` | list of int | **Replaces** the ticket's asset list. Use `link_asset_to_ticket` to merge a new asset into the existing list. |
 | `customfields` | list of object | Custom fields to set. |
 | `extra` | object | Raw HaloPSA ticket fields to merge. |
 
@@ -149,7 +149,7 @@ Returns `{ "record_count": N, "clients": [...] }` or `{ "record_count": N, "site
 
 ## Detection & Response
 
-Example response action that opens a HaloPSA ticket for a detection and links the affected sensor's hostname as an asset:
+Example response action that opens a HaloPSA ticket for a detection:
 
 ```yaml
 - action: extension request
@@ -162,22 +162,14 @@ Example response action that opens a HaloPSA ticket for a detection and links th
     site_id: 18
     tickettype_id: 1
     priority_id: 3
-
-- action: extension request
-  extension action: link_asset_to_ticket
-  extension name: ext-halopsa
-  extension request:
-    ticket_id: '{{ .extension.id }}'
-    hostname: '{{ .routing.hostname }}'
-    client_id: 12
-    site_id: 18
-    asset_type_id: 111
 ```
 
 > **Wrap literal strings in `{{ "..." }}`.**
 > Values under `extension request` are evaluated as templates. A bare string without `{{ }}` is interpreted as a [gjson](https://github.com/tidwall/gjson) path against the event and, if it doesn't resolve, the key is silently dropped from the payload.
 
-To append triage findings on an existing ticket (for example from an AI agent), use `add_action`:
+`extension request` actions are fire-and-forget — the rule engine does not surface the response back into the rule's evaluation context, so the freshly-created ticket id is not available to a subsequent action in the same rule. Workflows that need to chain (open a ticket, then link an asset, then add a note) belong in a [Playbook](../limacharlie/playbook.md) or an AI agent, which can hold the ticket id between calls.
+
+To append triage findings on an existing ticket (for example from a Playbook or AI agent that already knows the ticket id), use `add_action`:
 
 ```yaml
 - action: extension request
