@@ -6,6 +6,7 @@ Extensions built by third-party developers that integrate external tools and ser
 
 - [Atomic Red Team](atomic-red-team.md) - Adversary simulation testing
 - [Govee](govee.md) - Govee device integration
+- [HaloPSA](halopsa.md) - PSA ticketing and asset management
 - [Hayabusa](hayabusa.md) - Windows event log analysis
 - [NIMS](nims.md) - NIMS integration
 - [OTX](otx.md) - AlienVault OTX threat intelligence

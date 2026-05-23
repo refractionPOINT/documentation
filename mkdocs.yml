@@ -69,6 +69,7 @@ plugins:
         'docs/ext-epp.md': '5-integrations/extensions/limacharlie/epp.md'
         'docs/ext-exfil.md': '5-integrations/extensions/limacharlie/exfil.md'
         'docs/ext-govee.md': '5-integrations/extensions/third-party/govee.md'
+        'docs/ext-halopsa.md': '5-integrations/extensions/third-party/halopsa.md'
         'docs/ext-hayabusa.md': '5-integrations/extensions/third-party/hayabusa.md'
         'docs/ext-infrastructure.md': '5-integrations/extensions/limacharlie/infrastructure.md'
         'docs/ext-integrity.md': '5-integrations/extensions/limacharlie/integrity.md'
@@ -417,6 +418,7 @@ nav:
               - Overview: 5-integrations/extensions/third-party/index.md
               - Atomic Red Team: 5-integrations/extensions/third-party/atomic-red-team.md
               - Govee: 5-integrations/extensions/third-party/govee.md
+              - HaloPSA: 5-integrations/extensions/third-party/halopsa.md
               - Hayabusa: 5-integrations/extensions/third-party/hayabusa.md
               - NIMS: 5-integrations/extensions/third-party/nims.md
               - OTX: 5-integrations/extensions/third-party/otx.md
