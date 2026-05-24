@@ -280,6 +280,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Schedule Events](https://docs.limacharlie.io/8-reference/schedule-events/): Reference: Schedule Events
 - [Event Schemas](https://docs.limacharlie.io/8-reference/event-schemas/)
 - [Sensor Selectors](https://docs.limacharlie.io/8-reference/sensor-selector-expressions/): Reference: Sensor Selector Expressions
+- [Story Tags](https://docs.limacharlie.io/8-reference/story-tags/): Story Tag Namespace (`lc:story:*`)
 - [ID Schema](https://docs.limacharlie.io/8-reference/id-schema/): Reference: ID Schema
 - [Permissions](https://docs.limacharlie.io/8-reference/permissions/): Reference: Permissions
 - [Error Codes](https://docs.limacharlie.io/8-reference/error-codes/): Reference: Error Codes
