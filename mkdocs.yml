@@ -508,6 +508,7 @@ nav:
       - Schedule Events: 8-reference/schedule-events.md
       - Event Schemas: 8-reference/event-schemas.md
       - Sensor Selectors: 8-reference/sensor-selector-expressions.md
+      - Story Tags: 8-reference/story-tags.md
       - ID Schema: 8-reference/id-schema.md
       - Permissions: 8-reference/permissions.md
       - Error Codes: 8-reference/error-codes.md
