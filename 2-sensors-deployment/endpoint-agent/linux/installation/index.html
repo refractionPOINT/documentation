@@ -1768,6 +1768,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#rpm-based-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RPM-based Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -12295,6 +12306,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#rpm-based-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RPM-based Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -12514,8 +12536,13 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>remove<span class="w"> </span>limacharlie
 </span></code></pre></div>
 <p>Uninstall stops the service and removes the sensor binary, identity files, and the package staging directory.</p>
+<p>RPM packages are offered for the architectures the Linux sensor supports, like:</p>
+<ul>
+<li><strong>x64</strong>: <a href="https://downloads.limacharlie.io/sensor/linux/rpm64">https://downloads.limacharlie.io/sensor/linux/rpm64</a></li>
+<li><strong>arm64</strong>: <a href="https://downloads.limacharlie.io/sensor/linux/rpmarm64">https://downloads.limacharlie.io/sensor/linux/rpmarm64</a></li>
+</ul>
 <h3 id="custom-installation">Custom Installation<a class="headerlink" href="#custom-installation" title="Anchor link to this section">&para;</a></h3>
-<p>For non-Debian systems, download the installer using the following command:</p>
+<p>For systems where neither the <code>.deb</code> nor the <code>.rpm</code> package fits (e.g. distributions without <code>dpkg</code> or <code>rpm</code>, or installs that need a non-standard layout), download the installer directly using the following command:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">downloads</span><span class="o">.</span><span class="n">limacharlie</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">sensor</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="mi">64</span> <span class="o">-</span><span class="n">O</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">lc_sensor</span>
 </span></code></pre></div>
 <blockquote>
@@ -12539,7 +12566,7 @@ You can invoke it like this:</p>
 <p>By default, when running on a kernel where eBPF is unavailable, the Linux sensor uses the netlink proc connector (<code>CN_PROC</code>) to receive real-time process events. In some rare configurations this auto-detection may be unwanted — for example when another agent on the host already consumes the same connector — and netlink usage can be disabled by setting the environment variable <code>DISABLE_NETLINK</code> to any value on the sensor process. With netlink disabled and no eBPF available, the agent falls back to user-mode <code>/proc</code> polling. This setting has no effect when eBPF is the active acquisition path.</p>
 <h2 id="uninstalling-the-agent">Uninstalling the Agent<a class="headerlink" href="#uninstalling-the-agent" title="Anchor link to this section">&para;</a></h2>
 <p>For additional agent uninstall options, see <a href="../../uninstallation/"><abbr title="Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.">Endpoint Agent</abbr> Uninstallation</a></p>
-<p>Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (<code>dpkg</code> file), you should uninstall via the same mechanism. If you installed via the SystemV installation method, please utilize the bottom of <a href="https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97">this script</a>.</p>
+<p>Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (<code>dpkg</code> file) or an RPM package (<code>rpm</code> / <code>dnf</code> / <code>yum</code>), you should uninstall via the same package manager. If you installed via the SystemV installation method, please utilize the bottom of <a href="https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97">this script</a>.</p>
 <h3 id="sensor-command"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Command<a class="headerlink" href="#sensor-command" title="Anchor link to this section">&para;</a></h3>
 <p>The <code>uninstall</code> command does not work for Linux systems. However, there is a chained command that can be run from the <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Console:</p>
 <div class="language-powershell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a> <span class="n">run</span> <span class="p">-</span><span class="n">-shell-command</span> <span class="s2">&quot;service limacharlie stop; rm /bin/rphcp; update-rc.d limacharlie remove -f; rm -rf /etc/init.d/limacharlie; rm /etc/hcp ; rm /etc/hcp_conf; rm /etc/hcp_hbs&quot;</span>
@@ -12548,6 +12575,13 @@ You can invoke it like this:</p>
 <h3 id="debian-systems">Debian Systems<a class="headerlink" href="#debian-systems" title="Anchor link to this section">&para;</a></h3>
 <p>If the sensor was originally installed with the .deb file, this option is the cleanest uninstall method.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>apt<span class="w"> </span>remove<span class="w"> </span>limacharlie
+</span></code></pre></div>
+<h3 id="rpm-based-systems">RPM-based Systems<a class="headerlink" href="#rpm-based-systems" title="Anchor link to this section">&para;</a></h3>
+<p>If the sensor was originally installed with the .rpm file, use the matching package manager:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>remove<span class="w"> </span>limacharlie
+</span></code></pre></div>
+<p>or</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>sudo<span class="w"> </span>rpm<span class="w"> </span>-e<span class="w"> </span>limacharlie
 </span></code></pre></div>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
