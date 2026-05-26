@@ -110,6 +110,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [macOS Unified Logs](https://docs.limacharlie.io/2-sensors-deployment/tutorials/macos-unified-logs/): Ingesting MacOS Unified Logs
 - [Test Sensor Version](https://docs.limacharlie.io/2-sensors-deployment/tutorials/test-sensor-version/): Test a New Sensor Version
 - [Update Sensors](https://docs.limacharlie.io/2-sensors-deployment/tutorials/update-sensors/): Updating Sensors to the Newest Version
+- [Viberails Deployment (MSSP)](https://docs.limacharlie.io/2-sensors-deployment/tutorials/viberails-mssp-deployment/): Deploying Viberails at Scale via Payloads (MSSP Guide)
 
 ## Detection & Response
 
