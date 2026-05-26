@@ -324,6 +324,7 @@ nav:
           - macOS Unified Logs: 2-sensors-deployment/tutorials/macos-unified-logs.md
           - Test Sensor Version: 2-sensors-deployment/tutorials/test-sensor-version.md
           - Update Sensors: 2-sensors-deployment/tutorials/update-sensors.md
+          - Viberails Deployment (MSSP): 2-sensors-deployment/tutorials/viberails-mssp-deployment.md
 
   - Detection & Response:
       - Overview: 3-detection-response/index.md
