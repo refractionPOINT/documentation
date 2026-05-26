@@ -131,9 +131,14 @@ sudo dnf remove limacharlie
 
 Uninstall stops the service and removes the sensor binary, identity files, and the package staging directory.
 
+RPM packages are offered for the architectures the Linux sensor supports, like:
+
+- **x64**: <https://downloads.limacharlie.io/sensor/linux/rpm64>
+- **arm64**: <https://downloads.limacharlie.io/sensor/linux/rpmarm64>
+
 ### Custom Installation
 
-For non-Debian systems, download the installer using the following command:
+For systems where neither the `.deb` nor the `.rpm` package fits (e.g. distributions without `dpkg` or `rpm`, or installs that need a non-standard layout), download the installer directly using the following command:
 
 ```python
 wget https://downloads.limacharlie.io/sensor/linux/64 -O /tmp/lc_sensor
@@ -170,7 +175,7 @@ By default, when running on a kernel where eBPF is unavailable, the Linux sensor
 
 For additional agent uninstall options, see [Endpoint Agent Uninstallation](../uninstallation.md)
 
-Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (`dpkg` file), you should uninstall via the same mechanism. If you installed via the SystemV installation method, please utilize the bottom of [this script](https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97).
+Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (`dpkg` file) or an RPM package (`rpm` / `dnf` / `yum`), you should uninstall via the same package manager. If you installed via the SystemV installation method, please utilize the bottom of [this script](https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97).
 
 ### Sensor Command
 
@@ -188,4 +193,18 @@ If the sensor was originally installed with the .deb file, this option is the cl
 
 ```bash
 apt remove limacharlie
+```
+
+### RPM-based Systems
+
+If the sensor was originally installed with the .rpm file, use the matching package manager:
+
+```bash
+sudo dnf remove limacharlie
+```
+
+or
+
+```bash
+sudo rpm -e limacharlie
 ```
