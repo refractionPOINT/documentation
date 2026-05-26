@@ -40,7 +40,7 @@ Every segment that isn't a fixed keyword has a strict regex:
 | `TARGET_NAME` | `^[a-z0-9][a-z0-9_.-]{0,127}$`     | Same as `STORY_NAME` plus `.` (covers Hive record keys with dots).   |
 | `LABEL_SLUG`  | `^[a-z0-9][a-z0-9_-]{0,63}$`       | Same as `STORY_NAME`. Rendered with `-` and `_` turned into spaces. |
 
-Tags that violate any gate are **silently dropped** by the assembler — they never produce phantom nodes or edges. This matches the [`lc:asset:*`](asset-tags.md) convention: malformed metadata must never show up in a dashboard.
+Tags that violate any gate are **silently dropped** by the assembler — they never produce phantom nodes or edges. This matches the [`lc:asset:*`](../2-sensors-deployment/asset-tags.md) convention: malformed metadata must never show up in a dashboard.
 
 ### Canonical type slugs
 
