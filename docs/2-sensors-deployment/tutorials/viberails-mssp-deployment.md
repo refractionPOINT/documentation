@@ -59,8 +59,11 @@ Pick a tag that identifies machines where AI coding assistants are used. We will
 You can tag manually from the Sensors view, with the CLI, or automatically based on installed software. A common pattern is to add the tag at install time via the [installation key](../installation-keys.md), so any new developer workstation enrolling under that key inherits the tag.
 
 ```bash
-# Example: tag an existing sensor
-limacharlie sensors tag --sid <SENSOR_ID> --tag viberails-deploy --oid <OID>
+# Tag a single sensor
+limacharlie --oid <OID> tag add --sid <SENSOR_ID> --tag viberails-deploy
+
+# Or tag every sensor matching a selector — see `limacharlie tag mass-add --help`
+limacharlie --oid <OID> tag mass-add --selector 'plat == windows and "developer" in tags' --tag viberails-deploy
 ```
 
 See [Sensor Tags](../sensor-tags.md) for the full mechanics.
@@ -81,8 +84,11 @@ curl -fsSL -o viberails-windows-x64.exe https://get.viberails.io/viberails-windo
 for f in viberails-linux-x64 viberails-linux-arm64 \
          viberails-macos-x64 viberails-macos-arm64 \
          viberails-windows-x64.exe; do
-  limacharlie payload create --name "$f" --file "./$f" --oid <OID>
+  limacharlie --oid <OID> payload upload --name "$f" --file "./$f"
 done
+
+# Also upload the Windows PowerShell helper (defined in Step 3).
+limacharlie --oid <OID> payload upload --name viberails-install.ps1 --file ./viberails-install.ps1
 ```
 
 !!! tip "Naming"
@@ -116,32 +122,58 @@ detect:
     - op: is tagged
       tag: viberails-deploy
 respond:
+  # 1. Drop the viberails binary.
   - action: task
     command: put --payload-name viberails-windows-x64.exe --payload-path "C:\Windows\Temp\viberails.exe"
   - action: wait
     duration: 10s
-  # Run as the interactively logged-on user. PsExec/RunAs-equivalent behavior
-  # is needed because hooks must land in the developer's profile, not SYSTEM's.
-  # The scheduled task approach below uses the Interactive group token of
-  # whoever is currently signed in.
+  # 2. Drop a small PowerShell helper that does the user-context dance.
+  #    Upload this once as a payload named `viberails-install.ps1` (see below).
   - action: task
-    command: >
-      run --shell-command
-      "schtasks /Create /F /SC ONCE /ST 00:00 /TN VRInstall
-       /TR \"cmd /c C:\\Windows\\Temp\\viberails.exe join-team <YOUR_TEAM_URL>
-       && C:\\Windows\\Temp\\viberails.exe install --providers all\"
-       /RU INTERACTIVE && schtasks /Run /TN VRInstall"
+    command: put --payload-name viberails-install.ps1 --payload-path "C:\Windows\Temp\viberails-install.ps1"
+  - action: wait
+    duration: 5s
+  # 3. Run the helper as SYSTEM; the helper itself launches viberails in the
+  #    interactive user's session.
+  - action: task
+    command: run --shell-command "powershell -ExecutionPolicy Bypass -File C:\Windows\Temp\viberails-install.ps1 -TeamUrl <YOUR_TEAM_URL>"
   - action: wait
     duration: 60s
   - action: task
-    command: run --shell-command "schtasks /Delete /F /TN VRInstall"
-  - action: task
     command: file_del "C:\Windows\Temp\viberails.exe"
+  - action: task
+    command: file_del "C:\Windows\Temp\viberails-install.ps1"
   - action: remove tag
     tag: viberails-deploy
   - action: add tag
     tag: viberails-installed
 ```
+
+The PowerShell helper (`viberails-install.ps1`) — upload once as a payload alongside the binaries:
+
+```powershell
+param([Parameter(Mandatory = $true)][string]$TeamUrl)
+
+# Find the active console user by querying the explorer.exe owner.
+$explorer = Get-CimInstance Win32_Process -Filter "Name='explorer.exe'" |
+    Select-Object -First 1
+if (-not $explorer) {
+    Write-Error "No interactive user signed in; aborting viberails install."
+    exit 1
+}
+$owner = Invoke-CimMethod -InputObject $explorer -MethodName GetOwner
+$runAs = "$($owner.Domain)\$($owner.User)"
+
+# Create a one-shot task that runs viberails as the interactive user and
+# self-deletes after the run. /Z deletes the task after completion.
+$cmd = "C:\Windows\Temp\viberails.exe join-team `"$TeamUrl`" && " +
+       "C:\Windows\Temp\viberails.exe install --providers all"
+schtasks /Create /F /TN VRInstall /SC ONCE /ST 00:00 /Z `
+    /RU "$runAs" /IT /TR "cmd /c $cmd"
+schtasks /Run /TN VRInstall
+```
+
+`/IT` makes the task run only when the named user is signed in, and `/Z` deletes the task definition once it completes. Sign and review this script before deploying it across customer orgs.
 
 ### macOS
 
@@ -161,13 +193,14 @@ respond:
     duration: 10s
   - action: task
     command: run --shell-command "chmod +x /var/tmp/viberails"
+  # USER/UID are read-only in bash, so use TARGET_USER/TARGET_UID.
   - action: task
     command: >
       run --shell-command
-      "USER=$(stat -f%Su /dev/console);
-       UID=$(id -u $USER);
-       launchctl asuser $UID sudo -u $USER -H /var/tmp/viberails join-team <YOUR_TEAM_URL>;
-       launchctl asuser $UID sudo -u $USER -H /var/tmp/viberails install --providers all"
+      "TARGET_USER=$(stat -f%Su /dev/console);
+       TARGET_UID=$(id -u $TARGET_USER);
+       launchctl asuser $TARGET_UID sudo -u $TARGET_USER -H /var/tmp/viberails join-team <YOUR_TEAM_URL>;
+       launchctl asuser $TARGET_UID sudo -u $TARGET_USER -H /var/tmp/viberails install --providers all"
   - action: wait
     duration: 30s
   - action: task
@@ -178,7 +211,7 @@ respond:
     tag: viberails-installed
 ```
 
-For Intel hardware, swap `viberails-macos-arm64` for `viberails-macos-x64`. If you have a mixed fleet, split the rule by architecture using `op: is arch`.
+For Intel hardware, swap `viberails-macos-arm64` for `viberails-macos-x64`. If you have a mixed fleet, use two tags (`viberails-deploy-arm`, `viberails-deploy-x64`) applied per host so each rule picks the right payload — there is no `is arch` operator in D&R rules, so architecture must be encoded in the tag (or in the selector at tag-time via `limacharlie tag mass-add --selector 'arch == arm64 and ...'`).
 
 ### Linux
 
@@ -198,12 +231,15 @@ respond:
     duration: 10s
   - action: task
     command: run --shell-command "chmod +x /tmp/viberails"
+  # USER is read-only in bash, so use TARGET_USER. `who` returns one row per
+  # active login session; this picks the first, which is fine for typical
+  # single-developer workstations but should be revisited for multi-user hosts.
   - action: task
     command: >
       run --shell-command
-      "USER=$(who | awk 'NR==1{print $1}');
-       sudo -u $USER -H /tmp/viberails join-team <YOUR_TEAM_URL>;
-       sudo -u $USER -H /tmp/viberails install --providers all"
+      "TARGET_USER=$(who | awk 'NR==1{print $1}');
+       sudo -u $TARGET_USER -H /tmp/viberails join-team <YOUR_TEAM_URL>;
+       sudo -u $TARGET_USER -H /tmp/viberails install --providers all"
   - action: wait
     duration: 30s
   - action: task
@@ -215,7 +251,7 @@ respond:
 ```
 
 !!! warning "User-context matters"
-    Viberails stores its configuration under the **developer's** home directory (`~/.config/viberails/`) and installs hooks into per-tool config files there (`~/.claude/`, `~/.cursor/`, etc.). The endpoint agent runs payloads as `root`/`SYSTEM`, so the rules above explicitly drop privileges to the interactively signed-in user. Running Viberails as `root`/`SYSTEM` would install hooks for that account and leave the developer untouched.
+    Viberails stores its configuration in the **developer's** home directory — `~/.config/viberails/` on Linux, `~/Library/Application Support/viberails/` on macOS, `%APPDATA%\viberails\` on Windows — and installs hooks into per-tool config files there (`~/.claude/`, `~/.cursor/`, etc.). The binary lands at `~/.local/bin/viberails` on every platform. The endpoint agent runs payloads as `root`/`SYSTEM`, so the rules above explicitly drop privileges to the interactively signed-in user. Running Viberails as `root`/`SYSTEM` would install hooks for that account and leave the developer untouched.
 
     If no user is signed in when the rule fires, the install will fail. The simplest workaround is to fire on a different trigger that implies a user is present, or to leave the `viberails-deploy` tag in place until the rule sees a logged-in user and successfully completes.
 
@@ -232,11 +268,11 @@ See [Designing Access for MSSPs](../../7-administration/access/designing-access.
 
 For each newly tagged endpoint, confirm the install succeeded:
 
-1. **Receipt in the sensor timeline.** Look for `RECEIPT` events corresponding to each `run` task. The exit code should be 0 and STDOUT should contain `Joined team successfully!` followed by `Hooks installed`.
+1. **Task results in the sensor timeline.** Each `put` task produces a [`RECEIPT`](../../8-reference/edr-events.md#receipt) event; each `run --shell-command` produces an `EXEC_OOB` event (macOS/Linux) and an audit entry on Windows. Confirm there are no errors. Viberails itself prints `Joined team successfully!` and `Hooks installed successfully!` to STDOUT when invoked correctly.
 2. **Tag rotation.** The sensor should now carry `viberails-installed` and no longer carry `viberails-deploy`.
-3. **Viberails events flowing.** In the Viberails team's LimaCharlie organization, watch for the first audit events from that machine the next time a developer uses one of the supported AI coding tools.
+3. **Viberails events flowing.** The Viberails team URL is itself a LimaCharlie hook URL (`https://<id>.hook.limacharlie.io/<oid>/<adapter>/<secret>`), so audit events land in the LimaCharlie organization identified by the `<oid>` segment of that URL. Watch its timeline for the first events the next time a developer uses one of the supported AI coding tools.
 
-If verification fails, enable Viberails debug logging on the affected machine and inspect `~/.local/share/viberails/debug/` (Linux/macOS) or `%LOCALAPPDATA%\viberails\debug\` (Windows). See [Viberails Troubleshooting](https://github.com/refractionPOINT/viberails#troubleshooting).
+If verification fails, enable Viberails debug logging on the affected machine and inspect the debug directory: `~/.local/share/viberails/debug/` on Linux, `~/Library/Application Support/viberails/debug/` on macOS, `%LOCALAPPDATA%\viberails\debug\` on Windows. See [Viberails Troubleshooting](https://github.com/refractionPOINT/viberails#troubleshooting).
 
 ## Updating Viberails on the fleet
 
