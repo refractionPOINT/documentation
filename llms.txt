@@ -73,6 +73,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Sophos](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sophos/)
 - [Carbon Black](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/carbon-black/): VMWare Carbon Black
 - [Sublime Security](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/sublime-security/)
+- [ThreatLocker](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/threatlocker/)
 - [Microsoft 365](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-365/)
 - [Slack Audit](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/slack-audit-logs/): Slack Audit Logs
 - [Google Workspace](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/google-workspace/)
@@ -206,6 +207,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Renigma](https://docs.limacharlie.io/5-integrations/extensions/third-party/renigma/)
 - [SecureAnnex](https://docs.limacharlie.io/5-integrations/extensions/third-party/secureannex/): Secure Annex
 - [Strelka](https://docs.limacharlie.io/5-integrations/extensions/third-party/strelka/)
+- [ThreatLocker](https://docs.limacharlie.io/5-integrations/extensions/third-party/threatlocker/)
 - [Twilio](https://docs.limacharlie.io/5-integrations/extensions/third-party/twilio/)
 - [Velociraptor](https://docs.limacharlie.io/5-integrations/extensions/third-party/velociraptor/)
 - [YARA](https://docs.limacharlie.io/5-integrations/extensions/third-party/yara/)
