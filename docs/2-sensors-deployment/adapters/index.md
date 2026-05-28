@@ -34,6 +34,7 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 - [SentinelOne](types/sentinelone.md)
 - [Sophos](types/sophos.md)
 - [Carbon Black](types/carbon-black.md)
+- [ThreatLocker](types/threatlocker.md)
 
 ### Generic Formats
 

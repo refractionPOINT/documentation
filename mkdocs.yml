@@ -83,6 +83,7 @@ plugins:
         'docs/ext-secureannex.md': '5-integrations/extensions/third-party/secureannex.md'
         'docs/ext-sensor-cull.md': '5-integrations/extensions/limacharlie/sensor-cull.md'
         'docs/ext-strelka.md': '5-integrations/extensions/third-party/strelka.md'
+        'docs/ext-threatlocker.md': '5-integrations/extensions/third-party/threatlocker.md'
         'docs/ext-twilio.md': '5-integrations/extensions/third-party/twilio.md'
         'docs/ext-usage-alerts.md': '5-integrations/extensions/limacharlie/usage-alerts.md'
         'docs/ext-velociraptor.md': '5-integrations/extensions/third-party/velociraptor.md'
@@ -279,6 +280,7 @@ nav:
               - Sophos: 2-sensors-deployment/adapters/types/sophos.md
               - Carbon Black: 2-sensors-deployment/adapters/types/carbon-black.md
               - Sublime Security: 2-sensors-deployment/adapters/types/sublime-security.md
+              - ThreatLocker: 2-sensors-deployment/adapters/types/threatlocker.md
           - Collaboration:
               - Microsoft 365: 2-sensors-deployment/adapters/types/microsoft-365.md
               - Slack Audit: 2-sensors-deployment/adapters/types/slack-audit-logs.md
@@ -428,6 +430,7 @@ nav:
               - Renigma: 5-integrations/extensions/third-party/renigma.md
               - SecureAnnex: 5-integrations/extensions/third-party/secureannex.md
               - Strelka: 5-integrations/extensions/third-party/strelka.md
+              - ThreatLocker: 5-integrations/extensions/third-party/threatlocker.md
               - Twilio: 5-integrations/extensions/third-party/twilio.md
               - Velociraptor: 5-integrations/extensions/third-party/velociraptor.md
               - YARA: 5-integrations/extensions/third-party/yara.md
