@@ -23,7 +23,7 @@ Adapter Type: `threatlocker`
 
 | Key | Required | Description |
 | --- | --- | --- |
-| `api_key` | yes | ThreatLocker API token (see [Authentication](#authentication) below). Sent verbatim in the `Authorization` header — no `Bearer ` prefix. |
+| `api_key` | yes | ThreatLocker API token (see [Authentication](#authentication) below). Sent verbatim in the `Authorization` header — no `Bearer` prefix. |
 | `instance` | yes* | ThreatLocker instance letter (`b`, `c`, …, `g`, `h`, …). *Required unless `base_url` is set. |
 | `base_url` | no | Full API root override, e.g. `https://portalapi.g.threatlocker.com/portalapi`. Use to point the adapter at a non-standard endpoint; otherwise prefer `instance`. |
 | `managed_organization_id` | no | UUID of the managed (child) organization. Sent as the `managedOrganizationId` header — used by MSP **parent** tokens to scope every request to a specific child tenant. |
@@ -64,7 +64,7 @@ With no `feeds` configured, the adapter polls three feeds that together cover Th
 
 ## Authentication
 
-Create an API token under **Portal → Administration → API Users** in the ThreatLocker Portal. The token is sent verbatim in the `Authorization` header — there is no `Bearer ` prefix and no OAuth handshake.
+Create an API token under **Portal → Administration → API Users** in the ThreatLocker Portal. The token is sent verbatim in the `Authorization` header — there is no `Bearer` prefix and no OAuth handshake.
 
 ### Finding your instance
 

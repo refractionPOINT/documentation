@@ -34,7 +34,7 @@ In **Extensions → ext-threatlocker → Configuration**, fill in:
 | `instance_letter` | yes | The single lowercase letter from step 2, e.g. `g`. |
 | `managed_organization_id` | no | UUID of the managed (child) organization. Sent as the `ManagedOrganizationId` header. Used by MSP **parent** tokens to scope every call to a specific child tenant. |
 
-The API token is sent **verbatim** in the `Authorization` header — there is no `Bearer ` prefix and no OAuth flow. The instance letter is validated at save time; everything else is rejected at request time by the Portal API.
+The API token is sent **verbatim** in the `Authorization` header — there is no `Bearer` prefix and no OAuth flow. The instance letter is validated at save time; everything else is rejected at request time by the Portal API.
 
 ## Actions
 
@@ -194,7 +194,7 @@ Example response action that enriches a ThreatLocker approval-request event deli
 
 ## Authentication and tenancy
 
-- The Portal API token is sent **verbatim** in the `Authorization` header — there is no `Bearer ` prefix. Do not paste the token with a prefix; the API will reject it.
+- The Portal API token is sent **verbatim** in the `Authorization` header — there is no `Bearer` prefix. Do not paste the token with a prefix; the API will reject it.
 - The token is scoped to the instance that minted it. `403 TOKEN_REVOKED` means either the token was revoked **or** the wrong `instance_letter` was configured. Verify the instance letter first.
 - For **MSPs**, a single parent-tenant token can be used to drive multiple child organizations by setting `managed_organization_id` to the child organization's UUID. The header `ManagedOrganizationId` is then attached to every request and the Portal scopes the response accordingly — one extension subscription per parent tenant, not per child.
 
