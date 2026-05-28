@@ -15,6 +15,7 @@ Extensions built by third-party developers that integrate external tools and ser
 - [Renigma](renigma.md) - Renigma integration
 - [SecureAnnex](secureannex.md) - SecureAnnex integration
 - [Strelka](strelka.md) - File analysis with Strelka
+- [ThreatLocker](threatlocker.md) - ThreatLocker Application Control approval workflow
 - [Twilio](twilio.md) - SMS and voice notifications
 - [Velociraptor](velociraptor.md) - DFIR artifact collection
 - [YARA](yara.md) - YARA rule scanning
