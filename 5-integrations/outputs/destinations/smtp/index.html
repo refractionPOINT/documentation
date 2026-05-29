@@ -12273,7 +12273,9 @@
 <p>Output individually each event, detection, audit, deployment or log through an email.</p>
 <ul>
 <li><code>dest_host</code>: the IP or DNS (and optionally port) of the SMTP server to use to send the email.</li>
-<li><code>dest_email</code>: the email address to send the email to.</li>
+<li><code>dest_email</code>: one or more email addresses to send the email to. Multiple addresses can be provided comma-separated (for example <code>soc@corp.com, oncall@corp.com</code>), and display names are supported (for example <code>SOC &lt;soc@corp.com&gt;</code>). Every address receives a copy and appears in the <code>To:</code> header.</li>
+<li><code>cc_email</code>: (optional) one or more comma-separated email addresses to add to the <code>Cc:</code> header. Each receives a copy.</li>
+<li><code>bcc_email</code>: (optional) one or more comma-separated email addresses to copy without exposing them in the message headers (blind copy).</li>
 <li><code>from_email</code>: the email address set in the From field.</li>
 <li><code>username</code>: the username (if any) used to authenticate to the SMTP server.</li>
 <li><code>password</code>: the password (if any) used to authenticate to the SMTP server.</li>
@@ -12295,6 +12297,18 @@
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>is_authlogin: false
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>subject: LC Detection- &lt;Name&gt;
 </span></code></pre></div>
+<p>Example sending to multiple recipients with <code>Cc</code> and <code>Bcc</code>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>dest_host: smtp.gmail.com
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>dest_email: soc@corp.com, oncall@corp.com
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>cc_email: manager@corp.com
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>bcc_email: audit@corp.com
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>from_email: lc@corp.com
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>secret_key: this-is-my-secret-shared-key
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>is_readable: true
+</span></code></pre></div>
+<blockquote>
+<p>Note: recipients in <code>dest_email</code> and <code>cc_email</code> appear in the message headers, so they can see each other. Use <code>bcc_email</code> for recipients who should receive a copy without being visible to the others. A malformed address in any of these fields will cause the output to fail validation when it is saved.</p>
+</blockquote>
 <h2 id="related-articles">Related articles<a class="headerlink" href="#related-articles" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li><a href="../../../../2-sensors-deployment/adapters/types/imap/">IMAP</a></li>
