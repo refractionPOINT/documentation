@@ -11,7 +11,7 @@ The HaloPSA LimaCharlie Extension exposes outbound HaloPSA actions to D&R rules 
 In HaloPSA, create an API application (under **Configuration → Integrations → HaloPSA API**) and configure it for the OAuth2 `client_credentials` flow:
 
 - **Authentication Method:** Client ID and Secret (Services)
-- **Login Type:** Log on as the **Application** (the API acts as itself, not as a specific agent)
+- **Login Type:** Log on as **Agent** — pick the HaloPSA agent that should own the tickets, actions, and assets this extension creates. HaloPSA has no "Application" login type; every API request is attributed to an agent identity.
 - **Permissions:** grant `edit:tickets`, `edit:assets`, `read:customers`
 
 These three scopes are the verified least-privilege set for the six actions below:
