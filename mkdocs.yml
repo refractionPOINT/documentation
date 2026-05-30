@@ -504,6 +504,7 @@ nav:
 
   - Reference:
       - Overview: 8-reference/index.md
+      - Topic Index for Automation & AI: index-for-ai.md
       - Endpoint Commands: 8-reference/endpoint-commands.md
       - Detection Operators: 8-reference/detection-logic-operators.md
       - Response Actions: 8-reference/response-actions.md

@@ -60,6 +60,66 @@ The body field set per endpoint is **not shadowed** by the extension — the Por
 | --- | --- | --- |
 | `id` | string | **Required.** `approvalRequestId` (UUID). |
 
+#### Response shape
+
+No request or response transformation is performed, so an automation reads the Portal response as-is. The extension returns the Portal payload under a top-level `data` key. For the **search/list** read (`approval_request_search`) `data` is an **array** of approval-request records; for the single-id read (`approval_request_get`) `data` is a single record object. An empty array (`"data": []`) on a search means **no matching requests** — it is a successful, empty result, **not** an error.
+
+```json
+{
+  "data": [
+    {
+      "approvalRequestId": "<uuid>",
+      "statusId": 1,
+      "hostname": "<hostname>",
+      "username": "<domain\\user>",
+      "requestorEmailAddress": "<email>",
+      "requestorReason": "<base64-encoded reason>",
+      "computerId": "<uuid>",
+      "organizationId": "<uuid>",
+      "path": "<full path on the endpoint>",
+      "dateTime": "<ISO-8601 timestamp>",
+      "threatLockerActionDto": {
+        "actionType": "<action type>",
+        "sha256": "<hex sha-256>",
+        "fullPath": "<full path>",
+        "certs": ["<certificate>"],
+        "osType": 1,
+        "processName": "<process name>"
+      }
+    }
+  ]
+}
+```
+
+Salient fields an automation typically needs:
+
+| Field | Notes |
+| --- | --- |
+| `approvalRequestId` | Request UUID — pass to `approval_request_get` and the decision actions. |
+| `statusId` | Request state. `1` = pending. |
+| `hostname` | Endpoint that raised the request. |
+| `username` | The requesting user. |
+| `requestorEmailAddress` | Email of the requestor. |
+| `requestorReason` | The requestor's justification, **base64-encoded** — decode before display. |
+| `computerId` | Computer UUID — resolve device context via `computer_get`. |
+| `organizationId` | ThreatLocker organization UUID the request belongs to. |
+| `path` | Full path of the binary on the endpoint. |
+| `dateTime` | When the request was raised. |
+| `threatLockerActionDto` | Nested object describing the blocked action (see below). |
+
+The nested `threatLockerActionDto` object carries the file/action detail an enrichment call needs:
+
+| Field | Notes |
+| --- | --- |
+| `actionType` | The action that was blocked. |
+| `sha256` | SHA-256 of the file — the primary key for `application_get_matching`. |
+| `fullPath` | Full path of the file. |
+| `certs` | Array of code-signing certificate identities. |
+| `osType` | OS type (`1` = Windows, `2` = Mac, `3` = Linux). |
+| `processName` | Name of the process. |
+
+> Field names and the exact set returned per endpoint are defined by ThreatLocker and may change over time. The authoritative reference is the ThreatLocker Portal Swagger spec (visit `https://portalapi.<instance>.threatlocker.com/swagger`). The fields above are the well-known ones an approval-request automation depends on; the response may carry additional fields not listed here.
+
 ### Application reads
 
 #### `application_get_matching`
