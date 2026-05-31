@@ -2367,6 +2367,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#discovering-adapter-types-and-finding-an-adapters-sensor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovering adapter types and finding an adapter's sensor
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -12399,6 +12410,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#discovering-adapter-types-and-finding-an-adapters-sensor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovering adapter types and finding an adapter's sensor
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -12908,15 +12930,29 @@ Namely:</p>
 <h3 id="sensor-ids"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> IDs<a class="headerlink" href="#sensor-ids" title="Anchor link to this section">&para;</a></h3>
 <p>USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (<abbr title="In LimaCharlie, a Sensor ID (SID) is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for...">SID</abbr>) is generated based on the <abbr title="In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry,...">Organization ID</abbr> (<abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr>) and the <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Seed Key.</p>
 <p>This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same <abbr title="In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all...">OID</abbr> and <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Seed Key, the generated SIDs will be stable despite the IID change.</p>
+<h3 id="discovering-adapter-types-and-finding-an-adapters-sensor">Discovering adapter types and finding an adapter's sensor<a class="headerlink" href="#discovering-adapter-types-and-finding-an-adapters-sensor" title="Anchor link to this section">&para;</a></h3>
+<p>The <abbr title="Command-line Interface">CLI</abbr> can enumerate the supported adapter types, describe their configuration schema, and locate the sensor an adapter produced. These commands work for both <code>cloud-adapter</code> (the hosted set) and <code>external-adapter</code> (the on-prem set); the examples below use <code>cloud-adapter</code>.</p>
+<p>List the supported adapter/sensor type names:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>limacharlie<span class="w"> </span>cloud-adapter<span class="w"> </span>list-types
+</span></code></pre></div>
+<p>Note that <code>external-adapter list-types</code> lists the on-prem set, which differs from the cloud set.</p>
+<p>Show the configuration field listing for one adapter type. This indicates where each field lives (for example, <code>hostname</code> under <code>client_options</code>). Add <code>--output json</code> for the raw schema:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>limacharlie<span class="w"> </span>cloud-adapter<span class="w"> </span>schema<span class="w"> </span>--type<span class="w"> </span>&lt;t&gt;
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>limacharlie<span class="w"> </span>cloud-adapter<span class="w"> </span>schema<span class="w"> </span>--type<span class="w"> </span>&lt;t&gt;<span class="w"> </span>--output<span class="w"> </span>json
+</span></code></pre></div>
+<p>Find the live sensor(s) an adapter produced, matched by installation-key IID:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>limacharlie<span class="w"> </span>cloud-adapter<span class="w"> </span>sensors<span class="w"> </span>--key<span class="w"> </span>&lt;adapter-record&gt;
+</span></code></pre></div>
+<p>An empty result means the adapter has not delivered any events yet; the sensor materializes on the first event.</p>
 <h2 id="validating-configurations">Validating Configurations<a class="headerlink" href="#validating-configurations" title="Anchor link to this section">&para;</a></h2>
 <p>Before deploying an adapter to production, you can validate your configuration and test parsing rules to ensure data will be correctly ingested.</p>
 <h3 id="validating-adapter-configuration">Validating <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Configuration<a class="headerlink" href="#validating-adapter-configuration" title="Anchor link to this section">&para;</a></h3>
 <p>The adapter binary supports a <code>--validate</code> flag that checks your configuration without actually starting the adapter:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Validate a YAML config file</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>./lc_adapter<span class="w"> </span>--validate<span class="w"> </span>syslog<span class="w"> </span>config.yaml
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># Validate CLI parameters</span>
-</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>./lc_adapter<span class="w"> </span>--validate<span class="w"> </span>wel<span class="w"> </span><span class="nv">evt_sources</span><span class="o">=</span>Security,System<span class="w"> </span>client_options.identity.oid<span class="o">=</span>...<span class="w"> </span>client_options.identity.installation_key<span class="o">=</span>...<span class="w"> </span>client_options.platform<span class="o">=</span>wel
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Validate a YAML config file</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>./lc_adapter<span class="w"> </span>--validate<span class="w"> </span>syslog<span class="w"> </span>config.yaml
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Validate CLI parameters</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>./lc_adapter<span class="w"> </span>--validate<span class="w"> </span>wel<span class="w"> </span><span class="nv">evt_sources</span><span class="o">=</span>Security,System<span class="w"> </span>client_options.identity.oid<span class="o">=</span>...<span class="w"> </span>client_options.identity.installation_key<span class="o">=</span>...<span class="w"> </span>client_options.platform<span class="o">=</span>wel
 </span></code></pre></div>
 <p>This will:</p>
 <ol>
@@ -12931,8 +12967,8 @@ Namely:</p>
 </ul>
 <h3 id="testing-parsing-with-sample-data">Testing Parsing with Sample Data<a class="headerlink" href="#testing-parsing-with-sample-data" title="Anchor link to this section">&para;</a></h3>
 <p>The adapter also supports a <code>--test-parsing</code> flag that sends sample data to the LimaCharlie validation API to verify your parsing rules work correctly:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Test parsing with a sample log file</span>
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>./lc_adapter<span class="w"> </span>--test-parsing<span class="w"> </span>sample.log<span class="w"> </span>syslog<span class="w"> </span>config.yaml
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Test parsing with a sample log file</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>./lc_adapter<span class="w"> </span>--test-parsing<span class="w"> </span>sample.log<span class="w"> </span>syslog<span class="w"> </span>config.yaml
 </span></code></pre></div>
 <p>This will:</p>
 <ol>
@@ -12947,59 +12983,59 @@ Namely:</p>
 <li><code>1</code>: Parsing failed (API errors) or no events were parsed</li>
 </ul>
 <p>Example successful output:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>starting
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>loading config from file: config.yaml
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>found 1 configs to run
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>testing parsing with platform=text
-</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>PARSING SUCCESSFUL
-</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
-</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>Parsed 3 event(s):
-</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>
-</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>Event 1:
-</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>  {
-</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>    &quot;event_type&quot;: &quot;INFO&quot;,
-</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>    &quot;hostname&quot;: &quot;server01&quot;,
-</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>    &quot;json_payload&quot;: {
-</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>      &quot;hostname&quot;: &quot;server01&quot;,
-</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>      &quot;level&quot;: &quot;INFO&quot;,
-</span><span id="__span-20-16"><a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>      &quot;message&quot;: &quot;User login successful&quot;
-</span><span id="__span-20-17"><a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>    }
-</span><span id="__span-20-18"><a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>  }
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>starting
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>loading config from file: config.yaml
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>found 1 configs to run
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>testing parsing with platform=text
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>PARSING SUCCESSFUL
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>Parsed 3 event(s):
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>Event 1:
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>  {
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>    &quot;event_type&quot;: &quot;INFO&quot;,
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>    &quot;hostname&quot;: &quot;server01&quot;,
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>    &quot;json_payload&quot;: {
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>      &quot;hostname&quot;: &quot;server01&quot;,
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a>      &quot;level&quot;: &quot;INFO&quot;,
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a>      &quot;message&quot;: &quot;User login successful&quot;
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a>    }
+</span><span id="__span-23-18"><a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a>  }
 </span></code></pre></div>
 <p>Example error output when no events are parsed (e.g., regex doesn't match):</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>starting
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>loading config from file: config.yaml
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>found 1 configs to run
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>testing parsing with platform=text
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>PARSING FAILED
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>WARNING: No events were parsed from the sample data.
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>This usually indicates one of the following issues:
-</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>  - The parsing_re regex does not match the input format
-</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>  - The platform type does not match the data format
-</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>  - The sample data is empty or contains only whitespace
-</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>
-</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>Suggestions:
-</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>  - Verify your parsing_re regex matches the sample data
-</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>  - Check that the platform matches your data format (text, json, cef, etc.)
-</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>  - Ensure the sample file contains valid log data
-</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>parsing test failed: no events parsed from sample data
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>starting
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>loading config from file: config.yaml
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>found 1 configs to run
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>testing parsing with platform=text
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>PARSING FAILED
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>WARNING: No events were parsed from the sample data.
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>This usually indicates one of the following issues:
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>  - The parsing_re regex does not match the input format
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a>  - The platform type does not match the data format
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a>  - The sample data is empty or contains only whitespace
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a>Suggestions:
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a>  - Verify your parsing_re regex matches the sample data
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a>  - Check that the platform matches your data format (text, json, cef, etc.)
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a>  - Ensure the sample file contains valid log data
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a>parsing test failed: no events parsed from sample data
 </span></code></pre></div>
 <p><strong>Note</strong>: The config must contain a valid API key (not just an installation key) in <code>client_options.identity.installation_key</code> for API authentication.</p>
 <h3 id="testing-parsing-via-python-cli">Testing Parsing via Python <abbr title="Command-line Interface">CLI</abbr><a class="headerlink" href="#testing-parsing-via-python-cli" title="Anchor link to this section">&para;</a></h3>
 <p>You can also test parsing using the LimaCharlie Python <abbr title="Command-line Interface">CLI</abbr>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Validate with a text file containing sample logs</span>
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>text<span class="w"> </span>--mapping-file<span class="w"> </span>mapping.yaml<span class="w"> </span>--input-file<span class="w"> </span>sample.log
-</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
-</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># Validate CEF parsing with inline sample data</span>
-</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>cef<span class="w"> </span>--mapping-file<span class="w"> </span>cef-mapping.yaml<span class="w"> </span>--input<span class="w"> </span><span class="s2">&quot;CEF:0|Security|threatmanager|1.0|100|worm|10|src=192.168.1.1&quot;</span>
-</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>
-</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="c1"># Validate JSON parsing</span>
-</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>json<span class="w"> </span>--mapping-file<span class="w"> </span>mapping.yaml<span class="w"> </span>--input-file<span class="w"> </span>sample.json<span class="w"> </span>--json-input
-</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>
-</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="c1"># Output parsed events as JSON for inspection</span>
-</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>text<span class="w"> </span>--mapping-file<span class="w"> </span>mapping.yaml<span class="w"> </span>--input-file<span class="w"> </span>sample.log<span class="w"> </span>--output-format<span class="w"> </span>json
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Validate with a text file containing sample logs</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>text<span class="w"> </span>--mapping-file<span class="w"> </span>mapping.yaml<span class="w"> </span>--input-file<span class="w"> </span>sample.log
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="c1"># Validate CEF parsing with inline sample data</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>cef<span class="w"> </span>--mapping-file<span class="w"> </span>cef-mapping.yaml<span class="w"> </span>--input<span class="w"> </span><span class="s2">&quot;CEF:0|Security|threatmanager|1.0|100|worm|10|src=192.168.1.1&quot;</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="c1"># Validate JSON parsing</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>json<span class="w"> </span>--mapping-file<span class="w"> </span>mapping.yaml<span class="w"> </span>--input-file<span class="w"> </span>sample.json<span class="w"> </span>--json-input
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="c1"># Output parsed events as JSON for inspection</span>
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>limacharlie<span class="w"> </span>usp<span class="w"> </span>validate<span class="w"> </span>--platform<span class="w"> </span>text<span class="w"> </span>--mapping-file<span class="w"> </span>mapping.yaml<span class="w"> </span>--input-file<span class="w"> </span>sample.log<span class="w"> </span>--output-format<span class="w"> </span>json
 </span></code></pre></div>
 <p>The validation API processes your sample data through the actual parsing engine and returns:</p>
 <ul>
@@ -13045,22 +13081,22 @@ Namely:</p>
 </table>
 <h3 id="sdk-validation">SDK Validation<a class="headerlink" href="#sdk-validation" title="Anchor link to this section">&para;</a></h3>
 <p>For programmatic validation, the Python SDK provides the <code>validateUSP</code> method:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie</span><span class="w"> </span><span class="kn">import</span> <span class="n">Manager</span>
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">()</span>
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="n">result</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">validateUSP</span><span class="p">(</span>
-</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="n">platform</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span>
-</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span>
-</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>        <span class="s1">&#39;parsing_re&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;timestamp&gt;\S+) (?P&lt;message&gt;.*)&#39;</span><span class="p">,</span>
-</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>        <span class="s1">&#39;event_type_path&#39;</span><span class="p">:</span> <span class="s1">&#39;event_type&#39;</span>
-</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>    <span class="p">},</span>
-</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>    <span class="n">text_input</span><span class="o">=</span><span class="s1">&#39;2024-01-01T12:00:00Z Test message</span><span class="se">\n</span><span class="s1">2024-01-01T12:00:01Z Another message&#39;</span>
-</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="p">)</span>
-</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>
-</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;errors&#39;</span><span class="p">):</span>
-</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Validation failed:&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;errors&#39;</span><span class="p">])</span>
-</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="k">else</span><span class="p">:</span>
-</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Parsed events:&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">])</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">limacharlie</span><span class="w"> </span><span class="kn">import</span> <span class="n">Manager</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">()</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="n">result</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">validateUSP</span><span class="p">(</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>    <span class="n">platform</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>    <span class="n">mapping</span><span class="o">=</span><span class="p">{</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>        <span class="s1">&#39;parsing_re&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;(?P&lt;timestamp&gt;\S+) (?P&lt;message&gt;.*)&#39;</span><span class="p">,</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>        <span class="s1">&#39;event_type_path&#39;</span><span class="p">:</span> <span class="s1">&#39;event_type&#39;</span>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>    <span class="p">},</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>    <span class="n">text_input</span><span class="o">=</span><span class="s1">&#39;2024-01-01T12:00:00Z Test message</span><span class="se">\n</span><span class="s1">2024-01-01T12:00:01Z Another message&#39;</span>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a><span class="p">)</span>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a>
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a><span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;errors&#39;</span><span class="p">):</span>
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Validation failed:&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;errors&#39;</span><span class="p">])</span>
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a><span class="k">else</span><span class="p">:</span>
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Parsed events:&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">])</span>
 </span></code></pre></div>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
