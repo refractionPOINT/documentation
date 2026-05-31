@@ -215,7 +215,7 @@ Similar to agents, Sensors send telemetry to the LimaCharlie platform in the for
     limacharlie api-key create --name <name> --permissions "..." --store-secret <secret-name> [--store-secret-tag <tag>]
     ```
 
-    This creates the key and writes its value to `hive://secret/<secret-name>`. The value is shown only once at creation, so storing it directly avoids having to capture and re-pipe it. If a secret with that name already exists, it is updated in place via its etag.
+    This creates the key and writes its value to `hive://secret/<secret-name>`. The value is shown only once at creation, so storing it directly avoids having to capture and re-pipe it. If a secret with that name already exists, it is updated in place via its etag. The identity running this command needs the `secret.set` permission (to write the secret) in addition to the permission to create API keys.
 
 ### Delete an API Key
 
