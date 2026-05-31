@@ -405,6 +405,33 @@ USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SI
 
 This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same OID and Sensor Seed Key, the generated SIDs will be stable despite the IID change.
 
+### Discovering adapter types and finding an adapter's sensor
+
+The CLI can enumerate the supported adapter types, describe their configuration schema, and locate the sensor an adapter produced. These commands work for both `cloud-adapter` (the hosted set) and `external-adapter` (the on-prem set); the examples below use `cloud-adapter`.
+
+List the supported adapter/sensor type names:
+
+```bash
+limacharlie cloud-adapter list-types
+```
+
+Note that `external-adapter list-types` lists the on-prem set, which differs from the cloud set.
+
+Show the configuration field listing for one adapter type. This indicates where each field lives (for example, `hostname` under `client_options`). Add `--output json` for the raw schema:
+
+```bash
+limacharlie cloud-adapter schema --type <t>
+limacharlie cloud-adapter schema --type <t> --output json
+```
+
+Find the live sensor(s) an adapter produced, matched by installation-key IID:
+
+```bash
+limacharlie cloud-adapter sensors --key <adapter-record>
+```
+
+An empty result means the adapter has not delivered any events yet; the sensor materializes on the first event.
+
 ## Validating Configurations
 
 Before deploying an adapter to production, you can validate your configuration and test parsing rules to ensure data will be correctly ingested.
