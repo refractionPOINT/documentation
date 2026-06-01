@@ -11,8 +11,16 @@ The HaloPSA LimaCharlie Extension exposes outbound HaloPSA actions to D&R rules 
 In HaloPSA, create an API application (under **Configuration → Integrations → HaloPSA API**) and configure it for the OAuth2 `client_credentials` flow:
 
 - **Authentication Method:** Client ID and Secret (Services)
-- **Login Type:** Log on as the **Application** (the API acts as itself, not as a specific agent)
-- **Permissions:** grant `read:tickets`, `edit:tickets`, `read:customers`, `edit:customers`, `read:assets`, `edit:assets`, `read:actions`, `edit:actions`
+- **Login Type:** Log on as **Agent** — pick the HaloPSA agent that should own the tickets, actions, and assets this extension creates.
+- **Permissions:** grant `edit:tickets`, `edit:assets`, `read:customers`
+
+These three scopes are the verified least-privilege set for the six actions below:
+
+- `edit:tickets` covers `create_ticket`, `update_ticket`, `search_tickets`, and `add_action`. Actions are a HaloPSA ticket sub-resource — there is no separate `read:actions` or `edit:actions` scope (the HaloPSA token endpoint rejects them as `invalid_scope`).
+- `edit:assets` covers asset lookup and the create-if-missing path in `link_asset_to_ticket`.
+- `read:customers` covers `lookup_client_site` for both clients *and* sites (sites are a customer sub-resource). The extension never writes clients or sites, so `edit:customers` is not required.
+
+If you'd rather not enumerate scopes, the extension's default of `all` also works.
 
 Copy the **Client ID** and **Client Secret** — you will need them in the next step. Refer to HaloPSA's own product documentation for the current UI path; the labels above may differ slightly across HaloPSA versions.
 
