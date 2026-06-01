@@ -12534,9 +12534,16 @@
 <p>In HaloPSA, create an API application (under <strong>Configuration → Integrations → HaloPSA API</strong>) and configure it for the OAuth2 <code>client_credentials</code> flow:</p>
 <ul>
 <li><strong>Authentication Method:</strong> Client ID and Secret (Services)</li>
-<li><strong>Login Type:</strong> Log on as the <strong>Application</strong> (the API acts as itself, not as a specific agent)</li>
-<li><strong>Permissions:</strong> grant <code>read:tickets</code>, <code>edit:tickets</code>, <code>read:customers</code>, <code>edit:customers</code>, <code>read:assets</code>, <code>edit:assets</code>, <code>read:actions</code>, <code>edit:actions</code></li>
+<li><strong>Login Type:</strong> Log on as <strong>Agent</strong> — pick the HaloPSA agent that should own the tickets, actions, and assets this extension creates.</li>
+<li><strong>Permissions:</strong> grant <code>edit:tickets</code>, <code>edit:assets</code>, <code>read:customers</code></li>
 </ul>
+<p>These three scopes are the verified least-privilege set for the six actions below:</p>
+<ul>
+<li><code>edit:tickets</code> covers <code>create_ticket</code>, <code>update_ticket</code>, <code>search_tickets</code>, and <code>add_action</code>. Actions are a HaloPSA ticket sub-resource — there is no separate <code>read:actions</code> or <code>edit:actions</code> scope (the HaloPSA token endpoint rejects them as <code>invalid_scope</code>).</li>
+<li><code>edit:assets</code> covers asset lookup and the create-if-missing path in <code>link_asset_to_ticket</code>.</li>
+<li><code>read:customers</code> covers <code>lookup_client_site</code> for both clients <em>and</em> sites (sites are a customer sub-resource). The extension never writes clients or sites, so <code>edit:customers</code> is not required.</li>
+</ul>
+<p>If you'd rather not enumerate scopes, the extension's default of <code>all</code> also works.</p>
 <p>Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> — you will need them in the next step. Refer to HaloPSA's own product documentation for the current UI path; the labels above may differ slightly across HaloPSA versions.</p>
 <h3 id="2-subscribe-to-the-extension">2. Subscribe to the extension<a class="headerlink" href="#2-subscribe-to-the-extension" title="Anchor link to this section">&para;</a></h3>
 <p>Subscribe to <code>ext-halopsa</code> from the LimaCharlie <strong>Marketplace</strong> (<abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> → Add-Ons).</p>
