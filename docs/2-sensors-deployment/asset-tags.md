@@ -1,6 +1,6 @@
 # Asset Tag Namespace (`lc:asset:*`)
 
-`lc:asset:*` is a reserved sensor-tag namespace for marking endpoints with structured asset metadata — criticality, network exposure, environment, owner, and compliance regimes. It is a convention layered on top of [Sensor Tags](sensor-tags.md): there is no separate field on the sensor model, no migration to run, and no per-surface schema to extend. Any LimaCharlie surface that needs asset context (Vulnerabilities, D&R, Cases, Search, Query Console, Outputs, etc.) reads the same tags and gets a consistent view.
+`lc:asset:*` is a reserved sensor-tag namespace for marking endpoints with structured asset metadata — criticality, network exposure, environment, owner, compliance regimes, and OS. It is a convention layered on top of [Sensor Tags](sensor-tags.md): there is no separate field on the sensor model, no migration to run, and no per-surface schema to extend. Any LimaCharlie surface that needs asset context (Vulnerabilities, D&R, Cases, Search, Query Console, Outputs, etc.) reads the same tags and gets a consistent view.
 
 The first consumer of the namespace is the [Vulnerability Reporting extension](../5-integrations/extensions/limacharlie/vulnerability-reporting.md), which uses `lc:asset:criticality:*` to drive risk scoring and SLA windows. Other surfaces will adopt the same parser as they need asset context.
 
@@ -16,7 +16,7 @@ Adding a new sensor-model field for asset metadata would require schema changes,
 
 ## Schema
 
-The namespace defines five tag prefixes. The value follows the prefix as a third colon-separated segment.
+The namespace defines six tag prefixes. The value follows the prefix as a third colon-separated segment.
 
 | Tag | Values | Cardinality | Purpose |
 |---|---|---|---|
@@ -25,6 +25,7 @@ The namespace defines five tag prefixes. The value follows the prefix as a third
 | `lc:asset:env:<v>` | `prod`, `staging`, `dev`, `test` | Singleton | Environment for filtering and suppression scoping. |
 | `lc:asset:owner:<v>` | Free text | Singleton | Routing target for assignment / paging (e.g. a team name, an email, a Slack handle). |
 | `lc:asset:compliance:<v>` | Free text (e.g. `pci`, `hipaa`, `sox`, `gdpr`) | Multi-value | Compliance regimes the asset is subject to. A sensor can carry several at once. |
+| `lc:asset:os:<distro>-<release>` | Free text (e.g. `debian-11`, `redhat-enterprise-9`) | Singleton | Linux distribution and release. Lets the [Vulnerability Reporting extension](../5-integrations/extensions/limacharlie/vulnerability-reporting.md#linux-distro-aware-matching) apply distro backport data so backported security fixes aren't flagged as vulnerable. Split on the **last** `-`. |
 
 ### Validation rules
 
@@ -48,6 +49,7 @@ limacharlie tag add --sid SENSOR_ID --tag lc:asset:exposure:internet-facing
 limacharlie tag add --sid SENSOR_ID --tag lc:asset:env:prod
 limacharlie tag add --sid SENSOR_ID --tag lc:asset:owner:platform-team
 limacharlie tag add --sid SENSOR_ID --tag lc:asset:compliance:pci
+limacharlie tag add --sid SENSOR_ID --tag lc:asset:os:debian-11
 ```
 
 ### Tag a fleet by selector
