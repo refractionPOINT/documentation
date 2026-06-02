@@ -12443,7 +12443,7 @@
 
 
 <h1 id="asset-tag-namespace-lcasset">Asset <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr> Namespace (<code>lc:asset:*</code>)<a class="headerlink" href="#asset-tag-namespace-lcasset" title="Anchor link to this section">&para;</a></h1>
-<p><code>lc:asset:*</code> is a reserved sensor-tag namespace for marking endpoints with structured asset metadata — criticality, network exposure, environment, owner, and compliance regimes. It is a convention layered on top of <a href="../sensor-tags/"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr></a>: there is no separate field on the sensor model, no migration to run, and no per-surface schema to extend. Any LimaCharlie surface that needs asset context (Vulnerabilities, <abbr title="Detection &amp; Response">D&amp;R</abbr>, Cases, Search, Query Console, Outputs, etc.) reads the same tags and gets a consistent view.</p>
+<p><code>lc:asset:*</code> is a reserved sensor-tag namespace for marking endpoints with structured asset metadata — criticality, network exposure, environment, owner, compliance regimes, and OS. It is a convention layered on top of <a href="../sensor-tags/"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr></a>: there is no separate field on the sensor model, no migration to run, and no per-surface schema to extend. Any LimaCharlie surface that needs asset context (Vulnerabilities, <abbr title="Detection &amp; Response">D&amp;R</abbr>, Cases, Search, Query Console, Outputs, etc.) reads the same tags and gets a consistent view.</p>
 <p>The first consumer of the namespace is the <a href="../../5-integrations/extensions/limacharlie/vulnerability-reporting/">Vulnerability Reporting extension</a>, which uses <code>lc:asset:criticality:*</code> to drive risk scoring and SLA windows. Other surfaces will adopt the same parser as they need asset context.</p>
 <h2 id="why-tags">Why tags<a class="headerlink" href="#why-tags" title="Anchor link to this section">&para;</a></h2>
 <p>LimaCharlie tags are already the cross-cutting metadata mechanism for sensors:</p>
@@ -12454,7 +12454,7 @@
 </ul>
 <p>Adding a new sensor-model field for asset metadata would require schema changes, per-surface adoption, and a separate write path. A tag convention sidesteps all of that: every surface that already understands tags inherits the new metadata for free.</p>
 <h2 id="schema">Schema<a class="headerlink" href="#schema" title="Anchor link to this section">&para;</a></h2>
-<p>The namespace defines five tag prefixes. The value follows the prefix as a third colon-separated segment.</p>
+<p>The namespace defines six tag prefixes. The value follows the prefix as a third colon-separated segment.</p>
 <table>
 <thead>
 <tr>
@@ -12495,6 +12495,12 @@
 <td>Multi-value</td>
 <td>Compliance regimes the asset is subject to. A sensor can carry several at once.</td>
 </tr>
+<tr>
+<td><code>lc:asset:os:&lt;distro&gt;-&lt;release&gt;</code></td>
+<td>Free text (e.g. <code>debian-11</code>, <code>redhat-enterprise-9</code>)</td>
+<td>Singleton</td>
+<td>Linux distribution and release. Lets the <a href="../../5-integrations/extensions/limacharlie/vulnerability-reporting/#linux-distro-aware-matching">Vulnerability Reporting extension</a> apply distro backport data so backported security fixes aren't flagged as vulnerable. Split on the <strong>last</strong> <code>-</code>.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="validation-rules">Validation rules<a class="headerlink" href="#validation-rules" title="Anchor link to this section">&para;</a></h3>
@@ -12510,6 +12516,7 @@
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>limacharlie<span class="w"> </span>tag<span class="w"> </span>add<span class="w"> </span>--sid<span class="w"> </span>SENSOR_ID<span class="w"> </span>--tag<span class="w"> </span>lc:asset:env:prod
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>limacharlie<span class="w"> </span>tag<span class="w"> </span>add<span class="w"> </span>--sid<span class="w"> </span>SENSOR_ID<span class="w"> </span>--tag<span class="w"> </span>lc:asset:owner:platform-team
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>limacharlie<span class="w"> </span>tag<span class="w"> </span>add<span class="w"> </span>--sid<span class="w"> </span>SENSOR_ID<span class="w"> </span>--tag<span class="w"> </span>lc:asset:compliance:pci
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>limacharlie<span class="w"> </span>tag<span class="w"> </span>add<span class="w"> </span>--sid<span class="w"> </span>SENSOR_ID<span class="w"> </span>--tag<span class="w"> </span>lc:asset:os:debian-11
 </span></code></pre></div>
 <h3 id="tag-a-fleet-by-selector"><abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr> a fleet by selector<a class="headerlink" href="#tag-a-fleet-by-selector" title="Anchor link to this section">&para;</a></h3>
 <p>Mass-tagging is the practical path for any non-trivial environment. The selector uses <a href="../../8-reference/sensor-selector-expressions/">sensor selector expressions</a>.</p>
