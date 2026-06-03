@@ -27,25 +27,25 @@ The adapter needs read access to the target mailbox through the Gmail API. Choos
 
 Best when you want to monitor one user's mailbox and that user can complete a consent screen once.
 
-**Step 1 — Create a Google Cloud project and enable the Gmail API**
+#### Step 1 — Create a Google Cloud project and enable the Gmail API
 
 1. In the [Google Cloud Console](https://console.cloud.google.com/), create (or select) a project.
 2. Go to **APIs & Services → Library**, search for **Gmail API**, and click **Enable**.
 
-**Step 2 — Configure the OAuth consent screen**
+#### Step 2 — Configure the OAuth consent screen
 
 1. Go to **APIs & Services → OAuth consent screen**.
 2. Pick **Internal** (recommended, if the project belongs to your Workspace org) or **External**.
 3. Add the scope `https://www.googleapis.com/auth/gmail.readonly`.
 4. If you chose **External**, add the mailbox owner as a **Test user**.
 
-**Step 3 — Create an OAuth client**
+#### Step 3 — Create an OAuth client
 
 1. Go to **APIs & Services → Credentials → Create Credentials → OAuth client ID**.
 2. Choose application type **Desktop app** (or **Web application** if you prefer to run the code flow yourself).
 3. Record the generated **Client ID** and **Client secret**.
 
-**Step 4 — Obtain a refresh token**
+#### Step 4 — Obtain a refresh token
 
 The simplest path is the [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground):
 
@@ -59,15 +59,17 @@ You now have the three values the adapter needs: **client id**, **client secret*
 
 Best for monitoring a Workspace mailbox without per-user consent. This mode is **required for `collect_delegates`**.
 
-**Step 1 — Enable the Gmail API** in a Google Cloud project (as in Mode 1, Step 1).
+#### Step 1 — Enable the Gmail API
 
-**Step 2 — Create a service account and key**
+Enable the Gmail API in a Google Cloud project, as in Mode 1, Step 1.
+
+#### Step 2 — Create a service account and key
 
 1. Go to **APIs & Services → Credentials → Create Credentials → Service account**.
 2. Once created, open the service account → **Keys → Add key → Create new key → JSON**, and download the key file. Keep it secret.
 3. On the service account's **Details** page, note its numeric **Client ID** (the "Unique ID").
 
-**Step 3 — Authorize domain-wide delegation in the Workspace Admin console**
+#### Step 3 — Authorize domain-wide delegation in the Workspace Admin console
 
 1. In the [Workspace Admin console](https://admin.google.com/), go to **Security → Access and data control → API controls → Domain-wide delegation**.
 2. Click **Add new** and enter:
