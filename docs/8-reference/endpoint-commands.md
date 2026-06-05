@@ -1049,6 +1049,29 @@ limacharlie sensor task <SID> reg_list --reg_path "HKEY_LOCAL_MACHINE\\SOFTWARE\
 
 ---
 
+### reg_get
+
+Fetch a single named value from a Windows registry key. Complements `reg_list`, which enumerates a whole key.
+
+> **Note:** Added in sensor version 5.3.0.
+
+**Platforms:** Windows
+
+**Parameters:**
+
+- `reg_path` (required): Registry path to read from (e.g., "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run")
+- `value_name` (optional): Name of the value to fetch; omit for the key's default (unnamed) value
+
+**Response Event:** REGISTRY_GET_REP
+
+**Usage Example:**
+
+```bash
+limacharlie sensor task <SID> reg_get --reg_path "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run" --value_name "OneDrive"
+```
+
+---
+
 ### epp_scan
 
 Trigger an Endpoint Protection (EPP) scan on a file or directory.
