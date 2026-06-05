@@ -281,6 +281,7 @@ nav:
               - Carbon Black: 2-sensors-deployment/adapters/types/carbon-black.md
               - Sublime Security: 2-sensors-deployment/adapters/types/sublime-security.md
               - ThreatLocker: 2-sensors-deployment/adapters/types/threatlocker.md
+              - Wiz: 2-sensors-deployment/adapters/types/wiz.md
           - Collaboration:
               - Microsoft 365: 2-sensors-deployment/adapters/types/microsoft-365.md
               - Slack Audit: 2-sensors-deployment/adapters/types/slack-audit-logs.md
