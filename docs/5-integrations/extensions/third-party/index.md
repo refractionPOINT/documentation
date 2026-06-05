@@ -14,6 +14,7 @@ Extensions built by third-party developers that integrate external tools and ser
 - [Plaso](plaso.md) - Timeline analysis with Plaso
 - [Renigma](renigma.md) - Renigma integration
 - [SecureAnnex](secureannex.md) - SecureAnnex integration
+- [ServiceNow](servicenow.md) - ITSM ticketing, CMDB and Case mirroring
 - [Strelka](strelka.md) - File analysis with Strelka
 - [ThreatLocker](threatlocker.md) - ThreatLocker Application Control approval workflow
 - [Twilio](twilio.md) - SMS and voice notifications
