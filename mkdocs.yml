@@ -82,6 +82,7 @@ plugins:
         'docs/ext-renigma.md': '5-integrations/extensions/third-party/renigma.md'
         'docs/ext-secureannex.md': '5-integrations/extensions/third-party/secureannex.md'
         'docs/ext-sensor-cull.md': '5-integrations/extensions/limacharlie/sensor-cull.md'
+        'docs/ext-sentinelone.md': '5-integrations/extensions/third-party/sentinelone.md'
         'docs/ext-strelka.md': '5-integrations/extensions/third-party/strelka.md'
         'docs/ext-threatlocker.md': '5-integrations/extensions/third-party/threatlocker.md'
         'docs/ext-twilio.md': '5-integrations/extensions/third-party/twilio.md'
@@ -429,6 +430,7 @@ nav:
               - Plaso: 5-integrations/extensions/third-party/plaso.md
               - Renigma: 5-integrations/extensions/third-party/renigma.md
               - SecureAnnex: 5-integrations/extensions/third-party/secureannex.md
+              - SentinelOne: 5-integrations/extensions/third-party/sentinelone.md
               - Strelka: 5-integrations/extensions/third-party/strelka.md
               - ThreatLocker: 5-integrations/extensions/third-party/threatlocker.md
               - Twilio: 5-integrations/extensions/third-party/twilio.md
