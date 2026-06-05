@@ -272,6 +272,7 @@ nav:
               - Microsoft Entra ID: 2-sensors-deployment/adapters/types/microsoft-entra-id.md
               - Duo: 2-sensors-deployment/adapters/types/duo.md
               - 1Password: 2-sensors-deployment/adapters/types/1password.md
+              - Bitwarden: 2-sensors-deployment/adapters/types/bitwarden.md
           - Security Tools:
               - Check Point Harmony: 2-sensors-deployment/adapters/types/checkpoint-harmony.md
               - CrowdStrike: 2-sensors-deployment/adapters/types/crowdstrike.md
