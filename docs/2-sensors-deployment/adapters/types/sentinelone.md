@@ -2,6 +2,8 @@
 
 This Adapter allows you to stream SentinelOne activities, threats, and alerts to LimaCharlie via SentinelOne API.
 
+It pairs naturally with the [SentinelOne extension](../../../5-integrations/extensions/third-party/sentinelone.md): this adapter delivers SentinelOne telemetry into LimaCharlie, and the extension provides the write-back actions an AI agent (or a Playbook) calls to isolate endpoints, mitigate threats, set verdicts, and blocklist hashes.
+
 ## Deployment Configurations
 
 All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
