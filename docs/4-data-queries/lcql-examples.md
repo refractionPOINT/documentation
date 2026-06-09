@@ -106,6 +106,44 @@ When ingested with EDR telemetry, or as a separate Adapter, `WEL` type events ar
 
 ---
 
+## Sorting and Limiting Results
+
+The projection clause supports `ORDER BY(...)` for sorting and `LIMIT N` for capping the result set. These are evaluated after aggregation, so they apply to both raw projections and `GROUP BY` summaries.
+
+### ORDER BY Syntax
+
+```text
+ORDER BY(<field> [asc|desc])
+ORDER BY(<field>)                       # direction omitted; defaults to ascending
+```
+
+The parentheses are mandatory — they delimit the operator's arguments inside the space-delimited projection clause. Direction keywords are case-insensitive but the canonical form is lowercase `asc` / `desc`. Sort keys may reference either raw selectors (e.g. `event/PORT`) or projection aliases (e.g. `Port`).
+
+!!! note
+    `ORDER BY` currently sorts on a single key. Multi-key sort expressions are not supported by the backend at this time.
+
+### LIMIT Syntax
+
+```text
+LIMIT <N>
+```
+
+`LIMIT` caps the number of rows returned. It appears at the end of the projection clause, after any `ORDER BY`.
+
+### Top N Noisiest Destination Ports
+
+Sort raw events by a numeric field, no aggregation:
+
+`-1h | * | NETWORK_CONNECTIONS | event/PORT > 1000 | event/IP_ADDRESS as IP event/PORT as Port ORDER BY(Port desc) LIMIT 100`
+
+### Top 50 Failed-Logon Source IPs
+
+Sort an aggregated count, descending:
+
+`-24h | plat == windows | WEL | event/EVENT/System/EventID == "4625" | event/EVENT/EventData/IpAddress as SourceIP COUNT(event) as FailedAttempts GROUP BY(SourceIP) ORDER BY(FailedAttempts desc) LIMIT 50`
+
+---
+
 ## See Also
 
 - [LCQL Overview](index.md)
