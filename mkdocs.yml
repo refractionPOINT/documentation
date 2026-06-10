@@ -285,6 +285,7 @@ nav:
               - Microsoft 365: 2-sensors-deployment/adapters/types/microsoft-365.md
               - Slack Audit: 2-sensors-deployment/adapters/types/slack-audit-logs.md
               - Google Workspace: 2-sensors-deployment/adapters/types/google-workspace.md
+              - Gmail: 2-sensors-deployment/adapters/types/gmail.md
               - Atlassian: 2-sensors-deployment/adapters/types/atlassian.md
               - HubSpot: 2-sensors-deployment/adapters/types/hubspot.md
               - Zendesk: 2-sensors-deployment/adapters/types/zendesk.md
@@ -423,12 +424,15 @@ nav:
               - Govee: 5-integrations/extensions/third-party/govee.md
               - HaloPSA: 5-integrations/extensions/third-party/halopsa.md
               - Hayabusa: 5-integrations/extensions/third-party/hayabusa.md
+              - Microsoft Response: 5-integrations/extensions/third-party/microsoft-response.md
               - NIMS: 5-integrations/extensions/third-party/nims.md
               - OTX: 5-integrations/extensions/third-party/otx.md
               - PagerDuty: 5-integrations/extensions/third-party/pagerduty.md
               - Plaso: 5-integrations/extensions/third-party/plaso.md
               - Renigma: 5-integrations/extensions/third-party/renigma.md
               - SecureAnnex: 5-integrations/extensions/third-party/secureannex.md
+              - SentinelOne: 5-integrations/extensions/third-party/sentinelone.md
+              - ServiceNow: 5-integrations/extensions/third-party/servicenow.md
               - Strelka: 5-integrations/extensions/third-party/strelka.md
               - ThreatLocker: 5-integrations/extensions/third-party/threatlocker.md
               - Twilio: 5-integrations/extensions/third-party/twilio.md
