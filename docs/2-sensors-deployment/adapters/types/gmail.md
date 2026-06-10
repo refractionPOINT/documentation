@@ -117,7 +117,7 @@ Adapter Type: `gmail`
 - **Messages**: each poll lists message ids matching `query` over a rolling time window, fetches each message at the configured `format`, and forwards the full message resource verbatim. A deduper keyed on the immutable Gmail message id guarantees each message ships exactly once despite overlapping windows. The event timestamp is the message's `internalDate`.
 - **Configuration state**: polled on `settings_poll_interval`; only appearances and changes are shipped.
 - **History**: the first run records a baseline `historyId` and ships nothing; later polls list forward from the cursor, filtered to deletions and label changes. Gmail retains history for roughly a week — if the cursor ages out, the adapter re-baselines and resumes rather than stopping.
-- **Errors**: `401` triggers one transparent token refresh; `429`/`5xx` are retried with backoff; persistently rejected credentials stop that mailbox's collector (other mailboxes are unaffected); a failing BEC capability is logged and skipped without affecting the others.
+- **Errors**: `401` triggers one transparent token refresh; `429`/`5xx`/`403` rate-limit errors are retried with backoff; persistently rejected credentials stop that mailbox's collector (other mailboxes are unaffected); a failing BEC capability is logged and skipped without affecting the others.
 
 ## CLI Deployment
 

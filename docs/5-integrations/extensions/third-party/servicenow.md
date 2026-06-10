@@ -151,7 +151,8 @@ Idempotently upsert a ServiceNow incident from a LimaCharlie Case. The incident 
 | `classification` | string | Case classification (appended to the description). |
 | `summary` | string | Case summary — becomes the incident subject (first line, truncated to 160 chars) and description. |
 | `conclusion` | string | Case conclusion — appended to the description; used as `close_notes` on terminal states. |
-| `assignees` / `tags` | list of string | Appended to the description. |
+| `tags` | list of string | Appended to the description. |
+| `assignees` | list of string | Accepted, but not currently reflected on the incident. |
 | `correlation_display` | string | Override the configured label for this mirror. |
 | `sync_note` | string | Optional work note recording the sync on the incident. |
 

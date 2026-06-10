@@ -95,7 +95,7 @@ Generic passthrough to Graph or Defender for Endpoint.
 | Field | Type | Notes |
 | --- | --- | --- |
 | `service` | enum | `graph` (default) or `defender`. Token audience is handled automatically. |
-| `method` | enum | **Required.** `GET`, `POST`, `PATCH`, `PUT`, `DELETE`. |
+| `method` | enum | `GET` (default), `POST`, `PATCH`, `PUT`, `DELETE`. |
 | `path` | string | **Required.** Path relative to the service base (e.g. `users/{id}/revokeSignInSessions`) or a full `@odata.nextLink` URL. |
 | `query` | object | Query-string parameters (`$filter`, `$select`, `$top`, …). |
 | `headers` | object | Extra request headers, e.g. `{"ConsistencyLevel": "eventual"}`. |
