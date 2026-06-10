@@ -11160,6 +11160,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#reg_get" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reg_get
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#epp_scan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -13160,6 +13171,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#reg_get" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reg_get
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#epp_scan" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -14411,11 +14433,27 @@
 <p><strong>Platforms:</strong> Windows</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>reg_path</code> (required): Registry path to list (e.g., "HKEY_LOCAL_MACHINE\SOFTWARE")</li>
+<li><code>reg</code> (required, positional): Registry path to list. Must start with one of <code>hkcr</code>, <code>hkcc</code>, <code>hkcu</code>, <code>hklm</code>, <code>hku</code> (e.g., <code>hklm\software</code>). Backslashes must be escaped.</li>
 </ul>
-<p><strong>Response Event:</strong> REG_LIST_REP</p>
+<p><strong>Response Event:</strong> REGISTRY_LIST_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>reg_list<span class="w"> </span>--reg_path<span class="w"> </span><span class="s2">&quot;HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>reg_list<span class="w"> </span><span class="s2">&quot;hklm\\software\\microsoft\\windows\\currentversion\\run&quot;</span>
+</span></code></pre></div>
+<hr />
+<h3 id="reg_get">reg_get<a class="headerlink" href="#reg_get" title="Anchor link to this section">&para;</a></h3>
+<p>Fetch a single named value from a Windows registry key. Complements <code>reg_list</code>, which enumerates a whole key.</p>
+<blockquote>
+<p><strong>Note:</strong> Added in sensor version 5.3.0.</p>
+</blockquote>
+<p><strong>Platforms:</strong> Windows</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>reg</code> (required, positional): Registry key to read from. Must start with one of <code>hkcr</code>, <code>hkcc</code>, <code>hkcu</code>, <code>hklm</code>, <code>hku</code> (e.g., <code>hklm\software</code>). Backslashes must be escaped.</li>
+<li><code>name</code> (optional, positional): Name of the value to fetch; omit for the key's default (unnamed) value</li>
+</ul>
+<p><strong>Response Event:</strong> REGISTRY_GET_REP</p>
+<p><strong>Usage Example:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>reg_get<span class="w"> </span><span class="s2">&quot;hklm\\software\\microsoft\\windows\\currentversion\\run&quot;</span><span class="w"> </span><span class="s2">&quot;OneDrive&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_scan">epp_scan<a class="headerlink" href="#epp_scan" title="Anchor link to this section">&para;</a></h3>
@@ -14427,7 +14465,7 @@
 </ul>
 <p><strong>Response Event:</strong> EPP_SCAN_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_scan<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\Users\\Public&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_scan<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\Users\\Public&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_list_exclusions">epp_list_exclusions<a class="headerlink" href="#epp_list_exclusions" title="Anchor link to this section">&para;</a></h3>
@@ -14436,7 +14474,7 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EPP_LIST_EXCLUSIONS_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_list_exclusions
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_list_exclusions
 </span></code></pre></div>
 <hr />
 <h3 id="epp_add_exclusion">epp_add_exclusion<a class="headerlink" href="#epp_add_exclusion" title="Anchor link to this section">&para;</a></h3>
@@ -14449,7 +14487,7 @@
 </ul>
 <p><strong>Response Event:</strong> EPP_ADD_EXCLUSION_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_add_exclusion<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\safe_app&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_add_exclusion<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\safe_app&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_rem_exclusion">epp_rem_exclusion<a class="headerlink" href="#epp_rem_exclusion" title="Anchor link to this section">&para;</a></h3>
@@ -14462,7 +14500,7 @@
 </ul>
 <p><strong>Response Event:</strong> EPP_REM_EXCLUSION_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_rem_exclusion<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\safe_app&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_rem_exclusion<span class="w"> </span>--file_path<span class="w"> </span><span class="s2">&quot;C:\\safe_app&quot;</span>
 </span></code></pre></div>
 <hr />
 <h3 id="epp_list_quarantine">epp_list_quarantine<a class="headerlink" href="#epp_list_quarantine" title="Anchor link to this section">&para;</a></h3>
@@ -14471,12 +14509,12 @@
 <p><strong>Parameters:</strong> None</p>
 <p><strong>Response Event:</strong> EPP_LIST_QUARANTINE_REP</p>
 <p><strong>Usage Example:</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_list_quarantine
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SID&gt;<span class="w"> </span>epp_list_quarantine
 </span></code></pre></div>
 <hr />
 <h2 id="command-usage-notes">Command Usage Notes<a class="headerlink" href="#command-usage-notes" title="Anchor link to this section">&para;</a></h2>
 <p><strong>General Syntax:</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SENSOR_ID&gt;<span class="w"> </span>&lt;COMMAND_NAME&gt;<span class="w"> </span><span class="o">[</span>--param<span class="w"> </span>value<span class="w"> </span>...<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-57-1"><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>limacharlie<span class="w"> </span>sensor<span class="w"> </span>task<span class="w"> </span>&lt;SENSOR_ID&gt;<span class="w"> </span>&lt;COMMAND_NAME&gt;<span class="w"> </span><span class="o">[</span>--param<span class="w"> </span>value<span class="w"> </span>...<span class="o">]</span>
 </span></code></pre></div>
 <p><strong>Platform Abbreviations:</strong></p>
 <ul>
