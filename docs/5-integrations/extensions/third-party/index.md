@@ -8,7 +8,7 @@ Extensions built by third-party developers that integrate external tools and ser
 - [Govee](govee.md) - Govee device integration
 - [HaloPSA](halopsa.md) - PSA ticketing and asset management
 - [Hayabusa](hayabusa.md) - Windows event log analysis
-- [Microsoft Response](microsoft-response.md) - Entra ID, Intune, and Defender for Endpoint response actions
+- [Microsoft Response](microsoft-response.md) - Entra ID, Intune, Defender XDR, and Defender for Endpoint investigation and response actions
 - [NIMS](nims.md) - NIMS integration
 - [OTX](otx.md) - AlienVault OTX threat intelligence
 - [PagerDuty](pagerduty.md) - Incident management notifications
