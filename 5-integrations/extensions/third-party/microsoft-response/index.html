@@ -8202,6 +8202,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#microsoft-defender-xdr-graph-security-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Defender XDR (Graph security API)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#group-containment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8217,6 +8228,17 @@
     <span class="md-ellipsis">
       
         Intune devices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defender-for-endpoint-investigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Defender for Endpoint investigation
       
     </span>
   </a>
@@ -12560,6 +12582,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#microsoft-defender-xdr-graph-security-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Defender XDR (Graph security API)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#group-containment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12575,6 +12608,17 @@
     <span class="md-ellipsis">
       
         Intune devices
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defender-for-endpoint-investigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Defender for Endpoint investigation
       
     </span>
   </a>
@@ -12735,10 +12779,10 @@
 
 
 <h1 id="microsoft-response">Microsoft Response<a class="headerlink" href="#microsoft-response" title="Anchor link to this section">&para;</a></h1>
-<p>The Microsoft Response LimaCharlie <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> exposes the incident-response surface of Microsoft's cloud security platforms — <strong>Microsoft Graph</strong> (Entra ID identities, Identity Protection, groups, Intune devices, audit logs) and <strong>Microsoft Defender for Endpoint</strong> (machine isolation, scans, forensics, file quarantine, custom indicators) — to <abbr title="Detection &amp; Response">D&amp;R</abbr> rules and AI agents. It enables automated containment of account and endpoint compromise directly from detections.</p>
+<p>The Microsoft Response LimaCharlie <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> exposes the incident-response and investigation surface of Microsoft's cloud security platforms — <strong>Microsoft Graph</strong> (Entra ID identities, Identity Protection, groups, Intune devices, audit logs, and the Defender XDR security API for cross-product alerts, incidents, and advanced hunting) and <strong>Microsoft Defender for Endpoint</strong> (machine isolation, scans, forensics, file quarantine, alerts, file intelligence, custom indicators) — to <abbr title="Detection &amp; Response">D&amp;R</abbr> rules and AI agents. It enables automated investigation and containment of account and endpoint compromise directly from detections.</p>
 <p>The extension provides two layers:</p>
 <ul>
-<li><strong>Typed actions</strong> for the common containment and triage workflows, with friendly parameter names and built-in safety rails.</li>
+<li><strong>Typed actions</strong> for the common containment, triage, and investigation workflows, with friendly parameter names and built-in safety rails.</li>
 <li>A generic <strong><code>api_call</code></strong> passthrough for any Graph or Defender endpoint not covered by a typed action.</li>
 </ul>
 <p>Authentication is OAuth2 <strong>client credentials</strong> against an Entra app registration — no user interaction, no delegated tokens.</p>
@@ -12782,13 +12826,23 @@
 <td>Microsoft Graph</td>
 </tr>
 <tr>
+<td>User group/role memberships (<code>list_user_groups</code>)</td>
+<td><code>Directory.Read.All</code></td>
+<td>Microsoft Graph</td>
+</tr>
+<tr>
 <td>Risky users (read / confirm / dismiss)</td>
-<td><code>IdentityRiskyUser.ReadWrite.All</code></td>
+<td><code>IdentityRiskyUser.ReadWrite.All</code> (<code>IdentityRiskyUser.Read.All</code> suffices for reads)</td>
+<td>Microsoft Graph</td>
+</tr>
+<tr>
+<td>Risk detections (<code>list_risk_detections</code>)</td>
+<td><code>IdentityRiskEvent.Read.All</code></td>
 <td>Microsoft Graph</td>
 </tr>
 <tr>
 <td>Groups read / membership change</td>
-<td><code>GroupMember.ReadWrite.All</code></td>
+<td><code>GroupMember.ReadWrite.All</code> (<code>GroupMember.Read.All</code> suffices for reads)</td>
 <td>Microsoft Graph</td>
 </tr>
 <tr>
@@ -12797,8 +12851,23 @@
 <td>Microsoft Graph</td>
 </tr>
 <tr>
+<td>Defender XDR alerts (read / update + comment)</td>
+<td><code>SecurityAlert.Read.All</code> / <code>SecurityAlert.ReadWrite.All</code></td>
+<td>Microsoft Graph</td>
+</tr>
+<tr>
+<td>Defender XDR incidents (read / update)</td>
+<td><code>SecurityIncident.Read.All</code> / <code>SecurityIncident.ReadWrite.All</code></td>
+<td>Microsoft Graph</td>
+</tr>
+<tr>
+<td>Advanced hunting (<code>run_hunting_query</code>)</td>
+<td><code>ThreatHunting.Read.All</code></td>
+<td>Microsoft Graph</td>
+</tr>
+<tr>
 <td>Intune device actions</td>
-<td><code>DeviceManagementManagedDevices.PrivilegedOperations.All</code> (+ <code>DeviceManagementManagedDevices.Read.All</code> to list)</td>
+<td><code>DeviceManagementManagedDevices.PrivilegedOperations.All</code> (+ <code>DeviceManagementManagedDevices.Read.All</code> to list/get)</td>
 <td>Microsoft Graph</td>
 </tr>
 <tr>
@@ -12827,8 +12896,28 @@
 <td>WindowsDefenderATP</td>
 </tr>
 <tr>
-<td>List machines / machine actions</td>
+<td>List/get machines, machine actions, find-by-IP, package URI</td>
 <td><code>Machine.ReadWrite.All</code></td>
+<td>WindowsDefenderATP</td>
+</tr>
+<tr>
+<td>Defender alerts (list/get/update)</td>
+<td><code>Alert.ReadWrite.All</code> (no app-only read-only permission exists)</td>
+<td>WindowsDefenderATP</td>
+</tr>
+<tr>
+<td>Logged-on users (<code>list_machine_logon_users</code>)</td>
+<td><code>User.Read.All</code></td>
+<td>WindowsDefenderATP</td>
+</tr>
+<tr>
+<td>File profiles (<code>get_file_info</code>, file machines/alerts)</td>
+<td><code>File.Read.All</code></td>
+<td>WindowsDefenderATP</td>
+</tr>
+<tr>
+<td>Advanced hunting (<code>run_advanced_query</code>)</td>
+<td><code>AdvancedQuery.Read.All</code></td>
 <td>WindowsDefenderATP</td>
 </tr>
 <tr>
@@ -12841,7 +12930,7 @@
 <p>Only add what you will use — every action degrades independently with a <code>403</code> if its permission is missing.</p>
 <blockquote>
 <p><strong>Privileged user writes need a directory role too.</strong> For <code>disable_user</code>, <code>enable_user</code>, and <code>reset_user_password</code>, Graph permissions alone are not sufficient: the app's service principal must also hold an Entra <strong>directory role</strong> (e.g. <em>User Administrator</em>) covering the target user. A <code>403</code> on these actions is a consent/role problem, not a bug.</p>
-<p><strong>Identity Protection requires Entra ID P2.</strong> <code>list_risky_users</code>, <code>confirm_user_compromised</code>, and <code>dismiss_user_risk</code> return <code>403</code> on tenants without a P2 license.</p>
+<p><strong>Identity Protection requires Entra ID P2.</strong> <code>list_risky_users</code>, <code>get_user_risk</code>, <code>confirm_user_compromised</code>, and <code>dismiss_user_risk</code> return <code>403</code> on tenants without a P2 license. <code>list_risk_detections</code> and the sign-in log (<code>list_sign_ins</code>, <code>get_signin_history</code>) require P1 or P2.</p>
 </blockquote>
 <h3 id="3-subscribe-to-the-extension">3. Subscribe to the extension<a class="headerlink" href="#3-subscribe-to-the-extension" title="Anchor link to this section">&para;</a></h3>
 <p>Subscribe to <code>ext-microsoft-response</code> from the LimaCharlie <strong>Marketplace</strong> (<abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> → Add-Ons).</p>
@@ -13006,6 +13095,11 @@
 <td>List/search users. Add <code>accountEnabled</code> to <code>select</code> to read it (not returned by default).</td>
 </tr>
 <tr>
+<td><code>get_user</code></td>
+<td><code>user_id</code>, <code>select</code></td>
+<td>Get one user. Defaults to an investigation-oriented <code>$select</code> (<code>accountEnabled</code>, <code>createdDateTime</code>, <code>lastPasswordChangeDateTime</code>, <code>signInSessionsValidFromDateTime</code>, <code>proxyAddresses</code>, <code>otherMails</code>, ...).</td>
+</tr>
+<tr>
 <td><code>disable_user</code></td>
 <td><code>user_id</code></td>
 <td>Set <code>accountEnabled=false</code> — blocks new sign-ins immediately. Reverse with <code>enable_user</code>.</td>
@@ -13030,6 +13124,11 @@
 <td><code>user_id</code></td>
 <td>List registered authentication methods — spot attacker-registered MFA.</td>
 </tr>
+<tr>
+<td><code>list_user_groups</code></td>
+<td><code>user_id</code> + common list params</td>
+<td>List the groups, directory roles, and administrative units the user is a direct member of — check whether a compromised user holds privileged roles.</td>
+</tr>
 </tbody>
 </table>
 <p><code>user_id</code> accepts either the user object ID (GUID) or the userPrincipalName (UPN).</p>
@@ -13048,6 +13147,16 @@
 <td><code>list_risky_users</code></td>
 <td>common list params</td>
 <td>Users flagged by Identity Protection (<code>riskLevel</code>, <code>riskState</code>, <code>riskDetail</code>).</td>
+</tr>
+<tr>
+<td><code>get_user_risk</code></td>
+<td><code>user_id</code></td>
+<td>One user's riskyUser record. Accepts a GUID or a UPN (the UPN is resolved with one extra lookup). A <code>404</code> means the user has no risk record.</td>
+</tr>
+<tr>
+<td><code>list_risk_detections</code></td>
+<td>common list params</td>
+<td>Individual risk detections (<code>riskEventType</code> like <code>passwordSpray</code>, <code>impossibleTravel</code>, <code>leakedCredentials</code>; <code>ipAddress</code>, <code>location</code>, <code>detectedDateTime</code>). P1 tenants see premium detections as <code>riskEventType=generic</code>. Page size caps at 500.</td>
 </tr>
 <tr>
 <td><code>confirm_user_compromised</code></td>
@@ -13077,14 +13186,82 @@
 <td>List groups (e.g. find a quarantine or privileged group).</td>
 </tr>
 <tr>
+<td><code>get_group</code></td>
+<td><code>group_id</code>, <code>select</code></td>
+<td>Get one group by object id.</td>
+</tr>
+<tr>
+<td><code>list_group_members</code></td>
+<td><code>group_id</code> + common list params</td>
+<td>List a group's direct members — enumerate who sits in a privileged group.</td>
+</tr>
+<tr>
 <td><code>list_sign_ins</code></td>
 <td>common list params</td>
 <td>Entra sign-in events. Always scope with a <code>createdDateTime</code> filter.</td>
 </tr>
 <tr>
+<td><code>get_signin_history</code></td>
+<td><code>user_id</code>, <code>days</code> (default 7), <code>filter</code>, <code>top</code>, <code>next_link</code></td>
+<td>One user's sign-ins over a trailing window, newest first. Builds the <code>$filter</code> for you (GUID → <code>userId</code>, otherwise <code>userPrincipalName</code>); <code>filter</code> is AND-ed on top (e.g. <code>status/errorCode eq 0</code>). Key fields: <code>createdDateTime</code>, <code>ipAddress</code>, <code>location</code>, <code>deviceDetail</code>, <code>status.errorCode</code>, <code>riskLevelDuringSignIn</code>.</td>
+</tr>
+<tr>
 <td><code>list_directory_audits</code></td>
 <td>common list params</td>
 <td>Directory audit log — who changed what.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="microsoft-defender-xdr-graph-security-api">Microsoft Defender XDR (Graph security API)<a class="headerlink" href="#microsoft-defender-xdr-graph-security-api" title="Anchor link to this section">&para;</a></h3>
+<p>Cross-product alerts and incidents from Defender for Endpoint / Office 365 / Identity / Cloud Apps, Entra ID Protection, and Sentinel. Enum values here are <strong>camelCase</strong> (<code>new</code>, <code>inProgress</code>, <code>resolved</code>) — unlike the Defender for Endpoint API below.</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Parameters</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list_security_alerts</code></td>
+<td><code>filter</code>, <code>top</code>, <code>next_link</code>, <code>extra_query</code></td>
+<td>List XDR alerts (<code>security/alerts_v2</code>). Filterable on <code>createdDateTime</code>, <code>severity</code>, <code>status</code>, <code>serviceSource</code>, <code>classification</code>, <code>determination</code>, <code>assignedTo</code>. Evidence is embedded in each alert.</td>
+</tr>
+<tr>
+<td><code>get_security_alert</code></td>
+<td><code>alert_id</code></td>
+<td>One XDR alert with evidence (devices, files, processes, IPs, users), MITRE techniques, comments.</td>
+</tr>
+<tr>
+<td><code>update_security_alert</code></td>
+<td><code>alert_id</code>, <code>status</code>, <code>classification</code>, <code>determination</code>, <code>assigned_to</code></td>
+<td>Triage an alert; only provided fields change. Returns the updated alert.</td>
+</tr>
+<tr>
+<td><code>add_security_alert_comment</code></td>
+<td><code>alert_id</code>, <code>comment</code></td>
+<td>Append a comment (e.g. record the automated response taken). Returns the alert's full comment list.</td>
+</tr>
+<tr>
+<td><code>list_security_incidents</code></td>
+<td><code>filter</code>, <code>top</code>, <code>next_link</code>, <code>extra_query</code></td>
+<td>List XDR incidents. Add <code>extra_query: {"$expand": "alerts"}</code> to embed each incident's alerts.</td>
+</tr>
+<tr>
+<td><code>get_security_incident</code></td>
+<td><code>incident_id</code></td>
+<td>One incident (numeric-string id, e.g. <code>"29"</code>).</td>
+</tr>
+<tr>
+<td><code>update_security_incident</code></td>
+<td><code>incident_id</code>, <code>status</code> (<code>active</code>/<code>resolved</code>/<code>redirected</code>), <code>classification</code>, <code>determination</code>, <code>assigned_to</code>, <code>resolving_comment</code>, <code>custom_tags</code></td>
+<td>Triage an incident. <code>custom_tags</code> <strong>replaces</strong> the tag list (an explicit empty list clears it).</td>
+</tr>
+<tr>
+<td><code>run_hunting_query</code></td>
+<td><code>query</code>, <code>timespan</code></td>
+<td>Run a KQL query against the XDR advanced-hunting tables. Returns <code>{schema, results}</code>. Default lookback 30 days; max 100,000 rows.</td>
 </tr>
 </tbody>
 </table>
@@ -13126,6 +13303,11 @@
 <td>List Intune-managed devices (<code>deviceName</code>, <code>complianceState</code>, <code>userPrincipalName</code>, …).</td>
 </tr>
 <tr>
+<td><code>get_managed_device</code></td>
+<td><code>device_id</code>, <code>select</code></td>
+<td>Get one managed device (<code>osVersion</code>, <code>isEncrypted</code>, <code>lastSyncDateTime</code>, <code>azureADDeviceId</code>, …).</td>
+</tr>
+<tr>
 <td><code>wipe_device</code></td>
 <td><code>device_id</code>, <code>keep_enrollment_data</code>, <code>keep_user_data</code>, <code>data</code></td>
 <td>Factory-reset a device. <strong>Destructive.</strong></td>
@@ -13153,6 +13335,79 @@
 </tbody>
 </table>
 <p><code>device_id</code> is the Intune <code>managedDevice</code> id from <code>list_managed_devices</code>.</p>
+<h3 id="defender-for-endpoint-investigation">Defender for Endpoint investigation<a class="headerlink" href="#defender-for-endpoint-investigation" title="Anchor link to this section">&para;</a></h3>
+<p>Read-side actions against the Defender for Endpoint API. Enum values here are <strong>PascalCase</strong> (<code>New</code>, <code>InProgress</code>, <code>Resolved</code>) — unlike the Graph security API above.</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Parameters</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_machine</code></td>
+<td><code>machine_id</code></td>
+<td>One machine (<code>computerDnsName</code>, <code>lastIpAddress</code>, <code>lastExternalIpAddress</code>, <code>healthStatus</code>, <code>riskScore</code>, <code>exposureLevel</code>, <code>machineTags</code>).</td>
+</tr>
+<tr>
+<td><code>find_machines_by_ip</code></td>
+<td><code>ip</code>, <code>timestamp</code> (default now)</td>
+<td>Machines seen with an <strong>internal</strong> IP within ±15 minutes of the timestamp (last 30 days only).</td>
+</tr>
+<tr>
+<td><code>list_alerts</code></td>
+<td><code>filter</code>, <code>top</code>, <code>next_link</code>, <code>extra_query</code></td>
+<td>List Defender for Endpoint alerts. Filterable on <code>alertCreationTime</code>, <code>status</code>, <code>severity</code>, <code>category</code>, <code>detectionSource</code>, <code>machineId</code>. Add <code>extra_query: {"$expand": "evidence"}</code> to embed evidence.</td>
+</tr>
+<tr>
+<td><code>get_alert</code></td>
+<td><code>alert_id</code></td>
+<td>One alert (<code>title</code>, <code>severity</code>, <code>status</code>, <code>machineId</code>, <code>relatedUser</code>, <code>comments</code>, <code>mitreTechniques</code>).</td>
+</tr>
+<tr>
+<td><code>update_alert</code></td>
+<td><code>alert_id</code>, <code>status</code>, <code>classification</code>, <code>determination</code>, <code>assigned_to</code>, <code>comment</code></td>
+<td>Triage an alert and/or add a comment; only provided fields change.</td>
+</tr>
+<tr>
+<td><code>list_machine_alerts</code></td>
+<td><code>machine_id</code></td>
+<td>All alerts related to one machine.</td>
+</tr>
+<tr>
+<td><code>list_machine_logon_users</code></td>
+<td><code>machine_id</code></td>
+<td>Users Defender saw log on to the machine (<code>accountName</code>, <code>firstSeen</code>/<code>lastSeen</code>, <code>logonTypes</code>, <code>isDomainAdmin</code>) — who else may be compromised.</td>
+</tr>
+<tr>
+<td><code>get_file_info</code></td>
+<td><code>file_hash</code> (SHA1 or SHA256)</td>
+<td>Defender's file profile: <code>globalPrevalence</code>, <code>signer</code>/<code>issuer</code>, <code>isValidCertificate</code>, <code>determinationType</code>/<code>determinationValue</code>.</td>
+</tr>
+<tr>
+<td><code>list_file_machines</code></td>
+<td><code>sha1</code></td>
+<td>Machines a file was observed on — scope how far it spread. <strong>SHA1 only</strong>; unknown hash returns an empty list.</td>
+</tr>
+<tr>
+<td><code>list_file_alerts</code></td>
+<td><code>sha1</code></td>
+<td>Alerts related to a file. <strong>SHA1 only</strong>.</td>
+</tr>
+<tr>
+<td><code>run_advanced_query</code></td>
+<td><code>query</code></td>
+<td>Run a KQL query against the Defender for Endpoint hunting tables. Returns <code>{Schema, Results}</code>. 30-day window, max 100,000 rows. For cross-product tables prefer <code>run_hunting_query</code>.</td>
+</tr>
+<tr>
+<td><code>list_indicators</code></td>
+<td><code>filter</code>, <code>top</code>, <code>next_link</code>, <code>extra_query</code></td>
+<td>The tenant's custom indicators (IoCs); use a returned <code>id</code> with <code>delete_indicator</code>.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="defender-for-endpoint-machines">Defender for Endpoint machines<a class="headerlink" href="#defender-for-endpoint-machines" title="Anchor link to this section">&para;</a></h3>
 <p>Machine actions are <strong>asynchronous</strong>: they return a <code>machineAction</code> object with <code>status: Pending</code>, and the work completes in the background. Poll with <code>get_machine_action</code> until <code>Succeeded</code> / <code>Failed</code>. All take an optional <code>comment</code> recorded in the Defender action audit (default <code>Automated response via LimaCharlie</code>) and an optional <code>data</code> object merged into the payload.</p>
 <table>
@@ -13197,7 +13452,7 @@
 <tr>
 <td><code>collect_investigation_package</code></td>
 <td><code>machine_id</code></td>
-<td>Collect a forensics package; fetch the download URL via <code>get_machine_action</code> once complete.</td>
+<td>Collect a forensics package.</td>
 </tr>
 <tr>
 <td><code>stop_and_quarantine_file</code></td>
@@ -13213,6 +13468,11 @@
 <td><code>get_machine_action</code></td>
 <td><code>action_id</code></td>
 <td>Poll one machine action's status (<code>Pending</code> / <code>InProgress</code> / <code>Succeeded</code> / <code>Failed</code>).</td>
+</tr>
+<tr>
+<td><code>get_investigation_package_uri</code></td>
+<td><code>action_id</code></td>
+<td>Short-lived SAS download URL for a <strong>succeeded</strong> <code>collect_investigation_package</code> action. A <code>404</code> usually means the collection hasn't finished. Rate-limited to 2 calls/minute.</td>
 </tr>
 </tbody>
 </table>
@@ -13280,6 +13540,8 @@
 </tr>
 </tbody>
 </table>
+<h4 id="delete_indicator"><code>delete_indicator</code><a class="headerlink" href="#delete_indicator" title="Anchor link to this section">&para;</a></h4>
+<p>Delete one custom indicator by its <code>indicator_id</code> (from <code>list_indicators</code> or the <code>create_indicator</code> response) — e.g. to lift a block.</p>
 <h2 id="detection-response">Detection &amp; Response<a class="headerlink" href="#detection-response" title="Anchor link to this section">&para;</a></h2>
 <p>Example response action that isolates the Defender machine named in a detection:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
@@ -13297,6 +13559,7 @@ Values under <code>extension request</code> are evaluated as templates. A bare s
 <p><code>extension request</code> actions are fire-and-forget — the rule engine does not surface the response back into the rule's evaluation context, so a <code>machineAction</code> id is not available to a subsequent action in the same rule. Workflows that chain (look up the machine, isolate it, poll the action, collect forensics) belong in a <a href="../../limacharlie/playbook/">Playbook</a> or an AI agent, which can hold ids between calls.</p>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Anchor link to this section">&para;</a></h2>
 <ul>
+<li>Two alert/hunting surfaces are deliberately both exposed: the <strong>Graph security API</strong> actions (<code>*_security_alert</code>, <code>*_security_incident</code>, <code>run_hunting_query</code>) cover all of Defender XDR with camelCase enums, while the <strong>Defender for Endpoint API</strong> actions (<code>list_alerts</code>, <code>get_alert</code>, <code>update_alert</code>, <code>run_advanced_query</code>) are endpoint-only with PascalCase enums and machine-centric fields (<code>machineId</code>, <code>computerDnsName</code>).</li>
 <li>Graph and Defender use <strong>separate token audiences</strong>; the extension caches one token per service and renews it before expiry. A token rejected by the other service surfaces as <code>403</code>, not <code>401</code>.</li>
 <li>A single <code>401</code> is treated as a token-expiry race: the cached token is dropped and the request retried once with a fresh token. Rotating <code>client_secret</code> in Secrets Manager recovers the same way — the next auth failure evicts the cached client and re-reads the secret.</li>
 <li>Microsoft Graph throttling (<code>429</code>) is <strong>not</strong> retried by the extension; throttled requests surface to the caller.</li>
