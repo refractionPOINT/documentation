@@ -77,6 +77,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Microsoft 365](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/microsoft-365/)
 - [Slack Audit](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/slack-audit-logs/): Slack Audit Logs
 - [Google Workspace](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/google-workspace/)
+- [Gmail](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/gmail/)
 - [Atlassian](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/atlassian/)
 - [HubSpot](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/hubspot/)
 - [Zendesk](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/zendesk/)
@@ -200,12 +201,15 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Govee](https://docs.limacharlie.io/5-integrations/extensions/third-party/govee/)
 - [HaloPSA](https://docs.limacharlie.io/5-integrations/extensions/third-party/halopsa/)
 - [Hayabusa](https://docs.limacharlie.io/5-integrations/extensions/third-party/hayabusa/)
+- [Microsoft Response](https://docs.limacharlie.io/5-integrations/extensions/third-party/microsoft-response/)
 - [NIMS](https://docs.limacharlie.io/5-integrations/extensions/third-party/nims/)
 - [OTX](https://docs.limacharlie.io/5-integrations/extensions/third-party/otx/)
 - [PagerDuty](https://docs.limacharlie.io/5-integrations/extensions/third-party/pagerduty/)
 - [Plaso](https://docs.limacharlie.io/5-integrations/extensions/third-party/plaso/)
 - [Renigma](https://docs.limacharlie.io/5-integrations/extensions/third-party/renigma/)
 - [SecureAnnex](https://docs.limacharlie.io/5-integrations/extensions/third-party/secureannex/): Secure Annex
+- [SentinelOne](https://docs.limacharlie.io/5-integrations/extensions/third-party/sentinelone/)
+- [ServiceNow](https://docs.limacharlie.io/5-integrations/extensions/third-party/servicenow/)
 - [Strelka](https://docs.limacharlie.io/5-integrations/extensions/third-party/strelka/)
 - [ThreatLocker](https://docs.limacharlie.io/5-integrations/extensions/third-party/threatlocker/)
 - [Twilio](https://docs.limacharlie.io/5-integrations/extensions/third-party/twilio/)
