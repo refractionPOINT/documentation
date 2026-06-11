@@ -10,7 +10,7 @@ Release notes for LimaCharlie platform components, organized by date.
 
 Notable improvements and fixes:
 
-**New Features**
+#### New Features
 
 - **AI Terminal ShareCard** — share sessions socially and invite users to tenants.
 - **Docked corner chat** — persistent AI chat launcher with pop-out, draft-new-session, minimize/maximize, and a live-session selector.
@@ -24,7 +24,7 @@ Notable improvements and fixes:
 - **AI Sessions** — rationalized session user state (Active + needs-attention), and `lc-compliance` as a selectable plugin.
 - **Git Sync** — added missing config hives to the UI.
 
-**Bug Fixes**
+#### Bug Fixes
 
 - Fixed dark-mode LimaCharlie logo visibility.
 - Included `ai_agent.operate` in FDE and worker-key permission lists.
