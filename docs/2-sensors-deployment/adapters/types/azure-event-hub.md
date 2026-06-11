@@ -91,17 +91,16 @@ client_options.hostname=<HOSTNAME> \
 
 ```python
 sensor_type: "azure_event_hub"
-  azure_event_hub:
-    connection_string: "Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_EVENT_HUB_SHARED_ACCESS_K
-  EY_HERE;EntityPath=your-actual-event-hub-name"
-    client_options:
-      identity:
-        oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        installation_key: "YOUR_LC_INSTALLATION_KEY_FOR_AZURE"
-      hostname: "azure-eventhub-adapter"
-      # Match the feed streamed into the hub: msdefender, azure_ad, azure_monitor, etc.
-      # Only use "json" for custom data, together with a manual mapping.
-      platform: "msdefender"
-      sensor_seed_key: "azure-eventhub-prod-sensor"
-      indexing: []
+azure_event_hub:
+  connection_string: "Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_EVENT_HUB_SHARED_ACCESS_KEY_HERE;EntityPath=your-actual-event-hub-name"
+  client_options:
+    identity:
+      oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      installation_key: "YOUR_LC_INSTALLATION_KEY_FOR_AZURE"
+    hostname: "azure-eventhub-adapter"
+    # Match the feed streamed into the hub: msdefender, azure_ad, azure_monitor, etc.
+    # Only use "json" for custom data, together with a manual mapping.
+    platform: "msdefender"
+    sensor_seed_key: "azure-eventhub-prod-sensor"
+    indexing: []
 ```

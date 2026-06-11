@@ -60,18 +60,15 @@ office365:
     platform: "office365"
     sensor_seed_key: "office365-audit-sensor"
     indexing: []
-  # Office 365 specific configuration
-  content_types:
-    - "Audit.AzureActiveDirectory"
-    - "Audit.Exchange"
-    - "Audit.SharePoint"
-    - "Audit.General"
-    - "DLP.All"
+  # Office 365 specific configuration (all required)
+  domain: "yourcompany.onmicrosoft.com"
+  publisher_id: "hive://secret/o365-publisher-id" # usually same as tenant_id
+  endpoint: "enterprise"                          # or gcc-gov / gcc-high-gov / dod-gov
+  # content_types is a comma-separated string (not a YAML list);
+  # if omitted, it defaults to all of the below
+  content_types: "Audit.AzureActiveDirectory,Audit.Exchange,Audit.SharePoint,Audit.General,DLP.All"
   # Optional configuration
-  endpoint: "enterprise"                           # Default: "enterprise"
   start_time: "2024-01-01T00:00:00Z"              # Optional: historical start time
-  domain: "yourcompany.onmicrosoft.com"           # Optional: for GCC environments
-  publisher_id: "hive://secret/o365-publisher-id" # Optional: usually same as tenant_id
 ```
 
 ## Configuring a Microsoft 365 Adapter in the Web UI
