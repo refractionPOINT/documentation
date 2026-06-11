@@ -10,6 +10,8 @@ Entra ID data uses one of two platform values depending on the ingestion method 
 - **Entra ID API** (Identity Protection risk detections polled from Microsoft Graph): `client_options.platform: entraid`
 
 > **Note on naming:** The platform identifier `azure_ad` reflects the legacy product name (Azure Active Directory). Microsoft renamed this product to Microsoft Entra ID in 2023. Despite naming the same product, `azure_ad` and `entraid` select different parsers: `azure_ad` parses the Azure diagnostic-stream `records` envelope (event type from `category`, timestamp from `time`), while `entraid` parses Graph risk-detection objects (event type from `activity`, timestamp from `detectedDateTime`). Crossing them silently breaks event-type and timestamp extraction.
+>
+> **Choosing by data need:** Directory audit events — app consent (`Consent to application`), OAuth2 permission grants (`Add OAuth2PermissionGrant`), app role assignments, user/group/role changes — are **only** available from the diagnostic-stream **AuditLogs** category (Event Hub, platform `azure_ad`) or from the Microsoft 365 unified audit log ([`office365` adapter](microsoft-365.md), `Audit.AzureActiveDirectory` content type, where operation names carry a trailing period). The Entra ID API adapter polls risk detections only and will never deliver these events. Also prefer `azure_ad` over `azure_monitor` for Entra streams: both parse the same envelope, but the platform value tags the sensor and drives `is platform` / LCQL targeting and shared detection rules.
 
 ## Data Collected
 
@@ -33,14 +35,18 @@ The API adapter polls Microsoft Graph's `/identityProtection/riskDetections` end
 
 For the full list of risk detection types, see [Microsoft's documentation](https://learn.microsoft.com/en-us/entra/id-protection/concept-identity-protection-risks).
 
+The API adapter does **not** receive sign-in logs or directory audit events (such as app consent or OAuth2 permission grants) — use the Azure Event Hub method for those.
+
 ### Azure Event Hub
 
 When using Event Hub, you receive whatever data you configure Azure to stream. You must configure **Azure Diagnostic Settings** in Entra ID to send logs to your Event Hub. Common log types include:
 
 - **Sign-in logs** - Interactive and non-interactive authentication events
-- **Audit logs** - Directory changes (user/group management, app registrations)
+- **Audit logs** - Directory changes (user/group management, app registrations, app consent and OAuth2 permission grants)
 - **Provisioning logs** - User provisioning to SaaS apps
 - **Risky users/sign-ins** - Identity Protection detections (alternative to API)
+
+In the `azure_ad` stream the LimaCharlie event type is the log *category* (e.g. `AuditLogs`, `SignInLogs`), so detection rules targeting a specific operation match on the `event/operationName` field.
 
 See [Microsoft's documentation on streaming Entra ID logs](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
 
