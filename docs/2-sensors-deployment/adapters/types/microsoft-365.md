@@ -5,7 +5,7 @@ Microsoft 365, formerly Office 365, is a product family of productivity software
 Microsoft 365 events can be ingested in LimaCharlie and observed as the `office365` platform.
 
 > Always set `client_options.platform: office365` for this adapter. The `office365` parser extracts the event type (`Operation`) and timestamp (`CreationTime`) from unified audit log records automatically — no manual `mapping` is needed. Do not substitute `json`.
-
+>
 > **Note on naming:** The platform identifier `office365` reflects the legacy product name. Microsoft renamed Office 365 to Microsoft 365 in 2020.
 
 ## Adapter Deployment
