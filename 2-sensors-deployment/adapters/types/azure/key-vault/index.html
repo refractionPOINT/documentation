@@ -12366,7 +12366,7 @@
 <li><a href="../../azure-event-hub/">Azure Event Hub</a></li>
 <li>LimaCharlie <a href="../../../tutorials/webhook-adapter/">Webhooks</a></li>
 </ul>
-<p>Upon ingestion, the log <code>category</code> field is used to define the Event Type.</p>
+<p>When configuring the adapter, set <code>client_options.platform: azure_key_vault</code> to select the dedicated parser. Upon ingestion, the log <code>category</code> field is used to define the Event Type and the <code>time</code> field provides the event timestamp.</p>
 <h2 id="sample-event">Sample Event<a class="headerlink" href="#sample-event" title="Anchor link to this section">&para;</a></h2>
 <p>The following sample event is taken from Microsoft Azure documentation:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>

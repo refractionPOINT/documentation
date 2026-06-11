@@ -12600,7 +12600,14 @@
 <li>Azure Monitor (Platform: <code>azure_monitor</code>)</li>
 <li>Entra ID [formerly Azure AD] (Platform: <code>azure_ad</code>)</li>
 <li>Microsoft Defender (Platform: <code>msdefender</code>)</li>
+<li>Azure Key Vault (Platform: <code>azure_key_vault</code>)</li>
+<li>Azure Kubernetes Service (Platform: <code>azure_kubernetes_service</code>)</li>
+<li>Azure Network Security Group (Platform: <code>azure_network_security_group</code>)</li>
+<li>Azure SQL Audit (Platform: <code>azure_sql_audit</code>)</li>
 </ul>
+<blockquote>
+<p><strong>Choosing the platform:</strong> the Event Hub is only a transport — <code>client_options.platform</code> selects the LimaCharlie parser and must match the data being streamed <strong>into</strong> the hub (see the list above). Use <code>json</code> only for custom or unknown data, in which case you must supply your own <code>mapping</code>. Note that <code>azure_event_hub_namespace</code> is <strong>not</strong> a generic value for "data arriving via Event Hub": it is used solely for ingesting an Event Hub namespace's own diagnostic logs.</p>
+</blockquote>
 <p>Microsoft has <a href="https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create">documentation for creating an Event Hub</a>.</p>
 <h2 id="configuring-data-streams">Configuring Data Streams<a class="headerlink" href="#configuring-data-streams" title="Anchor link to this section">&para;</a></h2>
 <p>When using Azure Event Hub, you must configure the source service to stream data to your Event Hub. The data you receive depends entirely on what you configure in Azure.</p>
@@ -12656,17 +12663,18 @@
 </span></code></pre></div>
 <h3 id="infrastructure-as-code-deployment"><abbr title="Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure...">Infrastructure as Code</abbr> Deployment<a class="headerlink" href="#infrastructure-as-code-deployment" title="Anchor link to this section">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">sensor_type</span><span class="p">:</span> <span class="s2">&quot;azure_event_hub&quot;</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  <span class="n">azure_event_hub</span><span class="p">:</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">connection_string</span><span class="p">:</span> <span class="s2">&quot;Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_EVENT_HUB_SHARED_ACCESS_K</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  <span class="n">EY_HERE</span><span class="p">;</span><span class="n">EntityPath</span><span class="o">=</span><span class="n">your</span><span class="o">-</span><span class="n">actual</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">hub</span><span class="o">-</span><span class="n">name</span><span class="s2">&quot;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">client_options</span><span class="p">:</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>      <span class="n">identity</span><span class="p">:</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="n">oid</span><span class="p">:</span> <span class="s2">&quot;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&quot;</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="n">installation_key</span><span class="p">:</span> <span class="s2">&quot;YOUR_LC_INSTALLATION_KEY_FOR_AZURE&quot;</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>      <span class="n">hostname</span><span class="p">:</span> <span class="s2">&quot;azure-eventhub-adapter&quot;</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>      <span class="n">platform</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>      <span class="n">sensor_seed_key</span><span class="p">:</span> <span class="s2">&quot;azure-eventhub-prod-sensor&quot;</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>      <span class="n">indexing</span><span class="p">:</span> <span class="p">[]</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">azure_event_hub</span><span class="p">:</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  <span class="n">connection_string</span><span class="p">:</span> <span class="s2">&quot;Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=YOUR_EVENT_HUB_SHARED_ACCESS_KEY_HERE;EntityPath=your-actual-event-hub-name&quot;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  <span class="n">client_options</span><span class="p">:</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">identity</span><span class="p">:</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>      <span class="n">oid</span><span class="p">:</span> <span class="s2">&quot;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&quot;</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>      <span class="n">installation_key</span><span class="p">:</span> <span class="s2">&quot;YOUR_LC_INSTALLATION_KEY_FOR_AZURE&quot;</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">hostname</span><span class="p">:</span> <span class="s2">&quot;azure-eventhub-adapter&quot;</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="c1"># Match the feed streamed into the hub: msdefender, azure_ad, azure_monitor, etc.</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="c1"># Only use &quot;json&quot; for custom data, together with a manual mapping.</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">platform</span><span class="p">:</span> <span class="s2">&quot;msdefender&quot;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">sensor_seed_key</span><span class="p">:</span> <span class="s2">&quot;azure-eventhub-prod-sensor&quot;</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">indexing</span><span class="p">:</span> <span class="p">[]</span>
 </span></code></pre></div>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
