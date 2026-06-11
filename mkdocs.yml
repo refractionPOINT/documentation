@@ -289,6 +289,7 @@ nav:
               - Atlassian: 2-sensors-deployment/adapters/types/atlassian.md
               - HubSpot: 2-sensors-deployment/adapters/types/hubspot.md
               - Zendesk: 2-sensors-deployment/adapters/types/zendesk.md
+              - ServiceNow: 2-sensors-deployment/adapters/types/servicenow.md
               - PandaDoc: 2-sensors-deployment/adapters/types/pandadoc.md
               - Mimecast: 2-sensors-deployment/adapters/types/mimecast.md
           - Infrastructure:
