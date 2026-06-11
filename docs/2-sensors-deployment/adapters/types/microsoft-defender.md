@@ -8,6 +8,8 @@ Microsoft has [documentation for creating an Event Hub](https://learn.microsoft.
 
 Telemetry Platform: `msdefender`
 
+> Use `client_options.platform: msdefender` for **both** ingestion methods. The `msdefender` parser understands the Streaming API `records` envelope (Event Hub) as well as bare Graph `alerts_v2` alert objects (API adapter), extracting event types and timestamps automatically and mapping raw device telemetry to native LimaCharlie event types (`NEW_PROCESS`, `NETWORK_CONNECTIONS`, etc.) with one sensor per Defender device. Do not substitute `json` — it bypasses this parser and requires manual field mappings.
+
 ## Data Collected
 
 ### API vs Event Hub Comparison
@@ -106,11 +108,7 @@ defender:
       oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       installation_key: "YOUR_LC_INSTALLATION_KEY_DEFENDER"
     hostname: "ms-defender-adapter"
-    platform: "json"
+    platform: "msdefender"
     sensor_seed_key: "defender-sensor"
-    mapping:
-      sensor_hostname_path: "machineDnsName"
-      event_type_path: "alertType"
-      event_time_path: "lastUpdateTime"
     indexing: []
 ```

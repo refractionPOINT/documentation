@@ -11,4 +11,4 @@ AKS logs can be ingested via:
 - [Azure Event Hub](../azure-event-hub.md)
 - LimaCharlie [Webhooks](../../tutorials/webhook-adapter.md)
 
-Upon ingestion, the log `category` field is used to define the Event Type.
+When configuring the adapter, set `client_options.platform: azure_kubernetes_service` to select the dedicated parser. Upon ingestion, the log `category` field is used to define the Event Type and the `time` field provides the event timestamp.
