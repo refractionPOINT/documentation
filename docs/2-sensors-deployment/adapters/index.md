@@ -36,6 +36,10 @@ Adapters enable log ingestion from external sources into LimaCharlie. They trans
 - [Carbon Black](types/carbon-black.md)
 - [ThreatLocker](types/threatlocker.md)
 
+### IT & Business Platforms
+
+- [ServiceNow](types/servicenow.md)
+
 ### Generic Formats
 
 - [Syslog](types/syslog.md)
