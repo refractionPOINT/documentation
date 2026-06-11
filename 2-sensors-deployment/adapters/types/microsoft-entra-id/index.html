@@ -12524,6 +12524,7 @@
 </ul>
 <blockquote>
 <p><strong>Note on naming:</strong> The platform identifier <code>azure_ad</code> reflects the legacy product name (Azure Active Directory). Microsoft renamed this product to Microsoft Entra ID in 2023. Despite naming the same product, <code>azure_ad</code> and <code>entraid</code> select different parsers: <code>azure_ad</code> parses the Azure diagnostic-stream <code>records</code> envelope (event type from <code>category</code>, timestamp from <code>time</code>), while <code>entraid</code> parses Graph risk-detection objects (event type from <code>activity</code>, timestamp from <code>detectedDateTime</code>). Crossing them silently breaks event-type and timestamp extraction.</p>
+<p><strong>Choosing by data need:</strong> Directory audit events — app consent (<code>Consent to application</code>), OAuth2 permission grants (<code>Add OAuth2PermissionGrant</code>), app role assignments, user/group/role changes — are <strong>only</strong> available from the diagnostic-stream <strong>AuditLogs</strong> category (Event Hub, platform <code>azure_ad</code>) or from the Microsoft 365 unified audit log (<a href="../microsoft-365/"><code>office365</code> adapter</a>, <code>Audit.AzureActiveDirectory</code> content type, where operation names carry a trailing period). The Entra ID API adapter polls risk detections only and will never deliver these events. Also prefer <code>azure_ad</code> over <code>azure_monitor</code> for Entra streams: both parse the same envelope, but the platform value tags the sensor and drives <code>is platform</code> / <abbr title="LimaCharlie Query Language (LCQL) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie. Telemetry ingested via sensors are searchable via LCQL.">LCQL</abbr> targeting and shared detection rules.</p>
 </blockquote>
 <h2 id="data-collected">Data Collected<a class="headerlink" href="#data-collected" title="Anchor link to this section">&para;</a></h2>
 <h3 id="api-vs-event-hub-vs-webhook-comparison">API vs Event Hub vs Webhook Comparison<a class="headerlink" href="#api-vs-event-hub-vs-webhook-comparison" title="Anchor link to this section">&para;</a></h3>
@@ -12567,14 +12568,16 @@
 <li>Malware-linked IP addresses</li>
 </ul>
 <p>For the full list of risk detection types, see <a href="https://learn.microsoft.com/en-us/entra/id-protection/concept-identity-protection-risks">Microsoft's documentation</a>.</p>
+<p>The API adapter does <strong>not</strong> receive sign-in logs or directory audit events (such as app consent or OAuth2 permission grants) — use the Azure Event Hub method for those.</p>
 <h3 id="azure-event-hub">Azure Event Hub<a class="headerlink" href="#azure-event-hub" title="Anchor link to this section">&para;</a></h3>
 <p>When using Event Hub, you receive whatever data you configure Azure to stream. You must configure <strong>Azure Diagnostic Settings</strong> in Entra ID to send logs to your Event Hub. Common log types include:</p>
 <ul>
 <li><strong>Sign-in logs</strong> - Interactive and non-interactive authentication events</li>
-<li><strong>Audit logs</strong> - Directory changes (user/group management, app registrations)</li>
+<li><strong>Audit logs</strong> - Directory changes (user/group management, app registrations, app consent and OAuth2 permission grants)</li>
 <li><strong>Provisioning logs</strong> - User provisioning to SaaS apps</li>
 <li><strong>Risky users/sign-ins</strong> - Identity Protection detections (alternative to API)</li>
 </ul>
+<p>In the <code>azure_ad</code> stream the LimaCharlie event type is the log <em>category</em> (e.g. <code>AuditLogs</code>, <code>SignInLogs</code>), so detection rules targeting a specific operation match on the <code>event/operationName</code> field.</p>
 <p>See <a href="https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub">Microsoft's documentation on streaming Entra ID logs</a>.</p>
 <h2 id="adapter-deployment"><abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Deployment<a class="headerlink" href="#adapter-deployment" title="Anchor link to this section">&para;</a></h2>
 <p>Microsoft Entra ID logs are ingested into LimaCharlie via:</p>
