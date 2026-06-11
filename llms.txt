@@ -81,6 +81,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Atlassian](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/atlassian/)
 - [HubSpot](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/hubspot/)
 - [Zendesk](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/zendesk/)
+- [ServiceNow](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/servicenow/)
 - [PandaDoc](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/pandadoc/)
 - [Mimecast](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/mimecast/)
 - [Kubernetes Pods](https://docs.limacharlie.io/2-sensors-deployment/adapters/types/kubernetes-pods/): Kubernetes Pods Logs
