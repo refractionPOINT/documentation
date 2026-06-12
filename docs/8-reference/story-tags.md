@@ -6,7 +6,7 @@ The first consumer of the namespace is the LimaCharlie web app and the AI Sessio
 
 ## Why tags
 
-LimaCharlie tags are the cross-cutting metadata mechanism for every Hive record (D&R rules, playbooks, outputs, adapters, cloud sensors, lookups, etc.):
+LimaCharlie tags are the cross-cutting metadata mechanism for every Hive record (D&R rules, playbooks, adapters, cloud sensors, lookups, etc.):
 
 - They are visible on every record via the API and the web app.
 - They can be added or removed by API, by CLI, by D&R rule responses, or by hand in the web app.
@@ -38,7 +38,7 @@ Every segment that isn't a fixed keyword has a strict regex:
 | `STORY_NAME`  | `^[a-z0-9][a-z0-9_-]{0,63}$`       | Lowercase, digits, underscore, hyphen. Starts alnum. Up to 64 chars. |
 | `TARGET_TYPE` | one of the canonical type slugs    | See table below.                                                   |
 | `TARGET_NAME` | `^[a-z0-9][a-z0-9_.-]{0,127}$`     | Same as `STORY_NAME` plus `.` (covers Hive record keys with dots).   |
-| `LABEL_SLUG`  | `^[a-z0-9][a-z0-9_-]{0,63}$`       | Same as `STORY_NAME`. Rendered with `-` and `_` turned into spaces. |
+| `LABEL_SLUG`  | `^(?:[a-z0-9]\|[a-z0-9][a-z0-9_-]{0,62}[a-z0-9])$` | Like `STORY_NAME`, but no trailing `-`/`_` (a trailing separator would humanize to a trailing space). Rendered with `-` and `_` turned into spaces — see [Label humanization](#label-humanization). |
 
 Tags that violate any gate are **silently dropped** by the assembler — they never produce phantom nodes or edges. This matches the [`lc:asset:*`](../2-sensors-deployment/asset-tags.md) convention: malformed metadata must never show up in a dashboard.
 
@@ -85,9 +85,16 @@ Applied deterministically by the assembler when it walks the tag set:
 6. **Edge whose target isn't a member of the story** → drop the edge silently (applies to derived edges too).
 7. **Multiple `label:` tags on the same node** → lexically-first slug wins (mirrors the `lc:asset:*` tie-break).
 
+Membership nuance: rules 1–2 reject the tag at parse time, so a rejected tag confers nothing — not even membership. Rule 3 voids only the edge semantics: the tag parsed successfully, so the bearer remains a member of the story.
+
 ### Label humanization
 
-`LABEL_SLUG` values are rendered with `-` and `_` replaced by spaces. `web-server-fleet` becomes "web server fleet"; `triggers-alert` becomes "triggers alert". This keeps the slug safe to use inside a tag (which has restricted charset) while still producing readable labels in the rendered graph.
+`LABEL_SLUG` values render with `-` and `_` replaced by spaces (`web-server-fleet` → "web server fleet"), but the two label kinds are humanized at different layers:
+
+- **Node labels** are humanized by the assembler: the API payload carries `"label": "web server fleet"` for a `label:web-server-fleet` tag.
+- **Edge labels** stay in slug form in the API payload (`"label": "writes-to"`) so they double as stable identifiers; the rendering surface humanizes them (`StoryGraph` renders "writes to").
+
+This keeps the slug safe to use inside a tag (which has restricted charset) while still producing readable labels in the rendered graph.
 
 ## Edge ontology
 
@@ -107,20 +114,22 @@ For each member, the assembler inspects the record content and emits an edge whe
 | `dr-rule` | `lookup` | `consults` | `op: lookup` with `hive://lookup/NAME` or `lcr://lookup/NAME` in the detect logic |
 | `dr-rule` | `yara-rule` | `scans-with` | `hive://yara/NAME` in a respond task (e.g. `yara_scan`) |
 | `dr-rule` | `ai-agent` | `starts` | `action: start ai agent` with `definition: hive://ai_agent/NAME` |
-| `dr-rule` | `playbook` | `runs` | `extension request` to `ext-playbook`/`ext-feedback` carrying a `playbook_name`, or any `hive://playbook/NAME` reference |
+| `dr-rule` | `playbook` | `runs` | `extension request` to `ext-playbook` (`name:` in the request) or `ext-feedback` (`playbook_name:`), or any `hive://playbook/NAME` reference |
 | `dr-rule` | `extension` | `invokes` | `action: extension request` with `extension name: NAME` |
 | `dr-rule` | `secret` | `authenticates-with` | `hive://secret/NAME` (e.g. inline `start ai agent` credentials) |
 | `dr-rule` | `output` | `forwards-to` | `action: output` with `name: NAME` (lands once `output` nodes surface) |
-| `fp-rule` | `dr-rule` | `suppresses` | fp detect comparing `path: cat` against a name the rule `report`s |
+| `fp-rule` | `dr-rule` | `suppresses` | fp logic (which sits at the record root) comparing `path: cat` with `op: is` — exact matches only — against a name the rule `report`s |
 | `cloud-sensor` | `secret` | `authenticates-with` | `hive://secret/NAME` in the sensor configuration |
 | `adapter` | `secret` | `authenticates-with` | `hive://secret/NAME` in the adapter configuration |
 | `ai-agent` | `secret` | `authenticates-with` | `anthropic_secret`, `lc_api_key_secret`, etc. |
-| `playbook` | `lookup` / `yara-rule` / `secret` / `playbook` | `uses` | `hive://...` ARLs found in the playbook code (best-effort) |
+| `playbook` | `lookup` / `yara-rule` | `uses` | `hive://...` ARLs found in the playbook code (best-effort) |
+| `playbook` | `secret` | `authenticates-with` | `hive://secret/NAME` in the playbook code (best-effort) |
+| `playbook` | `playbook` | `runs` | `hive://playbook/NAME` in the playbook code (best-effort) |
 | `playbook` | `ai-agent` | `starts` | `hive://ai_agent/NAME` in the playbook code (best-effort) |
 
-The mechanism is uniform: any `hive://HIVE/NAME` (or `lcr://lookup/NAME`) string in a member's record content, where `HIVE` maps to a canonical type slug, produces a candidate edge — plus two structural extractors that don't use ARLs (extension requests by name, fp `cat` matching).
+The mechanism is uniform: any `hive://HIVE/NAME` (or `lcr://lookup/NAME`) string in a member's record content, where `HIVE` maps to a canonical type slug, produces a candidate edge — plus three structural extractors that don't use ARLs and apply to `dr-rule` members (extension requests by name, `action: output` by name, fp `cat` matching).
 
-**Do not declare `links:` tags for these relationships.** The platform draws them for you, and a declared duplicate adds nothing (see [Precedence](#precedence-and-de-duplication)).
+**Do not declare `links:` tags for these relationships.** The platform draws them for you; a declared duplicate changes nothing except flipping the edge's `origin` to `"declared"` (see [Precedence](#precedence-and-de-duplication)).
 
 ### Declared edges and the allowed-pair matrix
 
@@ -139,6 +148,8 @@ The mechanism is uniform: any `hive://HIVE/NAME` (or `lcr://lookup/NAME`) string
 | `detection`, `vulnerability`, `artifact` | `case` (`escalates-to`) |
 
 Direction convention: data-flow edges point the way data moves (telemetry → detection → response → sink); dependency edges point from the consumer to the dependency (`dr-rule → lookup`, `adapter → secret`).
+
+**Migration note:** before the matrix, any pair of known slugs was a valid `links:` target. Existing tags whose pair falls outside the matrix keep conferring membership, but their edges no longer render. Re-point or remove them — and if a legitimate pair is missing from the matrix, it can be added (the matrix can grow; pairs are never removed).
 
 ### Canonical edge labels
 
@@ -167,9 +178,9 @@ lc:story:prod-pipeline:label:exfiltration-detector
 lc:story:prod-pipeline:links:playbook:respond
 
 # On Playbook "respond" (Hive: playbook):
-lc:story:prod-pipeline:links:output:siem
+lc:story:prod-pipeline:links:ai-agent:triage
 
-# On Output "siem":
+# On AI agent "triage" (Hive: ai_agent):
 lc:story:prod-pipeline
 ```
 
@@ -179,21 +190,21 @@ Assembles to:
 {
   "name": "prod-pipeline",
   "nodes": [
+    { "id": "ai-agent/triage",      "type": "ai-agent", "name": "triage"  },
     { "id": "dr-rule/exfil-detect", "type": "dr-rule",
       "name": "exfil-detect", "label": "exfiltration detector" },
-    { "id": "output/siem",          "type": "output",   "name": "siem"    },
     { "id": "playbook/respond",     "type": "playbook", "name": "respond" }
   ],
   "edges": [
     { "from": "dr-rule/exfil-detect", "to": "playbook/respond",
       "label": "runs", "origin": "declared" },
-    { "from": "playbook/respond", "to": "output/siem",
-      "label": "writes-to", "origin": "declared" }
+    { "from": "playbook/respond", "to": "ai-agent/triage",
+      "label": "starts", "origin": "declared" }
   ]
 }
 ```
 
-Neither `links:` tag carries an `edge-label:`, so the assembler fills in the canonical default for each pair (`dr-rule → playbook` is `runs`, `playbook → output` is `writes-to`). And if `exfil-detect`'s respond block actually invoked the playbook via `ext-playbook`, the first `links:` tag would be unnecessary — the edge would appear automatically with `"origin": "derived"`.
+Neither `links:` tag carries an `edge-label:`, so the assembler fills in the canonical default for each pair (`dr-rule → playbook` is `runs`, `playbook → ai-agent` is `starts`). And if `exfil-detect`'s respond block actually invoked the playbook via `ext-playbook`, the first `links:` tag would be unnecessary — the edge would appear automatically with `"origin": "derived"`.
 
 ## Applying tags
 
@@ -205,10 +216,10 @@ The workflow is: **tag membership on everything, declare only the edges no confi
 
 ```bash
 # Mark a D&R rule as part of the "prod-pipeline" story:
-limacharlie hive set-tags --hive dr-general \
-    --name exfil-detect \
-    --tag lc:story:prod-pipeline \
-    --tag lc:story:prod-pipeline:label:exfiltration-detector
+limacharlie hive set --hive-name dr-general \
+    --key exfil-detect \
+    --tag-add lc:story:prod-pipeline \
+    --tag-add lc:story:prod-pipeline:label:exfiltration-detector
 ```
 
 ### Compose a multi-component story
@@ -217,25 +228,26 @@ A typical story spans several components. Membership tags go on everything; the 
 
 ```bash
 # Cloud sensor: member + declared telemetry edge to the rule
-limacharlie hive set-tags --hive cloud_sensor --name web-fleet \
-    --tag lc:story:detection-pipeline \
-    --tag lc:story:detection-pipeline:links:dr-rule:exfiltration
+limacharlie hive set --hive-name cloud_sensor --key web-fleet \
+    --tag-add lc:story:detection-pipeline \
+    --tag-add lc:story:detection-pipeline:links:dr-rule:exfiltration
 
-# D&R rule: member only — its respond block invokes the playbook via
-# ext-playbook and forwards to the output, so those edges are derived.
-limacharlie hive set-tags --hive dr-general --name exfiltration \
-    --tag lc:story:detection-pipeline
+# D&R rule: member only — its detect consults hive://lookup/threat-domains
+# and its respond invokes the playbook via ext-playbook, so those edges
+# are derived.
+limacharlie hive set --hive-name dr-general --key exfiltration \
+    --tag-add lc:story:detection-pipeline
 
 # Playbook: member only
-limacharlie hive set-tags --hive playbook --name quarantine \
-    --tag lc:story:detection-pipeline
+limacharlie hive set --hive-name playbook --key quarantine \
+    --tag-add lc:story:detection-pipeline
 
-# Output: member only
-limacharlie hive set-tags --hive output --name siem \
-    --tag lc:story:detection-pipeline
+# Lookup: member only
+limacharlie hive set --hive-name lookup --key threat-domains \
+    --tag-add lc:story:detection-pipeline
 ```
 
-The assembled graph: `web-fleet —telemetry→ exfiltration` (declared), `exfiltration —runs→ quarantine` (derived), `exfiltration —forwards-to→ siem` (derived).
+The assembled graph: `web-fleet —telemetry→ exfiltration` (declared), `exfiltration —runs→ quarantine` (derived), `exfiltration —consults→ threat-domains` (derived).
 
 ### Remove a component from a story
 
@@ -243,12 +255,12 @@ Untag the component. The next request for the story sees one fewer node and any 
 
 ## Reservation
 
-The `sensor` type slug is reserved for endpoint sensors but not yet surfaced by the v1 assembler — endpoint sensor selectors only support exact tag matching, which would miss link-only sensors and break the implicit-membership rule. `links:sensor:SID` tags will parse successfully but the edge will be dropped at the dangling-edge step until the sensor side is wired up. Use `cloud-sensor` (which IS surfaced) for sensor-shaped components today.
+The `sensor` type slug is reserved for endpoint sensors but not yet surfaced by the v1 assembler — endpoint sensor selectors only support exact tag matching, which would miss link-only sensors and break the implicit-membership rule. `links:sensor:SID` tags will parse, but no allowed-pair matrix row currently *targets* `sensor`, so the tag is dropped at the matrix gate (drop rule 3); a matrix row will be added when the sensor side is wired up. Use `cloud-sensor` (which IS surfaced) for sensor-shaped components today.
 
-Records (`case`, `artifact`, `detection`, `vulnerability`), IAM (`user`, `role`), and config singletons (`installation-key`, `api-key`) are similarly reserved and will surface as they're added to the assembler.
+Data-flow singletons (`output`, `payload`), Records (`case`, `artifact`, `detection`, `vulnerability`), IAM (`user`, `role`), and config singletons (`installation-key`, `api-key`) are similarly reserved — they are not Hive-backed today, so they cannot carry tags or appear as nodes, and edges pointing at them are dropped at the dangling-edge step. They will surface as they're added to the assembler.
 
 ## See also
 
 - [Asset Tags (`lc:asset:*`)](../2-sensors-deployment/asset-tags.md) — sister tag namespace for asset metadata; same drop-rule philosophy.
 - [Sensor Tags](../2-sensors-deployment/sensor-tags.md) — the underlying tagging mechanism and API surface.
-- [`limacharlie` CLI](../6-developer-guide/cli.md) — `hive set-tags` reference.
+- [`limacharlie` CLI](../6-developer-guide/cli.md) — `hive set` (`--tag-add`/`--tag-rm`) reference.
