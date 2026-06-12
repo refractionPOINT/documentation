@@ -12772,7 +12772,7 @@
 <p><code>lc:story:*</code> is a reserved tag namespace for declaring <strong>emergent graphs</strong> of LimaCharlie components. A <em>story</em> is the union of components (Hive records) carrying <code>lc:story:STORY_NAME[:...]</code> tags within an org, plus the directed edges between them. There is no separate story record anywhere — membership IS the tags. Edges come from two places: most are <strong>derived</strong> by the assembler from the member records' own configuration, and the rest are <strong>declared</strong> with <code>links:</code> tags (see <a href="#edge-ontology">Edge ontology</a>).</p>
 <p>The first consumer of the namespace is the LimaCharlie web app and the AI Sessions terminal, both of which render a story as a node-link diagram via the same shared <code>&lt;StoryGraph&gt;</code> component. The web app fetches the assembled story through a single API endpoint (<code>GET /v1/orgs/{oid}/stories/{name}</code>); the AI emits the matching card via <code>lc-card story</code>.</p>
 <h2 id="why-tags">Why tags<a class="headerlink" href="#why-tags" title="Anchor link to this section">&para;</a></h2>
-<p>LimaCharlie tags are the cross-cutting metadata mechanism for every Hive record (<abbr title="Detection &amp; Response">D&amp;R</abbr> rules, playbooks, outputs, adapters, cloud sensors, lookups, etc.):</p>
+<p>LimaCharlie tags are the cross-cutting metadata mechanism for every Hive record (<abbr title="Detection &amp; Response">D&amp;R</abbr> rules, playbooks, adapters, cloud sensors, lookups, etc.):</p>
 <ul>
 <li>They are visible on every record via the API and the web app.</li>
 <li>They can be added or removed by API, by <abbr title="Command-line Interface">CLI</abbr>, by <abbr title="Detection &amp; Response">D&amp;R</abbr> rule responses, or by hand in the web app.</li>
@@ -12842,8 +12842,8 @@
 </tr>
 <tr>
 <td><code>LABEL_SLUG</code></td>
-<td><code>^[a-z0-9][a-z0-9_-]{0,63}$</code></td>
-<td>Same as <code>STORY_NAME</code>. Rendered with <code>-</code> and <code>_</code> turned into spaces.</td>
+<td><code>^(?:[a-z0-9]\|[a-z0-9][a-z0-9_-]{0,62}[a-z0-9])$</code></td>
+<td>Like <code>STORY_NAME</code>, but no trailing <code>-</code>/<code>_</code> (a trailing separator would humanize to a trailing space). Rendered with <code>-</code> and <code>_</code> turned into spaces — see <a href="#label-humanization">Label humanization</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -12917,7 +12917,7 @@
 <tr>
 <td>Config</td>
 <td><code>extension</code></td>
-<td>Installed extension subscription</td>
+<td>Installed extension subscription (reserved — see <a href="#reservation">Reservation</a>)</td>
 </tr>
 <tr>
 <td>Config</td>
@@ -12992,8 +12992,14 @@
 <li><strong>Edge whose target isn't a member of the story</strong> → drop the edge silently (applies to derived edges too).</li>
 <li><strong>Multiple <code>label:</code> tags on the same node</strong> → lexically-first slug wins (mirrors the <code>lc:asset:*</code> tie-break).</li>
 </ol>
+<p>Membership nuance: rules 1–2 reject the tag at parse time, so a rejected tag confers nothing — not even membership. Rule 3 voids only the edge semantics: the tag parsed successfully, so the bearer remains a member of the story.</p>
 <h3 id="label-humanization">Label humanization<a class="headerlink" href="#label-humanization" title="Anchor link to this section">&para;</a></h3>
-<p><code>LABEL_SLUG</code> values are rendered with <code>-</code> and <code>_</code> replaced by spaces. <code>web-server-fleet</code> becomes "web server fleet"; <code>triggers-alert</code> becomes "triggers alert". This keeps the slug safe to use inside a tag (which has restricted charset) while still producing readable labels in the rendered graph.</p>
+<p><code>LABEL_SLUG</code> values render with <code>-</code> and <code>_</code> replaced by spaces (<code>web-server-fleet</code> → "web server fleet"), but the two label kinds are humanized at different layers:</p>
+<ul>
+<li><strong>Node labels</strong> are humanized by the assembler: the API payload carries <code>"label": "web server fleet"</code> for a <code>label:web-server-fleet</code> tag.</li>
+<li><strong>Edge labels</strong> stay in slug form in the API payload (<code>"label": "writes-to"</code>) so they double as stable identifiers; the rendering surface humanizes them (<code>StoryGraph</code> renders "writes to").</li>
+</ul>
+<p>This keeps the slug safe to use inside a tag (which has restricted charset) while still producing readable labels in the rendered graph.</p>
 <h2 id="edge-ontology">Edge ontology<a class="headerlink" href="#edge-ontology" title="Anchor link to this section">&para;</a></h2>
 <p>Edges are facts about how components connect; membership is curation of what belongs in the picture. The assembler keeps those responsibilities separate:</p>
 <ul>
@@ -13029,19 +13035,19 @@
 <td><code>dr-rule</code></td>
 <td><code>ai-agent</code></td>
 <td><code>starts</code></td>
-<td><code>action: start ai agent</code> with <code>definition: hive://ai_agent/NAME</code></td>
+<td><code>action: start ai agent</code> with <code>definition: hive://ai_agent/NAME</code>, or <code>extension request</code> to <code>ext-feedback</code> with <code>feedback_destination: ai_agent</code> carrying an <code>ai_agent_name:</code></td>
 </tr>
 <tr>
 <td><code>dr-rule</code></td>
 <td><code>playbook</code></td>
 <td><code>runs</code></td>
-<td><code>extension request</code> to <code>ext-playbook</code>/<code>ext-feedback</code> carrying a <code>playbook_name</code>, or any <code>hive://playbook/NAME</code> reference</td>
+<td><code>extension request</code> to <code>ext-playbook</code> (<code>name:</code> in the request) or <code>ext-feedback</code> (<code>playbook_name:</code>), or any <code>hive://playbook/NAME</code> reference</td>
 </tr>
 <tr>
 <td><code>dr-rule</code></td>
 <td><code>extension</code></td>
 <td><code>invokes</code></td>
-<td><code>action: extension request</code> with <code>extension name: NAME</code></td>
+<td><code>action: extension request</code> with <code>extension name: NAME</code> (reserved — <code>extension</code> nodes don't surface, see <a href="#reservation">Reservation</a>)</td>
 </tr>
 <tr>
 <td><code>dr-rule</code></td>
@@ -13059,7 +13065,7 @@
 <td><code>fp-rule</code></td>
 <td><code>dr-rule</code></td>
 <td><code>suppresses</code></td>
-<td>fp detect comparing <code>path: cat</code> against a name the rule <code>report</code>s</td>
+<td>fp logic (which sits at the record root) comparing <code>path: cat</code> with <code>op: is</code> — exact matches only — against a name the rule <code>report</code>s</td>
 </tr>
 <tr>
 <td><code>cloud-sensor</code></td>
@@ -13081,9 +13087,21 @@
 </tr>
 <tr>
 <td><code>playbook</code></td>
-<td><code>lookup</code> / <code>yara-rule</code> / <code>secret</code> / <code>playbook</code></td>
+<td><code>lookup</code> / <code>yara-rule</code></td>
 <td><code>uses</code></td>
 <td><code>hive://...</code> ARLs found in the playbook code (best-effort)</td>
+</tr>
+<tr>
+<td><code>playbook</code></td>
+<td><code>secret</code></td>
+<td><code>authenticates-with</code></td>
+<td><code>hive://secret/NAME</code> in the playbook code (best-effort)</td>
+</tr>
+<tr>
+<td><code>playbook</code></td>
+<td><code>playbook</code></td>
+<td><code>runs</code></td>
+<td><code>hive://playbook/NAME</code> in the playbook code (best-effort)</td>
 </tr>
 <tr>
 <td><code>playbook</code></td>
@@ -13093,8 +13111,8 @@
 </tr>
 </tbody>
 </table>
-<p>The mechanism is uniform: any <code>hive://HIVE/NAME</code> (or <code>lcr://lookup/NAME</code>) string in a member's record content, where <code>HIVE</code> maps to a canonical type slug, produces a candidate edge — plus two structural extractors that don't use ARLs (extension requests by name, fp <code>cat</code> matching).</p>
-<p><strong>Do not declare <code>links:</code> tags for these relationships.</strong> The platform draws them for you, and a declared duplicate adds nothing (see <a href="#precedence-and-de-duplication">Precedence</a>).</p>
+<p>The mechanism is uniform: any <code>hive://HIVE/NAME</code> (or <code>lcr://lookup/NAME</code>) string in a member's record content, where <code>HIVE</code> maps to a canonical type slug, produces a candidate edge — plus three structural extractors that don't use ARLs and apply to <code>dr-rule</code> members (extension requests by name, <code>action: output</code> by name, fp <code>cat</code> matching).</p>
+<p><strong>Do not declare <code>links:</code> tags for these relationships.</strong> The platform draws them for you; a declared duplicate changes nothing except flipping the edge's <code>origin</code> to <code>"declared"</code> (see <a href="#precedence-and-de-duplication">Precedence</a>).</p>
 <h3 id="declared-edges-and-the-allowed-pair-matrix">Declared edges and the allowed-pair matrix<a class="headerlink" href="#declared-edges-and-the-allowed-pair-matrix" title="Anchor link to this section">&para;</a></h3>
 <p><code>links:</code> tags are reserved for relationships no configuration expresses. Each <code>(bearer type → TARGET_TYPE)</code> pair must appear in the matrix below; a <code>links:</code> or <code>edge-label:</code> tag with a pair outside the matrix is silently dropped (drop rule 3). The matrix is a superset of the derived pairs — manually declaring a derivable edge stays valid (useful when the config reference doesn't exist yet).</p>
 <table>
@@ -13107,7 +13125,7 @@
 <tbody>
 <tr>
 <td><code>sensor</code>, <code>cloud-sensor</code>, <code>adapter</code></td>
-<td><code>dr-rule</code>, <code>fp-rule</code>, <code>yara-rule</code> (<code>telemetry</code>); <code>output</code> (<code>forwards-to</code>); <code>secret</code> (<code>authenticates-with</code>); <code>installation-key</code> (<code>enrolls-with</code>)</td>
+<td><code>dr-rule</code>, <code>fp-rule</code>, <code>yara-rule</code> (<code>telemetry</code>); <code>ai-agent</code> (<code>triggers</code>); <code>output</code> (<code>forwards-to</code>); <code>secret</code> (<code>authenticates-with</code>); <code>installation-key</code> (<code>enrolls-with</code>)</td>
 </tr>
 <tr>
 <td><code>dr-rule</code></td>
@@ -13144,6 +13162,7 @@
 </tbody>
 </table>
 <p>Direction convention: data-flow edges point the way data moves (telemetry → detection → response → sink); dependency edges point from the consumer to the dependency (<code>dr-rule → lookup</code>, <code>adapter → secret</code>).</p>
+<p><strong>Migration note:</strong> before the matrix, any pair of known slugs was a valid <code>links:</code> target. Existing tags whose pair falls outside the matrix keep conferring membership, but their edges no longer render. Re-point or remove them — and if a legitimate pair is missing from the matrix, it can be added (the matrix can grow; pairs are never removed).</p>
 <h3 id="canonical-edge-labels">Canonical edge labels<a class="headerlink" href="#canonical-edge-labels" title="Anchor link to this section">&para;</a></h3>
 <p>Derived edges always carry the canonical label for their pair. Declared edges without an <code>edge-label:</code> tag get the pair's default label filled in by the assembler — so an unlabeled <code>links:</code> tag still renders consistently. An explicit <code>edge-label:</code> overrides the default; any charset-valid slug is accepted, but stick to the vocabulary unless you have a strong reason:</p>
 <p><code>telemetry</code>, <code>triggers</code>, <code>starts</code>, <code>runs</code>, <code>invokes</code>, <code>consults</code>, <code>scans-with</code>, <code>suppresses</code>, <code>forwards-to</code>, <code>writes-to</code>, <code>reports</code>, <code>authenticates-with</code>, <code>enrolls-with</code>, <code>manages</code>, <code>uses</code>, <code>remembers</code>, <code>follows</code>, <code>deploys</code>, <code>documented-by</code>, <code>files</code>, <code>escalates-to</code>, <code>member-of</code>, <code>owns</code></p>
@@ -13163,70 +13182,72 @@
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>lc:story:prod-pipeline:links:playbook:respond
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a># On Playbook &quot;respond&quot; (Hive: playbook):
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>lc:story:prod-pipeline:links:output:siem
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>lc:story:prod-pipeline:links:ai-agent:triage
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a># On Output &quot;siem&quot;:
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a># On AI agent &quot;triage&quot; (Hive: ai_agent):
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>lc:story:prod-pipeline
 </span></code></pre></div>
 <p>Assembles to:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prod-pipeline&quot;</span><span class="p">,</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dr-rule/exfil-detect&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dr-rule&quot;</span><span class="p">,</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exfil-detect&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exfiltration detector&quot;</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;output/siem&quot;</span><span class="p">,</span><span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;output&quot;</span><span class="p">,</span><span class="w">   </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;siem&quot;</span><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ai-agent/triage&quot;</span><span class="p">,</span><span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ai-agent&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;triage&quot;</span><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dr-rule/exfil-detect&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dr-rule&quot;</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exfil-detect&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exfiltration detector&quot;</span><span class="w"> </span><span class="p">},</span>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;playbook/respond&quot;</span><span class="p">,</span><span class="w">     </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;playbook&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;respond&quot;</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="p">],</span>
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dr-rule/exfil-detect&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;playbook/respond&quot;</span><span class="p">,</span>
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;runs&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;declared&quot;</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;playbook/respond&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;output/siem&quot;</span><span class="p">,</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;writes-to&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;declared&quot;</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;playbook/respond&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ai-agent/triage&quot;</span><span class="p">,</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;starts&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;origin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;declared&quot;</span><span class="w"> </span><span class="p">}</span>
 </span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="p">]</span>
 </span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>Neither <code>links:</code> tag carries an <code>edge-label:</code>, so the assembler fills in the canonical default for each pair (<code>dr-rule → playbook</code> is <code>runs</code>, <code>playbook → output</code> is <code>writes-to</code>). And if <code>exfil-detect</code>'s respond block actually invoked the playbook via <code>ext-playbook</code>, the first <code>links:</code> tag would be unnecessary — the edge would appear automatically with <code>"origin": "derived"</code>.</p>
+<p>Neither <code>links:</code> tag carries an <code>edge-label:</code>, so the assembler fills in the canonical default for each pair (<code>dr-rule → playbook</code> is <code>runs</code>, <code>playbook → ai-agent</code> is <code>starts</code>). And if <code>exfil-detect</code>'s respond block actually invoked the playbook via <code>ext-playbook</code>, the first <code>links:</code> tag would be unnecessary — the edge would appear automatically with <code>"origin": "derived"</code>.</p>
 <h2 id="applying-tags">Applying tags<a class="headerlink" href="#applying-tags" title="Anchor link to this section">&para;</a></h2>
 <p>Use the <a href="../../6-developer-guide/cli/"><code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr></a> or the API equivalents documented in <a href="../../2-sensors-deployment/sensor-tags/"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr></a>. <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr> can be added at the Hive record level via the standard tag editor in the web app, via the <abbr title="Command-line Interface">CLI</abbr>, or via <abbr title="Detection &amp; Response">D&amp;R</abbr> rule responses.</p>
 <p>The workflow is: <strong>tag membership on everything, declare only the edges no config expresses.</strong> If a member's configuration already references another member (a rule's <code>hive://lookup/...</code>, an adapter's <code>hive://secret/...</code>, an <code>extension request</code>), the edge is derived automatically — adding a <code>links:</code> tag for it is redundant.</p>
 <h3 id="tag-a-single-hive-record"><abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tag</abbr> a single Hive record<a class="headerlink" href="#tag-a-single-hive-record" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Mark a D&amp;R rule as part of the &quot;prod-pipeline&quot; story:</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>set-tags<span class="w"> </span>--hive<span class="w"> </span>dr-general<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>--name<span class="w"> </span>exfil-detect<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>--tag<span class="w"> </span>lc:story:prod-pipeline<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span>--tag<span class="w"> </span>lc:story:prod-pipeline:label:exfiltration-detector
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--hive-name<span class="w"> </span>dr-general<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>--key<span class="w"> </span>exfil-detect<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>--tag-add<span class="w"> </span>lc:story:prod-pipeline<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span>--tag-add<span class="w"> </span>lc:story:prod-pipeline:label:exfiltration-detector
 </span></code></pre></div>
 <h3 id="compose-a-multi-component-story">Compose a multi-component story<a class="headerlink" href="#compose-a-multi-component-story" title="Anchor link to this section">&para;</a></h3>
 <p>A typical story spans several components. Membership tags go on everything; the only <code>links:</code> tag needed here is the telemetry edge, because "this sensor's data feeds this rule" is not written in any config:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Cloud sensor: member + declared telemetry edge to the rule</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>set-tags<span class="w"> </span>--hive<span class="w"> </span>cloud_sensor<span class="w"> </span>--name<span class="w"> </span>web-fleet<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--tag<span class="w"> </span>lc:story:detection-pipeline<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>--tag<span class="w"> </span>lc:story:detection-pipeline:links:dr-rule:exfiltration
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--hive-name<span class="w"> </span>cloud_sensor<span class="w"> </span>--key<span class="w"> </span>web-fleet<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--tag-add<span class="w"> </span>lc:story:detection-pipeline<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>--tag-add<span class="w"> </span>lc:story:detection-pipeline:links:dr-rule:exfiltration
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># D&amp;R rule: member only — its respond block invokes the playbook via</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># ext-playbook and forwards to the output, so those edges are derived.</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>set-tags<span class="w"> </span>--hive<span class="w"> </span>dr-general<span class="w"> </span>--name<span class="w"> </span>exfiltration<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span>--tag<span class="w"> </span>lc:story:detection-pipeline
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># Playbook: member only</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>set-tags<span class="w"> </span>--hive<span class="w"> </span>playbook<span class="w"> </span>--name<span class="w"> </span>quarantine<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span>--tag<span class="w"> </span>lc:story:detection-pipeline
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="c1"># Output: member only</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span>set-tags<span class="w"> </span>--hive<span class="w"> </span>output<span class="w"> </span>--name<span class="w"> </span>siem<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span>--tag<span class="w"> </span>lc:story:detection-pipeline
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># D&amp;R rule: member only — its detect consults hive://lookup/threat-domains</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># and its respond invokes the playbook via ext-playbook, so those edges</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># are derived.</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--hive-name<span class="w"> </span>dr-general<span class="w"> </span>--key<span class="w"> </span>exfiltration<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span>--tag-add<span class="w"> </span>lc:story:detection-pipeline
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="c1"># Playbook: member only</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--hive-name<span class="w"> </span>playbook<span class="w"> </span>--key<span class="w"> </span>quarantine<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span>--tag-add<span class="w"> </span>lc:story:detection-pipeline
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="c1"># Lookup: member only</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>limacharlie<span class="w"> </span>hive<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--hive-name<span class="w"> </span>lookup<span class="w"> </span>--key<span class="w"> </span>threat-domains<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span>--tag-add<span class="w"> </span>lc:story:detection-pipeline
 </span></code></pre></div>
-<p>The assembled graph: <code>web-fleet —telemetry→ exfiltration</code> (declared), <code>exfiltration —runs→ quarantine</code> (derived), <code>exfiltration —forwards-to→ siem</code> (derived).</p>
+<p>The assembled graph: <code>web-fleet —telemetry→ exfiltration</code> (declared), <code>exfiltration —runs→ quarantine</code> (derived), <code>exfiltration —consults→ threat-domains</code> (derived).</p>
 <h3 id="remove-a-component-from-a-story">Remove a component from a story<a class="headerlink" href="#remove-a-component-from-a-story" title="Anchor link to this section">&para;</a></h3>
 <p>Untag the component. The next request for the story sees one fewer node and any edges pointing at it disappear (the assembler drops dangling edges).</p>
 <h2 id="reservation">Reservation<a class="headerlink" href="#reservation" title="Anchor link to this section">&para;</a></h2>
-<p>The <code>sensor</code> type slug is reserved for endpoint sensors but not yet surfaced by the v1 assembler — endpoint sensor selectors only support exact tag matching, which would miss link-only sensors and break the implicit-membership rule. <code>links:sensor:SID</code> tags will parse successfully but the edge will be dropped at the dangling-edge step until the sensor side is wired up. Use <code>cloud-sensor</code> (which IS surfaced) for sensor-shaped components today.</p>
-<p>Records (<code>case</code>, <code>artifact</code>, <code>detection</code>, <code>vulnerability</code>), IAM (<code>user</code>, <code>role</code>), and config singletons (<code>installation-key</code>, <code>api-key</code>) are similarly reserved and will surface as they're added to the assembler.</p>
+<p>The <code>sensor</code> type slug is reserved for endpoint sensors but not yet surfaced by the v1 assembler — endpoint sensor selectors only support exact tag matching, which would miss link-only sensors and break the implicit-membership rule. <code>links:sensor:SID</code> tags will parse, but no allowed-pair matrix row currently <em>targets</em> <code>sensor</code>, so the tag is dropped at the matrix gate (drop rule 3); a matrix row will be added when the sensor side is wired up. Use <code>cloud-sensor</code> (which IS surfaced) for sensor-shaped components today.</p>
+<p>Data-flow singletons (<code>output</code>, <code>payload</code>), Records (<code>case</code>, <code>artifact</code>, <code>detection</code>, <code>vulnerability</code>), IAM (<code>user</code>, <code>role</code>), and config singletons (<code>installation-key</code>, <code>api-key</code>) are similarly reserved — they are not Hive-backed today, so they cannot carry tags or appear as nodes, and edges pointing at them are dropped at the dangling-edge step. They will surface as they're added to the assembler.</p>
+<p><code>extension</code> is also reserved, for a different reason: its backing hive (<code>extension_subscription</code>) is internal — <strong>never tag extension subscription records</strong>. <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> nodes don't surface, and edges targeting <code>extension</code> drop at the dangling-edge step. Model an extension-mediated flow through its visible components instead — e.g. ext-feedback's webhook cloud sensor declaring <code>links:ai-agent:...</code> (<code>triggers</code>), while the rule→agent leg derives from the <code>ai_agent_name</code> in the extension request.</p>
 <h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li><a href="../../2-sensors-deployment/asset-tags/">Asset <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr> (<code>lc:asset:*</code>)</a> — sister tag namespace for asset metadata; same drop-rule philosophy.</li>
 <li><a href="../../2-sensors-deployment/sensor-tags/"><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> <abbr title="Tags in LimaCharlie are strings linked to sensors for classifying endpoints, automating detection and response, and triggering workflows. Tags appear in every event under the `routing` component and help simplify rule writing. Tags can be added manually, via API, or through detection &amp; response...">Tags</abbr></a> — the underlying tagging mechanism and API surface.</li>
-<li><a href="../../6-developer-guide/cli/"><code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr></a> — <code>hive set-tags</code> reference.</li>
+<li><a href="../../6-developer-guide/cli/"><code>limacharlie</code> <abbr title="Command-line Interface">CLI</abbr></a> — <code>hive set</code> (<code>--tag-add</code>/<code>--tag-rm</code>) reference.</li>
 </ul>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
