@@ -4,6 +4,37 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ---
 
+## 2026-06-11
+
+### Web App 5.9.0
+
+Notable improvements and fixes:
+
+#### New Features
+
+- **AI Terminal ShareCard** — share sessions socially and invite users to tenants.
+- **Docked corner chat** — persistent AI chat launcher with pop-out, draft-new-session, minimize/maximize, and a live-session selector.
+- **Session fork** — fork an AI session with full lineage tracking.
+- **Card-list session browser** inside the chat layout with a unified action dropdown.
+- **Onboarding demand-signal cards** for unsupported AI providers.
+- **Feedback rich card** plus unsupported-request guidance for the AI FDE.
+- **ThreatLocker** platform and adapter support.
+- **AI Workbench** — agent usage moved into a dedicated Usage tab.
+- **Search** — scroll-to-top/bottom buttons, perceived + server timing on the status line, and query ID in the timing breakdown tooltip.
+- **AI Sessions** — rationalized session user state (Active + needs-attention), and `lc-compliance` as a selectable plugin.
+- **Git Sync** — added missing config hives to the UI.
+
+#### Bug Fixes
+
+- Fixed dark-mode LimaCharlie logo visibility.
+- Included `ai_agent.operate` in FDE and worker-key permission lists.
+- Cases — batched bulk assign / tags / close-note to avoid rate-limit failures.
+- Restored the agent list table in the AI Agents tabs.
+- CVE detail now opens from the sensor vulnerability list.
+- Timestamp column hidden for aggregation search results.
+
+---
+
 ## 2026-05-09
 
 ### Vulnerability Management Uplift
