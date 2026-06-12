@@ -1,6 +1,6 @@
 # Story Tag Namespace (`lc:story:*`)
 
-`lc:story:*` is a reserved tag namespace for declaring **emergent graphs** of LimaCharlie components. A *story* is the union of components (Hive records) carrying `lc:story:STORY_NAME[:...]` tags within an org, plus the directed links those tags declare between them. There is no separate story record anywhere — the graph IS the tags.
+`lc:story:*` is a reserved tag namespace for declaring **emergent graphs** of LimaCharlie components. A *story* is the union of components (Hive records) carrying `lc:story:STORY_NAME[:...]` tags within an org, plus the directed edges between them. There is no separate story record anywhere — membership IS the tags. Edges come from two places: most are **derived** by the assembler from the member records' own configuration, and the rest are **declared** with `links:` tags (see [Edge ontology](#edge-ontology)).
 
 The first consumer of the namespace is the LimaCharlie web app and the AI Sessions terminal, both of which render a story as a node-link diagram via the same shared `<StoryGraph>` component. The web app fetches the assembled story through a single API endpoint (`GET /v1/orgs/{oid}/stories/{name}`); the AI emits the matching card via `lc-card story`.
 
@@ -79,20 +79,82 @@ Applied deterministically by the assembler when it walks the tag set:
 
 1. **Charset gate failure** → drop the tag.
 2. **Unknown `TARGET_TYPE`** → drop the tag (forward-compat: the table can grow without invalidating older clients).
-3. **Component with an unknown root type** (not in the slug table) → drop the entire component.
-4. **`edge-label:` without a matching `links:`** → drop (no phantom edges).
-5. **Edge whose target isn't a member of the story** → drop the edge silently.
-6. **Multiple `label:` tags on the same node** → lexically-first slug wins (mirrors the `lc:asset:*` tie-break).
+3. **`links:`/`edge-label:` pair not in the allowed-pair matrix** → drop the tag (see [Declared edges](#declared-edges-and-the-allowed-pair-matrix)).
+4. **Component with an unknown root type** (not in the slug table) → drop the entire component.
+5. **`edge-label:` without a matching `links:`** → drop (no phantom edges).
+6. **Edge whose target isn't a member of the story** → drop the edge silently (applies to derived edges too).
+7. **Multiple `label:` tags on the same node** → lexically-first slug wins (mirrors the `lc:asset:*` tie-break).
 
 ### Label humanization
 
 `LABEL_SLUG` values are rendered with `-` and `_` replaced by spaces. `web-server-fleet` becomes "web server fleet"; `triggers-alert` becomes "triggers alert". This keeps the slug safe to use inside a tag (which has restricted charset) while still producing readable labels in the rendered graph.
 
+## Edge ontology
+
+Edges are facts about how components connect; membership is curation of what belongs in the picture. The assembler keeps those responsibilities separate:
+
+- **Derived edges** are computed by the assembler from the member records' own configuration — ARLs, extension requests, and name references that are already written down in the resource definitions. They require no tags, and they can never go stale: edit a rule to call a different playbook and the story updates on the next fetch.
+- **Declared edges** come from `links:` tags and cover relationships that exist operationally but are not expressed in any configuration (telemetry feeding a detection, an agent writing to its memory).
+
+Every edge in the assembled story carries an `origin` field: `"derived"` or `"declared"`.
+
+### Derived edges
+
+For each member, the assembler inspects the record content and emits an edge when it finds one of the reference patterns below **and the target is also a member of the story**. A reference to a non-member never pulls the target into the story — membership stays curated.
+
+| Source | Target | Label | Derived from |
+|---|---|---|---|
+| `dr-rule` | `lookup` | `consults` | `op: lookup` with `hive://lookup/NAME` or `lcr://lookup/NAME` in the detect logic |
+| `dr-rule` | `yara-rule` | `scans-with` | `hive://yara/NAME` in a respond task (e.g. `yara_scan`) |
+| `dr-rule` | `ai-agent` | `starts` | `action: start ai agent` with `definition: hive://ai_agent/NAME` |
+| `dr-rule` | `playbook` | `runs` | `extension request` to `ext-playbook`/`ext-feedback` carrying a `playbook_name`, or any `hive://playbook/NAME` reference |
+| `dr-rule` | `extension` | `invokes` | `action: extension request` with `extension name: NAME` |
+| `dr-rule` | `secret` | `authenticates-with` | `hive://secret/NAME` (e.g. inline `start ai agent` credentials) |
+| `dr-rule` | `output` | `forwards-to` | `action: output` with `name: NAME` (lands once `output` nodes surface) |
+| `fp-rule` | `dr-rule` | `suppresses` | fp detect comparing `path: cat` against a name the rule `report`s |
+| `cloud-sensor` | `secret` | `authenticates-with` | `hive://secret/NAME` in the sensor configuration |
+| `adapter` | `secret` | `authenticates-with` | `hive://secret/NAME` in the adapter configuration |
+| `ai-agent` | `secret` | `authenticates-with` | `anthropic_secret`, `lc_api_key_secret`, etc. |
+| `playbook` | `lookup` / `yara-rule` / `secret` / `playbook` | `uses` | `hive://...` ARLs found in the playbook code (best-effort) |
+| `playbook` | `ai-agent` | `starts` | `hive://ai_agent/NAME` in the playbook code (best-effort) |
+
+The mechanism is uniform: any `hive://HIVE/NAME` (or `lcr://lookup/NAME`) string in a member's record content, where `HIVE` maps to a canonical type slug, produces a candidate edge — plus two structural extractors that don't use ARLs (extension requests by name, fp `cat` matching).
+
+**Do not declare `links:` tags for these relationships.** The platform draws them for you, and a declared duplicate adds nothing (see [Precedence](#precedence-and-de-duplication)).
+
+### Declared edges and the allowed-pair matrix
+
+`links:` tags are reserved for relationships no configuration expresses. Each `(bearer type → TARGET_TYPE)` pair must appear in the matrix below; a `links:` or `edge-label:` tag with a pair outside the matrix is silently dropped (drop rule 3). The matrix is a superset of the derived pairs — manually declaring a derivable edge stays valid (useful when the config reference doesn't exist yet).
+
+| Source | Allowed targets (default edge label) |
+|---|---|
+| `sensor`, `cloud-sensor`, `adapter` | `dr-rule`, `fp-rule`, `yara-rule` (`telemetry`); `output` (`forwards-to`); `secret` (`authenticates-with`); `installation-key` (`enrolls-with`) |
+| `dr-rule` | `lookup` (`consults`); `yara-rule` (`scans-with`); `ai-agent` (`starts`); `playbook` (`runs`); `extension` (`invokes`); `secret` (`authenticates-with`); `output` (`forwards-to`); `payload` (`deploys`); `sop` (`documented-by`); `case` (`files`); `detection` (`reports`) |
+| `fp-rule` | `dr-rule` (`suppresses`) |
+| `yara-rule` | `dr-rule` (`triggers`) |
+| `playbook` | `output` (`writes-to`); `lookup` (`uses`); `yara-rule` (`uses`); `secret` (`authenticates-with`); `payload` (`deploys`); `ai-agent` (`starts`); `playbook` (`runs`); `extension` (`invokes`); `sop` (`follows`); `case` (`files`); `artifact` (`files`); `detection` (`reports`) |
+| `ai-agent` | `ai-memory` (`remembers`); `ai-skill` (`uses`); `sop` (`follows`); `output` (`writes-to`); `playbook` (`runs`); `ai-agent` (`starts`); `extension` (`invokes`); `secret` (`authenticates-with`); `case` (`files`); `artifact` (`files`); `detection` (`reports`) |
+| `extension` | `dr-rule`, `fp-rule`, `yara-rule`, `lookup`, `output`, `playbook` (`manages`) |
+| `user` | `role` (`member-of`); `api-key` (`owns`) |
+| `detection`, `vulnerability`, `artifact` | `case` (`escalates-to`) |
+
+Direction convention: data-flow edges point the way data moves (telemetry → detection → response → sink); dependency edges point from the consumer to the dependency (`dr-rule → lookup`, `adapter → secret`).
+
+### Canonical edge labels
+
+Derived edges always carry the canonical label for their pair. Declared edges without an `edge-label:` tag get the pair's default label filled in by the assembler — so an unlabeled `links:` tag still renders consistently. An explicit `edge-label:` overrides the default; any charset-valid slug is accepted, but stick to the vocabulary unless you have a strong reason:
+
+`telemetry`, `triggers`, `starts`, `runs`, `invokes`, `consults`, `scans-with`, `suppresses`, `forwards-to`, `writes-to`, `reports`, `authenticates-with`, `enrolls-with`, `manages`, `uses`, `remembers`, `follows`, `deploys`, `documented-by`, `files`, `escalates-to`, `member-of`, `owns`
+
+### Precedence and de-duplication
+
+If the same `(from, to)` edge is both derived and declared, the assembler emits a single edge: `origin` is `"declared"`, and the label is the declared `edge-label:` if present, otherwise the canonical default for the pair.
+
 ## Where stories surface
 
 - **AI Sessions terminal** — the AI emits the StoryCard via `lc-card story --oid OID --name STORY_NAME` when the user asks to see a named story. The card fetches the assembled story from the API and renders the graph inline.
 - **LimaCharlie web app** — any page that wants to render a story uses the same shared `StoryGraph` component. Future surfaces (an org-level "Story Library", per-extension landing pages) will plug into the same shape.
-- **API** — `GET /v1/orgs/{oid}/stories` returns the catalog (story names found in the org). `GET /v1/orgs/{oid}/stories/{name}` returns the assembled `{ name, nodes, edges }` graph. Per-Hive read permissions are enforced server-side; the response is scoped to what the caller can read.
+- **API** — `GET /v1/orgs/{oid}/stories` returns the catalog (story names found in the org). `GET /v1/orgs/{oid}/stories/{name}` returns the assembled `{ name, nodes, edges }` graph; each edge carries an `origin` field (`"derived"` or `"declared"`). Per-Hive read permissions are enforced server-side; the response is scoped to what the caller can read.
 
 ## Worked example
 
@@ -103,7 +165,6 @@ Three Hive records carry tags. Together they form the `prod-pipeline` story:
 lc:story:prod-pipeline
 lc:story:prod-pipeline:label:exfiltration-detector
 lc:story:prod-pipeline:links:playbook:respond
-lc:story:prod-pipeline:edge-label:playbook:respond:triggers
 
 # On Playbook "respond" (Hive: playbook):
 lc:story:prod-pipeline:links:output:siem
@@ -124,15 +185,21 @@ Assembles to:
     { "id": "playbook/respond",     "type": "playbook", "name": "respond" }
   ],
   "edges": [
-    { "from": "dr-rule/exfil-detect", "to": "playbook/respond", "label": "triggers" },
-    { "from": "playbook/respond",     "to": "output/siem" }
+    { "from": "dr-rule/exfil-detect", "to": "playbook/respond",
+      "label": "runs", "origin": "declared" },
+    { "from": "playbook/respond", "to": "output/siem",
+      "label": "writes-to", "origin": "declared" }
   ]
 }
 ```
 
+Neither `links:` tag carries an `edge-label:`, so the assembler fills in the canonical default for each pair (`dr-rule → playbook` is `runs`, `playbook → output` is `writes-to`). And if `exfil-detect`'s respond block actually invoked the playbook via `ext-playbook`, the first `links:` tag would be unnecessary — the edge would appear automatically with `"origin": "derived"`.
+
 ## Applying tags
 
 Use the [`limacharlie` CLI](../6-developer-guide/cli.md) or the API equivalents documented in [Sensor Tags](../2-sensors-deployment/sensor-tags.md). Tags can be added at the Hive record level via the standard tag editor in the web app, via the CLI, or via D&R rule responses.
+
+The workflow is: **tag membership on everything, declare only the edges no config expresses.** If a member's configuration already references another member (a rule's `hive://lookup/...`, an adapter's `hive://secret/...`, an `extension request`), the edge is derived automatically — adding a `links:` tag for it is redundant.
 
 ### Tag a single Hive record
 
@@ -141,35 +208,34 @@ Use the [`limacharlie` CLI](../6-developer-guide/cli.md) or the API equivalents 
 limacharlie hive set-tags --hive dr-general \
     --name exfil-detect \
     --tag lc:story:prod-pipeline \
-    --tag lc:story:prod-pipeline:label:exfiltration-detector \
-    --tag lc:story:prod-pipeline:links:playbook:respond
+    --tag lc:story:prod-pipeline:label:exfiltration-detector
 ```
 
 ### Compose a multi-component story
 
-A typical story spans several components. The pattern is the same regardless of component type:
+A typical story spans several components. Membership tags go on everything; the only `links:` tag needed here is the telemetry edge, because "this sensor's data feeds this rule" is not written in any config:
 
 ```bash
-# Source: cloud sensor → links → D&R rule
+# Cloud sensor: member + declared telemetry edge to the rule
 limacharlie hive set-tags --hive cloud_sensor --name web-fleet \
     --tag lc:story:detection-pipeline \
     --tag lc:story:detection-pipeline:links:dr-rule:exfiltration
 
-# Source: D&R rule → links → playbook + output
+# D&R rule: member only — its respond block invokes the playbook via
+# ext-playbook and forwards to the output, so those edges are derived.
 limacharlie hive set-tags --hive dr-general --name exfiltration \
-    --tag lc:story:detection-pipeline \
-    --tag lc:story:detection-pipeline:links:playbook:quarantine \
-    --tag lc:story:detection-pipeline:links:output:siem \
-    --tag lc:story:detection-pipeline:edge-label:playbook:quarantine:triggers
+    --tag lc:story:detection-pipeline
 
-# Sink: playbook (no outgoing links, still a member):
+# Playbook: member only
 limacharlie hive set-tags --hive playbook --name quarantine \
     --tag lc:story:detection-pipeline
 
-# Sink: output:
+# Output: member only
 limacharlie hive set-tags --hive output --name siem \
     --tag lc:story:detection-pipeline
 ```
+
+The assembled graph: `web-fleet —telemetry→ exfiltration` (declared), `exfiltration —runs→ quarantine` (derived), `exfiltration —forwards-to→ siem` (derived).
 
 ### Remove a component from a story
 
