@@ -255,6 +255,8 @@ This event is generated when a Sensor has crashed. It will include some telemetr
 
 Over quota deployment events are produced when a Sensor tries to connect but the Organization quota is already reached.
 
+The usage value that enforcement compares against the quota can be read via `GET https://api.limacharlie.io/v1/quota_usage/{oid}`. Note that it can be higher than the online sensor count reported by `GET /v1/online/{oid}`, because sensor categories are weighted differently for quota purposes and some categories that count toward enforcement are not included in the online count. See [the billing FAQ](faq/billing.md#how-do-i-check-my-sensor-quota-usage) for details.
+
 **Sample Event:**
 
 ```json
