@@ -73,6 +73,34 @@ If you set the quota to 100 vSensors, you can have concurrently:
 
 If the quota is maxed out when a sensor attempts to come online, the sensor will be given a message to go away for a period of time and then they can check again. A `sensor_over_quota` event will be emitted in the deployments stream as well enabling users to set up alerts and be notified about this happening. The amount of time sensors are told to go away for increases if they connect again and the organization is still over quota.
 
+## How Do I Check My Sensor Quota Usage?
+
+Two REST API endpoints report sensor counts for an organization, and they answer different questions:
+
+- `GET https://api.limacharlie.io/v1/online/{oid}` returns the number of sensors currently online.
+- `GET https://api.limacharlie.io/v1/quota_usage/{oid}` returns the **enforced** quota usage: the weighted vSensor count the platform compares against your sensor quota when deciding whether a sensor may come online.
+
+Both endpoints require the `sensor.list` permission on the organization.
+
+When sizing your sensor quota, use `/quota_usage`. Sensor categories are weighted differently for quota purposes — some consume a fraction of a vSensor each — and some categories that count toward enforcement are not included in the online count. As a result, `/quota_usage` can read higher than `/online`, and a quota sized off the online count alone can sit below the enforced usage and trigger `sensor_over_quota` events.
+
+A `/quota_usage` response contains the enforced usage, the currently configured quota, and a per-category breakdown:
+
+```json
+{
+  "usage": 53,
+  "quota": 100,
+  "breakdown": {
+    "windows": { "count": 50, "weight": 1.0, "quota": 50.0 },
+    "chromium": { "count": 30, "weight": 0.1, "quota": 3.0 }
+  }
+}
+```
+
+- `usage`: the enforced weighted vSensor count, truncated to an integer the same way enforcement truncates it. This is the value to compare against your configured quota.
+- `quota`: the sensor quota currently configured for the organization. This field is best-effort and may be absent.
+- `breakdown`: one entry per sensor category currently holding sensors, keyed by the platform or architecture name (for example `windows` or `chromium`) or by the sensor mode. Each entry reports `count`, the raw number of sensors in that category, `weight`, the vSensor cost of each sensor in that category, and `quota`, their weighted contribution to the usage total. Contributions are kept as floats so they sum to the pre-truncation total.
+
 ## When Will My Credit Card Be Charged?
 
 Quota-based items are charged a month ahead, while usage items are billed the month following, similar to most cellphone invoices (or hosting).
