@@ -11463,6 +11463,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-do-i-check-my-sensor-quota-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do I Check My Sensor Quota Usage?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#when-will-my-credit-card-be-charged" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12437,6 +12448,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-do-i-check-my-sensor-quota-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do I Check My Sensor Quota Usage?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#when-will-my-credit-card-be-charged" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12591,6 +12613,29 @@
 </ul>
 <h3 id="sensors-over-quota">Sensors Over Quota<a class="headerlink" href="#sensors-over-quota" title="Anchor link to this section">&para;</a></h3>
 <p>If the quota is maxed out when a sensor attempts to come online, the sensor will be given a message to go away for a period of time and then they can check again. A <code>sensor_over_quota</code> event will be emitted in the deployments stream as well enabling users to set up alerts and be notified about this happening. The amount of time sensors are told to go away for increases if they connect again and the organization is still over quota.</p>
+<h2 id="how-do-i-check-my-sensor-quota-usage">How Do I Check My <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Quota Usage?<a class="headerlink" href="#how-do-i-check-my-sensor-quota-usage" title="Anchor link to this section">&para;</a></h2>
+<p>Two REST API endpoints report sensor counts for an organization, and they answer different questions:</p>
+<ul>
+<li><code>GET https://api.limacharlie.io/v1/online/{oid}</code> returns the number of sensors currently online.</li>
+<li><code>GET https://api.limacharlie.io/v1/quota_usage/{oid}</code> returns the <strong>enforced</strong> quota usage: the weighted vSensor count the platform compares against your sensor quota when deciding whether a sensor may come online.</li>
+</ul>
+<p>Both endpoints require the <code>sensor.list</code> permission on the organization.</p>
+<p>When sizing your sensor quota, use <code>/quota_usage</code>. <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> categories are weighted differently for quota purposes — some consume a fraction of a vSensor each — and some categories that count toward enforcement are not included in the online count. As a result, <code>/quota_usage</code> can read higher than <code>/online</code>, and a quota sized off the online count alone can sit below the enforced usage and trigger <code>sensor_over_quota</code> events.</p>
+<p>A <code>/quota_usage</code> response contains the enforced usage, the currently configured quota, and a per-category breakdown:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;usage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">53</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&quot;quota&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&quot;breakdown&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">&quot;windows&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;quota&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">50.0</span><span class="w"> </span><span class="p">},</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">&quot;chromium&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;quota&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3.0</span><span class="w"> </span><span class="p">}</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<ul>
+<li><code>usage</code>: the enforced weighted vSensor count, truncated to an integer the same way enforcement truncates it. This is the value to compare against your configured quota.</li>
+<li><code>quota</code>: the sensor quota currently configured for the organization. This field is best-effort and may be absent.</li>
+<li><code>breakdown</code>: one entry per sensor category currently holding sensors, keyed by the platform or architecture name (for example <code>windows</code> or <code>chromium</code>) or by the sensor mode. Each entry reports <code>count</code>, the raw number of sensors in that category, <code>weight</code>, the vSensor cost of each sensor in that category, and <code>quota</code>, their weighted contribution to the usage total. Contributions are kept as floats so they sum to the pre-truncation total.</li>
+</ul>
 <h2 id="when-will-my-credit-card-be-charged">When Will My Credit Card Be Charged?<a class="headerlink" href="#when-will-my-credit-card-be-charged" title="Anchor link to this section">&para;</a></h2>
 <p>Quota-based items are charged a month ahead, while usage items are billed the month following, similar to most cellphone invoices (or hosting).</p>
 <h2 id="how-do-i-change-my-billing-credit-card">How Do I Change My Billing Credit Card?<a class="headerlink" href="#how-do-i-change-my-billing-credit-card" title="Anchor link to this section">&para;</a></h2>
