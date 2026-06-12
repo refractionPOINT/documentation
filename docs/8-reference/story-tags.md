@@ -59,7 +59,7 @@ Used in `TARGET_TYPE` for `links:` and `edge-label:` tags, and as the `type` fie
 | Data flow   | `output`          | Output configuration        |
 | Data flow   | `lookup`          | Hive `lookup`               |
 | Data flow   | `payload`         | Payload configuration       |
-| Config      | `extension`       | Installed extension subscription |
+| Config      | `extension`       | Installed extension subscription (reserved — see [Reservation](#reservation)) |
 | Config      | `installation-key`| Installation key            |
 | Config      | `secret`          | Hive `secret`               |
 | Config      | `api-key`         | API key                     |
@@ -115,7 +115,7 @@ For each member, the assembler inspects the record content and emits an edge whe
 | `dr-rule` | `yara-rule` | `scans-with` | `hive://yara/NAME` in a respond task (e.g. `yara_scan`) |
 | `dr-rule` | `ai-agent` | `starts` | `action: start ai agent` with `definition: hive://ai_agent/NAME`, or `extension request` to `ext-feedback` with `feedback_destination: ai_agent` carrying an `ai_agent_name:` |
 | `dr-rule` | `playbook` | `runs` | `extension request` to `ext-playbook` (`name:` in the request) or `ext-feedback` (`playbook_name:`), or any `hive://playbook/NAME` reference |
-| `dr-rule` | `extension` | `invokes` | `action: extension request` with `extension name: NAME` |
+| `dr-rule` | `extension` | `invokes` | `action: extension request` with `extension name: NAME` (reserved — `extension` nodes don't surface, see [Reservation](#reservation)) |
 | `dr-rule` | `secret` | `authenticates-with` | `hive://secret/NAME` (e.g. inline `start ai agent` credentials) |
 | `dr-rule` | `output` | `forwards-to` | `action: output` with `name: NAME` (lands once `output` nodes surface) |
 | `fp-rule` | `dr-rule` | `suppresses` | fp logic (which sits at the record root) comparing `path: cat` with `op: is` — exact matches only — against a name the rule `report`s |
@@ -258,6 +258,8 @@ Untag the component. The next request for the story sees one fewer node and any 
 The `sensor` type slug is reserved for endpoint sensors but not yet surfaced by the v1 assembler — endpoint sensor selectors only support exact tag matching, which would miss link-only sensors and break the implicit-membership rule. `links:sensor:SID` tags will parse, but no allowed-pair matrix row currently *targets* `sensor`, so the tag is dropped at the matrix gate (drop rule 3); a matrix row will be added when the sensor side is wired up. Use `cloud-sensor` (which IS surfaced) for sensor-shaped components today.
 
 Data-flow singletons (`output`, `payload`), Records (`case`, `artifact`, `detection`, `vulnerability`), IAM (`user`, `role`), and config singletons (`installation-key`, `api-key`) are similarly reserved — they are not Hive-backed today, so they cannot carry tags or appear as nodes, and edges pointing at them are dropped at the dangling-edge step. They will surface as they're added to the assembler.
+
+`extension` is also reserved, for a different reason: its backing hive (`extension_subscription`) is internal — **never tag extension subscription records**. Extension nodes don't surface, and edges targeting `extension` drop at the dangling-edge step. Model an extension-mediated flow through its visible components instead — e.g. ext-feedback's webhook cloud sensor declaring `links:ai-agent:...` (`triggers`), while the rule→agent leg derives from the `ai_agent_name` in the extension request.
 
 ## See also
 
