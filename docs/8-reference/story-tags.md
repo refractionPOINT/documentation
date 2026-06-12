@@ -113,7 +113,7 @@ For each member, the assembler inspects the record content and emits an edge whe
 |---|---|---|---|
 | `dr-rule` | `lookup` | `consults` | `op: lookup` with `hive://lookup/NAME` or `lcr://lookup/NAME` in the detect logic |
 | `dr-rule` | `yara-rule` | `scans-with` | `hive://yara/NAME` in a respond task (e.g. `yara_scan`) |
-| `dr-rule` | `ai-agent` | `starts` | `action: start ai agent` with `definition: hive://ai_agent/NAME` |
+| `dr-rule` | `ai-agent` | `starts` | `action: start ai agent` with `definition: hive://ai_agent/NAME`, or `extension request` to `ext-feedback` with `feedback_destination: ai_agent` carrying an `ai_agent_name:` |
 | `dr-rule` | `playbook` | `runs` | `extension request` to `ext-playbook` (`name:` in the request) or `ext-feedback` (`playbook_name:`), or any `hive://playbook/NAME` reference |
 | `dr-rule` | `extension` | `invokes` | `action: extension request` with `extension name: NAME` |
 | `dr-rule` | `secret` | `authenticates-with` | `hive://secret/NAME` (e.g. inline `start ai agent` credentials) |
@@ -137,7 +137,7 @@ The mechanism is uniform: any `hive://HIVE/NAME` (or `lcr://lookup/NAME`) string
 
 | Source | Allowed targets (default edge label) |
 |---|---|
-| `sensor`, `cloud-sensor`, `adapter` | `dr-rule`, `fp-rule`, `yara-rule` (`telemetry`); `output` (`forwards-to`); `secret` (`authenticates-with`); `installation-key` (`enrolls-with`) |
+| `sensor`, `cloud-sensor`, `adapter` | `dr-rule`, `fp-rule`, `yara-rule` (`telemetry`); `ai-agent` (`triggers`); `output` (`forwards-to`); `secret` (`authenticates-with`); `installation-key` (`enrolls-with`) |
 | `dr-rule` | `lookup` (`consults`); `yara-rule` (`scans-with`); `ai-agent` (`starts`); `playbook` (`runs`); `extension` (`invokes`); `secret` (`authenticates-with`); `output` (`forwards-to`); `payload` (`deploys`); `sop` (`documented-by`); `case` (`files`); `detection` (`reports`) |
 | `fp-rule` | `dr-rule` (`suppresses`) |
 | `yara-rule` | `dr-rule` (`triggers`) |
