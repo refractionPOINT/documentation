@@ -72,6 +72,7 @@ Used in `TARGET_TYPE` for `links:` and `edge-label:` tags, and as the `type` fie
 | AI          | `ai-agent`        | Hive `ai_agent`             |
 | AI          | `ai-skill`        | Hive `ai_skill`             |
 | AI          | `ai-memory`       | Hive `ai_memory`            |
+| Interface   | `app`             | Hive `app` (sandboxed iframe mini-app / dashboard) |
 
 ### Drop rules (assembler)
 
