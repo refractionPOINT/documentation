@@ -57,13 +57,13 @@ Records use a strict unmarshal: unknown fields are rejected. The maximum record 
 
 ## Permissions
 
-Managing records in the `app` hive currently reuses the `playbook.*` permission set:
+Managing records in the `app` hive requires the `app.*` permission set:
 
-- `playbook.get`
-- `playbook.set`
-- `playbook.del`
-- `playbook.get.mtd`
-- `playbook.set.mtd`
+- `app.get`
+- `app.set`
+- `app.del`
+- `app.get.mtd`
+- `app.set.mtd`
 
 !!! note
     These permissions gate who can **manage app records**. They are entirely separate from an app's own `required_permissions`, which are minted into the per-viewer iframe JWT. Do not conflate the two.
@@ -346,5 +346,5 @@ Managing records in the `app` hive currently reuses the `playbook.*` permission 
 
 ## See Also
 
-- [Permissions Reference](../../8-reference/permissions.md) -- The `playbook.*` permissions that gate app record management.
+- [Permissions Reference](../../8-reference/permissions.md) -- The `app.*` permissions that gate app record management.
 - [AI Sessions](../../9-ai-sessions/index.md) -- AI-driven workflows that author and consume LimaCharlie configuration.
