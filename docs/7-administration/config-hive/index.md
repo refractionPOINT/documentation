@@ -9,6 +9,7 @@ The Config Hive is LimaCharlie's hierarchical configuration store. It provides a
 - [Secrets](secrets.md) - Secure credential management
 - [YARA](yara.md) - YARA rule storage and management
 - [Cloud Sensors](cloud-sensors.md) - Cloud sensor configurations
+- [Apps](apps.md) - User-authored, AI-generated mini web applications
 
 ## Usage
 
