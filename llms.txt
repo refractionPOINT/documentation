@@ -276,6 +276,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [D&R Rules](https://docs.limacharlie.io/7-administration/config-hive/dr-rules/): Config Hive: Detection & Response Rules
 - [YARA](https://docs.limacharlie.io/7-administration/config-hive/yara/): Config Hive: Yara
 - [Cloud Sensors](https://docs.limacharlie.io/7-administration/config-hive/cloud-sensors/): Config Hive: Cloud Sensors
+- [Apps](https://docs.limacharlie.io/7-administration/config-hive/apps/): Config Hive: Apps
 
 ## Reference
 
