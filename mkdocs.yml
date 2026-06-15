@@ -539,6 +539,7 @@ nav:
 
   - AI Sessions:
       - Overview: 9-ai-sessions/index.md
+      - Grid - Your AI Field Engineer: 9-ai-sessions/grid.md
       - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
       - User Sessions: 9-ai-sessions/user-sessions.md
       - Tool Permissions & Profiles: 9-ai-sessions/tool-permissions.md
