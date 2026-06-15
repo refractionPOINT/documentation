@@ -310,6 +310,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 ## AI Sessions
 
 - [Overview](https://docs.limacharlie.io/9-ai-sessions/): AI Sessions
+- [Grid - Your AI Field Engineer](https://docs.limacharlie.io/9-ai-sessions/grid/): Grid: Your AI Field Engineer
 - [D&R-Driven Sessions](https://docs.limacharlie.io/9-ai-sessions/dr-sessions/): D&R-Driven AI Sessions
 - [User Sessions](https://docs.limacharlie.io/9-ai-sessions/user-sessions/): User AI Sessions
 - [Tool Permissions & Profiles](https://docs.limacharlie.io/9-ai-sessions/tool-permissions/)
