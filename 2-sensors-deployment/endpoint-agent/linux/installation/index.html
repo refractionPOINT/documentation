@@ -1087,6 +1087,8 @@
       
         
       
+        
+      
     
     
     
@@ -1141,6 +1143,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI & Environment Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -1161,10 +1191,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_2" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_1" id="__nav_3_8_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_2" id="__nav_3_8_2_label" tabindex="0">
             
   
   
@@ -1182,8 +1212,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1291,10 +1321,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_2" id="__nav_3_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_3" id="__nav_3_8_3_label" tabindex="0">
             
   
   
@@ -1312,8 +1342,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1525,10 +1555,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_3_8_3" id="__nav_3_8_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_4" id="__nav_3_8_4_label" tabindex="0">
             
   
   
@@ -1546,8 +1576,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_3_8_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_8_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1723,6 +1753,28 @@
     <span class="md-ellipsis">
       
         Disabling Netlink
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-data-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Data Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restricting-dns-tracking-to-an-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restricting DNS Tracking to an Interface
       
     </span>
   </a>
@@ -12567,6 +12619,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#custom-data-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Data Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restricting-dns-tracking-to-an-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restricting DNS Tracking to an Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -12682,13 +12756,8 @@
   
     
     
-      
-  
-  
-    
-    
       <li class="md-path__item">
-        <a href="../../windows/installation/" class="md-path__link">
+        <a href="../../cli-reference/" class="md-path__link">
           
   <span class="md-ellipsis">
     Endpoint Agents
@@ -12696,9 +12765,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -12864,6 +12930,11 @@ You can invoke it like this:</p>
 </ul>
 <h3 id="disabling-netlink">Disabling Netlink<a class="headerlink" href="#disabling-netlink" title="Anchor link to this section">&para;</a></h3>
 <p>By default, when running on a kernel where eBPF is unavailable, the Linux sensor uses the netlink proc connector (<code>CN_PROC</code>) to receive real-time process events. In some rare configurations this auto-detection may be unwanted — for example when another agent on the host already consumes the same connector — and netlink usage can be disabled by setting the environment variable <code>DISABLE_NETLINK</code> to any value on the sensor process. With netlink disabled and no eBPF available, the agent falls back to user-mode <code>/proc</code> polling. This setting has no effect when eBPF is the active acquisition path.</p>
+<h3 id="custom-data-directory">Custom Data Directory<a class="headerlink" href="#custom-data-directory" title="Anchor link to this section">&para;</a></h3>
+<p>The sensor stores its data and status files under <code>/opt/limacharlie</code> by default. On non-standard or hardened distributions where that path is not writable, you can point the sensor at a different directory by setting the <code>LC_DATA_DIRECTORY</code> environment variable on the sensor process to an absolute path. The directory must exist and be writable by the sensor.</p>
+<h3 id="restricting-dns-tracking-to-an-interface">Restricting DNS Tracking to an Interface<a class="headerlink" href="#restricting-dns-tracking-to-an-interface" title="Anchor link to this section">&para;</a></h3>
+<p>By default DNS tracking watches all network interfaces. To restrict it to a single interface, set the <code>LC_DNS_IFACE</code> environment variable to the interface name (for example <code>LC_DNS_IFACE=eth0</code>) on the sensor process.</p>
+<p>For the complete list of supported options, see the <a href="../../cli-reference/">Agent <abbr title="Command-line Interface">CLI</abbr> &amp; Environment Reference</a>.</p>
 <h2 id="uninstalling-the-agent">Uninstalling the Agent<a class="headerlink" href="#uninstalling-the-agent" title="Anchor link to this section">&para;</a></h2>
 <p>For additional agent uninstall options, see <a href="../../uninstallation/"><abbr title="Endpoint Agents are lightweight software agents deployed directly on endpoints like workstations and servers. These sensors collect real-time data related to system activity, network traffic, file changes, process behavior, and much more.">Endpoint Agent</abbr> Uninstallation</a></p>
 <p>Linux agent uninstallation depends on how the sensor was installed. For example, if installed via a Debian package (<code>dpkg</code> file) or an RPM package (<code>rpm</code> / <code>dnf</code> / <code>yum</code>), you should uninstall via the same package manager. If you installed via the SystemV installation method, please utilize the bottom of <a href="https://github.com/refractionPOINT/lce_doc/blob/master/docs/lc_linux_installer.sh#L97">this script</a>.</p>

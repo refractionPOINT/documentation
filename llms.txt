@@ -24,6 +24,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Asset Tags (lc:asset:*)](https://docs.limacharlie.io/2-sensors-deployment/asset-tags/): Asset Tag Namespace (`lc:asset:*`)
 - [Log Collection Guide](https://docs.limacharlie.io/2-sensors-deployment/log-collection-guide/)
 - [Telemetry Index](https://docs.limacharlie.io/2-sensors-deployment/telemetry-index/): Telemetry
+- [CLI & Environment Reference](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/cli-reference/): Agent CLI & Environment Reference
 - [Installation](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/windows/installation/): Windows Agent Installation
 - [Custom MSI](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/windows/custom-msi/): Building a custom MSI installer for Windows
 - [Installation (Sequoia+)](https://docs.limacharlie.io/2-sensors-deployment/endpoint-agent/macos/sequoia/): macOS Agent Installation - Latest Versions (macOS 15 Sequoia and newer)

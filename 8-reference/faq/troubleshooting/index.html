@@ -1080,6 +1080,8 @@
       
         
       
+        
+      
     
     
     
@@ -1131,6 +1133,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../../2-sensors-deployment/endpoint-agent/cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI & Environment Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -1151,10 +1181,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_2" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_1" id="__nav_3_8_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_2" id="__nav_3_8_2_label" tabindex="0">
             
   
   
@@ -1172,8 +1202,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1281,10 +1311,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_2" id="__nav_3_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_3" id="__nav_3_8_3_label" tabindex="0">
             
   
   
@@ -1302,8 +1332,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1513,10 +1543,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_4" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_3" id="__nav_3_8_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_4" id="__nav_3_8_4_label" tabindex="0">
             
   
   
@@ -1534,8 +1564,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -11627,6 +11657,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#enabling-verbose-and-file-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling Verbose and File Logging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#additional-help" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12530,6 +12571,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#enabling-verbose-and-file-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling Verbose and File Logging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#additional-help" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12964,6 +13016,56 @@
 </span><span id="__span-2-189"><a id="__codelineno-2-189" name="__codelineno-2-189" href="#__codelineno-2-189"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-2-190"><a id="__codelineno-2-190" name="__codelineno-2-190" href="#__codelineno-2-190"></a><span class="p">}</span>
 </span></code></pre></div>
+<h2 id="enabling-verbose-and-file-logging">Enabling Verbose and File Logging<a class="headerlink" href="#enabling-verbose-and-file-logging" title="Anchor link to this section">&para;</a></h2>
+<p>By default a released sensor logs almost nothing, to keep it quiet on production
+hosts. When diagnosing an issue you can raise the verbosity and route the output
+to a file using environment variables on the sensor process (set them in your
+systemd unit, launchd plist, or the Windows service environment so the running
+service inherits them):</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LC_VERBOSE</code></td>
+<td>Set to <code>1</code>/<code>true</code> to enable verbose logging (same as the <code>-v</code> flag).</td>
+</tr>
+<tr>
+<td><code>RPAL_LOG_LEVEL</code></td>
+<td>Sets the verbosity. Accepted values: <code>off</code>, <code>error</code> (alias <code>critical</code>), <code>warning</code> (alias <code>warn</code>), <code>info</code>, <code>debug</code>. Defaults to <code>warning</code> in release builds.</td>
+</tr>
+<tr>
+<td><code>RPAL_LOG_FILE</code></td>
+<td>Path to a log file. Setting this is the opt-in that turns on logging for a release sensor: output is written to the file at <code>RPAL_LOG_LEVEL</code>. Without it (and without <code>LC_VERBOSE</code>), a release sensor stays silent.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>In released sensors, <code>warning</code> is the most verbose level that produces output. The <code>info</code> and <code>debug</code> log statements are compiled out of release builds, so setting <code>RPAL_LOG_LEVEL</code> to <code>info</code> or <code>debug</code> has no additional effect over <code>warning</code>.</p>
+<p>For example, to capture logs to a file while reproducing an issue:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Linux / macOS</label><label for="__tabbed_1_2">Windows</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>sudo<span class="w"> </span><span class="nv">RPAL_LOG_FILE</span><span class="o">=</span>/tmp/lc_sensor.log<span class="w"> </span><span class="nv">RPAL_LOG_LEVEL</span><span class="o">=</span>warning<span class="w"> </span>./rphcp<span class="w"> </span>-d<span class="w"> </span>-
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bat highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">set</span> <span class="nv">RPAL_LOG_FILE</span><span class="p">=</span>C:\Temp\lc_sensor.log
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">set</span> <span class="nv">RPAL_LOG_LEVEL</span><span class="p">=</span>warning
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>rphcp.exe -d -
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>The log file can contain operational details about the host, so treat it as potentially sensitive and remove it once you are done troubleshooting.</p>
+<p>See the <a href="../../../2-sensors-deployment/endpoint-agent/cli-reference/">Agent <abbr title="Command-line Interface">CLI</abbr> &amp; Environment Reference</a>
+for the full list of supported options.</p>
 <h2 id="additional-help">Additional Help<a class="headerlink" href="#additional-help" title="Anchor link to this section">&para;</a></h2>
 <p>If these steps do not help, get in touch with us, and we will help you figure out the issue. The best way of contacting us is via our <a href="https://community.limacharlie.com/">Community Site</a>, followed by <code>support@limacharlie.io</code>.</p>
 <p>Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of <abbr title="Endpoint Detection &amp; Response">EDR</abbr> telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.</p>

@@ -1002,6 +1002,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#certificate-revocation-checks-on-restricted-networks-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate Revocation Checks on Restricted Networks (Windows)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1160,6 +1171,8 @@
       
         
       
+        
+      
     
     
     
@@ -1214,6 +1227,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../endpoint-agent/cli-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI & Environment Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
       
@@ -1234,10 +1275,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_2" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_1" id="__nav_3_8_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_2" id="__nav_3_8_2_label" tabindex="0">
             
   
   
@@ -1255,8 +1296,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_1">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1364,10 +1405,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_2" id="__nav_3_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_3" id="__nav_3_8_3_label" tabindex="0">
             
   
   
@@ -1385,8 +1426,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1596,10 +1637,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8_4" >
         
           
-          <label class="md-nav__link" for="__nav_3_8_3" id="__nav_3_8_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_8_4" id="__nav_3_8_4_label" tabindex="0">
             
   
   
@@ -1617,8 +1658,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_8_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_8_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -12352,6 +12393,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#certificate-revocation-checks-on-restricted-networks-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate Revocation Checks on Restricted Networks (Windows)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -12432,6 +12484,9 @@
 <p>On Windows, you may use a light auto-detection of a globally-configured, unauthenticated proxy.</p>
 <p>To enable this, set the same environment variable to the <code>-</code> value, like <code>LC_PROXY=-</code>. This will make the sensor query the registry key <code>HKLM\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ProxyServer</code> and use its value as the proxy destination.</p>
 <p>Also on Windows, in some cases the environment variable changes do not propagate to all processes in the expected way. Usually a reboot of the machine will fix it, but for machines that cannot be rebooted you have the ability to set a special value to the environment variable (deletion is usually problematic but setting a var works) that will disable the proxy specifically: <code>!</code>. So if you set the <code>LC_PROXY</code> variable to <code>!</code> (exclamation mark), the proxy will be disabled.</p>
+<h2 id="certificate-revocation-checks-on-restricted-networks-windows">Certificate Revocation Checks on Restricted Networks (Windows)<a class="headerlink" href="#certificate-revocation-checks-on-restricted-networks-windows" title="Anchor link to this section">&para;</a></h2>
+<p>On Windows, when the sensor verifies code signatures it performs certificate revocation checks, which can attempt to reach CRL/OCSP endpoints over the network. On air-gapped or tightly restricted networks those lookups may stall or fail.</p>
+<p>Setting the <code>LC_LOCAL_CACHE_ONLY_REVOCATION_CHECK</code> environment variable to <code>1</code> (or <code>true</code>) on the sensor process makes these revocation checks use only the local cache and never reach out to the network.</p>
 <p>Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of <abbr title="Endpoint Detection &amp; Response">EDR</abbr> telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.</p>
 <p>In LimaCharlie, an <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each <abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr> has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
