@@ -171,6 +171,16 @@ You may also pass the value `-` instead of the `INSTALLATION_KEY` like: `-d -`. 
 
 By default, when running on a kernel where eBPF is unavailable, the Linux sensor uses the netlink proc connector (`CN_PROC`) to receive real-time process events. In some rare configurations this auto-detection may be unwanted — for example when another agent on the host already consumes the same connector — and netlink usage can be disabled by setting the environment variable `DISABLE_NETLINK` to any value on the sensor process. With netlink disabled and no eBPF available, the agent falls back to user-mode `/proc` polling. This setting has no effect when eBPF is the active acquisition path.
 
+### Custom Data Directory
+
+The sensor stores its data and status files under `/opt/limacharlie` by default. On non-standard or hardened distributions where that path is not writable, you can point the sensor at a different directory by setting the `LC_DATA_DIRECTORY` environment variable on the sensor process to an absolute path. The directory must exist and be writable by the sensor.
+
+### Restricting DNS Tracking to an Interface
+
+By default DNS tracking watches all network interfaces. To restrict it to a single interface, set the `LC_DNS_IFACE` environment variable to the interface name (for example `LC_DNS_IFACE=eth0`) on the sensor process.
+
+For the complete list of supported options, see the [Agent CLI & Environment Reference](../cli-reference.md).
+
 ## Uninstalling the Agent
 
 For additional agent uninstall options, see [Endpoint Agent Uninstallation](../uninstallation.md)

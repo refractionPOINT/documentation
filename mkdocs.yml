@@ -222,6 +222,7 @@ nav:
       - Log Collection Guide: 2-sensors-deployment/log-collection-guide.md
       - Telemetry Index: 2-sensors-deployment/telemetry-index.md
       - Endpoint Agents:
+          - CLI & Environment Reference: 2-sensors-deployment/endpoint-agent/cli-reference.md
           - Windows:
               - Installation: 2-sensors-deployment/endpoint-agent/windows/installation.md
               - Custom MSI: 2-sensors-deployment/endpoint-agent/windows/custom-msi.md

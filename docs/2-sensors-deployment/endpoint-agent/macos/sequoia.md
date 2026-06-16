@@ -7,15 +7,18 @@ This document provides details of how to install, verify, and uninstall the Lima
 When running the installer from the command line, you can pass the following arguments:
 
 ```text
--v: display build version.
--q: quiet; do not display banner.
+-v: verbose logging output.
+-V: display the sensor build version.
 -d <INSTALLATION_KEY>: the installation key to use to enroll, no permanent installation.
 -i <INSTALLATION_KEY>: install executable as a service with deployment key.
 -r: uninstall executable as a service.
 -c: uninstall executable as a service and delete identity files.
+-H: verify sensor health and write a diagnostic report.
 -w: executable is running as a macOS service.
 -h: displays the list of accepted arguments.
 ```
+
+For the complete list of options, environment variables, and local files, see the [Agent CLI & Environment Reference](../cli-reference.md).
 
 ## Installation Flow
 
