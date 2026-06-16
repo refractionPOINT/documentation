@@ -62,3 +62,10 @@ The `-u` flag requires sensor version **4.33.28 or later**.
     ```bat
     hcp_win_x64_release_4.33.28.exe -u
     ```
+
+## Advanced: Forcing an Upgrade
+
+By default an in-place upgrade (`-u`) only replaces the installed service when the supplied binary is newer than what is installed. To re-apply or move to a build that is not strictly newer (for example to re-deploy a known-good version), set the `LC_UPGRADE_SKIP_VERSION_CHECK` environment variable to `1` (or `true`) on the upgrade process. This bypasses the version comparison and replaces the installed service unconditionally.
+
+!!! warning
+Use this only when you intend to override the version check. The automatic rollback on a failed start still applies, but skipping the check makes it possible to deliberately downgrade the on-disk agent.

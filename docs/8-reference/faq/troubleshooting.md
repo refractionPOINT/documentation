@@ -339,6 +339,44 @@ The log data is formatted similarly to the example below:
 }
 ```
 
+## Enabling Verbose and File Logging
+
+By default a released sensor logs almost nothing, to keep it quiet on production
+hosts. When diagnosing an issue you can raise the verbosity and route the output
+to a file using environment variables on the sensor process (set them in your
+systemd unit, launchd plist, or the Windows service environment so the running
+service inherits them):
+
+| Variable | Effect |
+| --- | --- |
+| `LC_VERBOSE` | Set to `1`/`true` to enable verbose logging (same as the `-v` flag). |
+| `RPAL_LOG_LEVEL` | Sets the verbosity. Accepted values: `off`, `error` (alias `critical`), `warning` (alias `warn`), `info`, `debug`. Defaults to `warning` in release builds. |
+| `RPAL_LOG_FILE` | Path to a log file. Setting this is the opt-in that turns on logging for a release sensor: output is written to the file at `RPAL_LOG_LEVEL`. Without it (and without `LC_VERBOSE`), a release sensor stays silent. |
+
+!!! note
+In released sensors, `warning` is the most verbose level that produces output. The `info` and `debug` log statements are compiled out of release builds, so setting `RPAL_LOG_LEVEL` to `info` or `debug` has no additional effect over `warning`.
+
+For example, to capture logs to a file while reproducing an issue:
+
+=== "Linux / macOS"
+
+    ```bash
+    sudo RPAL_LOG_FILE=/tmp/lc_sensor.log RPAL_LOG_LEVEL=warning ./rphcp -d -
+    ```
+
+=== "Windows"
+
+    ```bat
+    set RPAL_LOG_FILE=C:\Temp\lc_sensor.log
+    set RPAL_LOG_LEVEL=warning
+    rphcp.exe -d -
+    ```
+
+The log file can contain operational details about the host, so treat it as potentially sensitive and remove it once you are done troubleshooting.
+
+See the [Agent CLI & Environment Reference](../../2-sensors-deployment/endpoint-agent/cli-reference.md)
+for the full list of supported options.
+
 ## Additional Help
 
 If these steps do not help, get in touch with us, and we will help you figure out the issue. The best way of contacting us is via our [Community Site](https://community.limacharlie.com/), followed by `support@limacharlie.io`.
