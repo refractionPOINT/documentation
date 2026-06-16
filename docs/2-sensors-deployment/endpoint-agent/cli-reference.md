@@ -45,8 +45,8 @@ or the Windows service environment) so the running service inherits them.
 | Variable | Platforms | Description |
 |----------|-----------|-------------|
 | `LC_VERBOSE` | All | Set to `1`/`true` to enable verbose logging (same effect as the `-v` flag). |
-| `RPAL_LOG_LEVEL` | All | Sets the log verbosity. Accepted values: `off`, `error` (alias `critical`), `warning` (alias `warn`), `info`, `debug`. Defaults to `warning` in release builds. |
-| `RPAL_LOG_FILE` | All | Path to a file to write logs to. Setting this is the opt-in for logging on a release sensor — output is written to the file at `RPAL_LOG_LEVEL` (default `warning`). Without it, a release sensor stays silent unless `LC_VERBOSE` is set. |
+| `RPAL_LOG_LEVEL` | All | Sets the log verbosity. Accepted values: `off`, `error` (alias `critical`), `warning` (alias `warn`), `info`, `debug`. Defaults to `warning` in release builds. **In released sensors `warning` is the most verbose level that produces output — `info` and `debug` log statements are compiled out, so those values have no additional effect.** |
+| `RPAL_LOG_FILE` | All | Path to a file to write logs to. Setting this is the opt-in for logging on a release sensor — output is written to the file at `RPAL_LOG_LEVEL` (`warning` and above). Without it, a release sensor stays silent unless `LC_VERBOSE` is set. The log can contain operational details about the host; treat it as potentially sensitive and remove it once you are done troubleshooting. |
 
 See [Enabling Verbose and File Logging](../../8-reference/faq/troubleshooting.md#enabling-verbose-and-file-logging)
 for usage examples.
