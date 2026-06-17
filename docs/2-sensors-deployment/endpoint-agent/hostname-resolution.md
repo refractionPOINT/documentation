@@ -20,3 +20,5 @@ LC_DISABLE_REVERSE_DNS_HOSTNAME=1
 ```
 
 The variable must be explicitly set to `1` or `true` (case-insensitive) — simply defining the variable with an empty or other value is not enough and will be treated as disabled. When enabled, the agent skips steps 2 and 3 above and directly uses the local hostname of the box (step 4).
+
+For a sensor that is already installed and running as a service, set the variable through the service manager (launchd plist, systemd unit, or the Windows service) and restart the service. See [Setting Environment Variables for an Installed Service](cli-reference.md#setting-environment-variables-for-an-installed-service) for the per-platform procedure.
