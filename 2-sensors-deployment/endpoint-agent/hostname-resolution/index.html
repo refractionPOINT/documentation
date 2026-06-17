@@ -12451,6 +12451,7 @@
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>LC_DISABLE_REVERSE_DNS_HOSTNAME=1
 </span></code></pre></div>
 <p>The variable must be explicitly set to <code>1</code> or <code>true</code> (case-insensitive) — simply defining the variable with an empty or other value is not enough and will be treated as disabled. When enabled, the agent skips steps 2 and 3 above and directly uses the local hostname of the box (step 4).</p>
+<p>For a sensor that is already installed and running as a service, set the variable through the service manager (launchd plist, systemd unit, or the Windows service) and restart the service. See <a href="../cli-reference/#setting-environment-variables-for-an-installed-service">Setting Environment Variables for an Installed Service</a> for the per-platform procedure.</p>
 <!-- Glossary definitions for tooltip abbreviations -->
 <!-- Auto-generated from glossary CSV - do not edit manually -->
 

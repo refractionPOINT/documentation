@@ -1287,6 +1287,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#setting-environment-variables-for-an-installed-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting Environment Variables for an Installed Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting Environment Variables for an Installed Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#macos-launchd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS (launchd)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux-systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux (systemd)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows (service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#local-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12517,6 +12567,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#setting-environment-variables-for-an-installed-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting Environment Variables for an Installed Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting Environment Variables for an Installed Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#macos-launchd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS (launchd)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux-systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux (systemd)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows (service)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#local-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12704,7 +12804,9 @@ actions require <strong>root</strong> (Linux/macOS) or <strong>Administrator</st
 <h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Anchor link to this section">&para;</a></h2>
 <p>These environment variables are read by the sensor process. For installed
 services, set them through your service manager (systemd unit, launchd plist,
-or the Windows service environment) so the running service inherits them.</p>
+or the Windows service environment) so the running service inherits them — see
+<a href="#setting-environment-variables-for-an-installed-service">Setting Environment Variables for an Installed Service</a>
+below for the per-platform procedure.</p>
 <h3 id="enrollment">Enrollment<a class="headerlink" href="#enrollment" title="Anchor link to this section">&para;</a></h3>
 <table>
 <thead>
@@ -12837,6 +12939,83 @@ for usage examples.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="setting-environment-variables-for-an-installed-service">Setting Environment Variables for an Installed Service<a class="headerlink" href="#setting-environment-variables-for-an-installed-service" title="Anchor link to this section">&para;</a></h2>
+<p>The variables above are read by the sensor process when it starts. When the
+sensor runs as a managed service it inherits its environment from the service
+manager, not from your interactive shell, so <code>export</code>-ing a variable in a
+terminal has no effect on the running service. To make a variable take effect
+you set it in the service manager and then restart the service so it is
+re-spawned with the new environment. The procedure below is the same for any
+variable in the tables above — substitute the variable name and value you need.</p>
+<h3 id="macos-launchd">macOS (launchd)<a class="headerlink" href="#macos-launchd" title="Anchor link to this section">&para;</a></h3>
+<p>The installed sensor runs as the launchd daemon <code>com.refractionpoint.rphcp</code>,
+defined by <code>/Library/LaunchDaemons/com.refractionpoint.rphcp.plist</code>. Add an
+<code>EnvironmentVariables</code> dictionary to that plist (launchd values are always
+strings):</p>
+<div class="language-xml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">&lt;dict&gt;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>LC_DISABLE_REVERSE_DNS_HOSTNAME<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">&lt;string&gt;</span>1<span class="nt">&lt;/string&gt;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">&lt;/dict&gt;</span>
+</span></code></pre></div>
+<p>Add more <code>&lt;key&gt;</code>/<code>&lt;string&gt;</code> pairs to the same <code>&lt;dict&gt;</code> to set additional
+variables. Validate the edited file, then reload the daemon so launchd
+re-reads it — the environment is applied only when the process is spawned, so a
+running daemon will not pick up the change until it is restarted:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo<span class="w"> </span>plutil<span class="w"> </span>-lint<span class="w"> </span>/Library/LaunchDaemons/com.refractionpoint.rphcp.plist
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>launchctl<span class="w"> </span>bootout<span class="w"> </span>system<span class="w"> </span>/Library/LaunchDaemons/com.refractionpoint.rphcp.plist
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>launchctl<span class="w"> </span>bootstrap<span class="w"> </span>system<span class="w"> </span>/Library/LaunchDaemons/com.refractionpoint.rphcp.plist
+</span></code></pre></div>
+<p>Confirm the running service picked up the variable:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>sudo<span class="w"> </span>launchctl<span class="w"> </span>print<span class="w"> </span>system/com.refractionpoint.rphcp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">5</span><span class="w"> </span>environment
+</span></code></pre></div>
+<p>Notes:</p>
+<ul>
+<li><strong>Test without editing the plist.</strong> To apply a variable for the <em>next</em> launch
+  only, use <code>sudo launchctl debug system/com.refractionpoint.rphcp --environment LC_DISABLE_REVERSE_DNS_HOSTNAME=1</code>
+  followed by <code>sudo launchctl kickstart -k system/com.refractionpoint.rphcp</code>.
+  The setting is consumed on that single launch and is not persistent — useful
+  for confirming a variable's effect before committing it to the plist.</li>
+<li><strong>Managed fleets.</strong> Reinstalling the sensor recreates the plist, so re-apply
+  the variable after a reinstall. On hosts managed by an MDM, set the variable
+  through the management channel so it is not reverted when the configuration
+  profile is re-applied. See <a href="../macos/mdm-profiles/">MDM Profiles</a>.</li>
+</ul>
+<h3 id="linux-systemd">Linux (systemd)<a class="headerlink" href="#linux-systemd" title="Anchor link to this section">&para;</a></h3>
+<p>The installed sensor runs as the <code>limacharlie</code> systemd unit. Add an environment
+drop-in rather than editing the packaged unit file:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>edit<span class="w"> </span>limacharlie
+</span></code></pre></div>
+<p>In the editor that opens, add:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">[Service]</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">Environment</span><span class="o">=</span><span class="s">LC_DISABLE_REVERSE_DNS_HOSTNAME=1</span>
+</span></code></pre></div>
+<p>This writes <code>/etc/systemd/system/limacharlie.service.d/override.conf</code>. Apply it
+by restarting the service:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>limacharlie
+</span></code></pre></div>
+<p><code>systemctl edit</code> reloads the systemd daemon for you; if you create or edit the
+drop-in file by hand, run <code>sudo systemctl daemon-reload</code> first. On hosts that
+use a System V init service instead of systemd, export the variable from the
+init script's environment. Verify the running process:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>cat<span class="w"> </span>/proc/<span class="s2">&quot;</span><span class="k">$(</span>pgrep<span class="w"> </span>-x<span class="w"> </span>rphcp<span class="k">)</span><span class="s2">&quot;</span>/environ<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;\0&#39;</span><span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;^LC_&#39;</span>
+</span></code></pre></div>
+<h3 id="windows-service">Windows (service)<a class="headerlink" href="#windows-service" title="Anchor link to this section">&para;</a></h3>
+<p>The installed sensor runs as the <code>rphcpsvc</code> service. Set the variable in one of
+two ways, then restart the service:</p>
+<ul>
+<li><strong>Machine-wide (simplest):</strong> <code>setx /M LC_DISABLE_REVERSE_DNS_HOSTNAME 1</code> (run
+  from an elevated prompt). This adds the variable to the system environment
+  that every service and new process inherits.</li>
+<li><strong>Scoped to the sensor service:</strong> add a <code>REG_MULTI_SZ</code> value named
+  <code>Environment</code> under
+  <code>HKLM\SYSTEM\CurrentControlSet\Services\rphcpsvc</code>, with one <code>NAME=value</code>
+  entry per line. The Service Control Manager merges these into the service's
+  environment only, leaving the rest of the host untouched.</li>
+</ul>
+<p>Restart the service so it is re-spawned with the new environment:</p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">Restart-Service</span> <span class="n">rphcpsvc</span>
+</span></code></pre></div>
 <h2 id="local-files">Local Files<a class="headerlink" href="#local-files" title="Anchor link to this section">&para;</a></h2>
 <table>
 <thead>
