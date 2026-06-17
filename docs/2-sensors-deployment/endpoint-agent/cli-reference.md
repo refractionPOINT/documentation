@@ -32,7 +32,9 @@ actions require **root** (Linux/macOS) or **Administrator** (Windows).
 
 These environment variables are read by the sensor process. For installed
 services, set them through your service manager (systemd unit, launchd plist,
-or the Windows service environment) so the running service inherits them.
+or the Windows service environment) so the running service inherits them — see
+[Setting Environment Variables for an Installed Service](#setting-environment-variables-for-an-installed-service)
+below for the per-platform procedure.
 
 ### Enrollment
 
@@ -75,6 +77,112 @@ for usage examples.
 | Variable | Platforms | Description |
 |----------|-----------|-------------|
 | `LC_UPGRADE_SKIP_VERSION_CHECK` | All | **Advanced.** Set to `1`/`true` to skip the version comparison during an in-place upgrade (`-u`), forcing the binary to replace the installed service even when it is not newer. Use only when deliberately re-applying or downgrading a known-good build. |
+
+## Setting Environment Variables for an Installed Service
+
+The variables above are read by the sensor process when it starts. When the
+sensor runs as a managed service it inherits its environment from the service
+manager, not from your interactive shell, so `export`-ing a variable in a
+terminal has no effect on the running service. To make a variable take effect
+you set it in the service manager and then restart the service so it is
+re-spawned with the new environment. The procedure below is the same for any
+variable in the tables above — substitute the variable name and value you need.
+
+### macOS (launchd)
+
+The installed sensor runs as the launchd daemon `com.refractionpoint.rphcp`,
+defined by `/Library/LaunchDaemons/com.refractionpoint.rphcp.plist`. Add an
+`EnvironmentVariables` dictionary to that plist (launchd values are always
+strings):
+
+```xml
+<key>EnvironmentVariables</key>
+<dict>
+    <key>LC_DISABLE_REVERSE_DNS_HOSTNAME</key>
+    <string>1</string>
+</dict>
+```
+
+Add more `<key>`/`<string>` pairs to the same `<dict>` to set additional
+variables. Validate the edited file, then reload the daemon so launchd
+re-reads it — the environment is applied only when the process is spawned, so a
+running daemon will not pick up the change until it is restarted:
+
+```bash
+sudo plutil -lint /Library/LaunchDaemons/com.refractionpoint.rphcp.plist
+sudo launchctl bootout system /Library/LaunchDaemons/com.refractionpoint.rphcp.plist
+sudo launchctl bootstrap system /Library/LaunchDaemons/com.refractionpoint.rphcp.plist
+```
+
+Confirm the running service picked up the variable:
+
+```bash
+sudo launchctl print system/com.refractionpoint.rphcp | grep -A 5 environment
+```
+
+Notes:
+
+- **Test without editing the plist.** To apply a variable for the *next* launch
+  only, use `sudo launchctl debug system/com.refractionpoint.rphcp --environment LC_DISABLE_REVERSE_DNS_HOSTNAME=1`
+  followed by `sudo launchctl kickstart -k system/com.refractionpoint.rphcp`.
+  The setting is consumed on that single launch and is not persistent — useful
+  for confirming a variable's effect before committing it to the plist.
+- **Managed fleets.** Reinstalling the sensor recreates the plist, so re-apply
+  the variable after a reinstall. On hosts managed by an MDM, set the variable
+  through the management channel so it is not reverted when the configuration
+  profile is re-applied. See [MDM Profiles](macos/mdm-profiles.md).
+
+### Linux (systemd)
+
+The installed sensor runs as the `limacharlie` systemd unit. Add an environment
+drop-in rather than editing the packaged unit file:
+
+```bash
+sudo systemctl edit limacharlie
+```
+
+In the editor that opens, add:
+
+```ini
+[Service]
+Environment=LC_DISABLE_REVERSE_DNS_HOSTNAME=1
+```
+
+This writes `/etc/systemd/system/limacharlie.service.d/override.conf`. Apply it
+by restarting the service:
+
+```bash
+sudo systemctl restart limacharlie
+```
+
+`systemctl edit` reloads the systemd daemon for you; if you create or edit the
+drop-in file by hand, run `sudo systemctl daemon-reload` first. On hosts that
+use a System V init service instead of systemd, export the variable from the
+init script's environment. Verify the running process:
+
+```bash
+sudo cat /proc/"$(pgrep -x rphcp)"/environ | tr '\0' '\n' | grep '^LC_'
+```
+
+### Windows (service)
+
+The installed sensor runs as the `rphcpsvc` service. Set the variable in one of
+two ways, then restart the service:
+
+- **Machine-wide (simplest):** `setx /M LC_DISABLE_REVERSE_DNS_HOSTNAME 1` (run
+  from an elevated prompt). This adds the variable to the system environment
+  that every service and new process inherits.
+- **Scoped to the sensor service:** add a `REG_MULTI_SZ` value named
+  `Environment` under
+  `HKLM\SYSTEM\CurrentControlSet\Services\rphcpsvc`, with one `NAME=value`
+  entry per line. The Service Control Manager merges these into the service's
+  environment only, leaving the rest of the host untouched.
+
+Restart the service so it is re-spawned with the new environment:
+
+```powershell
+Restart-Service rphcpsvc
+```
 
 ## Local Files
 
