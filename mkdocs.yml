@@ -293,6 +293,7 @@ nav:
               - ServiceNow: 2-sensors-deployment/adapters/types/servicenow.md
               - PandaDoc: 2-sensors-deployment/adapters/types/pandadoc.md
               - Mimecast: 2-sensors-deployment/adapters/types/mimecast.md
+              - Box: 2-sensors-deployment/adapters/types/box.md
           - Infrastructure:
               - Kubernetes Pods: 2-sensors-deployment/adapters/types/kubernetes-pods.md
               - IIS: 2-sensors-deployment/adapters/types/iis.md
