@@ -281,6 +281,7 @@ nav:
               - Sophos: 2-sensors-deployment/adapters/types/sophos.md
               - Carbon Black: 2-sensors-deployment/adapters/types/carbon-black.md
               - Sublime Security: 2-sensors-deployment/adapters/types/sublime-security.md
+              - Trend Micro Vision One: 2-sensors-deployment/adapters/types/trend-micro.md
               - ThreatLocker: 2-sensors-deployment/adapters/types/threatlocker.md
           - Collaboration:
               - Microsoft 365: 2-sensors-deployment/adapters/types/microsoft-365.md
