@@ -213,6 +213,8 @@ theme and re-colors itself when you toggle dark mode.
 </script>
 ```
 
+**Permissions:** `sensor.list` (read-only).
+
 A few things the chart helper does for you:
 
 - **Colors itself from your theme.** Leave datasets uncolored and they're assigned
@@ -255,21 +257,33 @@ the result. Add `{ service: 'search' }` to route to it.
     const end = Math.floor(Date.now() / 1000)
     const start = end - 24 * 60 * 60
 
-    // The assistant writes the LCQL `query` for you and validates it.
+    // The assistant writes and validates the LCQL `query` for you.
+    // startTime/endTime are Unix seconds passed as strings.
     const init = await lc.api('POST', '/v1/search/',
-      { oid, query: '<assistant-generated LCQL>', startTime: start, endTime: end },
+      { oid, query: '<assistant-generated LCQL>', startTime: String(start), endTime: String(end) },
       { service: 'search' })
 
-    const page = await lc.api('GET', '/v1/search/' + init.queryId + '/',
-      null, { service: 'search' })
+    // A search runs asynchronously — poll until it reports completed.
+    let res = init
+    while (!res.completed) {
+      await new Promise((r) => setTimeout(r, res.nextPollInMs || 1000))
+      res = await lc.api('GET', '/v1/search/' + init.queryId + '/',
+        null, { service: 'search' })
+    }
 
-    document.getElementById('count').textContent = (page.results || []).length
+    // Results come back as blocks; tally the rows of the event blocks.
+    const count = (res.results || [])
+      .filter((b) => b.type === 'events')
+      .reduce((n, b) => n + (b.rows ? b.rows.length : 0), 0)
+    document.getElementById('count').textContent = count
   })()
 </script>
 ```
 
-**Requires:** the `search` service must be declared on the app, plus the relevant
-read permission. The assistant sets both up.
+**Requires:** the `search` service declared on the app, plus the `insight.evt.get`
+permission — the assistant sets both up. This tallies the events the query returns;
+for very large totals, ask the assistant to write an aggregating LCQL query that
+returns the count directly.
 
 !!! note "Let the assistant write LCQL"
     LimaCharlie's query language (LCQL) has its own syntax that's validated against
@@ -301,17 +315,22 @@ viewing. The console passes the sensor's ID into `lc.ctx.context.sid`.
       return
     }
     try {
-      const info = await lc.api('GET', '/v1/' + sid)
+      // GET /v1/<sid> returns { online: { is_online }, info: { hostname, … } }.
+      const data = await lc.api('GET', '/v1/' + sid)
+      const hostname = (data.info && data.info.hostname) || sid
+      const online = !!(data.online && data.online.is_online)
       panel.innerHTML =
-        '<h2>' + (info.hostname || sid) + '</h2>' +
-        '<span class="lc-badge ' + (info.is_online ? 'lc-badge--positive' : '') + '">' +
-        (info.is_online ? 'online' : 'offline') + '</span>'
+        '<h2>' + hostname + '</h2>' +
+        '<span class="lc-badge ' + (online ? 'lc-badge--positive' : '') + '">' +
+        (online ? 'online' : 'offline') + '</span>'
     } catch (e) {
       panel.textContent = 'Error: ' + e.code
     }
   })()
 </script>
 ```
+
+**Permissions:** `sensor.get`.
 
 When you build this, tell the assistant you want it on sensor pages so it sets the
 **location** to *within a sensor* and the **expected context** to `sid`. See
