@@ -241,13 +241,13 @@ same engine as the Query Console). It's a two-step call: start a query, then rea
 the result. Add `{ service: 'search' }` to route to it.
 
 **Ask the assistant:**
-> *"Count how many detections fired in the last 24 hours and show it as a big
+> *"Count the events across all sensors in the last 24 hours and show it as a big
 > number."*
 
 ```html
 <div class="lc-card"><div class="lc-kpi">
   <span class="lc-kpi__value" id="count">—</span>
-  <span class="lc-kpi__label">Detections (24h)</span>
+  <span class="lc-kpi__label">Events (last 24h)</span>
 </div></div>
 
 <script>
@@ -257,10 +257,12 @@ the result. Add `{ service: 'search' }` to route to it.
     const end = Math.floor(Date.now() / 1000)
     const start = end - 24 * 60 * 60
 
-    // The assistant writes and validates the LCQL `query` for you.
-    // startTime/endTime are Unix seconds passed as strings.
+    // The assistant writes and validates the LCQL for you. A counting query
+    // ends with `COUNT(event) as count`. startTime/endTime are Unix seconds
+    // passed as strings (they override any time range in the query).
     const init = await lc.api('POST', '/v1/search/',
-      { oid, query: '<assistant-generated LCQL>', startTime: String(start), endTime: String(end) },
+      { oid, query: '* | * | / exists | COUNT(event) as count',
+        startTime: String(start), endTime: String(end) },
       { service: 'search' })
 
     // A search runs asynchronously — poll until it reports completed.
@@ -271,19 +273,17 @@ the result. Add `{ service: 'search' }` to route to it.
         null, { service: 'search' })
     }
 
-    // Results come back as blocks; tally the rows of the event blocks.
-    const count = (res.results || [])
-      .filter((b) => b.type === 'events')
-      .reduce((n, b) => n + (b.rows ? b.rows.length : 0), 0)
-    document.getElementById('count').textContent = count
+    // A COUNT query returns one aggregate row in the events block.
+    const block = (res.results || []).find((b) => b.type === 'events')
+    const count = block && block.rows && block.rows[0] ? block.rows[0].data.count : 0
+    document.getElementById('count').textContent = Number(count).toLocaleString()
   })()
 </script>
 ```
 
 **Requires:** the `search` service declared on the app, plus the `insight.evt.get`
-permission — the assistant sets both up. This tallies the events the query returns;
-for very large totals, ask the assistant to write an aggregating LCQL query that
-returns the count directly.
+permission — the assistant sets both up. A `COUNT(...)` projection returns the exact
+total in a single aggregate row, no matter how many events match.
 
 !!! note "Let the assistant write LCQL"
     LimaCharlie's query language (LCQL) has its own syntax that's validated against
