@@ -99,29 +99,38 @@ A row of big numbers is the quickest win for an at-a-glance view.
 ```html
 <div class="lc-row">
   <div class="lc-card"><div class="lc-kpi">
-    <span class="lc-kpi__value" id="total">—</span>
+    <span class="lc-kpi__value" id="total"><span class="lc-spinner"></span></span>
     <span class="lc-kpi__label">Total sensors</span>
   </div></div>
   <div class="lc-card"><div class="lc-kpi">
-    <span class="lc-kpi__value" id="online">—</span>
+    <span class="lc-kpi__value" id="online"><span class="lc-spinner"></span></span>
     <span class="lc-kpi__label">Online now</span>
   </div></div>
 </div>
 
 <script>
   ;(async () => {
-    await lc.ready
-    const oid = lc.ctx.orgs[0].oid
-    const res = await lc.api('GET', '/v1/sensors/' + oid)
-    const sensors = res.sensors || []
-    document.getElementById('total').textContent = sensors.length
-    document.getElementById('online').textContent =
-      sensors.filter((s) => s.is_online).length
+    try {
+      await lc.ready
+      const oid = lc.ctx.orgs[0].oid
+      const res = await lc.api('GET', '/v1/sensors/' + oid)
+      const sensors = res.sensors || []
+      document.getElementById('total').textContent = sensors.length
+      document.getElementById('online').textContent =
+        sensors.filter((s) => s.is_online).length
+    } catch (e) {
+      document.getElementById('online').innerHTML =
+        '<span class="lc-badge lc-badge--danger">' + e.code + '</span>'
+    }
   })()
 </script>
 ```
 
 **Permissions:** `sensor.list` (read-only).
+
+Each value starts as a `.lc-spinner`, swapped for the number once the data
+arrives. Do this — and wrap calls in `try`/`catch` — in every data-backed app so
+it shows progress and surfaces errors instead of sitting on a blank dash.
 
 ---
 
@@ -218,7 +227,10 @@ theme and re-colors itself when you toggle dark mode.
 A few things the chart helper does for you:
 
 - **Colors itself from your theme.** Leave datasets uncolored and they're assigned
-  the console palette automatically. Toggle dark mode and the chart re-themes live.
+  the console palette automatically — pie and doughnut charts get one color per
+  slice. Toggle dark mode and the chart re-themes live. Pass an explicit
+  `backgroundColor` array to choose specific colors (e.g. green for online, red
+  for offline).
 - **Supports the usual chart types** — `bar`, `line`, `doughnut`, `pie`, and more.
   Switch by changing `type`. For a bar chart of activity over time, feed `labels`
   (e.g. days) and a `datasets` array of counts.
@@ -246,37 +258,42 @@ the result. Add `{ service: 'search' }` to route to it.
 
 ```html
 <div class="lc-card"><div class="lc-kpi">
-  <span class="lc-kpi__value" id="count">—</span>
+  <span class="lc-kpi__value" id="count"><span class="lc-spinner"></span></span>
   <span class="lc-kpi__label">Events (last 24h)</span>
 </div></div>
 
 <script>
   ;(async () => {
-    await lc.ready
-    const oid = lc.ctx.orgs[0].oid
-    const end = Math.floor(Date.now() / 1000)
-    const start = end - 24 * 60 * 60
+    const el = document.getElementById('count')
+    try {
+      await lc.ready
+      const oid = lc.ctx.orgs[0].oid
+      const end = Math.floor(Date.now() / 1000)
+      const start = end - 24 * 60 * 60
 
-    // The assistant writes and validates the LCQL for you. A counting query
-    // ends with `COUNT(event) as count`. startTime/endTime are Unix seconds
-    // passed as strings (they override any time range in the query).
-    const init = await lc.api('POST', '/v1/search/',
-      { oid, query: '* | * | / exists | COUNT(event) as count',
-        startTime: String(start), endTime: String(end) },
-      { service: 'search' })
+      // The assistant writes and validates the LCQL for you. A counting query
+      // ends with `COUNT(event) as count`. startTime/endTime are Unix seconds
+      // passed as strings (they override any time range in the query).
+      const init = await lc.api('POST', '/v1/search/',
+        { oid, query: '* | * | / exists | COUNT(event) as count',
+          startTime: String(start), endTime: String(end) },
+        { service: 'search' })
 
-    // A search runs asynchronously — poll until it reports completed.
-    let res = init
-    while (!res.completed) {
-      await new Promise((r) => setTimeout(r, res.nextPollInMs || 1000))
-      res = await lc.api('GET', '/v1/search/' + init.queryId + '/',
-        null, { service: 'search' })
+      // A search runs asynchronously — the spinner stays up while we poll.
+      let res = init
+      while (!res.completed) {
+        await new Promise((r) => setTimeout(r, res.nextPollInMs || 1000))
+        res = await lc.api('GET', '/v1/search/' + init.queryId + '/',
+          null, { service: 'search' })
+      }
+
+      // A COUNT query returns one aggregate row in the events block.
+      const block = (res.results || []).find((b) => b.type === 'events')
+      const count = block && block.rows && block.rows[0] ? block.rows[0].data.count : 0
+      el.textContent = Number(count).toLocaleString()
+    } catch (e) {
+      el.innerHTML = '<span class="lc-badge lc-badge--danger">Error: ' + e.code + '</span>'
     }
-
-    // A COUNT query returns one aggregate row in the events block.
-    const block = (res.results || []).find((b) => b.type === 'events')
-    const count = block && block.rows && block.rows[0] ? block.rows[0].data.count : 0
-    document.getElementById('count').textContent = Number(count).toLocaleString()
   })()
 </script>
 ```
@@ -303,7 +320,7 @@ viewing. The console passes the sensor's ID into `lc.ctx.context.sid`.
 > online status."*
 
 ```html
-<div class="lc-card" id="panel">Loading sensor…</div>
+<div class="lc-card" id="panel"><span class="lc-spinner"></span></div>
 
 <script>
   ;(async () => {
@@ -311,7 +328,9 @@ viewing. The console passes the sensor's ID into `lc.ctx.context.sid`.
     const sid = lc.ctx.context.sid          // provided by the host on a sensor page
     const panel = document.getElementById('panel')
     if (!sid) {
-      panel.textContent = 'Open this app from a sensor page.'
+      panel.innerHTML =
+        '<p class="lc-muted">This panel embeds on a sensor’s page, where it shows ' +
+        'that sensor’s status. Open it from any sensor to see it in action.</p>'
       return
     }
     try {
@@ -377,6 +396,14 @@ you on the consent screen**. By default an app can reach nothing external.
     Only add external origins you trust, and request the **fewest** read
     permissions the app needs. Note external calls use your app's own `fetch`
     (with no LimaCharlie key attached), not `lc.api`.
+
+!!! note "The external site must allow browser calls"
+    The app's `fetch` is a cross-origin browser request, so the site must return
+    permissive CORS headers (`Access-Control-Allow-Origin`) — many APIs don't —
+    and it must be reachable from your network (security setups commonly block
+    DNS-over-HTTPS and other uncommon endpoints). A `Failed to fetch` with no
+    network request means the origin is undeclared, CORS-blocked, or
+    network-blocked.
 
 ## Where to go next
 
