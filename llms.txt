@@ -328,6 +328,13 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Case-Reviewer Agent](https://docs.limacharlie.io/9-ai-sessions/compliance/case-reviewer-agent/)
 - [Gap Analysis](https://docs.limacharlie.io/9-ai-sessions/compliance/gap-analysis/)
 
+## Apps
+
+- [Overview](https://docs.limacharlie.io/apps/): Apps
+- [Creating & Managing Apps](https://docs.limacharlie.io/apps/creating-and-managing-apps/)
+- [Building Blocks & Recipes](https://docs.limacharlie.io/apps/building-blocks-and-recipes/)
+- [Reference](https://docs.limacharlie.io/apps/reference/)
+
 ## Release Notes
 
 - [Overview](https://docs.limacharlie.io/10-release-notes/): Release Notes
