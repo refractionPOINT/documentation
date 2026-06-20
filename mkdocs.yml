@@ -558,5 +558,11 @@ nav:
           - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
           - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
+  - Apps:
+      - Overview: apps/index.md
+      - Creating & Managing Apps: apps/creating-and-managing-apps.md
+      - Building Blocks & Recipes: apps/building-blocks-and-recipes.md
+      - Reference: apps/reference.md
+
   - Release Notes:
       - Overview: 10-release-notes/index.md

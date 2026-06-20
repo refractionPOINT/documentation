@@ -346,5 +346,6 @@ Managing records in the `app` hive requires the `app.*` permission set:
 
 ## See Also
 
+- [Apps](../../apps/index.md) -- The end-user guide to building and using apps in the console: the AI authoring flow, the `window.lc` runtime, and recipes for charts and tables.
 - [Permissions Reference](../../8-reference/permissions.md) -- The `app.*` permissions that gate app record management.
 - [AI Sessions](../../9-ai-sessions/index.md) -- AI-driven workflows that author and consume LimaCharlie configuration.
