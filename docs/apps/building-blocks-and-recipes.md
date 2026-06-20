@@ -48,6 +48,8 @@ Here's a tiny app that uses several pieces together:
 </div>
 ```
 
+![A LimaCharlie app showing two cards: a "Hello" card with a muted subtitle and a green "Ready" badge, and a card with a primary "Do the thing" button.](../assets/images/apps/hello.png)
+
 ## Getting your data
 
 Apps read live LimaCharlie data through a built-in helper called `lc.api`. You
@@ -126,6 +128,8 @@ A row of big numbers is the quickest win for an at-a-glance view.
 </script>
 ```
 
+![A two-card KPI dashboard: a large "568" labeled "Total sensors" and a large "27" labeled "Online now".](../assets/images/apps/kpi-dashboard.png)
+
 **Permissions:** `sensor.list` (read-only).
 
 Each value starts as a `.lc-spinner`, swapped for the number once the data
@@ -183,6 +187,8 @@ from an API call.
 </script>
 ```
 
+![A console-styled "Sensors" card with a Refresh button, listing sensor hostnames with green "online" status badges.](../assets/images/apps/sensors-table.png)
+
 **Permissions:** `sensor.list`. Want more columns (platform, last seen, external
 IP)? Just ask the assistant — it confirms the exact field names against your live
 data.
@@ -221,6 +227,8 @@ theme and re-colors itself when you toggle dark mode.
   })()
 </script>
 ```
+
+![A doughnut chart titled with an Online/Offline legend, drawn in the console palette, showing a small online slice against a large offline slice.](../assets/images/apps/online-offline.png)
 
 **Permissions:** `sensor.list` (read-only).
 
@@ -298,6 +306,8 @@ the result. Add `{ service: 'search' }` to route to it.
 </script>
 ```
 
+![A single KPI card showing "265,563" above the label "Events (last 24h)".](../assets/images/apps/events-count.png)
+
 **Requires:** the `search` service declared on the app, plus the `insight.evt.get`
 permission — the assistant sets both up. A `COUNT(...)` projection returns the exact
 total in a single aggregate row, no matter how many events match.
@@ -349,6 +359,8 @@ viewing. The console passes the sensor's ID into `lc.ctx.context.sid`.
 </script>
 ```
 
+![A sensor's page in the console with a "Sensor Panel" tab open, showing the app embedded in context: the sensor's hostname and a green "online" badge.](../assets/images/apps/sensor-panel.png)
+
 **Permissions:** `sensor.get`.
 
 When you build this, tell the assistant you want it on sensor pages so it sets the
@@ -380,8 +392,9 @@ you on the consent screen**. By default an app can reach nothing external.
     const out = document.getElementById('out')
     out.textContent = 'Looking up…'
     try {
-      // Only works because https://intel.example.com is a declared allowed origin.
-      const r = await fetch('https://intel.example.com/lookup?ip=' + encodeURIComponent(ip))
+      // Only works because https://ipinfo.io is a declared allowed origin.
+      // Swap in your own threat-intel provider — and declare its origin too.
+      const r = await fetch('https://ipinfo.io/' + encodeURIComponent(ip) + '/json')
       out.textContent = JSON.stringify(await r.json(), null, 2)
     } catch (e) {
       out.textContent = 'Lookup failed (is the origin declared?): ' + e
@@ -389,6 +402,13 @@ you on the consent screen**. By default an app can reach nothing external.
   })
 </script>
 ```
+
+![The IP lookup app: an input containing "8.8.8.8" with a "Look up" button, and a monospace card below showing the returned JSON (hostname dns.google, city Mountain View, org AS15169 Google LLC).](../assets/images/apps/ip-lookup.png)
+
+This runs as-is: it calls [ipinfo.io](https://ipinfo.io), a free, CORS-enabled IP
+lookup, so you only need to declare `https://ipinfo.io` as an allowed origin. Swap
+in your own threat-intel provider the same way — declare its origin and adjust the
+URL.
 
 !!! warning "External access is a data-exfiltration surface — declare it carefully"
     Any LimaCharlie data your app can read could be sent to a declared external
