@@ -16,12 +16,12 @@ This page covers the cost analytics and savings views in the LimaCharlie web app
 
 LimaCharlie uses a Bring Your Own Key model, so AI cost has two parts:
 
-- **AI spend** — the Claude API token cost reported by the AI gateway for D&R-driven and interactive sessions, plus per-minute session runtime on your invoice. Token spend is what Cost Analytics charts and breaks down by model and trigger rule.
+- **AI spend** — the Claude API token cost reported by the AI gateway for D&R-driven and interactive sessions. This is what Cost Analytics charts and breaks down by model and trigger rule, and what the savings calculation nets out. Per-minute session runtime is billed separately on your invoice.
 - **Analyst-equivalent value** — what the same investigations would have cost in human analyst time. This is the savings side, and it is anchored to how your cases were actually resolved.
 
 Savings is the first netted against the second:
 
-```
+```text
 net savings = analyst-equivalent value − logged human time − AI spend
 ```
 
@@ -38,7 +38,7 @@ A **cost profile** is a named category of analyst work that AI stands in for —
 
 From these, the **cost to handle** one investigation of that profile is:
 
-```
+```text
 cost to handle = loaded_hourly_rate × (minutes_per_investigation / 60)
 ```
 
@@ -61,7 +61,7 @@ Any case an AI touched (AI-only or AI + Human) is credited the full cost to hand
 
 Cases are valued per **severity**, not at one blanket rate. When you have more than one cost profile, LimaCharlie tiers them by cost — the cheapest profile handles the lowest severities, the most expensive handles the highest (e.g. an L1 triage rate for informational cases, an IR analyst rate for critical ones). The analyst-equivalent value is the sum across severities of:
 
-```
+```text
 cases at that severity × cost to handle of that severity's profile
 ```
 
