@@ -4,6 +4,31 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ---
 
+## 2026-06-18
+
+### Web App 5.10.0
+
+Fleet Billing arrives for MSSPs, alongside AI Terminal refinements and clearer session-state reporting.
+
+#### New Features
+
+- **Fleet Billing**: a cross-tenant billing console for MSSPs.
+- **AI Terminal**: visual improvements and refined landing actions.
+- **AI session statuses**: Running, Waiting, and Ended states, with an indicator when a session is awaiting user input.
+- **Access Management**: added a Role column to the user table.
+- **Case console**: added a selectable page size.
+
+#### Bug Fixes
+
+- Query console download now matches the visible table.
+- Added a Minimize button to the AI Session chat floating button.
+- Added the AI Session chat button to the sessions page.
+- Restored the "Download file from session" action in the chat menu.
+- Restored the app version and release notes in the profile menu, and fixed the Dark Mode font.
+- Adjusted the light-mode AI Terminal card fill color for better contrast.
+
+---
+
 ## 2026-06-11
 
 ### Web App 5.9.0
