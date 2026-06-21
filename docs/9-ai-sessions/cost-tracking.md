@@ -105,4 +105,4 @@ Cost Tracking is for measurement and reporting — it does **not** cap spend. To
 
 - [D&R-Driven Sessions](dr-sessions.md) — `max_budget_usd` and session triggering
 - [User Sessions](user-sessions.md) — interactive sessions and budgets
-- [Billing options](../7-administration/billing/options/) — how LimaCharlie billing works overall
+- [Billing options](../7-administration/billing/options.md) — how LimaCharlie billing works overall
