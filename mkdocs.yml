@@ -550,6 +550,7 @@ nav:
       - Command Line Interface: 9-ai-sessions/cli.md
       - Alternative Providers: 9-ai-sessions/alternative-providers.md
       - API Reference: 9-ai-sessions/api-reference.md
+      - Cost Tracking & Savings: 9-ai-sessions/cost-tracking.md
       - Compliance:
           - Overview: 9-ai-sessions/compliance/index.md
           - Installation: 9-ai-sessions/compliance/installation.md

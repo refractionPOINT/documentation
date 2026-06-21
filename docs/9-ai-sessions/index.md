@@ -90,6 +90,7 @@ respond:
 - [AI Skills](skills.md) - Reusable Claude Code skill definitions stored in your org
 - [AI Memory](memory.md) - Per-agent persistent memory with partial-merge writes
 - [API Reference](api-reference.md) - REST API and WebSocket protocol
+- [Cost Tracking & Savings](cost-tracking.md) - AI spend, analyst-equivalent value, and net savings measured from your case resolution mix
 - [Compliance](compliance/index.md) - The `lc-compliance` Claude Code plugin: per-framework case-reviewer agents (D&R-driven) plus four interactive skills for control lookups, gap analysis, and guided deploy
 
 ## Billing
@@ -100,6 +101,8 @@ AI Sessions usage is billed based on:
 - **Claude API usage**: Passed through from your Anthropic account (Bring Your Own Key model)
 
 Since you provide your own Anthropic API key, Claude API costs are billed directly by Anthropic to your account.
+
+To track what your AI agents spend and the analyst work they took on — including net savings versus the cost of doing the same investigations by hand — see [Cost Tracking & Savings](cost-tracking.md). To hard-cap what a single session can spend, set `max_budget_usd` (see [D&R-Driven Sessions](dr-sessions.md)).
 
 ## Privacy & Security
 
