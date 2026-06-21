@@ -314,6 +314,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Grid - Your AI Field Engineer](https://docs.limacharlie.io/9-ai-sessions/grid/): Grid: Your AI Field Engineer
 - [D&R-Driven Sessions](https://docs.limacharlie.io/9-ai-sessions/dr-sessions/): D&R-Driven AI Sessions
 - [User Sessions](https://docs.limacharlie.io/9-ai-sessions/user-sessions/): User AI Sessions
+- [Cost Tracking & Savings](https://docs.limacharlie.io/9-ai-sessions/cost-tracking/): AI Cost Tracking & Savings
 - [Tool Permissions & Profiles](https://docs.limacharlie.io/9-ai-sessions/tool-permissions/)
 - [Runner Environment](https://docs.limacharlie.io/9-ai-sessions/runner-environment/)
 - [AI Skills](https://docs.limacharlie.io/9-ai-sessions/skills/)
@@ -321,7 +322,6 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Command Line Interface](https://docs.limacharlie.io/9-ai-sessions/cli/)
 - [Alternative Providers](https://docs.limacharlie.io/9-ai-sessions/alternative-providers/): Alternative AI Providers
 - [API Reference](https://docs.limacharlie.io/9-ai-sessions/api-reference/)
-- [Cost Tracking & Savings](https://docs.limacharlie.io/9-ai-sessions/cost-tracking/): AI Cost Tracking & Savings
 - [Overview](https://docs.limacharlie.io/9-ai-sessions/compliance/): Compliance
 - [Installation](https://docs.limacharlie.io/9-ai-sessions/compliance/installation/)
 - [Frameworks](https://docs.limacharlie.io/9-ai-sessions/compliance/frameworks/)
