@@ -321,6 +321,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Command Line Interface](https://docs.limacharlie.io/9-ai-sessions/cli/)
 - [Alternative Providers](https://docs.limacharlie.io/9-ai-sessions/alternative-providers/): Alternative AI Providers
 - [API Reference](https://docs.limacharlie.io/9-ai-sessions/api-reference/)
+- [Cost Tracking & Savings](https://docs.limacharlie.io/9-ai-sessions/cost-tracking/): AI Cost Tracking & Savings
 - [Overview](https://docs.limacharlie.io/9-ai-sessions/compliance/): Compliance
 - [Installation](https://docs.limacharlie.io/9-ai-sessions/compliance/installation/)
 - [Frameworks](https://docs.limacharlie.io/9-ai-sessions/compliance/frameworks/)
