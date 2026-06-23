@@ -282,6 +282,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 ## Reference
 
 - [Overview](https://docs.limacharlie.io/8-reference/): Reference
+- [The routing Section](https://docs.limacharlie.io/8-reference/routing/): Reference: The `routing` Section
 - [Endpoint Commands](https://docs.limacharlie.io/8-reference/endpoint-commands/): Reference: Endpoint Agent Commands
 - [Detection Operators](https://docs.limacharlie.io/8-reference/detection-logic-operators/): Detection Logic Operators
 - [Response Actions](https://docs.limacharlie.io/8-reference/response-actions/)

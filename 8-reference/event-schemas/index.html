@@ -10761,6 +10761,8 @@
       
         
       
+        
+      
     
     
     
@@ -10816,6 +10818,34 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../routing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The routing Section
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -11465,7 +11495,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_17" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_18" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -11487,14 +11517,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_9_17" id="__nav_9_17_label" tabindex="">
+              <label class="md-nav__link " for="__nav_9_18" id="__nav_9_18_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_17_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9_17">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_18">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -13179,6 +13209,9 @@
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a443f9c48bef700740ef27e062c333c6&quot;</span>
 </span></code></pre></div>
 <h3 id="relationship-to-other-structures">Relationship to Other Structures<a class="headerlink" href="#relationship-to-other-structures" title="Anchor link to this section">&para;</a></h3>
+<blockquote>
+<p>For a dedicated explanation of the <code>routing</code> metadata envelope shared by events and detections, see <a href="../routing/">The <code>routing</code> Section</a>.</p>
+</blockquote>
 <p><strong>Events → Detections</strong>: When a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule matches an event, a Detection is created. The Detection inherits the <code>routing</code> object from the triggering event and adds detection-specific metadata.</p>
 <p><strong>Events → Outputs</strong>: Events can be routed to external systems via the "event" output stream. The full event structure (both <code>routing</code> and <code>event</code>) is sent.</p>
 <p><strong>Events → Audit</strong>: Audit logs track platform actions and have a different structure. See the Output Stream Structures documentation for details.</p>
