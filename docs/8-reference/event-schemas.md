@@ -227,6 +227,8 @@ detect:
 
 ### Relationship to Other Structures
 
+> For a dedicated explanation of the `routing` metadata envelope shared by events and detections, see [The `routing` Section](routing.md).
+
 **Events → Detections**: When a D&R rule matches an event, a Detection is created. The Detection inherits the `routing` object from the triggering event and adds detection-specific metadata.
 
 **Events → Outputs**: Events can be routed to external systems via the "event" output stream. The full event structure (both `routing` and `event`) is sent.
