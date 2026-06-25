@@ -13049,11 +13049,17 @@
 <td>OAuth client credentials</td>
 <td><code>oauth_client_credentials</code></td>
 <td><code>client_id</code>, <code>client_secret</code></td>
-<td>True server-to-server. Requires the instance property <code>glide.oauth.inbound.client.credential.grant_type.enabled</code> to be <code>true</code>.</td>
+<td>True server-to-server (no end-user password). Needs extra instance-side setup — see below.</td>
 </tr>
 </tbody>
 </table>
 <p>For the OAuth modes, create an OAuth API endpoint client in ServiceNow (<strong>System OAuth → Application Registry</strong>).</p>
+<p>The <strong>client credentials</strong> grant needs two extra pieces of instance-side setup beyond the client registration:</p>
+<ol>
+<li>Set the system property <code>glide.oauth.inbound.client.credential.grant_type.enabled</code> to <code>true</code> (create it under <strong>System Properties</strong> if it doesn't exist). Without it the token endpoint returns <code>access_denied</code> / <code>server_error</code>.</li>
+<li>On the OAuth application record, set the <strong>OAuth Application User</strong> (the <code>user</code> field) to your integration user. The grant issues tokens <strong>as this user</strong>, so it must hold the roles the actions need (e.g. <code>itil</code> / <code>sn_incident_write</code> for incident writes). Without it the token endpoint returns <code>unauthorized_client</code> ("integration user is not configured"). Set <code>integration_user</code> (below) to this same username so SN → LC polling can de-echo the extension's own writes.</li>
+</ol>
+<p>The <strong>basic</strong> and <strong>OAuth password</strong> modes don't need this — they authenticate as the <code>username</code> you configure directly.</p>
 <h3 id="3-subscribe-to-the-extension">3. Subscribe to the extension<a class="headerlink" href="#3-subscribe-to-the-extension" title="Anchor link to this section">&para;</a></h3>
 <p>Subscribe to <code>ext-servicenow</code> from the LimaCharlie <strong>Marketplace</strong> (<abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> → Add-Ons).</p>
 <h3 id="4-store-the-secrets">4. Store the secrets<a class="headerlink" href="#4-store-the-secrets" title="Anchor link to this section">&para;</a></h3>
@@ -13112,7 +13118,7 @@
 <tr>
 <td><code>close_code</code></td>
 <td>no</td>
-<td>Incident <code>close_code</code> applied when mirroring a case into Resolved/Closed (data policies usually require one). Default <code>Solved (Permanently)</code>.</td>
+<td>Incident <code>close_code</code> applied when mirroring a case into Resolved/Closed (data policies usually require one). Default <code>Solution provided</code>. Must be a value in your instance's <code>close_code</code> choice list, which varies by ServiceNow version — the legacy <code>Solved (Permanently)</code> is not present on current releases. An invalid value is silently dropped by ServiceNow, which then trips the mandatory-resolution-code data policy.</td>
 </tr>
 </tbody>
 </table>
@@ -13476,7 +13482,7 @@ Values under <code>extension request</code> are evaluated as templates. A bare s
 <ul>
 <li>Reference fields (<code>assignment_group</code>, <code>assigned_to</code>, <code>caller_id</code>) take <strong>sys_ids</strong>, not display names — resolve names first with <code>query_table</code>.</li>
 <li>ServiceNow rate limiting (<code>429</code>) is honored once per request with a <code>Retry-After</code> cap of 5 seconds; a persistent <code>429</code> surfaces to the caller.</li>
-<li>ServiceNow can return HTTP <code>200</code> with a <code>{"status": "failure"}</code> envelope when a business rule or data policy aborts the operation — the extension treats this as an error, not a success.</li>
+<li>A business rule or data policy abort surfaces as an error either way: ServiceNow may return a non-2xx status (e.g. <code>403</code>) or, for some aborts, HTTP <code>200</code> with a <code>{"status": "failure"}</code> envelope. The extension treats both as errors, never as success. (A common cause is resolving a record with a <code>close_code</code> that isn't in the instance's choice list — see the <code>close_code</code> config note above.)</li>
 <li><code>correlation_id</code> and <code>correlation_display</code> values are sanitized (encoded-query delimiters stripped) on both the write and the lookup path, keeping upserts idempotent even for hostile values.</li>
 <li>OAuth tokens are refreshed automatically; rotating a secret in Secrets Manager takes effect after the next surfaced <code>401</code> evicts the cached client.</li>
 <li>Errors are surfaced as <code>servicenow api &lt;status&gt; on &lt;path&gt;: &lt;message&gt;</code>.</li>
