@@ -169,15 +169,46 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/capture-
 
 ## Session Lifecycle
 
-### Session States
+### What you see: Running / Waiting / Ended
 
-| State | Description |
-|-------|-------------|
-| `starting` | Session is being created and provisioned |
-| `running` | Session is active and accepting prompts |
-| `ended` | Session has terminated (see `end_reason` for details) |
+Across the UI — the sidebar, session lists, the live grid, the chat header — a
+session shows one of three states, with an optional **needs-attention** flag:
 
-Idle sessions are automatically hibernated and resumed transparently — they continue to appear as `running` during hibernation and resume automatically when you send a new message.
+| State | Meaning |
+|-------|---------|
+| **Running** | The agent is actively working — thinking, running tools, or recovering. |
+| **Waiting** | The session is alive but idle — waiting for your next prompt, asleep but resumable, or blocked on an unanswered tool approval or question. |
+| **Ended** | The session is finished. The `end_reason` says why — see [End Reasons](#end-reasons) below. |
+
+**Needs attention** — when a Running or Waiting session is blocked on a tool approval
+or a question you haven't answered, the badge gains a trailing alert marker. If you
+send a prompt while a session is blocked, the chat shows a "message queued" notice
+with a button that scrolls the pending request into view.
+
+### Hibernation
+
+Idle sessions are automatically **hibernated**: the workspace is archived and the
+session becomes **dormant**, incurring storage cost but **zero compute** until you
+send a new message, at which point it resumes transparently. To you it simply stays
+"Waiting" the whole time and picks up where it left off — the conversation and
+working files are restored on resume.
+
+### Forking
+
+A dormant or ended session can be **forked** into a new session within its retention
+window. The fork inherits the source's **conversation context** but starts with the
+**forking user's profile** (its tools and capabilities). A fork preflight reports
+whether the source is forkable and which of its MCP servers are missing from your
+profiles, so you can acknowledge them before forking.
+
+### Resource limits
+
+Several [Profile Options](#profile-options) act as automatic termination triggers:
+`max_turns` ends the session after a number of turns, `max_budget_usd` when
+cumulative Claude cost exceeds the cap, `one_shot` after the initial task, and
+`ttl_seconds` sets the session lifetime (capped at 24 hours). A platform maximum
+session duration, set by your organization's tier, also applies. When one of these is
+reached the session moves to `ended` with the matching `end_reason` below.
 
 ### End Reasons
 

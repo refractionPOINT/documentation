@@ -542,11 +542,13 @@ nav:
   - AI Sessions:
       - Overview: 9-ai-sessions/index.md
       - Grid - Your AI Field Engineer: 9-ai-sessions/grid.md
+      - Architecture: 9-ai-sessions/architecture.md
       - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
       - User Sessions: 9-ai-sessions/user-sessions.md
       - Cost Tracking & Savings: 9-ai-sessions/cost-tracking.md
       - Tool Permissions & Profiles: 9-ai-sessions/tool-permissions.md
       - Runner Environment: 9-ai-sessions/runner-environment.md
+      - Rich Cards & Slash Commands: 9-ai-sessions/rich-cards.md
       - AI Skills: 9-ai-sessions/skills.md
       - AI Memory: 9-ai-sessions/memory.md
       - Command Line Interface: 9-ai-sessions/cli.md

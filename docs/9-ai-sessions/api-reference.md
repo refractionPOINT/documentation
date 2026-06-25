@@ -208,6 +208,82 @@ Delete a terminated session from history. Only sessions in the `ended` state can
 }
 ```
 
+#### Fork Preflight Check
+
+```text
+GET /v1/sessions/{sessionId}/fork-preflight
+```
+
+Inspect a source session before forking. Reports whether the source can be forked, a suggested name, and any MCP servers the source uses that are missing from the forker's profile (these must be acknowledged when forking).
+
+Forking your own session needs no special permission. Forking a session owned by the organization (an API/D&R session) requires the `ai_agent.set` permission on the org.
+
+##### Query Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `profile_id` | The forker's profile ID. Defaults to the caller's default profile if omitted. |
+
+##### Response: 200 OK
+
+```json
+{
+  "source_session_id": "abc123",
+  "source_session_type": "user",
+  "source_status": "ended",
+  "source_name": "Investigation 2025-01-15",
+  "source_lifetime_days": 3,
+  "default_fork_name": "Fork of Investigation 2025-01-15",
+  "source_mcp_servers": ["virustotal"],
+  "missing_mcps": ["virustotal"],
+  "is_forkable": true,
+  "is_forkable_reason": "",
+  "history_available": true
+}
+```
+
+`source_session_type` is `user` or `api`. When `missing_mcps` is non-empty, pass those names in `acknowledge_missing_tools` on the fork request.
+
+#### Fork Session
+
+```text
+POST /v1/sessions/{sessionId}/fork
+```
+
+Create a new session forked from the given source. The fork inherits the source's conversation context but starts with the forker's profile. The source must be in a forkable state (dormant or ended, within its retention window).
+
+All fields are optional:
+
+```json
+{
+  "name": "Continued investigation",
+  "profile_id": "profile-xyz",
+  "initial_prompt": "Pick up where the previous session left off and check the new IOCs.",
+  "acknowledge_missing_tools": ["virustotal"]
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Name for the forked session (defaults to a derived name). |
+| `profile_id` | string | Profile to use for the fork (defaults to the caller's default profile). |
+| `initial_prompt` | string | Initial prompt for the forked session. |
+| `acknowledge_missing_tools` | array | MCP servers present in the source but missing from the fork profile, acknowledged by the caller. |
+
+##### Response: 201 Created
+
+Returns the new session object, the same shape as [Create Session](#create-session). The new session's `forked_from_session_id` field references the source.
+
+##### Errors
+
+| Status | Meaning |
+|--------|---------|
+| `403` | Forking an org-owned session without the `ai_agent.set` permission. |
+| `409` | Source is not in a forkable state, or a create/fork/resume is already in progress. |
+| `410` | Source workspace archive is no longer available. |
+| `412` | Source uses MCP servers missing from the fork profile; acknowledge them via `acknowledge_missing_tools`. |
+| `429` | Maximum concurrent sessions reached. |
+
 ---
 
 ### Profiles

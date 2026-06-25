@@ -48,6 +48,8 @@ AI Sessions runs fully-managed Claude Code instances in isolated cloud environme
 3. **Connects to external data** via the LimaCharlie CLI, MCP servers, or other configured tools
 4. **Returns results** either as a final summary or streamed in real-time
 
+For the platform layers, the isolation model, and data residency, see [Architecture](architecture.md).
+
 ## Getting Started
 
 ### For D&R-Driven Sessions
@@ -83,10 +85,13 @@ respond:
 
 ## Documentation
 
+- [Grid: Your AI Field Engineer](grid.md) - The guided, outcome-first way to use AI Sessions
+- [Architecture](architecture.md) - How the platform is organized, the isolation model
 - [D&R-Driven Sessions](dr-sessions.md) - Automated sessions triggered by D&R rules
-- [User Sessions](user-sessions.md) - Interactive sessions via web UI or API
+- [User Sessions](user-sessions.md) - Interactive sessions via web UI or API, including the session lifecycle
 - [Tool Permissions & Profiles](tool-permissions.md) - How `allowed_tools`, `denied_tools`, and `permission_mode` work
 - [Runner Environment](runner-environment.md) - CLI tools, language runtimes, and reference data pre-installed in the session container
+- [Rich Cards & Slash Commands](rich-cards.md) - Interactive cards the agent renders inline, and the `/` commands that summon them
 - [AI Skills](skills.md) - Reusable Claude Code skill definitions stored in your org
 - [AI Memory](memory.md) - Per-agent persistent memory with partial-merge writes
 - [API Reference](api-reference.md) - REST API and WebSocket protocol
