@@ -127,6 +127,29 @@ am.delete("triage-bot", "progress/step-1")
 am.delete_record("triage-bot")
 ```
 
+## Profile memory bank
+
+AI Memory (above) is an **org-scoped, per-agent** store managed through the
+`ai_memory` Hive. There is a second, distinct kind of memory: the **profile memory
+bank**, which is **per-user and lifecycle-coupled to a [profile](user-sessions.md#session-profiles)**.
+
+When a session is launched from a profile, the bank's markdown files are mounted
+into the session workspace at `/workspace/.memory/<path>`, and edits the agent makes
+there during the session are synced back to the profile. It's useful for notes,
+runbooks, and reference material you want available in every session that uses a
+given profile, editable both by hand and by the agent.
+
+| | AI Memory (`ai_memory`) | Profile memory bank |
+|---|---|---|
+| Scope | Organization, per agent | A single user's profile |
+| Managed via | CLI / API / SDK (Hive) | Profile management, mounted into the session |
+| Mounted in session | No (the agent reads/writes via tools) | Yes, at `/workspace/.memory/` |
+| Limits | 1024 entries, 256-char names, 10 MB total | 100 entries, 64 KiB per entry, 5 MiB total |
+
+The bank is excluded from hibernation archives and re-mounted fresh on every start,
+so changes made through profile management while a session is dormant take effect on
+the next resume.
+
 ## Related
 
 - [AI Skills](skills.md) — companion store for reusable instruction sets.
