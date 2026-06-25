@@ -11654,6 +11654,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -11726,6 +11730,34 @@
     
   
     Grid - Your AI Field Engineer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
   
 
     
@@ -11979,10 +12011,43 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#session-states" class="md-nav__link">
+  <a href="#what-you-see-running-waiting-ended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Session States
+        What you see: Running / Waiting / Ended
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hibernation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hibernation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource limits
       
     </span>
   </a>
@@ -12349,6 +12414,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../rich-cards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rich Cards & Slash Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../skills/" class="md-nav__link">
         
   
@@ -12521,7 +12614,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -12543,14 +12636,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_10_13" id="__nav_10_13_label" tabindex="">
+              <label class="md-nav__link " for="__nav_10_15" id="__nav_10_15_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_10_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_10_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_10_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10_15">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -13122,10 +13215,43 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#session-states" class="md-nav__link">
+  <a href="#what-you-see-running-waiting-ended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Session States
+        What you see: Running / Waiting / Ended
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hibernation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hibernation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#forking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource limits
       
     </span>
   </a>
@@ -13646,30 +13772,54 @@ Navigate to the AI Sessions section in the LimaCharlie web console and click "Re
 </span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;My Session Config&quot;}&#39;</span>
 </span></code></pre></div>
 <h2 id="session-lifecycle">Session Lifecycle<a class="headerlink" href="#session-lifecycle" title="Anchor link to this section">&para;</a></h2>
-<h3 id="session-states">Session States<a class="headerlink" href="#session-states" title="Anchor link to this section">&para;</a></h3>
+<h3 id="what-you-see-running-waiting-ended">What you see: Running / Waiting / Ended<a class="headerlink" href="#what-you-see-running-waiting-ended" title="Anchor link to this section">&para;</a></h3>
+<p>Across the UI — the sidebar, session lists, the live grid, the chat header — a
+session shows one of three states, with an optional <strong>needs-attention</strong> flag:</p>
 <table>
 <thead>
 <tr>
 <th>State</th>
-<th>Description</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>starting</code></td>
-<td>Session is being created and provisioned</td>
+<td><strong>Running</strong></td>
+<td>The agent is actively working — thinking, running tools, or recovering.</td>
 </tr>
 <tr>
-<td><code>running</code></td>
-<td>Session is active and accepting prompts</td>
+<td><strong>Waiting</strong></td>
+<td>The session is alive but idle — waiting for your next prompt, asleep but resumable, or blocked on an unanswered tool approval or question.</td>
 </tr>
 <tr>
-<td><code>ended</code></td>
-<td>Session has terminated (see <code>end_reason</code> for details)</td>
+<td><strong>Ended</strong></td>
+<td>The session is finished. The <code>end_reason</code> says why — see <a href="#end-reasons">End Reasons</a> below.</td>
 </tr>
 </tbody>
 </table>
-<p>Idle sessions are automatically hibernated and resumed transparently — they continue to appear as <code>running</code> during hibernation and resume automatically when you send a new message.</p>
+<p><strong>Needs attention</strong> — when a Running or Waiting session is blocked on a tool approval
+or a question you haven't answered, the badge gains a trailing alert marker. If you
+send a prompt while a session is blocked, the chat shows a "message queued" notice
+with a button that scrolls the pending request into view.</p>
+<h3 id="hibernation">Hibernation<a class="headerlink" href="#hibernation" title="Anchor link to this section">&para;</a></h3>
+<p>Idle sessions are automatically <strong>hibernated</strong>: the workspace is archived and the
+session becomes <strong>dormant</strong>, incurring storage cost but <strong>zero compute</strong> until you
+send a new message, at which point it resumes transparently. To you it simply stays
+"Waiting" the whole time and picks up where it left off — the conversation and
+working files are restored on resume.</p>
+<h3 id="forking">Forking<a class="headerlink" href="#forking" title="Anchor link to this section">&para;</a></h3>
+<p>A dormant or ended session can be <strong>forked</strong> into a new session within its retention
+window. The fork inherits the source's <strong>conversation context</strong> but starts with the
+<strong>forking user's profile</strong> (its tools and capabilities). A fork preflight reports
+whether the source is forkable and which of its MCP servers are missing from your
+profiles, so you can acknowledge them before forking.</p>
+<h3 id="resource-limits">Resource limits<a class="headerlink" href="#resource-limits" title="Anchor link to this section">&para;</a></h3>
+<p>Several <a href="#profile-options">Profile Options</a> act as automatic termination triggers:
+<code>max_turns</code> ends the session after a number of turns, <code>max_budget_usd</code> when
+cumulative Claude cost exceeds the cap, <code>one_shot</code> after the initial task, and
+<code>ttl_seconds</code> sets the session lifetime (capped at 24 hours). A platform maximum
+session duration, set by your organization's tier, also applies. When one of these is
+reached the session moves to <code>ended</code> with the matching <code>end_reason</code> below.</p>
 <h3 id="end-reasons">End Reasons<a class="headerlink" href="#end-reasons" title="Anchor link to this section">&para;</a></h3>
 <p>When a session enters the <code>ended</code> state, the <code>end_reason</code> field indicates why:</p>
 <table>

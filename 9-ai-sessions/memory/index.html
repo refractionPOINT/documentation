@@ -11654,6 +11654,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -11726,6 +11730,34 @@
     
   
     Grid - Your AI Field Engineer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
   
 
     
@@ -11866,6 +11898,34 @@
     
   
     Runner Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rich-cards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rich Cards & Slash Commands
   
 
     
@@ -12068,6 +12128,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#profile-memory-bank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile memory bank
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#related" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12210,7 +12281,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -12232,14 +12303,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_10_13" id="__nav_10_13_label" tabindex="">
+              <label class="md-nav__link " for="__nav_10_15" id="__nav_10_15_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_10_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_10_13">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_10_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10_15">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -12760,6 +12831,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#profile-memory-bank" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profile memory bank
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#related" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12967,6 +13049,49 @@
 </span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="c1"># Wipe the agent record entirely.</span>
 </span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="n">am</span><span class="o">.</span><span class="n">delete_record</span><span class="p">(</span><span class="s2">&quot;triage-bot&quot;</span><span class="p">)</span>
 </span></code></pre></div>
+<h2 id="profile-memory-bank">Profile memory bank<a class="headerlink" href="#profile-memory-bank" title="Anchor link to this section">&para;</a></h2>
+<p>AI Memory (above) is an <strong>org-scoped, per-agent</strong> store managed through the
+<code>ai_memory</code> Hive. There is a second, distinct kind of memory: the <strong>profile memory
+bank</strong>, which is <strong>per-user and lifecycle-coupled to a <a href="../user-sessions/#session-profiles">profile</a></strong>.</p>
+<p>When a session is launched from a profile, the bank's markdown files are mounted
+into the session workspace at <code>/workspace/.memory/&lt;path&gt;</code>, and edits the agent makes
+there during the session are synced back to the profile. It's useful for notes,
+runbooks, and reference material you want available in every session that uses a
+given profile, editable both by hand and by the agent.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>AI Memory (<code>ai_memory</code>)</th>
+<th>Profile memory bank</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scope</td>
+<td><abbr title="In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete...">Organization</abbr>, per agent</td>
+<td>A single user's profile</td>
+</tr>
+<tr>
+<td>Managed via</td>
+<td><abbr title="Command-line Interface">CLI</abbr> / API / SDK (Hive)</td>
+<td>Profile management, mounted into the session</td>
+</tr>
+<tr>
+<td>Mounted in session</td>
+<td>No (the agent reads/writes via tools)</td>
+<td>Yes, at <code>/workspace/.memory/</code></td>
+</tr>
+<tr>
+<td>Limits</td>
+<td>1024 entries, 256-char names, 10 MB total</td>
+<td>100 entries, 64 KiB per entry, 5 MiB total</td>
+</tr>
+</tbody>
+</table>
+<p>The bank is excluded from hibernation archives and re-mounted fresh on every start,
+so changes made through profile management while a session is dormant take effect on
+the next resume.</p>
 <h2 id="related">Related<a class="headerlink" href="#related" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li><a href="../skills/">AI Skills</a> — companion store for reusable instruction sets.</li>

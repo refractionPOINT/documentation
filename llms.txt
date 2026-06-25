@@ -313,11 +313,13 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 
 - [Overview](https://docs.limacharlie.io/9-ai-sessions/): AI Sessions
 - [Grid - Your AI Field Engineer](https://docs.limacharlie.io/9-ai-sessions/grid/): Grid: Your AI Field Engineer
+- [Architecture](https://docs.limacharlie.io/9-ai-sessions/architecture/)
 - [D&R-Driven Sessions](https://docs.limacharlie.io/9-ai-sessions/dr-sessions/): D&R-Driven AI Sessions
 - [User Sessions](https://docs.limacharlie.io/9-ai-sessions/user-sessions/): User AI Sessions
 - [Cost Tracking & Savings](https://docs.limacharlie.io/9-ai-sessions/cost-tracking/): AI Cost Tracking & Savings
 - [Tool Permissions & Profiles](https://docs.limacharlie.io/9-ai-sessions/tool-permissions/)
 - [Runner Environment](https://docs.limacharlie.io/9-ai-sessions/runner-environment/)
+- [Rich Cards & Slash Commands](https://docs.limacharlie.io/9-ai-sessions/rich-cards/)
 - [AI Skills](https://docs.limacharlie.io/9-ai-sessions/skills/)
 - [AI Memory](https://docs.limacharlie.io/9-ai-sessions/memory/)
 - [Command Line Interface](https://docs.limacharlie.io/9-ai-sessions/cli/)
