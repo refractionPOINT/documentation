@@ -79,4 +79,3 @@ flowchart LR
 
 For how usage is billed and what it costs, see [Cost Tracking & Savings](cost-tracking.md)
 and the [billing summary](index.md#billing).
-
