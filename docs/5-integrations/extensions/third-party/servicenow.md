@@ -19,9 +19,16 @@ Create a dedicated ServiceNow user (for example `lc.integration`) with permissio
 | --- | --- | --- | --- |
 | HTTP Basic | `basic` | `username`, `password` | Simplest; credentials sent on every request. |
 | OAuth password grant | `oauth_password` | `client_id`, `client_secret`, `username`, `password` | Token obtained then auto-refreshed. |
-| OAuth client credentials | `oauth_client_credentials` | `client_id`, `client_secret` | True server-to-server. Requires the instance property `glide.oauth.inbound.client.credential.grant_type.enabled` to be `true`. |
+| OAuth client credentials | `oauth_client_credentials` | `client_id`, `client_secret` | True server-to-server (no end-user password). Needs extra instance-side setup — see below. |
 
 For the OAuth modes, create an OAuth API endpoint client in ServiceNow (**System OAuth → Application Registry**).
+
+The **client credentials** grant needs two extra pieces of instance-side setup beyond the client registration:
+
+1. Set the system property `glide.oauth.inbound.client.credential.grant_type.enabled` to `true` (create it under **System Properties** if it doesn't exist). Without it the token endpoint returns `access_denied` / `server_error`.
+2. On the OAuth application record, set the **OAuth Application User** (the `user` field) to your integration user. The grant issues tokens **as this user**, so it must hold the roles the actions need (e.g. `itil` / `sn_incident_write` for incident writes). Without it the token endpoint returns `unauthorized_client` ("integration user is not configured"). Set `integration_user` (below) to this same username so SN → LC polling can de-echo the extension's own writes.
+
+The **basic** and **OAuth password** modes don't need this — they authenticate as the `username` you configure directly.
 
 ### 3. Subscribe to the extension
 
@@ -45,7 +52,7 @@ In **Extensions → ext-servicenow → Configuration**, fill in:
 | `client_secret` | for OAuth modes | Reference to the stored secret, e.g. `hive://secret/servicenow-client-secret`. |
 | `correlation_display` | no | Label stamped on mirrored incidents' `correlation_display`. Default `LimaCharlie`. Scopes both upserts and polling, so multiple integrations can coexist. |
 | `integration_user` | no | The ServiceNow username the extension authenticates as. `pull_incident_changes` excludes changes by this user to break echo loops. |
-| `close_code` | no | Incident `close_code` applied when mirroring a case into Resolved/Closed (data policies usually require one). Default `Solved (Permanently)`. |
+| `close_code` | no | Incident `close_code` applied when mirroring a case into Resolved/Closed (data policies usually require one). Default `Solution provided`. Must be a value in your instance's `close_code` choice list, which varies by ServiceNow version — the legacy `Solved (Permanently)` is not present on current releases. An invalid value is silently dropped by ServiceNow, which then trips the mandatory-resolution-code data policy. |
 
 ## Actions
 
@@ -211,7 +218,7 @@ Example response action that opens a ServiceNow incident for a detection:
 
 - Reference fields (`assignment_group`, `assigned_to`, `caller_id`) take **sys_ids**, not display names — resolve names first with `query_table`.
 - ServiceNow rate limiting (`429`) is honored once per request with a `Retry-After` cap of 5 seconds; a persistent `429` surfaces to the caller.
-- ServiceNow can return HTTP `200` with a `{"status": "failure"}` envelope when a business rule or data policy aborts the operation — the extension treats this as an error, not a success.
+- A business rule or data policy abort surfaces as an error either way: ServiceNow may return a non-2xx status (e.g. `403`) or, for some aborts, HTTP `200` with a `{"status": "failure"}` envelope. The extension treats both as errors, never as success. (A common cause is resolving a record with a `close_code` that isn't in the instance's choice list — see the `close_code` config note above.)
 - `correlation_id` and `correlation_display` values are sanitized (encoded-query delimiters stripped) on both the write and the lookup path, keeping upserts idempotent even for hostile values.
 - OAuth tokens are refreshed automatically; rotating a secret in Secrets Manager takes effect after the next surfaced `401` evicts the cached client.
 - Errors are surfaced as `servicenow api <status> on <path>: <message>`.
