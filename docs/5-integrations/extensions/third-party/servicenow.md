@@ -356,5 +356,3 @@ To append triage findings on an existing record (for example from a Playbook or 
 - The OAuth access token is cached and renewed via `refresh_token` (in `oauth_password` mode). Rotating the secret in Secrets Manager evicts the cached client on the next surfaced `401`.
 - `pull_incident_changes` only breaks echo loops if `integration_user` is set to the user the extension authenticates as.
 - Errors are surfaced as `servicenow api <status> on <path>: <message>`.
-</content>
-</invoke>
