@@ -8414,10 +8414,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-store-the-secrets" class="md-nav__link">
+  <a href="#4-store-the-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Store the secrets
+        4. Store the credentials
       
     </span>
   </a>
@@ -8453,10 +8453,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#incident-lifecycle" class="md-nav__link">
+  <a href="#generic-table-api-bridge-any-table" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Incident lifecycle
+        Generic Table API bridge (any table)
       
     </span>
   </a>
@@ -8464,10 +8464,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#notes-attachments" class="md-nav__link">
+  <a href="#typed-incident-conveniences" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Notes &amp; attachments
+        Typed incident conveniences
       
     </span>
   </a>
@@ -8475,10 +8475,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#reads" class="md-nav__link">
+  <a href="#journal-attachments-cmdb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reads
+        Journal, attachments, CMDB
       
     </span>
   </a>
@@ -8486,10 +8486,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#case-mirroring" class="md-nav__link">
+  <a href="#case-mirroring-optional" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Case mirroring
+        Case mirroring (optional)
       
     </span>
   </a>
@@ -8498,17 +8498,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#wiring-up-the-bidirectional-sync" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Wiring up the bidirectional sync
-      
-    </span>
-  </a>
   
 </li>
       
@@ -12848,10 +12837,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-store-the-secrets" class="md-nav__link">
+  <a href="#4-store-the-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Store the secrets
+        4. Store the credentials
       
     </span>
   </a>
@@ -12887,10 +12876,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#incident-lifecycle" class="md-nav__link">
+  <a href="#generic-table-api-bridge-any-table" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Incident lifecycle
+        Generic Table API bridge (any table)
       
     </span>
   </a>
@@ -12898,10 +12887,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#notes-attachments" class="md-nav__link">
+  <a href="#typed-incident-conveniences" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Notes &amp; attachments
+        Typed incident conveniences
       
     </span>
   </a>
@@ -12909,10 +12898,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#reads" class="md-nav__link">
+  <a href="#journal-attachments-cmdb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reads
+        Journal, attachments, CMDB
       
     </span>
   </a>
@@ -12920,10 +12909,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#case-mirroring" class="md-nav__link">
+  <a href="#case-mirroring-optional" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Case mirroring
+        Case mirroring (optional)
       
     </span>
   </a>
@@ -12932,17 +12921,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#wiring-up-the-bidirectional-sync" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Wiring up the bidirectional sync
-      
-    </span>
-  </a>
   
 </li>
       
@@ -13073,47 +13051,47 @@
 
 
 <h1 id="servicenow">ServiceNow<a class="headerlink" href="#servicenow" title="Anchor link to this section">&para;</a></h1>
-<p><a href="https://www.servicenow.com/">ServiceNow</a> is an IT service management platform. The ServiceNow LimaCharlie <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> provides <strong>bidirectional mirroring between LimaCharlie Cases and ServiceNow incidents</strong>, plus a set of outbound incident-management actions for <abbr title="Detection &amp; Response">D&amp;R</abbr> rules and AI agents: incident lifecycle (create/update/get/search), work notes and comments, attachments, CMDB lookups, and a read-only Table API escape hatch.</p>
+<p><a href="https://www.servicenow.com/">ServiceNow</a> is an IT service management (ITSM) and security operations platform used for ticketing, change/problem management, CMDB asset tracking, and security incident response.</p>
+<p>The ServiceNow LimaCharlie <abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extension</abbr> is primarily an <strong>API bridge</strong>: it lets LimaCharlie-side automation (<abbr title="Detection &amp; Response">D&amp;R</abbr> rules, AI agents) drive a ServiceNow instance as it sees fit — create/read/update/delete records on <em>any</em> table, append journal entries, manage attachments, count and query, and resolve CMDB items. On top of that bridge it ships typed incident conveniences and one optional, fully-configurable <strong>Case-mirroring</strong> recipe (LimaCharlie Cases ⇄ ServiceNow records).</p>
+<p>Nothing pins the extension to the stock ITSM <code>incident</code> table. Security teams on Security Incident Response (<code>sn_si_incident</code>), change/problem workflows, or custom tables are all first-class: pass a <code>table</code> (or configure the mirror target) and the same actions apply.</p>
 <p>The sync model is stateless on the LimaCharlie side:</p>
 <ul>
-<li><strong>LC → ServiceNow</strong>: <code>mirror_case</code> idempotently upserts a ServiceNow incident from a LimaCharlie Case, anchored on the incident's standard <code>correlation_id</code> / <code>correlation_display</code> fields. Repeated calls update the same incident.</li>
-<li><strong>ServiceNow → LC</strong>: <code>pull_incident_changes</code> returns incidents updated since a watermark, normalized for feeding back into Cases. Changes made by the integration's own user are excluded, breaking echo loops.</li>
+<li><strong>LC → ServiceNow</strong>: <code>mirror_case</code> idempotently upserts a ServiceNow record from a LimaCharlie Case, anchored on the record's standard <code>correlation_id</code> / <code>correlation_display</code> fields. Repeated calls update the same record.</li>
+<li><strong>ServiceNow → LC</strong>: <code>pull_incident_changes</code> returns records updated since a watermark, normalized for feeding back into Cases. Changes made by the integration's own user are excluded, breaking echo loops.</li>
 </ul>
 <h2 id="setup">Setup<a class="headerlink" href="#setup" title="Anchor link to this section">&para;</a></h2>
 <h3 id="1-create-a-servicenow-integration-user">1. Create a ServiceNow integration user<a class="headerlink" href="#1-create-a-servicenow-integration-user" title="Anchor link to this section">&para;</a></h3>
-<p>Create a dedicated ServiceNow user (for example <code>lc.integration</code>) with permissions to read/create/update records on the <code>incident</code> table (including <code>work_notes</code>, <code>comments</code>, <code>correlation_id</code>, and <code>correlation_display</code>), attach files, and read whatever other tables you intend to query (<code>cmdb_ci</code> for <code>lookup_ci</code>, etc.). Using a dedicated user matters: its username is how the extension recognizes — and filters out — its own writes.</p>
+<p>Create a dedicated ServiceNow <strong>integration user</strong> for the extension and grant it the roles needed for the tables and operations you intend to drive (e.g. <code>itil</code> for incidents, <code>sn_si.analyst</code> for Security Incident Response, plus <code>rest_api_explorer</code>/table ACLs as appropriate). The integration user's ACLs govern everything the extension can read, write, or delete.</p>
+<p>Using a dedicated user matters for the Case-mirroring puller: <code>pull_incident_changes</code> filters out the extension's own writes by this user to break echo loops (see <a href="#case-mirroring-optional">Case mirroring</a>).</p>
 <h3 id="2-choose-an-authentication-mode">2. Choose an authentication mode<a class="headerlink" href="#2-choose-an-authentication-mode" title="Anchor link to this section">&para;</a></h3>
+<p>The extension supports three modes (set <code>auth_mode</code>):</p>
 <table>
 <thead>
 <tr>
 <th>Mode</th>
-<th><code>auth_mode</code></th>
-<th>Credentials needed</th>
+<th>Requires</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>HTTP Basic</td>
 <td><code>basic</code></td>
 <td><code>username</code>, <code>password</code></td>
-<td>Simplest; credentials sent on every request.</td>
+<td>Username/password sent on every request. Simplest for ServiceNow.</td>
 </tr>
 <tr>
-<td>OAuth password grant</td>
 <td><code>oauth_password</code></td>
 <td><code>client_id</code>, <code>client_secret</code>, <code>username</code>, <code>password</code></td>
-<td>Token obtained then auto-refreshed.</td>
+<td>OAuth2 Resource Owner Password Credentials grant, then <code>refresh_token</code> to renew.</td>
 </tr>
 <tr>
-<td>OAuth client credentials</td>
 <td><code>oauth_client_credentials</code></td>
 <td><code>client_id</code>, <code>client_secret</code></td>
-<td>True server-to-server (no end-user password). Needs extra instance-side setup — see below.</td>
+<td>True server-to-server grant (no end-user password). Needs extra instance-side setup — see below.</td>
 </tr>
 </tbody>
 </table>
-<p>For the OAuth modes, create an OAuth API endpoint client in ServiceNow (<strong>System OAuth → Application Registry</strong>).</p>
+<p>For the OAuth modes, register an OAuth application in ServiceNow (<strong>System OAuth → Application Registry</strong>) and copy its Client ID and Client Secret.</p>
 <p>The <strong>client credentials</strong> grant needs two extra pieces of instance-side setup beyond the client registration:</p>
 <ol>
 <li>Set the system property <code>glide.oauth.inbound.client.credential.grant_type.enabled</code> to <code>true</code> (create it under <strong>System Properties</strong> if it doesn't exist). Without it the token endpoint returns <code>access_denied</code> / <code>server_error</code>.</li>
@@ -13122,8 +13100,8 @@
 <p>The <strong>basic</strong> and <strong>OAuth password</strong> modes don't need this — they authenticate as the <code>username</code> you configure directly.</p>
 <h3 id="3-subscribe-to-the-extension">3. Subscribe to the extension<a class="headerlink" href="#3-subscribe-to-the-extension" title="Anchor link to this section">&para;</a></h3>
 <p>Subscribe to <code>ext-servicenow</code> from the LimaCharlie <strong>Marketplace</strong> (<abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> → Add-Ons).</p>
-<h3 id="4-store-the-secrets">4. Store the secrets<a class="headerlink" href="#4-store-the-secrets" title="Anchor link to this section">&para;</a></h3>
-<p>In <strong>Secrets Manager</strong>, store the password and/or client secret (for example <code>servicenow-password</code>, <code>servicenow-client-secret</code>).</p>
+<h3 id="4-store-the-credentials">4. Store the credentials<a class="headerlink" href="#4-store-the-credentials" title="Anchor link to this section">&para;</a></h3>
+<p>In <strong>Secrets Manager</strong>, create secrets for the sensitive values — the <code>password</code> and <code>client_secret</code> fields are resolved as secret references at request time. For example create a <code>servicenow-password</code> secret and reference it as <code>hive://secret/servicenow-password</code>.</p>
 <h3 id="5-configure-the-extension">5. Configure the extension<a class="headerlink" href="#5-configure-the-extension" title="Anchor link to this section">&para;</a></h3>
 <p>In <strong><abbr title="LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions...">Extensions</abbr> → ext-servicenow → Configuration</strong>, fill in:</p>
 <table>
@@ -13147,45 +13125,249 @@
 </tr>
 <tr>
 <td><code>username</code></td>
-<td>for <code>basic</code> / <code>oauth_password</code></td>
-<td>The integration user's username.</td>
+<td>conditional</td>
+<td>Required for <code>basic</code> / <code>oauth_password</code>.</td>
 </tr>
 <tr>
 <td><code>password</code></td>
-<td>for <code>basic</code> / <code>oauth_password</code></td>
-<td>Reference to the stored secret, e.g. <code>hive://secret/servicenow-password</code>.</td>
+<td>conditional</td>
+<td>Secret reference. Required for <code>basic</code> / <code>oauth_password</code>.</td>
 </tr>
 <tr>
 <td><code>client_id</code></td>
-<td>for OAuth modes</td>
-<td>OAuth client ID.</td>
+<td>conditional</td>
+<td>Required for <code>oauth_password</code> / <code>oauth_client_credentials</code>.</td>
 </tr>
 <tr>
 <td><code>client_secret</code></td>
-<td>for OAuth modes</td>
-<td>Reference to the stored secret, e.g. <code>hive://secret/servicenow-client-secret</code>.</td>
-</tr>
-<tr>
-<td><code>correlation_display</code></td>
-<td>no</td>
-<td>Label stamped on mirrored incidents' <code>correlation_display</code>. Default <code>LimaCharlie</code>. Scopes both upserts and polling, so multiple integrations can coexist.</td>
+<td>conditional</td>
+<td>Secret reference. Required for <code>oauth_password</code> / <code>oauth_client_credentials</code>.</td>
 </tr>
 <tr>
 <td><code>integration_user</code></td>
 <td>no</td>
-<td>The ServiceNow username the extension authenticates as. <code>pull_incident_changes</code> excludes changes by this user to break echo loops.</td>
+<td>The ServiceNow user the extension authenticates as. <code>pull_incident_changes</code> excludes changes made by this user. Set it to enable the echo-loop guard.</td>
+</tr>
+<tr>
+<td><code>correlation_display</code></td>
+<td>no</td>
+<td>Label stamped on mirrored records' <code>correlation_display</code> field (default <code>LimaCharlie</code>). Scopes upserts and SN→LC polling, so multiple integrations can coexist.</td>
 </tr>
 <tr>
 <td><code>close_code</code></td>
 <td>no</td>
-<td>Incident <code>close_code</code> applied when mirroring a case into Resolved/Closed (data policies usually require one). Default <code>Solution provided</code>. Must be a value in your instance's <code>close_code</code> choice list, which varies by ServiceNow version — the legacy <code>Solved (Permanently)</code> is not present on current releases. An invalid value is silently dropped by ServiceNow, which then trips the mandatory-resolution-code data policy.</td>
+<td><code>close_code</code> applied when mirroring a case into Resolved/Closed (default <code>Solution provided</code>). Must be a value in your instance's <code>close_code</code> choice list, which varies by ServiceNow version — the legacy <code>Solved (Permanently)</code> is not present on current releases. An invalid value is silently dropped by ServiceNow, which then trips the mandatory-resolution-code data policy.</td>
+</tr>
+<tr>
+<td><code>mirror_table</code></td>
+<td>no</td>
+<td>Target table for case mirroring (default <code>incident</code>; set <code>sn_si_incident</code> for Security Incident Response, or any task-derived table).</td>
+</tr>
+<tr>
+<td><code>mirror_subject_prefix</code></td>
+<td>no</td>
+<td>Prefix for the mirrored record's <code>short_description</code> (default <code>LimaCharlie Case</code>).</td>
+</tr>
+<tr>
+<td><code>mirror_state_map</code></td>
+<td>no</td>
+<td>Override of case-status→record-state mapping, e.g. <code>{"new":1,"in_progress":2,"resolved":6,"closed":7}</code>. Used in both directions.</td>
+</tr>
+<tr>
+<td><code>mirror_severity_map</code></td>
+<td>no</td>
+<td>Override of case-severity→<code>{urgency,impact}</code> mapping, e.g. <code>{"critical":{"urgency":1,"impact":1}}</code>.</td>
 </tr>
 </tbody>
 </table>
+<p>Only <code>instance_url</code> is strictly required; the credential fields are validated at request time against the selected <code>auth_mode</code>. The extension is stateless — mirroring state lives in ServiceNow (<code>correlation_id</code>) and the returned <code>watermark</code>, so there is no database to provision.</p>
 <h2 id="actions">Actions<a class="headerlink" href="#actions" title="Anchor link to this section">&para;</a></h2>
-<h3 id="incident-lifecycle">Incident lifecycle<a class="headerlink" href="#incident-lifecycle" title="Anchor link to this section">&para;</a></h3>
+<p>All actions accept a JSON request body when invoked from a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule via <code>extension request</code>. The typed actions and the mirroring recipe are conveniences — a customer who models ServiceNow differently can ignore them and drive <code>create_record</code> / <code>update_record</code> / <code>query_table</code> directly.</p>
+<h3 id="generic-table-api-bridge-any-table">Generic Table API bridge (any table)<a class="headerlink" href="#generic-table-api-bridge-any-table" title="Anchor link to this section">&para;</a></h3>
+<p>These actions operate against <em>any</em> table and never assume <code>incident</code>.</p>
+<h4 id="create_record"><code>create_record</code><a class="headerlink" href="#create_record" title="Anchor link to this section">&para;</a></h4>
+<p>Insert a record into any table with an arbitrary field map. The generic write counterpart to <code>query_table</code> — use it for <code>change_request</code>, <code>problem</code>, <code>sc_task</code>, custom tables, etc.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Table name.</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td>object</td>
+<td><strong>Required.</strong> Field name→value map to set on the new record.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="get_record"><code>get_record</code><a class="headerlink" href="#get_record" title="Anchor link to this section">&para;</a></h4>
+<p>Fetch a single record from any table by <code>sys_id</code> or by its <code>number</code> field.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Table name.</td>
+</tr>
+<tr>
+<td><code>sys_id</code></td>
+<td>string</td>
+<td>Record sys_id.</td>
+</tr>
+<tr>
+<td><code>number</code></td>
+<td>string</td>
+<td>Record number (alternative to <code>sys_id</code>).</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td>string</td>
+<td>Comma-separated fields to return (<code>sysparm_fields</code>).</td>
+</tr>
+<tr>
+<td><code>display_value</code></td>
+<td>enum</td>
+<td><code>false</code> (raw, default), <code>true</code> (labels), or <code>all</code>.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="update_record"><code>update_record</code><a class="headerlink" href="#update_record" title="Anchor link to this section">&para;</a></h4>
+<p>Patch a record on any table by <code>sys_id</code> with an arbitrary field map (unspecified fields are left untouched).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Table name.</td>
+</tr>
+<tr>
+<td><code>sys_id</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Record sys_id to update.</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td>object</td>
+<td><strong>Required.</strong> Field name→value map to change.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="delete_record"><code>delete_record</code><a class="headerlink" href="#delete_record" title="Anchor link to this section">&para;</a></h4>
+<p>Delete a record on any table by <code>sys_id</code>. Irreversible — the integration user's ACLs govern what can be deleted.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Table name.</td>
+</tr>
+<tr>
+<td><code>sys_id</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Record sys_id to delete.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="query_table"><code>query_table</code><a class="headerlink" href="#query_table" title="Anchor link to this section">&para;</a></h4>
+<p>Read-only Table API query against any table (<code>incident</code>, <code>problem</code>, <code>change_request</code>, <code>cmdb_ci</code>, <code>sys_user</code>, …). An escape hatch for AI agents that need data the typed actions don't cover, and the way to resolve display names to the sys_ids the write actions expect.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Table name.</td>
+</tr>
+<tr>
+<td><code>query</code></td>
+<td>string</td>
+<td>ServiceNow encoded query (<code>sysparm_query</code>).</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td>string</td>
+<td>Comma-separated fields to return.</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>int</td>
+<td>Max records (default <code>50</code>).</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td>int</td>
+<td>Pagination offset.</td>
+</tr>
+<tr>
+<td><code>display_value</code></td>
+<td>enum</td>
+<td><code>false</code> / <code>true</code> / <code>all</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Returns <code>{ "count": N, "records": [...] }</code>.</p>
+<h4 id="count_records"><code>count_records</code><a class="headerlink" href="#count_records" title="Anchor link to this section">&para;</a></h4>
+<p>Return the number of records matching an encoded query, via the Aggregate API (no rows pulled). E.g. count open criticals before deciding to escalate.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Table name.</td>
+</tr>
+<tr>
+<td><code>query</code></td>
+<td>string</td>
+<td>Encoded query (optional; empty counts all).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="typed-incident-conveniences">Typed incident conveniences<a class="headerlink" href="#typed-incident-conveniences" title="Anchor link to this section">&para;</a></h3>
+<p>Table-aware shortcuts that default to <code>incident</code>; set <code>table</code> to e.g. <code>sn_si_incident</code> to operate on Security Incident Response records. Beyond the fields below, each accepts an <code>extra</code> object to merge raw ServiceNow fields the typed schema doesn't model.</p>
 <h4 id="create_incident"><code>create_incident</code><a class="headerlink" href="#create_incident" title="Anchor link to this section">&para;</a></h4>
-<p>Create a new incident. Only <code>short_description</code> is required.</p>
+<p>Open a record with typed subject/body, urgency/impact, and assignment. Returns the created record including its <code>sys_id</code> and <code>number</code>.</p>
 <table>
 <thead>
 <tr>
@@ -13201,24 +13383,34 @@
 <td><strong>Required.</strong> Incident subject line.</td>
 </tr>
 <tr>
+<td><code>table</code></td>
+<td>string</td>
+<td>Table to create in (default <code>incident</code>).</td>
+</tr>
+<tr>
 <td><code>description</code></td>
 <td>string</td>
-<td>Incident body.</td>
+<td>Incident body / description.</td>
 </tr>
 <tr>
 <td><code>state</code></td>
 <td>int</td>
-<td><code>1</code> New, <code>2</code> In Progress, <code>3</code> On Hold, <code>6</code> Resolved, <code>7</code> Closed, <code>8</code> Canceled.</td>
+<td>Incident state (1 New, 2 In Progress, 3 On Hold, 6 Resolved, 7 Closed, 8 Canceled).</td>
 </tr>
 <tr>
-<td><code>urgency</code> / <code>impact</code></td>
+<td><code>urgency</code></td>
 <td>int</td>
-<td><code>1</code> High … <code>3</code> Low.</td>
+<td>Urgency (1 High … 3 Low).</td>
+</tr>
+<tr>
+<td><code>impact</code></td>
+<td>int</td>
+<td>Impact (1 High … 3 Low).</td>
 </tr>
 <tr>
 <td><code>priority</code></td>
 <td>int</td>
-<td>Usually derived from urgency × impact; set to override.</td>
+<td>Usually derived from urgency×impact; set to override.</td>
 </tr>
 <tr>
 <td><code>category</code></td>
@@ -13228,7 +13420,7 @@
 <tr>
 <td><code>assignment_group</code></td>
 <td>string</td>
-<td>Assignment group <strong>sys_id</strong> (display names are not resolved).</td>
+<td>Assignment group <strong>sys_id</strong> (reference; display names are not auto-resolved).</td>
 </tr>
 <tr>
 <td><code>assigned_to</code></td>
@@ -13248,18 +13440,17 @@
 <tr>
 <td><code>correlation_display</code></td>
 <td>string</td>
-<td>External system label.</td>
+<td>External system label (e.g. <code>LimaCharlie</code>).</td>
 </tr>
 <tr>
 <td><code>extra</code></td>
 <td>object</td>
-<td>Raw ServiceNow incident fields to merge — escape hatch for fields not modeled above.</td>
+<td>Raw ServiceNow fields to merge.</td>
 </tr>
 </tbody>
 </table>
-<p>Returns the created record, including <code>sys_id</code> and <code>number</code>.</p>
 <h4 id="update_incident"><code>update_incident</code><a class="headerlink" href="#update_incident" title="Anchor link to this section">&para;</a></h4>
-<p>Update an incident by <code>sys_id</code>. Accepts the same fields as <code>create_incident</code> (minus <code>short_description</code> being required), plus:</p>
+<p>Update a record by <code>sys_id</code>. Set <code>state</code> to drive workflow transitions, reassign, or append a work note/comment.</p>
 <table>
 <thead>
 <tr>
@@ -13272,7 +13463,12 @@
 <tr>
 <td><code>sys_id</code></td>
 <td>string</td>
-<td><strong>Required.</strong> Incident to update.</td>
+<td><strong>Required.</strong> Record sys_id to update.</td>
+</tr>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td>Table to update (default <code>incident</code>).</td>
 </tr>
 <tr>
 <td><code>work_note</code></td>
@@ -13284,12 +13480,15 @@
 <td>string</td>
 <td>Customer-visible comment to append.</td>
 </tr>
+<tr>
+<td><code>short_description</code>, <code>description</code>, <code>state</code>, <code>urgency</code>, <code>impact</code>, <code>priority</code>, <code>category</code>, <code>assignment_group</code>, <code>assigned_to</code>, <code>caller_id</code>, <code>extra</code></td>
+<td></td>
+<td>Same typed incident fields as <code>create_incident</code>.</td>
+</tr>
 </tbody>
 </table>
 <h4 id="get_incident"><code>get_incident</code><a class="headerlink" href="#get_incident" title="Anchor link to this section">&para;</a></h4>
-<p>Fetch a single incident by <code>sys_id</code> or human-readable <code>number</code> (e.g. <code>INC0010023</code>). Optional <code>fields</code> (comma-separated <code>sysparm_fields</code>) and <code>display_value</code> (<code>false</code> / <code>true</code> / <code>all</code>).</p>
-<h4 id="search_incidents"><code>search_incidents</code><a class="headerlink" href="#search_incidents" title="Anchor link to this section">&para;</a></h4>
-<p>Search incidents with a ServiceNow encoded query.</p>
+<p>Fetch a single record by <code>sys_id</code> or by human number (e.g. <code>INC0010023</code>, <code>SIR0001001</code>).</p>
 <table>
 <thead>
 <tr>
@@ -13300,9 +13499,52 @@
 </thead>
 <tbody>
 <tr>
+<td><code>table</code></td>
+<td>string</td>
+<td>Table to read (default <code>incident</code>).</td>
+</tr>
+<tr>
+<td><code>sys_id</code></td>
+<td>string</td>
+<td>Record sys_id.</td>
+</tr>
+<tr>
+<td><code>number</code></td>
+<td>string</td>
+<td>Record number (e.g. <code>INC0010023</code>).</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td>string</td>
+<td>Comma-separated fields to return.</td>
+</tr>
+<tr>
+<td><code>display_value</code></td>
+<td>enum</td>
+<td><code>false</code> / <code>true</code> / <code>all</code>.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="search_incidents"><code>search_incidents</code><a class="headerlink" href="#search_incidents" title="Anchor link to this section">&para;</a></h4>
+<p>Search with a ServiceNow encoded query (<code>sysparm_query</code>), e.g. <code>active=true^state=2^ORDERBYDESCsys_updated_on</code>. Use to dedup before create or to look up existing work.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td>Table to search (default <code>incident</code>).</td>
+</tr>
+<tr>
 <td><code>query</code></td>
 <td>string</td>
-<td>Encoded query (<code>sysparm_query</code>), e.g. <code>active=true^state=2^ORDERBYDESCsys_updated_on</code>.</td>
+<td>ServiceNow encoded query.</td>
 </tr>
 <tr>
 <td><code>fields</code></td>
@@ -13312,7 +13554,7 @@
 <tr>
 <td><code>limit</code></td>
 <td>int</td>
-<td>Default <code>50</code>.</td>
+<td>Max records (default <code>50</code>).</td>
 </tr>
 <tr>
 <td><code>offset</code></td>
@@ -13327,9 +13569,9 @@
 </tbody>
 </table>
 <p>Returns <code>{ "count": N, "incidents": [...] }</code>.</p>
-<h3 id="notes-attachments">Notes &amp; attachments<a class="headerlink" href="#notes-attachments" title="Anchor link to this section">&para;</a></h3>
+<h3 id="journal-attachments-cmdb">Journal, attachments, CMDB<a class="headerlink" href="#journal-attachments-cmdb" title="Anchor link to this section">&para;</a></h3>
 <h4 id="add_note"><code>add_note</code><a class="headerlink" href="#add_note" title="Anchor link to this section">&para;</a></h4>
-<p>Append an internal work note and/or a customer-visible comment to a record. Journal fields append — they never overwrite.</p>
+<p>Append an internal work note and/or a customer-visible comment to a record (default table <code>incident</code>). Journal fields <strong>append</strong> — they never overwrite.</p>
 <table>
 <thead>
 <tr>
@@ -13347,7 +13589,7 @@
 <tr>
 <td><code>table</code></td>
 <td>string</td>
-<td>Table name. Default <code>incident</code>.</td>
+<td>Table name (default <code>incident</code>).</td>
 </tr>
 <tr>
 <td><code>note</code></td>
@@ -13357,12 +13599,12 @@
 <tr>
 <td><code>comment</code></td>
 <td>string</td>
-<td>Customer-visible comment.</td>
+<td>Customer-visible additional comment.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="add_attachment"><code>add_attachment</code><a class="headerlink" href="#add_attachment" title="Anchor link to this section">&para;</a></h4>
-<p>Upload a file onto a record.</p>
+<p>Upload a file as an attachment on a record (default table <code>incident</code>). Set <code>content_base64=true</code> to send binary content.</p>
 <table>
 <thead>
 <tr>
@@ -13385,33 +13627,104 @@
 <tr>
 <td><code>table</code></td>
 <td>string</td>
-<td>Default <code>incident</code>.</td>
+<td>Table name (default <code>incident</code>).</td>
 </tr>
 <tr>
 <td><code>content_type</code></td>
 <td>string</td>
-<td>MIME type. Default <code>application/octet-stream</code>.</td>
+<td>MIME type (default <code>application/octet-stream</code>).</td>
 </tr>
 <tr>
 <td><code>content</code></td>
 <td>string</td>
-<td>File content — text, or base64 when <code>content_base64</code> is <code>true</code>.</td>
+<td>File content (text, or base64 when <code>content_base64=true</code>).</td>
 </tr>
 <tr>
 <td><code>content_base64</code></td>
 <td>bool</td>
-<td>Set for binary content.</td>
+<td><code>true</code> if <code>content</code> is base64-encoded binary.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="reads">Reads<a class="headerlink" href="#reads" title="Anchor link to this section">&para;</a></h3>
-<h4 id="query_table"><code>query_table</code><a class="headerlink" href="#query_table" title="Anchor link to this section">&para;</a></h4>
-<p>Read-only Table API query against any table (<code>incident</code>, <code>problem</code>, <code>change_request</code>, <code>cmdb_ci</code>, <code>sys_user</code>, …) — the escape hatch for data the typed actions don't cover, and the way to resolve display names to the sys_ids the write actions expect. Takes <code>table</code> (required), <code>query</code>, <code>fields</code>, <code>limit</code> (default <code>50</code>), <code>offset</code>, <code>display_value</code>. Returns <code>{ "count": N, "records": [...] }</code>.</p>
+<h4 id="list_attachments"><code>list_attachments</code><a class="headerlink" href="#list_attachments" title="Anchor link to this section">&para;</a></h4>
+<p>List a record's attachment metadata (default table <code>incident</code>). Returns each attachment's <code>sys_id</code>, <code>file_name</code>, size and content type; pass an attachment <code>sys_id</code> to <code>get_attachment</code> to download it.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sys_id</code></td>
+<td>string</td>
+<td><strong>Required.</strong> Record sys_id.</td>
+</tr>
+<tr>
+<td><code>table</code></td>
+<td>string</td>
+<td>Table name (default <code>incident</code>).</td>
+</tr>
+</tbody>
+</table>
+<h4 id="get_attachment"><code>get_attachment</code><a class="headerlink" href="#get_attachment" title="Anchor link to this section">&para;</a></h4>
+<p>Download an attachment's bytes by its attachment <code>sys_id</code> (from <code>list_attachments</code>). Returns <code>content_base64</code>, <code>content_type</code> and <code>size_bytes</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>attachment_sys_id</code></td>
+<td>string</td>
+<td><strong>Required.</strong> sys_id of the attachment record (<code>sys_attachment</code>), not the parent record.</td>
+</tr>
+</tbody>
+</table>
 <h4 id="lookup_ci"><code>lookup_ci</code><a class="headerlink" href="#lookup_ci" title="Anchor link to this section">&para;</a></h4>
-<p>Resolve a CMDB configuration item — bridges LC sensor hostnames to the ServiceNow CMDB. Takes <code>name</code> (LIKE match), or a custom <code>query</code>; optional <code>class</code> (default <code>cmdb_ci</code>) and <code>limit</code> (default <code>50</code>). Returns <code>{ "count": N, "cis": [...] }</code>.</p>
-<h3 id="case-mirroring">Case mirroring<a class="headerlink" href="#case-mirroring" title="Anchor link to this section">&para;</a></h3>
+<p>Resolve a CMDB configuration item (asset) by name or a custom encoded query — bridges LC sensor hostnames to the ServiceNow CMDB so incidents can reference the right asset.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>CI name to match (LIKE).</td>
+</tr>
+<tr>
+<td><code>query</code></td>
+<td>string</td>
+<td>Custom encoded query (overrides <code>name</code>).</td>
+</tr>
+<tr>
+<td><code>class</code></td>
+<td>string</td>
+<td>CMDB table/class (default <code>cmdb_ci</code>).</td>
+</tr>
+<tr>
+<td><code>limit</code></td>
+<td>int</td>
+<td>Max records (default <code>50</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>Returns <code>{ "count": N, "cis": [...] }</code>.</p>
+<h3 id="case-mirroring-optional">Case mirroring (optional)<a class="headerlink" href="#case-mirroring-optional" title="Anchor link to this section">&para;</a></h3>
+<p>A bidirectional, fully-configurable recipe that keeps a <a href="../../limacharlie/">LimaCharlie Case</a> and a ServiceNow record in sync. Mirroring is anchored on ServiceNow's purpose-built external-link fields: <code>correlation_id</code> holds the LimaCharlie case id and <code>correlation_display</code> holds the per-integration label (default <code>LimaCharlie</code>).</p>
 <h4 id="mirror_case"><code>mirror_case</code><a class="headerlink" href="#mirror_case" title="Anchor link to this section">&para;</a></h4>
-<p>Idempotently upsert a ServiceNow incident from a LimaCharlie Case. The incident is matched on <code>correlation_id = case_id</code> (scoped to this integration's <code>correlation_display</code>), so repeated calls update the same incident.</p>
+<p><strong>LC → ServiceNow.</strong> Idempotently upsert a ServiceNow record from an LC Case. Looks the record up by <code>correlation_id=case_id</code> (scoped to this integration's <code>correlation_display</code>), so repeated calls update the same record rather than creating duplicates. Wire this to a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule on case events.</p>
 <table>
 <thead>
 <tr>
@@ -13424,37 +13737,42 @@
 <tr>
 <td><code>case_id</code></td>
 <td>string</td>
-<td><strong>Required.</strong> LimaCharlie case id — stored as <code>correlation_id</code>.</td>
+<td><strong>Required.</strong> LimaCharlie case id (stored as <code>correlation_id</code>).</td>
 </tr>
 <tr>
 <td><code>case_number</code></td>
 <td>int</td>
-<td>LC case number, used in the incident subject (<code>LimaCharlie Case #N: …</code>).</td>
+<td>LimaCharlie case number (used in the record subject, <code>LimaCharlie Case #N: …</code>).</td>
 </tr>
 <tr>
 <td><code>status</code></td>
 <td>enum</td>
-<td><code>new</code>, <code>in_progress</code>, <code>resolved</code>, <code>closed</code>.</td>
+<td><code>new</code>, <code>in_progress</code>, <code>resolved</code>, <code>closed</code>. Maps to <code>state</code> (configurable via <code>mirror_state_map</code>).</td>
 </tr>
 <tr>
 <td><code>severity</code></td>
 <td>enum</td>
-<td><code>critical</code>, <code>high</code>, <code>medium</code>, <code>low</code>, <code>info</code>.</td>
+<td><code>critical</code>, <code>high</code>, <code>medium</code>, <code>low</code>, <code>info</code>. Maps to <code>urgency</code>/<code>impact</code> (configurable via <code>mirror_severity_map</code>; ServiceNow derives <code>priority</code>).</td>
 </tr>
 <tr>
 <td><code>classification</code></td>
 <td>string</td>
-<td>Case classification (appended to the description).</td>
+<td>Case classification (<code>true_positive</code>, <code>false_positive</code>, <code>pending</code>); appended to the description.</td>
 </tr>
 <tr>
 <td><code>summary</code></td>
 <td>string</td>
-<td>Case summary — becomes the incident subject (first line, truncated to 160 chars) and description.</td>
+<td>Case summary (becomes the record subject — first line, truncated to 160 chars — and description).</td>
 </tr>
 <tr>
 <td><code>conclusion</code></td>
 <td>string</td>
-<td>Case conclusion — appended to the description; used as <code>close_notes</code> on terminal states.</td>
+<td>Case conclusion (appended to description, used as <code>close_notes</code> on terminal states).</td>
+</tr>
+<tr>
+<td><code>assignees</code></td>
+<td>list of string</td>
+<td>Accepted, but not currently reflected on the record.</td>
 </tr>
 <tr>
 <td><code>tags</code></td>
@@ -13462,30 +13780,35 @@
 <td>Appended to the description.</td>
 </tr>
 <tr>
-<td><code>assignees</code></td>
-<td>list of string</td>
-<td>Accepted, but not currently reflected on the incident.</td>
+<td><code>table</code></td>
+<td>string</td>
+<td>Override the configured mirror target table for this call.</td>
 </tr>
 <tr>
 <td><code>correlation_display</code></td>
 <td>string</td>
-<td>Override the configured label for this mirror.</td>
+<td>Override the <code>correlation_display</code> label for this mirror.</td>
 </tr>
 <tr>
 <td><code>sync_note</code></td>
 <td>string</td>
-<td>Optional work note recording the sync on the incident.</td>
+<td>Optional work note to record the sync on the record.</td>
+</tr>
+<tr>
+<td><code>extra</code></td>
+<td>object</td>
+<td>Raw fields merged into (and overriding) the mapped record fields.</td>
 </tr>
 </tbody>
 </table>
-<p>Mappings applied:</p>
+<p>Default mappings applied (all overridable via config):</p>
 <ul>
-<li>Status → incident <code>state</code>: <code>new</code> → 1, <code>in_progress</code> → 2, <code>resolved</code> → 6, <code>closed</code> → 7. Terminal states also set <code>close_code</code> (from config) and <code>close_notes</code>.</li>
+<li>Status → <code>state</code>: <code>new</code> → 1, <code>in_progress</code> → 2, <code>resolved</code> → 6, <code>closed</code> → 7. Terminal states (Resolved/Closed) also set <code>close_code</code> (from config) and <code>close_notes</code>.</li>
 <li>Severity → <code>urgency</code>/<code>impact</code>: <code>critical</code> → 1/1, <code>high</code> → &frac12;, <code>medium</code> → 2/2, <code>low</code> and <code>info</code> → 3/3.</li>
 </ul>
 <p>Returns <code>{ "created": bool, "sys_id": "...", "number": "...", "incident": {...} }</code>.</p>
 <h4 id="pull_incident_changes"><code>pull_incident_changes</code><a class="headerlink" href="#pull_incident_changes" title="Anchor link to this section">&para;</a></h4>
-<p>Return incidents belonging to this integration (matched on <code>correlation_display</code>) updated at or after a watermark, normalized for feeding back into LC Cases.</p>
+<p><strong>ServiceNow → LC.</strong> Return records (on the mirror table, scoped to this integration's <code>correlation_display</code>) updated at/after a watermark, normalized to <code>{case_id, case_status, …}</code> ready to apply back to LC Cases. It <strong>excludes changes made by the <code>integration_user</code></strong> to break echo loops, and returns a fresh <code>watermark</code> to drive the next pull. Drive it from a <abbr title="Detection &amp; Response">D&amp;R</abbr> <code>schedule</code> rule (e.g. every 12h per org) and pass the watermark back as rule state.</p>
 <table>
 <thead>
 <tr>
@@ -13498,23 +13821,25 @@
 <tr>
 <td><code>since</code></td>
 <td>string</td>
-<td>ServiceNow datetime watermark (<code>YYYY-MM-DD HH:MM:SS</code>, UTC). Empty bootstraps from the most recent changes; pass the returned watermark back on the next call.</td>
+<td>ServiceNow datetime watermark (<code>YYYY-MM-DD HH:MM:SS</code>, UTC). Empty bootstraps from the most recent changes (newest first); pass the returned watermark back to move forward.</td>
 </tr>
 <tr>
 <td><code>limit</code></td>
 <td>int</td>
-<td>Default <code>100</code>. Keep it above the largest expected same-second burst of updates.</td>
+<td>Max records (default <code>100</code>).</td>
 </tr>
 <tr>
 <td><code>include_own_changes</code></td>
 <td>bool</td>
-<td>Disable the echo-loop guard (changes by <code>integration_user</code> are excluded by default).</td>
+<td>Disable the echo-loop guard (include changes by the integration user).</td>
 </tr>
 </tbody>
 </table>
 <p>Returns <code>{ "count": N, "changes": [...], "watermark": "YYYY-MM-DD HH:MM:SS" }</code>. Each change carries <code>sys_id</code>, <code>number</code>, <code>case_id</code> (from <code>correlation_id</code>), <code>state</code>, a normalized <code>case_status</code> (<code>new</code> / <code>in_progress</code> / <code>resolved</code> / <code>closed</code> — On Hold maps to <code>in_progress</code>, Canceled to <code>closed</code>), <code>short_description</code>, <code>sys_updated_on</code>, and <code>sys_updated_by</code>.</p>
-<p>The watermark boundary is <strong>inclusive</strong> (≥ <code>since</code>) so records sharing the watermark's second are never missed; de-duplicate by <code>sys_id</code> when applying changes.</p>
-<h2 id="wiring-up-the-bidirectional-sync">Wiring up the bidirectional sync<a class="headerlink" href="#wiring-up-the-bidirectional-sync" title="Anchor link to this section">&para;</a></h2>
+<blockquote>
+<p>The watermark boundary is <strong>inclusive</strong> (≥ <code>since</code>), so de-dupe applied changes by <code>sys_id</code>, and keep <code>limit</code> above the largest expected same-second burst of updates.</p>
+</blockquote>
+<h4 id="wiring-up-the-bidirectional-sync">Wiring up the bidirectional sync<a class="headerlink" href="#wiring-up-the-bidirectional-sync" title="Anchor link to this section">&para;</a></h4>
 <p>Both directions are driven from <abbr title="Detection &amp; Response">D&amp;R</abbr> rules — the extension holds no schedule of its own:</p>
 <ul>
 <li><strong>LC → ServiceNow</strong>: a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule on Case events calls <code>mirror_case</code> with the case fields, pushing changes as they happen.</li>
@@ -13531,20 +13856,30 @@
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.event</span><span class="nv"> </span><span class="s">}}&#39;</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">urgency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">impact</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">correlation_display</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;LimaCharlie&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">table</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;incident&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
 </span></code></pre></div>
 <blockquote>
 <p><strong>Wrap literal strings in <code>{{ "..." }}</code>.</strong>
 Values under <code>extension request</code> are evaluated as templates. A bare string without <code>{{ }}</code> is interpreted as a <a href="https://github.com/tidwall/gjson">gjson</a> path against the event and, if it doesn't resolve, the key is silently dropped from the payload.</p>
 </blockquote>
-<p><code>extension request</code> actions are fire-and-forget — the rule engine does not surface the response back into the rule's evaluation context, so the freshly-created incident <code>sys_id</code> is not available to a subsequent action in the same rule. Workflows that need to chain (create an incident, attach a file, add notes) belong in a <a href="../../limacharlie/playbook/">Playbook</a> or an AI agent, which can hold the <code>sys_id</code> between calls.</p>
+<p><code>extension request</code> actions are fire-and-forget — the rule engine does not surface the response back into the rule's evaluation context, so the freshly-created <code>sys_id</code> is not available to a subsequent action in the same rule. Workflows that need to chain (open a record, then attach a file, then add a note) belong in a <a href="../../limacharlie/playbook/">Playbook</a> or an AI agent, which can hold the <code>sys_id</code> between calls.</p>
+<p>To append triage findings on an existing record (for example from a Playbook or AI agent that already knows the <code>sys_id</code>), use <code>add_note</code>:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">extension request</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">extension action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">add_note</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">extension name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ext-servicenow</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">extension request</span><span class="p">:</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">sys_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">&quot;a1b2c3d4e5f6...&quot;</span><span class="nv"> </span><span class="s">}}&#39;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="nt">note</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.routing.hostname</span><span class="nv"> </span><span class="s">}}:</span><span class="nv"> </span><span class="s">suspicious</span><span class="nv"> </span><span class="s">process</span><span class="nv"> </span><span class="s">tree</span><span class="nv"> </span><span class="s">observed.</span><span class="nv"> </span><span class="s">See</span><span class="nv"> </span><span class="s">LC</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">details.&#39;</span>
+</span></code></pre></div>
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Anchor link to this section">&para;</a></h2>
 <ul>
-<li>Reference fields (<code>assignment_group</code>, <code>assigned_to</code>, <code>caller_id</code>) take <strong>sys_ids</strong>, not display names — resolve names first with <code>query_table</code>.</li>
+<li>The extension is <strong>stateless</strong> — mirroring state lives in ServiceNow (<code>correlation_id</code>) and the returned <code>watermark</code>; there is no database.</li>
+<li>Reference fields (<code>assignment_group</code>, <code>assigned_to</code>, <code>caller_id</code>) take <strong>sys_ids</strong>, not display names — display names are not auto-resolved. Use <code>query_table</code> against <code>sys_user</code> / <code>sys_user_group</code> to resolve a name to its sys_id first.</li>
 <li>ServiceNow rate limiting (<code>429</code>) is honored once per request with a <code>Retry-After</code> cap of 5 seconds; a persistent <code>429</code> surfaces to the caller.</li>
 <li>A business rule or data policy abort surfaces as an error either way: ServiceNow may return a non-2xx status (e.g. <code>403</code>) or, for some aborts, HTTP <code>200</code> with a <code>{"status": "failure"}</code> envelope. The extension treats both as errors, never as success. (A common cause is resolving a record with a <code>close_code</code> that isn't in the instance's choice list — see the <code>close_code</code> config note above.)</li>
 <li><code>correlation_id</code> and <code>correlation_display</code> values are sanitized (encoded-query delimiters stripped) on both the write and the lookup path, keeping upserts idempotent even for hostile values.</li>
-<li>OAuth tokens are refreshed automatically; rotating a secret in Secrets Manager takes effect after the next surfaced <code>401</code> evicts the cached client.</li>
+<li>The OAuth access token is cached and renewed via <code>refresh_token</code> (in <code>oauth_password</code> mode). Rotating the secret in Secrets Manager evicts the cached client on the next surfaced <code>401</code>.</li>
+<li><code>pull_incident_changes</code> only breaks echo loops if <code>integration_user</code> is set to the user the extension authenticates as.</li>
 <li>Errors are surfaced as <code>servicenow api &lt;status&gt; on &lt;path&gt;: &lt;message&gt;</code>.</li>
 </ul>
 <!-- Glossary definitions for tooltip abbreviations -->
