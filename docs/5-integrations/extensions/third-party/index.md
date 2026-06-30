@@ -16,7 +16,7 @@ Extensions built by third-party developers that integrate external tools and ser
 - [Renigma](renigma.md) - Renigma integration
 - [SecureAnnex](secureannex.md) - SecureAnnex integration
 - [SentinelOne](sentinelone.md) - SentinelOne EDR response and triage actions
-- [ServiceNow](servicenow.md) - Incident management and bidirectional Case mirroring
+- [ServiceNow](servicenow.md) - ITSM ticketing, CMDB and bidirectional Case mirroring
 - [Strelka](strelka.md) - File analysis with Strelka
 - [ThreatLocker](threatlocker.md) - ThreatLocker Application Control approval workflow
 - [Twilio](twilio.md) - SMS and voice notifications
