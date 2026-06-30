@@ -48,7 +48,7 @@ In **Extensions → ext-servicenow → Configuration**, fill in:
 | `client_secret` | conditional | Secret reference. Required for `oauth_password` / `oauth_client_credentials`. |
 | `integration_user` | no | The ServiceNow user the extension authenticates as. `pull_incident_changes` excludes changes made by this user. Set it to enable the echo-loop guard. |
 | `correlation_display` | no | Label stamped on mirrored records' `correlation_display` field (default `LimaCharlie`). Scopes upserts and SN→LC polling. |
-| `close_code` | no | `close_code` applied when mirroring a case into Resolved/Closed (default `Solved (Permanently)`). |
+| `close_code` | no | `close_code` applied when mirroring a case into Resolved/Closed (default `Solution provided`). Must be a valid `close_code` choice on your instance. |
 | `mirror_table` | no | Target table for case mirroring (default `incident`; set `sn_si_incident` for Security Incident Response). |
 | `mirror_subject_prefix` | no | Prefix for the mirrored record's `short_description` (default `LimaCharlie Case`). |
 | `mirror_state_map` | no | Override of case-status→record-state mapping, e.g. `{"new":1,"in_progress":2,"resolved":6,"closed":7}`. Used in both directions. |
