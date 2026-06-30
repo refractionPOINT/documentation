@@ -12569,6 +12569,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#2026-06-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026-06-29
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2026-06-29">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-app-5110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web App 5.11.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#2026-06-18" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -13832,10 +13860,47 @@
 <h1 id="release-notes">Release Notes<a class="headerlink" href="#release-notes" title="Anchor link to this section">&para;</a></h1>
 <p>Release notes for LimaCharlie platform components, organized by date.</p>
 <hr />
+<h2 id="2026-06-29">2026-06-29<a class="headerlink" href="#2026-06-29" title="Anchor link to this section">&para;</a></h2>
+<h3 id="web-app-5110">Web App 5.11.0<a class="headerlink" href="#web-app-5110" title="Anchor link to this section">&para;</a></h3>
+<p>Expanded AI cost tracking adds spend breakdowns, <abbr title="Managed Security Services Provider">MSSP</abbr> chargeback, and a savings trend to the AI Usage page, now available in the main web app alongside deeper Vulnerabilities filtering and functional app egress.</p>
+<h4 id="new-features">New Features<a class="headerlink" href="#new-features" title="Anchor link to this section">&para;</a></h4>
+<ul>
+<li><strong>AI cost tracking</strong>: the AI Usage page now offers 7/30/90-day ranges, a KPI strip (spend, investigations, cost per investigation, tokens), spend breakdowns by model and detection rule with per-investigation unit cost, per-tenant re-bill markup for <abbr title="Managed Security Services Provider">MSSP</abbr> chargeback in the CSV export, anomaly and trend indicators, and a savings trend chart. Sub-cent costs display adaptive precision instead of rounding to $0.00.</li>
+<li><strong>AI Usage in the main web app</strong>: the AI Usage view, previously Grid-only, is now reachable from the main web app sidebar under the AI group, gated by the <code>ai_agent.get</code> permission.</li>
+<li><strong>Vulnerabilities subscription gating</strong>: orgs without the Vulnerability Reporting extension now see a subscribe call-to-action (for <code>billing.ctrl</code> users) or an admin-contact prompt, replacing the misleading empty state.</li>
+<li><strong>Vulnerabilities platform filtering</strong>: the Platform facet now scopes the CVEs tab, and dashboard charts and KPI tiles update to reflect active Severity and Platform filters, with a caveat label when other filters can't be represented in the rollup.</li>
+<li><strong>Vulnerabilities application grouping</strong>: the host vuln table splits the combined column into sortable Application and CVE columns, grouping all CVEs for a package together; the org drawer defaults to application sort and the sensor tab keeps score sort.</li>
+<li><strong>Vulnerabilities false-positive feedback</strong>: a per-finding "Report incorrect detection" action collects a structured reason and relays it to the product team, separate from the local mark-false-positive triage action.</li>
+<li><strong>Gmail adapter</strong>: setup and edit forms for single-mailbox OAuth and Workspace service-account flows, with per-feed capability toggles, subject scoping, and masked managed-secret storage for service-account credentials.</li>
+<li><strong>ThreatLocker adapter</strong>: Include Child Organizations scoping for parent API tokens and individual toggles for the Approval Requests, Unified Audit, and System Audit feeds.</li>
+<li><strong>Brand feature flags</strong>: branded deployments can disable fleet billing, case management, automation SOPs, mini apps, and the AI terminal per deployment.</li>
+<li><strong>Windows PowerShell installer</strong>: the Windows install wizard leads with a copy-paste PowerShell one-liner using LimaCharlie's hosted install.ps1, mirroring the Linux curl installer, with the manual EXE/MSI tab still available.</li>
+<li><strong>Search timing breakdown</strong>: the per-stage timing breakdown is now on by default for all users.</li>
+<li><strong><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Connectivity</strong>: the Add <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> panel now lists the org's webhook endpoint alongside the existing addresses, making firewall setup for cloud sensors and webhook adapters easier.</li>
+<li><strong>Apps launcher icons</strong>: apps now derive distinct icons from author emoji, required-permission prefixes, and other signals before falling back to the generic diamond.</li>
+<li><strong>Per-theme logos</strong>: runtime configs support a dedicated dark-theme logo alongside the standard logo.</li>
+</ul>
+<h4 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Anchor link to this section">&para;</a></h4>
+<ul>
+<li>Apps declaring allowed_origins can now make third-party fetch() calls; apps load from a real HTTP origin with their own permissive floor CSP instead of inheriting the console's strict policy. The brokered lc.api path and app isolation are unchanged.</li>
+<li>Apps now open correctly on Grid, which previously failed with a sandbox handshake timeout.</li>
+<li>Creating a false-positive rule from a detection now names the draft from the detection (category and detect ID) instead of "Untitled-1".</li>
+<li>Deleting a REST API key now requires confirmation through a danger dialog, preventing accidental deletion that would break integrations.</li>
+<li>Replaying a <abbr title="Detection &amp; Response">D&amp;R</abbr> rule with target: detection now runs against the detection stream instead of the event stream, which had matched nothing.</li>
+<li>Projection queries that select <code>ts</code> without an alias now show the column, formatted as YYYY-MM-DD HH<img alt="🇲🇲" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f1f2-1f1f2.svg" title=":mm:" />ss in the table and exports.</li>
+<li>Saved query text can now be edited in the Edit Query modal, not just renamed.</li>
+<li>The saved-query size limit now matches the backend's 1024-byte ceiling, raised from a stricter 512-byte client cap.</li>
+<li>CVE descriptions from the NVD feed now render as sanitized HTML instead of literal tag text on the CVE detail page and sidebar drawer.</li>
+<li>The CVE detail page layout is now stable, with stacked tables sized to their actual row count instead of growing unboundedly or leaving large empty gaps.</li>
+<li>The KEV and Total vulnerability tiles now use server-computed host-wide counts instead of page-limited values, fixing incorrect counts for sensors with many findings.</li>
+<li>The create-case org picker now shows all cases-enabled orgs for accounts spanning more than 200 orgs, resolving names for up to 10,000 orgs.</li>
+<li>Social share previews are fixed for Grid and the main web app, with OG and Twitter tags added and robots.txt updated to allow social crawlers while keeping the console out of search indexes.</li>
+</ul>
+<hr />
 <h2 id="2026-06-18">2026-06-18<a class="headerlink" href="#2026-06-18" title="Anchor link to this section">&para;</a></h2>
 <h3 id="web-app-5100">Web App 5.10.0<a class="headerlink" href="#web-app-5100" title="Anchor link to this section">&para;</a></h3>
 <p>Fleet Billing arrives for MSSPs, alongside AI Terminal refinements and clearer session-state reporting.</p>
-<h4 id="new-features">New Features<a class="headerlink" href="#new-features" title="Anchor link to this section">&para;</a></h4>
+<h4 id="new-features_1">New Features<a class="headerlink" href="#new-features_1" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li><strong>Fleet Billing</strong>: a cross-tenant billing console for MSSPs.</li>
 <li><strong>AI Terminal</strong>: visual improvements and refined landing actions.</li>
@@ -13843,7 +13908,7 @@
 <li><strong>Access Management</strong>: added a Role column to the user table.</li>
 <li><strong>Case console</strong>: added a selectable page size.</li>
 </ul>
-<h4 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Anchor link to this section">&para;</a></h4>
+<h4 id="bug-fixes_1">Bug Fixes<a class="headerlink" href="#bug-fixes_1" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li>Query console download now matches the visible table.</li>
 <li>Added a Minimize button to the AI Session chat floating button.</li>
@@ -13856,7 +13921,7 @@
 <h2 id="2026-06-11">2026-06-11<a class="headerlink" href="#2026-06-11" title="Anchor link to this section">&para;</a></h2>
 <h3 id="web-app-590">Web App 5.9.0<a class="headerlink" href="#web-app-590" title="Anchor link to this section">&para;</a></h3>
 <p>Notable improvements and fixes:</p>
-<h4 id="new-features_1">New Features<a class="headerlink" href="#new-features_1" title="Anchor link to this section">&para;</a></h4>
+<h4 id="new-features_2">New Features<a class="headerlink" href="#new-features_2" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li><strong>AI Terminal ShareCard</strong> — share sessions socially and invite users to tenants.</li>
 <li><strong>Docked corner chat</strong> — persistent AI chat launcher with pop-out, draft-new-session, minimize/maximize, and a live-session selector.</li>
@@ -13870,7 +13935,7 @@
 <li><strong>AI Sessions</strong> — rationalized session user state (Active + needs-attention), and <code>lc-compliance</code> as a selectable plugin.</li>
 <li><strong>Git Sync</strong> — added missing config hives to the UI.</li>
 </ul>
-<h4 id="bug-fixes_1">Bug Fixes<a class="headerlink" href="#bug-fixes_1" title="Anchor link to this section">&para;</a></h4>
+<h4 id="bug-fixes_2">Bug Fixes<a class="headerlink" href="#bug-fixes_2" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li>Fixed dark-mode LimaCharlie logo visibility.</li>
 <li>Included <code>ai_agent.operate</code> in FDE and worker-key permission lists.</li>
