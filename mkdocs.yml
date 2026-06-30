@@ -223,6 +223,7 @@ nav:
       - Log Collection Guide: 2-sensors-deployment/log-collection-guide.md
       - Telemetry Index: 2-sensors-deployment/telemetry-index.md
       - Endpoint Agents:
+          - CLI & Environment Reference: 2-sensors-deployment/endpoint-agent/cli-reference.md
           - Windows:
               - Installation: 2-sensors-deployment/endpoint-agent/windows/installation.md
               - Custom MSI: 2-sensors-deployment/endpoint-agent/windows/custom-msi.md
@@ -286,9 +287,11 @@ nav:
               - Microsoft 365: 2-sensors-deployment/adapters/types/microsoft-365.md
               - Slack Audit: 2-sensors-deployment/adapters/types/slack-audit-logs.md
               - Google Workspace: 2-sensors-deployment/adapters/types/google-workspace.md
+              - Gmail: 2-sensors-deployment/adapters/types/gmail.md
               - Atlassian: 2-sensors-deployment/adapters/types/atlassian.md
               - HubSpot: 2-sensors-deployment/adapters/types/hubspot.md
               - Zendesk: 2-sensors-deployment/adapters/types/zendesk.md
+              - ServiceNow: 2-sensors-deployment/adapters/types/servicenow.md
               - PandaDoc: 2-sensors-deployment/adapters/types/pandadoc.md
               - Mimecast: 2-sensors-deployment/adapters/types/mimecast.md
           - Infrastructure:
@@ -424,12 +427,14 @@ nav:
               - Govee: 5-integrations/extensions/third-party/govee.md
               - HaloPSA: 5-integrations/extensions/third-party/halopsa.md
               - Hayabusa: 5-integrations/extensions/third-party/hayabusa.md
+              - Microsoft Response: 5-integrations/extensions/third-party/microsoft-response.md
               - NIMS: 5-integrations/extensions/third-party/nims.md
               - OTX: 5-integrations/extensions/third-party/otx.md
               - PagerDuty: 5-integrations/extensions/third-party/pagerduty.md
               - Plaso: 5-integrations/extensions/third-party/plaso.md
               - Renigma: 5-integrations/extensions/third-party/renigma.md
               - SecureAnnex: 5-integrations/extensions/third-party/secureannex.md
+              - SentinelOne: 5-integrations/extensions/third-party/sentinelone.md
               - ServiceNow: 5-integrations/extensions/third-party/servicenow.md
               - Strelka: 5-integrations/extensions/third-party/strelka.md
               - ThreatLocker: 5-integrations/extensions/third-party/threatlocker.md
@@ -503,9 +508,11 @@ nav:
           - D&R Rules: 7-administration/config-hive/dr-rules.md
           - YARA: 7-administration/config-hive/yara.md
           - Cloud Sensors: 7-administration/config-hive/cloud-sensors.md
+          - Apps: 7-administration/config-hive/apps.md
 
   - Reference:
       - Overview: 8-reference/index.md
+      - The routing Section: 8-reference/routing.md
       - Endpoint Commands: 8-reference/endpoint-commands.md
       - Detection Operators: 8-reference/detection-logic-operators.md
       - Response Actions: 8-reference/response-actions.md
@@ -535,10 +542,14 @@ nav:
 
   - AI Sessions:
       - Overview: 9-ai-sessions/index.md
+      - Grid - Your AI Field Engineer: 9-ai-sessions/grid.md
+      - Architecture: 9-ai-sessions/architecture.md
       - D&R-Driven Sessions: 9-ai-sessions/dr-sessions.md
       - User Sessions: 9-ai-sessions/user-sessions.md
+      - Cost Tracking & Savings: 9-ai-sessions/cost-tracking.md
       - Tool Permissions & Profiles: 9-ai-sessions/tool-permissions.md
       - Runner Environment: 9-ai-sessions/runner-environment.md
+      - Rich Cards & Slash Commands: 9-ai-sessions/rich-cards.md
       - AI Skills: 9-ai-sessions/skills.md
       - AI Memory: 9-ai-sessions/memory.md
       - Command Line Interface: 9-ai-sessions/cli.md
@@ -551,6 +562,12 @@ nav:
           - Skills Reference: 9-ai-sessions/compliance/skills.md
           - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
           - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
+
+  - Apps:
+      - Overview: apps/index.md
+      - Creating & Managing Apps: apps/creating-and-managing-apps.md
+      - Building Blocks & Recipes: apps/building-blocks-and-recipes.md
+      - Reference: apps/reference.md
 
   - Release Notes:
       - Overview: 10-release-notes/index.md

@@ -1406,6 +1406,28 @@ This event is generated in response to the `reg_list` command to list keys and v
 }
 ```
 
+### REGISTRY\_GET\_REP
+
+This event is generated in response to the `reg_get` command to fetch a single named value from a registry key.
+
+> **Note:** Added in sensor version 5.3.0.
+
+The `VALUE` field holds the value's data when it is under the size cap; for larger values, `SIZE` is returned instead. `ERROR` is the Windows error code (`0` on success).
+
+**Platforms:**
+
+**Sample Event:**
+
+```json
+{
+    "ROOT": "hklm\\software\\microsoft\\windows\\currentversion\\run",
+    "NAME": "OneDrive",
+    "TYPE": 1,
+    "VALUE": "\"C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe\" /background",
+    "ERROR": 0
+}
+```
+
 ### REGISTRY\_WRITE
 
 This event is generated whenever a registry value is written to on a Windows OS.

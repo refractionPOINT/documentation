@@ -4,6 +4,8 @@ Microsoft 365, formerly Office 365, is a product family of productivity software
 
 Microsoft 365 events can be ingested in LimaCharlie and observed as the `office365` platform.
 
+> Always set `client_options.platform: office365` for this adapter. The `office365` parser extracts the event type (`Operation`) and timestamp (`CreationTime`) from unified audit log records automatically — no manual `mapping` is needed. Do not substitute `json`.
+>
 > **Note on naming:** The platform identifier `office365` reflects the legacy product name. Microsoft renamed Office 365 to Microsoft 365 in 2020.
 
 ## Adapter Deployment
@@ -55,25 +57,18 @@ office365:
       oid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       installation_key: "YOUR_LC_INSTALLATION_KEY_O365"
     hostname: "ms-o365-adapter"
-    platform: "json"
+    platform: "office365"
     sensor_seed_key: "office365-audit-sensor"
-    mapping:
-      sensor_hostname_path: "ClientIP"
-      event_type_path: "Operation"
-      event_time_path: "CreationTime"
     indexing: []
-  # Office 365 specific configuration
-  content_types:
-    - "Audit.AzureActiveDirectory"
-    - "Audit.Exchange"
-    - "Audit.SharePoint"
-    - "Audit.General"
-    - "DLP.All"
+  # Office 365 specific configuration (all required)
+  domain: "yourcompany.onmicrosoft.com"
+  publisher_id: "hive://secret/o365-publisher-id" # usually same as tenant_id
+  endpoint: "enterprise"                          # or gcc-gov / gcc-high-gov / dod-gov
+  # content_types is a comma-separated string (not a YAML list);
+  # if omitted, it defaults to all of the below
+  content_types: "Audit.AzureActiveDirectory,Audit.Exchange,Audit.SharePoint,Audit.General,DLP.All"
   # Optional configuration
-  endpoint: "enterprise"                           # Default: "enterprise"
   start_time: "2024-01-01T00:00:00Z"              # Optional: historical start time
-  domain: "yourcompany.onmicrosoft.com"           # Optional: for GCC environments
-  publisher_id: "hive://secret/o365-publisher-id" # Optional: usually same as tenant_id
 ```
 
 ## Configuring a Microsoft 365 Adapter in the Web UI

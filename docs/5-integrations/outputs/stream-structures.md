@@ -509,6 +509,7 @@ Use deployment events to track sensor health and detect:
 
 ## Related Documentation
 
+- [The `routing` Section](../../8-reference/routing.md) - Deep dive into the metadata envelope shared by events and detections
 - [Event Structure Reference](../../8-reference/event-schemas.md#event-structure-reference)
 - [Detection Structure](../../3-detection-response/tutorials/writing-testing-rules.md)
 - [LimaCharlie Data Structures](../../1-getting-started/core-concepts.md#limacharlie-data-structures)

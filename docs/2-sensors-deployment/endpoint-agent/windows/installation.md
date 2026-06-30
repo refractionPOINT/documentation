@@ -85,6 +85,8 @@ When running the installer from the command line, you can use the following opti
 | `-H` | Verify sensor health and installation |
 | `-h` | Display help message |
 
+For the complete list of options, environment variables, and local files, see the [Agent CLI & Environment Reference](../cli-reference.md).
+
 ## Installation Methods
 
 ### Method 1: Executable (EXE) Installation

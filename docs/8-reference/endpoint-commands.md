@@ -1037,14 +1037,37 @@ List Windows registry keys and values.
 
 **Parameters:**
 
-- `reg_path` (required): Registry path to list (e.g., "HKEY_LOCAL_MACHINE\\SOFTWARE")
+- `reg` (required, positional): Registry path to list. Must start with one of `hkcr`, `hkcc`, `hkcu`, `hklm`, `hku` (e.g., `hklm\software`). Backslashes must be escaped.
 
-**Response Event:** REG_LIST_REP
+**Response Event:** REGISTRY_LIST_REP
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> reg_list --reg_path "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"
+limacharlie sensor task <SID> reg_list "hklm\\software\\microsoft\\windows\\currentversion\\run"
+```
+
+---
+
+### reg_get
+
+Fetch a single named value from a Windows registry key. Complements `reg_list`, which enumerates a whole key.
+
+> **Note:** Added in sensor version 5.3.0.
+
+**Platforms:** Windows
+
+**Parameters:**
+
+- `reg` (required, positional): Registry key to read from. Must start with one of `hkcr`, `hkcc`, `hkcu`, `hklm`, `hku` (e.g., `hklm\software`). Backslashes must be escaped.
+- `name` (optional, positional): Name of the value to fetch; omit for the key's default (unnamed) value
+
+**Response Event:** REGISTRY_GET_REP
+
+**Usage Example:**
+
+```bash
+limacharlie sensor task <SID> reg_get "hklm\\software\\microsoft\\windows\\currentversion\\run" "OneDrive"
 ```
 
 ---

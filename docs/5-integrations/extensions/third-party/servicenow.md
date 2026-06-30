@@ -6,6 +6,11 @@ The ServiceNow LimaCharlie Extension is primarily an **API bridge**: it lets Lim
 
 Nothing pins the extension to the stock ITSM `incident` table. Security teams on Security Incident Response (`sn_si_incident`), change/problem workflows, or custom tables are all first-class: pass a `table` (or configure the mirror target) and the same actions apply.
 
+The sync model is stateless on the LimaCharlie side:
+
+- **LC → ServiceNow**: `mirror_case` idempotently upserts a ServiceNow record from a LimaCharlie Case, anchored on the record's standard `correlation_id` / `correlation_display` fields. Repeated calls update the same record.
+- **ServiceNow → LC**: `pull_incident_changes` returns records updated since a watermark, normalized for feeding back into Cases. Changes made by the integration's own user are excluded, breaking echo loops.
+
 ## Setup
 
 ### 1. Create a ServiceNow integration user
@@ -22,9 +27,16 @@ The extension supports three modes (set `auth_mode`):
 | --- | --- | --- |
 | `basic` | `username`, `password` | Username/password sent on every request. Simplest for ServiceNow. |
 | `oauth_password` | `client_id`, `client_secret`, `username`, `password` | OAuth2 Resource Owner Password Credentials grant, then `refresh_token` to renew. |
-| `oauth_client_credentials` | `client_id`, `client_secret` | True server-to-server grant (no end-user password). Requires the instance to enable `glide.oauth.inbound.client.credential.grant_type.enabled`. |
+| `oauth_client_credentials` | `client_id`, `client_secret` | True server-to-server grant (no end-user password). Needs extra instance-side setup — see below. |
 
 For the OAuth modes, register an OAuth application in ServiceNow (**System OAuth → Application Registry**) and copy its Client ID and Client Secret.
+
+The **client credentials** grant needs two extra pieces of instance-side setup beyond the client registration:
+
+1. Set the system property `glide.oauth.inbound.client.credential.grant_type.enabled` to `true` (create it under **System Properties** if it doesn't exist). Without it the token endpoint returns `access_denied` / `server_error`.
+2. On the OAuth application record, set the **OAuth Application User** (the `user` field) to your integration user. The grant issues tokens **as this user**, so it must hold the roles the actions need (e.g. `itil` / `sn_incident_write` for incident writes). Without it the token endpoint returns `unauthorized_client` ("integration user is not configured"). Set `integration_user` (below) to this same username so SN → LC polling can de-echo the extension's own writes.
+
+The **basic** and **OAuth password** modes don't need this — they authenticate as the `username` you configure directly.
 
 ### 3. Subscribe to the extension
 
@@ -47,9 +59,9 @@ In **Extensions → ext-servicenow → Configuration**, fill in:
 | `client_id` | conditional | Required for `oauth_password` / `oauth_client_credentials`. |
 | `client_secret` | conditional | Secret reference. Required for `oauth_password` / `oauth_client_credentials`. |
 | `integration_user` | no | The ServiceNow user the extension authenticates as. `pull_incident_changes` excludes changes made by this user. Set it to enable the echo-loop guard. |
-| `correlation_display` | no | Label stamped on mirrored records' `correlation_display` field (default `LimaCharlie`). Scopes upserts and SN→LC polling. |
-| `close_code` | no | `close_code` applied when mirroring a case into Resolved/Closed (default `Solution provided`). Must be a valid `close_code` choice on your instance. |
-| `mirror_table` | no | Target table for case mirroring (default `incident`; set `sn_si_incident` for Security Incident Response). |
+| `correlation_display` | no | Label stamped on mirrored records' `correlation_display` field (default `LimaCharlie`). Scopes upserts and SN→LC polling, so multiple integrations can coexist. |
+| `close_code` | no | `close_code` applied when mirroring a case into Resolved/Closed (default `Solution provided`). Must be a value in your instance's `close_code` choice list, which varies by ServiceNow version — the legacy `Solved (Permanently)` is not present on current releases. An invalid value is silently dropped by ServiceNow, which then trips the mandatory-resolution-code data policy. |
+| `mirror_table` | no | Target table for case mirroring (default `incident`; set `sn_si_incident` for Security Incident Response, or any task-derived table). |
 | `mirror_subject_prefix` | no | Prefix for the mirrored record's `short_description` (default `LimaCharlie Case`). |
 | `mirror_state_map` | no | Override of case-status→record-state mapping, e.g. `{"new":1,"in_progress":2,"resolved":6,"closed":7}`. Used in both directions. |
 | `mirror_severity_map` | no | Override of case-severity→`{urgency,impact}` mapping, e.g. `{"critical":{"urgency":1,"impact":1}}`. |
@@ -106,7 +118,7 @@ Delete a record on any table by `sys_id`. Irreversible — the integration user'
 
 #### `query_table`
 
-Read-only Table API query against any table (`incident`, `problem`, `change_request`, `cmdb_ci`, `sys_user`, …). An escape hatch for AI agents that need data the typed actions don't cover.
+Read-only Table API query against any table (`incident`, `problem`, `change_request`, `cmdb_ci`, `sys_user`, …). An escape hatch for AI agents that need data the typed actions don't cover, and the way to resolve display names to the sys_ids the write actions expect.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -116,6 +128,8 @@ Read-only Table API query against any table (`incident`, `problem`, `change_requ
 | `limit` | int | Max records (default `50`). |
 | `offset` | int | Pagination offset. |
 | `display_value` | enum | `false` / `true` / `all`. |
+
+Returns `{ "count": N, "records": [...] }`.
 
 #### `count_records`
 
@@ -188,6 +202,8 @@ Search with a ServiceNow encoded query (`sysparm_query`), e.g. `active=true^stat
 | `offset` | int | Pagination offset. |
 | `display_value` | enum | `false` / `true` / `all`. |
 
+Returns `{ "count": N, "incidents": [...] }`.
+
 ### Journal, attachments, CMDB
 
 #### `add_note`
@@ -242,31 +258,38 @@ Resolve a CMDB configuration item (asset) by name or a custom encoded query — 
 | `class` | string | CMDB table/class (default `cmdb_ci`). |
 | `limit` | int | Max records (default `50`). |
 
+Returns `{ "count": N, "cis": [...] }`.
+
 ### Case mirroring (optional)
 
 A bidirectional, fully-configurable recipe that keeps a [LimaCharlie Case](../limacharlie/index.md) and a ServiceNow record in sync. Mirroring is anchored on ServiceNow's purpose-built external-link fields: `correlation_id` holds the LimaCharlie case id and `correlation_display` holds the per-integration label (default `LimaCharlie`).
 
 #### `mirror_case`
 
-**LC → ServiceNow.** Idempotently upsert a ServiceNow record from an LC Case. Looks the record up by `correlation_id=case_id`, so repeated calls update the same record rather than creating duplicates. Wire this to a D&R rule on case events.
+**LC → ServiceNow.** Idempotently upsert a ServiceNow record from an LC Case. Looks the record up by `correlation_id=case_id` (scoped to this integration's `correlation_display`), so repeated calls update the same record rather than creating duplicates. Wire this to a D&R rule on case events.
 
 | Field | Type | Notes |
 | --- | --- | --- |
 | `case_id` | string | **Required.** LimaCharlie case id (stored as `correlation_id`). |
-| `case_number` | int | LimaCharlie case number (used in the record subject). |
+| `case_number` | int | LimaCharlie case number (used in the record subject, `LimaCharlie Case #N: …`). |
 | `status` | enum | `new`, `in_progress`, `resolved`, `closed`. Maps to `state` (configurable via `mirror_state_map`). |
 | `severity` | enum | `critical`, `high`, `medium`, `low`, `info`. Maps to `urgency`/`impact` (configurable via `mirror_severity_map`; ServiceNow derives `priority`). |
-| `classification` | string | Case classification (`true_positive`, `false_positive`, `pending`). |
-| `summary` | string | Case summary (becomes record description/subject). |
-| `conclusion` | string | Case conclusion (appended to description, used as close notes). |
-| `assignees` | list of string | Case assignees. |
-| `tags` | list of string | Case tags. |
+| `classification` | string | Case classification (`true_positive`, `false_positive`, `pending`); appended to the description. |
+| `summary` | string | Case summary (becomes the record subject — first line, truncated to 160 chars — and description). |
+| `conclusion` | string | Case conclusion (appended to description, used as `close_notes` on terminal states). |
+| `assignees` | list of string | Accepted, but not currently reflected on the record. |
+| `tags` | list of string | Appended to the description. |
 | `table` | string | Override the configured mirror target table for this call. |
 | `correlation_display` | string | Override the `correlation_display` label for this mirror. |
 | `sync_note` | string | Optional work note to record the sync on the record. |
 | `extra` | object | Raw fields merged into (and overriding) the mapped record fields. |
 
-Resolved/Closed transitions carry the configured `close_code`/`close_notes`.
+Default mappings applied (all overridable via config):
+
+- Status → `state`: `new` → 1, `in_progress` → 2, `resolved` → 6, `closed` → 7. Terminal states (Resolved/Closed) also set `close_code` (from config) and `close_notes`.
+- Severity → `urgency`/`impact`: `critical` → 1/1, `high` → 1/2, `medium` → 2/2, `low` and `info` → 3/3.
+
+Returns `{ "created": bool, "sys_id": "...", "number": "...", "incident": {...} }`.
 
 #### `pull_incident_changes`
 
@@ -278,7 +301,18 @@ Resolved/Closed transitions carry the configured `close_code`/`close_notes`.
 | `limit` | int | Max records (default `100`). |
 | `include_own_changes` | bool | Disable the echo-loop guard (include changes by the integration user). |
 
-> The watermark boundary is **inclusive**, so de-dupe applied changes by `sys_id`, and keep `limit` above the largest expected same-second burst of updates.
+Returns `{ "count": N, "changes": [...], "watermark": "YYYY-MM-DD HH:MM:SS" }`. Each change carries `sys_id`, `number`, `case_id` (from `correlation_id`), `state`, a normalized `case_status` (`new` / `in_progress` / `resolved` / `closed` — On Hold maps to `in_progress`, Canceled to `closed`), `short_description`, `sys_updated_on`, and `sys_updated_by`.
+
+> The watermark boundary is **inclusive** (≥ `since`), so de-dupe applied changes by `sys_id`, and keep `limit` above the largest expected same-second burst of updates.
+
+#### Wiring up the bidirectional sync
+
+Both directions are driven from D&R rules — the extension holds no schedule of its own:
+
+- **LC → ServiceNow**: a D&R rule on Case events calls `mirror_case` with the case fields, pushing changes as they happen.
+- **ServiceNow → LC**: a scheduled D&R rule periodically calls `pull_incident_changes`, passing back the watermark from the previous run, and applies the returned changes to Cases.
+
+Because `pull_incident_changes` excludes the integration user's own writes, the LC → SN → LC round trip does not re-import what the extension itself mirrored.
 
 ## Detection & Response
 
@@ -316,5 +350,11 @@ To append triage findings on an existing record (for example from a Playbook or 
 
 - The extension is **stateless** — mirroring state lives in ServiceNow (`correlation_id`) and the returned `watermark`; there is no database.
 - Reference fields (`assignment_group`, `assigned_to`, `caller_id`) take **sys_ids**, not display names — display names are not auto-resolved. Use `query_table` against `sys_user` / `sys_user_group` to resolve a name to its sys_id first.
+- ServiceNow rate limiting (`429`) is honored once per request with a `Retry-After` cap of 5 seconds; a persistent `429` surfaces to the caller.
+- A business rule or data policy abort surfaces as an error either way: ServiceNow may return a non-2xx status (e.g. `403`) or, for some aborts, HTTP `200` with a `{"status": "failure"}` envelope. The extension treats both as errors, never as success. (A common cause is resolving a record with a `close_code` that isn't in the instance's choice list — see the `close_code` config note above.)
+- `correlation_id` and `correlation_display` values are sanitized (encoded-query delimiters stripped) on both the write and the lookup path, keeping upserts idempotent even for hostile values.
 - The OAuth access token is cached and renewed via `refresh_token` (in `oauth_password` mode). Rotating the secret in Secrets Manager evicts the cached client on the next surfaced `401`.
 - `pull_incident_changes` only breaks echo loops if `integration_user` is set to the user the extension authenticates as.
+- Errors are surfaced as `servicenow api <status> on <path>: <message>`.
+</content>
+</invoke>

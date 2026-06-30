@@ -163,6 +163,16 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | playbook.get.mtd | View playbook metadata only |
 | playbook.set.mtd | Modify playbook metadata only |
 
+### Apps
+
+| Permission | Description |
+| --- | --- |
+| app.get | Access app records |
+| app.set | Create and modify app records |
+| app.del | Delete app records |
+| app.get.mtd | View app metadata only |
+| app.set.mtd | Modify app metadata only |
+
 ### External Adapters
 
 | Permission | Description |
