@@ -4,6 +4,47 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ---
 
+## 2026-06-29
+
+### Web App 5.11.0
+
+Expanded AI cost tracking adds spend breakdowns, MSSP chargeback, and a savings trend to the AI Usage page, now available in the main web app alongside deeper Vulnerabilities filtering and functional app egress.
+
+#### New Features
+
+- **AI cost tracking**: the AI Usage page now offers 7/30/90-day ranges, a KPI strip (spend, investigations, cost per investigation, tokens), spend breakdowns by model and detection rule with per-investigation unit cost, per-tenant re-bill markup for MSSP chargeback in the CSV export, anomaly and trend indicators, and a savings trend chart. Sub-cent costs display adaptive precision instead of rounding to $0.00.
+- **AI Usage in the main web app**: the AI Usage view, previously Grid-only, is now reachable from the main web app sidebar under the AI group, gated by the `ai_agent.get` permission.
+- **Vulnerabilities subscription gating**: orgs without the Vulnerability Reporting extension now see a subscribe call-to-action (for `billing.ctrl` users) or an admin-contact prompt, replacing the misleading empty state.
+- **Vulnerabilities platform filtering**: the Platform facet now scopes the CVEs tab, and dashboard charts and KPI tiles update to reflect active Severity and Platform filters, with a caveat label when other filters can't be represented in the rollup.
+- **Vulnerabilities application grouping**: the host vuln table splits the combined column into sortable Application and CVE columns, grouping all CVEs for a package together; the org drawer defaults to application sort and the sensor tab keeps score sort.
+- **Vulnerabilities false-positive feedback**: a per-finding "Report incorrect detection" action collects a structured reason and relays it to the product team, separate from the local mark-false-positive triage action.
+- **Gmail adapter**: setup and edit forms for single-mailbox OAuth and Workspace service-account flows, with per-feed capability toggles, subject scoping, and masked managed-secret storage for service-account credentials.
+- **ThreatLocker adapter**: Include Child Organizations scoping for parent API tokens and individual toggles for the Approval Requests, Unified Audit, and System Audit feeds.
+- **Brand feature flags**: branded deployments can disable fleet billing, case management, automation SOPs, mini apps, and the AI terminal per deployment.
+- **Windows PowerShell installer**: the Windows install wizard leads with a copy-paste PowerShell one-liner using LimaCharlie's hosted install.ps1, mirroring the Linux curl installer, with the manual EXE/MSI tab still available.
+- **Search timing breakdown**: the per-stage timing breakdown is now on by default for all users.
+- **Sensor Connectivity**: the Add Sensor panel now lists the org's webhook endpoint alongside the existing addresses, making firewall setup for cloud sensors and webhook adapters easier.
+- **Apps launcher icons**: apps now derive distinct icons from author emoji, required-permission prefixes, and other signals before falling back to the generic diamond.
+- **Per-theme logos**: runtime configs support a dedicated dark-theme logo alongside the standard logo.
+
+#### Bug Fixes
+
+- Apps declaring allowed_origins can now make third-party fetch() calls; apps load from a real HTTP origin with their own permissive floor CSP instead of inheriting the console's strict policy. The brokered lc.api path and app isolation are unchanged.
+- Apps now open correctly on Grid, which previously failed with a sandbox handshake timeout.
+- Creating a false-positive rule from a detection now names the draft from the detection (category and detect ID) instead of "Untitled-1".
+- Deleting a REST API key now requires confirmation through a danger dialog, preventing accidental deletion that would break integrations.
+- Replaying a D&R rule with target: detection now runs against the detection stream instead of the event stream, which had matched nothing.
+- Projection queries that select `ts` without an alias now show the column, formatted as YYYY-MM-DD HH:mm:ss in the table and exports.
+- Saved query text can now be edited in the Edit Query modal, not just renamed.
+- The saved-query size limit now matches the backend's 1024-byte ceiling, raised from a stricter 512-byte client cap.
+- CVE descriptions from the NVD feed now render as sanitized HTML instead of literal tag text on the CVE detail page and sidebar drawer.
+- The CVE detail page layout is now stable, with stacked tables sized to their actual row count instead of growing unboundedly or leaving large empty gaps.
+- The KEV and Total vulnerability tiles now use server-computed host-wide counts instead of page-limited values, fixing incorrect counts for sensors with many findings.
+- The create-case org picker now shows all cases-enabled orgs for accounts spanning more than 200 orgs, resolving names for up to 10,000 orgs.
+- Social share previews are fixed for Grid and the main web app, with OG and Twitter tags added and robots.txt updated to allow social crawlers while keeping the console out of search indexes.
+
+---
+
 ## 2026-06-18
 
 ### Web App 5.10.0
