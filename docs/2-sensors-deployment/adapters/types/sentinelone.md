@@ -1,6 +1,6 @@
 # SentinelOne
 
-This Adapter allows you to stream SentinelOne activities, threats, and alerts to LimaCharlie via SentinelOne API.
+This Adapter allows you to stream SentinelOne activities, threats, and alerts to LimaCharlie via SentinelOne API. It can optionally be scoped to specific SentinelOne sites/accounts (a single tenant of an MSP console) and pull the agent inventory so every endpoint in scope appears as an individual LimaCharlie sensor.
 
 ## Deployment Configurations
 
@@ -18,6 +18,10 @@ Adapter Type: `sentinel_one`
 - `domain` - your SentinelOne MGMT endpoint, `https://<your-instance>.sentinelone.net`
 - `api_key` - SentinelOne API token
 - `start_time` - optional start time to fetch past events.
+- `site_ids` - optional comma-separated SentinelOne Site IDs. Every request is scoped to these sites (the standard `siteIds` filter), so an MSP/partner console token pulls in a **single tenant** instead of every site the token can see. Find a Site ID in the SentinelOne console under *Sentinels → Site Info*.
+- `account_ids` - optional comma-separated SentinelOne Account IDs; like `site_ids` but at the account level.
+- `collect_agents` - optional boolean. When `true`, the adapter also polls the agent (endpoint) inventory (`/web/api/v2.1/agents`) and ships one `agents` record per agent, re-shipping a record whenever the agent's details change. The first poll walks the full inventory, so the endpoints in scope appear in LimaCharlie as individual sensors right away — even before they produce any threat/alert/activity telemetry. Decommissioned agents are excluded. Off by default.
+- `agents_poll_interval` - optional, how often the agent inventory is re-polled when `collect_agents` is on, as a Go duration in nanoseconds. Default 15 minutes.
 - `urls` - Advanced, CLI only: a comma-separated list of REST API paths to scrub. If omitted, by default the adapter brings activities, alerts, and threats:
 
   ```text
@@ -25,6 +29,12 @@ Adapter Type: `sentinel_one`
   /web/api/v2.1/cloud-detection/alerts,
   /web/api/v2.1/threats
   ```
+
+### Endpoints as individual sensors
+
+SentinelOne telemetry is multiplexed into one LimaCharlie sensor per SentinelOne agent: threats, alerts, activities and (with `collect_agents`) inventory records that carry the same agent id all collapse onto the same per-endpoint sensor, named after the endpoint's hostname. Combined with `site_ids`, this maps one tenant of a multi-tenant SentinelOne console into a LimaCharlie organization with one sensor per endpoint — the same MSP workflow as the [ThreatLocker adapter](threatlocker.md)'s Managed Organization ID scoping.
+
+Agent inventory records arrive with the event type `s1_agent`; threats, alerts and activities arrive as `s1_threat`, `s1_alert` and `s1_activity`.
 
 ## Deployment Examples
 
