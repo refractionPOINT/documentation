@@ -20,9 +20,9 @@ Adapter Type: `sentinel_one`
 - `start_time` - optional start time to fetch past events.
 - `site_ids` - optional comma-separated SentinelOne Site IDs. Every request is scoped to these sites (the standard `siteIds` filter), so an MSP/partner console token pulls in a **single tenant** instead of every site the token can see. Find a Site ID in the SentinelOne console under *Sentinels → Site Info*.
 - `account_ids` - optional comma-separated SentinelOne Account IDs; like `site_ids` but at the account level.
-- `collect_agents` - optional boolean. When `true`, the adapter also polls the agent (endpoint) inventory (`/web/api/v2.1/agents`) and ships one `agents` record per agent, re-shipping a record whenever the agent's details change. The first poll walks the full inventory, so the endpoints in scope appear in LimaCharlie as individual sensors right away — even before they produce any threat/alert/activity telemetry. Decommissioned agents are excluded. Off by default.
+- `collect_agents` - optional boolean. When `true`, the adapter also polls the agent (endpoint) inventory (`/web/api/v2.1/agents`) and ships one `agents` record per agent, re-shipping a record whenever the agent's details change. The first poll walks the full inventory, so the endpoints in scope appear in LimaCharlie as individual sensors right away — even before they produce any threat/alert/activity telemetry. Decommissioned agents are excluded. Off by default. The API token must be allowed to view Endpoints; like any permission problem on a polled endpoint, a `403` stops the adapter with a visible error rather than silently skipping the feed.
 - `agents_poll_interval` - optional, how often the agent inventory is re-polled when `collect_agents` is on, as a Go duration in nanoseconds. Default 15 minutes.
-- `urls` - Advanced, CLI only: a comma-separated list of REST API paths to scrub. If omitted, by default the adapter brings activities, alerts, and threats:
+- `urls` - Advanced, CLI only: a comma-separated list of REST API paths to scrub. The `site_ids`/`account_ids` scoping applies to custom paths too, so every path listed here must accept the standard `siteIds`/`accountIds` filters when scoping is configured. If omitted, by default the adapter brings activities, alerts, and threats:
 
   ```text
   /web/api/v2.1/activities,
