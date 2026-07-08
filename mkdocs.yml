@@ -524,6 +524,7 @@ nav:
       - Story Tags: 8-reference/story-tags.md
       - ID Schema: 8-reference/id-schema.md
       - Permissions: 8-reference/permissions.md
+      - Cloud Security API & IaC: 8-reference/cloud-security-api-iac.md
       - Error Codes: 8-reference/error-codes.md
       - Auth Resource Locator: 8-reference/authentication-resource-locator.md
       - YARA Modules: 8-reference/yara-modules.md
