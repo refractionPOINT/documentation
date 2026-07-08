@@ -277,6 +277,7 @@ nav:
           - Security Tools:
               - Check Point Harmony: 2-sensors-deployment/adapters/types/checkpoint-harmony.md
               - CrowdStrike: 2-sensors-deployment/adapters/types/crowdstrike.md
+              - CrowdStrike Falcon (Cloud): 2-sensors-deployment/adapters/types/falconcloud.md
               - Microsoft Defender: 2-sensors-deployment/adapters/types/microsoft-defender.md
               - SentinelOne: 2-sensors-deployment/adapters/types/sentinelone.md
               - Sophos: 2-sensors-deployment/adapters/types/sophos.md
