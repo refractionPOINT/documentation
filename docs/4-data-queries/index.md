@@ -17,6 +17,11 @@ Query and analyze your security telemetry using LimaCharlie Query Language (LCQL
 
 ### Run an LCQL Query
 
+!!! info "Facets and histogram are opt-in"
+    The search API supports two optional boolean request body fields, `include_facets` and `include_histogram`. Both default to `false`: when they are omitted (or sent as `false`), the response is returned without facet aggregations and without the time-distribution histogram, and the matching response keys come back empty. Send `true` to request either block.
+
+    The web Query Console always opts in, so its facets sidebar and histogram render unchanged. This only affects callers using the REST API, the SDKs, or `lc-cli` directly.
+
 === "REST API"
 
     ```bash
@@ -33,7 +38,9 @@ Query and analyze your security telemetry using LimaCharlie Query Language (LCQL
         "query": "event.FILE_PATH ends with .exe",
         "startTime": "'"$START"'",
         "endTime": "'"$END"'",
-        "stream": "event"
+        "stream": "event",
+        "include_facets": true,
+        "include_histogram": true
       }'
     ```
 
