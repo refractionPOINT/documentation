@@ -2,7 +2,7 @@
 
 LimaCharlie's deepest AI integration is with Claude — [AI Sessions](../9-ai-sessions/index.md) in the browser and the [Claude Code plugin](mcp-server.md#option-1-claude-code-plugin-recommended) in the terminal. But the platform itself is API-first and model-agnostic: any agent that can run shell commands can operate it through the [`limacharlie` CLI](cli.md), whatever frontier model it runs on.
 
-The CLI is the recommended integration for agents that aren't Claude Code (and Claude Code itself uses it under the hood). Two things make it work especially well:
+The CLI is the recommended integration for agents that aren't Claude Code. Two things make it work especially well:
 
 - Every command supports `--ai-help` — help text written specifically for LLM consumption, so an agent can teach itself the platform as it goes
 - It is scriptable: cron jobs, CI checks, and bulk operations work the same way for an agent as for a human
