@@ -8,15 +8,17 @@ To view and operate the Query Console, the following permissions are required:
 
 ### UI Element Overview
 
-![Query console permissions requirement screen](../assets/images/image(338).png)
+![Annotated overview of the Query Console interface with numbered UI elements](../assets/images/query-console-overview.png)
 
 1. **Source:** Select Events (everything that had been injected from endpoints and XDR sources, default), Detections, or Platform Audit events as the data source for the search.
+
 2. **Query editor:** Enter a LimaCharlie Query Language (LCQL) query to include:
 
    1. *Sensor Selector -* precisely define the sensors that produced the desired events.
    2. *Event Type* - filter results to only return specific types of events.
    3. Filter - the actual query filter using individual fields and operations on top of them.
    4. Projections (optional) - control output columns, sort results via `ORDER BY` and/or aggregate the data with `GROUP BY` , `COUNT`, `COUNT_UNIQUE`  and more. See LCQL reference and Examples for details.
+
 3. **Time period:** Set the searchable time period using three options: last [time period],  around [time frame], and absolute "from start→to finish".
 
    ![Event Type - filter results to only return specific types of events](../assets/images/image(340).png)
@@ -28,6 +30,7 @@ To view and operate the Query Console, the following permissions are required:
      - From `10am` to `1:30pm`
 
      **Note:** All times are shown according to the timezone selected by the user in User Settings.
+
 4. **Available Fields:** Managed data exploration
 
    1. Schema fields - a list of all the fields associated with ingested events.
@@ -38,6 +41,7 @@ To view and operate the Query Console, the following permissions are required:
    4. Table columns: control the columns displayed in Table View.
 
    Note: While the schema fields are always available, the event types and query fields are only shown for portion of the time frame *searched so far*.  As more data is churned in the background (to complete your selected time frame), more event types and fields may appear.
+
 5. **Query status:** Shows the state of your query in real time, highlighting any existing syntax errors or providing a cost estimate if the query is properly formed.
 
    As the query runs the status displays progress, query status, and a running total of the cost accrued.
@@ -45,9 +49,11 @@ To view and operate the Query Console, the following permissions are required:
    *Query cost estimation:* Queries are charged by the amount of data churned, measured and billed per 200,000 events evaluated. This estimation shows the "at most" cost of a query for the selected time range. Only retrieved data is chargeable.
 
    *Performance tuning:* The better tuned the query, the faster the search and lower the cost. Using Sensor Selector and Event Type to precisely target the desired telemetry will increase search speeds and lower costs.
+
 6. **Histogram:**
 
    When a search is run, a histogram appears below the query field showing the distribution of events over time. The portion with a vertical bar chart represents results  that have been retrieved so far. The non-bar chart portion shows the total number of events in the selected time frame. The histogram shows the progress of the search through the time frame.  As you paginate through the search, more events are evaluated, and more bars appear to signify the progress through the time frame.
+
 7. **Search results:** displays results in two views, **timeline** and **table**. Timeline view shows matching events with the most recent on top.  Table view provides a way to sort results into desired columns. Find the desired field in Query Fields and use the `pin` icon to add it as a column.
 
    1. A **Tab Columns** section appears in the **Fields** sidebar when table view is selected. Columns can be viewed or removed here.
@@ -55,7 +61,14 @@ To view and operate the Query Console, the following permissions are required:
    3. **Download** all the events you've retrieved in a [.ndjson format](https://github.com/ndjson/ndjson-spec). The automatic download of the entire time range is coming soon.
 
    ![A Tab Columns section appears in the Fields sidebar when table view is selected](../assets/images/image(342).png)
+
 8. **Saving Queries and Query Library.** A query can be saved in your private user library or shared via an org library. Use the library to browse queries and load the desired one to the query editor.
+
+9. **Progress indicator:** The status line shows how much of the query has completed so far (for example, `11% scanned`). For whole-timeline queries such as aggregations, sorting, and other stateful operations, this value climbs as more of the selected time range is processed. See [Query Limits & Performance](query-limits-and-performance.md#query-progress-and-cost-reporting) for details on how progress and cost are reported.
+
+10. **Search details (info icon):** Hovering the info icon at the end of the status line opens a **Search Details** panel with per-session and per-page timings (wall, server, total work, cost, and pages) and a completion breakdown (progress, batches completed vs. in scope, events, and data). It also shows the query's **Query ID**, which you can copy and share with LimaCharlie support when reporting an issue with a query so troubleshooting is faster.
+
+    ![Search Details panel showing per-session and per-page timings, a completion breakdown, and the Query ID](../assets/images/query-console-search-details.png)
 
 ---
 
