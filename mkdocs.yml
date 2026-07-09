@@ -173,7 +173,9 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.smartsymbols
   - pymdownx.snippets:
-      base_path: docs
+      base_path:
+        - docs
+        - .
       auto_append:
         - includes/glossary.md
   - pymdownx.superfences:

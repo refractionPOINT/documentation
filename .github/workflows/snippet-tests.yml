@@ -1,0 +1,62 @@
+name: Snippet Compilation
+
+# Compiles the documentation code snippets (docs/4-data-queries embeds these via
+# pymdownx.snippets) so they cannot drift from the published SDKs. Go snippets are
+# type-checked by the compiler; Python snippets are byte-compiled and the SDK
+# import paths they use are verified against the installed package.
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  go-snippets:
+    name: Go snippets (go build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Build and vet Go snippets
+        working-directory: snippets/golang
+        run: |
+          go build ./...
+          go vet ./...
+
+  python-snippets:
+    name: Python snippets (py_compile)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install the LimaCharlie SDK
+        run: |
+          pip install --upgrade pip
+          pip install limacharlie
+
+      - name: Byte-compile Python snippets
+        run: python -m py_compile snippets/python/*.py
+
+      - name: Verify SDK import paths used by the snippets
+        run: |
+          python - <<'PY'
+          from limacharlie.client import Client
+          from limacharlie.sdk.organization import Organization
+          from limacharlie.sdk.search import Search
+          from limacharlie.sdk.hive import Hive, HiveRecord
+          print("SDK import paths used by the documentation snippets all resolve.")
+          PY
