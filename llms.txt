@@ -256,6 +256,7 @@ This file is a machine-readable index of the documentation, intended for LLMs an
 - [Command Line Interface](https://docs.limacharlie.io/6-developer-guide/sdk-overview/)
 - [CLI Extension](https://docs.limacharlie.io/6-developer-guide/cli/)
 - [Connecting AI Assistants](https://docs.limacharlie.io/6-developer-guide/mcp-server/)
+- [Using the CLI with other Frontier Models](https://docs.limacharlie.io/6-developer-guide/frontier-models/)
 - [Getting Started](https://docs.limacharlie.io/6-developer-guide/extensions/building-extensions/): Building Extensions
 - [User Interface](https://docs.limacharlie.io/6-developer-guide/extensions/building-ui/): Building the User Interface
 - [Schema & Data Types](https://docs.limacharlie.io/6-developer-guide/extensions/schema-data-types/): Schema Data Types
