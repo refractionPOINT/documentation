@@ -10,6 +10,7 @@ Extensions built by third-party developers that integrate external tools and ser
 - [Hayabusa](hayabusa.md) - Windows event log analysis
 - [Microsoft Response](microsoft-response.md) - Entra ID, Intune, Defender XDR, and Defender for Endpoint investigation and response actions
 - [NIMS](nims.md) - NIMS integration
+- [Okta](okta.md) - Okta identity investigation and response (suspend, MFA/password reset, session & token revocation)
 - [OTX](otx.md) - AlienVault OTX threat intelligence
 - [PagerDuty](pagerduty.md) - Incident management notifications
 - [Plaso](plaso.md) - Timeline analysis with Plaso
