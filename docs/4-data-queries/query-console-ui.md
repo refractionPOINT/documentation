@@ -42,7 +42,7 @@ To view and operate the Query Console, the following permissions are required:
 
    As the query runs the status displays progress, query status, and a running total of the cost accrued.
 
-   *Query cost estimation:* Queries are charged by the amount of data churned, measured and billed per one million events evaluated. This estimation shows the "at most" cost of a query for the selected time range. Only retrieved data is chargeable.
+   *Query cost estimation:* Queries are charged by the amount of data churned, measured and billed per 200,000 events evaluated. This estimation shows the "at most" cost of a query for the selected time range. Only retrieved data is chargeable.
 
    *Performance tuning:* The better tuned the query, the faster the search and lower the cost. Using Sensor Selector and Event Type to precisely target the desired telemetry will increase search speeds and lower costs.
 6. **Histogram:**
@@ -62,3 +62,4 @@ To view and operate the Query Console, the following permissions are required:
 ### What's Next
 
 - [LimaCharlie Query Language](lcql-examples.md)
+- [Query Limits & Performance](query-limits-and-performance.md)

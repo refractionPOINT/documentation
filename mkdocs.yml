@@ -358,6 +358,7 @@ nav:
       - LCQL Examples: 4-data-queries/lcql-examples.md
       - Query Console UI: 4-data-queries/query-console-ui.md
       - Query CLI: 4-data-queries/query-cli.md
+      - Query Limits & Performance: 4-data-queries/query-limits-and-performance.md
       - Template Strings: 4-data-queries/template-strings.md
       - Template Transforms: 4-data-queries/template-transforms.md
       - Events:
