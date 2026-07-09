@@ -163,3 +163,15 @@ plat == linux and hostname contains "web" # Linux with "web" in hostname
 plat == windows and not isolated          # Non-isolated Windows
 ext_plat == windows                       # Carbon Black/Crowdstrike reporting Windows endpoints
 ```
+
+## Documentation Snippet Accuracy
+
+When adding or editing documentation that includes code snippets or commands, verify them against authoritative, PUBLIC sources before publishing. Do not rely on memory.
+
+- **SDK snippets (Python, Go, and any other SDK):** Cross-check every module path, class, function/method name, and argument against the latest STABLE release of the corresponding public SDK - for example the `python-limacharlie` and `go-limacharlie` repositories on GitHub, or the `limacharlie` package on PyPI. Confirm signatures match the released version, not an older or in-development one.
+- **CLI commands and flags:** Cross-check subcommands, flags, and arguments against the latest stable `limacharlie` CLI (from PyPI or the public `python-limacharlie` repository). Use `limacharlie <command> --ai-help` or `--help` to confirm.
+- **LCQL queries and syntax:** Confirm operators, aggregation functions, field-path syntax, and query structure against the authoritative LCQL grammar, and validate example queries with `limacharlie search validate` before publishing.
+
+Runnable Python and Go SDK examples live in `snippets/` (`snippets/python/*.py`, `snippets/golang/*/main.go`) and are embedded into the docs with `pymdownx.snippets` (`--8<--`). They are compiled in CI (`.github/workflows/snippet-tests.yml`): Go snippets are built with `go build`, and Python snippets are byte-compiled with their SDK import paths verified. Add or edit runnable SDK examples there rather than inline, so CI keeps them from drifting out of sync with the SDKs.
+
+**Reminder:** This repository is PUBLIC. Only reference and link public sources; never include internal repository names, internal URLs, org IDs, or other non-public details in documentation or examples.
