@@ -8402,6 +8402,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#org-scoping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Org scoping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#actions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -12853,6 +12864,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#org-scoping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Org scoping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#actions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -13090,9 +13112,32 @@
 <td>no</td>
 <td>API version path segment. Defaults to <code>v2.1</code>.</td>
 </tr>
+<tr>
+<td><code>site_ids</code></td>
+<td>no</td>
+<td>List of SentinelOne site ids. When set, <strong>every</strong> call is restricted to these sites. See <a href="#org-scoping">Org scoping</a>.</td>
+</tr>
+<tr>
+<td><code>account_ids</code></td>
+<td>no</td>
+<td>List of SentinelOne account ids. When set, every call is restricted to these accounts (combined with <code>site_ids</code> when both are set).</td>
+</tr>
 </tbody>
 </table>
 <p>The token is sent as <code>Authorization: ApiToken &lt;token&gt;</code> on every request. Rotating the secret in Secrets Manager takes effect on the next request after a surfaced <code>401</code>.</p>
+<h2 id="org-scoping">Org scoping<a class="headerlink" href="#org-scoping" title="Anchor link to this section">&para;</a></h2>
+<p>For the <abbr title="Managed Security Services Provider">MSSP</abbr> / multi-tenant pattern — where one SentinelOne console holds many customers, split across <strong>accounts</strong> and <strong>sites</strong> — set <code>site_ids</code> and/or <code>account_ids</code> in the configuration to pin a single LimaCharlie organization to a single SentinelOne customer. Every call the organization makes is then restricted to that scope. For example, <code>list_agents</code> returns only that customer's endpoints, and a mitigation can only act within it.</p>
+<p>The scope is a <strong>hard cap</strong>, not a default:</p>
+<ul>
+<li><strong>List actions</strong> (<code>list_agents</code>, <code>list_threats</code>, <code>list_activities</code>, <code>list_sites</code> / <code>list_accounts</code> / <code>list_groups</code>) apply the scope to the <code>site_ids</code> / <code>account_ids</code> filters. A per-request <code>site_ids</code> / <code>account_ids</code> is <strong>intersected</strong> with the configured scope — a request can narrow within the scope but never widen past it, and a request that targets ids wholly outside the scope is <strong>rejected</strong>.</li>
+<li><strong>Mutating actions</strong> (isolate / scan / mitigate / verdict / incident / note) inject the scope into the action's target filter, so an entity selected purely by id is still confined to the configured sites/accounts — you cannot act on another tenant's agent or threat by guessing its id.</li>
+<li><strong><code>blocklist_hash</code></strong> cannot be applied <code>tenant</code>-wide for a scoped organization; the configured scope is used automatically when no scope is given on the request.</li>
+<li><strong><code>api_call</code></strong> (the generic passthrough): a <strong>write</strong> (<code>POST</code> / <code>PUT</code> / <code>DELETE</code>) that carries no target <code>filter</code> cannot be constrained and is <strong>refused</strong> for a scoped organization — use a typed action or include a filter. A <strong>read</strong> (<code>GET</code>) has the scope injected into the query; a read of a single resource by path (for example <code>sites/&lt;id&gt;</code>) cannot be constrained this way, so the typed actions are the fully-enforced surface.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Scope by the right dimension</p>
+<p>Scope by <code>account_ids</code> when a customer maps to a SentinelOne <em>account</em>, and by <code>site_ids</code> when it maps to a <em>site</em>. The hierarchy-list actions can only filter by a dimension the endpoint supports: <code>list_accounts</code> filters by <code>account_ids</code> only (an account has no parent site), so an organization scoped by <code>site_ids</code> alone does not constrain <code>list_accounts</code>. Prefer <code>account_ids</code> (or set both) if listing the account hierarchy must also be scoped. The API token itself should also be scoped to the intended sites/accounts in SentinelOne — the configuration scope is enforced on top of the token's own permissions, not instead of them.</p>
+</div>
 <h2 id="actions">Actions<a class="headerlink" href="#actions" title="Anchor link to this section">&para;</a></h2>
 <p>Every action that mutates state (isolate, scan, mitigate, verdict, incident, note) selects its targets with either an explicit id list (<code>agent_ids</code> / <code>threat_ids</code>) or a raw SentinelOne <code>filter</code> object. <strong>An empty selector is refused</strong> — the extension will not run an action that would target every entity in the tenant.</p>
 <p>List actions return one page plus a cursor: <code>{data: [...], pagination: {nextCursor, totalItems}}</code>. Pass <code>cursor</code> back (together with the same filters) to fetch the next page. <code>limit</code> defaults to <code>100</code> (max <code>1000</code>).</p>
