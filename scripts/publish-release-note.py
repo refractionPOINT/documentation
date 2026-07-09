@@ -38,6 +38,23 @@ ALLOWED_URL_HOSTS = ("github.com", "limacharlie.io")
 # caps how much untrusted, machine-fed content we will ever write into the docs.
 MAX_BODY_LEN = 50000
 
+# URL schemes that may appear in a Markdown link or image destination in the
+# release URL or body. Anything else (javascript:, data:, vbscript:, file:, ...)
+# is rejected: those render to a live href/src and would be a stored one-click
+# XSS on the docs site. Scheme-less destinations (relative paths, "#anchors",
+# "example.com/x") have no scheme and are always allowed.
+ALLOWED_LINK_SCHEMES = ("http", "https", "mailto")
+
+# Matches a leading URL scheme ("javascript:", "https:", ...) on a destination.
+_SCHEME_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9+.\-]*):")
+
+# Inline link/image destination: the text right after "](", up to the first
+# whitespace, ">", or ")". Handles an optional leading "<".
+_INLINE_DEST_RE = re.compile(r"\]\(\s*<?\s*([^)\s>]+)")
+
+# Reference-style link definition at the start of a line: "[label]: dest".
+_REF_DEST_RE = re.compile(r"(?m)^[ \t]{0,3}\[[^\]]+\]:\s*<?\s*([^\s>]+)")
+
 
 def parse_date(date_str: str) -> datetime:
     """Parse ISO 8601 or YYYY-MM-DD date string."""
@@ -57,7 +74,7 @@ def ensure_monthly_file(dt: datetime) -> str:
     if not os.path.exists(filepath):
         month_label = dt.strftime("%B %Y")
         with open(filepath, "w") as f:
-            f.write(f"# Release Notes — {month_label}\n")
+            f.write(f"# Release Notes - {month_label}\n")
 
     return filepath
 
@@ -142,11 +159,16 @@ def update_mkdocs_nav(dt: datetime) -> None:
 
 
 def validate_inputs(component: str, version: str) -> None:
-    """Validate component and version to prevent path traversal or injection."""
-    if not re.match(r'^[\w][\w.-]*$', component):
+    """Validate component and version to prevent path traversal or injection.
+
+    Uses ``re.fullmatch`` so the whole string must match: ``re.match`` with a
+    trailing ``$`` would also accept a single trailing newline, letting a caller
+    smuggle a line break into the generated heading.
+    """
+    if not re.fullmatch(r'[\w][\w.-]*', component):
         print(f"Invalid component name: {component}", file=sys.stderr)
         sys.exit(1)
-    if not re.match(r'^v?[\d]+[\d.]*[\w.-]*$', version):
+    if not re.fullmatch(r'v?[\d]+[\d.]*[\w.-]*', version):
         print(f"Invalid version: {version}", file=sys.stderr)
         sys.exit(1)
 
@@ -169,23 +191,60 @@ def validate_url(url: str) -> None:
     if not any(host == d or host.endswith("." + d) for d in ALLOWED_URL_HOSTS):
         print(f"URL host not in allowlist ({', '.join(ALLOWED_URL_HOSTS)}): {url}", file=sys.stderr)
         sys.exit(1)
+    # urlparse().hostname stops at the first "/", "?" or "#", so the host
+    # allowlist alone does not vet the rest of the string - and the raw URL is
+    # embedded verbatim inside a Markdown link destination ("[GitHub Release](URL)").
+    # A ")" or whitespace would close/break that destination and let a caller
+    # inject further Markdown (e.g. a javascript: link), which passes the host
+    # check. None of these characters appear in a legitimate release URL, so
+    # reject them.
+    forbidden = set(' \t\r\n"`\\()<>')
+    if any(c in forbidden or ord(c) < 0x20 for c in url):
+        print(f"URL contains forbidden characters: {url}", file=sys.stderr)
+        sys.exit(1)
+
+
+def reject_dangerous_link_schemes(body: str) -> None:
+    """Reject the publish if a Markdown link/image destination uses a bad scheme.
+
+    ``html.escape`` neutralizes raw HTML and autolinks, but Markdown inline links
+    (``[x](javascript:...)``) and reference definitions (``[x]: javascript:...``)
+    still render to a live ``<a href>`` regardless of HTML escaping, so a
+    ``javascript:`` or ``data:`` destination would be a stored one-click XSS on
+    the docs site. A legitimate, machine-generated release note never uses those
+    schemes, so we fail closed rather than trying to rewrite the body.
+    """
+    for pattern in (_INLINE_DEST_RE, _REF_DEST_RE):
+        for match in pattern.finditer(body):
+            dest = match.group(1)
+            scheme = _SCHEME_RE.match(dest)
+            if scheme and scheme.group(1).lower() not in ALLOWED_LINK_SCHEMES:
+                print(f"Disallowed URL scheme in release body link: {dest}", file=sys.stderr)
+                sys.exit(1)
 
 
 def sanitize_body(body: str) -> str:
     """Bound and neutralize the release-note body before it is written to docs.
 
     The body is machine-fed via repository_dispatch and rendered by MkDocs with
-    md_in_html enabled, so raw HTML in the body would render as live markup. The
-    body is expected to be Markdown (not HTML), so we HTML-escape only the three
-    structural characters (& < >). This defuses any raw HTML (e.g. <script>,
-    <iframe>, event handlers) while leaving normal Markdown - headings, lists,
-    links, emphasis, inline/fenced code - untouched. Quotes are intentionally
-    left alone (quote=False) so prose is not mangled; with < and > escaped no
-    HTML tag can form, so bare quotes are harmless.
+    md_in_html enabled. Two classes of active content must be defused:
+
+    1. Raw HTML (e.g. <script>, <iframe>, event handlers). We HTML-escape the
+       three structural characters (& < >), which turns any raw tag - and any
+       Markdown autolink like <javascript:...> - into inert text. Quotes are
+       intentionally left alone (quote=False) so prose is not mangled; with < and
+       > escaped no HTML tag can form, so bare quotes are harmless.
+    2. Markdown link/image destinations with a dangerous URL scheme, which
+       html.escape does NOT touch (see reject_dangerous_link_schemes). These are
+       vetted against a scheme allowlist and the publish is rejected on a hit.
+
+    Normal Markdown - headings, lists, http(s)/mailto links, emphasis,
+    inline/fenced code - is left untouched.
     """
     if len(body) > MAX_BODY_LEN:
         print(f"Body too long ({len(body)} > {MAX_BODY_LEN} chars)", file=sys.stderr)
         sys.exit(1)
+    reject_dangerous_link_schemes(body)
     return html.escape(body, quote=False)
 
 
