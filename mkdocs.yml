@@ -142,6 +142,7 @@ plugins:
 
 hooks:
   - hooks/llms_txt.py
+  - hooks/lcql_lexer.py
 
 markdown_extensions:
   - abbr
