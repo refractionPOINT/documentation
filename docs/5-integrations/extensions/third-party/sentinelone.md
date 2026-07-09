@@ -30,8 +30,24 @@ In **Extensions → ext-sentinelone → Configuration**, fill in:
 | `console_url` | yes | Your SentinelOne management console URL, e.g. `https://usea1-partners.sentinelone.net` |
 | `api_token` | yes | Reference to the secret created in step 3, e.g. `hive://secret/sentinelone-api-token` |
 | `api_version` | no | API version path segment. Defaults to `v2.1`. |
+| `site_ids` | no | List of SentinelOne site ids. When set, **every** call is restricted to these sites. See [Org scoping](#org-scoping). |
+| `account_ids` | no | List of SentinelOne account ids. When set, every call is restricted to these accounts (combined with `site_ids` when both are set). |
 
 The token is sent as `Authorization: ApiToken <token>` on every request. Rotating the secret in Secrets Manager takes effect on the next request after a surfaced `401`.
+
+## Org scoping
+
+For the MSSP / multi-tenant pattern — where one SentinelOne console holds many customers, split across **accounts** and **sites** — set `site_ids` and/or `account_ids` in the configuration to pin a single LimaCharlie organization to a single SentinelOne customer. Every call the organization makes is then restricted to that scope. For example, `list_agents` returns only that customer's endpoints, and a mitigation can only act within it.
+
+The scope is a **hard cap**, not a default:
+
+- **List actions** (`list_agents`, `list_threats`, `list_activities`, `list_sites` / `list_accounts` / `list_groups`) apply the scope to the `site_ids` / `account_ids` filters. A per-request `site_ids` / `account_ids` is **intersected** with the configured scope — a request can narrow within the scope but never widen past it, and a request that targets ids wholly outside the scope is **rejected**.
+- **Mutating actions** (isolate / scan / mitigate / verdict / incident / note) inject the scope into the action's target filter, so an entity selected purely by id is still confined to the configured sites/accounts — you cannot act on another tenant's agent or threat by guessing its id.
+- **`blocklist_hash`** cannot be applied `tenant`-wide for a scoped organization; the configured scope is used automatically when no scope is given on the request.
+- **`api_call`** (the generic passthrough): a **write** (`POST` / `PUT` / `DELETE`) that carries no target `filter` cannot be constrained and is **refused** for a scoped organization — use a typed action or include a filter. A **read** (`GET`) has the scope injected into the query; a read of a single resource by path (for example `sites/<id>`) cannot be constrained this way, so the typed actions are the fully-enforced surface.
+
+!!! note "Scope by the right dimension"
+    Scope by `account_ids` when a customer maps to a SentinelOne *account*, and by `site_ids` when it maps to a *site*. The hierarchy-list actions can only filter by a dimension the endpoint supports: `list_accounts` filters by `account_ids` only (an account has no parent site), so an organization scoped by `site_ids` alone does not constrain `list_accounts`. Prefer `account_ids` (or set both) if listing the account hierarchy must also be scoped. The API token itself should also be scoped to the intended sites/accounts in SentinelOne — the configuration scope is enforced on top of the token's own permissions, not instead of them.
 
 ## Actions
 
