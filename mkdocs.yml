@@ -484,6 +484,7 @@ nav:
       - Command Line Interface: 6-developer-guide/sdk-overview.md
       - CLI Extension: 6-developer-guide/cli.md
       - Connecting AI Assistants: 6-developer-guide/mcp-server.md
+      - Using the CLI with other Frontier Models: 6-developer-guide/frontier-models.md
       - Building Extensions:
           - Getting Started: 6-developer-guide/extensions/building-extensions.md
           - User Interface: 6-developer-guide/extensions/building-ui.md

@@ -1,8 +1,9 @@
 # Connecting AI Assistants
 
-LimaCharlie can be accessed by AI assistants in two ways:
+LimaCharlie can be accessed by AI assistants in three ways:
 
 - **Claude Code Plugin** — Uses the `limacharlie` CLI for all operations, with pre-built skills and workflows (recommended)
+- **CLI with other Frontier Models** — The same `limacharlie` CLI driven by Gemini CLI, OpenAI Codex, or any shell-capable agent; the recommended path when you're not using Claude Code. See [Using the CLI with other Frontier Models](frontier-models.md)
 - **MCP Server** — A [Model Context Protocol](https://modelcontextprotocol.io/) endpoint for any MCP-compatible AI client
 
 ## Setup Options
