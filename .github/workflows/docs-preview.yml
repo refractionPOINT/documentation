@@ -1,0 +1,64 @@
+name: Docs Preview
+
+# Builds the documentation on a pull request and uploads the fully rendered
+# site as a downloadable artifact so reviewers can view the rendered pages
+# before merge.
+#
+# Security posture: build only. There is no deploy step, no secrets are used,
+# and the token is read-only, so this cannot publish anywhere or leak
+# credentials. It runs only for pull requests from branches in this repository
+# (collaborators), not from forks.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-preview:
+    name: Build rendered docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build documentation
+        run: mkdocs build --strict
+
+      - name: Upload rendered site
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-preview
+          path: site
+          retention-days: 1
+
+      - name: How to view the preview
+        run: |
+          {
+            echo "### Rendered docs preview"
+            echo ""
+            echo "Download the **docs-preview** artifact from this run (the Artifacts section above), unzip it, then serve it locally:"
+            echo ""
+            echo '```bash'
+            echo "cd docs-preview   # the unzipped folder"
+            echo "python -m http.server 8000"
+            echo '```'
+            echo ""
+            echo "Open <http://localhost:8000/> in your browser. Serving over HTTP (rather than opening index.html directly) makes internal links and search work correctly."
+          } >> "$GITHUB_STEP_SUMMARY"
