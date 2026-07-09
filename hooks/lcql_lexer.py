@@ -88,7 +88,12 @@ class LCQLLexer(RegexLexer):
 
 
 def _register() -> None:
-    """Make ``get_lexer_by_name("lcql")`` resolve to :class:`LCQLLexer`."""
+    """Make ``get_lexer_by_name("lcql")`` resolve to :class:`LCQLLexer`.
+
+    Wrapped by callers in a broad ``except`` so that any failure (for example a
+    future Pygments dropping the private ``_lexer_cache`` symbol this relies on)
+    degrades to unhighlighted ``lcql`` blocks instead of breaking the build.
+    """
     from pygments.lexers import LEXERS, _lexer_cache
 
     _lexer_cache["LCQL"] = LCQLLexer
@@ -97,10 +102,18 @@ def _register() -> None:
     LEXERS["LCQLLexer"] = ("", "LCQL", ("lcql",), (), ())
 
 
-_register()
+try:
+    _register()
+except Exception:
+    # Fail safe: if registration is not possible, an ``lcql`` block simply
+    # renders as plain text and the build still succeeds.
+    pass
 
 
 def on_config(config):
     """MkDocs hook entry point; re-register defensively before pages render."""
-    _register()
+    try:
+        _register()
+    except Exception:
+        pass
     return config
