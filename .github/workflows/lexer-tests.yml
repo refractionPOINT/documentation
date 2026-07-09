@@ -7,13 +7,25 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Minimum permissions: this workflow only reads the repository. The job token
+# has no write scope and no secrets are exposed to it.
+permissions:
+  contents: read
+
 jobs:
   test:
+    name: LCQL lexer unit tests
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
+    # Run for repository events (push to master, manual dispatch) and for pull
+    # requests only when they come from a branch in this repository, never from
+    # a fork. Untrusted contributors therefore cannot trigger this job.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
