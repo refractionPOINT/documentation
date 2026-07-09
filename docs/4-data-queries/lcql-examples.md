@@ -12,16 +12,17 @@ Every LCQL query is scoped to a time range. Where that range comes from depends 
 
 | Interface | How the time range is set |
 |-----------|---------------------------|
-| Replay API and raw LCQL (the `limacharlie` CLI `q` / `qa`) | The **first component of the query string**, before the first `\|` (for example `-24h \| ...`). |
+| Replay API and raw LCQL query strings | The **first component of the query string**, before the first `\|` (for example `-24h \| ...`). |
 | Query Console (web UI) | The **time picker** above the query editor, not the query text. |
 | Search API | The **`startTime` and `endTime`** body parameters, in Unix epoch seconds. |
+| CLI (`limacharlie search run`) | The **`--start` and `--end`** flags, in Unix epoch seconds. |
 
 !!! note
-    In the Search API and the Query Console, the picker / `startTime` / `endTime` value always wins: any time prefix written into the query string is stripped and replaced. The examples on this page include the leading time component (`-24h |`) because they are written for Replay and the CLI.
+    In the Search API, the CLI, and the Query Console, the explicit range (the picker, `startTime` / `endTime`, or `--start` / `--end`) always wins: any time prefix written into the query string is stripped and replaced. The examples on this page include the leading time component (`-24h |`) because they are written as raw LCQL, where the time range is the first component of the query string.
 
 ### Time Formats in the Query String
 
-When the time range is part of the query (Replay and the CLI), the first component accepts relative durations, absolute date/times, or a bounded range.
+When the time range is part of the query (raw LCQL and the Replay API), the first component accepts relative durations, absolute date/times, or a bounded range.
 
 **Relative durations** count backwards from now using Go [duration syntax](https://pkg.go.dev/time#ParseDuration). The units are `h`, `m`, and `s`; there is no day or week unit, so express longer windows in hours (`-168h` is 7 days).
 
