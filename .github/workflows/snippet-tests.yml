@@ -66,9 +66,12 @@ jobs:
           python-version: '3.11'
 
       - name: Install the LimaCharlie SDK
+        # Pin the SDK version the snippets target so this check is reproducible
+        # (matching the Go side's pinned module) and a later SDK release that
+        # reorganizes modules fails the PR that bumps it, not an unrelated PR.
         run: |
           pip install --upgrade pip
-          pip install limacharlie
+          pip install 'limacharlie==5.5.1'
 
       - name: Byte-compile (do not run) the Python snippets
         run: python -m py_compile snippets/python/*.py

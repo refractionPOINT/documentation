@@ -122,8 +122,12 @@ jobs:
     if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
+      # If check-links failed before lychee ran (e.g. mkdocs build broke), the
+      # results artifact is never created. Don't fail this job on a missing
+      # artifact; the script step below no-ops when the file is absent.
       - name: Download link check results
         uses: actions/download-artifact@v8
+        continue-on-error: true
         with:
           name: linkcheck-results
 
