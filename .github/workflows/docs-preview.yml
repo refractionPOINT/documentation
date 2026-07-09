@@ -41,6 +41,13 @@ jobs:
       - name: Build documentation
         run: mkdocs build --strict
 
+      # Fails the PR only on NEW ordered-list numbering breaks (an item the
+      # author numbered >1 that renders as a restarted "1." because its content
+      # is mis-indented). Pre-existing cases are recorded in the baseline and do
+      # not fail; see scripts/check-list-numbering.py for the full rationale.
+      - name: Check ordered-list numbering
+        run: python scripts/check-list-numbering.py docs site --baseline scripts/list-numbering-baseline.json
+
       - name: Upload rendered site
         uses: actions/upload-artifact@v4
         with:
