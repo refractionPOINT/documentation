@@ -4,6 +4,35 @@ Release notes for LimaCharlie platform components, organized by date.
 
 ---
 
+## 2026-07-09
+
+### Web App 5.12.0
+
+The console and Grid app are now fully localized in English, Español, 日本語, Français, Deutsch, Português, 한국어, Italiano, and Nederlands alongside redesigned sensor pages and per-sensor vulnerability report exports.
+
+#### New Features
+
+- **Internationalization**: the console and Grid app are fully localized in English, Spanish (Español), Japanese (日本語), French (Français), German (Deutsch), Portuguese (Português), Korean (한국어), Italian (Italiano), and Dutch (Nederlands). A Language Switcher in User Settings sets the preferred language per device.
+- **Sensor Analytics dashboard**: the per-sensor Analytics page is rebuilt as a responsive card-grid dashboard with a single shared time-range selector, replacing the stack of full-width charts.
+- **Sensor Overview redesign**: identity, network, and system details are organized into grouped cards with inline status chips for connection, seal, network, and platform state. Seal and Isolate controls move into the page header, with the full pending/cancel state machine preserved.
+- **Search progress indicator**: the query console status line shows a live percent-scanned figure while a paginated query runs, with a hover tooltip listing batch, event, and data counts for the in-scope scan. Cancelled searches are now labelled "Cancelled" instead of "Complete!".
+- **Per-sensor Vulnerability Report export**: the Sensor Vulnerabilities tab adds an Export report menu with PDF, HTML, Markdown, CSV, and Excel formats. Reports include a KPI summary strip, top remediation recommendations aggregated by package and fix version, and the full findings table (CVE, application, version, severity, score, LC Risk, EPSS %, KEV, fix version, first detected date).
+- **Builder Program promo**: free-tier users periodically see a Builder Program offer (first 3 months free) in the console. The promo is limited to first-party LimaCharlie branding, shown at most once every 7 days, and suppressed permanently once a user expresses interest.
+- **Vulnerability tables: First Detected and Version columns**: both the sensor-level and org-level vulnerability tables add a sortable First Detected column (the date a vulnerability was first observed on the host, marking the start of the remediation clock) and a Version column showing the installed version of each vulnerable package. The version value also feeds the compliance CSV export, replacing a previously hardcoded blank.
+- **Vulnerabilities dashboard and CVE detail redesign**: the org Vulnerabilities page replaces the 2×4 KPI card grid with a compact posture strip, brings charts forward, and narrows the CVE list/detail gracefully on smaller viewports. The CVE detail gains a cleaner CVSS metric card and a full-width EPSS percentile meter with banded severity coloring.
+- **Microsoft Defender adapter**: an optional Endpoint field targets Enterprise (Commercial), GCC, GCC High (L4), or DoD (L5) Microsoft cloud environments. Existing adapters continue to use the enterprise endpoint by default.
+- **SentinelOne adapter**: optional `site_ids` and `account_ids` fields scope ingestion to a single tenant of an MSP/partner console, and a `collect_agents` toggle pulls all in-scope endpoints as individual sensors immediately rather than waiting for telemetry.
+- **Sensor sub-page tables**: Autoruns, Drivers, Event Collection, Packages, Users, Services, Integrity, and Processes migrate to the updated table component, gaining sortable column headers, truncation tooltips, and consistent viewport-fill height. Event Collection and Integrity rule chips move into per-row kebab menus, and several empty-state typos are fixed.
+- **Analytics charts**: all analytics charts across D&R rules, False-Positive rules, Outputs, Adapter Analytics, VibeRails, Billing quota, and the Grid app are updated. Outputs and Adapter Analytics charts now display side by side with a single shared time-range selector.
+
+#### Bug Fixes
+
+- The "Create new App" button now works for orgs with zero apps; a transparent overlay was intercepting pointer events over the page header.
+- Opening the AI Terminal no longer crashes the app with "Maximum update depth exceeded".
+- Seal and isolate pending transition states now display correctly, so "Pending rejoin" and "Pending unseal" surface during the backend transition window instead of holding on "Isolated" or "Sealed".
+
+---
+
 ## 2026-06-29
 
 ### Web App 5.11.0
