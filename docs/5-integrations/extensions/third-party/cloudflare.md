@@ -97,7 +97,7 @@ Returns the whole response body verbatim — the `{success, errors, result, resu
 | `get_access_user_activity` | `account_id`, `user_id`, `kind` | An Access user's `active_sessions`, `last_seen_identity`, or `failed_logins`. |
 | `list_gateway_lists` | `account_id`, `page`, `per_page` | List Zero Trust Gateway lists — find a `list_id`. |
 | `list_members` | `account_id`, `status`, `page`, `per_page` | List account members — use a returned membership id (`result[].id`, **not** `user.id`) with `remove_member`. |
-| `get_audit_logs` | `account_id`, `since`, `before`, `action_type`, `actor_email`, `limit`, `cursor`, `direction` | Query the account audit log (v2, cursor-paginated). |
+| `get_audit_logs` | `account_id`, `since`, `before`, `action_type`, `actor_email`, `limit`, `cursor`, `direction` | Query the account audit log (v2, cursor-paginated). The v2 API requires a `since`+`before` window; if omitted it defaults to the last 7 days. Pass the same explicit window across pages for stable pagination. |
 | `search_firewall_events` | `zone_id`, `since`, `until`, `client_ip`, `action`, `limit` | Search a zone's WAF/firewall events via the GraphQL Analytics API (`firewallEventsAdaptive`). Counts are sampled; the window is plan-dependent (~31 days). |
 | `get_waf_custom_ruleset` | `account_id`/`zone_id` | Fetch the `http_request_firewall_custom` phase ruleset — its id is the `ruleset_id` for `add_waf_custom_rule`. |
 
