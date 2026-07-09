@@ -12569,6 +12569,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#2026-07-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026-07-09
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2026-07-09">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-app-5120" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web App 5.12.0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#2026-06-29" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -13860,10 +13888,35 @@
 <h1 id="release-notes">Release Notes<a class="headerlink" href="#release-notes" title="Anchor link to this section">&para;</a></h1>
 <p>Release notes for LimaCharlie platform components, organized by date.</p>
 <hr />
+<h2 id="2026-07-09">2026-07-09<a class="headerlink" href="#2026-07-09" title="Anchor link to this section">&para;</a></h2>
+<h3 id="web-app-5120">Web App 5.12.0<a class="headerlink" href="#web-app-5120" title="Anchor link to this section">&para;</a></h3>
+<p>The console and Grid app are now fully localized in English, Español, 日本語, Français, Deutsch, Português, 한국어, Italiano, and Nederlands alongside redesigned sensor pages and per-sensor vulnerability report exports.</p>
+<h4 id="new-features">New Features<a class="headerlink" href="#new-features" title="Anchor link to this section">&para;</a></h4>
+<ul>
+<li><strong>Internationalization</strong>: the console and Grid app are fully localized in English, Spanish (Español), Japanese (日本語), French (Français), German (Deutsch), Portuguese (Português), Korean (한국어), Italian (Italiano), and Dutch (Nederlands). A Language Switcher in User Settings sets the preferred language per device.</li>
+<li><strong><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Analytics dashboard</strong>: the per-sensor Analytics page is rebuilt as a responsive card-grid dashboard with a single shared time-range selector, replacing the stack of full-width charts.</li>
+<li><strong><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Overview redesign</strong>: identity, network, and system details are organized into grouped cards with inline status chips for connection, seal, network, and platform state. Seal and Isolate controls move into the page header, with the full pending/cancel state machine preserved.</li>
+<li><strong>Search progress indicator</strong>: the query console status line shows a live percent-scanned figure while a paginated query runs, with a hover tooltip listing batch, event, and data counts for the in-scope scan. Cancelled searches are now labelled "Cancelled" instead of "Complete!".</li>
+<li><strong>Per-sensor Vulnerability Report export</strong>: the <abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> Vulnerabilities tab adds an Export report menu with PDF, HTML, Markdown, CSV, and Excel formats. Reports include a KPI summary strip, top remediation recommendations aggregated by package and fix version, and the full findings table (CVE, application, version, severity, score, LC Risk, EPSS %, KEV, fix version, first detected date).</li>
+<li><strong>Builder Program promo</strong>: free-tier users periodically see a Builder Program offer (first 3 months free) in the console. The promo is limited to first-party LimaCharlie branding, shown at most once every 7 days, and suppressed permanently once a user expresses interest.</li>
+<li><strong>Vulnerability tables: First Detected and Version columns</strong>: both the sensor-level and org-level vulnerability tables add a sortable First Detected column (the date a vulnerability was first observed on the host, marking the start of the remediation clock) and a Version column showing the installed version of each vulnerable package. The version value also feeds the compliance CSV export, replacing a previously hardcoded blank.</li>
+<li><strong>Vulnerabilities dashboard and CVE detail redesign</strong>: the org Vulnerabilities page replaces the 2×4 KPI card grid with a compact posture strip, brings charts forward, and narrows the CVE list/detail gracefully on smaller viewports. The CVE detail gains a cleaner CVSS metric card and a full-width EPSS percentile meter with banded severity coloring.</li>
+<li><strong>Microsoft Defender adapter</strong>: an optional Endpoint field targets Enterprise (Commercial), GCC, GCC High (L4), or DoD (L5) Microsoft cloud environments. Existing adapters continue to use the enterprise endpoint by default.</li>
+<li><strong>SentinelOne adapter</strong>: optional <code>site_ids</code> and <code>account_ids</code> fields scope ingestion to a single tenant of an MSP/partner console, and a <code>collect_agents</code> toggle pulls all in-scope endpoints as individual sensors immediately rather than waiting for telemetry.</li>
+<li><strong><abbr title="Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.">Sensor</abbr> sub-page tables</strong>: Autoruns, Drivers, <abbr title="In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events,...">Event Collection</abbr>, Packages, Users, Services, Integrity, and Processes migrate to the updated table component, gaining sortable column headers, truncation tooltips, and consistent viewport-fill height. <abbr title="In LimaCharlie, Exfil (Event Collection) is a configuration extension that determines which types of events are collected and sent from endpoint agents to the cloud. It controls the data flow, ensuring only specified events are transmitted for monitoring and analysis. To capture specific events,...">Event Collection</abbr> and Integrity rule chips move into per-row kebab menus, and several empty-state typos are fixed.</li>
+<li><strong>Analytics charts</strong>: all analytics charts across <abbr title="Detection &amp; Response">D&amp;R</abbr> rules, False-Positive rules, Outputs, <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Analytics, VibeRails, Billing quota, and the Grid app are updated. Outputs and <abbr title="Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.">Adapter</abbr> Analytics charts now display side by side with a single shared time-range selector.</li>
+</ul>
+<h4 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Anchor link to this section">&para;</a></h4>
+<ul>
+<li>The "Create new App" button now works for orgs with zero apps; a transparent overlay was intercepting pointer events over the page header.</li>
+<li>Opening the AI Terminal no longer crashes the app with "Maximum update depth exceeded".</li>
+<li>Seal and isolate pending transition states now display correctly, so "Pending rejoin" and "Pending unseal" surface during the backend transition window instead of holding on "Isolated" or "Sealed".</li>
+</ul>
+<hr />
 <h2 id="2026-06-29">2026-06-29<a class="headerlink" href="#2026-06-29" title="Anchor link to this section">&para;</a></h2>
 <h3 id="web-app-5110">Web App 5.11.0<a class="headerlink" href="#web-app-5110" title="Anchor link to this section">&para;</a></h3>
 <p>Expanded AI cost tracking adds spend breakdowns, <abbr title="Managed Security Services Provider">MSSP</abbr> chargeback, and a savings trend to the AI Usage page, now available in the main web app alongside deeper Vulnerabilities filtering and functional app egress.</p>
-<h4 id="new-features">New Features<a class="headerlink" href="#new-features" title="Anchor link to this section">&para;</a></h4>
+<h4 id="new-features_1">New Features<a class="headerlink" href="#new-features_1" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li><strong>AI cost tracking</strong>: the AI Usage page now offers 7/30/90-day ranges, a KPI strip (spend, investigations, cost per investigation, tokens), spend breakdowns by model and detection rule with per-investigation unit cost, per-tenant re-bill markup for <abbr title="Managed Security Services Provider">MSSP</abbr> chargeback in the CSV export, anomaly and trend indicators, and a savings trend chart. Sub-cent costs display adaptive precision instead of rounding to $0.00.</li>
 <li><strong>AI Usage in the main web app</strong>: the AI Usage view, previously Grid-only, is now reachable from the main web app sidebar under the AI group, gated by the <code>ai_agent.get</code> permission.</li>
@@ -13880,7 +13933,7 @@
 <li><strong>Apps launcher icons</strong>: apps now derive distinct icons from author emoji, required-permission prefixes, and other signals before falling back to the generic diamond.</li>
 <li><strong>Per-theme logos</strong>: runtime configs support a dedicated dark-theme logo alongside the standard logo.</li>
 </ul>
-<h4 id="bug-fixes">Bug Fixes<a class="headerlink" href="#bug-fixes" title="Anchor link to this section">&para;</a></h4>
+<h4 id="bug-fixes_1">Bug Fixes<a class="headerlink" href="#bug-fixes_1" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li>Apps declaring allowed_origins can now make third-party fetch() calls; apps load from a real HTTP origin with their own permissive floor CSP instead of inheriting the console's strict policy. The brokered lc.api path and app isolation are unchanged.</li>
 <li>Apps now open correctly on Grid, which previously failed with a sandbox handshake timeout.</li>
@@ -13900,7 +13953,7 @@
 <h2 id="2026-06-18">2026-06-18<a class="headerlink" href="#2026-06-18" title="Anchor link to this section">&para;</a></h2>
 <h3 id="web-app-5100">Web App 5.10.0<a class="headerlink" href="#web-app-5100" title="Anchor link to this section">&para;</a></h3>
 <p>Fleet Billing arrives for MSSPs, alongside AI Terminal refinements and clearer session-state reporting.</p>
-<h4 id="new-features_1">New Features<a class="headerlink" href="#new-features_1" title="Anchor link to this section">&para;</a></h4>
+<h4 id="new-features_2">New Features<a class="headerlink" href="#new-features_2" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li><strong>Fleet Billing</strong>: a cross-tenant billing console for MSSPs.</li>
 <li><strong>AI Terminal</strong>: visual improvements and refined landing actions.</li>
@@ -13908,7 +13961,7 @@
 <li><strong>Access Management</strong>: added a Role column to the user table.</li>
 <li><strong>Case console</strong>: added a selectable page size.</li>
 </ul>
-<h4 id="bug-fixes_1">Bug Fixes<a class="headerlink" href="#bug-fixes_1" title="Anchor link to this section">&para;</a></h4>
+<h4 id="bug-fixes_2">Bug Fixes<a class="headerlink" href="#bug-fixes_2" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li>Query console download now matches the visible table.</li>
 <li>Added a Minimize button to the AI Session chat floating button.</li>
@@ -13921,7 +13974,7 @@
 <h2 id="2026-06-11">2026-06-11<a class="headerlink" href="#2026-06-11" title="Anchor link to this section">&para;</a></h2>
 <h3 id="web-app-590">Web App 5.9.0<a class="headerlink" href="#web-app-590" title="Anchor link to this section">&para;</a></h3>
 <p>Notable improvements and fixes:</p>
-<h4 id="new-features_2">New Features<a class="headerlink" href="#new-features_2" title="Anchor link to this section">&para;</a></h4>
+<h4 id="new-features_3">New Features<a class="headerlink" href="#new-features_3" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li><strong>AI Terminal ShareCard</strong> — share sessions socially and invite users to tenants.</li>
 <li><strong>Docked corner chat</strong> — persistent AI chat launcher with pop-out, draft-new-session, minimize/maximize, and a live-session selector.</li>
@@ -13935,7 +13988,7 @@
 <li><strong>AI Sessions</strong> — rationalized session user state (Active + needs-attention), and <code>lc-compliance</code> as a selectable plugin.</li>
 <li><strong>Git Sync</strong> — added missing config hives to the UI.</li>
 </ul>
-<h4 id="bug-fixes_2">Bug Fixes<a class="headerlink" href="#bug-fixes_2" title="Anchor link to this section">&para;</a></h4>
+<h4 id="bug-fixes_3">Bug Fixes<a class="headerlink" href="#bug-fixes_3" title="Anchor link to this section">&para;</a></h4>
 <ul>
 <li>Fixed dark-mode LimaCharlie logo visibility.</li>
 <li>Included <code>ai_agent.operate</code> in FDE and worker-key permission lists.</li>
