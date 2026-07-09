@@ -16,14 +16,27 @@ Usage:
 """
 
 import argparse
+import html
 import os
 import re
 import sys
 from datetime import datetime
+from urllib.parse import urlparse
 
 
 DOCS_DIR = os.path.join(os.path.dirname(__file__), "..", "docs", "10-release-notes")
 MKDOCS_YML = os.path.join(os.path.dirname(__file__), "..", "mkdocs.yml")
+
+# Allowlisted hosts for the release URL. A URL is accepted only when its host is
+# one of these exactly or a subdomain of one (e.g. docs.limacharlie.io). The
+# dotted-boundary check ("." + domain) prevents look-alike hosts such as
+# "evilgithub.com" or "limacharlie.io.attacker.example" from slipping through an
+# endswith() match.
+ALLOWED_URL_HOSTS = ("github.com", "limacharlie.io")
+
+# Upper bound on the release-note body. Release notes are short; this simply
+# caps how much untrusted, machine-fed content we will ever write into the docs.
+MAX_BODY_LEN = 50000
 
 
 def parse_date(date_str: str) -> datetime:
@@ -138,6 +151,44 @@ def validate_inputs(component: str, version: str) -> None:
         sys.exit(1)
 
 
+def validate_url(url: str) -> None:
+    """Validate the optional release URL before it is embedded in the docs.
+
+    An empty URL is allowed (the field is optional). A non-empty URL must use the
+    https scheme and point at an allowlisted host (see ALLOWED_URL_HOSTS);
+    anything else is rejected so a caller cannot inject a link to an arbitrary
+    (e.g. javascript:, http:, or attacker-controlled) destination.
+    """
+    if not url:
+        return
+    parsed = urlparse(url)
+    if parsed.scheme != "https":
+        print(f"Invalid URL scheme (must be https): {url}", file=sys.stderr)
+        sys.exit(1)
+    host = (parsed.hostname or "").lower()
+    if not any(host == d or host.endswith("." + d) for d in ALLOWED_URL_HOSTS):
+        print(f"URL host not in allowlist ({', '.join(ALLOWED_URL_HOSTS)}): {url}", file=sys.stderr)
+        sys.exit(1)
+
+
+def sanitize_body(body: str) -> str:
+    """Bound and neutralize the release-note body before it is written to docs.
+
+    The body is machine-fed via repository_dispatch and rendered by MkDocs with
+    md_in_html enabled, so raw HTML in the body would render as live markup. The
+    body is expected to be Markdown (not HTML), so we HTML-escape only the three
+    structural characters (& < >). This defuses any raw HTML (e.g. <script>,
+    <iframe>, event handlers) while leaving normal Markdown - headings, lists,
+    links, emphasis, inline/fenced code - untouched. Quotes are intentionally
+    left alone (quote=False) so prose is not mangled; with < and > escaped no
+    HTML tag can form, so bare quotes are harmless.
+    """
+    if len(body) > MAX_BODY_LEN:
+        print(f"Body too long ({len(body)} > {MAX_BODY_LEN} chars)", file=sys.stderr)
+        sys.exit(1)
+    return html.escape(body, quote=False)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Publish a release note entry")
     parser.add_argument("--component", required=True, help="Component name (e.g., sensor, python-sdk)")
@@ -148,12 +199,15 @@ def main():
     args = parser.parse_args()
 
     validate_inputs(args.component, args.version)
+    validate_url(args.url)
+    # Neutralize any raw HTML in the untrusted body before it reaches the docs.
+    body = sanitize_body(args.body)
 
     os.makedirs(DOCS_DIR, exist_ok=True)
 
     dt = parse_date(args.date)
     filepath = ensure_monthly_file(dt)
-    append_entry(filepath, args.component, args.version, dt, args.url, args.body)
+    append_entry(filepath, args.component, args.version, dt, args.url, body)
     update_mkdocs_nav(dt)
 
     print(f"Published: {args.component} {args.version} -> {filepath}")
