@@ -102,6 +102,58 @@ Every page also returns the actual billing for the data it processed, so you do 
 !!! warning "Estimates are approximate - rely on the per-page billing for cost"
     The pre-flight `estimatedPrice`, `eventsInScope`, and related validate estimates are approximations. Their accuracy varies with the query type and with internal optimizations that reduce how much data actually has to be scanned, which are not always reflected in the estimate. Treat the estimate as a planning aid only and never rely on it as the exact cost. The authoritative cost is the actual billing (`billedEvents` and the `estimatedPrice` derived from it) returned with each page and accumulated in `cumulativeStats`.
 
+### Building a Progress Bar
+
+The Query Console renders its progress bar with this formula:
+
+```text
+progress = clamp(batchesCompleted / batchesInScope, 0, 100%)
+```
+
+Use `batchesInScope` as the denominator - from the [validate response](#pre-flight-estimate-validate) before the search starts, or from each page's `cumulativeStats` once it is running - and the per-page `cumulativeStats.batchesCompleted` as the numerator. Two rules keep the bar well-behaved:
+
+- **Guard the denominator.** `batchesInScope` is `0` (or absent) until the scope is known, so treat progress as unavailable rather than dividing by zero.
+- **Clamp the ratio.** `batchesCompleted` can briefly exceed `batchesInScope` when a batch is re-opened across page boundaries, so clamp to 100%. A page's `completed` flag is the authoritative "done" signal.
+
+The examples below take one Search API page response (a parsed `SearchResponse`) and return a percentage in the range 0-100.
+
+=== "Python"
+
+    ```python
+    --8<-- "snippets/python/progress_bar.py"
+    ```
+
+=== "Go"
+
+    ```go
+    --8<-- "snippets/golang/progress_bar/main.go"
+    ```
+
+=== "Bash (curl + jq)"
+
+    ```bash
+    # Denominator only, from the pre-flight validate response (before running):
+    curl -s -X POST "https://$SEARCH_HOST/v1/search/validate" \
+      -H "Authorization: Bearer $LC_JWT" -H "Content-Type: application/json" \
+      -d '{"oid":"YOUR_OID","query":"...","startTime":"'"$START"'","endTime":"'"$END"'"}' \
+      | jq '.stats.batchesInScope'
+
+    # Progress from a running search page: clamp batchesCompleted/batchesInScope
+    # to 0-100%, and treat a completed page as 100%.
+    curl -s -X POST "https://$SEARCH_HOST/v1/search" \
+      -H "Authorization: Bearer $LC_JWT" -H "Content-Type: application/json" \
+      -d '{"oid":"YOUR_OID","query":"...","startTime":"'"$START"'","endTime":"'"$END"'","stream":"event"}' \
+      | jq '
+        ([.results[].stats.cumulativeStats | select(. != null)] | first) as $c
+        | if .completed then 100
+          elif ($c.batchesInScope // 0) > 0
+          then ([100 * $c.batchesCompleted / $c.batchesInScope, 100] | min)
+          else 0
+          end'
+    ```
+
+See [Run an LCQL Query](index.md#run-an-lcql-query) for how to discover `$SEARCH_HOST` and obtain a JWT.
+
 ## Writing Efficient and Performant Queries
 
 Query cost is measured by the amount of data churned (billed per 200,000 events evaluated), and speed tracks the same factor: the fewer events a query has to scan and the less data it has to return, the faster and cheaper it is. The patterns below reduce both.
