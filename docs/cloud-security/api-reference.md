@@ -46,7 +46,7 @@ Shared behaviors:
 | `GET /overview` | Composed risk overview (`score`, distributions, top paths, coverage, trend, changes, and the per-tenant `usage` metering block). Param: `trend_days` (default 30). |
 | `GET /changes` | `{changes}` — created/closed feed, newest first. Param: `limit` (default 50). |
 | `GET /risk-trend` | `{trend}` — score history, oldest first. Param: `trend_days`. |
-| `GET /scan-status` | `{status}` — collection run state. Param: `provider` (default `gcp`). |
+| `GET /scan-status` | `{status}` — collection run state. Param: `provider` (default `gcp`; ids are lowercase — the lookup is case-sensitive and an unknown/miscased id reads as never-scanned). |
 | `GET /resolve/sensors?sid=…` | `{resolved, unresolved}` — sensor → cloud asset, bulk via repeated `sid` (server cap 500/request; keep URLs under ~8KB — the CLI/SDK chunks automatically). |
 | `GET /resolve/assets?urn=…` | `{resolved, unresolved}` — cloud asset → sensors, bulk via repeated `urn` (same caps and chunking). |
 | `GET /caasm/assets` | `{resources, next_cursor}` — the merged third-party asset inventory. Params: `q`, paging. |
@@ -60,7 +60,7 @@ All writes are `POST` with a JSON body and require `cloudsec.set`.
 | Route | Body | Returns |
 |---|---|---|
 | `/findings/{finding_id}/status` | `{resolution: {kind, reason, expires_at}}` — `kind` is `mitigated` \| `accepted` \| `false_positive`, or `open` to clear the disposition and reopen. `expires_at` is unix seconds (meaningful with `accepted`). | `{ok}` |
-| `/findings/bulk/status` | `{finding_ids: [...], resolution: {...}}` — one resolution applied to many findings. | `{updated}` |
+| `/findings/bulk/status` | `{finding_ids: [...], resolution: {...}}` — one resolution applied to many findings. Unlike the single-finding route, `kind` must be `mitigated` \| `accepted` \| `false_positive` — the bulk route does **not** accept `open` (reopen findings one at a time). | `{updated}` |
 | `/findings/{finding_id}/owner` | `{owner}` — empty string clears. | `{ok}` |
 | `/findings/{finding_id}/ticket` | `{ticket}` — empty string clears. | `{ok}` |
 | `/chokepoints/dismiss` | `{urn, reason?}` | `{ok}` |

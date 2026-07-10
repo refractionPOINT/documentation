@@ -25,9 +25,12 @@ record references a [secret](../7-administration/config-hive/secrets.md) by
 `hive://secret/<name>`:
 
 ```bash
-limacharlie hive set --hive-name secret --key gcp-collector-sa \
-  --oid $OID --data '{"secret": "<service-account-key-json>"}'
+echo '{"secret": "<service-account-key-json>"}' | \
+  limacharlie hive set --hive-name secret --key gcp-collector-sa \
+    --oid $OID --enabled
 ```
+
+(`hive set` reads the record data from `--input-file` or piped stdin.)
 
 What the credential must be able to do depends on the provider — the
 credential test in the next step tells you exactly which permission surfaces

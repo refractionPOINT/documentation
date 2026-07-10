@@ -11,9 +11,11 @@ page collects the operator recipes.
 # 1. Subscribe the org to the extension (billing/enable gate).
 limacharlie extension subscribe --name ext-cloud-inventory --oid $OID
 
-# 2. Store the collector credential as a secret.
-limacharlie hive set --hive-name secret --key gcp-collector-sa \
-  --oid $OID --data '{"secret": "<service-account-key-json>"}'
+# 2. Store the collector credential as a secret (hive set reads
+#    record data from --input-file or piped stdin).
+echo '{"secret": "<service-account-key-json>"}' | \
+  limacharlie hive set --hive-name secret --key gcp-collector-sa \
+    --oid $OID --enabled
 
 # 3. Connect the provider.
 cat > provider.json <<EOF

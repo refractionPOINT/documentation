@@ -80,11 +80,20 @@ Rule matchers (shared by every policy type that scopes over resources):
 `account_contains`, `account_glob`, `name_contains`, `name_glob`,
 `label` (key→value), `label_key_present`, `tag`.
 
-### `coverage` — CAASM expectations
+### `coverage` — workload coverage expectations
 
-The expected-coverage declaration, with `required` and `exempt` rule lists.
-Equivalent to (and kept in sync with) `limacharlie cloudsec caasm policy set`
-— see [CAASM](caasm.md#declare-expected-coverage).
+Declares which **cloud workloads** are expected to run a LimaCharlie
+sensor, with `required` and `exempt` resource-rule lists — the "EDR on
+production VMs" expectation, evaluated over the cloud inventory.
+
+!!! note "Distinct from the CAASM expected-coverage policy"
+    `limacharlie cloudsec caasm policy set` manages a **separate**
+    policy with a different shape (`{expect: [{label, capability,
+    kinds}]}`) evaluated over the merged *third-party asset* inventory
+    ("seen by the IdP, no EDR") — see
+    [CAASM](caasm.md#declare-expected-coverage). The two are not synced:
+    this hive record drives cloud-workload coverage findings; the CAASM
+    policy drives `coverage_gap` findings over third-party assets.
 
 ### `scanning` — agentless content scanning
 
