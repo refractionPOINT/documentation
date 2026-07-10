@@ -10,6 +10,12 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+# Least-privilege default at the workflow scope; the deploy job opts into the
+# pages:write / id-token:write it needs. Any future job added without its own
+# permissions block therefore defaults to read-only.
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
