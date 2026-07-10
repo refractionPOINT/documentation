@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -42,7 +42,7 @@ jobs:
           python-version: '3.11'
 
       - name: Cache Python dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -58,7 +58,7 @@ jobs:
         run: mkdocs build
 
       - name: Restore lychee cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: .lycheecache
           key: lychee-cache-${{ github.sha }}
@@ -132,7 +132,7 @@ jobs:
           name: linkcheck-results
 
       - name: Comment on PR with broken links
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -178,7 +178,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
