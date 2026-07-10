@@ -1,5 +1,10 @@
 # Cloud Security
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 LimaCharlie Cloud Security is an agentless cloud-native application protection
 platform (CNAPP) built into the same tenant, permission model, and automation
 surface as the rest of LimaCharlie. It continuously enumerates your cloud and
