@@ -51,6 +51,29 @@ LimaCharlie is a Agentic SecOps Workspace providing:
 | **Python** | `pip install limacharlie` | [Python SDK](docs/6-developer-guide/sdks/python-sdk.md) |
 | **Go** | `go get github.com/refractionPOINT/go-limacharlie` | [Go SDK](docs/6-developer-guide/sdks/go-sdk.md) |
 
+## Local Development
+
+Install the build dependencies and preview the site:
+
+```bash
+pip install -r requirements.txt
+mkdocs serve        # live-reload preview at http://127.0.0.1:8000
+mkdocs build        # one-off build into site/
+```
+
+### Dependency lock
+
+`requirements.txt` is a fully pinned, hashed lock file (so builds are reproducible and tamper-evident) generated from `requirements.in`, which holds the human-edited dependency ranges. Do not edit `requirements.txt` by hand.
+
+To change a dependency, edit `requirements.in`, then regenerate the lock with [pip-tools](https://pypi.org/project/pip-tools/):
+
+```bash
+pip install pip-tools
+pip-compile --generate-hashes --strip-extras --output-file=requirements.txt requirements.in
+```
+
+Commit both `requirements.in` and the regenerated `requirements.txt`.
+
 ## AI / LLM Consumption
 
 This site publishes an [`llms.txt`](https://llmstxt.org/) index at
