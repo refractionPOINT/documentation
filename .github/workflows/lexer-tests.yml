@@ -33,9 +33,13 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
+        # requirements.txt is a hashed lock, so it must be installed on its own
+        # (pip refuses to mix hashed and unhashed requirements in one command).
+        # pytest is a test-only tool, pinned but not part of the docs lock.
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt pytest
+          pip install -r requirements.txt
+          pip install pytest==9.1.1
 
       - name: Run LCQL lexer tests
         run: pytest tests/ -v
