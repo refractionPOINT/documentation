@@ -30,7 +30,7 @@ Shared behaviors:
 | `GET /findings/facets` | `{facets}` — cross-filtered facet counts under the same selectors. |
 | `GET /findings/{finding_id}` | `{finding}` — one finding in full. |
 | `GET /attack-paths` | `{paths}` — marquee toxic-combination paths. Filters: `severity[]`, `account[]`, `status[]`, `q`. |
-| `GET /chokepoints` | `{chokepoints, total_paths}` — shared attack-path hops ranked by paths broken. |
+| `GET /chokepoints` | `{chokepoints, total_paths}` — shared attack-path hops ranked by paths broken, including the principal-exposure metrics. |
 | `GET /ciem/public-access` | `{access}` — public/external access to sensitive resources. |
 | `GET /ciem/facets` | `{facets}` — identity facet counts. |
 | `GET /inventory` | `{resources, next_cursor}`. Filters: `type`, `account`, `region`, `q`, paging. |
@@ -43,12 +43,12 @@ Shared behaviors:
 | `GET /compliance` | `{report}` — per-control assessment. Params: `framework` (default `cis-gcp`) or `assignment` (overrides `framework`). |
 | `GET /compliance/frameworks` | `{frameworks}` — id, name, version, control counts. |
 | `GET /compliance/assignments` | `{assignments}` — scoped assignments with per-assignment scores. |
-| `GET /overview` | Composed risk overview (`score`, distributions, top paths, coverage, trend, changes). Param: `trend_days` (default 30). |
+| `GET /overview` | Composed risk overview (`score`, distributions, top paths, coverage, trend, changes, and the per-tenant `usage` metering block). Param: `trend_days` (default 30). |
 | `GET /changes` | `{changes}` — created/closed feed, newest first. Param: `limit` (default 50). |
 | `GET /risk-trend` | `{trend}` — score history, oldest first. Param: `trend_days`. |
 | `GET /scan-status` | `{status}` — collection run state. Param: `provider` (default `gcp`). |
-| `GET /resolve/sensors?sid=…` | `{resolved, unresolved}` — sensor → cloud asset, bulk via repeated `sid` (max 500). |
-| `GET /resolve/assets?urn=…` | `{resolved, unresolved}` — cloud asset → sensors, bulk via repeated `urn` (max 500). |
+| `GET /resolve/sensors?sid=…` | `{resolved, unresolved}` — sensor → cloud asset, bulk via repeated `sid` (server cap 500/request; keep URLs under ~8KB — the CLI/SDK chunks automatically). |
+| `GET /resolve/assets?urn=…` | `{resolved, unresolved}` — cloud asset → sensors, bulk via repeated `urn` (same caps and chunking). |
 | `GET /caasm/assets` | `{resources, next_cursor}` — the merged third-party asset inventory. Params: `q`, paging. |
 | `GET /caasm/coverage` | `{findings, next_cursor}` — coverage-gap findings. Params: `status[]`, `severity[]`, `q`, `sort`, `order`, paging. |
 | `GET /caasm/policy` | Resource-list shape: zero rows (no policy) or one row whose `props` is the policy. |
