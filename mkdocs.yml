@@ -5,6 +5,11 @@ site_author: refractionPOINT
 repo_url: https://github.com/refractionPOINT/documentation
 repo_name: refractionPOINT/documentation
 
+# Treat build warnings (broken nav entries, unresolved internal links, bad
+# redirects) as errors on every build path - deploy included - so a regression
+# fails fast instead of shipping. The PR docs-preview already builds --strict.
+strict: true
+
 theme:
   name: material
   custom_dir: overrides
@@ -142,6 +147,7 @@ plugins:
 
 hooks:
   - hooks/llms_txt.py
+  - hooks/lcql_lexer.py
 
 markdown_extensions:
   - abbr
@@ -172,7 +178,9 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.smartsymbols
   - pymdownx.snippets:
-      base_path: docs
+      base_path:
+        - docs
+        - .
       auto_append:
         - includes/glossary.md
   - pymdownx.superfences:
@@ -357,6 +365,7 @@ nav:
       - LCQL Examples: 4-data-queries/lcql-examples.md
       - Query Console UI: 4-data-queries/query-console-ui.md
       - Query CLI: 4-data-queries/query-cli.md
+      - Query Limits & Performance: 4-data-queries/query-limits-and-performance.md
       - Template Strings: 4-data-queries/template-strings.md
       - Template Transforms: 4-data-queries/template-transforms.md
       - Events:

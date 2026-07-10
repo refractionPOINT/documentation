@@ -1,0 +1,87 @@
+name: Snippet Compilation
+
+# Compiles the documentation code snippets (embedded via pymdownx.snippets) so
+# they cannot drift from the published SDKs.
+#
+# Security posture:
+#   * The snippets are only COMPILED, never EXECUTED. Go snippets are
+#     type-checked with `go build` / `go vet` (which never run the programs),
+#     and Python snippets are byte-compiled with `py_compile` (which never runs
+#     them). A snippet edited to do something malicious cannot execute here.
+#   * Jobs run with read-only permissions and no secrets are exposed.
+#   * Pull requests from forks do not run; external contributions are not
+#     accepted for this repository.
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+# Minimum permissions: read the repository only.
+permissions:
+  contents: read
+
+jobs:
+  go-snippets:
+    name: Go snippets (compile only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    env:
+      # Build against the committed go.mod / go.sum; fail instead of mutating them.
+      GOFLAGS: -mod=readonly
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Compile (do not run) the Go snippets
+        working-directory: snippets/golang
+        run: |
+          go build ./...
+          go vet ./...
+
+  python-snippets:
+    name: Python snippets (compile only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install the LimaCharlie SDK
+        # Pin the SDK version the snippets target so this check is reproducible
+        # (matching the Go side's pinned module) and a later SDK release that
+        # reorganizes modules fails the PR that bumps it, not an unrelated PR.
+        run: |
+          pip install --upgrade pip
+          pip install 'limacharlie==5.5.1'
+
+      - name: Byte-compile (do not run) the Python snippets
+        run: python -m py_compile snippets/python/*.py
+
+      - name: Verify SDK import paths used by the snippets
+        run: |
+          python - <<'PY'
+          from limacharlie.client import Client
+          from limacharlie.sdk.organization import Organization
+          from limacharlie.sdk.search import Search
+          from limacharlie.sdk.hive import Hive, HiveRecord
+          print("SDK import paths used by the documentation snippets all resolve.")
+          PY

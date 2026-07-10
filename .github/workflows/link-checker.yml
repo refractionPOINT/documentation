@@ -16,17 +16,25 @@ on:
     # Run weekly on Sundays at midnight UTC
     - cron: '0 0 * * 0'
 
+# Least privilege at the workflow scope; jobs opt in to more where needed.
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   check-links:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    # Only run for pull requests from branches in this repository (collaborators),
+    # not from forks; external contributions are not accepted for this repository.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -57,7 +65,9 @@ jobs:
           restore-keys: |
             lychee-cache-
 
-      # PRs: internal links only (fast, catches broken cross-references)
+      # PRs: internal links only (fast, catches broken cross-references).
+      # Blocking (fail: true): a broken internal cross-reference is a real
+      # regression introduced by the PR, so it should fail the check.
       - name: Check internal links (PR)
         if: github.event_name == 'pull_request'
         uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411  # v2.8.0
@@ -69,10 +79,12 @@ jobs:
             --exclude '^https?://'
             --exclude '^mailto:'
             ./site
-          fail: false
+          fail: true
           output: ./linkcheck-results.txt
 
-      # Push/schedule/manual: full check including external links
+      # Push/schedule/manual: full check including external links.
+      # Advisory (fail: false): external sites go down or rate-limit for reasons
+      # outside our control, so a transient external failure must not block.
       - name: Check all links
         if: github.event_name != 'pull_request'
         uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411  # v2.8.0
@@ -94,10 +106,32 @@ jobs:
         with:
           name: linkcheck-results
           path: linkcheck-results.txt
-          retention-days: 7
+          retention-days: 1
+
+  # The comment job is split out so that pull-requests: write is granted only to
+  # the step that needs it, not to the job that builds the docs and runs lychee.
+  comment-links:
+    needs: check-links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+    # Post the results comment even when the link check above failed, but only
+    # for pull requests from branches in this repository (not forks).
+    if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      # If check-links failed before lychee ran (e.g. mkdocs build broke), the
+      # results artifact is never created. Don't fail this job on a missing
+      # artifact; the script step below no-ops when the file is absent.
+      - name: Download link check results
+        uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: linkcheck-results
 
       - name: Comment on PR with broken links
-        if: github.event_name == 'pull_request'
         uses: actions/github-script@v8
         with:
           script: |
@@ -138,12 +172,17 @@ jobs:
 
   check-markdown:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Check markdown formatting
-        uses: DavidAnson/markdownlint-cli2-action@v22
+        uses: DavidAnson/markdownlint-cli2-action@07035fd053f7be764496c0f8d8f9f41f98305101  # v22
         with:
           globs: 'docs/**/*.md'
