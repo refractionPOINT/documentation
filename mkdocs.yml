@@ -573,6 +573,18 @@ nav:
           - Case-Reviewer Agent: 9-ai-sessions/compliance/case-reviewer-agent.md
           - Gap Analysis: 9-ai-sessions/compliance/gap-analysis.md
 
+  - Cloud Security:
+      - Overview: cloud-security/index.md
+      - Getting Started: cloud-security/getting-started.md
+      - Findings & Triage: cloud-security/findings.md
+      - Security Graph & Queries: cloud-security/graph.md
+      - Compliance: cloud-security/compliance.md
+      - CAASM: cloud-security/caasm.md
+      - Configuration Reference: cloud-security/configuration.md
+      - Command Line Interface: cloud-security/cli.md
+      - API Reference: cloud-security/api-reference.md
+      - Automation & IaC: cloud-security/automation.md
+
   - Apps:
       - Overview: apps/index.md
       - Creating & Managing Apps: apps/creating-and-managing-apps.md
