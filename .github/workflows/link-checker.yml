@@ -175,6 +175,9 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+    # Only run for pull requests from branches in this repository (collaborators),
+    # not from forks; external contributions are not accepted for this repository.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
       - name: Checkout repository
