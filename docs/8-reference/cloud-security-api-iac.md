@@ -1,5 +1,10 @@
 # Cloud Security: API, Infrastructure-as-Code, and Case Automation
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 This page is the operator reference for automating LimaCharlie Cloud Security: the
 public REST API surface, the Hive records that ARE the Infrastructure-as-Code
 surface (providers, policies, saved queries), and the D&R recipes that close the

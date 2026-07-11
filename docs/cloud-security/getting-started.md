@@ -1,5 +1,10 @@
 # Getting Started with Cloud Security
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 This page takes an organization from zero to a populated Cloud Security
 dashboard: subscribe the extension, store a credential, connect a provider,
 and run the first sweep.

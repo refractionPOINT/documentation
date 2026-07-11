@@ -1,5 +1,10 @@
 # Automation & Infrastructure-as-Code
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 Everything Cloud Security does is scriptable: configuration is Hive records,
 the query/triage surface is the [REST API](api-reference.md) and
 [CLI](cli.md), and findings flow through the standard event pipeline. This

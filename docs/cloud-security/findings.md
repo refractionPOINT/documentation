@@ -1,5 +1,10 @@
 # Findings & Triage
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 Everything Cloud Security detects lands in one place: a merged, risk-ranked
 findings worklist. CSPM misconfigurations, graph-derived attack paths, and
 identity (CIEM) risks are all findings with the same shape, the same triage

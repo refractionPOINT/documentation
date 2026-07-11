@@ -1,5 +1,10 @@
 # Security Graph & Queries
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 Every sweep builds a graph of the estate: resources, identities, and data
 stores as nodes; reachability, exposure, permissions, and vulnerability
 relationships as edges. The graph is what turns three individually-boring

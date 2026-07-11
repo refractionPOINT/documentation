@@ -1,5 +1,10 @@
 # Configuration Reference
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 Cloud Security is configured entirely through three Hive types. Anything the
 console can configure, `limacharlie hive set` can configure — which makes
 tenant onboarding and fleet-wide policy a script, not a UI workflow (see

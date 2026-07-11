@@ -1,5 +1,10 @@
 # Compliance
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 Cloud Security evaluates compliance frameworks continuously against the live
 estate: each control maps to detection rules, and a control fails when open
 findings prove the violation — so the compliance report is always as fresh

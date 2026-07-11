@@ -1,5 +1,10 @@
 # API Reference
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 All Cloud Security routes live under
 `https://api.limacharlie.io/v1/cloudsec/{oid}/…` and appear in the public
 OpenAPI spec at [`/openapi`](https://api.limacharlie.io/openapi).
