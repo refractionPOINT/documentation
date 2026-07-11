@@ -11,7 +11,7 @@ All Cloud Security routes live under `https://api.limacharlie.io/v1/cloudsec/{oi
 and appear in the public OpenAPI spec at
 [`/openapi`](https://api.limacharlie.io/openapi). Reads require the `cloudsec.get`
 permission, finding-triage writes require `cloudsec.set`, and every route requires
-the organization to be subscribed to the cloud inventory extension (a `403` tells
+the organization to be subscribed to the cloud security extension (a `403` tells
 you to subscribe).
 
 The read surface includes: `findings` (risk-ranked worklist with keyset pagination
