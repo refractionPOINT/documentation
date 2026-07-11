@@ -9,7 +9,7 @@ page collects the operator recipes.
 
 ```bash
 # 1. Subscribe the org to the extension (billing/enable gate).
-limacharlie extension subscribe --name ext-cloud-inventory --oid $OID
+limacharlie extension subscribe --name ext-cloud-security --oid $OID
 
 # 2. Store the collector credential as a secret (hive set reads
 #    record data from --input-file or piped stdin).

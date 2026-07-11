@@ -7,7 +7,7 @@ Authentication is the standard `Authorization: Bearer <JWT>` header.
 
 !!! info "Permissions & enable gate"
     Reads require `cloudsec.get`; writes require `cloudsec.set`. Every route
-    requires the organization to be subscribed to `ext-cloud-inventory` — a
+    requires the organization to be subscribed to `ext-cloud-security` — a
     `403` on any route means subscribe first. The `oid` is always taken from
     the authorized path.
 

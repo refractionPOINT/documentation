@@ -44,7 +44,7 @@ on a schedule, on demand, or continuously from a change feed.
 
 ## How it works
 
-1. **Subscribe** the organization to the `ext-cloud-inventory` extension —
+1. **Subscribe** the organization to the `ext-cloud-security` extension —
    this is the product's enable (and billing) gate.
 2. **Connect providers**: one `cloudsec_provider` Hive record per cloud
    account / IdP tenant. A pre-save credential test probes every permission
@@ -74,7 +74,7 @@ onboarded and governed as code.
       connection records in the Hive.
 
     Every route additionally requires the organization to be subscribed to
-    `ext-cloud-inventory`; unsubscribed organizations receive `403`.
+    `ext-cloud-security`; unsubscribed organizations receive `403`.
 
 ## Documentation
 
