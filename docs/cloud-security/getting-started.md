@@ -1,5 +1,10 @@
 # Getting Started with Cloud Security
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 This page takes an organization from zero to a populated Cloud Security
 dashboard: subscribe the extension, store a credential, connect a provider,
 and run the first sweep.
@@ -7,12 +12,12 @@ and run the first sweep.
 ## 1. Subscribe the extension
 
 Cloud Security is enabled per organization by subscribing to the
-`ext-cloud-inventory` extension — the subscription is both the enable gate
+`ext-cloud-security` extension — the subscription is both the enable gate
 and the billing hook. In the web console, open the extension from the
 Add-Ons marketplace and click **Subscribe**, or from the CLI:
 
 ```bash
-limacharlie extension subscribe --name ext-cloud-inventory --oid $OID
+limacharlie extension subscribe --name ext-cloud-security --oid $OID
 ```
 
 Until the organization is subscribed, every Cloud Security API route and

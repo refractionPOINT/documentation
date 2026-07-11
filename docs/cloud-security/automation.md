@@ -1,5 +1,10 @@
 # Automation & Infrastructure-as-Code
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 Everything Cloud Security does is scriptable: configuration is Hive records,
 the query/triage surface is the [REST API](api-reference.md) and
 [CLI](cli.md), and findings flow through the standard event pipeline. This
@@ -9,7 +14,7 @@ page collects the operator recipes.
 
 ```bash
 # 1. Subscribe the org to the extension (billing/enable gate).
-limacharlie extension subscribe --name ext-cloud-inventory --oid $OID
+limacharlie extension subscribe --name ext-cloud-security --oid $OID
 
 # 2. Store the collector credential as a secret (hive set reads
 #    record data from --input-file or piped stdin).

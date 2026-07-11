@@ -1,5 +1,10 @@
 # API Reference
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 All Cloud Security routes live under
 `https://api.limacharlie.io/v1/cloudsec/{oid}/…` and appear in the public
 OpenAPI spec at [`/openapi`](https://api.limacharlie.io/openapi).
@@ -7,7 +12,7 @@ Authentication is the standard `Authorization: Bearer <JWT>` header.
 
 !!! info "Permissions & enable gate"
     Reads require `cloudsec.get`; writes require `cloudsec.set`. Every route
-    requires the organization to be subscribed to `ext-cloud-inventory` — a
+    requires the organization to be subscribed to `ext-cloud-security` — a
     `403` on any route means subscribe first. The `oid` is always taken from
     the authorized path.
 

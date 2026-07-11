@@ -1,5 +1,10 @@
 # Command Line Interface
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 The `limacharlie cloudsec` command group (Python SDK/CLI v2) covers the full
 Cloud Security API surface. Every command supports the global options
 (`--oid`, `--output json|yaml|csv|table`, `--filter <jmespath>`), and every

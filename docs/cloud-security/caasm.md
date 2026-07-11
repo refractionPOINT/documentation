@@ -1,5 +1,10 @@
 # CAASM — Cyber Asset Attack Surface Management
 
+!!! warning "Private Beta"
+    Cloud Security is currently in **Private Beta**. Features, APIs, and
+    configuration formats described here may change before general
+    availability. Contact us if you would like access.
+
 Your tools already know what you own: the EDR sees devices, the identity
 provider sees users and their devices, MDM and scanners see more. CAASM
 merges those third-party views into one entity-resolved asset inventory and
