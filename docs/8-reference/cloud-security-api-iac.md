@@ -53,7 +53,7 @@ multi-tenant policy management a script, not a UI workflow.
 
 ```bash
 # 1. Subscribe the org to the extension (billing/enable gate).
-limacharlie extension subscribe --name ext-cloud-inventory --oid $OID
+limacharlie extension subscribe --name ext-cloud-security --oid $OID
 
 # 2. Connect a provider.
 cat > provider.json <<EOF
