@@ -19,7 +19,7 @@ It is possible to set the Payload's file extension on the endpoint by making the
 
 Payloads are uploaded to the LimaCharlie platform and given a name. The task `run` can then be used with the `--payload-name MY-PAYLOAD --arguments "-v EulaAccepted"` can be used to run the payload with optional arguments.
 
-The STDOUT and STDERR data will be returned in a related `RECEIPT` event, up to ~10 MB. If your payload generates more data, we recommend to pipe the data to a file on disk and use the `log_get` command to retrieve it.
+The STDOUT and STDERR data will be returned in a related `RECEIPT` event, up to 1 MB. If your payload generates more data, we recommend to pipe the data to a file on disk and use the `log_get` command to retrieve it.
 
 The payload is retrieved by the endpoint agent over HTTPS to the Ingestion API DNS endpoint. This DNS entry is available from the Sensor Download section of the web app if you need to allow it.
 
