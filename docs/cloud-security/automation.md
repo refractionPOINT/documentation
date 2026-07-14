@@ -60,6 +60,18 @@ for OID in $(cat tenant-oids.txt); do
 done
 ```
 
+The read half of the fleet story is the multi-org overview — one call
+returning a posture row per authorized org plus cross-tenant rollups
+(widely-recurring rules, fleet risk distribution, orgs with failing
+providers), narrowable to an org group:
+
+```bash
+limacharlie cloudsec fleet overview --group $GROUP_ID
+```
+
+See the [API Reference](api-reference.md#fleet-multi-org) for the route's
+pagination and org-set semantics.
+
 ## Suppression rules (finding disposition policy)
 
 A `suppression`-typed `cloudsec_policy` record dispositions matching

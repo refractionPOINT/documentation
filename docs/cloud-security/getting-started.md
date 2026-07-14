@@ -53,9 +53,19 @@ short version per provider:
 | AWS | `aws` | `aws_role_arn` + `aws_external_id`, optional `aws_regions`, optional `aws_member_role_name` for AWS Organizations |
 | Azure | `azure` | `azure_tenant_id`, `azure_client_id`, `azure_subscription_id` |
 | Okta | `okta` | `okta_org_url` (e.g. `https://acme.okta.com`) |
+| Microsoft Entra ID | `entra` | `entra_tenant_id`, optional `entra_client_id` |
 | Google Workspace | `google_workspace` | `workspace_customer_id` (`my_customer` or an explicit id) |
 | 1Password | `1password` | `onepassword_scim_url` |
 | Cloudflare | `cloudflare` | `cloudflare_account_id` |
+| OpenAI | `openai` | optional `openai_org_id` (cross-checked against the Admin API key's org) |
+| Anthropic | `anthropic` | optional `anthropic_org_uuid` (required for Compliance-API-only connections) |
+| Auth0 | `auth0` | `auth0_domain` (the canonical tenant domain, e.g. `acme.us.auth0.com`) |
+| GitHub | `github` | `github_org` + `github_app_id`, `github_installation_id` (GitHub App auth) |
+| LimaCharlie | `limacharlie` | one of `limacharlie_oid` or `limacharlie_uid` (self-inventory of your own tenant estate) |
+
+To see exactly what a provider can collect — resource kinds, posture checks,
+support levels, known gaps — fetch its coverage manifest:
+`limacharlie cloudsec provider manifest --type gcp`.
 
 Example — a GCP organization:
 

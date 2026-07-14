@@ -30,12 +30,20 @@ D&R rules, Cases, and Outputs you already use.
 | **CAASM** | A merged third-party asset inventory (EDR / IdP / MDM / scanner sources) with coverage-gap findings — "seen by the identity provider, no EDR". |
 | **Security graph** | An explorable graph of resources, identities, and their relationships (`can_reach`, `exposed_to`, `has_permission_on`, `can_assume`, …) with a query language and saved queries. |
 | **Runtime fusion** | Bidirectional resolution between LimaCharlie sensors and the cloud assets they run on — pivot from a cloud finding to the live endpoint and back. |
+| **Fleet overview (MSSP)** | One multi-org call — [`/cloudsec/fleet/overview`](api-reference.md#fleet-multi-org) or `limacharlie cloudsec fleet overview` — returns a posture row per authorized org plus cross-tenant rollups (widely-recurring rules, fleet risk distribution, failing providers). |
 
 ## Supported providers
 
 Cloud infrastructure: **GCP**, **AWS** (including multi-account AWS
 Organizations), **Azure**. Identity and SaaS surfaces: **Okta**,
-**Google Workspace**, **1Password**, **Cloudflare**.
+**Microsoft Entra ID**, **Google Workspace**, **1Password**, **Cloudflare**,
+**Auth0**, **GitHub**. AI platforms: **OpenAI**, **Anthropic**. Plus
+**LimaCharlie** itself (self-inventory of your own tenant estate).
+
+Each provider ships a coverage manifest — what it collects, which posture
+checks can fire, and known gaps — readable via
+`limacharlie cloudsec provider manifest` or
+[`GET /providers/manifest`](api-reference.md).
 
 All collection is agentless and read-only: you grant a scoped read credential
 (stored as a LimaCharlie [secret](../7-administration/config-hive/secrets.md), referenced —

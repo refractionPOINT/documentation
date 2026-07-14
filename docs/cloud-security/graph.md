@@ -113,6 +113,7 @@ The system-of-record behind the graph is queryable directly:
 
 ```bash
 limacharlie cloudsec inventory list --type <resource-type> --region us-central1 -q prod
+limacharlie cloudsec inventory list --provider okta   # scope to one provider's sweep
 limacharlie cloudsec inventory facets
 ```
 

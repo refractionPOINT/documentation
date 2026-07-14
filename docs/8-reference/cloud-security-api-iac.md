@@ -13,7 +13,8 @@ loop between cloud findings and Cases.
 ## The REST API
 
 All Cloud Security routes live under `https://api.limacharlie.io/v1/cloudsec/{oid}/…`
-and appear in the public OpenAPI spec at
+— except the multi-org fleet overview at `/v1/cloudsec/fleet/overview` — and appear
+in the public OpenAPI spec at
 [`/openapi`](https://api.limacharlie.io/openapi). Reads require the `cloudsec.get`
 permission, finding-triage writes require `cloudsec.set`, and every route requires
 the organization to be subscribed to the cloud security extension (a `403` tells
@@ -21,10 +22,17 @@ you to subscribe).
 
 The read surface includes: `findings` (risk-ranked worklist with keyset pagination
 and server-side filters), `findings/facets`, `attack-paths` (with the same filter
-selectors), `chokepoints` (incl. the principal-exposure metrics), `ciem/public-access`,
-`inventory` (+`inventory/facets`), `compliance` (+`compliance/frameworks`),
+selectors), `chokepoints` (incl. the principal-exposure metrics),
+`ciem/public-access`, `ciem/facets`, `inventory` (+`inventory/facets`),
+`data-security/facets` (the DSPM rollup), `resource` (point lookup by URN),
+`compliance` (+`compliance/frameworks`, `compliance/assignments`),
 `overview` (incl. the per-tenant `usage` metering block), `risk-trend`, `changes`,
-`scan-status`, `query` (the graph DSL), and `graph/neighbors`.
+`scan-status`, `query` (the graph DSL), `graph/neighbors`, `resolve/sensors` /
+`resolve/assets` (sensor↔asset fusion), `caasm/*` (third-party asset inventory and
+coverage), `providers/manifest` (per-provider coverage manifests), and the
+multi-org `fleet/overview` (one posture row per authorized org plus cross-tenant
+rollups). The full per-route reference lives at
+[Cloud Security → API Reference](../cloud-security/api-reference.md).
 
 ### CSV export
 
@@ -50,9 +58,9 @@ multi-tenant policy management a script, not a UI workflow.
 
 | Hive | Record | Purpose |
 |---|---|---|
-| `cloudsec_provider` | one per cloud/IdP connection | what to collect (GCP / AWS / Azure / Okta / Google Workspace) |
-| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `scanning` (agentless YARA), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules) |
-| `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
+| `cloudsec_provider` | one per cloud/IdP connection | what to collect (GCP / AWS / Azure / Okta / Entra ID / Google Workspace / 1Password / Cloudflare / OpenAI / Anthropic / Auth0 / GitHub / LimaCharlie self-inventory) |
+| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `scanning` (agentless YARA), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignments) |
+| `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library), schedulable for automatic evaluation |
 
 ### Onboarding a tenant (recipe)
 
@@ -64,8 +72,8 @@ limacharlie extension subscribe --name ext-cloud-security --oid $OID
 cat > provider.json <<EOF
 {
   "provider_type": "gcp",
-  "scope": "organizations/123456789",
-  "secret": {"secret_name": "hive://secret/gcp-collector-sa"},
+  "gcp_scope": "organizations/123456789",
+  "credentials": "hive://secret/gcp-collector-sa",
   "sync_now": "onboard-1"
 }
 EOF
@@ -140,8 +148,13 @@ findings on the next cycle, and criticals are never auto-suppressed unless a rul
 ```
 
 Save it as a `cloudsec_query` record and it appears in every teammate's Query
-Console and as a pinnable Explore lens. The `schedule` and `detection` blocks are
-accepted (so IaC written today survives the scheduled-query phase) but inert.
+Console and as a pinnable Explore lens. Add a `schedule` block with
+`{"scheduled": true}` (optionally `interval` or `cron`) to have the query
+evaluated automatically, emitting `cloud_query.match` / `cloud_query.resolved`
+events as anchors enter/leave the match-set — see
+[Configuration → Scheduled queries](../cloud-security/configuration.md#scheduled-queries).
+The `detection` block is accepted but remains inert (reserved for the
+promote-to-detection phase).
 
 ## Findings ↔ Cases automation
 

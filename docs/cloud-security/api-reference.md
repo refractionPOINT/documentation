@@ -6,8 +6,10 @@
     availability. Contact us if you would like access.
 
 All Cloud Security routes live under
-`https://api.limacharlie.io/v1/cloudsec/{oid}/…` and appear in the public
-OpenAPI spec at [`/openapi`](https://api.limacharlie.io/openapi).
+`https://api.limacharlie.io/v1/cloudsec/{oid}/…` — except the multi-org
+[fleet overview](#fleet-multi-org) at `/v1/cloudsec/fleet/overview` — and
+appear in the public OpenAPI spec at
+[`/openapi`](https://api.limacharlie.io/openapi).
 Authentication is the standard `Authorization: Bearer <JWT>` header.
 
 !!! info "Permissions & enable gate"
@@ -38,7 +40,7 @@ Shared behaviors:
 | `GET /chokepoints` | `{chokepoints, total_paths}` — shared attack-path hops ranked by paths broken, including the principal-exposure metrics. |
 | `GET /ciem/public-access` | `{access}` — public/external access to sensitive resources. |
 | `GET /ciem/facets` | `{facets}` — identity facet counts. |
-| `GET /inventory` | `{resources, next_cursor}`. Filters: `type`, `account`, `region`, `q`, paging. |
+| `GET /inventory` | `{resources, next_cursor}`. Filters: `type`, `provider` (scope to one provider's sweep, e.g. `gcp` \| `okta` \| `google_workspace`), `account`, `region`, `q`, paging. |
 | `GET /inventory/facets` | Inventory facet counts by type/account/region. |
 | `GET /data-security/facets` | `{facets}` — DSPM data-store rollup. |
 | `GET /resource?urn=` | `{resource}` — the canonical record for any URN (null when unknown). |
@@ -57,6 +59,31 @@ Shared behaviors:
 | `GET /caasm/assets` | `{resources, next_cursor}` — the merged third-party asset inventory. Params: `q`, paging. |
 | `GET /caasm/coverage` | `{findings, next_cursor}` — coverage-gap findings. Params: `status[]`, `severity[]`, `q`, `sort`, `order`, paging. |
 | `GET /caasm/policy` | Resource-list shape: zero rows (no policy) or one row whose `props` is the policy. |
+| `GET /providers/manifest` | `{manifests}` — per-provider coverage manifests: collectors (resource + edge kinds) with status, posture checks, activity/CIEM support level, validation grade, known gaps, and the org's own scan coverage/freshness. Param: `type` (e.g. `gcp`) returns a single `{manifest}`, including a provider the org has never swept. |
+
+### Fleet (multi-org)
+
+`GET https://api.limacharlie.io/v1/cloudsec/fleet/overview` — the one route
+**without** `{oid}` in the path: one posture row per authorized org (score,
+severity distribution, trend direction, coverage/freshness, usage counters)
+plus, on the first page, cross-tenant rollups (widely-recurring rules, fleet
+risk distribution, orgs with failing providers).
+
+- The org set is every org the caller's token carries — optionally narrowed
+  with repeatable `oids` and/or an org `group` (the caller must be a member
+  or owner of the group) — intersected with the orgs where the caller holds
+  `cloudsec.get` and that are subscribed to the extension. Orgs failing
+  either filter are silently excluded and counted in `skipped`
+  (`{not_enabled, lookup_failed}`), never an error.
+- Keyset-paginated **by org**: `cursor` / `limit` (default 25, cap 100);
+  `trend_days` sets the per-org trend window. The resolved org set is capped
+  at 500 — narrow with `oids` or `group` past that.
+- Returns `{orgs, next_cursor, total_orgs, skipped, rollups (first page)}`.
+- Rate-limited to 120 calls/hour per identity.
+
+CLI: `limacharlie cloudsec fleet overview` (with user-scoped credentials the
+CLI mints a temporary multi-org token so the fleet spans every accessible
+org).
 
 ## Writes
 
@@ -112,6 +139,9 @@ platform emits into the organization's event stream:
 - `cloud_finding.still_open` — re-asserted at most daily for open findings
   with a linked ticket.
 - `cloud_resource.*` — inventory change events.
+- `cloud_query.match` / `cloud_query.resolved` — a
+  [scheduled saved query](configuration.md#scheduled-queries)'s match-set
+  gained / lost an anchor.
 
 See [Automation & IaC](automation.md#findings-cases-automation) for D&R
 rules that consume them.

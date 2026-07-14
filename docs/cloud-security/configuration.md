@@ -30,7 +30,7 @@ Common fields:
 
 | Field | Meaning |
 |---|---|
-| `provider_type` | `gcp` \| `aws` \| `azure` \| `okta` \| `1password` \| `google_workspace` \| `cloudflare` |
+| `provider_type` | `gcp` \| `aws` \| `azure` \| `okta` \| `entra` \| `google_workspace` \| `1password` \| `cloudflare` \| `openai` \| `anthropic` \| `auth0` \| `github` \| `limacharlie` |
 | `credentials` | A `hive://secret/<name>` reference. The credential itself lives in the secret hive — it is **not** stored inline. |
 | `internal_domains` | Your own email domains (bare domains, no `@`) beyond the discoverable primary — identities outside this set are classified external. |
 | `sync_now` | Opaque nonce; change its value to trigger an on-demand sweep. |
@@ -45,9 +45,15 @@ Per-provider scope fields:
 | `aws` | `aws_role_arn` (the read-only role to assume), `aws_external_id`, optional `aws_regions`, optional `aws_member_role_name` — the role *name* assumed in each member account of an AWS Organization (defaults to the name in `aws_role_arn`, the common StackSet pattern) |
 | `azure` | `azure_tenant_id`, `azure_client_id`, `azure_subscription_id` (service-principal auth) |
 | `okta` | `okta_org_url` — the org base URL; the credential is an SSWS API token or an API Services app (client credentials) |
+| `entra` | `entra_tenant_id` (optional `entra_client_id`) — Microsoft Entra ID directory ingestion |
 | `google_workspace` | `workspace_customer_id` — `my_customer` or an explicit customer id; the credential is a service-account key with domain-wide delegation plus the admin subject to impersonate |
 | `1password` | `onepassword_scim_url` — the SCIM bridge URL; the credential is the SCIM bearer token |
 | `cloudflare` | `cloudflare_account_id` — the 32-hex account id |
+| `openai` | optional `openai_org_id` (`org-...`) — the Admin API key in the credential already implies the org; when set it is cross-checked. The credential is an Admin API key created with the read-only `api.management.read` scope |
+| `anthropic` | optional `anthropic_org_uuid` — discovered from the Console Admin key; **required** when only `compliance_credentials` (an optional second `hive://secret/<name>` for the Compliance API plane) is provided |
+| `auth0` | `auth0_domain` — the canonical tenant domain (e.g. `acme.us.auth0.com`; custom domains are not usable) |
+| `github` | `github_org` (the organization slug) + `github_app_id` and `github_installation_id` (GitHub App auth) |
+| `limacharlie` | exactly one of `limacharlie_oid` (org API key) or `limacharlie_uid` (user API key) — self-inventory of your LimaCharlie estate |
 
 Use `limacharlie cloudsec provider test` to preflight a record before saving
 it — see [Getting Started](getting-started.md#test-the-credential-before-saving).
@@ -167,5 +173,28 @@ A saved graph query, shared org-wide:
 
 `query` takes one of `named` (a query-pack reference), `text`, or `ast` (the
 raw DSL). Optional `ui` hints (view, columns) shape how the console renders
-results. `schedule` and `detection` blocks are accepted so IaC written today
-survives the scheduled-query phase, but are not yet active.
+results.
+
+### Scheduled queries
+
+A saved query with a `schedule` block whose `scheduled` is `true` is
+evaluated automatically — after each projection cycle by default, or on at
+most one of `interval` (`"1h"`, `"24h"`, …) / `cron` (5-field expression,
+optional IANA `timezone`). Evaluation emits a `cloud_query.match` event per
+*new* anchor entering the match-set and `cloud_query.resolved` when an
+anchor leaves, flowing through the org's `emission` policy (above) like
+every other cloudsec event. Scheduled queries must be **enabled** records.
+`emit_suppressed: true` opts anchors suppressed by the org's suppression
+policy into emission anyway.
+
+```json
+{
+  "version": 1,
+  "name": "Exposed VMs reaching sensitive data",
+  "query": {"text": "..."},
+  "schedule": {"scheduled": true, "interval": "24h"}
+}
+```
+
+The `detection` block remains reserved for the promote-to-detection phase:
+it is validated for shape but nothing consumes it yet.

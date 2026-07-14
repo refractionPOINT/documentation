@@ -29,6 +29,11 @@ limacharlie cloudsec changes --limit 100
 limacharlie cloudsec risk-trend
 limacharlie cloudsec scan-status --provider gcp
 
+# Multi-org fleet posture (MSSP) — spans every org your credentials can see,
+# narrowable with repeatable --oid and/or an org --group
+limacharlie cloudsec fleet overview
+limacharlie cloudsec fleet overview --group <GROUP_ID> --trend-days 90
+
 # Findings worklist + triage
 limacharlie cloudsec finding list --severity CRITICAL --class toxic_combination --kev
 limacharlie cloudsec finding facets --status open
@@ -52,6 +57,7 @@ limacharlie cloudsec data-security facets
 
 # Inventory & graph
 limacharlie cloudsec inventory list --type <resource-type> -q prod --limit 50
+limacharlie cloudsec inventory list --provider okta      # scope to one provider's sweep
 limacharlie cloudsec inventory facets
 limacharlie cloudsec resource get "lcrn:..."
 limacharlie cloudsec graph neighbors "lcrn:..." --limit 200
@@ -76,8 +82,15 @@ limacharlie cloudsec caasm policy get
 limacharlie cloudsec caasm policy set --input-file coverage.json
 limacharlie cloudsec caasm ingest --source okta --records-file users.json
 
-# Provider preflight
+# Providers: credential preflight + coverage manifests
 limacharlie cloudsec provider test --input-file provider.json
+limacharlie cloudsec provider manifest --type gcp
+
+# CSV exports (server walks the FULL filtered set, 100k-row cap)
+limacharlie cloudsec export findings -o findings.csv --severity CRITICAL
+limacharlie cloudsec export inventory -o inventory.csv --provider gcp
+limacharlie cloudsec export compliance -o cis-gcp.csv
+limacharlie cloudsec export query --named public-buckets -o rows.csv
 ```
 
 ## Filtering and pagination
@@ -97,6 +110,8 @@ limacharlie cloudsec finding list --cursor "<next_cursor>" --limit 50
 
 Boolean tri-state flags (`--kev/--no-kev`, `--reachable/--no-reachable`)
 send the filter only when given, so the server default applies otherwise.
+Findings sort keys: `lc_risk` (the default), `severity`, `first_seen`;
+`--order` is `desc` by default.
 
 ## Scripting
 

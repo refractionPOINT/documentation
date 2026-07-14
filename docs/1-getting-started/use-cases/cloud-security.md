@@ -1,5 +1,12 @@
 # Cloud Security
 
+!!! tip "Looking for the Cloud Security (CNAPP) product?"
+    This page covers the general use case of ingesting and monitoring cloud
+    telemetry. LimaCharlie also ships a dedicated **Cloud Security (CNAPP)**
+    product — agentless posture, attack paths, CIEM, DSPM, compliance, and a
+    security graph over your cloud estate — documented under
+    [Cloud Security](../../cloud-security/index.md).
+
 The Agentic SecOps Workspace simplifies the difficult task of securing cloud resources and managing complex cloud-based or hybrid infrastructure. LimaCharlie brings better visibility, robust interoperability, and better options for storing data to cloud and hybrid environments.
 
 ## Cloud security problems
