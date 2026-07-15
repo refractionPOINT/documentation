@@ -35,7 +35,7 @@ BigQuery dataset containing Velociraptor hunt results:
       1. ![image.png](../../assets/images/image(189).png)
    6. Grant the service account the **BigQuery Data Editor** role, either on the project or scoped to the dataset you just created
 
-      1. Streaming inserts require the `bigquery.tables.get` and `bigquery.tables.updateData` permissions. Roles like *BigQuery Data Viewer* or *BigQuery Job User* are **not** sufficient — without *BigQuery Data Editor* the output will fail with an error like `Permission bigquery.tables.get denied on table <project>:<dataset>.<table> (or it may not exist)`
+      1. The output needs the `bigquery.tables.get` permission (to read the table schema) and `bigquery.tables.updateData` (to stream rows in). Roles like *BigQuery Data Viewer* or *BigQuery Job User* are **not** sufficient — without *BigQuery Data Editor* the output will fail with an error like `Permission bigquery.tables.get denied on table <project>:<dataset>.<table> (or it may not exist)`
 2. Now we're ready to create our LimaCharlie tailored output
 
    1. In the side navigation menu, click "Outputs" then add a new output
@@ -46,12 +46,13 @@ BigQuery dataset containing Velociraptor hunt results:
          1. **Name**: `bigquery-tailored`
 
             1. You can change this, but it affects a subsequent step so take note of the output name
-         2. **schema**: `sid:STRING, job_id:STRING, artifact:JSON`
-         3. **Dataset**: *whatever you named BQ your dataset above*
-         4. **Table**: *whatever you named your BQ table above*
-         5. **Project**: *your GCP project **ID*** (e.g. `my-project-123456`, not the display name — you can find it on the GCP console dashboard or in the resource picker)
-         6. **Secret Key**: *provide the JSON secret key for your GCP service account*
-         7. **Advanced Options**
+         2. **Dataset**: *whatever you named BQ your dataset above*
+         3. **Table**: *whatever you named your BQ table above*
+
+            1. The output streams rows directly into this table, so the table's columns (defined when you created it above, e.g. `sid:STRING, job_id:STRING, artifact:JSON`) must match the fields produced by the Custom Transform below — rows with fields that don't exist as columns are rejected by BigQuery
+         4. **Project**: *your GCP project **ID*** (e.g. `my-project-123456`, not the display name — you can find it on the GCP console dashboard or in the resource picker)
+         5. **Secret Key**: *provide the JSON secret key for your GCP service account*
+         6. **Advanced Options**
 
             1. **Custom Transform**: paste in this JSON
 
@@ -98,13 +99,13 @@ For example, when starting a collection, use an artifact list like:
 ["Generic.Client.Info", "Windows.System.Pslist"]
 ```
 
-You can then surface the hostname as its own BigQuery column by extending the output schema:
+You can then surface the hostname as its own BigQuery column. First add the column to your table (fields sent by the output must exist as columns, or the rows will be rejected):
 
-```text
-sid:STRING, job_id:STRING, hostname:STRING, artifact:JSON
+```sql
+ALTER TABLE `velociraptor.hunts` ADD COLUMN hostname STRING
 ```
 
-and adding a `hostname` field to the Custom Transform, extracted from the `Generic.Client.Info` results:
+Then add a `hostname` field to the output's Custom Transform, extracted from the `Generic.Client.Info` results:
 
 ```json
 {
