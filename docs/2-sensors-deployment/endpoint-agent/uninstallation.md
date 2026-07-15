@@ -12,9 +12,24 @@ Details on manual uninstallation is found at the bottom of each respective OS' i
 
 ### Sensor Commands
 
-For macOS and Windows operating systems, you can uninstall a sensor with the `uninstall` command. See the [endpoint commands reference](../../8-reference/endpoint-commands.md) for more detail.
+For macOS and Windows operating systems, you can uninstall a sensor with the `uninstall` command. See the [endpoint commands reference](../../8-reference/endpoint-commands.md#uninstall) for more detail.
 
 On Windows, the command defaults to uninstalling the sensor as if installed from the direct installer exe. If an MSI was used for installation, you can add a `--msi` flag to the `uninstall` command to trigger an uninstallation that is compatible with MSI.
+
+#### Native vs Legacy Uninstall
+
+By default, the `uninstall` command uses the legacy procedure: the sensor runs a shell command that invokes the on-disk agent's own uninstaller. This works on every sensor version.
+
+Adding the `--native` flag instead instructs the sensor to uninstall itself using its built-in (native) uninstall procedure, without spawning a shell command:
+
+```bash
+uninstall --is-confirmed --native
+```
+
+!!! note
+    The `--native` flag requires sensor version **5.3.3 or later**. Sensors running an older version silently ignore the native uninstall request — the task appears to be sent successfully, but nothing happens on the endpoint. If you are unsure of a sensor's version, omit `--native` to use the legacy procedure.
+
+The `--msi` flag takes precedence over `--native`: the native procedure does not unregister the MSI product, so sensors installed via MSI should continue to use `--msi`.
 
 ### SDK
 
