@@ -53,7 +53,8 @@ For commands which emit a report/reply event type from the agent, the correspond
 | [segregate\_network](#segregate_network) | [SEGREGATE\_NETWORK](edr-events.md#segregate_network) | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ |
 | set\_performance\_mode | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | shutdown |  | ☑️ | ☑️ | ☑️ |  |  |
-| uninstall | N/A | ☑️ | ☑️ | ☑️ |  |  |
+| [uninstall](#uninstall) | N/A | ☑️ | ☑️ | ☑️ |  |  |
+| [upgrade\_core](#upgrade_core) | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | [yara\_scan](#yara_scan) | [YARA\_DETECTION](edr-events.md#yara_detection) | ☑️ | ☑️ | ☑️ |  |  |
 | yara\_update | N/A | ☑️ | ☑️ | ☑️ |  |  |
 | epp\_status | [EPP\_STATUS\_REP] | ☑️ |  |  |  |  |
@@ -939,6 +940,60 @@ Isolate a sensor from the network (except LimaCharlie cloud connectivity).
 
 ```bash
 limacharlie sensor task <SID> segregate_network
+```
+
+---
+
+### uninstall
+
+Uninstall the sensor from the endpoint.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `--is-confirmed` (required): Must be specified as a confirmation that you want to uninstall the sensor
+- `--msi` (optional): Windows only — must be specified if the sensor was installed via MSI
+- `--native` (optional): Use the sensor's built-in (native) uninstall procedure instead of the default legacy shell-based procedure
+
+By default, the sensor uninstalls itself by running a shell command that invokes the on-disk agent's own uninstaller. This legacy procedure works on every sensor version. With `--native`, the sensor performs the uninstallation itself without spawning a shell command.
+
+> **Note:** `--native` requires sensor version 5.3.3 or later. Older sensors silently ignore the native uninstall request — nothing happens on the endpoint. If you are unsure of a sensor's version, omit `--native`.
+
+`--msi` takes precedence over `--native`: the native procedure does not unregister the MSI product, so sensors installed via MSI should use `--msi`.
+
+**Response Event:** None (sensor uninstalls and disconnects)
+
+**Usage Example:**
+
+```bash
+limacharlie sensor task <SID> uninstall --is-confirmed
+limacharlie sensor task <SID> uninstall --is-confirmed --native
+```
+
+---
+
+### upgrade_core
+
+Task the sensor to upgrade its own on-disk agent (the installed service) to a new release. The sensor downloads, verifies, and installs the release itself; if the new version fails to start, it automatically rolls back to the previous one. See [Service Upgrades](../2-sensors-deployment/endpoint-agent/service-upgrades.md) for the full upgrade procedure.
+
+**Platforms:** macOS | Windows | Linux
+
+**Parameters:**
+
+- `--beta` (required): Opt in to the native upgrade procedure; the command is rejected without it while the feature is in beta
+- `--force` (optional): Upgrade even if the sensor already reports the latest available release
+- `--version` (optional): Pin the exact release to install (e.g. `5.3.3`), downgrades included; defaults to the latest available release
+
+> **Note:** Requires sensor version 5.3.3 or later. Sensors running an older version silently drop the request and no upgrade takes place.
+
+**Response Event:** None
+
+**Usage Example:**
+
+```bash
+limacharlie sensor task <SID> upgrade_core --beta
+limacharlie sensor task <SID> upgrade_core --beta --version 5.3.3
 ```
 
 ---

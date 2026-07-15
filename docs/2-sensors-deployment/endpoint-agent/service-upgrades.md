@@ -63,6 +63,26 @@ The `-u` flag requires sensor version **4.33.28 or later**.
     hcp_win_x64_release_4.33.28.exe -u
     ```
 
+## Upgrade from the Cloud with the `upgrade_core` Command (Beta)
+
+Instead of running an installer on the host, you can task a sensor to upgrade its own on-disk agent with the `upgrade_core` sensor command. The sensor downloads, verifies, and installs the requested release itself — no local shell access or installer download is required. The automatic rollback on a failed start applies here as well.
+
+The native upgrade procedure is currently in beta, so the `--beta` flag is required; the command is rejected without it.
+
+```bash
+limacharlie sensor task <SID> upgrade_core --beta
+```
+
+Optional flags:
+
+- `--force`: upgrade even if the sensor already reports the latest available release.
+- `--version`: pin the exact release to install (e.g. `5.3.3`) instead of the latest; downgrades are allowed.
+
+!!! note
+The `upgrade_core` command requires sensor version **5.3.3 or later**. Sensors running an older version silently drop the request and no upgrade takes place.
+
+See the [endpoint commands reference](../../8-reference/endpoint-commands.md#upgrade_core) for more detail.
+
 ## Advanced: Forcing an Upgrade
 
 By default an in-place upgrade (`-u`) only replaces the installed service when the supplied binary is newer than what is installed. To re-apply or move to a build that is not strictly newer (for example to re-deploy a known-good version), set the `LC_UPGRADE_SKIP_VERSION_CHECK` environment variable to `1` (or `true`) on the upgrade process. This bypasses the version comparison and replaces the installed service unconditionally.
