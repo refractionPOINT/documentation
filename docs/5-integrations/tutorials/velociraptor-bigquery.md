@@ -9,10 +9,19 @@ Imagine you wanted to obtain running processes from 10s, 100s, or 1000s of syste
 BigQuery dataset containing Velociraptor hunt results:
 ![image.png](../../assets/images/image(186).png)
 
+### Prerequisites
+
+1. **A Google Cloud project with billing enabled.** LimaCharlie writes to BigQuery using streaming inserts, which are not available in the free tier (BigQuery sandbox). If billing is not enabled on the project, the output will fail with an error like:
+
+   ```text
+   googleapi: Error 403: Access Denied: BigQuery BigQuery: Streaming insert is not allowed in the free tier, accessDenied
+   ```
+
+2. **The ability to create service account keys.** Some organizations enforce the `iam.disableServiceAccountKeyCreation` organization policy, which blocks the creation of service account JSON keys. If key creation fails with a policy error, an administrator will need to grant an exception for the project (Organization Policies > "Disable service account key creation"), or you can use a project outside of that policy.
+
 ### Steps to Accomplish
 
-1. You will need a Google Cloud project
-2. You will need to create a service account within your Google Cloud project
+1. You will need to create a service account within your Google Cloud project
 
    1. Navigate to your project
    2. Navigate to IAM
@@ -24,7 +33,10 @@ BigQuery dataset containing Velociraptor hunt results:
    5. In BigQuery, create a Dataset, Table, & Schema similar to the screenshot below
 
       1. ![image.png](../../assets/images/image(189).png)
-3. Now we're ready to create our LimaCharlie tailored output
+   6. Grant the service account the **BigQuery Data Editor** role, either on the project or scoped to the dataset you just created
+
+      1. Streaming inserts require the `bigquery.tables.get` and `bigquery.tables.updateData` permissions. Roles like *BigQuery Data Viewer* or *BigQuery Job User* are **not** sufficient — without *BigQuery Data Editor* the output will fail with an error like `Permission bigquery.tables.get denied on table <project>:<dataset>.<table> (or it may not exist)`
+2. Now we're ready to create our LimaCharlie tailored output
 
    1. In the side navigation menu, click "Outputs" then add a new output
 
@@ -37,7 +49,7 @@ BigQuery dataset containing Velociraptor hunt results:
          2. **schema**: `sid:STRING, job_id:STRING, artifact:JSON`
          3. **Dataset**: *whatever you named BQ your dataset above*
          4. **Table**: *whatever you named your BQ table above*
-         5. **Project**: *your GCP project name*
+         5. **Project**: *your GCP project **ID*** (e.g. `my-project-123456`, not the display name — you can find it on the GCP console dashboard or in the resource picker)
          6. **Secret Key**: *provide the JSON secret key for your GCP service account*
          7. **Advanced Options**
 
@@ -53,7 +65,7 @@ BigQuery dataset containing Velociraptor hunt results:
 
             2. **Specific Event Types**: `velociraptor_collection`
       3. ![velociraptor](../../assets/images/velociraptor.png)
-4. We now need a  rule that will watch for Velociraptor collections send send them to the new tailored output
+3. We now need a rule that will watch for Velociraptor collections and send them to the new tailored output
 
    1. Create a new D&R rule
 
@@ -74,7 +86,44 @@ BigQuery dataset containing Velociraptor hunt results:
            name: Velociraptor hunt sent to BigQuery
          ```
 
-5. You are now ready to send Velociraptor hunts to BigQuery!
+4. You are now ready to send Velociraptor hunts to BigQuery!
+
+## Including the Hostname
+
+The `velociraptor_collection` event identifies the endpoint by its sensor ID (`sid`) only — it does not contain the hostname, and because the event is delivered through the extension's webhook adapter, the output's `routing` metadata identifies the adapter rather than the endpoint. To get the hostname alongside your hunt results, include the built-in `Generic.Client.Info` artifact in your collections; its `BasicInformation` source reports the endpoint's `Hostname` and `Fqdn` as part of the collection results.
+
+For example, when starting a collection, use an artifact list like:
+
+```json
+["Generic.Client.Info", "Windows.System.Pslist"]
+```
+
+You can then surface the hostname as its own BigQuery column by extending the output schema:
+
+```text
+sid:STRING, job_id:STRING, hostname:STRING, artifact:JSON
+```
+
+and adding a `hostname` field to the Custom Transform, extracted from the `Generic.Client.Info` results:
+
+```json
+{
+"sid": "event.sid",
+"job_id": "event.job_id",
+"hostname": "event.collection.Generic_Client_Info.BasicInformation.0.Hostname",
+"artifact": "{{ json .event.collection }}"
+}
+```
+
+Alternatively, leave the schema and transform as-is and extract the hostname at query time from the `artifact` JSON column:
+
+```sql
+SELECT
+  sid,
+  JSON_VALUE(artifact.Generic_Client_Info.BasicInformation[0].Hostname) as Hostname
+FROM
+  `lc-demo-infra.velociraptor.hunts`
+```
 
 ## BigQuery Tips
 
@@ -84,7 +133,7 @@ Once the data arrives in BigQuery, it will be in three simple columns: `sid`, `j
 
 ![image.png](../../assets/images/image(191).png)
 
-Let's say we wanted to split out all results of a `Windows.System.Pslist` hunt so that each process, from each system, is returned in it's own row. Here is an example notebook to accomplish this:
+Let's say we wanted to split out all results of a `Windows.System.Pslist` hunt so that each process, from each system, is returned in its own row. Here is an example notebook to accomplish this:
 
 ```sql
 SELECT
