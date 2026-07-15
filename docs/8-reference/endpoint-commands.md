@@ -98,16 +98,16 @@ List files and directories at a specified path on the endpoint.
 
 **Parameters:**
 
-- `dir_path` (required): Directory path to list
-- `depth` (optional): Recursion depth (default: 0 = no recursion)
-- `file_pattern` (optional): File pattern filter (e.g., "*.exe")
+- `rootdir` (positional): Root directory where to begin the listing from
+- `fileexp` (positional): File name expression supporting basic wildcards like `*` and `?` (e.g., "*.exe")
+- `-d, --depth` (optional): Maximum depth of the listing, defaults to a single level
 
 **Response Event:** DIR_LIST_REP
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> dir_list --dir_path "C:\\Windows\\System32" --depth 1
+limacharlie task send --sid <SID> --task 'dir_list "C:\\Windows\\System32" "*.exe" --depth 1'
 ```
 
 **Sample Response:**
