@@ -2,6 +2,30 @@
 
 Release notes for LimaCharlie platform components, organized by date.
 
+## 2026-07-15
+
+### Web App 5.13.0
+
+Expanded Vulnerability Reporting, a revamped audit log, a redesigned REST API section, and continued localization across the extension catalog.
+
+#### New Features
+
+- **Vulnerability Reporting**: a new Vulnerable Packages tab (with a package drawer listing live affected hosts) and a "Group by application" toggle on per-host tables that collapses per-CVE rows to one line per application. Exports are stamped with org name and OID, gain a server-generated remediation-plan CSV and a vulnerable-packages CSV.
+- **Vulnerabilities dashboard polish**: the Packages table collapses like the other tabs, posture stats match the detail-panel strip, and the CVE and package detail sidebars cross-link to each other. The CISA KEV catalog now opens with the full filter parameters applied.
+- **Audit log revamp**: the Platform Logs audit tab adds sensor, date-range, and event-type filters plus client-side origin/identity search, bidirectional infinite scroll ("Load newer events"), and a row detail panel with a scrollable JSON viewer of the raw record.
+- **REST API section redesign**: API Details becomes a compact definition card with hover-to-copy on API Root, OID, and Org JWT and a Swagger reference link. The User-Generated, Service-Managed, and Ingestion key tables move behind a segmented pill switcher showing one table at a time, with a contextual Create button and one-line dates.
+- **EPP status dashboard**: the per-sensor EPP status page is redesigned as a status dashboard, with the metric tiles filled out and macOS status, product name, and not-subscribed states corrected on the Sensor Overview EPP card.
+- **AI provider onboarding**: a CLI escape hatch lets you configure AI providers not yet supported in the guided onboarding flow.
+- **Internationalization**: continued localization of the extension catalog - Artifact, binlib, reliable-tasking, EPP, dumper, integrity, feedback, exfil, atomic-red-team, govee, hayabusa, infrastructure, lookup-manager, and ~30 more extension pages are now translated across all nine locales.
+
+#### Bug Fixes
+
+- Tooltips now render above modals instead of behind them.
+- Cloud adapter forms now enforce required secret and number fields before submit.
+- Sensor Overview hides cards and chips that don't apply to adapters and USP sensors, long tags no longer blow out the Overview grid, and EPP status resolves instead of stalling on "Waiting for sync".
+- A newly created hive record shows its GUID immediately, and User ID click-to-copy is restored on the account settings page.
+- Workload Scanning last-scan stats are corrected (wire tolerance) with a richer Last Scan detail, and the "Findings closed" column in Top remediations is fixed. The CVE sidebar count stat is labelled "Findings" rather than "Impacted hosts".
+
 ---
 
 ## 2026-07-09
