@@ -16,15 +16,27 @@ All Cloud Security routes live under `https://api.limacharlie.io/v1/cloudsec/{oi
 and appear in the public OpenAPI spec at
 [`/openapi`](https://api.limacharlie.io/openapi). Reads require the `cloudsec.get`
 permission, finding-triage writes require `cloudsec.set`, and every route requires
-the organization to be subscribed to the cloud security extension (a `403` tells
-you to subscribe).
+the organization to be subscribed to the `ext-cloud-security` extension (a `403`
+tells you to subscribe).
 
 The read surface includes: `findings` (risk-ranked worklist with keyset pagination
-and server-side filters), `findings/facets`, `attack-paths` (with the same filter
-selectors), `chokepoints` (incl. the principal-exposure metrics), `ciem/public-access`,
-`inventory` (+`inventory/facets`), `compliance` (+`compliance/frameworks`),
-`overview` (incl. the per-tenant `usage` metering block), `risk-trend`, `changes`,
-`scan-status`, `query` (the graph DSL), and `graph/neighbors`.
+and server-side filters), `findings/facets`, `findings/classes` (the canonical
+finding-class enum), `attack-paths` (with the same filter selectors), `chokepoints`
+(incl. the principal-exposure metrics), `ciem/public-access`, `ciem/facets`,
+`ciem/identity` (the Identity 360 view, `?urn=`), `inventory` (+`inventory/facets`),
+`data-security/facets`, `topology` (server-side estate aggregates), `compliance`
+(+`compliance/frameworks`, `compliance/assignments`), `policy/vocabulary` (the
+classification-policy vocabulary), `providers/manifest` (what a provider collects),
+`caasm/assets`, `caasm/coverage`, `caasm/policy`, `overview` (incl. the per-tenant
+`usage` metering block), `risk-trend`, `changes`, `scan-status`, `query` (the graph
+DSL), and `graph/neighbors`. There is also a multi-org (no `{oid}`)
+`fleet/overview` route that rolls risk up across every tenant you manage. Three
+read-only preview POSTs help you author policy before you commit it —
+`simulate/resources` (test a classification/coverage/exclusion matcher against
+stored inventory), `simulate/findings` (test a suppression matcher against open
+findings), and `policy/suggest` (live matcher-value autocomplete from the tenant
+estate). See the [API Reference](../cloud-security/api-reference.md) for the full
+route list and response shapes.
 
 ### CSV export
 
@@ -50,8 +62,8 @@ multi-tenant policy management a script, not a UI workflow.
 
 | Hive | Record | Purpose |
 |---|---|---|
-| `cloudsec_provider` | one per cloud/IdP connection | what to collect (GCP / AWS / Azure / Okta / Google Workspace) |
-| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `scanning` (agentless YARA), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules) |
+| `cloudsec_provider` | one per connection | what to collect — one of thirteen connectors spanning cloud infra, identity/IdP, SaaS, AI, and LimaCharlie self-inventory (see [Providers](../cloud-security/providers.md) for the full list) |
+| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `scanning` (agentless YARA), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
 | `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
 
 ### Onboarding a tenant (recipe)
@@ -64,8 +76,9 @@ limacharlie extension subscribe --name ext-cloud-security --oid $OID
 cat > provider.json <<EOF
 {
   "provider_type": "gcp",
-  "scope": "organizations/123456789",
-  "secret": {"secret_name": "hive://secret/gcp-collector-sa"},
+  "gcp_scope": "organizations/123456789",
+  "credentials": "hive://secret/gcp-collector-sa",
+  "internal_domains": ["acme.com"],
   "sync_now": "onboard-1"
 }
 EOF
@@ -151,6 +164,10 @@ the internally-provisioned `cloudsec` webhook adapter: `cloud_finding.created`
 (`{finding_id, fingerprint, finding_class}`), and `cloud_finding.still_open`
 (re-asserted at most once per day for open findings with a linked ticket). D&R
 rules match these like any event; the Cases extension actions close the loop.
+For richer automation the same stream also carries `cloud_finding.updated` (an
+open finding's content materially changed — a severity flip or vuln-set change)
+and the operator-disposition verbs `cloud_finding.resolved` / `.dismissed` /
+`.reopened` / `.assigned` (for auditing human triage decisions).
 
 The console installs these three rules with one click (Settings → Cloud Security →
 Cases, an opt-in), or write them yourself:

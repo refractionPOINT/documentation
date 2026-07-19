@@ -20,10 +20,31 @@ limacharlie cloudsec compliance report --framework cis-gcp
 limacharlie cloudsec compliance frameworks
 ```
 
-The report is per-control pass/fail with the proving finding ids as
-evidence, plus a summary score. The frameworks list carries `id`, `name`,
-`version`, and control counts — treat it as the source of truth for valid
+Ten frameworks ship today — `cis-aws`, `cis-azure`, `cis-gcp` (the default),
+`soc2`, `pci-dss`, `hipaa`, `iso-27001`, `nist-csf`, `nist-ai-rmf`, and
+`owasp-llm`. The last two are AI frameworks: they assess the OpenAI and
+Anthropic estate connected through the
+[AI providers](providers.md#ai-security-aispm). The set
+grows over time, so `limacharlie cloudsec compliance frameworks`
+(`GET /compliance/frameworks`) — which carries each framework's `id`, `name`,
+`version`, and control counts — is the source of truth for valid
 `--framework` values.
+
+The report is per-control, and each control lands in one of four states:
+
+- **PASS** — no open finding proves a violation of the control.
+- **FAIL** — one or more open findings prove it; their `finding_id`s are
+  attached as evidence.
+- **NOT_ASSESSED** — the control has no mapped rule yet, so nothing was
+  evaluated.
+- **NOT_APPLICABLE** — the control maps to resource types that are not in
+  scope for this assessment.
+
+A framework scoped to a single cloud assesses only that cloud's findings —
+`cis-aws` looks at AWS findings, `cis-gcp` at GCP. A framework with no
+in-scope resource types comes back **NOT_APPLICABLE** rather than a vacuous
+PASS, so an empty estate never reads as compliant. Alongside the controls the
+report carries a summary score.
 
 For auditors, the same report exports as CSV — one row per control including
 the evidence finding ids — via the API's `?format=csv`

@@ -51,7 +51,7 @@ limacharlie cloudsec ciem facets
 limacharlie cloudsec data-security facets
 
 # Inventory & graph
-limacharlie cloudsec inventory list --type <resource-type> -q prod --limit 50
+limacharlie cloudsec inventory list --type <resource-type> --provider gcp -q prod --limit 50
 limacharlie cloudsec inventory facets
 limacharlie cloudsec resource get "lcrn:..."
 limacharlie cloudsec graph neighbors "lcrn:..." --limit 200
@@ -76,9 +76,41 @@ limacharlie cloudsec caasm policy get
 limacharlie cloudsec caasm policy set --input-file coverage.json
 limacharlie cloudsec caasm ingest --source okta --records-file users.json
 
-# Provider preflight
+# Provider preflight + coverage manifest
 limacharlie cloudsec provider test --input-file provider.json
+limacharlie cloudsec provider manifest --type gcp        # "what you get" for a provider
+
+# Full-set CSV export (server-side walk of the entire filtered set)
+limacharlie cloudsec export findings -o findings.csv
+limacharlie cloudsec export inventory -o inventory.csv
+limacharlie cloudsec export compliance --framework cis-gcp -o compliance.csv
+limacharlie cloudsec export query --named public-buckets -o public-buckets.csv
+
+# Fleet — cross-tenant (MSSP) roll-up, no single --oid
+limacharlie cloudsec fleet overview --oid $OID1 --oid $OID2 --trend-days 30
+limacharlie cloudsec fleet overview --group prod --limit 100
 ```
+
+The `export` subgroup streams the **entire** filtered set as a CSV
+(server-side keyset walk, capped at 100,000 rows) — use it for offline
+analysis. It is distinct from the per-page `--output csv`, which serializes
+only the current page of a normal list command. `export findings`,
+`export inventory`, and `export compliance` take the same filters as their
+`finding list` / `inventory list` / `compliance report` counterparts;
+`export query` takes the same `--named` / `--text` / `--query-json`
+selectors as `query run`.
+
+`fleet overview` is the multi-org board for MSSPs: pass `--oid` repeatedly
+(or `--group` to select a saved fleet group) to roll risk posture up across
+tenants. It carries `--trend-days`, `--limit`, and `--cursor` for paging the
+tenant list, and is the one command that does not resolve a single `--oid`.
+
+!!! note "CLI is the query & triage surface"
+    Simulate/preview, policy-matcher autocomplete, Topology, Identity 360,
+    scheduled queries, and workload-group views are **console + REST-API**
+    features with no CLI command — the CLI covers reads, findings triage,
+    exports, and fleet roll-up. Provider and policy *records* are managed
+    with `limacharlie hive` (see [Configuration](configuration.md)).
 
 ## Filtering and pagination
 
