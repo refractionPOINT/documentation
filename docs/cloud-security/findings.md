@@ -10,6 +10,12 @@ findings worklist. CSPM misconfigurations, graph-derived attack paths, and
 identity (CIEM) risks are all findings with the same shape, the same triage
 verbs, and the same automation events.
 
+!!! info "In the console it's called **Risks**"
+    The worklist is the **Risks** page. Lens tabs slice it without losing the
+    unified ranking: *All risks*, *Public exposure & misconfig*, *Identity*,
+    *Workload*, *Vulnerabilities*, and *Data*. Everything below is the same
+    data through the CLI/API.
+
 ## The worklist
 
 Findings are ordered by `lc_risk` — a 0–1000 composite that weighs severity,
@@ -21,7 +27,7 @@ resource is sensitive. Each finding carries:
   same fingerprint across sweeps.
 - `finding_class` — one of `toxic_combination`, `public_exposure`,
   `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`,
-  `malware`, `secret`, `scan_finding`, `coverage_gap`.
+  `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`.
 - `severity` (`CRITICAL` … `INFO`), `lc_risk`, and a `risk_breakdown`
   explaining the score.
 - The affected resource (`resource_urn`, `resource_name`, `resource_type`,
@@ -33,6 +39,18 @@ resource is sensitive. Each finding carries:
   `epss`, `in_kev`.
 - Runtime context: `runtime_sids` — the LimaCharlie sensors running on the
   affected asset, when the fusion mapping resolves any.
+
+Attack-path and `toxic_combination` findings headline the durable **workload
+group** rather than a single ephemeral node: a GKE/EKS/AKS node pool, a GCE
+managed instance group, an AWS Auto Scaling group, or an Azure VM scale set.
+The group is carried on `source_scope` / `target_scope`, so remediation reads
+as one shared fix for the whole pool instead of one finding per short-lived VM.
+
+For identity (CIEM) findings, access is scored by the **capability** a grant
+confers — `data_admin` › `data_write` › `data_read` › `metadata` › `none` —
+not by the mere existence of the grant. "Reaches sensitive data" gates on
+`data_read`-or-higher; `metadata`/`none` grants surface as a lower-severity
+reconnaissance signal, not a top data-access risk.
 
 List, filter, and paginate server-side:
 
@@ -74,6 +92,25 @@ limacharlie cloudsec finding bulk-resolve \
   --finding-id fnd_0a1b... --finding-id fnd_2c3d... \
   --kind false_positive --reason "scanner artifact"
 ```
+
+The `bulk-resolve` route applies one disposition to many findings at once, but
+it does **not** accept `open` — reopen findings one at a time with
+`finding resolve <id> --kind open`.
+
+In the console, the same dispositions are one-click buttons on a finding, plus
+the workflow actions built on top of them:
+
+| Button | What it does |
+|---|---|
+| **Mark fixed** | disposition `mitigated` |
+| **Accept risk** | disposition `accepted`, with an optional re-surface expiry |
+| **Mute** | disposition `false_positive` |
+| **Reopen** | clears the disposition |
+| **Assign owner** | sets/clears `owner` |
+| **Link ticket** | sets/clears `ticket` |
+| **Create case** | one-click, idempotent — opens (or updates) the linked case |
+| **Create suppression rule** | opens a prefilled `suppression` policy rule |
+| **Create D&R rule** | opens a prefilled detection & response rule |
 
 Ownership and ticket linkage are separate, lighter-weight fields:
 
@@ -127,8 +164,34 @@ limacharlie cloudsec risk-trend --trend-days 90
 ## Findings are events too
 
 Every lifecycle transition emits an event into the organization's event
-stream: `cloud_finding.created`, `cloud_finding.closed`, and a daily
-`cloud_finding.still_open` for open findings with a linked ticket. D&R rules
-match them like any other event — see
-[Automation & IaC](automation.md#findings-cases-automation) for the
-ready-made Cases loop.
+stream, so D&R rules, Outputs, and the Cases loop consume findings like any
+other telemetry. Two families:
+
+**Detection-truth lifecycle** (emitted by the projector as the sweep observes
+the world):
+
+- `cloud_finding.created` — a new finding; the full finding object rides under
+  `event/finding` (including `runtime_sids`).
+- `cloud_finding.updated` — the content of an already-open finding materially
+  changed (a severity flip, a changed vuln set); payload names the
+  `changed` fields, `old_severity`/`new_severity`, and carries the current
+  `finding`.
+- `cloud_finding.closed` — the condition is gone; `{finding_id, fingerprint,
+  finding_class}`.
+- `cloud_finding.still_open` — re-asserted at most once per day for open
+  findings that carry a linked ticket, the heartbeat that keeps a Case honest
+  when the cloud was never actually fixed.
+
+**Operator-disposition verbs** (emitted by the write handlers, flat payload
+`{finding_id, fingerprint, finding_class, actor, note?}`):
+`cloud_finding.resolved`, `cloud_finding.dismissed`, `cloud_finding.reopened`,
+`cloud_finding.assigned`.
+
+**Summary:** on the first-ever projection (or a rebuild) the platform emits a
+single `cloudsec.sync_completed` (`{total, by_class, by_severity}`) instead of
+a per-finding `created` flood — first-sync suppression.
+
+See [Automation & IaC](automation.md#findings-cases-automation) for the
+ready-made Cases loop that keys on `fingerprint`, and the
+[`emission` policy](configuration.md#emission-the-event-feed) for the feed
+controls (severity floor, which families are on).
