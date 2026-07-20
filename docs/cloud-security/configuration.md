@@ -13,7 +13,7 @@ tenant onboarding and fleet-wide policy a script, not a UI workflow (see
 | Hive | Records | Purpose |
 |---|---|---|
 | `cloudsec_provider` | one per cloud / IdP / SaaS / AI connection | what to collect and with which credential |
-| `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, scanning, emission, exclusions, suppression, compliance assignments |
+| `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, emission, exclusions, suppression, compliance assignments |
 | `cloudsec_query` | one per saved query | shared saved graph queries |
 
 !!! info "Permissions"
@@ -181,21 +181,6 @@ compute resource is expected to be covered; `exempt` wins.
     hive record drives cloud-workload coverage findings; the CAASM policy drives
     `coverage_gap` findings over third-party assets.
 
-### `scanning` — agentless content scanning
-
-Names the YARA rules to run against snapshot-scanned workloads and the
-classification each match assigns, plus an optional resource `scope`:
-
-```json
-{
-  "policy_type": "scanning",
-  "scanning": {
-    "rules": [{"yara_rule": "hive://yara/crypto-miners", "classification": "malware"}],
-    "scope": [{"account_glob": ["proj-prod-*"]}]
-  }
-}
-```
-
 ### `emission` — the event feed
 
 Controls which Cloud Security events reach the organization's event stream:
@@ -204,7 +189,7 @@ Controls which Cloud Security events reach the organization's event stream:
 |---|---|---|
 | `resource_events` | `cloud_resource.*` inventory change events | off |
 | `finding_events` | `cloud_finding.*` lifecycle events | on |
-| `ops_events` | operational events (sweep/scan failures) | off |
+| `ops_events` | operational events (sweep failures) | off |
 | `severity_floor` | drop finding events below this severity | none |
 | `suppress_first_sync` | emit one summary instead of a per-finding flood on the first / rebuild sweep | on |
 
@@ -213,7 +198,7 @@ event taxonomy.
 
 ### `exclusions` — the escape hatch
 
-Excludes matching resources from `collection`, `scanning`, or `emission` (three
+Excludes matching resources from `collection` or `emission` (two
 independent rule lists; collection rules add `services` and `resource_types`
 matchers on top of the shared resource matchers). Use it for the million-object
 bucket that should not be enumerated, or the noisy account that should not emit

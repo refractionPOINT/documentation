@@ -13,7 +13,7 @@ verbs, and the same automation events.
 !!! info "In the console it's called **Risks**"
     The worklist is the **Risks** page. Lens tabs slice it without losing the
     unified ranking: *All risks*, *Public exposure & misconfig*, *Identity*,
-    *Workload*, *Vulnerabilities*, and *Data*. Everything below is the same
+    *Vulnerabilities*, and *Data*. Everything below is the same
     data through the CLI/API.
 
 ## The worklist
@@ -27,7 +27,7 @@ resource is sensitive. Each finding carries:
   same fingerprint across sweeps.
 - `finding_class` — one of `toxic_combination`, `public_exposure`,
   `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`,
-  `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`.
+  `coverage_gap`, `device_posture`.
 - `severity` (`CRITICAL` … `INFO`), `lc_risk`, and a `risk_breakdown`
   explaining the score.
 - The affected resource (`resource_urn`, `resource_name`, `resource_type`,

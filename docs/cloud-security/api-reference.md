@@ -132,7 +132,7 @@ carry the same shape) — key fields:
 | Field | Meaning |
 |---|---|
 | `finding_id`, `fingerprint` | Stable identity of the condition (`fnd_` + fingerprint prefix). |
-| `rule_id`, `finding_class`, `classification` | What detected it and its class — one of the 11 values: `toxic_combination`, `public_exposure`, `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`, `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`. |
+| `rule_id`, `finding_class`, `classification` | What detected it and its class — one of: `toxic_combination`, `public_exposure`, `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`, `coverage_gap`, `device_posture`. |
 | `severity`, `lc_risk`, `risk_breakdown` | `CRITICAL`–`INFO`, the 0–1000 composite, and its explanation. |
 | `title`, `resource_urn`, `resource_name`, `resource_type`, `account`, `region` | The affected resource. |
 | `related_urns`, `path`, `path_kind` | Related resources; the hop list for path findings and the kind of path it represents. |
