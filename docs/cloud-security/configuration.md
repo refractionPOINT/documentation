@@ -96,6 +96,32 @@ the same matcher grammar:
     (This is a change from earlier behavior, where dimensions within a rule were
     ORed. The `store_kind` matcher has been folded into `resource_type`.)
 
+#### Glob syntax
+
+Every glob dimension (`account_glob`, `name_glob`, `region`, and suppression
+`account` matchers) shares one dialect:
+
+| Pattern | Matches |
+|---|---|
+| `*` | any run of characters (not `/`) |
+| `?` | one character (not `/`) |
+| `[abc]`, `[a-z]` | a character class; `[^…]` or `[!…]` negates the class |
+| `{a,b}` | alternation — `proj-{prod,staging}-*` |
+| `**` | any run **including** `/` (only differs from `*` on values containing `/`) |
+| `\c` | the literal character `c` |
+
+A pattern whose **first character is `!` is a negation**: within one list the
+positive patterns OR together as before, and any matching negation **vetoes**
+the whole list. A list containing only negations matches everything it doesn't
+exclude — `account_glob: ["!legion-*"]` means "every account **without** the
+`legion-` prefix". `\!` matches a literal leading `!`. Case-insensitive
+dimensions stay case-insensitive under negation.
+
+```yaml
+account_glob: ["*-prod", "!legion-*"]   # every -prod account except legion ones
+region: ["!eu-*"]                        # everywhere outside the EU
+```
+
 Not every dimension is honored on every surface — `tag` is compute-only,
 `content_class`/`public`/`classes` apply to data stores, and the `exclusions`
 emission list honors only account/name/provider. The console's policy editors

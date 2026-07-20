@@ -76,7 +76,9 @@ limacharlie hive set --hive-name cloudsec_policy --key prod-cis \
 ```
 
 Scope matchers support `account_contains`, `account_glob`, `name_contains`,
-and `name_glob`; an empty scope means the whole estate.
+and `name_glob` (globs use the shared dialect, including leading-`!`
+negation — see [Glob syntax](configuration.md#glob-syntax)); an empty scope
+means the whole estate.
 
 List assignments (each with its own scoped score) and evaluate one:
 

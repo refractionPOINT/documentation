@@ -74,6 +74,9 @@ findings automatically — the "accept this known risk in the sandbox for 90
 days" mechanic. An operator's own disposition always wins; deleting a rule
 releases exactly its own findings on the next cycle; criticals are never
 auto-suppressed unless a rule's `max_severity` says `critical` explicitly.
+The `account` matcher takes globs, including leading-`!` negation —
+`"account": ["!prod-*"]` scopes a rule to every account **outside** `prod-*`
+(see [Glob syntax](configuration.md#glob-syntax)).
 
 ```json
 {
