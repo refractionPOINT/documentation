@@ -88,7 +88,7 @@ map onto the capabilities above:
 | **Topology** | An aggregated, explorable diagram of the estate. |
 | **Compliance** | Per-control framework assessment and scoped assignments. |
 | **Explore** | The interactive Security graph and the Query console. |
-| **Policies** | Data classification (crown jewels), workload scanning, coverage, asset coverage, exclusions, and suppression. |
+| **Policies** | Data classification (crown jewels), coverage, asset coverage, exclusions, and suppression. |
 | **Settings** | Provider connections and the Cases integration. |
 
 A separate cross-tenant **Cloud Security Fleet** board rolls risk up across every

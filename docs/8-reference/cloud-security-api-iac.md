@@ -63,7 +63,7 @@ multi-tenant policy management a script, not a UI workflow.
 | Hive | Record | Purpose |
 |---|---|---|
 | `cloudsec_provider` | one per connection | what to collect — one of thirteen connectors spanning cloud infra, identity/IdP, SaaS, AI, and LimaCharlie self-inventory (see [Providers](../cloud-security/providers.md) for the full list) |
-| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `scanning` (agentless YARA), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
+| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
 | `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
 
 ### Onboarding a tenant (recipe)
