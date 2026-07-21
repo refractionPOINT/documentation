@@ -1167,42 +1167,43 @@ limacharlie sensor task <SID> epp_list_exclusions
 
 ### epp_add_exclusion
 
-Add a path or process to EPP scan exclusions.
+Add a path, process or file extension to EPP scan exclusions.
 
 **Platforms:** Windows
 
 **Parameters:**
 
-- `file_path` (optional): File/directory path to exclude
-- `process` (optional): Process name to exclude
+- `value` (positional, required): Value of the exclusion to add (a file/directory path, a process name, or a file extension)
+- `--type` / `-t` (required): Type of exclusion. Options are: `extension`, `path`, `process`
 
 **Response Event:** EPP_ADD_EXCLUSION_REP
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> epp_add_exclusion --file_path "C:\\safe_app"
+limacharlie sensor task <SID> epp_add_exclusion "C:\\safe_app" --type path
+limacharlie sensor task <SID> epp_add_exclusion "safe_app.exe" --type process
 ```
 
 ---
 
 ### epp_rem_exclusion
 
-Remove a path or process from EPP scan exclusions.
+Remove a path, process or file extension from EPP scan exclusions.
 
 **Platforms:** Windows
 
 **Parameters:**
 
-- `file_path` (optional): File/directory path to remove from exclusions
-- `process` (optional): Process name to remove from exclusions
+- `value` (positional, required): Value of the exclusion to remove (a file/directory path, a process name, or a file extension)
+- `--type` / `-t` (required): Type of exclusion. Options are: `extension`, `path`, `process`
 
 **Response Event:** EPP_REM_EXCLUSION_REP
 
 **Usage Example:**
 
 ```bash
-limacharlie sensor task <SID> epp_rem_exclusion --file_path "C:\\safe_app"
+limacharlie sensor task <SID> epp_rem_exclusion "C:\\safe_app" --type path
 ```
 
 ---
