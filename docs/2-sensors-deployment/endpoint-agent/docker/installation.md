@@ -23,19 +23,35 @@ Additionally, on newer Linux kernel versions (5.7+), the agent leverages **eBPF*
 
 ## Agent Docker Image
 
-A publicly available Docker image for the LimaCharlie agent is hosted on [Docker Hub](https://hub.docker.com/r/refractionpoint/limacharlie_sensor):
+Build your own agent image so you get the latest agent version and control the base distribution:
 
-```bash
-docker pull refractionpoint/limacharlie_sensor:latest
+```dockerfile
+# Requires an LC_INSTALLATION_KEY environment variable at runtime
+# specifying the installation key value.
+FROM debian:12-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /lc
+
+# Fetch the latest official glibc x64 sensor at build time.
+RUN curl -fsSL https://downloads.limacharlie.io/sensor/linux/64 -o lc_sensor \
+    && chmod 500 ./lc_sensor
+
+# Where the host's root filesystem and network namespaces directory
+# are mounted within the container.
+ENV HOST_FS=/rootfs
+ENV NET_NS=/netns
+
+CMD ["./lc_sensor", "-d", "-"]
 ```
 
-### Image Flavors
+Rebuild the image regularly so new deployments pick up the latest agent version.
 
-Docker image is available in different flavors based on specific distributions:
-
-- `latest` - Default version based on CentOS Linux.
-- `alpine` - Based on Alpine Linux (smaller image size).
-- `centos` - Based on CentOS Linux.
+!!! warning "eBPF requires a glibc-based image"
+    Kernel-level telemetry on Linux is only available for **glibc-based x64 sensors** (Debian, Ubuntu, RHEL/Rocky, etc.). An Alpine (musl) based image using the `alpine64` sensor binary will always operate in usermode acquisition, without eBPF kernel visibility.
 
 ## Available Environment Variables
 
@@ -61,7 +77,7 @@ docker run --privileged --net=host \
   --env LC_INSTALLATION_KEY=<your_key> \
   --env HOST_FS=/rootfs \
   --env NET_NS=/netns \
-  refractionpoint/limacharlie_sensor:latest
+  your-registry.example.com/lc-sensor:your-tag
 ```
 
 Ensure that you replace `<your_key>` with your actual LimaCharlie installation key.
@@ -73,7 +89,7 @@ You can also manage the LimaCharlie agent using Docker Compose. Below is a sampl
 ```yaml
 services:
   lc-sensor:
-    image: refractionpoint/limacharlie_sensor:latest
+    image: your-registry.example.com/lc-sensor:your-tag
     restart: unless-stopped
     network_mode: "host"
     pid: "host"
@@ -107,25 +123,3 @@ docker-compose up -d
 ```
 
 This setup ensures the agent runs as a privileged container, enabling full visibility into the host system while being managed through Docker Compose.
-
-## Building a Custom Docker Image
-
-If you need to create a custom Docker image incorporating the LimaCharlie agent, you can use the following Dockerfile as a base:
-
-```python
-FROM alpine
-
-RUN mkdir /lc
-WORKDIR /lc
-
-RUN wget https://downloads.limacharlie.io/sensor/linux/alpine64 -O lc_sensor
-RUN chmod 500 ./lc_sensor
-
-CMD ["./lc_sensor", "-d", "-"]
-```
-
-Build the image using:
-
-```bash
-docker build -t my-lc-agent .
-```

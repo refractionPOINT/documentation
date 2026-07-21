@@ -9,12 +9,12 @@ This is accomplished by a combination of a few techniques:
 3. LC runs with the `NET_NS` environment variable pointing to the host's directory listing network namespaces.
 4. Running the container with the required flags and mounts to make sure it can have proper access.
 
-## Choosing the Container Image
+## Building the Container Image
+
+Build your own sensor image and push it to a registry your cluster nodes can pull from. Building the image yourself guarantees you get the latest sensor version and lets you control the base distribution.
 
 !!! warning "eBPF requires a glibc-based image"
     Kernel-level telemetry on Linux is delivered by an eBPF component that is only available for **glibc-based x64 sensors**. The `alpine64` (musl) sensor build does **not** receive the eBPF component and will always operate in usermode acquisition. If you want kernel-level visibility (real-time process, file, network and DNS events from eBPF), your container must use a glibc-based distribution (Debian, Ubuntu, RHEL/Rocky, etc.) with the `linux/64` sensor binary — do not use Alpine.
-
-A public glibc-based image is available on dockerhub as `refractionpoint/limacharlie_sensor:latest`. An Alpine-based variant exists as `refractionpoint/limacharlie_sensor:alpine` for environments where kernel telemetry is not needed.
 
 This is a sample `Dockerfile` for a glibc-based sensor container:
 
@@ -54,7 +54,7 @@ docker run --privileged --net=host \
   --env HOST_FS=/rootfs \
   --env NET_NS=/netns \
   --env LC_INSTALLATION_KEY=your_key \
-  refractionpoint/limacharlie_sensor:latest
+  your-registry.example.com/lc-sensor:your-tag
 ```
 
 Note that `/var/run/docker/netns` is specific to dockerd. On hosts using containerd with CNI (including most managed Kubernetes node images), the network namespaces directory is `/var/run/netns` instead.
@@ -115,7 +115,9 @@ spec:
         - operator: Exists
       containers:
         - name: lc-sensor
-          image: refractionpoint/limacharlie_sensor:latest
+          # The image you built from the Dockerfile above, pushed to a
+          # registry your nodes can pull from.
+          image: your-registry.example.com/lc-sensor:your-tag
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: true
