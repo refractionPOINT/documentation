@@ -65,8 +65,8 @@ you're looking at.
 
 Because it is backed by **server-side aggregates**, the counts on every node
 are exact at any scale — Topology never walks a capped page and then guesses.
-It is served by `GET /topology` (see [API Reference](api-reference.md)); there
-is no CLI command for it.
+It is served by `GET /topology` (see [API Reference](api-reference.md)) and by
+`limacharlie cloudsec topology` on the CLI.
 
 ## Graph queries
 
@@ -75,14 +75,30 @@ Ask questions of the whole graph. Three input forms, one endpoint:
 ```bash
 # A named query from the built-in query pack:
 limacharlie cloudsec query list
-limacharlie cloudsec query run --named public-buckets
+limacharlie cloudsec query run --named public_data_stores
 
-# Free-text:
-limacharlie cloudsec query run --text "public bucket with sensitive data"
+# The text form — a compact MATCH ... RETURN pattern:
+limacharlie cloudsec query run --text 'MATCH (d:DataStore {is_sensitive: true})<-[:has_permission_on]-(i:Identity {is_external: true}) RETURN i, d'
 
 # The raw query DSL:
 limacharlie cloudsec query run --query-json '{...}' --project a,b
 ```
+
+The text form is a compact graph-pattern grammar, not natural language:
+nodes are `(alias:Label {prop: value, ...})`, edges are `<-[:edge_name]-`
+(inbound to the previous node) or `-[:edge_name]->` (outbound), edge names
+use underscores, and the query ends with `RETURN alias, alias...`. Inline
+predicates are AND-ed equalities.
+
+The first node is the **anchor**, and every query must anchor on a
+*selective* set and traverse inward. Bounded node types (data stores,
+vulnerabilities, public endpoints, applications, accounts) anchor as-is;
+dense types (workloads, identities) must be narrowed by a selective
+predicate — `is_sensitive: true`, `is_public: true`, `is_external: true`,
+`in_kev: true`, or an exact `email` / `sid`. A query that fans out from the
+dense fabric is rejected by design: restructure it to start from the
+selective end (the sensitive store, the known-exploited vulnerability, the
+specific identity) and walk toward the dense side.
 
 Results are rows of alias → URN bindings; use
 `limacharlie cloudsec resource get <urn>` to hydrate any URN into its full
@@ -127,7 +143,8 @@ endpoints associated with that identity. Each reach edge carries its classified
 access level, so the whole effective blast radius is visible in one place. It
 is the console's Identity & Access → *(an identity)* drill-down, served by
 `GET /cloudsec/{oid}/ciem/identity?urn=<identity-urn>` (see
-[API Reference](api-reference.md)); there is no CLI command for it.
+[API Reference](api-reference.md)) and by
+`limacharlie cloudsec ciem identity "<identity-urn>"` on the CLI.
 
 ## Data security: DSPM facets
 
