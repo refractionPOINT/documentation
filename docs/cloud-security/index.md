@@ -115,6 +115,8 @@ organization you manage.
   your first sweep.
 - [Connecting Providers](providers.md) — the thirteen connectors, their
   credentials, and what each collects.
+- [Provider Setup](provider-setup.md) — per-provider onboarding: exact scopes,
+  credential-secret formats, and first-run troubleshooting.
 - [Findings & Triage](findings.md) — the worklist, finding classes,
   dispositions, chokepoints.
 - [Security Graph & Queries](graph.md) — attack paths, topology, graph

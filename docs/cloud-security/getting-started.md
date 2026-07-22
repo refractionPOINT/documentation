@@ -79,6 +79,9 @@ limacharlie hive set --hive-name cloudsec_provider --key acme-gcp \
 The full field reference is in
 [Configuration](configuration.md#cloudsec_provider), and every provider's scope
 fields and credential shape are in [Connecting Providers](providers.md).
+[Provider Setup](provider-setup.md) has per-provider onboarding walkthroughs
+(exact scopes, credential-secret formats, and first-run troubleshooting) for
+Google Workspace, Cloudflare, and AWS.
 
 !!! tip "internal_domains matters for CIEM"
     List every email domain your own people use. A human identity whose domain
