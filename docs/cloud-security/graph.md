@@ -25,7 +25,7 @@ Edges carry the relationship semantics:
 | `can_reach` | Network reachability between workloads |
 | `exposed_to` | Exposure to the internet / an external boundary |
 | `has_vulnerability` | Workload → CVE (with package and fix version) |
-| `has_permission_on` | Identity → resource (with role and effect) |
+| `has_permission_on` | Identity → resource; carries the classified **access level** (the capability the grant confers — `data_admin` › `data_write` › `data_read` › `metadata` › `none`), which is the edge verb the UI shows |
 | `can_assume` | Identity → identity (role assumption / impersonation) |
 | `is_member_of` | Identity → group / account membership |
 | `has_app_access` | Identity → application assignment (IdP surfaces) |
@@ -53,6 +53,21 @@ The result is an induced subgraph (`nodes` + `edges`), ranked so sensitive
 and public neighbors surface first, with `truncated` set when the node has
 more neighbors than the cap (hard cap 500).
 
+## Topology
+
+The interactive **Security graph** above (the Explore page canvas) is for
+traversal — expanding one hop at a time from a starting node. **Topology** is
+the other view: an aggregated, explorable diagram of the whole estate,
+laid out Provider → Account → Region → Resource. A node-type declutter filter
+hides the classes you don't care about, and the current view (filters,
+expansion) is captured in a shareable URL so a colleague opens exactly what
+you're looking at.
+
+Because it is backed by **server-side aggregates**, the counts on every node
+are exact at any scale — Topology never walks a capped page and then guesses.
+It is served by `GET /topology` (see [API Reference](api-reference.md)) and by
+`limacharlie cloudsec topology` on the CLI.
+
 ## Graph queries
 
 Ask questions of the whole graph. Three input forms, one endpoint:
@@ -60,14 +75,30 @@ Ask questions of the whole graph. Three input forms, one endpoint:
 ```bash
 # A named query from the built-in query pack:
 limacharlie cloudsec query list
-limacharlie cloudsec query run --named public-buckets
+limacharlie cloudsec query run --named public_data_stores
 
-# Free-text:
-limacharlie cloudsec query run --text "public bucket with sensitive data"
+# The text form — a compact MATCH ... RETURN pattern:
+limacharlie cloudsec query run --text 'MATCH (d:DataStore {is_sensitive: true})<-[:has_permission_on]-(i:Identity {is_external: true}) RETURN i, d'
 
 # The raw query DSL:
 limacharlie cloudsec query run --query-json '{...}' --project a,b
 ```
+
+The text form is a compact graph-pattern grammar, not natural language:
+nodes are `(alias:Label {prop: value, ...})`, edges are `<-[:edge_name]-`
+(inbound to the previous node) or `-[:edge_name]->` (outbound), edge names
+use underscores, and the query ends with `RETURN alias, alias...`. Inline
+predicates are AND-ed equalities.
+
+The first node is the **anchor**, and every query must anchor on a
+*selective* set and traverse inward. Bounded node types (data stores,
+vulnerabilities, public endpoints, applications, accounts) anchor as-is;
+dense types (workloads, identities) must be narrowed by a selective
+predicate — `is_sensitive: true`, `is_public: true`, `is_external: true`,
+`in_kev: true`, or an exact `email` / `sid`. A query that fans out from the
+dense fabric is rejected by design: restructure it to start from the
+selective end (the sensitive store, the known-exploited vulnerability, the
+specific identity) and walk toward the dense side.
 
 Results are rows of alias → URN bindings; use
 `limacharlie cloudsec resource get <urn>` to hydrate any URN into its full
@@ -80,7 +111,8 @@ versioned, and IaC-manageable (see
 
 ## Identity: CIEM views
 
-Two dedicated identity reads sit on top of the graph:
+The console calls this area **Identity & Access**. Two dedicated identity
+reads sit on top of the graph:
 
 ```bash
 # Public / external access to sensitive resources — the headline CIEM view.
@@ -90,10 +122,29 @@ limacharlie cloudsec ciem public-access
 limacharlie cloudsec ciem facets
 ```
 
+Access is scored by the **capability** a grant confers, not the mere existence
+of a grant: the effective action set is classified to an access level —
+`data_admin` › `data_write` › `data_read` › `metadata` › `none`. "Reaches
+sensitive data" gates on `data_read`-or-higher; `metadata`/`none` grants are a
+lower-severity reconnaissance signal rather than a top data-access risk. That
+level is stamped on the `has_permission_on` edge and is the verb the UI shows.
+
 Identity findings (dormant privileged identities, escalation edges, unused
 privileges) surface in the main worklist under the `ciem_risk` and
 `privilege_escalation` classes. External-vs-internal classification is
 driven by the provider record's `internal_domains` — keep it complete.
+
+### Identity 360
+
+For a single identity, **Identity 360** is the one-screen view of everything
+it can reach — direct grants, group-inherited permissions, identities it can
+assume, and application assignments — plus a **devices** lane pulling in the
+endpoints associated with that identity. Each reach edge carries its classified
+access level, so the whole effective blast radius is visible in one place. It
+is the console's Identity & Access → *(an identity)* drill-down, served by
+`GET /cloudsec/{oid}/ciem/identity?urn=<identity-urn>` (see
+[API Reference](api-reference.md)) and by
+`limacharlie cloudsec ciem identity "<identity-urn>"` on the CLI.
 
 ## Data security: DSPM facets
 
@@ -103,18 +154,28 @@ limacharlie cloudsec data-security facets
 
 Returns the data-store posture rollup: total stores, sensitive, public, and
 public-*and*-sensitive counts, plus store-kind / sensitivity / exposure
-histograms. Sensitivity is your declaration (the `classification` policy)
-optionally augmented by content-based auto-classification — see
-[Getting Started](getting-started.md#5-declare-what-matters).
+histograms. Sensitivity is your declaration: `classification`-policy
+`content_class` and name/`resource_type` rules decide what counts as sensitive
+(the retired `auto_classify` boolean is gone). The agentless scanner still
+detects content classes and surfaces them as facts on a resource, but only a
+matching `content_class` rule turns a detection into a sensitivity claim — see
+[Configuration](configuration.md#classification-crown-jewels).
 
 ## Inventory
 
-The system-of-record behind the graph is queryable directly:
+The system-of-record behind the graph is queryable directly, filtered by
+`--type`, `--provider`, `--account`, `--region`, and free-text `-q`:
 
 ```bash
-limacharlie cloudsec inventory list --type <resource-type> --region us-central1 -q prod
+limacharlie cloudsec inventory list \
+  --type <resource-type> --provider gcp --region us-central1 -q prod
 limacharlie cloudsec inventory facets
 ```
+
+This is the first-party cloud inventory. **Third-party (CAASM) assets** — the
+entity-resolved devices and identities merged from EDR, IdP, MDM, and scanner
+sources — live in their own inventory tab and have their own reads; see
+[CAASM](caasm.md).
 
 ## Sensors ↔ cloud assets
 

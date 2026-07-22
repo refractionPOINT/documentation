@@ -5,16 +5,17 @@
     configuration formats described here may change before general
     availability. Contact us if you would like access.
 
-This page takes an organization from zero to a populated Cloud Security
-dashboard: subscribe the extension, store a credential, connect a provider,
-and run the first sweep.
+This guide takes an organization from zero to a populated Cloud Security
+dashboard: enable the product, connect a provider, run the first sweep, and
+declare what matters. You can do all of it in the console or entirely as code —
+both are shown.
 
-## 1. Subscribe the extension
+## 1. Enable Cloud Security
 
 Cloud Security is enabled per organization by subscribing to the
-`ext-cloud-security` extension — the subscription is both the enable gate
-and the billing hook. In the web console, open the extension from the
-Add-Ons marketplace and click **Subscribe**, or from the CLI:
+`ext-cloud-security` extension — the subscription is both the enable gate and
+the billing hook. In the web console, open the extension from the Add-Ons
+marketplace and click **Subscribe**, or from the CLI:
 
 ```bash
 limacharlie extension subscribe --name ext-cloud-security --oid $OID
@@ -23,45 +24,45 @@ limacharlie extension subscribe --name ext-cloud-security --oid $OID
 Until the organization is subscribed, every Cloud Security API route and
 console view returns `403`.
 
-## 2. Store the provider credential as a secret
+Once enabled, **Cloud Security** appears as a workspace in the organization
+sidebar.
 
-Collector credentials are never stored inline in the provider record — the
-record references a [secret](../7-administration/config-hive/secrets.md) by
-`hive://secret/<name>`:
+## 2. Connect a provider
+
+A provider connection is one `cloudsec_provider` record. Each provider needs a
+scope (which account/tenant/org to enumerate) and a read-only credential. The
+[Connecting Providers](providers.md) page has the full per-provider setup — the
+steps below use Google Cloud as the worked example.
+
+### In the console
+
+1. Open **Cloud Security → Settings → Providers** and click **+ Add provider**.
+2. Give the connection a **name**, pick the **provider type**, and fill the
+   type-specific connection fields (for GCP, the scope — a project, folder, or
+   organization).
+3. Supply the **credential**: either reference an existing
+   [secret](../7-administration/config-hive/secrets.md) by
+   `hive://secret/<name>`, or paste the credential to have the console store it
+   as a new secret for you. Credentials are always stored as a secret and
+   referenced — never inlined into the provider record.
+4. Click **Test Provider** to run the read-only preflight (see below), then
+   save. Saving an enabled connection starts collection.
+
+The provider row then shows its sync status, resource count, and per-row actions
+(**What you get**, **Sync now**, **Edit**, **Delete**).
+
+### As code
+
+The credential lives in the secret Hive; the provider record references it:
 
 ```bash
+# Store the collector credential as a secret (hive set reads the record
+# data from --input-file or piped stdin).
 echo '{"secret": "<service-account-key-json>"}' | \
   limacharlie hive set --hive-name secret --key gcp-collector-sa \
     --oid $OID --enabled
-```
 
-(`hive set` reads the record data from `--input-file` or piped stdin.)
-
-What the credential must be able to do depends on the provider — the
-credential test in the next step tells you exactly which permission surfaces
-are missing.
-
-## 3. Connect a provider
-
-A provider connection is one `cloudsec_provider` Hive record. The full field
-reference is in [Configuration](configuration.md#cloudsec_provider), and
-[Provider Setup](provider-setup.md) has per-provider onboarding walkthroughs
-(exact scopes, credential-secret formats, troubleshooting) for Google
-Workspace, Cloudflare, and AWS. The short version per provider:
-
-| Provider | `provider_type` | Scope fields |
-|---|---|---|
-| Google Cloud | `gcp` | `gcp_scope` (`projects/{id}`, `folders/{id}`, or `organizations/{id}`) |
-| AWS | `aws` | `aws_role_arn` + `aws_external_id`, optional `aws_regions`, optional `aws_member_role_name` for AWS Organizations |
-| Azure | `azure` | `azure_tenant_id`, `azure_client_id`, `azure_subscription_id` |
-| Okta | `okta` | `okta_org_url` (e.g. `https://acme.okta.com`) |
-| Google Workspace | `google_workspace` | `workspace_customer_id` (`my_customer` or an explicit id) |
-| 1Password | `1password` | `onepassword_scim_url` |
-| Cloudflare | `cloudflare` | `cloudflare_account_id` |
-
-Example — a GCP organization:
-
-```bash
+# Connect the provider.
 cat > provider.json <<EOF
 {
   "provider_type": "gcp",
@@ -75,17 +76,25 @@ limacharlie hive set --hive-name cloudsec_provider --key acme-gcp \
   --oid $OID --input-file provider.json --enabled
 ```
 
+The full field reference is in
+[Configuration](configuration.md#cloudsec_provider), and every provider's scope
+fields and credential shape are in [Connecting Providers](providers.md).
+[Provider Setup](provider-setup.md) has per-provider onboarding walkthroughs
+(exact scopes, credential-secret formats, and first-run troubleshooting) for
+Google Workspace, Cloudflare, and AWS.
+
 !!! tip "internal_domains matters for CIEM"
-    List every email domain your own people use. A human identity whose
-    domain is not in the internal set is classified *external*, and external
-    access to sensitive resources is one of the highest-signal finding
-    classes. The collector discovers the primary cloud-org domain on its
-    own; secondary domains must be declared.
+    List every email domain your own people use. A human identity whose domain
+    is not in the internal set is classified *external*, and external access to
+    sensitive resources is one of the highest-signal finding classes. The
+    collector discovers the primary cloud-org domain on its own; secondary
+    domains must be declared.
 
 ### Test the credential before saving
 
 The provider test connects with the supplied credential and probes every
-permission surface a sweep needs, without storing anything:
+permission surface a sweep needs, without storing anything — the same check the
+console's **Test Provider** button runs:
 
 ```bash
 limacharlie cloudsec provider test --input-file provider.json
@@ -103,7 +112,7 @@ connection failing.
     may be passed inline instead of as a `hive://secret/` reference; it is
     used ephemerally and never stored or logged.
 
-## 4. Watch the first sweep
+## 3. Watch the first sweep
 
 Saving an enabled provider record starts collection. Check progress:
 
@@ -112,15 +121,17 @@ limacharlie cloudsec scan-status --provider gcp
 ```
 
 The status carries whether a sweep is running, when the last one started and
-completed, the diff stats of the last run, and any error. To force an
-immediate re-enumeration later, change the record's `sync_now` value (any
-new value triggers a sweep); `refresh` sets the periodic cadence.
+completed, the diff stats of the last run, and any error. To force an immediate
+re-enumeration later, change the record's `sync_now` value (any new value
+triggers a sweep) or use **Sync now** on the provider row; `refresh` sets the
+periodic cadence.
 
-## 5. Declare what matters
+## 4. Declare what matters
 
 Out of the box, **nothing is classified sensitive** — sensitivity is your
-declaration, made with a `classification`-typed `cloudsec_policy` record
-(crown jewels), optionally augmented by content-based auto-classification:
+declaration, made with a `classification`-typed `cloudsec_policy` record (your
+crown jewels). Rules match resources by account, name, resource type, label, or
+tag and assign classes:
 
 ```bash
 cat > classification.json <<EOF
@@ -129,8 +140,7 @@ cat > classification.json <<EOF
   "classification": {
     "data_stores": [
       {"name_contains": ["customer", "pii"], "classes": ["pii"]}
-    ],
-    "auto_classify": true
+    ]
   }
 }
 EOF
@@ -139,11 +149,28 @@ limacharlie hive set --hive-name cloudsec_policy --key classification \
   --oid $OID --input-file classification.json --enabled
 ```
 
-Sensitivity drives the attack-path and CIEM analytics: "exposed workload
-that can reach *sensitive* data" and "external identity with access to
-*sensitive* store" both need to know what sensitive means in your estate.
+Sensitivity drives the attack-path and CIEM analytics: "exposed workload that
+can reach *sensitive* data" and "external identity with access to *sensitive*
+store" both need to know what sensitive means in your estate.
 
-## 6. Look at the result
+!!! tip "Content-based classification"
+    Beyond declaring crown jewels by name/label, you can add `content_class`
+    rules so that data stores where the agentless scanner samples sensitive
+    content (`pii`, `pci`, `phi`, `financial`) are treated as sensitive. Detected
+    content classes are always surfaced as facts on a resource; a `content_class`
+    rule is what turns a detection into a sensitivity claim. See
+    [Configuration](configuration.md#classification-crown-jewels). (The former
+    `auto_classify` boolean has been replaced by these explicit, previewable
+    rules.)
+
+In the console, the same policy is authored on **Cloud Security → Policies →
+Data classification**, where a live **Simulate** panel shows exactly which
+resources a rule matches before you save it.
+
+## 5. Look at the result
+
+In the console, the **Overview** page is the at-a-glance risk layer and
+**Risks** is the worklist. From the CLI:
 
 ```bash
 # The composed risk overview: score, severity distribution, top paths.
@@ -157,5 +184,6 @@ limacharlie cloudsec inventory facets
 ```
 
 From here, continue with [Findings & Triage](findings.md) for the day-to-day
-workflow, or [Automation & IaC](automation.md) to wire findings into Cases
-and onboard more tenants as code.
+workflow, [Connecting Providers](providers.md) to add more of your estate, or
+[Automation & IaC](automation.md) to wire findings into Cases and onboard more
+tenants as code.

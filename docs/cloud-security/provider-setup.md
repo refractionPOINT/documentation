@@ -11,7 +11,7 @@ permissions** each provider needs, the **credential-secret format** for each,
 and the **first-run failures** and how to fix them.
 
 It assumes the organization is already subscribed to the `ext-cloud-security`
-extension (step 1 of [Getting Started](getting-started.md#1-subscribe-the-extension)).
+extension (step 1 of [Getting Started](getting-started.md#1-enable-cloud-security)).
 
 ## The common model
 
@@ -391,6 +391,6 @@ provider record as `hive://secret/<name>`.
 | **Cloudflare** | `{"api_token": "..."}` |
 | **AWS** | `{"access_key_id": "...", "secret_access_key": "..."}` *(optional `session_token`)* |
 
-For GCP, see [Getting Started](getting-started.md#2-store-the-provider-credential-as-a-secret).
+For GCP, see [Getting Started](getting-started.md#as-code).
 Field-level details for every provider type — including Okta, Azure, and
 1Password — are in [Configuration](configuration.md#cloudsec_provider).

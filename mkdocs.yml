@@ -577,6 +577,7 @@ nav:
   - Cloud Security:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
+      - Connecting Providers: cloud-security/providers.md
       - Provider Setup: cloud-security/provider-setup.md
       - Findings & Triage: cloud-security/findings.md
       - Security Graph & Queries: cloud-security/graph.md

@@ -28,10 +28,12 @@ limacharlie cloudsec overview --trend-days 90
 limacharlie cloudsec changes --limit 100
 limacharlie cloudsec risk-trend
 limacharlie cloudsec scan-status --provider gcp
+limacharlie cloudsec topology
 
 # Findings worklist + triage
 limacharlie cloudsec finding list --severity CRITICAL --class toxic_combination --kev
 limacharlie cloudsec finding facets --status open
+limacharlie cloudsec finding classes                      # the finding_class enum
 limacharlie cloudsec finding get fnd_0a1b...
 limacharlie cloudsec finding resolve fnd_0a1b... --kind mitigated --reason "SG tightened"
 limacharlie cloudsec finding resolve fnd_0a1b... --kind open          # reopen
@@ -48,16 +50,17 @@ limacharlie cloudsec chokepoint restore "lcrn:..."
 # Identity & data
 limacharlie cloudsec ciem public-access
 limacharlie cloudsec ciem facets
+limacharlie cloudsec ciem identity "lcrn:..."             # Identity 360
 limacharlie cloudsec data-security facets
 
 # Inventory & graph
-limacharlie cloudsec inventory list --type <resource-type> -q prod --limit 50
+limacharlie cloudsec inventory list --type <resource-type> --provider gcp -q prod --limit 50
 limacharlie cloudsec inventory facets
 limacharlie cloudsec resource get "lcrn:..."
 limacharlie cloudsec graph neighbors "lcrn:..." --limit 200
 limacharlie cloudsec query list
-limacharlie cloudsec query run --named public-buckets
-limacharlie cloudsec query run --text "public bucket with sensitive data"
+limacharlie cloudsec query run --named public_data_stores
+limacharlie cloudsec query run --text 'MATCH (d:DataStore {is_sensitive: true})<-[:has_permission_on]-(i:Identity {is_external: true}) RETURN i, d'
 
 # Compliance
 limacharlie cloudsec compliance report --framework cis-gcp
@@ -76,9 +79,48 @@ limacharlie cloudsec caasm policy get
 limacharlie cloudsec caasm policy set --input-file coverage.json
 limacharlie cloudsec caasm ingest --source okta --records-file users.json
 
-# Provider preflight
+# Provider preflight + coverage manifest
 limacharlie cloudsec provider test --input-file provider.json
+limacharlie cloudsec provider manifest --type gcp        # "what you get" for a provider
+
+# Policy authoring aids + read-only matcher previews
+limacharlie cloudsec policy vocabulary
+limacharlie cloudsec policy suggest --dimension name -q prod
+limacharlie cloudsec simulate resources --input-file rules.json --target data_store
+limacharlie cloudsec simulate findings --input-file match.json
+
+# Full-set CSV export (server-side walk of the entire filtered set)
+limacharlie cloudsec export findings -o findings.csv
+limacharlie cloudsec export inventory -o inventory.csv
+limacharlie cloudsec export compliance --framework cis-gcp -o compliance.csv
+limacharlie cloudsec export query --named public_data_stores -o data-stores.csv
+
+# Fleet — cross-tenant (MSSP) roll-up, no single --oid
+limacharlie cloudsec fleet overview --oid $OID1 --oid $OID2 --trend-days 30
+limacharlie cloudsec fleet overview --group prod --limit 100
 ```
+
+The `export` subgroup streams the **entire** filtered set as a CSV
+(server-side keyset walk, capped at 100,000 rows) — use it for offline
+analysis. It is distinct from the per-page `--output csv`, which serializes
+only the current page of a normal list command. `export findings`,
+`export inventory`, and `export compliance` take the same filters as their
+`finding list` / `inventory list` / `compliance report` counterparts;
+`export query` takes the same `--named` / `--text` / `--query-json`
+selectors as `query run`.
+
+`fleet overview` is the multi-org board for MSSPs: pass `--oid` repeatedly
+(or `--group` to select a saved fleet group) to roll risk posture up across
+tenants. It carries `--trend-days`, `--limit`, and `--cursor` for paging the
+tenant list, and is the one command that does not resolve a single `--oid`.
+
+!!! note "CLI is the query & triage surface"
+    Scheduled queries and workload-group views are **console + REST-API**
+    features with no CLI command — everything else (reads, findings triage,
+    graph queries, Topology, Identity 360, policy simulation and
+    autocomplete, exports, and fleet roll-up) is covered. Provider and
+    policy *records* are managed with `limacharlie hive` (see
+    [Configuration](configuration.md)).
 
 ## Filtering and pagination
 

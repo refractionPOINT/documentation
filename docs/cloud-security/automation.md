@@ -60,6 +60,13 @@ for OID in $(cat tenant-oids.txt); do
 done
 ```
 
+!!! tip "Fleet-wide roll-up"
+    Beyond pushing policy to N orgs, the cross-tenant fleet board rolls risk
+    up across every org you manage — `limacharlie cloudsec fleet overview`
+    (see the [CLI](cli.md)), the multi-org `fleet/overview` route (see the
+    [API Reference](api-reference.md)), and the console's Cloud Security Fleet
+    view. It's the MSSP read half of the same fleet story.
+
 ## Suppression rules (finding disposition policy)
 
 A `suppression`-typed `cloudsec_policy` record dispositions matching
@@ -67,6 +74,9 @@ findings automatically — the "accept this known risk in the sandbox for 90
 days" mechanic. An operator's own disposition always wins; deleting a rule
 releases exactly its own findings on the next cycle; criticals are never
 auto-suppressed unless a rule's `max_severity` says `critical` explicitly.
+The `account` matcher takes globs, including leading-`!` negation —
+`"account": ["!prod-*"]` scopes a rule to every account **outside** `prod-*`
+(see [Glob syntax](configuration.md#glob-syntax)).
 
 ```json
 {
@@ -126,7 +136,9 @@ ids — the auditor-facing evidence export.
 !!! note "CLI `--output csv` is per-page"
     The CLI's global `--output csv` formats the rows the command returned —
     one page. For a full-estate export use the `?format=csv` server-side
-    walk above.
+    walk above, or the `limacharlie cloudsec export` subgroup
+    (`export findings|inventory|compliance|query [-o file]`), which drives the
+    same server-side full-set walk and writes the CSV to a file.
 
 ## Findings ↔ Cases automation
 
@@ -198,6 +210,28 @@ the finding fingerprint), so the rules never need a case number; a finding
 with no linked case is a no-op. Cases never close findings — findings are
 detection truth and close when the sweep confirms the fix (or via
 operator/policy disposition).
+
+!!! info "More lifecycle events for richer automation"
+    The `created` / `closed` / `still_open` verbs above are the Cases loop,
+    but D&R rules can key off more of the finding lifecycle:
+
+    - `cloud_finding.updated` — an **open** finding's content materially
+      changed (a severity flip or a change to its vuln set) without re-firing
+      on every sweep. Payload carries `changed[]` (the fields that moved),
+      `old_severity`, `new_severity`, and the full `finding` — the hook for
+      reacting to escalation (e.g. re-notify only when a finding crosses into
+      CRITICAL).
+    - `cloud_finding.resolved` / `.dismissed` / `.reopened` / `.assigned` —
+      the operator-disposition verbs, flat payload with an `actor` field, for
+      auditing human triage decisions (who accepted/muted/reopened what).
+    - `cloudsec.sync_completed` — the first-sync summary
+      (`{total, by_class, by_severity}`) emitted once instead of a
+      per-finding `created` flood, so onboarding a large estate is one event,
+      not thousands.
+    - `cloud_resource.created` / `.updated` / `.deleted` — inventory-level
+      change events, gated by the [`emission`
+      policy](configuration.md#emission-the-event-feed)'s `resource_events`
+      flag (**off by default**).
 
 **Non-Cases shops:** route the same `cloud_finding.*` events to
 Jira/ServiceNow via an Output and key your tickets on `fingerprint` the same
