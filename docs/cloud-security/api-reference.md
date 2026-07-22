@@ -111,12 +111,13 @@ curl -X POST -H "Authorization: Bearer $JWT" -H "Content-Type: application/json"
 
 These `POST` routes back the console's policy-authoring aids (matcher
 preview and value autocomplete). They never mutate state, so they require
-only `cloudsec.get`. There is **no CLI command** for them — they are
-console + REST-API only.
+only `cloudsec.get`. On the CLI they are `limacharlie cloudsec simulate
+resources` / `simulate findings`, `limacharlie cloudsec policy suggest`,
+and `limacharlie cloudsec policy vocabulary`.
 
 | Route | Body | Returns |
 |---|---|---|
-| `POST /simulate/resources` | `{rules, target, resource_types?, sample_limit?}` — `rules` is a list of matcher rules, `target` names the surface (e.g. `data_stores`, `compute`, `identities`). | `{evaluated, matched, indeterminate, truncated, sample}` — preview a classification / coverage / exclusion matcher against stored inventory. |
+| `POST /simulate/resources` | `{rules, target, resource_types?, sample_limit?}` — `rules` is a list of matcher rules, `target` scopes the walked surface (`data_store`, `compute`, `identity`, or `any` — the default). | `{evaluated, matched, indeterminate, truncated, sample}` — preview a classification / coverage / exclusion matcher against stored inventory. |
 | `POST /simulate/findings` | `{match, sample_limit?}` — a suppression matcher. | `{evaluated, matched, indeterminate, truncated, sample}` — preview it against currently-open findings. |
 | `POST /policy/suggest` | `{dimension, q, target, limit?}` — `dimension` is `name` or `account`. | `{suggestions}` — live matcher-value autocomplete drawn from the tenant estate. |
 

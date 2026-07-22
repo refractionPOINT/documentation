@@ -243,7 +243,8 @@ events) is an emerging capability.
 ## Previewing policies
 
 Two read-only, `cloudsec.get`-gated aids make policy authoring safe — both are
-in the console policy editors and on the API (there is no CLI command for them):
+in the console policy editors, on the API, and on the CLI
+(`limacharlie cloudsec simulate` / `limacharlie cloudsec policy`):
 
 - **Simulate** evaluates an in-progress matcher against your real data before you
   save. A resource matcher (classification / coverage / exclusions) is previewed
