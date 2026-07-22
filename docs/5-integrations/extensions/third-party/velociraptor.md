@@ -59,6 +59,39 @@ Once you see `artifact_uploaded` in the timeline, you can expect to find the art
 
 ![velociraptor ext 5](../../../assets/images/velociraptor-ext-5.png)
 
+## Correlating a Collection (`job_id` to Artifact)
+
+The `collect` action returns a `job_id`, for example:
+
+```json
+{
+  "data": {
+    "job_id": "bf24a49c-96e5-4c20-98a4-77f33bb7ce34",
+    "n_sensors": 1
+  }
+}
+```
+
+This `job_id` is the extension's correlation key for the collection request. It is **not** a payload or artifact ID. The collected data is ingested as a LimaCharlie **Artifact**, which has its own artifact ID. There are two ways to map one to the other.
+
+### 1. Webhook events (recommended for automation)
+
+With an `ext-velociraptor` webhook output configured, the extension emits a lifecycle of events as a collection progresses, all carrying the `job_id`:
+
+| Event | Key fields | When |
+|-------|------------|------|
+| `job_created` | `job_id`, `sids`, `request`, `inv_id` | Request accepted and tasks sent to sensors |
+| `artifact_generated` / `artifact_timeout` / `artifact_failed` | `job_id`, `sid` | Collection produced on the endpoint (or timed out / failed) |
+| `artifact_uploaded` / `upload_generated` | `job_id`, `sid` | Collection ZIP uploaded to the platform |
+| `velociraptor_collection` | `job_id`, `sid`, `collection`, `collection_artifact`, `inv_id` | Collection ingested and parsed |
+| `job_finished` | `job_id` | All taskings for the job are complete |
+
+The `collection_artifact` field in the `velociraptor_collection` event is the LimaCharlie **artifact ID** for that `job_id`. This is the definitive `job_id` to artifact mapping.
+
+### 2. Artifact `original_path`
+
+The ingested collection ZIP is named so that its path ends in `_<job_id>.zip`. In the Artifact Collection — or in a D&R rule via `{{ .event.original_path }}` — you can match or filter artifacts by their `job_id`.
+
 ## Automating Collection Retrieval
 
 Let's say you wanted to automatically fetch new Velociraptor collections and send somewhere else for storage/processing. This can be accomplished via  rules which watch for the artifact upload and send to a tailored output.
