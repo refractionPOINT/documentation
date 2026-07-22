@@ -80,6 +80,8 @@ onboarded and governed as code.
 
 - [Getting Started](getting-started.md) — subscribe, connect a provider, run
   your first sweep.
+- [Provider Setup](provider-setup.md) — per-provider onboarding: exact scopes,
+  credential-secret formats, and first-run troubleshooting.
 - [Findings & Triage](findings.md) — the worklist, finding classes,
   dispositions, chokepoints.
 - [Security Graph & Queries](graph.md) — attack paths, graph queries, CIEM,

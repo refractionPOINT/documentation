@@ -44,8 +44,10 @@ are missing.
 ## 3. Connect a provider
 
 A provider connection is one `cloudsec_provider` Hive record. The full field
-reference is in [Configuration](configuration.md#cloudsec_provider); the
-short version per provider:
+reference is in [Configuration](configuration.md#cloudsec_provider), and
+[Provider Setup](provider-setup.md) has per-provider onboarding walkthroughs
+(exact scopes, credential-secret formats, troubleshooting) for Google
+Workspace, Cloudflare, and AWS. The short version per provider:
 
 | Provider | `provider_type` | Scope fields |
 |---|---|---|
