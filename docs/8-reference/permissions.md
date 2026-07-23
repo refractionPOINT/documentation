@@ -163,6 +163,16 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | playbook.get.mtd | View playbook metadata only |
 | playbook.set.mtd | Modify playbook metadata only |
 
+### SOPs
+
+| Permission | Description |
+| --- | --- |
+| sop.get | Access Standard Operating Procedures |
+| sop.set | Create and modify SOPs |
+| sop.del | Delete SOPs |
+| sop.get.mtd | View SOP metadata only |
+| sop.set.mtd | Modify SOP metadata only |
+
 ### Apps
 
 | Permission | Description |
