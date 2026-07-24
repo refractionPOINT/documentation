@@ -74,8 +74,15 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | `osconfig_vuln` |
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
-| `roles/aiplatform.viewer` | Vertex AI endpoint, model, and notebook inventory *(already covered by `roles/viewer`)* | `vertex_ai` |
+| `roles/aiplatform.viewer` | Vertex AI endpoint, model, and notebook inventory | `vertex_ai` |
 | `roles/cloudidentity.groups.readonly` | Google-group **membership expansion**, so `group:` IAM bindings resolve to real people | `cloud_identity` |
+
+!!! note "Recommender needs only the list permission"
+    Google's own walkthrough for *reviewing* role recommendations in the
+    console also asks for `roles/iam.roleViewer` and a resource IAM-admin role.
+    Those cover applying recommendations interactively; this connector only
+    **lists** them, and the `roles/viewer` baseline already covers the
+    role-metadata reads.
 
 !!! note "Cloud Identity groups are granted elsewhere"
     `roles/cloudidentity.groups.readonly` (or the **Groups Reader** role) is

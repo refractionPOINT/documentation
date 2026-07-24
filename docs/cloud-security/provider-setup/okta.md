@@ -74,10 +74,11 @@ Optional scopes, requested only when you list them explicitly (see
     token_endpoint_auth_method"*. Use **Public key / Private key**.
 
 !!! info "DPoP is handled for you"
-    Okta locks sender-constrained tokens (DPoP) on for newly created API
-    Services apps — the toggle is visible but not editable. This is not a
-    misconfiguration and needs no credential field: the collector detects the
-    requirement and switches to DPoP automatically.
+    On newly created API Services apps you may find the sender-constrained
+    tokens (**DPoP**) toggle switched on and not editable. This is not a
+    misconfiguration and needs no credential field: when the token endpoint
+    requires DPoP, the collector detects it and switches to DPoP
+    automatically.
 
 ## Create the credentials secret
 

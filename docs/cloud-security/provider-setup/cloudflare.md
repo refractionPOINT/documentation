@@ -10,8 +10,18 @@ ID**. No infrastructure to stand up.
 
 ## Create the API token
 
-**Cloudflare dashboard → My Profile → API Tokens → Create Token → Create
+Cloudflare has two kinds of token, created in two different places. Use an
+**Account API token** — it is owned by the account rather than by a person, so
+it survives that person leaving:
+
+**Cloudflare dashboard → Manage Account → API Tokens → Create Token → Create
 Custom Token.**
+
+!!! note "User tokens live elsewhere"
+    Tokens created under **My Profile → API Tokens** are *user*-owned. One
+    scoped to the account also works for the surfaces below, but it is tied to
+    an individual. A user token is only strictly needed for the optional
+    [account-members and API-token surfaces](#optional-account-members-and-api-tokens).
 
 **Minimum permissions** (the required checks — authenticate plus the
 zones/DNS inventory):
@@ -24,10 +34,10 @@ zones/DNS inventory):
 **Optional permissions** — each lights up an additional inventory surface
 (skip any you do not want):
 
-| Surface | Add (Account · … · Read) |
+| Surface | Add (all Account-scope, Read) |
 |---|---|
 | Zero Trust Access (apps, IdPs, service tokens) | Access: Apps and Policies · Access: Service Tokens · Access: Organizations, Identity Providers, and Groups |
-| Security Center findings | Security Center |
+| Security Center findings | Security Center Insights |
 | R2 storage inventory | Workers R2 Storage |
 
 Scope the token's resources:
@@ -92,8 +102,8 @@ The optional checks pass only if you added the matching token permissions.
 ### Optional: account members and API tokens
 
 Account membership and API-token enumeration are served by **user-scoped**
-endpoints that an account-owned token cannot reach. To cover them, add a
-user-owned token to the same secret:
+endpoints that an account-owned token cannot reach. To cover them, create a
+second token under **My Profile → API Tokens** and add it to the same secret:
 
 ```json
 {"api_token": "<account-scoped-token>", "user_api_token": "<user-owned-token>"}

@@ -29,30 +29,56 @@ connected.
   Compliance API is not available on Team or Pro plans) and your
   **organization UUID**.
 
+!!! info "Two products, two places to create a key"
+    Keys are created in different consoles depending on the product. A key
+    created in one organization cannot manage another — if your company uses
+    both Claude Console and Claude Enterprise, create one key in each.
+
 ## Create the Console Admin key
 
-1. Open **console.anthropic.com → Organization settings → Admin keys**
-   (`https://console.anthropic.com/settings/admin-keys`).
-2. Click **Create admin key** and copy the value (`sk-ant-admin01-…`) — it is
-   shown once.
+1. Sign in as an organization **admin** and open
+   **Claude Console → Settings → Admin keys**
+   (`https://platform.claude.com/settings/admin-keys`).
+2. Click **Create key**, give it a name, choose a key expiration, and click
+   **Create**.
+3. Copy the value (`sk-ant-admin01-…`) — the full secret is shown once.
 
-!!! warning "Admin keys are not scopeable"
-    Anthropic Console Admin keys carry no scopes — every Admin key is full
-    read/write on the organization. The collector uses it **strictly
-    read-only** and stores it only as a secret reference, but there is no
-    narrower key to issue. If that is not acceptable, connect the Compliance
-    plane alone.
+!!! warning "Console Admin keys are not scopeable"
+    Claude Console Admin keys have no selectable scopes — every key carries
+    full access to all endpoints that accept Admin API keys. The collector
+    uses it **strictly read-only** and stores it only as a secret reference,
+    but there is no narrower Console key to issue. If that is not acceptable,
+    connect the Compliance plane alone.
 
 ## Create the Compliance key (Claude Enterprise)
 
-Request a Compliance API key from your Anthropic account contact with these
-read-only scopes:
+1. Sign in to **claude.ai → Organization settings → API**
+   (`https://claude.ai/admin-settings/api-access`) and find the **Keys**
+   section.
+2. Click **+ Create key**, name it, and select the scopes below.
+3. Copy the value (`sk-ant-api01-…`) — shown once.
+
+The **primary owner** of the parent organization can create a key reaching
+every linked organization; an **organization owner** can create one carrying
+Compliance scopes only, restricted to their own organization.
 
 | Scope | Unlocks |
 |---|---|
 | `read:compliance_org_data` | Enforced organization security settings |
 | `read:compliance_activities` | The activity feed — per-key and per-user last-used, which drives dormancy findings |
 | `read:analytics` | Usage analytics |
+
+!!! tip "One scope covers it"
+    Anthropic also offers `read:org_audit` — a single read-only scope covering
+    the Admin API read endpoints plus every Compliance API read endpoint,
+    intended for security-audit integrations. It is the simplest choice for
+    this connector. Note it does **not** include the Analytics API, so add
+    `read:analytics` alongside it if you want usage analytics.
+
+!!! warning "Scopes are fixed at creation"
+    To add a scope later you must create a new key. The Compliance and
+    Analytics APIs must also be **enabled for your organization** before keys
+    carrying those scopes will work.
 
 You will also need the **organization UUID** (8-4-4-4-12 hex), which addresses
 the Compliance API.
@@ -140,8 +166,8 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `auth` fails on the Console key | A workspace key (`sk-ant-api01-…`) was used as the Admin key | Create an Admin key (`sk-ant-admin01-…`) under *Organization settings → Admin keys* |
-| Compliance checks fail with 401/403 | The key lacks a required scope, or the org is not on Claude Enterprise | Confirm the scopes above with your Anthropic contact |
+| `auth` fails on the Console key | A workspace key (`sk-ant-api01-…`) was used as the Admin key | Create an Admin key (`sk-ant-admin01-…`) under *Claude Console → Settings → Admin keys* |
+| Compliance checks fail with 401/403 | The key lacks a required scope, the scope set is fixed at creation, or the Compliance API is not enabled for the organization | A 403 lists the scopes the key has and the scopes the endpoint needs; create a new key with the missing scope |
 | *"anthropic_org_uuid is required"* | Compliance-only connection with no org UUID | Set `anthropic_org_uuid` |
 | Dormancy findings never appear | The activity feed is unavailable, or covers only part of the window | Connect the Compliance plane. A partial feed never asserts "unused" — absence of data is treated as unknown, not as dormant |
 

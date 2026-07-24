@@ -58,7 +58,7 @@ TENANT_ID=$(az account show --query tenantId -o tsv)
 APP_ID=$(az ad app create --display-name lc-entra --query appId -o tsv)
 az ad sp create --id "$APP_ID"
 
-az ad app credential reset --id "$APP_ID" --years 2 \
+az ad app credential reset --id "$APP_ID" --years 2 --append \
   --display-name lc-entra --query password -o tsv      # capture this once
 
 GRAPH=00000003-0000-0000-c000-000000000000
@@ -78,6 +78,10 @@ az ad app permission admin-consent --id "$APP_ID"
     **API permissions → Add a permission → Microsoft Graph → Application
     permissions** → add the permissions above → **Grant admin consent for
     \<tenant\>**.
+
+!!! danger "`credential reset` clears existing secrets"
+    Without `--append`, `az ad app credential reset` **removes every existing
+    password and certificate** on the app before adding the new one.
 
 !!! danger "Application permissions, not delegated"
     Graph permissions must be **Application** permissions. Delegated

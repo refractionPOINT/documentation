@@ -68,6 +68,13 @@ To change scopes later: **Applications → APIs → Auth0 Management API →
 Machine to Machine Applications** tab → expand your application → adjust the
 checkboxes → **Update**.
 
+!!! danger "Do not use the API Explorer's test-application button"
+    The Management API's **API Explorer** tab offers *Create & Authorize a Test
+    Application*. That shortcut grants the application **every** Management API
+    scope — including the write and secret-bearing ones this connector
+    deliberately avoids. Create the application from the Applications page and
+    pick scopes explicitly.
+
 ## Create the credentials secret
 
 ```json

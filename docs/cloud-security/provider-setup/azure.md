@@ -60,8 +60,8 @@ SUB_ID=<your-subscription-id>
 APP_ID=$(az ad app create --display-name lc-cloudsec --query appId -o tsv)
 az ad sp create --id "$APP_ID"
 
-# 2. Client secret (note the expiry you choose)
-az ad app credential reset --id "$APP_ID" --years 2 \
+# 2. Client secret (note the expiry you choose; --append preserves existing ones)
+az ad app credential reset --id "$APP_ID" --years 2 --append \
   --display-name lc-cloudsec --query password -o tsv     # capture this once
 
 # 3. RBAC Reader on the subscription (repeat per subscription)
@@ -89,6 +89,12 @@ az ad app permission admin-consent --id "$APP_ID"
     consent for \<tenant\>** (the status column must read *Granted*) →
     finally **Subscriptions → \<sub\> → Access control (IAM) → Add role
     assignment → Reader → your app**.
+
+!!! danger "`credential reset` clears existing secrets"
+    Without `--append`, `az ad app credential reset` **removes every existing
+    password and certificate** on the app before adding the new one. Always
+    pass `--append` when the app already carries credentials something else
+    depends on.
 
 !!! danger "Application permissions, not delegated"
     Graph permissions must be added under **Application permissions**.

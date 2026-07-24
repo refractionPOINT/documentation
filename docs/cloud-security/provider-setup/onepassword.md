@@ -36,6 +36,12 @@ Do not include a trailing slash. Use exactly the URL your identity provider is
 configured with — the collector appends `/Users` and `/Groups` to it, so a
 wrong base path shows up immediately as a failed `scim_users` check.
 
+!!! info "Why the two forms differ"
+    Hosted provisioning serves SCIM under a `/scim/v2` path, while a
+    self-hosted bridge serves it at the **root** of its own domain (the address
+    you open in a browser to reach the bridge's status page). Both are correct
+    for their deployment — copy whichever your Integrations page shows.
+
 !!! info "This is the provisioning credential, not a new one"
     The bearer token and the `scimsession` file are cryptographically linked.
     If you ever regenerate credentials from the Integrations page, update both
