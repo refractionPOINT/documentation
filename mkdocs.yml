@@ -579,7 +579,21 @@ nav:
       - Overview: cloud-security/index.md
       - Getting Started: cloud-security/getting-started.md
       - Connecting Providers: cloud-security/providers.md
-      - Provider Setup: cloud-security/provider-setup.md
+      - Provider Setup:
+          - Overview: cloud-security/provider-setup/index.md
+          - Google Cloud: cloud-security/provider-setup/gcp.md
+          - Amazon Web Services: cloud-security/provider-setup/aws.md
+          - Microsoft Azure: cloud-security/provider-setup/azure.md
+          - Microsoft Entra ID: cloud-security/provider-setup/entra.md
+          - Okta: cloud-security/provider-setup/okta.md
+          - Google Workspace: cloud-security/provider-setup/google-workspace.md
+          - 1Password: cloud-security/provider-setup/onepassword.md
+          - Auth0: cloud-security/provider-setup/auth0.md
+          - Cloudflare: cloud-security/provider-setup/cloudflare.md
+          - GitHub: cloud-security/provider-setup/github.md
+          - OpenAI: cloud-security/provider-setup/openai.md
+          - Anthropic: cloud-security/provider-setup/anthropic.md
+          - LimaCharlie: cloud-security/provider-setup/limacharlie.md
       - Findings & Triage: cloud-security/findings.md
       - Security Graph & Queries: cloud-security/graph.md
       - Compliance: cloud-security/compliance.md

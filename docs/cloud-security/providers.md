@@ -22,19 +22,19 @@ missing.
 
 | `provider_type` | Surface | Scope field(s) | Credential (JSON stored in the secret) |
 |---|---|---|---|
-| `gcp` | Cloud infra | `gcp_scope` (`projects/{id}`, `folders/{id}`, or `organizations/{id}`) | Service-account key JSON |
-| `aws` | Cloud infra | `aws_role_arn` (+ `aws_external_id`, `aws_regions`, `aws_member_role_name`) | STS AssumeRole (secret optional) |
-| `azure` | Cloud infra | `azure_tenant_id` + `azure_subscription_id` (+ `azure_client_id`) | `{"client_secret": "...", "client_id": "..."}` |
-| `okta` | Identity | `okta_org_url` | `{"api_token": "..."}` (SSWS) or an API Services app |
-| `entra` | Identity | `entra_tenant_id` (+ `entra_client_id`) | `{"client_secret": "..."}` (service principal) |
-| `google_workspace` | Identity | `workspace_customer_id` | SA key with domain-wide delegation + `admin_email` |
-| `1password` | Identity | `onepassword_scim_url` | `{"scim_url": "...", "scim_token": "..."}` |
-| `auth0` | Identity | `auth0_domain` | `{"client_id": "...", "client_secret": "..."}` (M2M) |
-| `cloudflare` | SaaS | `cloudflare_account_id` | `{"api_token": "...", "user_api_token": "..."}` |
-| `github` | SaaS | `github_org` + `github_app_id` + `github_installation_id` | `{"private_key": "-----BEGIN..."}` (GitHub App) |
-| `openai` | AI | *(optional `openai_org_id`)* | `{"admin_api_key": "sk-admin-..."}` |
-| `anthropic` | AI | *(optional `anthropic_org_uuid`)* | `{"admin_api_key": "sk-ant-admin01-..."}` (+ optional compliance key) |
-| `limacharlie` | LimaCharlie | one of `limacharlie_oid` or `limacharlie_uid` | `{"api_key": "..."}` |
+| [`gcp`](provider-setup/gcp.md) | Cloud infra | `gcp_scope` (`projects/{id}`, `folders/{id}`, or `organizations/{id}`) | Service-account key JSON |
+| [`aws`](provider-setup/aws.md) | Cloud infra | `aws_role_arn` (+ `aws_external_id`, `aws_regions`, `aws_member_role_name`) | STS AssumeRole (secret optional) |
+| [`azure`](provider-setup/azure.md) | Cloud infra | `azure_tenant_id` + `azure_subscription_id` (+ `azure_client_id`) | `{"client_secret": "...", "client_id": "..."}` |
+| [`okta`](provider-setup/okta.md) | Identity | `okta_org_url` | `{"api_token": "..."}` (SSWS) or an API Services app |
+| [`entra`](provider-setup/entra.md) | Identity | `entra_tenant_id` (+ `entra_client_id`) | `{"client_secret": "..."}` (service principal) |
+| [`google_workspace`](provider-setup/google-workspace.md) | Identity | `workspace_customer_id` | SA key with domain-wide delegation + `admin_email` |
+| [`1password`](provider-setup/onepassword.md) | Identity | `onepassword_scim_url` | `{"scim_url": "...", "scim_token": "..."}` |
+| [`auth0`](provider-setup/auth0.md) | Identity | `auth0_domain` | `{"client_id": "...", "client_secret": "..."}` (M2M) |
+| [`cloudflare`](provider-setup/cloudflare.md) | SaaS | `cloudflare_account_id` | `{"api_token": "...", "user_api_token": "..."}` |
+| [`github`](provider-setup/github.md) | SaaS | `github_org` + `github_app_id` + `github_installation_id` | `{"private_key": "-----BEGIN..."}` (GitHub App) |
+| [`openai`](provider-setup/openai.md) | AI | *(optional `openai_org_id`)* | `{"admin_api_key": "sk-admin-..."}` |
+| [`anthropic`](provider-setup/anthropic.md) | AI | *(optional `anthropic_org_uuid`)* | `{"admin_api_key": "sk-ant-admin01-..."}` (+ optional compliance key) |
+| [`limacharlie`](provider-setup/limacharlie.md) | LimaCharlie | one of `limacharlie_oid` or `limacharlie_uid` | `{"api_key": "..."}` |
 
 Every record also accepts the shared fields common to all providers —
 `internal_domains`, `sync_now`, `refresh`, and `feed_subscription` — documented
@@ -44,6 +44,8 @@ in [Configuration](configuration.md#cloudsec_provider).
 
 ### Google Cloud (`gcp`)
 
+**Setup guide:** [step-by-step onboarding](provider-setup/gcp.md).
+
 Set `gcp_scope` to a single project (`projects/{id}`), a folder
 (`folders/{id}`), or a whole organization (`organizations/{id}`); the collector
 enumerates every project in scope. The credential is a service-account key JSON
@@ -52,6 +54,8 @@ networking, KMS, BigQuery, Cloud SQL, Secret Manager, Pub/Sub, …). The test
 report names any missing role.
 
 ### AWS (`aws`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/aws.md).
 
 The collector assumes a read-only IAM role you designate in `aws_role_arn`,
 using an `aws_external_id` for the confused-deputy guard. For a single account
@@ -64,6 +68,8 @@ the management role into each member account, assuming the role *named* by
 be omitted to use the collector's default chain.
 
 ### Azure (`azure`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/azure.md).
 
 Set `azure_tenant_id` and `azure_subscription_id`, and the app-registration
 (service-principal) client id in `azure_client_id`. The credential secret carries
@@ -79,12 +85,16 @@ user has admin on that GCP bucket") possible.
 
 ### Okta (`okta`)
 
+**Setup guide:** [step-by-step onboarding](provider-setup/okta.md).
+
 Set `okta_org_url` to the org base URL (e.g. `https://acme.okta.com`). The
 credential is either a user-owned SSWS token (`{"api_token": "..."}`) or an API
 Services app using client credentials (`{"client_id": "...", "private_key":
 "..."}` or `client_secret`), which is the recommended, non-user-bound option.
 
 ### Microsoft Entra ID (`entra`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/entra.md).
 
 A standalone directory-only connection for organizations that have M365/Entra
 but no Azure subscription to enumerate. Set `entra_tenant_id` and the
@@ -96,6 +106,8 @@ tenant, the Azure connection defers its directory collection to the standalone
 
 ### Google Workspace (`google_workspace`)
 
+**Setup guide:** [step-by-step onboarding](provider-setup/google-workspace.md).
+
 Set `workspace_customer_id` to `my_customer` (the delegated super-admin's own
 account, the common case) or an explicit customer id. The credential is a GCP
 service-account key with **domain-wide delegation**, plus the super-admin subject
@@ -105,11 +117,15 @@ unifying by email with the GCP IAM principals it references.
 
 ### 1Password (`1password`)
 
+**Setup guide:** [step-by-step onboarding](provider-setup/onepassword.md).
+
 Set `onepassword_scim_url` to the account's SCIM bridge URL; the credential is
 the SCIM bearer token: `{"scim_url": "...", "scim_token": "..."}`. It collects
 users and groups into the identity graph.
 
 ### Auth0 (`auth0`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/auth0.md).
 
 Set `auth0_domain` to the tenant's canonical domain (e.g. `acme.us.auth0.com` or
 the legacy `acme.auth0.com` — not a custom domain). The credential is a
@@ -121,6 +137,8 @@ applications, and connections.
 
 ### Cloudflare (`cloudflare`)
 
+**Setup guide:** [step-by-step onboarding](provider-setup/cloudflare.md).
+
 Set `cloudflare_account_id` to the 32-hex account id from the dashboard. The
 credential is a read-only account-scoped API token: `{"api_token": "..."}`. An
 optional `user_api_token` covers user-scoped endpoints (account members, API
@@ -129,6 +147,8 @@ zones, DNS posture, R2 buckets, members, API tokens, Access applications, and
 Security Center insights.
 
 ### GitHub (`github`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/github.md).
 
 Auth is a **GitHub App installed on the organization** — an App, not a personal
 access token — so access is org-scoped, read-only, and uses short-lived
@@ -147,6 +167,8 @@ first-class subjects, with the same findings and the `nist-ai-rmf` and
 
 ### OpenAI (`openai`)
 
+**Setup guide:** [step-by-step onboarding](provider-setup/openai.md).
+
 The credential is an **Admin API key** created *with* the `api.management.read`
 scope at creation time (a freshly created key — scope-upgraded keys have had
 missing-scope issues): `{"admin_api_key": "sk-admin-..."}`. `openai_org_id`
@@ -155,6 +177,8 @@ verified against the discovered org so a mismatch fails the connection early. It
 collects the organization, members, projects, and API keys.
 
 ### Anthropic (`anthropic`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/anthropic.md).
 
 Anthropic has two credential planes and either may stand alone:
 
@@ -173,6 +197,8 @@ discovered automatically. The credential secret may also optionally carry an
 degrade gracefully to whatever plane is connected.
 
 ## LimaCharlie (`limacharlie`)
+
+**Setup guide:** [step-by-step onboarding](provider-setup/limacharlie.md).
 
 Inventory your **own** LimaCharlie tenancy as an estate — useful both directly
 and as the CAASM source that unifies your sensors with the rest of your assets.
