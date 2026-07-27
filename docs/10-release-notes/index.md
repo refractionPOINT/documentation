@@ -2,6 +2,37 @@
 
 Release notes for LimaCharlie platform components, organized by date.
 
+## 2026-07-27
+
+### Web App 5.14.0
+
+A redesigned permissions editor, modernized Outputs and Artifacts experiences, and an "Overview" org diagram.
+
+#### New Features
+
+- **Permissions — grouped, read/write-aware editor**: the flat ~120-row permission lists become collapsible resource groups (collapsed by default, search auto-expands matches) with separate Read and Write bulk toggles per group.
+- **Outputs — modernized list and dry-run testers**: the Outputs list moves to the modern sortable table. New "Test Transform" / "Test Template" modals dry-run expressions server-side against an editable sample event before saving, and a WebSocket output destination is now creatable from the UI.
+- **Artifacts — modernized list and full-screen viewer**: the Artifacts list becomes a Detections-style table with a new full-screen record viewer.
+- **Org Overview diagram**: new "Overview" page with high level diagram.
+- **Search — full-data exports**: the query console download menu splits into "Visible columns" (CSV/Excel/HTML/PDF, mirroring the table) and "All fields" (NDJSON plus new CSV/Excel that export every flattened field of every event), so nested event details are no longer dropped from spreadsheet exports.
+- **Sign-up — Grid escape hatch**: the sign-up flow asks whether users want the full LimaCharlie platform or the AI-assisted Grid before choosing an auth method.
+- **Entra ID adapter**: an optional `streams` parameter (risk detections / sign-ins / audit logs) is exposed in the cloud adapter form and CLI template, and USP sensor tiles gain per-type documentation links (starting with Entra ID / Azure AD / Office 365).
+- **Extended localization**: extension pages for 10+ more extensions are now fully localized across all nine languages.
+
+#### Bug Fixes
+
+- Permission checkboxes in the API-key, add-on, and extension editors updated the form value but never visually toggled after the grouped-editor rewrite; they now toggle correctly.
+- Privileged permissions (`apikey.ctrl`, `user.ctrl`, `billing.ctrl`) could be bulk-granted in one click via select-all in the API-key/extension/add-on editors; they must now be granted individually.
+- A hidden HoverCard added a second window scrollbar on every page that used one, sliding the app under the sidebar when scrolled.
+- The modal close button floated over scrolled content in tall modals (e.g. the Data Classification rule editor); it now pins to the content and scrolls with the header.
+- The sidebar collapse caret was hidden and unclickable on tablet-width viewports because the fixed top navbar overran the sidebar rail.
+- Sortable table column headers wrapped their sort icon onto a second line in narrow columns (e.g. the Sensors "Type" column).
+- Long unbroken tokens (resource ids, base64 keys) overflowed the CAASM "What Changed" column.
+- Opening a Data Classification rule authored via IaC could crash the item detail when a hand-authored rule carried non-string values; such values are now coerced safely.
+- The Artifacts list sent Insight timestamps in milliseconds instead of seconds, breaking the feature once the API began rejecting out-of-range values.
+
+---
+
 ## 2026-07-15
 
 ### Web App 5.13.0
