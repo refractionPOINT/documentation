@@ -21,14 +21,18 @@ tells you to subscribe).
 
 The read surface includes: `findings` (risk-ranked worklist with keyset pagination
 and server-side filters), `findings/facets`, `findings/classes` (the canonical
-finding-class enum), `attack-paths` (with the same filter selectors), `chokepoints`
+finding-class enum), `findings/causes` (findings grouped by the object whose single
+edit fixes them), `attack-paths` (with the same filter selectors), `chokepoints`
 (incl. the principal-exposure metrics), `ciem/public-access`, `ciem/facets`,
-`ciem/identity` (the Identity 360 view, `?urn=`), `inventory` (+`inventory/facets`),
-`data-security/facets`, `topology` (server-side estate aggregates), `compliance`
-(+`compliance/frameworks`, `compliance/assignments`), `policy/vocabulary` (the
+`ciem/identities` (the filtered, paginated Access list), `ciem/identity` (the
+Identity 360 view of one principal, `?urn=`), `inventory` (+`inventory/facets`),
+`data-security/facets` (+`data-security/stores`), `topology` (server-side estate
+aggregates), `compliance` (+`compliance/frameworks`,
+`compliance/assignments`), `policy/vocabulary` (the
 classification-policy vocabulary), `providers/manifest` (what a provider collects),
 `caasm/assets`, `caasm/coverage`, `caasm/policy`, `overview` (incl. the per-tenant
-`usage` metering block), `risk-trend`, `changes`, `scan-status`, `query` (the graph
+`usage` metering block), `risk-trend`, `changes`, `scan-status`, `free-tier` (the
+org's free-tier standing and limits — descriptive, not a gate), `query` (the graph
 DSL), and `graph/neighbors`. There is also a multi-org (no `{oid}`)
 `fleet/overview` route that rolls risk up across every tenant you manage. Three
 read-only preview POSTs help you author policy before you commit it —
@@ -63,8 +67,19 @@ multi-tenant policy management a script, not a UI workflow.
 | Hive | Record | Purpose |
 |---|---|---|
 | `cloudsec_provider` | one per connection | what to collect — one of thirteen connectors spanning cloud infra, identity/IdP, SaaS, AI, and LimaCharlie self-inventory (see [Providers](../cloud-security/providers.md) for the full list) |
-| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
+| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation — accepted but not yet evaluated; see the [Configuration reference](../cloud-security/configuration.md)), `scanning` (the agentless snapshot scanner's ruleset), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
 | `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
+
+The `scanning` type names the `yara` hive records the agentless snapshot scanner
+runs and how each one's hits are classified (into the `malware`, `secret`, and
+`scan_finding` finding classes), plus an optional compute scope. There is no
+built-in ruleset: creating the policy *is* the opt-in, the same user-declared-only
+stance as classification.
+
+!!! note "`limacharlie sync` does not cover these hives"
+    The `cloudsec_*` hives are outside the set `limacharlie sync` walks, so a
+    config pull/push will not round-trip them. Manage them with explicit
+    `limacharlie hive set` / `hive get` calls — the loops below are the pattern.
 
 ### Onboarding a tenant (recipe)
 
@@ -119,6 +134,19 @@ An operator's own disposition always wins, deleting a rule releases exactly its 
 findings on the next cycle, and criticals are never auto-suppressed unless a rule's
 `max_severity` says `critical` explicitly.
 
+`match` takes four selectors — OR within a selector, AND across them:
+`finding_class` (the class enum), `rule` (exact rule ids), `account` (shell globs,
+including leading-`!` negation — `"!prod-*"` scopes to every account that is *not*
+production), and `urn_prefix` (resource-URN prefixes), with `max_severity` as the
+inclusive ceiling.
+The record is validated on write and rejected unless every rule has a unique
+non-empty `name` (it becomes the disposition actor, `policy:<name>`), at least one
+of those four match keys with no empty entries, a well-formed account glob, a
+`max_severity` from the severity enum, an `effect.kind` of `accepted` or
+`false_positive` — `mitigated` is not a policy's call to make — and a non-empty
+`effect.reason`, since an unexplained auto-disposition is unauditable. Rules are
+ordered and first match wins.
+
 ```json
 {
   "policy_type": "suppression",
@@ -153,8 +181,17 @@ findings on the next cycle, and criticals are never auto-suppressed unless a rul
 ```
 
 Save it as a `cloudsec_query` record and it appears in every teammate's Query
-Console and as a pinnable Explore lens. The `schedule` and `detection` blocks are
-accepted (so IaC written today survives the scheduled-query phase) but inert.
+Console and as a pinnable lens on the Attack Surface page's lens rail.
+
+The `schedule` block is **active**: a record with `schedule.scheduled: true` is
+evaluated after each projection cycle — or on an optional cadence, one of
+`interval` (a duration of at least `5m`) or `cron` (standard 5-field) — and emits
+`cloud_query.match` / `cloud_query.resolved` as anchors enter and leave its
+match-set. A scheduled query must be an enabled record, since a disabled one has to
+stay inert. Anchors already suppressed by the org's suppression policy do not emit
+unless the schedule sets `emit_suppressed`. The `detection` block is still
+reserved: it is shape-checked on write, so IaC written today survives the
+promote-to-detection phase, but nothing consumes it yet.
 
 ## Findings ↔ Cases automation
 
@@ -162,12 +199,17 @@ Cloud findings emit lifecycle events into the organization's own event stream vi
 the internally-provisioned `cloudsec` webhook adapter: `cloud_finding.created`
 (carries the full finding under `finding`), `cloud_finding.closed`
 (`{finding_id, fingerprint, finding_class}`), and `cloud_finding.still_open`
-(re-asserted at most once per day for open findings with a linked ticket). D&R
-rules match these like any event; the Cases extension actions close the loop.
+(re-asserted at most once per day for open findings with a linked ticket, carrying
+that `ticket` in the payload). D&R rules match these like any event; the Cases
+extension actions close the loop.
 For richer automation the same stream also carries `cloud_finding.updated` (an
-open finding's content materially changed — a severity flip or vuln-set change)
-and the operator-disposition verbs `cloud_finding.resolved` / `.dismissed` /
-`.reopened` / `.assigned` (for auditing human triage decisions).
+open finding materially changed: a severity move in either direction, the
+subject becoming internet-reachable, or one of its CVEs entering CISA KEV)
+and the disposition verbs `cloud_finding.resolved` / `.dismissed` /
+`.reopened` / `.assigned`. Those last four cover both human triage and a
+`suppression` policy acting on its own: read `actor` to tell them apart (a user id
+versus `policy:<rule name>`), and branch on the payload's `resolution` rather than
+the verb, since an accepted risk and a fixed one both arrive as `.resolved`.
 
 The console installs these three rules with one click (Settings → Cloud Security →
 Cases, an opt-in), or write them yourself:

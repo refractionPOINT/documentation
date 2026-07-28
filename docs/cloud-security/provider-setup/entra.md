@@ -10,7 +10,9 @@ Microsoft 365 but have no Azure infrastructure to enumerate. It collects the
 tenant-global identity surface over Microsoft Graph: users, groups and
 membership, service principals and app registrations (with their long-lived
 credentials), directory roles and PIM eligibility, Conditional Access policies,
-and administrative units.
+administrative units, and the tenant's **federated domains** — the external
+identity providers (ADFS and other SAML/WS-Fed trusts) that can assert
+identities into the tenant.
 
 **Auth model:** an **Entra ID app registration** (service principal) with a
 **client secret** and **Microsoft Graph application permissions**. There is no
@@ -37,7 +39,7 @@ ARM/subscription setup at all.
 
 | Grant | Type | Why | Preflight check |
 |---|---|---|---|
-| **Directory.Read.All** | Microsoft Graph — **Application** | Users, groups, service principals, app registrations, domains, directory roles | `graph_directory` |
+| **Directory.Read.All** | Microsoft Graph — **Application** | Users, groups, service principals, app registrations, domains (including federated-domain / external-IdP posture), directory roles and their active assignments | `graph_directory` |
 
 ## Optional permissions
 
@@ -45,10 +47,16 @@ ARM/subscription setup at all.
 |---|---|---|
 | **AuditLog.Read.All** | Last-sign-in / dormancy enrichment. **Requires Entra ID P1 or P2** | `signin_activity` |
 | **Policy.Read.All** | Conditional Access policy posture | *(collected during the sweep)* |
-| **RoleManagement.Read.Directory** | Directory role assignments and PIM eligibility | *(collected during the sweep)* |
+| **RoleManagement.Read.Directory** | PIM *eligibility* — who can activate a privileged role just-in-time. **Also requires Entra ID P1 or P2**: without the licence the PIM endpoints refuse the call no matter what is consented | *(collected during the sweep)* |
 | **Application.Read.All** | Fuller app-registration / service-principal credential detail | *(collected during the sweep)* |
 | **AdministrativeUnit.Read.All** | Administrative-unit scoping | *(collected during the sweep)* |
 | **AgentIdentity.Read.All** | Source-asserted AI-agent identities in the directory | *(collected during the sweep)* |
+
+!!! info "Skipping the PIM grant is safe"
+    Without `RoleManagement.Read.Directory` (or without the P1/P2 licence) the
+    directory-role graph is still collected from **active** assignments, which
+    ride `Directory.Read.All`. You lose just-in-time *eligibility* edges, not
+    the roles themselves.
 
 ## Create the app registration
 
@@ -95,9 +103,12 @@ az ad app permission admin-consent --id "$APP_ID"
 ```
 
 ```bash
-limacharlie hive set --hive-name secret --key entra-sp \
-    --input-file entra-secret.json --enabled
+limacharlie secret set --key entra-sp \
+    --value "$(cat entra-secret.json)" --enabled
 ```
+
+`secret set` wraps the value into the secret record's `{"secret": "..."}`
+envelope for you.
 
 ## Create the provider record
 
@@ -134,7 +145,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `auth` fails with `invalid_client` | Stored the secret **ID** instead of its **Value**, or the secret expired | Re-mint the secret and update the hive secret |
+| `auth` fails with `invalid_client` | Stored the secret **ID** instead of its **Value**, or the secret expired | Re-mint the secret and update the secret record |
 | `graph_directory` fails after consent | Permissions added as *Delegated*, or consent not actually granted | Add them under *Application permissions* and grant tenant-wide admin consent |
 | `signin_activity` fails with a licence error | Sign-in activity needs Entra ID P1/P2 | Accept the degrade, or add the licence |
 | Renewal reminder | Client secrets expire; when one does, every check fails at `auth` | Re-mint before expiry and update the secret record — nothing else changes |

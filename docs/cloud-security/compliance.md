@@ -35,16 +35,49 @@ The report is per-control, and each control lands in one of four states:
 - **PASS** — no open finding proves a violation of the control.
 - **FAIL** — one or more open findings prove it; their `finding_id`s are
   attached as evidence.
-- **NOT_ASSESSED** — the control has no mapped rule yet, so nothing was
-  evaluated.
-- **NOT_APPLICABLE** — the control maps to resource types that are not in
-  scope for this assessment.
+- **NOT_ASSESSED** — the control cannot be evaluated automatically. These are
+  the manual / attestation controls (policy documents, board sign-off,
+  interview evidence): the framework marks them as not auto-assessable, so no
+  rule is run and no verdict is invented.
+- **NOT_APPLICABLE** — the control has nothing to assess in *this* estate:
+  either the framework's cloud has no resources connected, or the control
+  declares no resource types to apply to.
 
 A framework scoped to a single cloud assesses only that cloud's findings —
 `cis-aws` looks at AWS findings, `cis-gcp` at GCP. A framework with no
 in-scope resource types comes back **NOT_APPLICABLE** rather than a vacuous
-PASS, so an empty estate never reads as compliant. Alongside the controls the
-report carries a summary score.
+PASS, so an empty estate never reads as compliant.
+
+### How the score is computed
+
+The report's summary carries `passed`, `failed`, `not_assessed`,
+`not_applicable`, `total`, `score`, and `applicable`. The score is the share of
+**assessable** controls that pass:
+
+```text
+score = passed / (passed + failed) × 100
+```
+
+Only PASS and FAIL are assessable. NOT_ASSESSED and NOT_APPLICABLE controls are
+excluded from the denominator entirely, so a manual control you have not
+attested does not drag the number down, and a framework you are only partly in
+scope for is not penalized for the parts that do not apply.
+
+!!! warning "No assessable controls means `applicable: false`, not 100%"
+    When nothing in the framework is assessable against your estate, the report
+    comes back with `applicable: false` and a `score` of **0** — never a
+    vacuous 100. Read `applicable` before reading `score`: a 0 with
+    `applicable: false` means "we could not assess this", not "you failed
+    everything".
+
+!!! note "FAIL evidence is capped per control"
+    A failing control attaches at most **25** proving `finding_id`s in the JSON
+    report, while `evidence_count` reports the true total — so a control with
+    900 violations shows 25 examples and `evidence_count: 900`. The CSV export
+    raises the cap to 2,000 ids per control for auditors who need the fuller
+    list; use the [findings API](findings.md) itself when you need all of them.
+
+### Auditor export
 
 For auditors, the same report exports as CSV — one row per control including
 the evidence finding ids — via the API's `?format=csv`

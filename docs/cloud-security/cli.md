@@ -5,13 +5,18 @@
     configuration formats described here may change before general
     availability. Contact us if you would like access.
 
-The `limacharlie cloudsec` command group (Python SDK/CLI v2) covers the full
-Cloud Security API surface. Every command supports the global options
-(`--oid`, `--output json|yaml|csv|table`, `--filter <jmespath>`), and every
-command and subgroup answers `--ai-help` with task-oriented guidance.
+The `limacharlie cloudsec` command group (Python SDK/CLI v2) covers most of
+the Cloud Security API surface: the posture and inventory reads, findings
+triage, graph queries, policy previews, CSV exports, and the fleet roll-up.
+Commands take the global options (`--oid`,
+`--output json|yaml|toon|csv|table|jsonl`, `--filter <jmespath>`,
+`--fields <names>`), and every command and subgroup answers `--ai-help` with
+task-oriented guidance. The `export` subgroup is the one exception: it writes
+a server-rendered CSV straight through, so the output, filter, and field
+options do not apply to it.
 
 ```bash
-pip install limacharlie
+pip install 'limacharlie>=5.5.3'   # Python 3.10 or newer
 limacharlie cloudsec --help
 ```
 
@@ -55,6 +60,7 @@ limacharlie cloudsec data-security facets
 
 # Inventory & graph
 limacharlie cloudsec inventory list --type <resource-type> --provider gcp -q prod --limit 50
+limacharlie cloudsec inventory list --all-accounts --limit 50   # drop per-account scoping
 limacharlie cloudsec inventory facets
 limacharlie cloudsec resource get "lcrn:..."
 limacharlie cloudsec graph neighbors "lcrn:..." --limit 200
@@ -74,7 +80,7 @@ limacharlie cloudsec resolve assets "lcrn:..."
 
 # CAASM
 limacharlie cloudsec caasm assets -q laptop
-limacharlie cloudsec caasm coverage --status open
+limacharlie cloudsec caasm coverage --status open --sort lc_risk --order desc
 limacharlie cloudsec caasm policy get
 limacharlie cloudsec caasm policy set --input-file coverage.json
 limacharlie cloudsec caasm ingest --source okta --records-file users.json
@@ -85,9 +91,10 @@ limacharlie cloudsec provider manifest --type gcp        # "what you get" for a 
 
 # Policy authoring aids + read-only matcher previews
 limacharlie cloudsec policy vocabulary
-limacharlie cloudsec policy suggest --dimension name -q prod
-limacharlie cloudsec simulate resources --input-file rules.json --target data_store
-limacharlie cloudsec simulate findings --input-file match.json
+limacharlie cloudsec policy suggest --dimension name -q prod --limit 10
+limacharlie cloudsec simulate resources --input-file rules.yaml --target data_store
+limacharlie cloudsec simulate resources --rules-json '[{"name_glob":"prod-*"}]' --resource-type gcp_bucket
+limacharlie cloudsec simulate findings --match-json '{"finding_class":"misconfig","max_severity":"LOW"}'
 
 # Full-set CSV export (server-side walk of the entire filtered set)
 limacharlie cloudsec export findings -o findings.csv
@@ -97,7 +104,7 @@ limacharlie cloudsec export query --named public_data_stores -o data-stores.csv
 
 # Fleet — cross-tenant (MSSP) roll-up, no single --oid
 limacharlie cloudsec fleet overview --oid $OID1 --oid $OID2 --trend-days 30
-limacharlie cloudsec fleet overview --group prod --limit 100
+limacharlie cloudsec fleet overview --group <GROUP_ID> --limit 100
 ```
 
 The `export` subgroup streams the **entire** filtered set as a CSV
@@ -109,23 +116,34 @@ only the current page of a normal list command. `export findings`,
 `export query` takes the same `--named` / `--text` / `--query-json`
 selectors as `query run`.
 
-`fleet overview` is the multi-org board for MSSPs: pass `--oid` repeatedly
-(or `--group` to select a saved fleet group) to roll risk posture up across
-tenants. It carries `--trend-days`, `--limit`, and `--cursor` for paging the
-tenant list, and is the one command that does not resolve a single `--oid`.
+`fleet overview` is the multi-org board for MSSPs: pass `--oid` repeatedly,
+or `--group <GROUP_ID>` — the opaque id of an org group you own or belong to,
+not its display name — to roll risk posture up across tenants. Given neither,
+it spans every organization your credentials can see. It carries
+`--trend-days`, `--limit`, and `--cursor` for paging the tenant list, and is
+the one command that does not resolve a single `--oid`.
 
-!!! note "CLI is the query & triage surface"
-    Scheduled queries and workload-group views are **console + REST-API**
-    features with no CLI command — everything else (reads, findings triage,
-    graph queries, Topology, Identity 360, policy simulation and
-    autocomplete, exports, and fleet roll-up) is covered. Provider and
-    policy *records* are managed with `limacharlie hive` (see
-    [Configuration](configuration.md)).
+!!! note "What lives outside this command group"
+    Three read routes have no `cloudsec` command of their own: the shared-fix
+    cause rollup (`GET /findings/causes`), the filtered identity list behind
+    the Access page (`GET /ciem/identities`), and the paginated data-store
+    list (`GET /data-security/stores`). Call them over the REST API, or with
+    the generic `limacharlie api <path>` escape hatch — see the
+    [API Reference](api-reference.md).
+
+    Two things that look like missing commands are really something else.
+    **Scheduled queries** are not a separate feature: a scheduled query is a
+    `cloudsec_query` Hive record carrying a `schedule` block, authored with
+    `limacharlie hive set --hive-name cloudsec_query` (see
+    [Configuration](configuration.md#cloudsec_query)). **Workload groups**
+    are not a view of their own either: they arrive on findings as
+    `source_scope` / `target_scope` in `finding list`, and as the
+    `ComputeGroup` node type in graph queries.
 
 ## Filtering and pagination
 
-List commands accept repeatable filters (OR within a key, AND across keys),
-free-text search, sorting, and keyset pagination:
+`finding list` carries the full vocabulary — repeatable filters (OR within a
+key, AND across keys), free-text search, sorting, and keyset pagination:
 
 ```bash
 limacharlie cloudsec finding list \
@@ -139,6 +157,34 @@ limacharlie cloudsec finding list --cursor "<next_cursor>" --limit 50
 
 Boolean tri-state flags (`--kev/--no-kev`, `--reachable/--no-reachable`)
 send the filter only when given, so the server default applies otherwise.
+
+The other lists carry a subset, so check `--help` before assuming a flag is
+there. `caasm coverage` behaves like `finding list` (repeatable filters,
+`--sort`/`--order`, paging). `inventory list` and `caasm assets` page but do
+not sort, and inventory's `--type` / `--provider` / `--account` / `--region`
+each take a single value rather than repeating. `attack-path list` returns
+the headline set in one shot: repeatable filters and `-q`, but no sorting and
+no paging.
+
+## Records, files, and stdin
+
+The commands that take a record — `provider test`, `caasm policy set`, and
+both `simulate` commands — accept it three ways: `--input-file` (JSON *or*
+YAML), an inline-JSON flag (`--provider-json`, `--policy-json`,
+`--rules-json`, `--match-json`), or piped on stdin:
+
+```bash
+cat provider.yaml | limacharlie cloudsec provider test
+limacharlie cloudsec caasm policy set --policy-json '{"expect":[...]}'
+```
+
+`caasm ingest` has its own pair: `--records-file` for a JSON or YAML array of
+vendor records, `--record-json` for a single inline record.
+
+Both `simulate` commands take `--sample-limit` (default 25, cap 100) to size
+the returned sample, and `simulate resources` takes a repeatable
+`--resource-type` to narrow the walked types the way an exclusions rule does.
+`policy suggest` takes `--limit` (default 20, cap 50).
 
 ## Scripting
 

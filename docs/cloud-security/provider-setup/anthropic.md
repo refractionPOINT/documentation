@@ -6,7 +6,8 @@
     availability. Contact us if you would like access.
 
 Collects your Anthropic organization as an AI-security surface: the member
-directory, workspaces, and API keys from the Console plane, plus — for Claude
+directory (including pending invites — staged seats that have never logged in),
+workspaces, and API keys from the Console plane, plus — for Claude
 Enterprise organizations — enforced security settings and a per-key/per-user
 activity feed that powers dormancy findings.
 
@@ -66,19 +67,24 @@ Compliance scopes only, restricted to their own organization.
 |---|---|
 | `read:compliance_org_data` | Enforced organization security settings |
 | `read:compliance_activities` | The activity feed — per-key and per-user last-used, which drives dormancy findings |
-| `read:analytics` | Usage analytics |
 
-!!! tip "One scope covers it"
-    Anthropic also offers `read:org_audit` — a single read-only scope covering
-    the Admin API read endpoints plus every Compliance API read endpoint,
-    intended for security-audit integrations. It is the simplest choice for
-    this connector. Note it does **not** include the Analytics API, so add
-    `read:analytics` alongside it if you want usage analytics.
+Those two are the whole ask. Anthropic's `read:analytics` scope is **not used by
+this connector today** — no usage-analytics endpoint is called, so adding it
+unlocks nothing here.
+
+!!! tip "The broad audit scope also works"
+    Anthropic offers `read:org_audit`, a single read-only scope covering the
+    Admin API read endpoints plus every Compliance API read endpoint, intended
+    for security-audit integrations. A Compliance key carrying it works fine
+    here. Be aware that only its *Compliance* coverage is exercised: this
+    connector reaches the Console plane exclusively through the Admin key on
+    `credentials`, so `read:org_audit` on a Compliance key is not a substitute
+    for connecting the Console plane.
 
 !!! warning "Scopes are fixed at creation"
-    To add a scope later you must create a new key. The Compliance and
-    Analytics APIs must also be **enabled for your organization** before keys
-    carrying those scopes will work.
+    To add a scope later you must create a new key. The Compliance API must
+    also be **enabled for your organization** before a key carrying Compliance
+    scopes will work.
 
 You will also need the **organization UUID** (8-4-4-4-12 hex), which addresses
 the Compliance API.
@@ -98,15 +104,22 @@ the Compliance API.
 ```
 
 Bare key strings are accepted for both and wrapped into these shapes
-automatically. Keep the two in separate secrets — the provider record
-references them independently and they are merged at runtime.
+automatically, so the simplest path is to store the key verbatim:
 
 ```bash
-limacharlie hive set --hive-name secret --key anthropic-admin \
-    --input-file anthropic-admin.json --enabled
-limacharlie hive set --hive-name secret --key anthropic-compliance \
-    --input-file anthropic-compliance.json --enabled
+limacharlie secret set --key anthropic-admin \
+    --value 'sk-ant-admin01-...' --enabled
+limacharlie secret set --key anthropic-compliance \
+    --value 'sk-ant-api01-...' --enabled
 ```
+
+`secret set` wraps whatever you pass in `--value` into the secret record's
+`{"secret": "..."}` shape for you. Pass the JSON object above instead of a bare
+key when the secret needs a second field — see
+[workload identity federation](#optional-workload-identity-federation-inventory).
+
+Keep the two planes in separate secrets — the provider record references them
+independently and they are merged at runtime.
 
 ## Create the provider record
 
@@ -153,7 +166,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
-| `auth` | ✅ | Neither plane's key authenticated. |
+| `auth` | ✅ *(Console)* | The Console Admin key was rejected, or it belongs to a different organization than the `anthropic_org_uuid` you set. This check covers the **Console plane only** and appears only when a Console key is configured — the rest of the Console plane is not probed after it fails. A Compliance-only connection has no `auth` row; `compliance_settings` is its gate. |
 | `directory` | ✅ *(Console)* | Member directory unreadable. |
 | `workspaces` | ✅ *(Console)* | Workspace inventory unreadable. |
 | `api_keys` | ✅ *(Console)* | API-key inventory unreadable. |

@@ -14,18 +14,39 @@ both are shown.
 
 Cloud Security is enabled per organization by subscribing to the
 `ext-cloud-security` extension — the subscription is both the enable gate and
-the billing hook. In the web console, open the extension from the Add-Ons
-marketplace and click **Subscribe**, or from the CLI:
+the billing hook.
+
+!!! info "Private Beta: contact us to enable"
+    While Cloud Security is in Private Beta, `ext-cloud-security` is not
+    publicly subscribable — you cannot turn it on yourself. Contact us and we
+    will enable it for your organization. Enabling it requires the
+    `billing.ctrl` and `user.ctrl` permissions and an active billing
+    subscription on the organization.
+
+Confirm the organization is enabled:
+
+```bash
+limacharlie extension list --oid $OID
+```
+
+Once the extension is publicly subscribable, the same enable is a single
+command (and a **Subscribe** button on **Extensions → Cloud Security** in the
+console):
 
 ```bash
 limacharlie extension subscribe --name ext-cloud-security --oid $OID
 ```
 
-Until the organization is subscribed, every Cloud Security API route and
-console view returns `403`.
+Until the organization is subscribed, every Cloud Security API route returns
+`403`. The **Cloud Security** workspace is always listed in the organization
+sidebar, but its pages show an "enable Cloud Security" screen — with a link to
+**Extensions** — rather than the product.
 
-Once enabled, **Cloud Security** appears as a workspace in the organization
-sidebar.
+!!! tip "The workspace opens gradually"
+    Before the first provider is connected there is nothing to show, so the
+    workspace deliberately exposes only **Settings** (and **Give Feedback**);
+    the other pages redirect there. The full set of pages appears once a
+    provider exists and its first sweep has data.
 
 ## 2. Connect a provider
 
@@ -36,20 +57,32 @@ steps below use Google Cloud as the worked example.
 
 ### In the console
 
-1. Open **Cloud Security → Settings → Providers** and click **+ Add provider**.
-2. Give the connection a **name**, pick the **provider type**, and fill the
-   type-specific connection fields (for GCP, the scope — a project, folder, or
-   organization).
-3. Supply the **credential**: either reference an existing
-   [secret](../7-administration/config-hive/secrets.md) by
-   `hive://secret/<name>`, or paste the credential to have the console store it
-   as a new secret for you. Credentials are always stored as a secret and
-   referenced — never inlined into the provider record.
-4. Click **Test Provider** to run the read-only preflight (see below), then
-   save. Saving an enabled connection starts collection.
+Open **Cloud Security → Settings → Providers** and click **+ Add provider**.
+The wizard has five steps:
 
-The provider row then shows its sync status, resource count, and per-row actions
-(**What you get**, **Sync now**, **Edit**, **Delete**).
+1. **Name & type** — name the connection and pick the provider type.
+2. **Configuration** — the type-specific connection fields (for GCP, the
+   scope: a project, folder, or organization).
+3. **Permissions** — the credential, plus the list of grants the collector
+   needs and per-OS command-line tabs that create them in the target platform.
+   Reference an existing [secret](../7-administration/config-hive/secrets.md)
+   by `hive://secret/<name>`, or paste the credential to have the console store
+   it as a new secret for you. Credentials are always stored as a secret and
+   referenced — never inlined into the provider record.
+4. **Sync cadence** — how often to re-enumerate, from 30 minutes to daily, or
+   a custom interval.
+5. **Summary** — review, then click **Add provider**. Saving an enabled
+   connection starts collection, and the closing screen reports the status of
+   that first scan.
+
+**Test Provider** sits in the wizard footer on every step, so you can run the
+read-only preflight (see below) as soon as the credential is in place rather
+than waiting until the end.
+
+The provider list then shows one row per connection with its **Source**,
+**Connection**, **Scope**, **Status**, **Resources**, and **Last sync**, plus
+per-row actions: **Sync now**, **Edit**, **Delete**, and — once the connection
+has reported what it can collect — **What you're getting**.
 
 ### As code
 
@@ -153,15 +186,12 @@ Sensitivity drives the attack-path and CIEM analytics: "exposed workload that
 can reach *sensitive* data" and "external identity with access to *sensitive*
 store" both need to know what sensitive means in your estate.
 
-!!! tip "Content-based classification"
-    Beyond declaring crown jewels by name/label, you can add `content_class`
-    rules so that data stores where the agentless scanner samples sensitive
-    content (`pii`, `pci`, `phi`, `financial`) are treated as sensitive. Detected
-    content classes are always surfaced as facts on a resource; a `content_class`
-    rule is what turns a detection into a sensitivity claim. See
-    [Configuration](configuration.md#classification-crown-jewels). (The former
-    `auto_classify` boolean has been replaced by these explicit, previewable
-    rules.)
+!!! note "Content-based classification is not yet available"
+    Classification rules accept a `content_class` dimension, intended to let
+    detected data content drive sensitivity, but content detection is not live
+    in the current release — declare your crown jewels by account, name,
+    resource type, label, or tag. (The former `auto_classify` boolean has been
+    retired in favour of these explicit, previewable rules.)
 
 In the console, the same policy is authored on **Cloud Security → Policies →
 Data classification**, where a live **Simulate** panel shows exactly which

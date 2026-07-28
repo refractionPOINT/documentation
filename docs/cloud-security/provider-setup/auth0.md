@@ -14,6 +14,13 @@ policy, attack protection, and session lifetimes.
 **Auth model:** a **Machine-to-Machine application** authorized against the
 **Auth0 Management API** with read-only scopes, using client credentials.
 
+!!! info "Auth0 Organizations are not collected"
+    **Auth0 Organizations (B2B)** — organizations, their members, and
+    organization-scoped role assignments — are outside the current coverage. On
+    a tenant that uses them, users, roles and applications are still
+    inventoried tenant-wide; what is missing is the per-organization
+    membership and role scoping. Granting extra scopes does not change this.
+
 ## Prerequisites
 
 - Auth0 tenant admin access.
@@ -82,9 +89,12 @@ checkboxes → **Update**.
 ```
 
 ```bash
-limacharlie hive set --hive-name secret --key auth0-m2m \
-    --input-file auth0-secret.json --enabled
+limacharlie secret set --key auth0-m2m \
+    --value "$(cat auth0-secret.json)" --enabled
 ```
+
+`secret set` wraps the value into the secret record's `{"secret": "..."}`
+envelope for you.
 
 ## Create the provider record
 

@@ -6,7 +6,8 @@
     availability. Contact us if you would like access.
 
 Collects your OpenAI platform organization as an AI-security surface: projects,
-members and service accounts, API keys (with last-used timestamps, so dormant
+members (including pending invites — staged seats that have never logged in)
+and service accounts, API keys (with last-used timestamps, so dormant
 and over-scoped keys surface), org Admin API keys, mTLS certificates, and
 audit-log availability posture.
 
@@ -45,17 +46,22 @@ configuration-change forensics — the `audit_logs` check reports that.
 
 ## Create the credentials secret
 
+The secret's shape is:
+
 ```json
 {"admin_api_key": "sk-admin-..."}
 ```
 
-You may also paste the bare key string; it is wrapped into this shape
-automatically.
+You may also store the bare key string; it is wrapped into this shape
+automatically, which makes it a one-liner:
 
 ```bash
-limacharlie hive set --hive-name secret --key openai-admin-key \
-    --input-file openai-secret.json --enabled
+limacharlie secret set --key openai-admin-key \
+    --value 'sk-admin-...' --enabled
 ```
+
+`secret set` wraps whatever you pass in `--value` into the secret record's
+`{"secret": "..."}` shape for you.
 
 ## Create the provider record
 
@@ -75,7 +81,9 @@ sweeping the wrong organization. Useful when one team manages several OpenAI
 orgs.
 
 In the web app: **Add provider → OpenAI**, then set **Credentials** and
-**Refresh interval**.
+**Refresh interval**. The optional **Organization ID** field is the same
+assertion as `openai_org_id`; leave it blank to have the organization
+discovered.
 
 ## Verify
 

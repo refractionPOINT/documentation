@@ -8,9 +8,10 @@
 Inventories your **own LimaCharlie tenancy** as an estate, like any other SaaS
 platform: org members as identities (with MFA state), API keys as machine
 identities, sensors as assets, installation keys, telemetry outputs, extension
-subscriptions, and configuration stores. Posture findings cover org MFA
-enforcement, unrestricted privileged API keys, insecure telemetry-output
-transports, stale enrollment keys, and non-expiring secrets.
+subscriptions, and configuration stores. Posture findings cover sign-in
+requirements, unrestricted privileged API keys, insecure telemetry-output
+transports, stale enrollment keys, config stores holding records that fail to
+apply, and non-expiring secrets.
 
 **Auth model:** a LimaCharlie **API key** — either an **org** key (one
 organization) or a **user** key (every organization that user can reach, which
@@ -23,8 +24,16 @@ is the MSSP fleet case).
 | **Org key** | `limacharlie_oid` | That one organization | You want a single tenant inventoried |
 | **User key** | `limacharlie_uid` | Every organization the user can reach, one account each | You run a fleet and want them all in one connection |
 
-Org-level MFA/SSO enforcement posture is observable **only in user-key mode** —
-the underlying endpoint rejects org identities.
+!!! note "What the MFA/SSO posture actually describes"
+    The sign-in posture on the Account node (required MFA, SSO-only sign-in) is
+    the policy attached to the **email domain of the user whose key is in
+    use** — the requirements that apply to everyone signing in with an address
+    in that domain. It is not a per-organization setting, so a user key reaching
+    several orgs reports the same posture on each of them.
+
+    It is therefore observable **only in user-key mode**: an org key has no user
+    identity behind it, so the posture is reported as unobserved rather than as
+    "not enforced".
 
 ## Required permissions
 
@@ -53,15 +62,52 @@ Set these on the API key. Each maps to a preflight check of the same name.
 |---|---|---|
 | `ext.conf.get` | Extension subscriptions as applications | `extensions` |
 | `replicant.get` | Extension configuration detail | `replicant` |
-| `billing.ctrl` | Org-level MFA/SSO enforcement posture *(user-key mode only)* | `billing` |
-| `secret.get.mtd` | The secret config store + non-expiring-secret findings | `secret_mtd` |
-| `lookup.get.mtd` | The lookup config store | `lookup_mtd` |
-| `yara.get.mtd` | The YARA config store | `yara_mtd` |
-| `query.get.mtd` | The query config store | `query_mtd` |
-| `playbook.get.mtd` | The playbook config store | `playbook_mtd` |
+| `billing.ctrl` | Sign-in requirement posture on the Account node *(user-key mode only)* | `billing` |
 
-All `*.get.mtd` permissions read **metadata only** — record names and
-attributes, never secret values or rule bodies.
+!!! info "Several permissions satisfy the extension read"
+    The extension-subscription read accepts **any** of `ext.conf.get`,
+    `ext.conf.get.mtd`, `ext.conf.set`, `ext.conf.set.mtd`, `ext.conf.del`,
+    `ext.request` or `billing.ctrl`, and the `extensions` check passes on any
+    one of them. `ext.conf.get` is simply the narrowest of the set.
+
+### Configuration stores
+
+Each configuration store is inventoried separately and needs its own
+metadata-read permission. Grant only the stores you want inventoried — a store
+whose permission is missing is left out, with no effect on the rest of the
+sweep.
+
+| Store | Permission | Preflight check |
+|---|---|---|
+| Secrets | `secret.get.mtd` | `secret_mtd` |
+| Lookups | `lookup.get.mtd` | `lookup_mtd` |
+| YARA | `yara.get.mtd` | `yara_mtd` |
+| Queries | `query.get.mtd` | `query_mtd` |
+| Playbooks | `playbook.get.mtd` | `playbook_mtd` |
+| D&R rules (general) | `dr.list` | — |
+| D&R rules (managed) | `dr.list.managed` | — |
+| False-positive rules | `fp.ctrl` | — |
+| Cloud sensors | `cloudsensor.get.mtd` | — |
+| External adapters | `externaladapter.get.mtd` | — |
+| AI agents | `ai_agent.get.mtd` | — |
+| Extension configuration | `ext.conf.get.mtd` (or `ext.conf.get` above) | — |
+
+!!! warning "Only the first five stores are preflighted"
+    `provider test` probes the secret, lookup, YARA, query and playbook stores
+    only. The stores below them have no check of their own: with the permission
+    missing, the test still reports the connection OK and those stores are
+    simply absent from the inventory. If you expected a store and do not see
+    it, compare the key's permissions against this table.
+
+    Note also that `fp.ctrl` is broader than read-only — LimaCharlie has no
+    read-only false-positive-rule permission, the same trade-off as `user.ctrl`
+    and `apikey.ctrl` above. It is used strictly for listing.
+
+All `*.get.mtd` and `*.list` permissions read **metadata only** — record names
+and attributes, never secret values or rule bodies. That metadata includes each
+store's count of records whose last apply failed, which is what raises the
+broken-records finding, and (for the secret store) which stored credentials
+carry no expiry.
 
 ## Create the API key
 
@@ -95,12 +141,17 @@ interface.
 {"api_key": "<the-api-key>"}
 ```
 
-A bare key string is also accepted and wrapped automatically.
+A bare key string is also accepted and wrapped automatically, so the key can go
+in directly:
 
 ```bash
-limacharlie hive set --hive-name secret --key limacharlie-collector \
-    --input-file lc-secret.json --enabled
+limacharlie secret set --key limacharlie-collector \
+    --value '<the-api-key>' --enabled
 ```
+
+`secret set` wraps the value into the secret record's `{"secret": "..."}`
+envelope for you. To store the JSON object form instead, pass
+`--value "$(cat lc-secret.json)"`.
 
 ## Create the provider record
 
@@ -155,5 +206,7 @@ it passes or fails.
 | `auth` fails | Key revoked, mistyped, or an org key used in user mode (or vice versa) | Re-copy the key; confirm the mode matches the field you set |
 | `scope` fails | `limacharlie_oid` is not the org the key belongs to, or the user ID is wrong | Confirm the org UUID / user ID; the user ID is case-sensitive |
 | A permission check fails after granting it | Permission changes need the key's effective permissions to refresh | Re-run the test; re-issue the key if it persists |
-| `billing` fails in org-key mode | Expected — org MFA/SSO posture is only observable with a user key | Use user-key mode if you want that posture |
+| `billing` fails in org-key mode | Expected — the sign-in posture is keyed on a user identity, so an org key cannot observe it | Use user-key mode if you want that posture |
+| `billing` reports the permission as missing, yet the sign-in posture is collected | The check looks for `billing.ctrl` on the key, while the underlying read is gated on the user identity rather than that permission | Grant `billing.ctrl` if you want the check to pass cleanly |
+| A configuration store is missing from the inventory | Its metadata-read permission is not on the key, and most stores have no preflight check | Grant the store's permission from the [Configuration stores](#configuration-stores) table |
 | Only some orgs appear in user-key mode | The user does not have the required permissions in the missing orgs | Grant the same permission set in each org you want inventoried |
