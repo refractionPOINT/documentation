@@ -254,9 +254,9 @@ operator/policy disposition).
       feed: a saved graph query becomes a detection source, emitting per anchor
       entering and leaving its match set (and one `.overbudget` instead of a
       flood when the match set blows its cap).
-    - `cloudsec.sweep_failed` / `cloudsec.scan_failed` — operational events for
-      alerting on collection and scanner health, gated by the `emission`
-      policy's `ops_events` flag (**off by default**).
+    - `cloudsec.sweep_failed` — the operational event for alerting on
+      collection health, gated by the `emission` policy's `ops_events` flag
+      (**off by default**).
 
 !!! warning "Drive automation from events, read state from the API"
     Event emission is best-effort and at-most-once: events queue in a bounded

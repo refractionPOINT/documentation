@@ -67,14 +67,8 @@ multi-tenant policy management a script, not a UI workflow.
 | Hive | Record | Purpose |
 |---|---|---|
 | `cloudsec_provider` | one per connection | what to collect — one of thirteen connectors spanning cloud infra, identity/IdP, SaaS, AI, and LimaCharlie self-inventory (see [Providers](../cloud-security/providers.md) for the full list) |
-| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation — accepted but not yet evaluated; see the [Configuration reference](../cloud-security/configuration.md)), `scanning` (the agentless snapshot scanner's ruleset), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
+| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation — accepted but not yet evaluated; see the [Configuration reference](../cloud-security/configuration.md)), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
 | `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
-
-The `scanning` type names the `yara` hive records the agentless snapshot scanner
-runs and how each one's hits are classified (into the `malware`, `secret`, and
-`scan_finding` finding classes), plus an optional compute scope. There is no
-built-in ruleset: creating the policy *is* the opt-in, the same user-declared-only
-stance as classification.
 
 !!! note "`limacharlie sync` does not cover these hives"
     The `cloudsec_*` hives are outside the set `limacharlie sync` walks, so a

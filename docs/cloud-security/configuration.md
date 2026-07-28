@@ -13,7 +13,7 @@ tenant onboarding and fleet-wide policy a script, not a UI workflow (see
 | Hive | Records | Purpose |
 |---|---|---|
 | `cloudsec_provider` | one per cloud / IdP / SaaS / AI connection | what to collect and with which credential |
-| `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, scanning, emission, exclusions, suppression, compliance assignments |
+| `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, emission, exclusions, suppression, compliance assignments |
 | `cloudsec_query` | one per saved query | shared saved graph queries |
 
 !!! info "Permissions"
@@ -135,7 +135,7 @@ not accept is **rejected when you save** rather than silently ignored:
 
 | Dimension | Where it is honored |
 |---|---|
-| `tag` | compute resources only. Within `classification` that means the `compute` section; the dimension is also accepted on `coverage`, `scanning` scopes, and `exclusions`. |
+| `tag` | compute resources only. Within `classification` that means the `compute` section; the dimension is also accepted on `coverage` and `exclusions`. |
 | `public` | data stores **and** compute. |
 | `content_class` | data stores only — and not yet populated, see the caveat above. |
 | `label` / `label_key_present` | resources carrying cloud labels. Not honored on `classification.identities`. |
@@ -218,46 +218,6 @@ covered; `exempt` wins.
     documented for records that already exist and for the shape it will take
     when evaluation lands; it is not synced with the CAASM policy.
 
-### `scanning` — what the agentless scanner looks for
-
-Declares what the agentless snapshot scanner looks for inside cloud workloads.
-There is **no built-in scanning**: with no `scanning` policy the scanner runs no
-content rules at all. Creating the policy *is* the opt-in — the same
-user-declared-only stance as `classification`.
-
-```json
-{
-  "policy_type": "scanning",
-  "scanning": {
-    "rules": [
-      {"yara_rule": "known-implants", "classification": "malware"},
-      {"yara_rule": "cloud-credentials", "classification": "secret"}
-    ],
-    "scope": [
-      {"account_glob": ["proj-prod-*"]}
-    ]
-  }
-}
-```
-
-`rules` is required and non-empty. Each entry is a binding of a YARA ruleset to
-a classification:
-
-| Field | Meaning |
-|---|---|
-| `yara_rule` | The **name of a record in your org's `yara` hive**, not inline YARA source. Every `rule` block inside that record is compiled and run. |
-| `classification` | How every hit from that ruleset is labeled. `malware` and `secret` are the built-in classes and produce `malware` / `secret` findings; any other value is preserved as a custom label that scan findings are grouped by. |
-
-`scope` is optional and applies to the whole policy, as cost control over which
-compute is snapshot-scanned: empty means **all** compute is in scope, and when
-non-empty only compute matching a scope rule is scanned. Scope rules match
-compute, so they follow the compute matcher rules (`tag` allowed, `classes`
-rejected).
-
-Scanning also has its own exclusion list, and an **exclusion beats the include
-scope**: a workload matching a scanning exclusion is never scanned even if a
-scope rule selects it.
-
 ### `emission` — the event feed
 
 Controls which Cloud Security events reach the organization's event stream:
@@ -266,7 +226,7 @@ Controls which Cloud Security events reach the organization's event stream:
 |---|---|---|
 | `resource_events` | `cloud_resource.*` inventory change events | off |
 | `finding_events` | `cloud_finding.*` lifecycle events | on |
-| `ops_events` | operational events — `cloudsec.sweep_failed` and `cloudsec.scan_failed` | off |
+| `ops_events` | operational events — `cloudsec.sweep_failed` | off |
 | `severity_floor` | drop finding events below this severity (`CRITICAL` … `INFO`); the first-sync summary still counts the whole estate | none |
 | `suppress_first_sync` | emit one summary instead of a per-finding flood on the first / rebuild sweep | on |
 
@@ -276,15 +236,13 @@ event taxonomy.
 ### `exclusions` — the escape hatch
 
 The per-org escape hatch for whales and noise: the account with hundreds of
-thousands of buckets, the workload too expensive to scan, the account whose
-events should never reach your stream. It has **three independent rule lists**,
-one per surface, and a rule on one surface has no effect on the others. At least
-one list must be non-empty:
+thousands of buckets, the account whose events should never reach your stream.
+It has **independent rule lists**, one per surface, and a rule on one surface
+has no effect on the others. At least one list must be non-empty:
 
 | List | Effect |
 |---|---|
 | `collection` | Matching scopes are skipped by the collection sweep. Only this list may add the `services` and `resource_types` narrowers on top of the shared resource matchers — an account-only rule excludes the whole account, while adding `services`/`resource_types` narrows the exclusion to those collector services or resource types inside the matched scope. |
-| `scanning` | Matching workloads are never snapshot-scanned. This **beats** the include scope of the `scanning` policy above. |
 | `emission` | Matching events are dropped before delivery to the event stream. Only account/name/provider matchers are honored here — an emission rule constrained on labels or tags can never be satisfied by a lean event and so never drops one. |
 
 !!! warning "A collection exclusion deletes the inventory it excludes"

@@ -73,7 +73,7 @@ Shared behaviors:
 | `GET /overview` | Composed risk overview in one round-trip: `score`, `severity_counts`, `open_count`, `reachable_open`, `reachable_criticals`, `top_paths`, `coverage`, `trend`, `recent_changes`, the per-tenant `usage` metering block, and `top_issue` when there is one. Also carries `estate_shape` (`cloud` \| `identity` \| `hybrid`) and, for an identity or hybrid estate, an `identity_summary` posture headline — both best-effort and omitted on a read failure. Param: `trend_days` (default 30). |
 | `GET /changes` | `{changes}` — created/closed feed, newest first. Param: `limit` (default 50, clamped to 1000). |
 | `GET /risk-trend` | `{trend}` — score history, oldest first. Param: `trend_days`. |
-| `GET /scan-status` | Collection run state. With `provider` set: `{status}` for that provider — ids are lowercase and the lookup is case-sensitive, so an unknown or miscased id reads as never-scanned. With `provider` omitted: `{coverage, workload, status}` — per-provider run state for every connected cloud provider, the agentless workload-scan state separately (it is a different pass, not cloud-inventory coverage), and `status` as the first cloud provider's state for backward compatibility. There is no default provider. |
+| `GET /scan-status` | Collection run state. With `provider` set: `{status}` for that provider — ids are lowercase and the lookup is case-sensitive, so an unknown or miscased id reads as never-scanned. With `provider` omitted: `{coverage, workload, status}` — per-provider run state for every connected cloud provider, `status` as the first cloud provider's state for backward compatibility, and a reserved `workload` section. There is no default provider. |
 | `GET /resolve/sensors?sid=…` | `{resolved, unresolved}` — sensor → cloud asset, bulk via repeated `sid` (server cap 500/request; keep URLs under ~8KB — the CLI/SDK chunks automatically). |
 | `GET /resolve/assets?urn=…` | `{resolved, unresolved}` — cloud asset → sensors, bulk via repeated `urn` (same caps and chunking). |
 | `GET /caasm/assets` | `{resources, next_cursor}` — the merged third-party asset inventory. Params: `q`, `kind[]`, `source[]` (which observing tool reported the asset), the four repeatable device-posture filters `posture_encryption`, `posture_screen_lock`, `posture_compromised`, `posture_managed`, `sort` (`urn` default, or `last_seen`), paging. Pass an **empty** value to a posture filter to select the assets no source reported that fact for — unreported is not the same as compliant. Also carries `served_from` / `data_as_of` when the page came from the materialized merged view. |
@@ -150,7 +150,7 @@ carry the same shape) — key fields:
 | Field | Meaning |
 |---|---|
 | `finding_id`, `fingerprint` | Stable identity of the condition (`fnd_` + fingerprint prefix). |
-| `rule_id`, `finding_class`, `classification` | What detected it and its class. The canonical enum, in picker order (paths → identity → posture → workload scan → coverage), is `toxic_combination`, `public_exposure`, `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`, `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`. Of those, `malware`, `secret`, and `scan_finding` come from the agentless snapshot scanner. `workload_coverage_gap`, the cloud-workload flavor of a coverage gap, can additionally appear on a finding even though it is not one of the 11 picker values. |
+| `rule_id`, `finding_class`, `classification` | What detected it and its class. The canonical enum is `toxic_combination`, `public_exposure`, `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`, `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture` (`malware`, `secret`, and `scan_finding` are reserved for capabilities not yet enabled). `workload_coverage_gap`, the cloud-workload flavor of a coverage gap, can additionally appear on a finding even though it is not one of the 11 picker values. |
 | `severity`, `lc_risk`, `risk_breakdown` | `CRITICAL`–`INFO`, the 0–1000 composite, and its explanation. |
 | `title`, `resource_urn`, `resource_name`, `resource_type`, `account`, `region` | The affected resource. |
 | `related_urns`, `path`, `path_kind` | Related resources; the hop list for path findings and the kind of path it represents. |
@@ -223,9 +223,8 @@ emits `cloud_query.match` once per new anchor entering its result set and
 findings — plus `cloud_query.overbudget` once on each transition into the
 over-budget state (rather than a match flood).
 
-**Operational:** `cloudsec.sweep_failed` and `cloudsec.scan_failed` report a
-collection or scan pass that failed. Off by default; opt in with the emission
-policy's `ops_events`.
+**Operational:** `cloudsec.sweep_failed` reports a collection pass that
+failed. Off by default; opt in with the emission policy's `ops_events`.
 
 Every payload also carries `event_type` and `oid`.
 

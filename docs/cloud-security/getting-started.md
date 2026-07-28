@@ -48,6 +48,22 @@ sidebar, but its pages show an "enable Cloud Security" screen — with a link to
     the other pages redirect there. The full set of pages appears once a
     provider exists and its first sweep has data.
 
+### Free tier and trial
+
+Organizations on the free tier (a configured sensor quota of 2 or fewer) can
+trial Cloud Security without upgrading: up to **2 provider connections**, with
+collection running for **14 days** from the day Cloud Security was enabled.
+The Overview page shows the trial banner, and
+[`GET /free-tier`](api-reference.md) reports the standing and limits.
+
+When the trial ends (or a third provider is added), the affected collection
+pauses rather than erroring: the reason appears as the provider's status in
+**Settings → Providers** and in `scan-status`. Nothing is deleted immediately
+and none of your configuration is touched — provider records, credentials, and
+policies all survive — so upgrading resumes collection where it left off within
+minutes. Trial data does age out eventually if the organization stays on the
+free tier.
+
 ## 2. Connect a provider
 
 A provider connection is one `cloudsec_provider` record. Each provider needs a

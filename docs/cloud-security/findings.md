@@ -48,9 +48,9 @@ Each finding carries:
   same fingerprint across sweeps.
 - `finding_class` — one of `toxic_combination`, `public_exposure`,
   `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`,
-  `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`.
-  `malware`, `secret`, and `scan_finding` come from the agentless snapshot
-  scanner. Cloud-workload coverage findings additionally carry
+  `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`
+  (`malware`, `secret`, and `scan_finding` are reserved for capabilities not
+  yet enabled). Cloud-workload coverage findings additionally carry
   `workload_coverage_gap`, which is not part of the class list offered by the
   suppression rule picker.
 - `severity` (`CRITICAL` … `INFO`), `lc_risk`, and the `risk_breakdown`
