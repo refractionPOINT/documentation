@@ -40,7 +40,7 @@ licensed, Conditional Access and sign-in activity.
 | Grant | Unlocks | Preflight check |
 |---|---|---|
 | **Policy.Read.All** (application) | Conditional Access policy posture | *(collected during the sweep)* |
-| **AuditLog.Read.All** (application) | Last-sign-in / dormancy enrichment on identities. **Requires an Entra ID P1 or P2 licence** — without the licence the report is unavailable regardless of consent | `signin_activity` |
+| **AuditLog.Read.All** (application) | Two things: last-sign-in / dormancy enrichment on identities, and each identity's **MFA-registration state** (whether the user is MFA-registered / MFA-capable, from the authentication-methods registration report). **Requires an Entra ID P1 or P2 licence** — without the licence the reports are unavailable regardless of consent | `signin_activity` covers the sign-in half only |
 | **RoleManagement.Read.Directory** (application) | Directory role assignments and PIM eligibility | *(collected during the sweep)* |
 | **Application.Read.All** (application) | Fuller app-registration / service-principal credential detail | *(collected during the sweep)* |
 | **AdministrativeUnit.Read.All** (application) | Administrative-unit scoping | *(collected during the sweep)* |
@@ -49,6 +49,12 @@ licensed, Conditional Access and sign-in activity.
 
 A denied Graph permission 403s only its own collector — that surface goes
 unobserved while everything else still collects.
+
+!!! note "MFA-registration state has no preflight check of its own"
+    The `signin_activity` check probes the sign-in report only. MFA-registration
+    state is read during the sweep, so if that particular report is denied or
+    unlicensed the provider test still passes and the symptom is identities with
+    **no MFA-registration information** rather than a failing check.
 
 ## Create the app registration
 
@@ -108,9 +114,13 @@ az ad app permission admin-consent --id "$APP_ID"
 ```
 
 ```bash
-limacharlie hive set --hive-name secret --key azure-sp \
-    --input-file azure-secret.json --enabled
+limacharlie secret set --key azure-sp \
+    --value "$(cat azure-secret.json)" --enabled
 ```
+
+`secret set` wraps the value into the secret record for you — the equivalent of
+`limacharlie hive set --hive-name secret` with `{"secret": "<the credential JSON
+as a string>"}`.
 
 ## Create the provider record
 
@@ -134,13 +144,18 @@ refresh: 6h
     back to the single configured subscription.
 
 In the web app: **Add provider → Azure**, then set **Tenant ID**, **Client
-ID**, **Subscription ID**, **Credentials**, and **Refresh interval**.
+ID**, **Subscription ID**, **Credentials**, and the **Sync cadence** (pick a
+preset, or **Custom interval** for a duration of your own).
 
 ## Verify
 
 ```bash
 limacharlie cloudsec provider test --input-file provider.yaml
 ```
+
+The report opens with the `config` and `credential` checks common to every
+provider, [documented once in Provider Setup](index.md#the-two-checks-every-provider-reports-first);
+the Azure-specific checks follow.
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|

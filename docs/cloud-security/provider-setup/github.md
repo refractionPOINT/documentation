@@ -5,10 +5,11 @@
     configuration formats described here may change before general
     availability. Contact us if you would like access.
 
-Collects a GitHub organization: org settings, members and teams (identities),
-repositories and their branch protection (data stores), installed GitHub Apps,
-webhooks, deploy keys and Actions secrets (machine identities), and the Actions
-OIDC subject configuration that lets workflows assume cloud roles.
+Collects a GitHub organization: org settings, members (including outside
+collaborators) and teams (identities), repositories and their branch protection
+(data stores), installed GitHub Apps, deploy keys and Actions secrets (machine
+identities), and the Actions OIDC subject configuration that lets workflows
+assume cloud roles.
 
 **Auth model:** a **GitHub App installed on the organization**, with a
 read-only permission set. The App's private key is used to mint short-lived
@@ -33,11 +34,18 @@ Create the App with **read-only** access on the following. All are
 
 | Permission | Scope | Unlocks | Preflight check |
 |---|---|---|---|
-| **Administration** | Organization | Installed-App inventory → over-privileged-app findings | `installed_apps` |
+| **Administration** | Organization | Installed-App inventory → over-privileged-app findings; the org's **MFA-required** posture; the per-member MFA-enrollment cross-check | `installed_apps` |
 | **Secrets** | Organization | Organization Actions-secret inventory (**names only**, never values) | `org_secrets` |
-| **Administration** | Repository | Branch-protection posture | *(collected during the sweep)* |
-| **Secrets** | Repository | Repository Actions-secret inventory (names only) | *(collected during the sweep)* |
-| **Webhooks** | Organization + Repository | Webhook inventory (data-egress surface) | *(collected during the sweep)* |
+| **Administration** | Repository | Branch-protection posture and deploy-key inventory (deploy keys are also the one activity signal — see [Known limitations](#known-limitations)) | *(collected during the sweep)* |
+| **Secrets** | Repository | Whether a repository has Actions secrets at all — an existence flag, not a name list (org-level secrets are the ones inventoried by name) | *(collected during the sweep)* |
+
+!!! note "The setup wizard asks for Administration as required"
+    The in-product **Add provider** wizard lists both Administration grants
+    (organization and repository) as required rather than optional. Collection
+    still succeeds without them — the required permissions above are what gate
+    the connection — but most of the useful posture depends on them (org MFA,
+    per-member MFA, branch protection, deploy keys, installed Apps), so the
+    wizard asks for them up front. Grant them unless you have a reason not to.
 
 ## Create the GitHub App
 
@@ -75,13 +83,18 @@ live on the provider record.
 {"private_key": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----\n"}
 ```
 
-```bash
-python3 -c 'import json;print(json.dumps({"secret":json.dumps({"private_key":open("app.private-key.pem").read()})}))' \
-  > gh-secret.json
+The key is a multi-line PEM, so JSON-escape it rather than pasting it by hand:
 
-limacharlie hive set --hive-name secret --key github-app-key \
-    --input-file gh-secret.json --enabled
+```bash
+python3 -c 'import json;print(json.dumps({"private_key":open("app.private-key.pem").read()}))' \
+  > gh-key.json
+
+limacharlie secret set --key github-app-key \
+    --value "$(cat gh-key.json)" --enabled
 ```
+
+`secret set` wraps whatever you pass in `--value` into the secret record's
+`{"secret": "..."}` shape for you.
 
 ## Create the provider record
 
@@ -126,7 +139,7 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `auth` fails: `Bad credentials` / JWT rejected | Wrong App ID, or the private key does not belong to that App | Confirm the App ID on the App settings page and regenerate the key if unsure |
 | `auth` fails: `Not Found` on the org | The installation ID belongs to a different account, or the App is not installed on this org | Re-read the installation ID from the installation settings URL |
 | `repos` passes but repositories are missing | The installation was scoped to selected repositories | Re-install with **All repositories**, or accept partial coverage |
-| First sweep takes many minutes | Large orgs need per-repository calls for branch protection, deploy keys, secrets, and webhooks | Expected; subsequent sweeps are incremental |
+| First sweep takes many minutes | Large orgs need per-repository calls for branch protection, deploy keys and the Actions-secret check | Expected; subsequent sweeps are incremental |
 | A permission was added after installing | GitHub requires the installation to accept new permissions | Approve the permission request on the org's installation page |
 
 ## Known limitations
@@ -136,5 +149,12 @@ limacharlie cloudsec provider test --input-file provider.yaml
   analysis is unavailable.
 - **Fine-grained personal access tokens** cannot be enumerated org-wide by an
   App, so they are not inventoried.
+- **Webhooks are not inventoried.** Organization and repository webhooks are
+  out of scope for this connector, so webhook data-egress endpoints do not
+  appear in the graph.
+- **Enterprise-level SAML SSO is not readable.** App installation tokens cannot
+  read enterprise-level SAML identities (a documented GitHub limit), so members
+  of an enterprise-SSO or managed-user org resolve through verified-domain and
+  public-profile emails only. Organization-level SSO is read normally.
 - An **Actions OIDC trust** with no corresponding cloud-side role is reported
   as a dangling trust rather than a fabricated "can assume" edge.

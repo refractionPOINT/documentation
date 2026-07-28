@@ -18,18 +18,43 @@ verbs, and the same automation events.
 
 ## The worklist
 
-Findings are ordered by `lc_risk` — a 0–1000 composite that weighs severity,
-exposure, reachability, exploit intelligence (KEV / EPSS), and whether the
-resource is sensitive. Each finding carries:
+Findings are ordered by `lc_risk` — a 0–1000 composite built from the severity
+of the condition and the exploit intelligence around it, amplified by how much
+the affected resource matters:
+
+- a **severity** base term, plus an **EPSS** term (the exploit-probability of
+  the finding's CVEs) and a **KEV** term (a bonus when a CVE is on CISA's Known
+  Exploited Vulnerabilities list);
+- multiplied by the **criticality** of the affected resource — the tier your
+  [`classification` policy](configuration.md#classification-crown-jewels)
+  assigned it (nothing is critical by default);
+- multiplied by a **blast-radius** factor taken from the graph: how many
+  sensitive nodes are reachable from the affected resource.
+
+Every finding carries a `risk_breakdown` that decomposes its score into those
+terms, so a position in the worklist is always explainable rather than an
+opaque number.
+
+!!! note "Runtime state never moves the score"
+    `lc_risk` is a property of the condition and of the resource's importance.
+    Whether a LimaCharlie sensor happens to be running on the affected asset is
+    context (`runtime_sids`) and can drive its own coverage findings, but it
+    never raises or lowers `lc_risk`.
+
+Each finding carries:
 
 - `finding_id` (stable, prefixed `fnd_`) and `fingerprint` — the identity of
   the *condition*; the same misconfiguration on the same resource keeps the
   same fingerprint across sweeps.
 - `finding_class` — one of `toxic_combination`, `public_exposure`,
   `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`,
-  `coverage_gap`, `device_posture`.
-- `severity` (`CRITICAL` … `INFO`), `lc_risk`, and a `risk_breakdown`
-  explaining the score.
+  `malware`, `secret`, `scan_finding`, `coverage_gap`, `device_posture`
+  (`malware`, `secret`, and `scan_finding` are reserved for capabilities not
+  yet enabled). Cloud-workload coverage findings additionally carry
+  `workload_coverage_gap`, which is not part of the class list offered by the
+  suppression rule picker.
+- `severity` (`CRITICAL` … `INFO`), `lc_risk`, and the `risk_breakdown`
+  above.
 - The affected resource (`resource_urn`, `resource_name`, `resource_type`,
   `account`, `region`), related resources, and — for path findings — the
   full `path` of hops.
@@ -51,6 +76,10 @@ confers — `data_admin` › `data_write` › `data_read` › `metadata` › `no
 not by the mere existence of the grant. "Reaches sensitive data" gates on
 `data_read`-or-higher; `metadata`/`none` grants surface as a lower-severity
 reconnaissance signal, not a top data-access risk.
+
+A grant whose effective capability cannot be resolved is `unknown`. It is not
+assumed harmless: it counts as *potentially* data-capable and surfaces as
+unverified access to review, but it is never treated as proven `data_read`.
 
 List, filter, and paginate server-side:
 
@@ -82,7 +111,8 @@ close) or an operator dispositions it:
 ```bash
 # Accept a known risk for 90 days.
 limacharlie cloudsec finding resolve fnd_0a1b... --kind accepted \
-  --reason "sandbox accepted risk (SEC-123)" --expires-at 1767225600
+  --reason "sandbox accepted risk (SEC-123)" \
+  --expires-at "$(date -d '+90 days' +%s)"
 
 # Reopen it.
 limacharlie cloudsec finding resolve fnd_0a1b... --kind open
@@ -95,7 +125,9 @@ limacharlie cloudsec finding bulk-resolve \
 
 The `bulk-resolve` route applies one disposition to many findings at once, but
 it does **not** accept `open` — reopen findings one at a time with
-`finding resolve <id> --kind open`.
+`finding resolve <id> --kind open`. A single call takes at most **500** finding
+ids; a larger batch is rejected outright rather than silently truncated, so
+split long lists into chunks of 500 yourself.
 
 In the console, the same dispositions are one-click buttons on a finding, plus
 the workflow actions built on top of them:
@@ -173,23 +205,43 @@ the world):
 - `cloud_finding.created` — a new finding; the full finding object rides under
   `event/finding` (including `runtime_sids`).
 - `cloud_finding.updated` — the content of an already-open finding materially
-  changed (a severity flip, a changed vuln set); payload names the
-  `changed` fields, `old_severity`/`new_severity`, and carries the current
-  `finding`.
+  changed. "Material" is a deliberately short list, so the event does not
+  re-fire on every sweep: the **severity** moved (in either direction), the
+  finding became **reachable** (not reachable → reachable), or one of its CVEs
+  entered **KEV** (not in KEV → in KEV). The payload names the `changed`
+  fields, `old_severity`/`new_severity`, and carries the current `finding`.
 - `cloud_finding.closed` — the condition is gone; `{finding_id, fingerprint,
   finding_class}`.
 - `cloud_finding.still_open` — re-asserted at most once per day for open
   findings that carry a linked ticket, the heartbeat that keeps a Case honest
   when the cloud was never actually fixed.
 
-**Operator-disposition verbs** (emitted by the write handlers, flat payload
-`{finding_id, fingerprint, finding_class, actor, note?}`):
+**Operator-disposition verbs** (flat payload
+`{finding_id, fingerprint, finding_class, actor, status, resolution, note?}`):
 `cloud_finding.resolved`, `cloud_finding.dismissed`, `cloud_finding.reopened`,
-`cloud_finding.assigned`.
+`cloud_finding.assigned`. `status` is the finding's new status and `resolution`
+the disposition kind that produced it — note that **both `mitigated` and
+`accepted` emit `cloud_finding.resolved`**, and `resolution` is what tells them
+apart. Key on `resolution` (not on the verb) if "fixed" and "accepted" should
+drive different automation.
+
+These verbs are not exclusively human: when a `suppression` policy
+auto-dispositions a finding it emits the same events, with `actor` set to
+`policy:<rule-name>` — and plain `policy` on the `reopened` event when a rule
+is removed or stops matching and releases its findings. Policy and human
+triage are therefore auditable through one stream, and the `actor` field is
+how you separate them.
 
 **Summary:** on the first-ever projection (or a rebuild) the platform emits a
 single `cloudsec.sync_completed` (`{total, by_class, by_severity}`) instead of
 a per-finding `created` flood — first-sync suppression.
+
+!!! warning "The event feed is best-effort"
+    Emission is at-most-once: events queue in a bounded buffer and the oldest
+    batch is dropped under sustained pressure rather than stalling the sweep.
+    Use the feed to *drive* automation, but treat the read API
+    (`finding list` / `finding get`) as the authoritative state of a finding —
+    it is not a replayable ledger of every transition.
 
 See [Automation & IaC](automation.md#findings-cases-automation) for the
 ready-made Cases loop that keys on `fingerprint`, and the

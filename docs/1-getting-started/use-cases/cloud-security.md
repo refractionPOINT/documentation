@@ -1,5 +1,16 @@
 # Cloud Security
 
+This page is about the telemetry side of cloud security: ingesting, monitoring,
+and retaining log data from cloud platforms and SaaS applications alongside the
+rest of your telemetry.
+
+!!! info "Looking for posture, inventory and attack paths?"
+    LimaCharlie also has a dedicated agentless cloud-native application
+    protection platform (CNAPP) — resource inventory, misconfiguration and
+    vulnerability findings, attack paths, identity (CIEM), data security
+    (DSPM), and compliance across your cloud, identity, SaaS, and AI estate.
+    See [Cloud Security](../../cloud-security/index.md).
+
 The Agentic SecOps Workspace simplifies the difficult task of securing cloud resources and managing complex cloud-based or hybrid infrastructure. LimaCharlie brings better visibility, robust interoperability, and better options for storing data to cloud and hybrid environments.
 
 ## Cloud security problems

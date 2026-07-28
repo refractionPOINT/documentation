@@ -119,10 +119,8 @@ shape.
 ## CSV export
 
 Add `?format=csv` to `findings`, `inventory`, `compliance`, or `query` to
-stream the result as a CSV attachment instead of JSON. The server walks the
-full filtered set itself (filter parameters apply; paging parameters are
-ignored), capped at 100,000 rows with a trailing `#`-comment row as the
-truncation notice:
+stream the result as a CSV attachment instead of JSON. Filter parameters apply;
+paging parameters are ignored, because the export owns its own walk:
 
 ```bash
 curl -H "Authorization: Bearer $JWT" \
@@ -130,8 +128,15 @@ curl -H "Authorization: Bearer $JWT" \
   -o findings.csv
 ```
 
+**`findings` and `inventory`** are multi-page sets, so the server pages through
+the whole filtered set for you, capped at 100,000 rows with a trailing
+`#`-comment row as the truncation notice. **`compliance` and `query`** are
+single-shot: one evaluation or one query execution produces the whole result, so
+there is nothing to walk and the CSV is exactly that result in row form.
+
 The compliance CSV carries one row per control including the proving finding
-ids — the auditor-facing evidence export.
+ids — the auditor-facing evidence export, with a higher per-control evidence cap
+than the JSON report (see [Compliance](compliance.md#auditor-export)).
 
 !!! note "CLI `--output csv` is per-page"
     The CLI's global `--output csv` formats the rows the command returned —
@@ -149,6 +154,13 @@ stream (see the [`emission` policy](configuration.md#emission-the-event-feed)):
 `cloud_finding.still_open` (re-asserted at most once per day for open
 findings with a linked ticket). D&R rules match these like any event; the
 Cases extension actions close the loop.
+
+!!! tip "You do not have to paste these by hand"
+    All three rules below ship as an installable recipe: the Cases toggle in
+    Cloud Security's settings writes them into your general D&R rule set for
+    you, byte-for-byte identical to what follows. Use the toggle for the
+    standard loop, and the YAML here when you want to review what it installs or
+    fork it into something org-specific.
 
 **Auto-case on high/critical findings** (async, grouped, storm-safe — one
 case per rule category per window, and first-sync floods are summarized
@@ -215,15 +227,20 @@ operator/policy disposition).
     The `created` / `closed` / `still_open` verbs above are the Cases loop,
     but D&R rules can key off more of the finding lifecycle:
 
-    - `cloud_finding.updated` — an **open** finding's content materially
-      changed (a severity flip or a change to its vuln set) without re-firing
-      on every sweep. Payload carries `changed[]` (the fields that moved),
+    - `cloud_finding.updated` — an **open** finding changed materially, on a
+      deliberately short list so it does not re-fire every sweep: the severity
+      moved (either direction), the finding became reachable, or one of its CVEs
+      entered KEV. Payload carries `changed[]` (the fields that moved),
       `old_severity`, `new_severity`, and the full `finding` — the hook for
       reacting to escalation (e.g. re-notify only when a finding crosses into
       CRITICAL).
     - `cloud_finding.resolved` / `.dismissed` / `.reopened` / `.assigned` —
-      the operator-disposition verbs, flat payload with an `actor` field, for
-      auditing human triage decisions (who accepted/muted/reopened what).
+      the disposition verbs, flat payload carrying `actor`, `status`, and
+      `resolution`, for auditing triage decisions. Note that **`mitigated` and
+      `accepted` both arrive as `.resolved`** — branch on `resolution`, not on
+      the verb, to tell "fixed" from "accepted". These are not only human
+      actions: a `suppression` policy emits the same verbs with `actor` set to
+      `policy:<rule-name>`.
     - `cloudsec.sync_completed` — the first-sync summary
       (`{total, by_class, by_severity}`) emitted once instead of a
       per-finding `created` flood, so onboarding a large estate is one event,
@@ -232,6 +249,22 @@ operator/policy disposition).
       change events, gated by the [`emission`
       policy](configuration.md#emission-the-event-feed)'s `resource_events`
       flag (**off by default**).
+    - `cloud_query.match` / `.resolved` / `.overbudget` — the
+      [scheduled-query](configuration.md#scheduled-queries-any-saved-query-as-a-detection-source)
+      feed: a saved graph query becomes a detection source, emitting per anchor
+      entering and leaving its match set (and one `.overbudget` instead of a
+      flood when the match set blows its cap).
+    - `cloudsec.sweep_failed` — the operational event for alerting on
+      collection health, gated by the `emission` policy's `ops_events` flag
+      (**off by default**).
+
+!!! warning "Drive automation from events, read state from the API"
+    Event emission is best-effort and at-most-once: events queue in a bounded
+    buffer and the oldest batch is dropped under sustained pressure rather than
+    stalling the sweep. That is the right trade for triggering work, but it means
+    the feed is not a replayable ledger. Whenever correctness matters — a
+    reconciliation job, a nightly audit, "is this really still open?" — read the
+    findings API rather than replaying events.
 
 **Non-Cases shops:** route the same `cloud_finding.*` events to
 Jira/ServiceNow via an Output and key your tickets on `fingerprint` the same

@@ -59,6 +59,20 @@ limacharlie hive set --hive-name secret --key <name> \
 
 where `secret.json` is `{"secret": "<the credential JSON, as a string>"}`.
 
+The `secret set` shortcut does that wrapping for you, so you can hand it the
+credential itself — `credential.json` below is the provider's credential JSON,
+with no `{"secret": …}` envelope:
+
+```bash
+limacharlie secret set --key <name> --value "$(cat credential.json)" --enabled
+```
+
+!!! note "`--value` lands in your shell history"
+    Anything passed on the command line is visible in the process list and in
+    shell history. To avoid that, pipe the record on stdin instead —
+    `echo '{"secret": "…"}' | limacharlie secret set --key <name> --enabled` —
+    or use `--input-file`.
+
 !!! tip "Bare keys are accepted for single-key providers"
     For [OpenAI](openai.md), [Anthropic](anthropic.md), and
     [LimaCharlie](limacharlie.md) you may store the raw key string instead of a
@@ -80,7 +94,8 @@ over the required checks only.** A failed **optional** check means that surface
 degrades gracefully — an inventory type goes unobserved — rather than the
 connection failing, and its `detail` names exactly what you lose.
 
-Every provider page lists its check IDs and what each one means.
+Every provider page lists its platform-specific check IDs and what each one
+means, on top of the two common checks below.
 
 Once a record passes preflight, save it:
 
@@ -94,6 +109,30 @@ limacharlie hive set --hive-name cloudsec_provider --key <name> \
     Providers → Add provider**, with secrets managed under **Organization
     Settings → Secrets Manager**. The **Test Provider** button runs the same
     preflight.
+
+### The two checks every provider reports first
+
+Before any provider-specific probe runs, the report always contains these two
+**required** checks. They are identical for all thirteen connectors, which is
+why the per-provider tables in this section start at `auth`:
+
+| Check | Required | Meaning if it fails |
+|---|:--:|---|
+| `config` | ✅ | The provider record itself is malformed — a field required for this `provider_type` is missing or ill-formed (a scope that is not in the expected shape, an ARN that does not parse, and so on). Nothing is contacted. |
+| `credential` | ✅ | The `hive://secret/<name>` reference could not be resolved — no such secret, or it is disabled — or the secret's contents are not the JSON shape that provider documents. Nothing is contacted. |
+
+Only once both pass does `auth` actually reach the platform.
+
+!!! warning "Unknown fields on the provider record are rejected, not ignored"
+    The provider record is parsed **strictly**, both by `provider test` and on
+    the Hive write: an unrecognized key is an error rather than something
+    silently dropped. A misspelled field name therefore fails outright, with the
+    offending key named, instead of quietly leaving a setting unapplied — use the
+    exact names from [Configuration](../configuration.md#cloudsec_provider).
+    Credential secrets are **not** strict in the same way: an unrecognized key
+    there is dropped without complaint, which is why a mistyped credential field
+    surfaces later as an authentication failure instead. Each provider page
+    documents its exact credential keys.
 
 ## Fields every provider accepts
 
@@ -123,7 +162,7 @@ limacharlie hive set --hive-name cloudsec_provider --key <name> \
 | Provider | `secret` value |
 |---|---|
 | [Google Cloud](gcp.md) | The service-account key JSON |
-| [AWS](aws.md) | `{"access_key_id": "...", "secret_access_key": "..."}` *(optional `session_token`)* |
+| [AWS](aws.md) | `{"access_key_id": "...", "secret_access_key": "..."}` |
 | [Azure](azure.md) | `{"client_id": "...", "client_secret": "..."}` |
 | [Entra ID](entra.md) | `{"client_id": "...", "client_secret": "..."}` |
 | [Okta](okta.md) | `{"org_url": "...", "client_id": "...", "private_key": {…JWK…}}`, or `{"org_url": "...", "api_token": "..."}` |

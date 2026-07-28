@@ -11,7 +11,10 @@ Two topologies:
 - **Single account** (below): one IAM user plus one role in that account.
 - **AWS Organization:** deploy the same role to every account via a
   service-managed CloudFormation StackSet and set `aws_member_role_name`; the
-  base user additionally needs `organizations:List*` / `Describe*`.
+  **management-account role** named by `aws_role_arn` additionally needs
+  `organizations:List*` / `Describe*`. The base IAM user still needs nothing
+  beyond `sts:AssumeRole` — member-account discovery is performed with the
+  assumed role, not with the user's own credentials.
 
 ## Architecture (least-privilege)
 
@@ -70,17 +73,24 @@ aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + Secr
 {"access_key_id": "AKIA...", "secret_access_key": "..."}
 ```
 
-!!! warning "No `aws_` prefix"
+!!! warning "No `aws_` prefix, and no other keys"
     `aws_access_key_id` / `aws_secret_access_key` are silently ignored — the
     SDK then falls back to the default credential chain and the auth check
     fails with `no EC2 IMDS role found`. Use the bare `access_key_id` /
-    `secret_access_key` keys. (Optional third key: `session_token` for
-    temporary credentials.)
+    `secret_access_key` keys. Those two are the only keys read: a
+    `session_token` is **not** supported, so temporary/session credentials
+    cannot be used here (they are dropped, and the assume then fails with
+    `InvalidClientTokenId`). Use the long-lived access key of the dedicated IAM
+    user — the role it assumes is where the read permissions live.
 
 ```bash
-limacharlie hive set --hive-name secret --key aws-credentials \
-    --input-file aws-secret.json
+limacharlie secret set --key aws-credentials \
+    --value "$(cat aws-secret.json)" --enabled
 ```
+
+`secret set` wraps the value into the secret record for you — the equivalent of
+`limacharlie hive set --hive-name secret` with `{"secret": "<the credential JSON
+as a string>"}`.
 
 ## Create the provider record
 
@@ -101,13 +111,17 @@ credentials: hive://secret/aws-credentials
 limacharlie cloudsec provider test --input-file provider.yaml
 ```
 
+The report opens with the `config` and `credential` checks common to every
+provider, [documented once in Provider Setup](index.md#the-two-checks-every-provider-reports-first);
+the AWS-specific checks follow.
+
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | `sts:AssumeRole` failed — wrong external ID, trust policy, or credentials. Nothing else is probed. |
 | `ec2` | ✅ | Compute inventory unavailable. |
 | `iam` | ✅ | IAM inventory unavailable — the CIEM access graph cannot be built. |
 | `s3` | ✅ | Storage inventory unavailable. |
-| `regions` | — | Enabled-region enumeration unavailable; the sweep falls back to `aws_regions` or defaults. |
+| `regions` | — | Only meaningful when `aws_regions` is **unset** (with it set the check is skipped as unnecessary, and still counts as passing). Enabled-region enumeration was denied, so the sweep falls back to `us-east-1` alone — list the regions you want in `aws_regions`. |
 | `organizations` | — | Member-account discovery unavailable; only the connected account is swept. |
 | `inspector` | — | Workload vulnerability findings unavailable. |
 | `secrets_manager` | — | Secret-store inventory unavailable. |

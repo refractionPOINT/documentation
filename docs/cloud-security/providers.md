@@ -79,9 +79,11 @@ Azure infrastructure to enumerate, use the standalone `entra` provider instead.
 ## Identity providers
 
 Identity providers ingest a directory — users, groups, and app assignments —
-into the identity graph rather than cloud infrastructure. They unify with cloud
-IAM principals by email, which is what makes cross-surface CIEM ("this Workspace
-user has admin on that GCP bucket") possible.
+into the identity graph rather than cloud infrastructure. Most of them unify
+with cloud IAM principals **by email**, which is what makes cross-surface CIEM
+("this Workspace user has admin on that GCP bucket") possible. The exception is
+[Auth0](#auth0-auth0), which keys identities per connection instead — see its
+section below.
 
 ### Okta (`okta`)
 
@@ -132,6 +134,15 @@ the legacy `acme.auth0.com` — not a custom domain). The credential is a
 Machine-to-Machine application authorized for the Management API with read-only
 scopes: `{"client_id": "...", "client_secret": "..."}`. It collects users, roles,
 applications, and connections.
+
+!!! note "Auth0 identities are not unified by email"
+    Unlike the other identity providers, Auth0 users are kept **scoped to the
+    Auth0 tenant** and keyed on their stable Auth0 user id, which means one
+    record per connection — the same person signing in through both a database
+    connection and a social connection appears as two Auth0 identities. This is
+    deliberate: Auth0 emails are per-connection and not necessarily verified or
+    unique, so unifying on them would merge identities that are not the same
+    principal.
 
 ## SaaS
 

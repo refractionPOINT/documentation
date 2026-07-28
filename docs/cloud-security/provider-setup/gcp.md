@@ -20,18 +20,25 @@ discovers every active project underneath that node by itself.
    does not have to be one being scanned).
 2. Permission to grant IAM roles at the scope you intend to connect
    (Organization Admin / Folder Admin / Project IAM Admin).
-3. The **APIs enabled** on the service account's own project — these are the
-   client APIs the collector calls:
+3. The **APIs enabled** on the service account's own project — the client APIs
+   the collector calls:
 
     ```bash
     gcloud services enable \
       cloudresourcemanager.googleapis.com \
+      serviceusage.googleapis.com \
       iam.googleapis.com \
       compute.googleapis.com \
       storage.googleapis.com \
       secretmanager.googleapis.com \
+      cloudkms.googleapis.com \
+      bigquery.googleapis.com \
+      sqladmin.googleapis.com \
+      pubsub.googleapis.com \
+      apikeys.googleapis.com \
       osconfig.googleapis.com \
       aiplatform.googleapis.com \
+      notebooks.googleapis.com \
       recommender.googleapis.com \
       policyanalyzer.googleapis.com \
       cloudidentity.googleapis.com \
@@ -44,6 +51,14 @@ discovers every active project underneath that node by itself.
     That is usually what you want. `provider test` reports a disabled API as a
     passing check with an explanatory note, precisely so you do not mistake it
     for a missing grant.
+
+!!! warning "Only some of these surfaces have a preflight check"
+    The preflight probes the surfaces listed in the
+    [check table](#verify) below. The rest — KMS, BigQuery, Cloud SQL, Pub/Sub,
+    API keys, Workbench notebooks — are exercised only during the sweep. If one
+    of their APIs is disabled, that inventory type simply comes back **empty**
+    while the provider test stays green, so enable the full list above rather
+    than trimming it to what the test covers.
 
 ## Required roles
 
@@ -71,11 +86,25 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 |---|---|---|
 | `roles/secretmanager.viewer` | Secret **metadata** inventory (names/rotation posture — never secret values) | `secret_manager` |
 | `roles/osconfig.vulnerabilityReportViewer` | Agentless workload vulnerabilities from VM Manager | `osconfig_vuln` |
-| `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | `osconfig_vuln` |
+| `roles/osconfig.inventoryViewer` | The OS-inventory join that attaches package name + installed/fixed version to each CVE | *(not probed — exercised during the sweep)* |
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
-| `roles/aiplatform.viewer` | Vertex AI endpoint, model, and notebook inventory | `vertex_ai` |
+| `roles/aiplatform.viewer` | Vertex AI endpoint and model inventory | `vertex_ai` |
 | `roles/cloudidentity.groups.readonly` | Google-group **membership expansion**, so `group:` IAM bindings resolve to real people | `cloud_identity` |
+
+!!! note "`osconfig_vuln` does not prove the inventory join"
+    The `osconfig_vuln` check probes the vulnerability-report read only, so it
+    passes with `roles/osconfig.vulnerabilityReportViewer` alone. If
+    `roles/osconfig.inventoryViewer` is missing, the sweep still records the
+    CVEs but skips the OS-inventory join and moves on — the symptom is
+    vulnerability rows with **no package name and no fixed version**, not a
+    failing check.
+
+!!! note "Workbench notebooks are a separate API"
+    Vertex AI Workbench notebook inventory comes from the Notebooks API
+    (`notebooks.googleapis.com`), not from the Vertex AI API, and it is not
+    covered by the `vertex_ai` check. Enable that API too if you want notebooks
+    inventoried.
 
 !!! note "Recommender needs only the list permission"
     Google's own walkthrough for *reviewing* role recommendations in the
@@ -114,7 +143,8 @@ for ROLE in roles/secretmanager.viewer \
             roles/osconfig.vulnerabilityReportViewer \
             roles/osconfig.inventoryViewer \
             roles/recommender.iamViewer \
-            roles/policyanalyzer.activityAnalysisViewer; do
+            roles/policyanalyzer.activityAnalysisViewer \
+            roles/aiplatform.viewer; do
   gcloud organizations add-iam-policy-binding "$ORG_ID" \
     --member "serviceAccount:${SA}" --role "$ROLE"
 done
@@ -165,8 +195,9 @@ refresh: 6h
 | `gcp_scope` | The node to enumerate: `organizations/{id}`, `folders/{id}`, or `projects/{id}`. Every **active** project underneath is swept. |
 | `gcp_project` | Alternative to `gcp_scope` for a single project. Supply one or the other. |
 
-In the web app: **Add provider → Google Cloud**, then set the **scope**,
-**Credentials**, and **Refresh interval**.
+In the web app: **Add provider → GCP**, then set the **scope**, **Credentials**,
+and the **Sync cadence** (pick a preset, or **Custom interval** for a duration of
+your own).
 
 ## Verify
 
@@ -174,10 +205,14 @@ In the web app: **Add provider → Google Cloud**, then set the **scope**,
 limacharlie cloudsec provider test --input-file provider.yaml
 ```
 
+The report opens with the `config` and `credential` checks common to every
+provider, [documented once in Provider Setup](index.md#the-two-checks-every-provider-reports-first);
+the GCP-specific checks follow.
+
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | The key could not mint a token, or the scope node is unreachable. Nothing else can be probed. |
-| `projects` | ✅ | `resourcemanager.projects.list` denied — no project can be discovered under the scope. |
+| `projects` *(folder/org scope only)* | ✅ | `resourcemanager.projects.list` denied — no project can be discovered under the scope. A single-project scope has nothing to enumerate, so this check is not reported at all. |
 | `compute` | ✅ | `compute.instances.list` denied — no compute inventory. |
 | `storage` | ✅ | `storage.buckets.list` denied — no storage inventory. |
 | `iam` | ✅ | `getIamPolicy` and/or `serviceAccounts.list` denied — the CIEM access graph cannot be built. |

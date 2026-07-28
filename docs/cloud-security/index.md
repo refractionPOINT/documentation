@@ -25,7 +25,7 @@ rules, Cases, and Outputs you already use.
 | **Inventory (CSPM)** | A continuously refreshed system-of-record of your cloud resources — compute, storage, networking, identities — with misconfiguration findings per resource. |
 | **Attack paths** | Toxic combinations across resources: an internet-exposed workload with a known-exploited vulnerability that can reach sensitive data is one finding, not three disconnected ones. |
 | **Identity (CIEM)** | Who — human or service — can access what: public/external access to sensitive resources, privilege-escalation edges, dormant privileged identities. Access is scored by the *capability* a grant actually confers, not by the mere existence of a grant. |
-| **Data security (DSPM)** | Which data stores exist, which are sensitive (you declare it by policy, optionally augmented by content-based classification rules), and which sensitive stores are exposed. |
+| **Data security (DSPM)** | Which data stores exist, which are sensitive (you declare it by policy), and which sensitive stores are exposed. |
 | **AI security (AISPM)** | Your OpenAI and Anthropic organizations as first-class estate: members, API keys, projects, and posture — with the same findings and compliance lenses (`nist-ai-rmf`, `owasp-llm`). |
 | **Compliance** | Per-control pass/fail assessment of frameworks over the live estate, whole-estate or scoped to named assignments. |
 | **CAASM** | A merged third-party asset inventory (EDR / IdP / MDM / scanner sources, including LimaCharlie's own sensors) with coverage-gap and device-posture findings — "seen by the identity provider, no EDR". |
@@ -54,8 +54,10 @@ demand, or continuously from a change feed. See
 
 ## How it works
 
-1. **Subscribe** the organization to the `ext-cloud-security` extension —
-   this is the product's enable (and billing) gate.
+1. **Enable** the organization for the `ext-cloud-security` extension — the
+   subscription is the product's enable (and billing) gate. While Cloud
+   Security is in Private Beta, contact us to have it enabled for your
+   organization.
 2. **Connect providers**: one `cloudsec_provider` Hive record per cloud
    account / IdP tenant / AI org. A pre-save credential test probes every
    permission the collector needs and reports which are missing.
@@ -67,10 +69,11 @@ demand, or continuously from a change feed. See
    chokepoint analysis, and full automation through `cloud_finding.*`
    events.
 
-Everything the console shows is also available through the
+Nearly everything the console shows is also available through the
 [REST API](api-reference.md), the [CLI](cli.md), and — for configuration —
 plain [Hive records](configuration.md), so a fleet of tenants can be
-onboarded and governed as code.
+onboarded and governed as code. (A few surfaces are console-only, notably the
+printable posture report.)
 
 ## In the console
 
@@ -80,14 +83,13 @@ map onto the capabilities above:
 | Page | What it is |
 |---|---|
 | **Overview** | The risk overview: score, severity distribution, top attack paths and the marquee chokepoint. |
-| **Risks** | The findings worklist, with lenses (Public exposure & misconfig / Identity / Workload / Vulnerabilities / Data) and per-finding triage. |
-| **Attack Paths** | The toxic-combination paths, grouped by shared fix. |
-| **Identity & Access** | CIEM — who can reach what, with a single-identity "Identity 360" view. |
+| **Risks** | The findings worklist, with lenses (All risks / Public exposure & misconfig / Identity / Vulnerabilities / Data) and per-finding triage. |
+| **Attack Surface** | The toxic-combination paths, grouped by shared fix, on an interactive graph canvas — plus a **Query console** tab for ad-hoc graph queries and saved queries. |
+| **Identity & Access** | CIEM — who can reach what, with a per-identity drill-down (**Grants** and **Access map** tabs). |
 | **Data Security** | DSPM — data-store posture and exposure. |
-| **Inventory** | The resource system-of-record, plus Third-party assets and Sensor coverage (CAASM) tabs. |
-| **Topology** | An aggregated, explorable diagram of the estate. |
+| **Inventory** | The estate itself, in four views: **Topology** (the landing view — an aggregated diagram of the estate), **Resources** (the resource system-of-record), **Third-party assets**, and **Sensor coverage** (CAASM). |
 | **Compliance** | Per-control framework assessment and scoped assignments. |
-| **Explore** | The interactive Security graph and the Query console. |
+| **Report** | A print-optimized posture report over the current estate, also reachable from **Overview → View report**. |
 | **Policies** | Data classification (crown jewels), coverage, asset coverage, exclusions, and suppression. |
 | **Settings** | Provider connections and the Cases integration. |
 
@@ -105,14 +107,18 @@ organization you manage.
       credential tests).
     - `cloudsec_provider.get` / `.set` / `.del` — manage provider
       connection records in the Hive.
+    - `cloudsec_provider.get.mtd` / `.set.mtd` — read and write the records'
+      user metadata (tags, comments, enabled state).
 
     Every route additionally requires the organization to be subscribed to
-    `ext-cloud-security`; unsubscribed organizations receive `403`.
+    `ext-cloud-security`. API calls from an unsubscribed organization return
+    `403`; in the console the Cloud Security pages render an "enable Cloud
+    Security" screen instead of the product.
 
 ## Documentation
 
-- [Getting Started](getting-started.md) — subscribe, connect a provider, run
-  your first sweep.
+- [Getting Started](getting-started.md) — enable the product, connect a
+  provider, run your first sweep.
 - [Connecting Providers](providers.md) — the thirteen connectors, their
   credentials, and what each collects.
 - [Provider Setup](provider-setup/index.md) — onboarding walkthrough for every

@@ -22,24 +22,27 @@ person, no password/MFA lifecycle, and no 30-day-inactivity expiry.
 - Your org base URL, e.g. `https://example.okta.com`. Use the URL you sign in
   to; note that an org's *name* and its *subdomain* can differ.
 
-## Required scopes
+## Scopes
 
-Granted on the app's **Okta API Scopes** tab:
+Granted on the app's **Okta API Scopes** tab. The collector requests all five
+of these by default; the first four are required for the connection to be
+usable.
 
-| Scope | Why | Preflight check |
-|---|---|---|
-| `okta.users.read` | The user directory — the core identity inventory | `users` |
-| `okta.groups.read` | Groups and membership | `groups` |
-| `okta.apps.read` | Application inventory and assignments | `apps` |
-| `okta.roles.read` | Admin-role enrichment on every user | `roles` |
-| `okta.idps.read` | External identity providers (federation/social trust) | `idps` |
+| Scope | Required | Why | Preflight check |
+|---|:--:|---|---|
+| `okta.users.read` | ✅ | The user directory — the core identity inventory | `users` |
+| `okta.groups.read` | ✅ | Groups and membership | `groups` |
+| `okta.apps.read` | ✅ | Application inventory and assignments | `apps` |
+| `okta.roles.read` | ✅ | Admin-role enrichment on every user | `roles` |
+| `okta.idps.read` | — | External identity providers (federation/social trust). Leave it ungranted and only that surface is skipped | `idps` |
 
 !!! danger "`okta.roles.read` is not optional"
     The user collector enriches every user with their admin roles inline and
     treats a roles denial as fatal. Without this scope **no users are
     inventoried at all** — not merely "users without roles".
 
-Optional scopes, requested only when you list them explicitly (see
+Two further scopes are outside the default set entirely — granting them is not
+enough, they are requested only when you list them explicitly (see
 [Requesting extra scopes](#requesting-extra-scopes)):
 
 | Scope | Unlocks | Preflight check |
@@ -55,8 +58,8 @@ Optional scopes, requested only when you list them explicitly (see
    **Public key / Private key**.
 3. Under **PUBLIC KEYS**, choose **Add key → Generate new key**, then copy the
    **private key in JWK format**. This is shown once — keep it.
-4. On the **Okta API Scopes** tab, **Grant** each of the five required scopes
-   (plus any optional ones you want).
+4. On the **Okta API Scopes** tab, **Grant** each of the five default scopes
+   above (plus any optional ones you want).
 5. On the app's **Admin roles** tab, **assign an admin role** — **Read-only
    Administrator** is sufficient for the required scope set.
 6. Copy the app's **Client ID** from the General tab.
@@ -102,17 +105,29 @@ with the key's `kid`.
 {"org_url": "https://example.okta.com", "api_token": "<SSWS-token>"}
 ```
 
+Either shape also accepts an optional `org_domain` — the org's primary email
+domain. It is treated as an internal domain on top of the record's
+`internal_domains`, so users outside it are flagged as external collaborators.
+
+!!! note "`org_url` in the secret wins"
+    The org URL can be carried on the provider record (`okta_org_url`) or in
+    the secret (`org_url`). When both are present the **secret's** value is
+    used; the record's is only a fallback.
+
 Store it:
 
 ```bash
-limacharlie hive set --hive-name secret --key okta-credentials \
-    --input-file okta-secret.json --enabled
+limacharlie secret set --key okta-credentials \
+    --value "$(cat okta-secret.json)" --enabled
 ```
+
+`secret set` wraps the value into the secret record's `{"secret": "..."}`
+envelope for you.
 
 ### Requesting extra scopes
 
-By default the collector requests exactly the five required scopes. To use an
-optional scope, grant it on the app **and** list the full scope set in the
+By default the collector requests exactly the five scopes listed above. To use
+an optional scope, grant it on the app **and** list the full scope set in the
 secret:
 
 ```json
@@ -125,10 +140,14 @@ secret:
 }
 ```
 
-!!! warning "`scopes` replaces the default set"
-    The list is used verbatim, and **every scope in it must be granted on the
-    app** or the token mint fails outright. Always include the five required
-    scopes alongside the optional ones.
+!!! warning "`scopes` replaces the default set — and misses fail silently"
+    The list is used verbatim; it does not add to the defaults. Always repeat
+    the five default scopes alongside the optional ones.
+
+    A scope in the list that is **not granted on the app** does not fail the
+    token mint: Okta's org authorization server quietly drops it and issues the
+    token without it. The gap only shows up later, as that one surface
+    returning 403 during the sweep. Grant every scope you list.
 
 ## Create the provider record
 
@@ -175,6 +194,6 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `auth` fails: *must use the private_key_jwt token_endpoint_auth_method* | App configured with a client secret | Switch the app to **Public key / Private key** and store the private JWK |
 | `groups` / `roles` 403 while `auth` passes | No admin role assigned to the app | Assign **Read-only Administrator** on the app's *Admin roles* tab |
 | A scope you granted still 403s | The org authorization server **silently drops ungranted scopes** at mint — the token simply lacks it | Re-check the *Okta API Scopes* tab; the 403's `WWW-Authenticate` header names the missing scope |
-| Token mint fails after adding `scopes` | A listed scope is not granted on the app | Grant it, or remove it from the list |
+| A surface 403s after you set `scopes` | The list omitted that scope, or it is listed but not granted on the app — either way the mint succeeds without it | List every scope you need and grant each one on the app |
 | `auth` fails: host unreachable | Wrong subdomain (org *name* ≠ org *subdomain*) | Use the exact URL you sign in to |
 | SSWS token stops working | SSWS tokens expire after 30 days of inactivity and die with their owner | Move to an API Services app |
