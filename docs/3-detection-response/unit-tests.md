@@ -90,6 +90,14 @@ A practical split for a stateful rule:
 - Test each side of the relationship on its own by temporarily lifting the sub-rule into a standalone stateless rule with its own `tests` — this validates the paths, operators and values.
 - Test the correlation itself with Replay, over traffic that contains the real chain of events.
 
+When you supply the events yourself rather than replaying stored traffic, the correlation only resolves if the events carry what links them:
+
+- The **same `routing/sid`**, since stateful state is tracked per sensor.
+- The parent's **`routing/this`** atom repeated as the child's **`routing/parent`** atom (`with descendant` follows the chain further down).
+- The events in **chronological order**. Stateful evaluation is forward-looking: a child that arrives before its parent does not match.
+
+A match reports the *first* event of the chain unless the rule sets `report latest event: true`, so expect the parent event in the result.
+
 ### Example
 
 ```yaml
