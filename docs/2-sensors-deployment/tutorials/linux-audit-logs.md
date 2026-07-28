@@ -1,52 +1,52 @@
 # Ingesting Linux Audit Logs
 
-One data source of common interest on Linux systems is the `audit.log` file. By default, this file stores entries from the Audit system, which contains information about logins, privilege escalations, and other account-related events. See [Audit Log file documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-understanding_audit_log_files).
+A common data source on Linux systems is the `audit.log` file. By default, this file stores entries from the Audit system. These entries contain information about logins, privilege escalations, and other events that relate to accounts. See [Audit Log file documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/security_guide/sec-understanding_audit_log_files).
 
-There are a few techniques to ingest Linux Audit logs into LimaCharlie:
+You can ingest Linux Audit logs into LimaCharlie with these techniques:
 
-1. Pull the raw logs using Artifacts and/or the File System navigator *(EDR sensors only)*
-2. Collect the files using **Artifact Collection.**
-3. Stream the raw audit log via a `file` adapter.
+1. Pull the raw logs with Artifacts or with the File System navigator *(EDR sensors only)*
+2. Collect the files with **Artifact Collection.**
+3. Stream the raw audit log through a `file` adapter.
 
-We will explore these techniques in this tutorial. Adapters can also be configured as syslog listeners; that will be covered in another tutorial.
+This tutorial explains these techniques. You can also configure adapters as syslog listeners. Another tutorial explains that configuration.
 
 ## File System Browser
 
-Our Windows, Linux, and macOS EDR sensors offer file system navigation capabilities. If you need a single, ad-hoc collection of the `auth.log`, you can use the File System capability to navigate to `/var/log`, and download `auth.log`.
+The Windows, Linux, and macOS EDR sensors can navigate the file system. For a single, ad-hoc collection of the `auth.log`, use the File System capability. Navigate to `/var/log` and download `auth.log`.
 
 ![audit 1](../../assets/images/audit-1.png)
 
 ## Artifact Collection
 
-If you don't need to stream Linux Audit log(s), but instead want to maintain a copy of them for posterity, Artifact collection would be your best method. This is an automated collection technique, but won't stream the events to your **Timeline**.
+Artifact collection is the best method if you do not need to stream the Linux Audit logs, but want to keep a copy of them. This technique collects the files automatically, but it does not stream the events to your **Timeline**.
 
-**Step 1:** Within the Navigation Pane, select `Artifact Collection`.
+**Step 1:** In the Navigation Pane, select `Artifact Collection`.
 
 ![audit 2](../../assets/images/audit-2.png)
 
-**Step 2:** Create a simple artifact collection rule for `/var/log/auth.log`. In this example, we chose a retention period of 30 days; however, you should choose the correct retention period for your use case.
+**Step 2:** Create an artifact collection rule for `/var/log/auth.log`. This example uses a retention period of 30 days. Choose the correct retention period for your use case.
 
 ![audit 3](../../assets/images/audit-3.png)
 
-click **Save**
+Click **Save**.
 
 ![audit 4](../../assets/images/audit-4.png)
 
-**Step 3:** Saving the artifact rule will then populate to the appropriate sensor(s), and you should see the `auth.log` in the Artifacts menu, once it is collected by the Sensor.
+**Step 3:** Save the artifact rule. The cloud sends the rule to the applicable sensors. After the Sensor collects the `auth.log`, the file is shown in the Artifacts menu.
 
 ![audit 5](../../assets/images/audit-5(1).png)
 
-Want more logs?
+More logs
 
-Want more than just the most recent `auth.log`? Specify a regular expression to capture all archived copies of the log files. However, be careful on retention and make sure you're not unnecessarily duplicating data!
+To collect more than the most recent `auth.log`, specify a regular expression. The expression captures all archived copies of the log files. Be careful with the retention period, and make sure that you do not duplicate data.
 
 ## File Adapter Ingestion
 
-It is also possible to deploy a LimaCharlie [Adapter](../adapters/index.md) pointed to `auth.log` to collect and stream the events in directly. Note that Adapters will create a separate telemetry "stream" - thus, it is recommended to combine file types where possible.
+You can also deploy a LimaCharlie [Adapter](../adapters/index.md) that points to `auth.log`. The adapter collects the events and streams them directly. Each Adapter creates a separate telemetry "stream", so combine file types where possible.
 
-**Step 1:** Create an Installation Key for your adapter and download the appropriate binary.
+**Step 1:** Create an Installation Key for your adapter. Download the applicable binary.
 
-**Step 2:** On the system(s) to collect logs from, deploy the adapter. We recommend utilizing a configuration file for adapter testing, to allow for tracking of changes. The following is a sample file that will ingest `auth.log` events as basic text.
+**Step 2:** Deploy the adapter on each system that collects logs. Use a configuration file when you test the adapter, so that you can track changes. The sample file below ingests `auth.log` events as basic text.
 
 ```yaml
 file:
@@ -62,16 +62,16 @@ file:
 
 See [adapter configuration and usage](../adapters/usage.md) for more detail.
 
-**Step 3:** Run the adapter, providing the `file` option and the appropriate config file.
+**Step 3:** Run the adapter. Give the `file` option and the applicable config file.
 
 `$ ./lc_adapter file /tmp/config.yml`
 
-The adapter should load the config and display options to the terminal.
+The adapter loads the config and shows the options in the terminal.
 
 ### Note: This is not a persistent install; utilize your operating system's init/systemctl capabilities to create a persistent adapter
 
-**Step 4:** Returning to the LimaCharlie web UI, you should start to see events flowing in almost instantaneously.
+**Step 4:** Return to the LimaCharlie web UI. The events start to arrive almost immediately.
 
 ![image.png](../../assets/images/image(115).png)
 
-Note that a `text` platform will ingest data as basic text, however you could use formatting options to parse the fields respective to your `auth.log` format.
+A `text` platform ingests data as basic text. You can use formatting options to parse the fields of your `auth.log` format.

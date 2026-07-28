@@ -1,6 +1,6 @@
 # YARA
 
-The [YARA](https://github.com/Yara-Rules/rules) Extension is designed to help you with all aspects of YARA scanning. It takes what is normally a manual piecewise process, provides a framework and automates it. Once configured, YARA scans can be run on demand for a particular endpoint or continuously in the background across your entire fleet.
+The [YARA](https://github.com/Yara-Rules/rules) Extension helps you with all parts of YARA scanning. YARA scanning is usually a manual process in separate steps. The extension gives a framework for the process and automates it. After you configure it, you can run YARA scans on demand for one endpoint, or continuously in the background across your fleet.
 
 Yara configurations are synchronized with sensors every few minutes.
 
@@ -12,19 +12,19 @@ There are three main sections to the YARA job:
 
 ## Where Does My YARA Scan?
 
-Automated YARA scanners in LimaCharlie will run on all files loaded in memory (e.g. exe, dll, etc), and on the memory itself.
+The automated YARA scanners in LimaCharlie scan all the files that are loaded in memory (for example exe, dll), and the memory itself.
 
-Files on disk can be scanned using a Sensor command. You can trigger a Manual Scan that's run on-demand by:
+A Sensor command scans the files on disk. To start a manual scan on demand, use one of these methods:
 
-- Clicking the Run YARA scan button on the sensor details page,
-- Clicking the Scan button on the YARA Scanners page
-- Using the console
-- Within the Response section of a rule (sample below)
-- Using the LimaCharlie API
+- Click the Run YARA scan button on the sensor details page
+- Click the Scan button on the YARA Scanners page
+- Use the console
+- Use the Response section of a rule (sample below)
+- Use the LimaCharlie API
 
 ## Rules
 
-This is where you define your YARA rule(s). You can copy and paste your YARA rules into the `Rule` box, or you can define sources via the [ext-yara-manager](../limacharlie/yara-manager.md). Sources can be either direct links (URLs) to a given YARA rule (or directory of rules) or [ARLs](../../../8-reference/authentication-resource-locator.md) to a YARA rule.
+In this section you define your YARA rules. Copy your YARA rules into the `Rule` box, or define sources with the [ext-yara-manager](../limacharlie/yara-manager.md). A source is a direct link (URL) to one YARA rule or to a directory of rules, or an [ARL](../../../8-reference/authentication-resource-locator.md) to a YARA rule.
 
 ![yara 1](../../../assets/images/yara-1.png)
 
@@ -32,15 +32,15 @@ This is where you define your YARA rule(s). You can copy and paste your YARA rul
 
 ## Scanners
 
-Scanners define which sets of sensors should be scanned with which sets of YARA rules.
+A scanner defines which sets of sensors to scan with which sets of YARA rules.
 
-Filter Tags are tags that must ALL be present on a sensor for it to match (AND condition), while the platform of the sensor much match one of the platforms in the filter (OR condition).
+A sensor matches only if it has ALL of the Filter Tags (AND condition). The platform of the sensor must match one of the platforms in the filter (OR condition).
 
-To apply YARA rules to scan an endpoint (or set of endpoints), you must select the platform or tags, and then add the YARA rules you would like to run.
+To scan an endpoint or a set of endpoints with YARA rules, first select the platform or the tags. Then add the YARA rules that you want to run.
 
 ## Using Yara in D&R Rules
 
-If you want to trigger a Yara scan as a response to one of your detections, you can configure an extension request in the respond block of a rule. A Yara scan request can be executed with a blank selector OR Sensor ID. However, one of them must be specified.
+To start a Yara scan as a response to one of your detections, configure an extension request in the respond block of a rule. A Yara scan request can run with a blank selector OR a blank Sensor ID, but you must specify one of them.
 
 ```yaml
 - action: extension request
@@ -55,9 +55,9 @@ If you want to trigger a Yara scan as a response to one of your detections, you 
 
 ## Migrating D&R Rule from legacy Service to new Extension
 
-***Note: LimaCharlie has migrated from Services to Extensions. Legacy services are no longer supported.***
+***Note: LimaCharlie migrated from Services to Extensions. Legacy services are not supported.***
 
-The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference legacy Yara service, preview the change and execute the conversion required in the rule "response".
+The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) shows if a rule refers to the legacy Yara service. It also previews the change and does the conversion in the "response" part of the rule.
 
 Command line to preview Yara rule conversion:
 
@@ -65,9 +65,9 @@ Command line to preview Yara rule conversion:
 limacharlie extension convert_rules --name ext-yara
 ```
 
-A dry-run response (default) will display the rule name being changed, a JSON of the service request rule and a JSON of the incoming extension request change.
+A dry run is the default. It shows the name of the rule that changes, a JSON of the service request rule, and a JSON of the new extension request.
 
-To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-run`
+To make the change in the rule, set the `--dry-run` flag to `--no-dry-run`
 
 Command line to execute Yara rule conversion:
 

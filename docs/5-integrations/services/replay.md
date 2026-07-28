@@ -1,30 +1,30 @@
 # Replay
 
-Replay allows you to run Detection & Response (D&R) rules against historical traffic.
- This can be done in a few combinations of sources:
+Replay runs Detection & Response (D&R) rules against historical traffic.
+ You can combine these sources:
 
 Rule Source:
 
-- Existing rule in the organization, by name.
-- Rule in the replay request.
+- An existing rule in the organization, by name.
+- A rule in the replay request.
 
 Traffic:
 
-- Sensor historical traffic.
-- Local events provided during request.
+- Historical traffic from a sensor.
+- Local events that you supply in the request.
 
 ## Using
 
-Using the Replay API requires the [API key](../../7-administration/access/api-keys.md) to have the following permissions:
+The Replay API needs an [API key](../../7-administration/access/api-keys.md) with these permissions:
 
 - `insight.evt.get`
 
-The returned data from the API contains the following:
+The API returns this data:
 
-- `responses`: a list of the actions that would have been taken by the rule (like `report`, `task`, etc).
-- `num_evals`: a number of evaluation operations performed by the rule. This is a rough estimate of the performance of the rule.
-- `num_events`: the number of events that were replayed.
-- `eval_time`: the number of seconds it took to replay the data.
+- `responses`: a list of the actions that the rule would take (such as `report` or `task`).
+- `num_evals`: the number of evaluation operations that the rule did. This number is a rough estimate of the performance of the rule.
+- `num_events`: the number of events that Replay replayed.
+- `eval_time`: the number of seconds to replay the data.
 
 ```json
 {
@@ -43,11 +43,11 @@ The returned data from the API contains the following:
 
 ### Query Language
 
-To use Replay in LCQL Mode (LimaCharlie Query Language), you can specify your query in the `query` parameter of the Replay Request (defined below) when using the REST interface, or you can use the LimaCharlie Python SDK/CLI's [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py): `limacharlie search --help`.
+The REST interface also accepts LCQL Mode (LimaCharlie Query Language). Put your query in the `query` parameter of the Replay Request that is defined below. You can also use the [query interface](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Query.py) of the LimaCharlie Python SDK and CLI: `limacharlie search --help`.
 
 ### Python CLI
 
-The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a friendly way to replay data, and to do so across larger datasets by automatically splitting up your query into multiple queries that can run in parallel.
+The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) replays data. For a large dataset, the CLI splits your query into many queries that run in parallel.
 
 Sample command line to query one sensor:
 
@@ -61,7 +61,7 @@ Sample command line to query an entire organization:
 limacharlie replay run --name my-rule-name --start 1555359000 --end 1556568600
 ```
 
-When specifying a rule via `--detect-file` and `--respond-file`, each file should be in `JSON` or `YAML` format. For example, a detect file:
+When you specify a rule with `--detect-file` and `--respond-file`, use the `JSON` or `YAML` format for each file. For example, a detect file:
 
 ```yaml
 event: DNS_REQUEST
@@ -77,28 +77,28 @@ And a respond file:
   name: dilbert-is-here
 ```
 
-Instead of replaying against an entire organization, you may use events from a local file via the `limacharlie dr test` command with the `--events` flag.
+You can use events from a local file instead of an entire organization. Use the `limacharlie dr test` command with the `--events` flag.
 
-We invite you to look at the command line usage itself, as the tool evolves.
+The tool changes over time. Look at the command line usage itself for the current options.
 
 ### REST API
 
-The Replay API is available to all DataCenter locations using a per-location URL.
- To get the appropriate URL for your organization, use the [`getOrgURLs` REST endpoint](https://api.limacharlie.io/static/swagger/#/Organizations/getOrgURLs) and look for the URL named `replay`.
+The Replay API is available in all DataCenter locations. Each location has its own URL.
+ To get the correct URL for your organization, use the [`getOrgURLs` REST endpoint](https://api.limacharlie.io/static/swagger/#/Organizations/getOrgURLs) and look for the URL named `replay`.
 
-Having per-location URLs will allow us to guarantee that processing occurs within the geographical area you chose. Currently, some locations are NOT guaranteed to be in the same area due to the fact we are using the Google Cloud Run product which is not available globally. For these cases, processing is currently done in the United States, but as soon as it becomes available in your area, the processing will be moved transparently.
+A URL for each location keeps the processing inside the geographical area that you chose. Some locations are NOT in the same area, because LimaCharlie uses the Google Cloud Run product, which is not available in all areas. For these locations, the processing is done in the United States. When Google Cloud Run becomes available in your area, the processing moves there transparently.
 
 Authentication to this API works with the same JWTs as the main limacharlie.io API.
 
-For this example, we will use the experimental datacenter's URL:
+This example uses the URL of the experimental datacenter:
 
 ```python
 https://0651b4f82df0a29c.replay.limacharlie.io/
 ```
 
-The API mainly works on a per-sensor basis, on a limited amount of time. Replaying for multiple sensors (or entire org), or longer time period is done through multiple parallel API calls. This multiplexing is taken care of by the Python CLI above.
+The API works mainly for one sensor and for a limited period of time. To replay many sensors, an entire organization, or a longer period, make many parallel API calls. The Python CLI above makes these parallel calls for you.
 
-To query Replay, do a `POST` with a `Content-Type` header of `application-json` and with a JSON body like:
+To query Replay, send a `POST` request with a `Content-Type` header of `application-json` and a JSON body like this:
 
 ```json
 {
@@ -129,13 +129,13 @@ To query Replay, do a `POST` with a `Content-Type` header of `application-json` 
 }
 ```
 
-Like the other endpoints you can also submit a `rule_name` in the URL query if you want
+Like the other endpoints, you can also put a `rule_name` in the URL query
  to use an existing organization rule.
 
-You may also specify a `limit_event` and `limit_eval` parameter as integers. They will limit the number of events evaluated and the number of rule evaluations performed (approximately). If the limits are reached, the response will contain an item named `limit_eval_reached: true` and `limit_event_reached: true`.
+You can also give the `limit_event` and `limit_eval` parameters as integers. They limit the approximate number of events that Replay evaluates and the approximate number of rule evaluations. If Replay reaches the limits, the response contains an item named `limit_eval_reached: true` and `limit_event_reached: true`.
 
-Finally, you may also set `trace` to `true` in the request to receive a detailed trace of the rule evaluation. This is useful in the development of new rules to find where rules are failing.
+You can also set `trace` to `true` in the request to get a detailed trace of the rule evaluation. The trace helps you find where a new rule fails.
 
 ## Billing
 
-The Replay service is billed on a per event evaluated.
+The Replay service is billed for each event that it evaluates.

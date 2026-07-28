@@ -1,6 +1,6 @@
 # Windows Agent Installation
 
-This guide walks you through installing the LimaCharlie Endpoint Detection and Response (EDR) sensor on Windows systems. The sensor provides deep visibility into your Windows endpoints, enabling real-time threat detection and response.
+This guide explains how to install the LimaCharlie Endpoint Detection and Response (EDR) sensor on Windows systems. The sensor gives visibility into your Windows endpoints for threat detection and response in real time.
 
 ## Supported Windows Versions
 
@@ -20,7 +20,7 @@ This guide walks you through installing the LimaCharlie Endpoint Detection and R
 
 ## Prerequisites
 
-Before installing the LimaCharlie sensor, ensure you have:
+Before you install the LimaCharlie sensor, make sure that you have:
 
 1. **Administrator privileges** on the Windows system
 2. **An Installation Key** from your LimaCharlie organization
@@ -28,17 +28,17 @@ Before installing the LimaCharlie sensor, ensure you have:
 
 ## Getting Your Installation Key
 
-An Installation Key is required to enroll your sensor with the LimaCharlie cloud. To obtain your key:
+You need an Installation Key to enroll your sensor with the LimaCharlie cloud. To get your key:
 
 1. Log in to the [LimaCharlie web application](https://app.limacharlie.io)
 2. Select your organization
-3. Navigate to **Sensors** > **Installation Keys** in the left sidebar
-4. Copy an existing key, or create a new one by clicking **Create Installation Key**
-5. Keep this key ready - you'll need it during installation
+3. Go to **Sensors** > **Installation Keys** in the left sidebar
+4. Copy an existing key, or click **Create Installation Key** to make a new key
+5. Keep this key ready. You need it during the installation
 
-For more details on managing keys, see [Installation Keys](../../installation-keys.md).
+For more information about how to manage keys, see [Installation Keys](../../installation-keys.md).
 
-> **Tip:** Installation keys can have tags associated with them. When a sensor enrolls using a key with tags, those tags are automatically applied to the sensor.
+> **Tip:** An installation key can have tags. When a sensor enrolls with a key that has tags, the cloud applies those tags to the sensor.
 
 ## Downloading the Sensor
 
@@ -52,7 +52,7 @@ Choose the correct download for your system architecture:
 | 32-bit (x86) | [https://downloads.limacharlie.io/sensor/windows/32](https://downloads.limacharlie.io/sensor/windows/32) |
 | ARM64 | [https://downloads.limacharlie.io/sensor/windows/arm64](https://downloads.limacharlie.io/sensor/windows/arm64) |
 
-> **Note:** A native ARM64 build is available for Windows on ARM devices (sensor 4.33.26 or later). Earlier sensor versions ran under x64 emulation; this is no longer required.
+> **Note:** A native ARM64 build is available for Windows on ARM devices (sensor 4.33.26 or later). Earlier sensor versions ran under x64 emulation. Emulation is no longer necessary.
 
 ### MSI Installer Downloads
 
@@ -62,9 +62,9 @@ Choose the correct download for your system architecture:
 | 32-bit (x86) | [https://downloads.limacharlie.io/sensor/windows/msi32](https://downloads.limacharlie.io/sensor/windows/msi32) |
 | ARM64 | [https://downloads.limacharlie.io/sensor/windows/msiarm64](https://downloads.limacharlie.io/sensor/windows/msiarm64) |
 
-> **Note about downloaded filenames:** The downloaded file will have a versioned name like `hcp_win_x64_release_4.33.23.exe`. You can rename it to `rphcp.exe` for convenience, or use the original filename in commands.
+> **Note about downloaded filenames:** The downloaded file has a versioned name such as `hcp_win_x64_release_4.33.23.exe`. You can rename it to `rphcp.exe`, or use the original filename in commands.
 >
-> **How do I know which architecture I need?**
+> **How to find the architecture that you need**
 >
 > On Windows 10/11: Go to **Settings** > **System** > **About** and look at **System type**.
 >
@@ -72,7 +72,7 @@ Choose the correct download for your system architecture:
 
 ## Command-Line Options
 
-When running the installer from the command line, you can use the following options:
+When you run the installer from the command line, you can use these options:
 
 | Option | Description |
 |--------|-------------|
@@ -80,10 +80,10 @@ When running the installer from the command line, you can use the following opti
 | `-d <KEY>` | Run with installation key (temporary, no permanent installation) |
 | `-r` | Uninstall the service |
 | `-c` | Uninstall the service and delete identity files (clean uninstall) |
-| `-V` | Display the sensor version |
+| `-V` | Show the sensor version |
 | `-v` | Enable verbose logging output |
-| `-H` | Verify sensor health and installation |
-| `-h` | Display help message |
+| `-H` | Check sensor health and installation |
+| `-h` | Show the help message |
 
 For the complete list of options, environment variables, and local files, see the [Agent CLI & Environment Reference](../cli-reference.md).
 
@@ -91,7 +91,7 @@ For the complete list of options, environment variables, and local files, see th
 
 ### Method 1: Executable (EXE) Installation
 
-This method is recommended for installing on individual systems.
+This method is recommended for the installation on individual systems.
 
 **Step 1:** Download the appropriate EXE for your architecture (see download links above).
 
@@ -99,7 +99,7 @@ This method is recommended for installing on individual systems.
 
 > To run as Administrator: Right-click Command Prompt or PowerShell and select **Run as administrator**.
 
-**Step 3:** Navigate to the folder where you downloaded the installer:
+**Step 3:** Go to the folder where you downloaded the installer:
 
 ```bash
 cd C:\Users\YourUsername\Downloads
@@ -111,27 +111,27 @@ cd C:\Users\YourUsername\Downloads
 rphcp.exe -i YOUR_INSTALLATION_KEY_GOES_HERE
 ```
 
-Replace `YOUR_INSTALLATION_KEY_GOES_HERE` with the actual key you copied from the LimaCharlie web application.
+Replace `YOUR_INSTALLATION_KEY_GOES_HERE` with the key that you copied from the LimaCharlie web application.
 
-**Step 5:** Wait for the installation to complete. You should see output indicating successful installation and service start.
+**Step 5:** Wait for the installation to complete. The output shows that the installation is successful and that the service started.
 
-The sensor is now installed and running as a Windows service. It will start automatically when Windows boots.
+The sensor is now installed and runs as a Windows service. It starts automatically when Windows boots.
 
 ### Method 2: MSI Installation
 
-MSI installers are ideal for enterprise deployment using tools like Group Policy, SCCM, or Intune.
+MSI installers are best for enterprise deployment with tools such as Group Policy, SCCM, or Intune.
 
 #### Interactive Installation
 
-1. Download the appropriate MSI for your architecture
-2. Double-click the MSI file to launch the installer
-3. Follow the installation prompts
+1. Download the correct MSI for your architecture
+2. Double-click the MSI file to start the installer
+3. Obey the installation prompts
 
-> **Note:** The MSI installation will require you to provide the Installation Key. Ensure you have it ready.
+> **Note:** The MSI installation asks you for the Installation Key. Make sure that you have it ready.
 
 #### Silent Installation (Command Line)
 
-For automated deployments, use the following command in an elevated Command Prompt or PowerShell:
+For automated deployments, use this command in an elevated Command Prompt or PowerShell:
 
 ```batch
 msiexec /i "path\to\installer.msi" /qn INSTALLATIONKEY="YOUR_INSTALLATION_KEY_GOES_HERE"
@@ -151,9 +151,9 @@ Options explained:
 
 ### Method 3: PowerShell Script (Automated)
 
-This script automates the download and installation process. It detects your system architecture and downloads the correct installer.
+This script does the download and the installation automatically. It detects your system architecture and downloads the correct installer.
 
-> **Note:** This script requires PowerShell 3.0 or later. Windows 7 and Server 2008 R2 ship with PowerShell 2.0 by default; you may need to install [Windows Management Framework 3.0+](https://www.microsoft.com/en-us/download/details.aspx?id=34595) first.
+> **Note:** This script needs PowerShell 3.0 or later. Windows 7 and Server 2008 R2 include PowerShell 2.0 by default. On these systems, it is possible that you must first install [Windows Management Framework 3.0+](https://www.microsoft.com/en-us/download/details.aspx?id=34595).
 
 Save this script as `Install-LimaCharlie.ps1`:
 
@@ -235,7 +235,7 @@ Remove-Item $InstallerPath -Force -ErrorAction SilentlyContinue
 **To run the script:**
 
 1. Open PowerShell as Administrator
-2. If you haven't already, allow script execution:
+2. If script execution is not yet allowed, allow it:
 
    ```powershell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -249,13 +249,13 @@ Remove-Item $InstallerPath -Force -ErrorAction SilentlyContinue
 
 ## Verifying Installation
 
-After installation, verify that the sensor is running correctly using any of these methods:
+After the installation, check that the sensor runs correctly. Use any of these methods:
 
 ### Windows Services GUI
 
 1. Press `Win + R`, type `services.msc`, and press Enter
 2. Scroll down to find **LimaCharlie** in the list
-3. Verify that the **Status** is **Running** and **Startup Type** is **Automatic**
+3. Check that the **Status** is **Running** and the **Startup Type** is **Automatic**
 
 ### PowerShell
 
@@ -285,7 +285,7 @@ Look for `STATE : 4  RUNNING` in the output.
 
 ### Verification Script
 
-Save and run this PowerShell script for a quick status check:
+Save and run this PowerShell script to check the status:
 
 ```powershell
 # Verify LimaCharlie installation
@@ -306,56 +306,56 @@ if ($null -eq $service) {
 ### LimaCharlie Web Application
 
 1. Log in to [app.limacharlie.io](https://app.limacharlie.io)
-2. Navigate to **Sensors** in the left sidebar
-3. Your newly installed sensor should appear in the list within a few minutes
+2. Go to **Sensors** in the left sidebar
+3. The new sensor shows in the list after a few minutes
 
 ## Troubleshooting
 
 ### "Access Denied" Error
 
-**Cause:** The installer must be run with Administrator privileges.
+**Cause:** You must run the installer with Administrator privileges.
 
-**Solution:** Right-click Command Prompt or PowerShell and select **Run as administrator** before running the installer.
+**Solution:** Right-click Command Prompt or PowerShell and select **Run as administrator**. Then run the installer.
 
 ### Architecture Mismatch Error
 
-**Cause:** Using a 32-bit installer on a 64-bit system (or vice versa).
+**Cause:** You used a 32-bit installer on a 64-bit system, or a 64-bit installer on a 32-bit system.
 
-**Solution:** Download and use the correct installer for your system architecture. The sensor will display an error message indicating the mismatch.
+**Solution:** Download and use the correct installer for your system architecture. The sensor shows an error message about the mismatch.
 
 ### Antivirus Blocking Installation
 
-**Cause:** Some antivirus software may flag the sensor installer.
+**Cause:** Some antivirus software can flag the sensor installer.
 
 **Solution:**
-1. Temporarily disable your antivirus during installation, OR
+1. Disable your antivirus for the time of the installation, OR
 2. Add an exclusion for `rphcp.exe` and `C:\Windows\System32\rphcp.exe`
-3. Contact your antivirus vendor if issues persist
+3. If the problem continues, contact your antivirus vendor
 
 ### Firewall Blocking Connection
 
 **Cause:** The sensor cannot reach LimaCharlie cloud services.
 
-**Solution:** Ensure outbound HTTPS (port 443) traffic is allowed to:
+**Solution:** Allow outbound HTTPS traffic on port 443 to:
 - `*.limacharlie.io`
 
 ### Installation Key Errors
 
-**Cause:** The installation key is invalid, expired, or incorrectly copied.
+**Cause:** The installation key is invalid, expired, or copied incorrectly.
 
 **Solution:**
-1. Verify the key in the LimaCharlie web application
-2. Ensure you copied the entire key without extra spaces
-3. Check that the key hasn't been revoked or expired
+1. Check the key in the LimaCharlie web application
+2. Make sure that you copied the full key with no extra spaces
+3. Check that the key is not revoked and not expired
 
 ### Service Won't Start
 
-**Cause:** Various issues including file permission problems or system configuration.
+**Cause:** Different problems, such as file permissions or the system configuration.
 
 **Solution:**
 1. Check Windows Event Viewer (Application and System logs) for errors
-2. Ensure the system meets minimum requirements
-3. Try reinstalling with the `-c` flag first to clean up, then install fresh
+2. Make sure that the system meets the minimum requirements
+3. Run the installer with the `-c` flag to clean up, then install again
 
 ## Uninstallation
 
@@ -371,7 +371,7 @@ rphcp.exe -c
 
 This removes the service and deletes all identity files.
 
-To uninstall but keep identity files (for potential reinstallation):
+To uninstall but keep the identity files for a later installation:
 
 ```
 
@@ -385,7 +385,7 @@ rphcp.exe -r
 2. Find **LimaCharlie** in the list
 3. Click **Uninstall**
 
-Or via command line:
+Or use the command line:
 
 ```
 
@@ -395,9 +395,9 @@ msiexec /x "path\to\installer.msi" /qn
 
 ### Using LimaCharlie Console
 
-You can remotely uninstall the sensor from the LimaCharlie web application:
+You can uninstall the sensor remotely from the LimaCharlie web application:
 
-1. Navigate to the sensor in the Sensors list
+1. Go to the sensor in the Sensors list
 2. Open the **Console** tab
 3. Run the command: `uninstall`
 
@@ -407,7 +407,7 @@ For more uninstallation options, see [Endpoint Agent Uninstallation](../uninstal
 
 ## Next Steps
 
-Now that your sensor is installed, you can:
+After the sensor is installed, you can:
 
 - [Configure Detection & Response rules](../../../3-detection-response/index.md) to detect threats
 - [Explore Sensor Commands](../../../8-reference/endpoint-commands.md) to interact with your endpoints

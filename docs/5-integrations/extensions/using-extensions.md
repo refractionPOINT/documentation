@@ -2,25 +2,25 @@
 
 ## Components
 
-Extensions can be interacted with using two main components:
+You interact with Extensions through two main components:
 
 ### Configurations
 
-Extension Configurations are records in [Hive](../../7-administration/config-hive/index.md). Each Extension has its configuration in the Hive record of the same name in the `extension_configuration` Hive.
+Extension Configurations are records in [Hive](../../7-administration/config-hive/index.md). Each Extension keeps its configuration in the Hive record of the same name in the `extension_configuration` Hive.
 
-These configurations are manipulated by simply storing the value in the record, LimaCharlie takes care of validating and notifying the Extension with the new value.
+To change a configuration, store the new value in the record. LimaCharlie validates the value and sends it to the Extension.
 
-Configurations are a great way of storing rarely-written settings for an Extension without the developer of the Extension having to manage secure storage for it.
+Configurations store settings that change rarely. The developer of the Extension does not need to manage secure storage for these settings.
 
-The structure of the configuration for a given Extension is published by the Extension via its "schema".
+Each Extension publishes the structure of its configuration in its "schema".
 
 Schemas are available through the [Schema API](https://api.limacharlie.io/static/swagger/#/Extension-Schema/getExtensionSchema) or the LimaCharlie CLI: `limacharlie extension schema --help`.
 
 ### Requests
 
-Requests are, as the name implies, direct individual requests to an Extension. A request contains an "action" and a "payload" (JSON object) to be sent to the Extension. Some requests can be flagged to have the Extension impersonate the requester (identity and permissions) during execution.
+A request is a direct, individual call to an Extension. A request contains an "action" and a "payload" (JSON object) for the Extension. You can flag some requests so that the Extension impersonates the requester (identity and permissions) during execution.
 
-The "action" and "payload" entirely depends on the Extension it is destined to. The list of actions and individual payload structures available for an Extension is documented by each Extension using the "schema" they publish.
+The "action" and the "payload" depend on the Extension that receives them. Each Extension documents its actions and payload structures in the "schema" that it publishes.
 
 Schemas are available through the [Schema API](https://api.limacharlie.io/static/swagger/#/Extension-Schema/getExtensionSchema) or the LimaCharlie CLI: `limacharlie extension schema --help`.
 
@@ -28,25 +28,25 @@ Schemas are available through the [Schema API](https://api.limacharlie.io/static
 
 ### Interactively
 
-The LimaCharlie webapp automatically displays a machine-generated user interface for each Extension based on the schema it publishes.
+The LimaCharlie web app shows a machine-generated user interface for each Extension. It builds this interface from the schema that the Extension publishes.
 
 ### Automation
 
-[Detection & Response Rules](../../3-detection-response/index.md), the main automation mechanism in LimaCharlie can interact with Extensions using the `extension request` action in the Response component.
+[Detection & Response Rules](../../3-detection-response/index.md) are the main automation mechanism in LimaCharlie. These rules interact with Extensions through the `extension request` action in the Response component.
 
 ### API
 
-Extensions can be interacted with using a few different APIs:
+More than one API interacts with Extensions:
 
-- Getting the schema for an Extension: [https://api.limacharlie.io/static/swagger/#/Extension-Schema](https://api.limacharlie.io/static/swagger/#/Extension-Request)
-- Making requests to an Extension: <https://api.limacharlie.io/static/swagger/#/Extension-Request>
+- Get the schema for an Extension: [https://api.limacharlie.io/static/swagger/#/Extension-Schema](https://api.limacharlie.io/static/swagger/#/Extension-Request)
+- Make requests to an Extension: <https://api.limacharlie.io/static/swagger/#/Extension-Request>
 
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+LimaCharlie Extensions expand and customize a security environment. They integrate third-party tools, automate workflows, and add new capabilities. An organization subscribes to an Extension and grants it specific permissions on the infrastructure of the organization. An Extension can be private or public. A private Extension gives tailored use, and a public Extension gives broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
 
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All API examples require an API key with the `extension` permission. See [API Keys](../../7-administration/access/api-keys.md) for setup.
+    All API examples need an API key with the `extension` permission. See [API Keys](../../7-administration/access/api-keys.md) for setup.
 
 ### List Subscribed Extensions
 
@@ -123,7 +123,7 @@ LimaCharlie Extensions allow users to expand and customize their security enviro
 
 === "Go"
 
-    There is no dedicated Go SDK method for listing all available extensions. Use the REST API directly.
+    The Go SDK has no dedicated method to list all available extensions. Use the REST API directly.
 
 === "CLI"
 

@@ -1,10 +1,10 @@
 # Integrations
 
-LimaCharlie connects to external systems in three directions: outbound (sending data out), inbound (acting on external data), and enrichment (pulling context into detections). This section covers all three.
+LimaCharlie connects to external systems in three directions: outbound (data goes out), inbound (action on external data), and enrichment (context comes into detections). This section covers all three.
 
 ## Outbound — get data out of LimaCharlie
 
-[**Outputs**](outputs/index.md) stream telemetry, detections, audit logs, and deployment events to external destinations on a continuous basis. Use them to feed your SIEM, archive to object storage, or trigger external systems via webhook.
+[**Outputs**](outputs/index.md) stream telemetry, detections, audit logs, and deployment events to external destinations continuously. Use outputs to feed a SIEM, to archive to object storage, or to trigger external systems with a webhook.
 
 Destination categories:
 
@@ -20,17 +20,17 @@ See [Outputs](outputs/index.md) for the complete list and operational reference 
 
 [**Extensions**](extensions/index.md) add capabilities to LimaCharlie. Some collect or process data (Artifact, BinLib, Velociraptor, Zeek), some manage internal platform features (Git Sync, YARA Manager, Sensor Cull), some integrate workflow tools (PagerDuty, Twilio, Cases, Playbook).
 
-[**Cloud CLI**](extensions/cloud-cli/index.md) is one specific extension that runs cloud-provider CLIs (AWS, Azure, GCP, Okta, etc.) as D&R response actions. Use it to take action *in* a cloud service from a LimaCharlie detection — disable an Okta user, isolate an EC2 instance, revoke a GitHub token.
+[**Cloud CLI**](extensions/cloud-cli/index.md) is one extension that runs cloud-provider CLIs (AWS, Azure, GCP, Okta, etc.) as D&R response actions. Use it to act *in* a cloud service from a LimaCharlie detection — disable an Okta user, isolate an EC2 instance, or revoke a GitHub token.
 
 ## Enrichment — pull external data into detections
 
-[**API Integrations**](api-integrations/index.md) let D&R rules and lookups query external services for context: VirusTotal, GreyNoise, Hybrid Analysis, IP geolocation, etc. Cheap to set up, useful for adding signal to existing detections.
+[**API Integrations**](api-integrations/index.md) let D&R rules and lookups query external services for context: VirusTotal, GreyNoise, Hybrid Analysis, IP geolocation, etc. They are cheap to set up and they add signal to existing detections.
 
 Cloud CLI vs API Integrations: Cloud CLI runs commands *into* a cloud service (action). API Integrations *read* from an external service (lookup). They complement each other.
 
 ## Tutorials
 
-End-to-end recipes combining several pieces:
+End-to-end recipes that combine several pieces:
 
 - [VirusTotal Integration](tutorials/virustotal-integration.md)
 - [Human-in-the-Loop Response](tutorials/human-in-the-loop-response.md)

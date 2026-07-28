@@ -1,16 +1,16 @@
 # Network Monitoring
 
-LimaCharlie's Agentic SecOps Workspace, through its integration with Zeek, revolutionizes network security monitoring by providing scalable semantic analysis, seamless artifact ingestion, and powerful detection and response capabilities. By automating threat detection and enabling efficient incident investigation and response, LimaCharlie helps organizations stay ahead of evolving network threats and maintain a robust security posture.
+The LimaCharlie Agentic SecOps Workspace integrates with Zeek for network security monitoring. The integration gives semantic analysis at scale, artifact ingestion, and detection and response capabilities. It automates threat detection and makes incident investigation and response efficient. This helps an organization to keep pace with new network threats and to maintain its security posture.
 
 ## Network monitoring problems
 
-- **Scalability issues:** Traditional monitoring tools struggle to keep up with the increased volume and variety of network traffic, leading to performance bottlenecks and reduced visibility.
-- **Lack of semantic analysis:** Many network monitoring solutions focus primarily on capturing and storing network traffic data without providing deep, semantic analysis of the content, making it difficult to identify and understand sophisticated threats.
-- **Limited automation and response capabilities:** Monitoring tools often lack advanced detection, automation, and response features, requiring manual intervention and slowing down incident response times.
+- **Scalability issues:** Traditional monitoring tools cannot process the increased volume and variety of network traffic. The result is low performance and less visibility.
+- **Lack of semantic analysis:** Many network monitoring solutions only capture and store network traffic data. They do not do a semantic analysis of the content. This makes it difficult to find and understand sophisticated threats.
+- **Limited automation and response capabilities:** Many monitoring tools do not have advanced detection, automation, and response features. An operator must act manually, and incident response is slower.
 
 ### LimaCharlie's solution
 
-- **Scalable semantic security monitoring:** By leveraging Zeek's robust platform, LimaCharlie enables organizations to perform semantic security monitoring at scale. The Zeek service automatically analyzes ingested PCAP files, extracting rich, structured data that provides deep insights into network activity and potential security threats.
-- **Seamless integration with Artifact Ingestion:** LimaCharlie's Zeek extension seamlessly integrates with the platform's Artifact Ingestion system. As PCAP files are ingested, the Zeek service automatically processes them, generating detailed log files that are then re-ingested into the Artifact Ingestion system for further analysis and action.
-- **Customizable Detection & Response (D&R) rules:** With the Zeek log files available as artifacts within LimaCharlie, security teams can create sophisticated D&R rules to automate threat detection and response. These rules can be customized to match an organization's specific security requirements, enabling rapid identification and mitigation of potential threats.
-- **Efficient incident investigation and response:** LimaCharlie's integration with Zeek empowers security teams to perform efficient incident investigations by providing rich, contextual data about network activity. The platform's powerful search capabilities allow security teams to quickly identify relevant artifacts and take appropriate actions to contain and remediate threats.
+- **Scalable semantic security monitoring:** LimaCharlie uses the Zeek platform to do semantic security monitoring at scale. The Zeek service analyzes ingested PCAP files automatically. It extracts structured data about network activity and possible security threats.
+- **Seamless integration with Artifact Ingestion:** The LimaCharlie Zeek extension integrates with the Artifact Ingestion system. When the system ingests a PCAP file, the Zeek service processes it and creates detailed log files. The Artifact Ingestion system then ingests those log files for more analysis and action.
+- **Customizable Detection & Response (D&R) rules:** The Zeek log files are artifacts in LimaCharlie. A security team can write D&R rules against these artifacts to automate threat detection and response. Customize the rules for the security requirements of your organization to find and mitigate threats quickly.
+- **Efficient incident investigation and response:** The integration with Zeek gives a security team contextual data about network activity for efficient incident investigations. The query capabilities of LimaCharlie find the relevant artifacts quickly. The team can then contain and remediate the threats.

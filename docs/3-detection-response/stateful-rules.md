@@ -2,24 +2,24 @@
 
 ## Overview
 
-> It's recommended to first read [Detection & Response rules](tutorials/writing-testing-rules.md) before diving into stateful rules.
+> Read [Detection & Response rules](tutorials/writing-testing-rules.md) before you continue with stateful rules.
 
-In LimaCharlie, a Stateful Rule tracks and remembers the state of past events to make decisions based on historical context. Unlike stateless rules, which evaluate events in isolation, stateful rules can detect patterns over time, such as multiple failed logins within an hour. This enables more complex and accurate detection, allowing users to trigger actions only when specific conditions are met across multiple events or timeframes.
+In LimaCharlie, a Stateful Rule keeps the state of past events and makes decisions from that history. A stateless rule evaluates each event alone. A stateful rule detects patterns over time, such as many failed logins in one hour. This gives more complex and more accurate detection. Users can trigger actions only when specific conditions occur across many events or timeframes.
 
-Events in LimaCharlie have well-defined relationships to one another using `routing/this`, `routing/parent`, `routing/target`, and can even be implicitly related by occurring in a similar timeframe. The relation context can be useful for writing more complex rules.
+Events in LimaCharlie have defined relationships to each other through `routing/this`, `routing/parent`, and `routing/target`. Two events can also have an implicit relation when they occur in a similar timeframe. This relation context helps you write more complex rules.
 
 These are called "stateful" rules.
 
 ## Detecting Children / Descendants
 
-To detect events in a tree you can use the following parameters:
+To detect events in a tree, use these parameters:
 
 - `with child`: matches children of the initial event
 - `with descendant`: matches descendants (children, grandchildren, etc.) of the initial event
 
-Aside from how deep they match, the `with child` and `with descendant` parameters operate identically: they declare a nested stateful rule.
+The `with child` and `with descendant` parameters are the same, except for the depth that they match. Both declare a nested stateful rule.
 
-For example, let's detect a `cmd.exe` process spawning a `calc.exe` process:
+For example, this rule detects a `cmd.exe` process that spawns a `calc.exe` process:
 
 ```yaml
 # Detect initial event
@@ -36,27 +36,27 @@ with child: # Wait for child matching this nested rule
   case sensitive: false
 ```
 
-Simply put, this will detect:
+This detects:
 
 ```batch
 cmd.exe --> calc.exe
 ```
 
-Because it uses `with child` it will not detect:
+Because it uses `with child`, it does not detect:
 
 ```batch
 cmd.exe --> firefox.exe --> calc.exe
 ```
 
-To do that, we could use `with descendant` instead.
+To detect that chain, use `with descendant` instead.
 
 ## Detecting Proximal Events
 
-To detect repetition of events close together on the same Sensor, we can use `with events`.
+To detect repeated events close together on the same Sensor, use `with events`.
 
-The `with events` parameter functions very similarly to `with child` and `with descendant`: it declares a nested stateful rule.
+The `with events` parameter works like `with child` and `with descendant`. It declares a nested stateful rule.
 
-For example, let's detect a scenario where `5` bad login attempts occur within `60` seconds.
+For example, this rule detects `5` bad login attempts in `60` seconds.
 
 ```yaml
 event: WEL
@@ -70,13 +70,13 @@ with events:
   within: 60
 ```
 
-The top-level rule filters down meaningful events to `WEL` ones sent from Windows sensors using the `is windows` operator, and then it declares a stateful rule inside `with events`. It uses `count` and `within` to declare a suitable timespan to evaluate matching events.
+The top-level rule uses the `is windows` operator to keep only the `WEL` events from Windows sensors. It then declares a stateful rule inside `with events`. The stateful rule uses `count` and `within` to set the timespan for the events that match.
 
 ## Stateful Rules
 
-Stateful rules — the rules declared within `with child`, `with descendant` or `with events` — have full range. They can do anything a normal rule might do, including declaring nested stateful rules or using `and`/`or` operators to write more complex rules.
+Stateful rules are the rules that you declare in `with child`, `with descendant`, or `with events`. They have full range and can do everything that a normal rule does. They can declare nested stateful rules, and they can use the `and` and `or` operators for more complex rules.
 
-Here's a stateful rule that uses `and` to detect a specific combination of child events:
+This stateful rule uses `and` to detect a specific combination of child events:
 
 ```yaml
 event: NEW_PROCESS
@@ -99,7 +99,7 @@ with child:
       case sensitive: false
 ```
 
-The above example is looking for an `outlook.exe` process that spawns a `chrome.exe` process and drops a `.ps1` (powershell) file to disk. Like this:
+The example above looks for an `outlook.exe` process that spawns a `chrome.exe` process and writes a `.ps1` (powershell) file to disk. Like this:
 
 ```text
 outlook.exe
@@ -109,9 +109,9 @@ outlook.exe
 
 ### Counting Events
 
-Rules declared using `with child` or `with descendant` also have the ability to use `count` and `within` to help scope the events it will statefully match.
+Rules that you declare with `with child` or `with descendant` can also use `count` and `within`. These parameters set the scope of the events that the rule matches statefully.
 
-For example, a rule that matches on Outlook writing 5 new `.ps1` documents within 60 seconds:
+For example, this rule matches when Outlook writes 5 new `.ps1` documents in 60 seconds:
 
 ```yaml
 event: NEW_PROCESS
@@ -131,9 +131,9 @@ with child:
 
 ### Choosing Event to Report
 
-A reported detection will include a copy of the event that was detected. When writing detections that match multiple events, the default behavior will be to include a copy of the initial parent event.
+A reported detection includes a copy of the event that the rule detected. When a detection matches many events, the default is a copy of the initial parent event.
 
-In many cases it's more desirable to get the latest event in the chain instead. For this, there's a `report latest event: true` flag that can be set. Piggy-backing on the earlier example:
+In many cases, the latest event in the chain is more useful. To get it, set the `report latest event: true` flag. This example extends the earlier one:
 
 ```yaml
 # Detection
@@ -162,11 +162,11 @@ with child:
   name: Outlook Spawning Chrome & Powershell
 ```
 
-The event returned in the detection will be either the `chrome.exe` `NEW_PROCESS` event or the `.ps1` `NEW_DOCUMENT` event, whichever was last. Without `report latest event: true` being set, it would default to including the `outlook.exe` `NEW PROCESS` event.
+The detection returns the `chrome.exe` `NEW_PROCESS` event or the `.ps1` `NEW_DOCUMENT` event, whichever came last. Without `report latest event: true`, the default is the `outlook.exe` `NEW PROCESS` event.
 
 ### Flipping back to stateless
 
-Since all operators under the `with child` and `with descentant` are operating in stateful mode (meaning all the nodes don't have to match a single event, but can match over multiple events), sometimes you want a operator and the operators underneath to flip back to stateless mode where they must match a single event. You can achieve this by setting `is stateless: true` in the operator like:
+All operators under `with child` and `with descentant` operate in stateful mode. In this mode, the nodes do not have to match one single event, but can match across many events. Sometimes you want an operator and the operators below it to return to stateless mode, where they must match a single event. To do this, set `is stateless: true` in the operator:
 
 ```yaml
 # Detection
@@ -196,15 +196,15 @@ with child:
 
 ### Testing Stateful Rules
 
-Stateful rules are forward-looking only and changing a rule will reset its state.
+Stateful rules look forward only, and a change to a rule resets its state.
 
-Practically speaking, this means that if you change a rule that detects `excel.exe -> cmd.exe`, `excel.exe` will need to be relaunched while the updated rule is running for it to then begin watching for `cmd.exe`.
+For example, you change a rule that detects `excel.exe -> cmd.exe`. You must start `excel.exe` again while the new rule runs. The rule then starts to watch for `cmd.exe`.
 
 ### Using Events in Actions
 
-Using `report` to report a detection works according to the [Choosing Event to Report](#choosing-event-to-report) section earlier. Other actions have a subtle difference: they will *always* observe the latest event in the chain.
+The `report` action obeys the rules in [Choosing Event to Report](#choosing-event-to-report) above. Other actions are different: they *always* see the latest event in the chain.
 
-Consider the `excel.exe -> cmd.exe` example. The `cmd.exe` event will be referenced inside the response action if using lookbacks (i.e. `<<routing/this>>`). If we wanted to end the `excel.exe` process (and its descendants), we would write a `task` that references the parent of the current event (`cmd.exe`):
+Look at the `excel.exe -> cmd.exe` example again. A lookback in the response action (`<<routing/this>>`) refers to the `cmd.exe` event. To stop the `excel.exe` process and its descendants, write a `task` that refers to the parent of the current event (`cmd.exe`):
 
 ```yaml
 - action: task

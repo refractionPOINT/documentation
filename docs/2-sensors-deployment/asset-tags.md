@@ -1,45 +1,45 @@
 # Asset Tag Namespace (`lc:asset:*`)
 
-`lc:asset:*` is a reserved sensor-tag namespace for marking endpoints with structured asset metadata — criticality, network exposure, environment, owner, compliance regimes, and OS. It is a convention layered on top of [Sensor Tags](sensor-tags.md): there is no separate field on the sensor model, no migration to run, and no per-surface schema to extend. Any LimaCharlie surface that needs asset context (Vulnerabilities, D&R, Cases, Search, Query Console, Outputs, etc.) reads the same tags and gets a consistent view.
+`lc:asset:*` is a reserved namespace for sensor tags. It marks endpoints with structured asset metadata: criticality, network exposure, environment, owner, compliance regimes, and OS. The namespace is a convention on top of [Sensor Tags](sensor-tags.md). There is no separate field on the sensor model, no migration to run, and no schema to extend for each surface. Any LimaCharlie surface that needs asset context (Vulnerabilities, D&R, Cases, Search, Query Console, Outputs, etc.) reads the same tags and gets a consistent view.
 
-The first consumer of the namespace is the [Vulnerability Reporting extension](../5-integrations/extensions/limacharlie/vulnerability-reporting.md), which uses `lc:asset:criticality:*` to drive risk scoring and SLA windows. Other surfaces will adopt the same parser as they need asset context.
+The first consumer of the namespace is the [Vulnerability Reporting extension](../5-integrations/extensions/limacharlie/vulnerability-reporting.md). It uses `lc:asset:criticality:*` for risk scores and SLA windows. Other surfaces will adopt the same parser when they need asset context.
 
 ## Why tags
 
-LimaCharlie tags are already the cross-cutting metadata mechanism for sensors:
+LimaCharlie tags are already the metadata mechanism that all sensors share:
 
 - They are visible on every event under `routing.tags`.
 - They are queryable in D&R rules, sensor selectors, LCQL, and the API.
-- They can be applied at enrollment time, by mass-tagging selectors, by D&R response actions, or manually through the web app and CLI.
+- You can apply them at enrollment time, with mass-tagging selectors, with D&R response actions, or manually in the web app and the CLI.
 
-Adding a new sensor-model field for asset metadata would require schema changes, per-surface adoption, and a separate write path. A tag convention sidesteps all of that: every surface that already understands tags inherits the new metadata for free.
+A new field on the sensor model for asset metadata would need schema changes, adoption in each surface, and a separate write path. A tag convention avoids all of that. Every surface that already understands tags gets the new metadata with no more work.
 
 ## Schema
 
-The namespace defines six tag prefixes. The value follows the prefix as a third colon-separated segment.
+The namespace defines six tag prefixes. The value comes after the prefix, as a third colon-separated segment.
 
 | Tag | Values | Cardinality | Purpose |
 |---|---|---|---|
-| `lc:asset:criticality:<v>` | `critical`, `high`, `medium`, `low` | Singleton | Asset importance. Used as a risk-score multiplier and to drive priority sort and SLA windows. |
-| `lc:asset:exposure:<v>` | `internet-facing`, `dmz`, `internal` | Singleton | Network reachability. Feeds risk scoring and filter chips. |
-| `lc:asset:env:<v>` | `prod`, `staging`, `dev`, `test` | Singleton | Environment for filtering and suppression scoping. |
-| `lc:asset:owner:<v>` | Free text | Singleton | Routing target for assignment / paging (e.g. a team name, an email, a Slack handle). |
-| `lc:asset:compliance:<v>` | Free text (e.g. `pci`, `hipaa`, `sox`, `gdpr`) | Multi-value | Compliance regimes the asset is subject to. A sensor can carry several at once. |
-| `lc:asset:os:<distro>-<release>` | Free text (e.g. `debian-11`, `redhat-enterprise-9`) | Singleton | Linux distribution and release. Lets the [Vulnerability Reporting extension](../5-integrations/extensions/limacharlie/vulnerability-reporting.md#linux-distro-aware-matching) apply distro backport data so backported security fixes aren't flagged as vulnerable. Split on the **last** `-`. |
+| `lc:asset:criticality:<v>` | `critical`, `high`, `medium`, `low` | Singleton | Asset importance. Used as a multiplier for the risk score, and for the priority sort and the SLA windows. |
+| `lc:asset:exposure:<v>` | `internet-facing`, `dmz`, `internal` | Singleton | Network reachability. Used for the risk score and the filter chips. |
+| `lc:asset:env:<v>` | `prod`, `staging`, `dev`, `test` | Singleton | Environment. Used for filters and for the scope of suppression. |
+| `lc:asset:owner:<v>` | Free text | Singleton | The routing target for assignment and paging (for example, a team name, an email, or a Slack handle). |
+| `lc:asset:compliance:<v>` | Free text (for example, `pci`, `hipaa`, `sox`, `gdpr`) | Multi-value | The compliance regimes that apply to the asset. A sensor can have more than one. |
+| `lc:asset:os:<distro>-<release>` | Free text (for example, `debian-11`, `redhat-enterprise-9`) | Singleton | Linux distribution and release. This lets the [Vulnerability Reporting extension](../5-integrations/extensions/limacharlie/vulnerability-reporting.md#linux-distro-aware-matching) apply distro backport data, so it does not flag backported security fixes as vulnerable. Split on the **last** `-`. |
 
 ### Validation rules
 
-The closed-set fields (`criticality`, `exposure`, `env`) only accept the values listed above. Tags with malformed or unknown values for those fields are dropped by the parser — this prevents typos like `lc:asset:criticality:hi` from creating a phantom bucket in dashboards or SLAs.
+The closed-set fields (`criticality`, `exposure`, `env`) accept only the values in the table above. The parser drops tags with malformed or unknown values for those fields. This stops a typo such as `lc:asset:criticality:hi` from creating a phantom bucket in dashboards or SLAs.
 
 `owner` and `compliance` accept any non-empty value after the prefix.
 
-If a sensor carries multiple tags for the same singleton field (for example, both `lc:asset:env:prod` and `lc:asset:env:staging`), the parser picks the first match in lexical order. This is deterministic but should be avoided — fix the tags rather than rely on the resolution order.
+If a sensor has more than one tag for the same singleton field, the parser picks the first match in lexical order. For example, a sensor can have both `lc:asset:env:prod` and `lc:asset:env:staging`. The result is deterministic, but do not depend on it. Correct the tags instead.
 
-`compliance` values are deduplicated and sorted alphabetically when emitted as JSON, so `lc:asset:compliance:pci` plus `lc:asset:compliance:hipaa` always renders as `["hipaa","pci"]` regardless of tag order.
+In JSON output, `compliance` values are deduplicated and sorted alphabetically. `lc:asset:compliance:pci` and `lc:asset:compliance:hipaa` therefore always give `["hipaa","pci"]` in any tag order.
 
 ## Applying tags
 
-Use the [`limacharlie` CLI](../6-developer-guide/cli.md) (or the API equivalents documented in [Sensor Tags](sensor-tags.md)).
+Use the [`limacharlie` CLI](../6-developer-guide/cli.md), or the equivalent API calls in [Sensor Tags](sensor-tags.md).
 
 ### Tag a single sensor
 
@@ -54,7 +54,7 @@ limacharlie tag add --sid SENSOR_ID --tag lc:asset:os:debian-11
 
 ### Tag a fleet by selector
 
-Mass-tagging is the practical path for any non-trivial environment. The selector uses [sensor selector expressions](../8-reference/sensor-selector-expressions.md).
+Mass-tagging is the practical method for any environment that is not small. The selector uses [sensor selector expressions](../8-reference/sensor-selector-expressions.md).
 
 ```bash
 # All Linux production hosts: env=prod
@@ -78,15 +78,15 @@ limacharlie tag mass-add \
     --tag lc:asset:compliance:pci
 ```
 
-Tags applied via mass-add are persistent (no TTL) unless `--ttl` is passed. Re-running mass-add is idempotent.
+Tags that you apply with mass-add are persistent (no TTL), unless you give `--ttl`. The mass-add command is idempotent, so you can run it again.
 
 ### Apply at enrollment time
 
-Installation keys can carry a fixed list of tags applied to every sensor that enrols against them. Bake the asset metadata into separate keys per asset class — for example, one key per environment + criticality combination — so the metadata lands the moment the sensor connects.
+An installation key can carry a fixed list of tags. These tags are applied to every sensor that enrolls with that key. Put the asset metadata in a separate key for each asset class, for example one key for each combination of environment and criticality. The sensor then gets the metadata when it connects.
 
 ### Apply via D&R rules
 
-D&R rules can add or remove tags as a response action. This is useful when asset state can be inferred from telemetry — for example, tagging a host as `lc:asset:exposure:internet-facing` when it starts answering on a public IP, or as `lc:asset:env:prod` based on a hostname pattern.
+A D&R rule can add or remove tags as a response action. Use this when the telemetry shows the state of the asset. For example, tag a host as `lc:asset:exposure:internet-facing` when it starts to answer on a public IP, or as `lc:asset:env:prod` from a hostname pattern.
 
 ```yaml
 respond:
@@ -96,20 +96,20 @@ respond:
 
 ## How surfaces consume the tags
 
-Each consumer surface uses a canonical parser that turns a sensor's tag set into a structured `AssetMetadata` object:
+Each consumer surface uses a canonical parser. The parser converts the tag set of a sensor into a structured `AssetMetadata` object:
 
-- **Go:** `ParseAssetMetadata(tags)` returns an `AssetMetadata` struct with `Criticality`, `Exposure`, `Env`, `Owner`, and `Compliance` fields. Used by extensions and backend services.
-- **TypeScript:** `parseAssetMetadataFromTags(tags)` mirrors the Go shape for use in the LimaCharlie web app and any TypeScript SDK consumer.
+- **Go:** `ParseAssetMetadata(tags)` returns an `AssetMetadata` struct with `Criticality`, `Exposure`, `Env`, `Owner`, and `Compliance` fields. Extensions and backend services use this function.
+- **TypeScript:** `parseAssetMetadataFromTags(tags)` has the same shape as the Go function. The LimaCharlie web app and any TypeScript SDK consumer use it.
 
-Both implementations share the same prefix list, the same closed-set validation, and the same tie-breaking rules so a tag set is interpreted identically across the platform.
+The two implementations share the same prefix list, the same closed-set validation, and the same tie-breaking rules. A tag set therefore has the same interpretation across the platform.
 
-The Vulnerability Reporting extension exposes the parsed metadata under an `asset_metadata` field on every endpoint and finding when `include_tags=true` is requested. See the [extension page](../5-integrations/extensions/limacharlie/vulnerability-reporting.md) for the response shape.
+If you request `include_tags=true`, the Vulnerability Reporting extension gives the parsed metadata in an `asset_metadata` field on every endpoint and finding. For the response shape, see the [Vulnerability Reporting extension page](../5-integrations/extensions/limacharlie/vulnerability-reporting.md).
 
 ## Override hatches
 
-Organizations that already run an asset taxonomy (for example, a long-standing `crown-jewel` / `tier-1` / `tier-3` scheme) can map their existing tags into the canonical buckets without re-tagging the fleet.
+An organization that already has an asset taxonomy can map its tags into the canonical buckets. It does not have to tag the fleet again. One example is a long-standing `crown-jewel` / `tier-1` / `tier-3` scheme.
 
-Today the override is exposed by the Vulnerability Reporting extension as a `criticality_tag_overrides` configuration field:
+Today, the Vulnerability Reporting extension gives this override in a `criticality_tag_overrides` configuration field:
 
 ```json
 {
@@ -121,11 +121,11 @@ Today the override is exposed by the Vulnerability Reporting extension as a `cri
 }
 ```
 
-The mapping is consulted only when no canonical `lc:asset:criticality:*` tag is present on the sensor. Explicit canonical tags always win, so an org can migrate gradually: leave the override map in place, start applying canonical tags to the most important assets, and remove the override entries as coverage grows.
+The mapping is used only when the sensor has no canonical `lc:asset:criticality:*` tag. An explicit canonical tag always has priority, so an organization can migrate one step at a time. Keep the override map, apply canonical tags to the most important assets first, and remove the override entries when coverage grows.
 
-Override values must be one of the four canonical buckets; any other value is silently ignored at read time and rejected when the configuration is written.
+An override value must be one of the four canonical buckets. Any other value is ignored at read time and rejected when the configuration is written.
 
-Other surfaces will adopt the same override pattern (or its equivalent) as they consume the namespace.
+Other surfaces will adopt the same override pattern, or an equivalent, when they consume the namespace.
 
 ## Sample real-world tagging
 
@@ -139,7 +139,7 @@ A hypothetical SaaS company runs four classes of assets. The tag plan:
 | Engineering laptops (internal, dev work) | `lc:asset:criticality:low`, `lc:asset:exposure:internal`, `lc:asset:env:dev`, `lc:asset:owner:it-help` |
 | HR file share (internal, in HIPAA + SOX scope) | `lc:asset:criticality:high`, `lc:asset:exposure:internal`, `lc:asset:env:prod`, `lc:asset:compliance:hipaa`, `lc:asset:compliance:sox`, `lc:asset:owner:hr-ops` |
 
-Driven by `limacharlie tag mass-add` calls keyed off existing infrastructure tags (e.g. an installation key per asset class, a hostname prefix, a cloud-provider label propagated via the cloud adapters), the entire fleet can be classified in a single pass and kept current as new sensors enrol.
+Use `limacharlie tag mass-add` calls that key off existing infrastructure tags. Such tags include an installation key for each asset class, a hostname prefix, or a cloud-provider label that the cloud adapters propagate. You can classify the full fleet in one pass and keep it current as new sensors enroll.
 
 ## See Also
 

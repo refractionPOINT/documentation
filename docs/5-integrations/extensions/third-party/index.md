@@ -1,6 +1,6 @@
 # Third-Party Extensions
 
-Extensions built by third-party developers that integrate external tools and services with LimaCharlie.
+Third-party developers build these extensions. The extensions integrate external tools and services with LimaCharlie.
 
 ## Available Extensions
 

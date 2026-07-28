@@ -1,23 +1,23 @@
 # 1Password
 
-[1Password](https://1password.com/) provides an events API to fetch audit logs. Events can be ingested directly via a cloud-to-cloud or CLI Adapter.
+[1Password](https://1password.com/) has an events API that supplies audit logs. A cloud-to-cloud adapter or a CLI adapter can ingest these events.
 
 See [1Password's official Events API documentation](https://developer.1password.com/docs/events-api/reference/).
 
-1Password telemetry can be addressed via the `1password` platform.
+You address 1Password telemetry with the `1password` platform.
 
 ## Adapter Deployment
 
-1Password events can be collected directly from the 1Password API, via a cloud-to-cloud Adapter, or via the CLI Adapter. 1Password adapters require the following options:
+A cloud-to-cloud adapter or a CLI adapter collects 1Password events directly from the 1Password API. 1Password adapters need these options:
 
-- `token`: the API token provisioned through 1password.
-- `endpoint`: the API endpoint to use, depending on your 1password plan, see their documentation below.
+- `token`: the API token that you create in 1Password.
+- `endpoint`: the API endpoint to use. The endpoint depends on your 1Password plan. See the 1Password documentation.
 
-You can generate an access token from 1Password at [this link](https://support.1password.com/events-reporting/).
+Create an access token in the [1Password events reporting documentation](https://support.1password.com/events-reporting/).
 
 ## Cloud-to-Cloud Adapter
 
-LimaCharlie offers a 1Password guided configuration in the web UI. From your 1Password instance, you will need:
+LimaCharlie has a guided configuration for 1Password in the web app. From your 1Password instance, you need:
 
 - 1Password API Access Token
 - Endpoint; one of the following:
@@ -27,11 +27,11 @@ LimaCharlie offers a 1Password guided configuration in the web UI. From your 1Pa
   - 1Password.ca
   - 1Password.eu
 
-After providing an [Installation Key](../../installation-keys.md), provide the required values and LimaCharlie will establish a Cloud Adapter for 1Password events
+Give an [Installation Key](../../installation-keys.md) and the required values. LimaCharlie then creates a cloud adapter for 1Password events.
 
 ### Infrastructure as Code Deployment
 
-LimaCharlie IaC Adapter can also be used to ingest 1Password events.
+The LimaCharlie IaC adapter can also ingest 1Password events.
 
 ```python
 sensor_type: "1password"

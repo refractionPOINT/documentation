@@ -1,29 +1,30 @@
 # Cloudflare
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and configuration
+    formats on this page can change before general availability. Contact us to
+    request access.
 
-The lightest provider: a **scoped, read-only API token** plus your **account
-ID**. No infrastructure to stand up.
+This is the smallest provider. It needs a **scoped, read-only API token** and
+your **account ID**. It needs no infrastructure.
 
 ## Create the API token
 
-Cloudflare has two kinds of token, created in two different places. Use an
-**Account API token** — it is owned by the account rather than by a person, so
-it survives that person leaving:
+Cloudflare has two types of token, and you create them in two different
+places. Use an **Account API token**. The account owns this token, not a
+person, so the token stays valid when that person leaves:
 
 **Cloudflare dashboard → Manage Account → API Tokens → Create Token → Create
 Custom Token.**
 
 !!! note "User tokens live elsewhere"
-    Tokens created under **My Profile → API Tokens** are *user*-owned. One
-    scoped to the account also works for the surfaces below, but it is tied to
-    an individual. A user token is only strictly needed for the optional
+    A *user* owns each token that you create under **My Profile → API
+    Tokens**. A user token with account scope also works for the surfaces
+    below, but it belongs to one person. You need a user token only for the
+    optional
     [account-members and API-token surfaces](#optional-account-members-and-api-tokens).
 
-**Minimum permissions** (the required checks — authenticate plus the
+**Minimum permissions** (for the required checks: authentication plus the
 zones/DNS inventory):
 
 | Type | Permission | Access |
@@ -31,8 +32,8 @@ zones/DNS inventory):
 | Account | Account Settings | Read |
 | Zone | Zone | Read |
 
-**Optional permissions** — each lights up an additional inventory surface
-(skip any you do not want):
+**Optional permissions**. Each one adds one more inventory surface. Omit the
+ones that you do not want:
 
 | Surface | Add (all Account-scope, Read) |
 |---|---|
@@ -40,12 +41,13 @@ zones/DNS inventory):
 | Security Center findings | Security Center Insights |
 | R2 storage inventory | Workers R2 Storage |
 
-Scope the token's resources:
+Set the resource scope of the token:
 
 - **Account Resources:** Include → your account.
 - **Zone Resources:** Include → All zones.
 
-Copy the token (it is shown once). You can confirm it independently:
+Copy the token. Cloudflare shows it one time only. To check the token, run
+this command:
 
 ```bash
 curl -s -H "Authorization: Bearer <TOKEN>" \
@@ -55,8 +57,8 @@ curl -s -H "Authorization: Bearer <TOKEN>" \
 
 ## Get the account ID
 
-The 32-hex string in the dashboard's right-hand sidebar (Overview), or in the
-dashboard URL.
+The account ID is the 32-hex string in the right sidebar of the dashboard
+(Overview). It is also in the dashboard URL.
 
 ## Create the credentials secret
 
@@ -79,7 +81,7 @@ cloudflare_account_id: "<32-hex-account-id>"
 credentials: hive://secret/cloudflare-credentials
 ```
 
-In the web app: **Add provider → Cloudflare**, then set **Account ID**,
+In the web app, select **Add provider → Cloudflare**. Then set **Account ID**,
 **Credentials**, and **Refresh interval**.
 
 ## Verify
@@ -95,18 +97,19 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `access` | — | Zero Trust Access apps, identity providers, and service tokens unavailable. |
 | `security_center` | — | Security Center findings unavailable. |
 | `r2` | — | R2 storage inventory unavailable. |
-| `user_scoped` | — | Account members and API-token enumeration unavailable — these are user-scoped endpoints and need `user_api_token` in the secret. |
+| `user_scoped` | — | Account members and API-token enumeration unavailable. These endpoints are user-scoped and need `user_api_token` in the secret. |
 
 The optional checks pass only if you added the matching token permissions.
 
 ### Optional: account members and API tokens
 
-Account membership and API-token enumeration are served by **user-scoped**
-endpoints that an account-owned token cannot reach. To cover them, create a
-second token under **My Profile → API Tokens** and add it to the same secret:
+**User-scoped** endpoints supply account membership and API-token
+enumeration. An account-owned token cannot reach these endpoints. To collect
+them, create a second token under **My Profile → API Tokens**, then add it to
+the same secret:
 
 ```json
 {"api_token": "<account-scoped-token>", "user_api_token": "<user-owned-token>"}
 ```
 
-Without it those two surfaces are simply unobserved.
+Without this second token, LimaCharlie does not collect those two surfaces.

@@ -1,8 +1,8 @@
 # Pangea
 
-Pangea is a collection of API-based security services that can quickly be added to enrich data. Pangea is designed make it easy to add security into an application, but also perform lookups for various data types.
+Pangea is a collection of API-based security services that you can add to enrich data. Pangea helps you add security to an application, and also do lookups for many data types.
 
-LimaCharlie supports the following Pangea lookups:
+LimaCharlie supports these Pangea lookups:
 
 - [Domain](https://pangea.cloud/docs/api/domain-intel#reputation)
   - Check malicious behavior on a domain
@@ -11,19 +11,19 @@ LimaCharlie supports the following Pangea lookups:
 - [IP](https://pangea.cloud/docs/api/ip-intel#reputation)
   - Check for malicious behavior on an IP
 - [URL](https://pangea.cloud/docs/api/url-intel#reputation)
-  - Retrieve an intelligence report
+  - Get an intelligence report
 - [User](https://pangea.cloud/docs/user-intel/)
-  - Checks to see if any PII data or credentials have been exposed by an attack.
+  - Check if an attack exposed PII data or credentials.
 
 ## API Keys
 
 > Subscription Required
 >
-> A Pangea subscription is required to utilize this service. Pangea offers a $5 monthly credit for development purposes, provided the account balance is not negative.
+> You need a Pangea subscription to use this service. Pangea gives a $5 monthly credit for development if the account balance is not negative.
 
-The Pangea API key (known as a token within the Pangea platform) is added via the integrations menu within LimaCharlie.
+Add the Pangea API key (Pangea calls it a token) in the integrations menu in LimaCharlie.
 
-The API key follows this format:
+The API key has this format:
 
 ```text
 domain/token
@@ -37,7 +37,7 @@ aws.us.pangea.cloud/pts_7kb33fyz313372vuu5zgnotarealtoken
 
 ## Domain
 
-The Domain Intel service allows you to retrieve intelligence about known domain names, giving you insight into the reputation of a domain.
+The Domain Intel service gets intelligence about known domain names. It shows you the reputation of a domain.
 
 ### Rule
 
@@ -64,7 +64,7 @@ resource: lcr://api/pangea-domain-reputation
 
 ## File Reputation
 
-The File Intel service enables you to submit a file's hash and get the file's attributes back - giving you insight into the disposition of the file.
+The File Intel service lets you submit the hash of a file and get the attributes of the file. It shows you the disposition of the file.
 
 ### D&R Rule
 
@@ -91,7 +91,7 @@ resource: lcr://api/pangea-file-reputation
 
 ## IP Reputation
 
-The IP Intel service allows you to retrieve security information about known IP addresses that have been collected across the internet for several decades, giving you insight into the reputation of an IP.
+The IP Intel service gets security information about known IP addresses. Pangea collected this information across the internet for several decades. The service shows you the reputation of an IP.
 
 ### D&R Rule
 
@@ -116,7 +116,7 @@ resource: lcr://api/pangea-ip-reputation
 
 ## URL Reputation
 
-The URL Intel service allows you to retrieve intelligence about known URLs, giving you insight into the reputation of a URL.
+The URL Intel service gets intelligence about known URLs. It shows you the reputation of a URL.
 
 ### D&R Rule
 
@@ -141,7 +141,7 @@ resource: lcr://api/pangea-url-reputation
 
 ## User
 
-The User Intel service allows you to check a large repository of breach data to see if a user's Personally Identifiable Data (PII) or credentials have been compromised.
+The User Intel service checks a large repository of breach data. It shows you if an attacker compromised the Personally Identifiable Data (PII) or the credentials of a user.
 
 ### D&R Rule
 

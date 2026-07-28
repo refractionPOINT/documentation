@@ -5,5 +5,5 @@ Get started with LimaCharlie.
 ## Documentation
 
 - [What is LimaCharlie?](what-is-limacharlie.md) - Platform overview
-- [Quickstart](quickstart.md) - Get up and running quickly
+- [Quickstart](quickstart.md) - First steps with the platform
 - [Core Concepts](core-concepts.md) - Fundamental platform concepts

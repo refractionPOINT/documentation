@@ -1,29 +1,29 @@
 # BinLib
 
-Binary Library, or "BinLib", is a collection of executable binaries (such as EXE or ELF files) that have been observed within your environment. If enabled, this Extension helps you build your own private collection of observed executables for subsequent analysis and searching.
+Binary Library, or "BinLib", is a collection of executable binaries, such as EXE or ELF files, that are observed in your environment. If you enable this Extension, it builds your own private collection of the observed executables. You can then analyze and search that collection.
 
-When LimaCharlie observes a binary and path for the first time a `CODE_IDENTITY` event is generated. The metadata from this event is stored within `binlib`, and is available for searching, tagging, and downloading. Additionally, you can run [YARA](../third-party/yara.md) scans against observed binaries.
+When LimaCharlie observes a binary and path for the first time, it generates a `CODE_IDENTITY` event. The metadata from this event is stored in `binlib`. You can search it, tag it, and download it. You can also run [YARA](../third-party/yara.md) scans against observed binaries.
 
 ## Enabling BinLib
 
-BinLib requires subscribing to the `ext-reliable-tasking` Extension in order to function properly. This can be enabled [in the Add-ons marketplace](https://app.limacharlie.io/add-ons/extension-detail/ext-reliable-tasking).
+BinLib needs a subscription to the `ext-reliable-tasking` Extension to work correctly. Enable that Extension [in the Add-ons marketplace](https://app.limacharlie.io/add-ons/extension-detail/ext-reliable-tasking).
 
-BinLib can be a powerful additional to your detection and response capabilities. Analysts can:
+BinLib adds to your detection and response capabilities. Analysts can:
 
 - Look for historical evidence of malicious binaries
-- Tag previously-observed files for data enrichment (i.e. [MITRE ATT&CK Techniques](https://attack.mitre.org/matrices/enterprise/))
+- Tag previously-observed files for data enrichment (for example, [MITRE ATT&CK Techniques](https://attack.mitre.org/matrices/enterprise/))
 - Compare observed hashes to known good or known bad lists
 - [YARA scan](../third-party/yara.md) and auto-tag for integration in detection & response rules
 
 ## Usage
 
-First, subscribe your tenant to the [BinLib](https://app.limacharlie.io/add-ons/extension-detail/binlib) extension.
+First, subscribe your organization to the [BinLib](https://app.limacharlie.io/add-ons/extension-detail/binlib) extension.
 
 ![binlib 1](../../../assets/images/binlib-1.png)
 
-To perform one of the following operations against your own library, choose the command and select **Run Request.**
+To do one of the operations below against your own library, choose the command and select **Run Request.**
 
-The BinLib page in the web app offers an easy way to get started with some of the core requests exposed by the extension: Check Hash, Search, and Yara Scan.
+The BinLib page in the web app gives you the main requests of the extension: Check Hash, Search, and Yara Scan.
 
 ![binlib 2](../../../assets/images/binlib-2.png)
 
@@ -31,7 +31,7 @@ The BinLib page in the web app offers an easy way to get started with some of th
 
 #### Accepted Values: MD5, SHA1, SHA256
 
-The `check_hash` operation lets you search to see if a particular hash has been observed in your Organization. Output includes a boolean if the hash was found and three hash values, if available.
+The `check_hash` operation shows you if a hash was observed in your Organization. The output includes a boolean that shows if the hash was found. It also includes three hash values, if they are available.
 
 Sample Output:
 
@@ -52,9 +52,9 @@ Sample Output:
 
 #### Careful Downloading Binaries
 
-LimaCharlie does not filter the binaries observed by your organization. You must exercise caution if downloading a malicious file. We recommend downloading potential malicious binaries to an isolated analysis system.
+Be careful when you download a file that can be malicious. LimaCharlie does not filter the binaries that your organization observes. Download binaries that can be malicious to an isolated analysis system.
 
-The `get_hash_data` operation provides a link to the raw data for the hash of interest, allowing you to download the resulting binary file (if previously observed within your environment).
+The `get_hash_data` operation gives a link to the raw data for the hash. Use the link to download the binary file, if the file was observed before in your environment.
 
 Sample Output:
 
@@ -74,7 +74,7 @@ Sample Output:
 
 #### Accepted Values: MD5, SHA1, SHA256
 
-The `get_hash_metadata` operation obtains the metadata for a hash of interest, including signing details, file type, and additional hashes.
+The `get_hash_metadata` operation gets the metadata for a hash. The metadata includes signing details, the file type, and more hashes.
 
 ```json
 {
@@ -103,7 +103,7 @@ The `get_hash_metadata` operation obtains the metadata for a hash of interest, i
 
 ### search
 
-The `search` operation searches the library for binary data points, including or *other than* a known hash.
+The `search` operation searches the library for data points of binaries. The data points can include a known hash, or they can be *other than* a known hash.
 
 Searchable fields include:
 
@@ -119,21 +119,21 @@ Searchable fields include:
 - size
 - type
 
-Note that search criteria are ANDed. Binaries must meet ALL criteria to be returned.
+The search criteria are ANDed. A binary must meet ALL criteria before the search returns it.
 
-Search results can be downloaded as a CSV.
+You can download the search results as a CSV.
 
 ![binlib 3](../../../assets/images/binlib-3.png)
 
 ### tag
 
-The `tag` operation allows you to add tag(s) to a hash, allowing for additional classification within binlib.
+The `tag` operation adds one or more tags to a hash. The tags give more classification in binlib.
 
-The below example Tags the Google Installer with the `google` tag.
+The example below tags the Google Installer with the `google` tag.
 
 ![binlib 4](../../../assets/images/binlib-4.png)
 
-Successful tagging yields an `updated` event:
+A successful tag operation gives an `updated` event:
 
 ```json
 {
@@ -153,24 +153,24 @@ The `untag` operation removes a tag from a binary.
 
 ### YARA scan
 
-The `yara_scan` operation lets you run YARA scans across observed files. Scans require:
+The `yara_scan` operation runs YARA scans across observed files. A scan needs:
 
 - Criteria or hash to filter files to be scanned
 - [Rule name(s)](../../../7-administration/config-hive/yara.md) or rule(s)
 
-You also have the option to tag hits on match.
+You can also tag the files that match.
 
-Note that search criteria are ANDed. Binaries must meet ALL criteria to be returned.
+The search criteria are ANDed. A binary must meet ALL criteria before the search returns it.
 
 ![binlib 5](../../../assets/images/binlib-5.png)
 
 ## Automating
 
-Here are some examples of useful rules that could be used to automate interactions with Binlib.
+These example rules automate interactions with Binlib.
 
 ### Scan all acquired files with Yara
 
-This rule will automatically scan all acquired files in binlib with a Yara rule:
+This rule scans all acquired files in binlib with a Yara rule:
 
 ```yaml
 detect:
@@ -192,7 +192,7 @@ respond:
       - yara_rule_name_here
 ```
 
-and this rule will alert on matches:
+This rule alerts on matches:
 
 ```yaml
 detect:

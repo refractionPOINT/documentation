@@ -1,29 +1,29 @@
 # Microsoft Entra ID
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and configuration
+    formats on this page can change before general availability. Contact us to
+    request access.
 
 A **directory-only** connection for organizations that use Entra ID or
-Microsoft 365 but have no Azure infrastructure to enumerate. It collects the
-tenant-global identity surface over Microsoft Graph: users, groups and
-membership, service principals and app registrations (with their long-lived
-credentials), directory roles and PIM eligibility, Conditional Access policies,
-and administrative units.
+Microsoft 365 but have no Azure infrastructure to enumerate. It uses Microsoft
+Graph to collect the tenant-global identity surface: users, groups and
+membership, service principals and app registrations with their long-lived
+credentials. It also collects directory roles and PIM eligibility, Conditional
+Access policies, and administrative units.
 
 **Auth model:** an **Entra ID app registration** (service principal) with a
-**client secret** and **Microsoft Graph application permissions**. There is no
-ARM/subscription setup at all.
+**client secret** and **Microsoft Graph application permissions**. This
+provider needs no ARM or subscription setup.
 
 !!! tip "Already connecting Azure?"
-    The [Azure](azure.md) provider collects this same directory as part of its
-    sweep. You only need a standalone Entra record when there is no Azure
-    subscription to connect — or when you want the directory collected
-    independently of the infrastructure connection. Holding **both** for one
-    tenant is supported and safe: the Azure connection detects the standalone
-    record and defers its tenant-global directory collectors to it, so the
-    directory is never collected twice.
+    The [Azure](azure.md) provider collects this same directory in its sweep.
+    You need a standalone Entra record only in two conditions: there is no
+    Azure subscription to connect, or you want the directory collected
+    separately from the infrastructure connection. You can keep **both**
+    records for one tenant; this is supported and safe. The Azure connection
+    finds the standalone record and defers its tenant-global directory
+    collectors to it, so LimaCharlie never collects the directory twice.
 
 ## Prerequisites
 
@@ -43,10 +43,10 @@ ARM/subscription setup at all.
 
 | Grant | Unlocks | Preflight check |
 |---|---|---|
-| **AuditLog.Read.All** | Last-sign-in / dormancy enrichment. **Requires Entra ID P1 or P2** | `signin_activity` |
+| **AuditLog.Read.All** | Last-sign-in / dormancy enrichment. **Needs Entra ID P1 or P2** | `signin_activity` |
 | **Policy.Read.All** | Conditional Access policy posture | *(collected during the sweep)* |
 | **RoleManagement.Read.Directory** | Directory role assignments and PIM eligibility | *(collected during the sweep)* |
-| **Application.Read.All** | Fuller app-registration / service-principal credential detail | *(collected during the sweep)* |
+| **Application.Read.All** | More credential detail for app registrations and service principals | *(collected during the sweep)* |
 | **AdministrativeUnit.Read.All** | Administrative-unit scoping | *(collected during the sweep)* |
 | **AgentIdentity.Read.All** | Source-asserted AI-agent identities in the directory | *(collected during the sweep)* |
 
@@ -73,20 +73,21 @@ az ad app permission admin-consent --id "$APP_ID"
 ```
 
 !!! note "In the portal"
-    **Microsoft Entra ID → App registrations → New registration** →
-    **Certificates & secrets → New client secret** (copy the *Value*) →
-    **API permissions → Add a permission → Microsoft Graph → Application
-    permissions** → add the permissions above → **Grant admin consent for
-    \<tenant\>**.
+    1. Go to **Microsoft Entra ID → App registrations → New registration**.
+    2. Go to **Certificates & secrets → New client secret**. Copy the
+       *Value*.
+    3. Go to **API permissions → Add a permission → Microsoft Graph →
+       Application permissions** and add the permissions above.
+    4. Select **Grant admin consent for \<tenant\>**.
 
 !!! danger "`credential reset` clears existing secrets"
     Without `--append`, `az ad app credential reset` **removes every existing
-    password and certificate** on the app before adding the new one.
+    password and certificate** on the app before it adds the new one.
 
 !!! danger "Application permissions, not delegated"
-    Graph permissions must be **Application** permissions. Delegated
-    permissions need a signed-in user and leave `graph_directory` failing even
-    after consent.
+    Add the Graph permissions as **Application** permissions. Delegated
+    permissions need a signed-in user. With delegated permissions, the
+    `graph_directory` check continues to fail, even after consent.
 
 ## Create the credentials secret
 
@@ -112,11 +113,11 @@ internal_domains: [example.com, example.onmicrosoft.com]
 refresh: 6h
 ```
 
-The client ID may be carried either on the record (`entra_client_id`) or inside
-the secret (`client_id`); the record wins when both are present.
+You can put the client ID on the record (`entra_client_id`) or in the secret
+(`client_id`). If both are present, the record has priority.
 
-In the web app: **Add provider → Entra ID**, then set **Tenant ID**, **Client
-ID**, **Credentials**, and **Refresh interval**.
+In the web app, select **Add provider → Entra ID**. Then set **Tenant ID**,
+**Client ID**, **Credentials**, and **Refresh interval**.
 
 ## Verify
 
@@ -127,14 +128,14 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | The client ID/secret pair was rejected, or the secret expired. |
-| `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
-| `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
+| `graph_directory` | ✅ | `Directory.Read.All` has no consent. There is no identity inventory. |
+| `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable. The usual cause is a missing Entra ID P1/P2 licence. |
 
 ## Troubleshooting
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `auth` fails with `invalid_client` | Stored the secret **ID** instead of its **Value**, or the secret expired | Re-mint the secret and update the hive secret |
-| `graph_directory` fails after consent | Permissions added as *Delegated*, or consent not actually granted | Add them under *Application permissions* and grant tenant-wide admin consent |
-| `signin_activity` fails with a licence error | Sign-in activity needs Entra ID P1/P2 | Accept the degrade, or add the licence |
-| Renewal reminder | Client secrets expire; when one does, every check fails at `auth` | Re-mint before expiry and update the secret record — nothing else changes |
+| `auth` fails with `invalid_client` | Stored the secret **ID** instead of its **Value**, or the secret expired | Create a new secret and update the hive secret |
+| `graph_directory` fails after consent | Permissions added as *Delegated*, or consent not granted | Add them under *Application permissions* and grant tenant-wide admin consent |
+| `signin_activity` fails with a licence error | Sign-in activity needs Entra ID P1/P2 | Accept the reduced data, or add the licence |
+| Renewal reminder | Client secrets expire. When a secret expires, every check fails at `auth` | Create a new secret before the expiry date and update the secret record. Nothing else changes |

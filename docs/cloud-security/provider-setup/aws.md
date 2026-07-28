@@ -1,28 +1,28 @@
 # Amazon Web Services
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and configuration
+    formats on this page can change before general availability. Contact us to
+    request access.
 
-Read-only inventory via an IAM identity that **assumes a read-only role**.
+Read-only inventory with an IAM identity that **assumes a read-only role**.
 Two topologies:
 
 - **Single account** (below): one IAM user plus one role in that account.
-- **AWS Organization:** deploy the same role to every account via a
-  service-managed CloudFormation StackSet and set `aws_member_role_name`; the
-  base user additionally needs `organizations:List*` / `Describe*`.
+- **AWS Organization:** deploy the same role to every account with a
+  service-managed CloudFormation StackSet, then set `aws_member_role_name`.
+  The base user also needs `organizations:List*` / `Describe*`.
 
 ## Architecture (least-privilege)
 
-An IAM **user** whose only permission is `sts:AssumeRole` on a read-only
-**role** (`SecurityAudit` + `ViewOnlyAccess`), gated by an **external ID**.
-LimaCharlie stores the user's access key, assumes the role, and reads. The
-user itself can do nothing but assume that one role.
+An IAM **user** has one permission only: `sts:AssumeRole` on a read-only
+**role** (`SecurityAudit` + `ViewOnlyAccess`). An **external ID** protects
+the role. LimaCharlie keeps the access key of the user, assumes the role, and
+reads. The user can do nothing but assume that one role.
 
 ## Create the identity (CLI, single account)
 
-Run as an IAM admin (never the root user):
+Run these commands as an IAM admin. Do not use the root user.
 
 ```bash
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -58,11 +58,13 @@ aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + Secr
 ```
 
 !!! note "In the web app (AWS console)"
-    IAM → Users → create `lc-cloudsec`; IAM → Roles → create
-    `LimaCharlieCloudSecRO` (custom trust policy → the user plus the
-    external-ID condition; attach `SecurityAudit` + `ViewOnlyAccess`); add an
-    inline policy on the user allowing `sts:AssumeRole` on the role; then
-    create an access key.
+    1. Go to IAM → Users and create `lc-cloudsec`.
+    2. Go to IAM → Roles and create `LimaCharlieCloudSecRO`. Use a custom
+       trust policy with the user and the external-ID condition.
+    3. Attach `SecurityAudit` and `ViewOnlyAccess` to the role.
+    4. Add an inline policy on the user that allows `sts:AssumeRole` on the
+       role.
+    5. Create an access key.
 
 ## Create the credentials secret
 
@@ -71,11 +73,11 @@ aws iam create-access-key --user-name lc-cloudsec   # capture AccessKeyId + Secr
 ```
 
 !!! warning "No `aws_` prefix"
-    `aws_access_key_id` / `aws_secret_access_key` are silently ignored — the
-    SDK then falls back to the default credential chain and the auth check
-    fails with `no EC2 IMDS role found`. Use the bare `access_key_id` /
-    `secret_access_key` keys. (Optional third key: `session_token` for
-    temporary credentials.)
+    Use the bare `access_key_id` / `secret_access_key` keys. The SDK ignores
+    `aws_access_key_id` / `aws_secret_access_key` without a message. It then
+    uses the default credential chain, and the auth check fails with
+    `no EC2 IMDS role found`. A third key is optional: `session_token` for
+    temporary credentials.
 
 ```bash
 limacharlie hive set --hive-name secret --key aws-credentials \
@@ -103,27 +105,28 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
-| `auth` | ✅ | `sts:AssumeRole` failed — wrong external ID, trust policy, or credentials. Nothing else is probed. |
+| `auth` | ✅ | `sts:AssumeRole` failed. The external ID, the trust policy, or the credentials are wrong. The test probes nothing else. |
 | `ec2` | ✅ | Compute inventory unavailable. |
-| `iam` | ✅ | IAM inventory unavailable — the CIEM access graph cannot be built. |
+| `iam` | ✅ | IAM inventory unavailable. LimaCharlie cannot build the CIEM access graph. |
 | `s3` | ✅ | Storage inventory unavailable. |
-| `regions` | — | Enabled-region enumeration unavailable; the sweep falls back to `aws_regions` or defaults. |
-| `organizations` | — | Member-account discovery unavailable; only the connected account is swept. |
+| `regions` | — | The list of enabled regions is unavailable. The sweep uses `aws_regions` or the defaults. |
+| `organizations` | — | Member-account discovery unavailable. The sweep covers only the connected account. |
 | `inspector` | — | Workload vulnerability findings unavailable. |
 | `secrets_manager` | — | Secret-store inventory unavailable. |
 | `data_stores` | — | RDS / DynamoDB / Redshift inventory unavailable. |
 | `ai_services` | — | SageMaker / Bedrock inventory unavailable. |
 
-With `SecurityAudit` + `ViewOnlyAccess`, every optional surface above also
-passes — no extra policies needed.
+With `SecurityAudit` + `ViewOnlyAccess`, each optional check above also
+passes. No more policies are necessary.
 
 !!! note "Propagation"
-    Fresh IAM keys and role trust can take a few seconds to propagate; retry
-    once on a transient `AccessDenied` / `InvalidClientTokenId`.
+    New IAM keys and role trust can need a few seconds to propagate. If the
+    test returns a temporary `AccessDenied` / `InvalidClientTokenId`, run it
+    again one time.
 
 ## Troubleshooting
 
 | `provider test` error | Cause | Fix |
 |---|---|---|
 | `auth` fails: `… no EC2 IMDS role found` | Secret used the wrong key names → no static creds → default chain → IMDS | Use `access_key_id` / `secret_access_key` (no `aws_` prefix) |
-| `AccessDenied` on `sts:AssumeRole` | External ID mismatch, wrong trust-policy principal, or propagation | Confirm `aws_external_id` matches the trust condition; retry after a few seconds |
+| `AccessDenied` on `sts:AssumeRole` | External ID mismatch, wrong trust-policy principal, or propagation | Check that `aws_external_id` matches the trust condition. Run the test again after a few seconds |

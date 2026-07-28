@@ -2,7 +2,7 @@
 
 ## Overview
 
-LimaCharlie uses a granular permission system that controls access to all platform functionality. Permissions are applied through User accounts, API Keys, or Groups and follow a hierarchical naming convention: `category`.`action`
+LimaCharlie uses a granular permission system that controls access to all platform functionality. You apply permissions through User accounts, API Keys, or Groups. Permissions use a hierarchical naming convention: `category`.`action`
 
 ## Permission Structure
 
@@ -234,7 +234,7 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | Permission | Description |
 | --- | --- |
 | audit.get | Access audit logs and error messages |
-| audit.set | Create audit logs entries |
+| audit.set | Create audit log entries |
 
 ## Operations Management
 
@@ -273,7 +273,7 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 
 ## Permission Application
 
-Permissions can be applied through:
+You can apply permissions through:
 
 1. **User Accounts**: Direct assignment to individual users
 2. **API Keys**: Embedded in API key configurations for programmatic access
@@ -281,8 +281,8 @@ Permissions can be applied through:
 
 ## Best Practices
 
-1. **Principle of Least Privilege**: Grant only the minimum permissions required
-2. **Use Groups**: Manage permissions through groups rather than individual assignments
-3. **Regular Auditing**: Periodically review and audit permission assignments
+1. **Principle of Least Privilege**: Grant only the minimum permissions that are necessary
+2. **Use Groups**: Manage permissions through groups and not through individual assignments
+3. **Regular Auditing**: Review and audit the permission assignments at regular intervals
 4. **Separate Environments**: Use different permission sets for development, staging, and production
-5. **API Key Management**: Rotate API keys regularly and scope them appropriately
+5. **API Key Management**: Rotate API keys at regular intervals and scope each key correctly

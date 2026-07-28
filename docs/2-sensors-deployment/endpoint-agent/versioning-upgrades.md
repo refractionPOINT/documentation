@@ -1,36 +1,36 @@
 # Endpoint Agent Versioning and Upgrades
 
-LimaCharlie frequently releases new versions of the endpoint agent (typically every few weeks), giving you full control over which version runs in your Organization. Sensors are not updated by default, allowing you to manage versioning and deployment as needed.
+LimaCharlie releases new versions of the endpoint agent often, usually every few weeks. You control which version runs in your Organization. Sensors do not update by default, so you manage versions and deployment yourself.
 
 ## Endpoint Agent Components
 
-The LimaCharlie endpoint agent consists of two main components, each versioned independently:
+The LimaCharlie endpoint agent has two main components, each with an independent version:
 
-1. **On-disk agent**: Implements core identity, cryptography, and transport mechanisms. This component rarely requires updates and typically remains static.
-2. **Over-the-air core**: The main component that receives frequent updates and delivers advanced functionality. It can be easily updated via the LimaCharlie cloud.
+1. **On-disk agent**: Supplies core identity, cryptography, and transport mechanisms. This component needs updates rarely and usually stays the same.
+2. **Over-the-air core**: The main component that gets frequent updates and supplies advanced functions. You can update it through the LimaCharlie cloud.
 
-When updates occur, they impact the over-the-air component, as it's the easiest to modify, with the update size generally being around 3-5 MB.
+Updates change the over-the-air component, because it is the easiest component to change. The update size is usually about 3-5 MB.
 
 ## Version Labels
 
-LimaCharlie provides three version labels to simplify version management:
+LimaCharlie has three version labels that make version management easier:
 
 1. **Latest**: The most recent release with new fixes and features.
-2. **Stable**: A less frequently updated version, ideal for maintaining slower update cadences.
+2. **Stable**: A version with fewer updates. Use it to keep a slower update rate.
 3. **Experimental**: The beta version of the next "Latest" release.
 
-You can upgrade to any of these version labels for your organization by using the LimaCharlie web interface or the [API](https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg).
+You can upgrade your organization to any of these version labels. Use the LimaCharlie web interface or the [API](https://api.limacharlie.io/static/swagger/#/Modules/upgradeOrg).
 
 ### Upgrading to Specific Versions
 
-In addition to using version labels, you can upgrade your organization to a specific sensor version using semantic version strings (e.g., `4.33.20`). This is useful when:
+You can also upgrade your organization to a specific sensor version with a semantic version string (for example, `4.33.20`). Use a specific version when:
 
-- You need to pin your organization to a specific tested version
-- You want to maintain version consistency across multiple organizations
-- You need to rollback to a previous version for compatibility reasons
-- You're testing a specific version before broader deployment
+- You must pin your organization to a specific tested version
+- You want the same version in many organizations
+- You must roll back to a previous version for compatibility
+- You test a specific version before a wider deployment
 
-To upgrade or manage sensors using the API:
+To upgrade or manage sensors with the API:
 
 ```bash
 # Upgrade to a specific version
@@ -54,34 +54,42 @@ curl -X POST "https://api.limacharlie.io/v1/modules/{oid}?is_sleep=true" \
   -H "Content-Type: application/json"
 ```
 
-**Note**: Specific version strings follow semantic versioning format (MAJOR.MINOR.PATCH) and must correspond to an available LimaCharlie sensor release. If you specify an invalid or unavailable version, the API will return an error.
+**Note**: Specific version strings use the semantic versioning format (MAJOR.MINOR.PATCH). The string must match an available LimaCharlie sensor release. If you give an invalid or unavailable version, the API returns an error.
 
 ## Managing Versioning for Sensors
 
-To manage the versioning of sensors, you can leverage LimaCharlie's **System** Tags:
+To manage the versions of sensors, use LimaCharlie's **System** Tags:
 
 - `lc:latest`: Tags the Sensor to receive the most recent version.
 
-  - This tag is primarily intended for testing `latest` sensor version against a small set of representative sensors before org-wide upgrades to `latest`.
+  - Use this tag mainly to test the `latest` sensor version on a small set of representative sensors, before you upgrade the full org to `latest`.
 - `lc:stable`: Tags the sensor to receive a stable version.
 - `lc:experimental`: Tags the sensor to receive the experimental version.
 
-These tags can be applied to individual sensors to alter version behavior, and updates take effect within 10 minutes. This method also enables staging deployments to test updates on a small group of sensors before organization-wide rollouts.
+Apply these tags to individual sensors to change the version behavior. The updates take effect in 10 minutes or less. You can also stage deployments with these tags, and test updates on a small group of sensors before an organization-wide rollout.
 
 ## Updating Endpoint Agents
 
 ### Best Practices
 
-When deploying new sensor versions, follow a controlled testing approach by first applying the `lc:latest` tag to a small subset of representative systems across different operating systems and workloads. Monitor these test systems for a period of time, evaluating stability, performance, and telemetry quality. If testing is successful, update the organization-level sensor version and remove the `lc:latest` tag from test systems, while maintaining a rollback plan and monitoring system health during the deployment. Note that the `lc:latest` sensor tag should primarily be used for upgrade testing purposes, as it automatically updates sensors to new versions as they are released.
+To deploy a new sensor version, use a controlled test:
+
+1. Apply the `lc:latest` tag to a small set of representative systems. Include different operating systems and workloads.
+2. Monitor these test systems for a period of time. Evaluate stability, performance, and the quality of the telemetry.
+3. If the test is successful, update the sensor version at the organization level.
+4. Remove the `lc:latest` tag from the test systems.
+5. Keep a rollback plan, and monitor the health of the systems during the deployment.
+
+Use the `lc:latest` sensor tag mainly for upgrade tests, because it updates sensors to each new version automatically at its release.
 
 ### Manual Update
 
-You can manually trigger an update for all endpoint agents in your organization by simply clicking a button in the web interface. This action updates the over-the-air component of the sensors within 20 minutes, with no need to re-download installers, as the installer remains unchanged.
+To start an update for all endpoint agents in your organization, click a button in the web interface. The action updates the over-the-air component of the sensors in 20 minutes or less. You do not download the installers again, because the installer does not change.
 
 ### Auto-Update
 
-To automate updates, apply the `lc:stable` tag to your sensors. This will ensure that sensors automatically update to the latest stable version upon release.
+To automate updates, apply the `lc:stable` tag to your sensors. The sensors then update to the latest stable version automatically at its release.
 
 ### Staged Deployment
 
-For testing new versions, tag specific sensors with `lc:latest` to run the latest version without affecting the rest of your organization. This allows you to test new releases on selected hosts before proceeding with a full rollout.
+To test new versions, tag specific sensors with `lc:latest`. These sensors run the latest version, and the rest of your organization does not change. You can test new releases on selected hosts before a full rollout.

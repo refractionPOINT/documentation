@@ -1,35 +1,35 @@
 # Config Hive
 
-The Config Hive is LimaCharlie's hierarchical configuration store. It provides a centralized way to manage configurations that can be referenced across the platform.
+The Config Hive is the hierarchical configuration store of LimaCharlie. It gives you one central place to manage configurations that the platform can reference.
 
 ## Hive Types
 
-- [D&R Rules](dr-rules.md) - Detection and response rule storage
+- [D&R Rules](dr-rules.md) - Storage for detection and response rules
 - [Lookups](lookups.md) - Key-value lookup tables for enrichment
-- [Secrets](secrets.md) - Secure credential management
-- [YARA](yara.md) - YARA rule storage and management
-- [Cloud Sensors](cloud-sensors.md) - Cloud sensor configurations
-- [Apps](apps.md) - User-authored, AI-generated mini web applications
-- [SOPs](../../9-ai-sessions/sops.md) - Standard Operating Procedures that AI agents read and follow
+- [Secrets](secrets.md) - Secure management of credentials
+- [YARA](yara.md) - Storage and management of YARA rules
+- [Cloud Sensors](cloud-sensors.md) - Configurations for cloud sensors
+- [Apps](apps.md) - Mini web applications that users write with AI
+- [SOPs](../../9-ai-sessions/sops.md) - Standard Operating Procedures that AI agents read and obey
 
 ## Usage
 
-Hive records can be:
+You can use hive records in these ways:
 
-- Referenced in D&R rules using the `hive://` prefix
-- Managed via the web interface, CLI, or API
-- Version controlled using the Git Sync extension
+- Reference them in D&R rules with the `hive://` prefix
+- Manage them with the web app, the CLI, or the API
+- Put them under version control with the Git Sync extension
 
 !!! warning "New records are disabled by default"
-    Every new Hive record — D&R rules, FP rules, secrets, lookups, YARA sources, cloud sensors, AI skills, playbooks, etc. — is created **disabled** unless the request explicitly sets `usr_mtd.enabled: true`. A disabled record is stored normally but is skipped by every consumer that respects the flag (rules don't fire, lookups aren't queried, AI skills aren't enumerated). When debugging "the record exists but nothing happens", check `usr_mtd.enabled` first.
+    The cloud creates every new Hive record **disabled**, unless the request sets `usr_mtd.enabled: true`. This applies to D&R rules, FP rules, secrets, lookups, YARA sources, cloud sensors, AI skills, playbooks, and other record types. The cloud stores a disabled record normally, but every consumer that obeys the flag skips it. Rules do not fire, lookups are not queried, and AI skills are not enumerated. If a record exists but nothing happens, check `usr_mtd.enabled` first.
 
-    Enable a record at creation time by either:
+    To enable a record when you create it, do one of these:
 
-    1. Passing `--enabled` on the CLI `set` command (e.g. `limacharlie secret set --key … --input-file … --enabled`).
-    2. Including `usr_mtd.enabled: true` in the request body / input file.
-    3. Setting `enabled=True` (Python SDK) or `Enabled: &enabled` (Go SDK) on the record before calling `set` / `Add`.
+    1. Pass `--enabled` on the CLI `set` command, for example `limacharlie secret set --key … --input-file … --enabled`.
+    2. Include `usr_mtd.enabled: true` in the request body or the input file.
+    3. Set `enabled=True` (Python SDK) or `Enabled: &enabled` (Go SDK) on the record before you call `set` or `Add`.
 
-    Or call the matching `enable` subcommand after creation (`limacharlie <hive> enable --key …`).
+    You can also call the matching `enable` subcommand after you create the record (`limacharlie <hive> enable --key …`).
 
 ---
 

@@ -1,17 +1,17 @@
 # Test a New Sensor Version
 
-Prior to rolling out a new Sensor version, we recommend testing to ensure everything works as intended within your environment. While we test Sensors before releasing them, we cannot predict every niche use case. We also recommend testing on `dev` or `test` systems prior to deployment in production, again, to eliminate any concerns of resource utilization or Sensor operations.
+Test a new Sensor version before you roll it out. The test makes sure that the Sensor works correctly in your environment. LimaCharlie tests Sensors before it releases them, but it cannot predict each niche use case. Test on `dev` or `test` systems before you deploy in production. This removes concerns about resource use and about Sensor operations.
 
-Sensor version testing is done via LimaCharlie's tagging functionality.
+You test a sensor version with the tagging functionality of LimaCharlie.
 
-When you tag a Sensor with `lc:latest`, the sensor version currently assigned to the Organization will be ignored for that specific sensor, and the latest version of the sensor will be used instead. You can apply this tag to a handful of systems to test-deploy the latest version.
+When you tag a Sensor with `lc:latest`, that sensor ignores the sensor version that is assigned to the Organization. It uses the latest version of the sensor instead. Apply this tag to a small number of systems to test-deploy the latest version.
 
-Alternatively, you can tag a sensor with `lc:stable`. Similarly, the sensor version currently assigned to the Organization will be ignored for that specific sensor, and the stable version of the sensor will be used instead.
+You can also tag a sensor with `lc:stable`. That sensor then ignores the sensor version that is assigned to the Organization, and uses the stable version of the sensor instead.
 
-You can tag a Sensor by opening the sensors list, selecting a sensor you would like to test, and navigating to the `tags` field on the sensor `Overview`.
+To tag a Sensor, open the sensors list. Select the sensor that you want to test. Go to the `tags` field on the sensor `Overview`.
 
 ![Alternatively, you can tag a sensor with lc:stable](../../assets/images/image(314).png)
 
-Simply type `lc:stable` and click `Update Tags`.
+Type `lc:stable` and click `Update Tags`.
 
 Note: It can take up to 10 minutes to update the sensor to the tagged version.

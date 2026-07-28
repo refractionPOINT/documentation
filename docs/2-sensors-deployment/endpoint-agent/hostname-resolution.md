@@ -1,24 +1,24 @@
 # Hostname Resolution
 
-The Endpoint Agent reports its hostname to the LimaCharlie cloud where it shows up as the `hostname` field for the Sensor.
+The Endpoint Agent reports its hostname to the LimaCharlie cloud, where it shows in the `hostname` field for the Sensor.
 
-The resolution of that hostname is done in a few different ways:
+The Endpoint Agent resolves that hostname in these steps:
 
-1. The main local interface is detected by looking for the route to `8.8.8.8`.
-2. A `getnameinfo()` with `NI_NAMEREQD` is performed to resolve the FQDN of the box.
-3. If the above hostname resolved is valid (no failure, and it is not equal to the static hostname of a few VPN and virtualization providers), this is the hostname we use.
-4. If the FQDN could not be resolved, the local hostname of the box is used.
+1. The Endpoint Agent finds the main local interface. It looks for the route to `8.8.8.8`.
+2. The Endpoint Agent calls `getnameinfo()` with `NI_NAMEREQD` to resolve the FQDN of the box.
+3. If that hostname is valid, the Endpoint Agent uses it. The hostname is valid if the call does not fail, and if the hostname is not the static hostname of one of a few VPN and virtualization providers.
+4. If the Endpoint Agent cannot resolve the FQDN, it uses the local hostname of the box.
 
-This method allows the endpoint agent to better resolve its hostname in large environments where different regions re-use the same hostname.
+This method helps the Endpoint Agent to resolve its hostname in large environments where different regions use the same hostname.
 
 ## Disabling Reverse DNS Resolution
 
-In some environments the reverse DNS lookup is undesirable (for example, when it is slow, unreliable, or returns a hostname that is not meaningful for the deployment). The reverse DNS step can be disabled by setting the following environment variable on the host before the Endpoint Agent starts:
+In some environments, the reverse DNS lookup is not wanted. For example, the lookup is slow, or it is unreliable, or it gives a hostname that has no meaning for the deployment. To disable the reverse DNS step, set this environment variable on the host before the Endpoint Agent starts:
 
 ```text
 LC_DISABLE_REVERSE_DNS_HOSTNAME=1
 ```
 
-The variable must be explicitly set to `1` or `true` (case-insensitive) — simply defining the variable with an empty or other value is not enough and will be treated as disabled. When enabled, the agent skips steps 2 and 3 above and directly uses the local hostname of the box (step 4).
+Set the variable to `1` or `true` (case-insensitive). A variable with an empty value or a different value is not enough, and the Endpoint Agent treats it as disabled. When the variable is enabled, the Endpoint Agent skips steps 2 and 3 above and uses the local hostname of the box (step 4).
 
-For a sensor that is already installed and running as a service, set the variable through the service manager (launchd plist, systemd unit, or the Windows service) and restart the service. See [Setting Environment Variables for an Installed Service](cli-reference.md#setting-environment-variables-for-an-installed-service) for the per-platform procedure.
+For an Endpoint Agent that is installed and runs as a service, set the variable in the service manager (launchd plist, systemd unit, or the Windows service). Then restart the service. For the procedure for each platform, see [Setting Environment Variables for an Installed Service](cli-reference.md#setting-environment-variables-for-an-installed-service).

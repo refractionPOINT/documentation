@@ -1,39 +1,41 @@
 # Building Blocks & Recipes
 
-This page shows what you can put inside an app and gives copy-and-paste recipes for
+This page shows what you can put inside an app. It gives copy-and-paste recipes for
 the most common requests: tables, dashboards, charts, interactive controls, and
 embedded panels.
 
 !!! tip "You don't have to type any of this"
-    The recipes below show the *shape* of a finished app so you can see what's
-    possible and tweak the result. The easiest way to get one is still to
+    The recipes below show the *shape* of a finished app, so that you can see what
+    is possible and change the result. The best way to get an app is to
     [ask the AI assistant](creating-and-managing-apps.md#building-an-app-with-the-ai-assistant)
-    for the outcome — *"a doughnut chart of online vs offline sensors"* — and let
-    it write the code. Each recipe includes a prompt you can start from.
+    for the outcome, for example *"a doughnut chart of online vs offline
+    sensors"*. Let the assistant write the code. Each recipe includes a prompt
+    that you can start from.
 
 ## The building blocks
 
-Every app is a small web page. You don't style it from scratch — LimaCharlie
-injects a **design system** so your app automatically matches the console, including
-light and dark mode. You build with a handful of ready-made pieces:
+Every app is a small web page. You do not write the style from the start.
+LimaCharlie injects a **design system**, so your app matches the console
+automatically, in light mode and in dark mode. You build with a small set of
+ready-made pieces:
 
 | Piece | What it is | Class |
 | --- | --- | --- |
 | **Card** | A bordered container for a section | `.lc-card` |
 | **KPI** | A big number with a label, for dashboards | `.lc-kpi` |
-| **Table** | A clean, console-styled table | `.lc-table` |
+| **Table** | A clean table in the console style | `.lc-table` |
 | **Badge** | A status pill (positive / warning / danger) | `.lc-badge` |
 | **Button** | A primary, neutral, or danger button | `.lc-btn` |
 | **Inputs** | Text fields, selects, text areas | `.lc-input`, `.lc-select` |
 | **Chart** | A bar / line / doughnut chart | `lc.chart(...)` |
 | **Layout** | Rows, columns, and vertical stacks | `.lc-row`, `.lc-col`, `.lc-stack` |
 
-The full list of pieces and the color tokens behind them is in the
-[Reference](reference.md#design-system). The golden rule: **never hardcode colors
-or fonts** — use the building blocks, and your app stays on-brand and dark-mode
-ready for free.
+The [Reference](reference.md#design-system) gives the full list of pieces and the
+color tokens that they use. The main rule: **never hardcode colors or fonts**. Use
+the building blocks, and your app keeps the brand style and stays ready for dark
+mode.
 
-Here's a tiny app that uses several pieces together:
+This small app uses several pieces together:
 
 ```html
 <div class="lc-stack">
@@ -52,9 +54,9 @@ Here's a tiny app that uses several pieces together:
 
 ## Getting your data
 
-Apps read live LimaCharlie data through a built-in helper called `lc.api`. You
-never paste an API key — the console attaches a temporary, permission-scoped key
-for you (see [How apps stay safe](index.md#how-apps-stay-safe)).
+Apps read live LimaCharlie data with a built-in helper, `lc.api`. You never paste
+an API key. The console attaches a temporary key that is scoped to your permissions
+(see [How apps stay safe](index.md#how-apps-stay-safe)).
 
 The pattern is always the same: wait until the runtime is ready, then call the API.
 
@@ -74,26 +76,26 @@ The pattern is always the same: wait until the runtime is ready, then call the A
 </script>
 ```
 
-There are three kinds of data an app can reach:
+An app can reach three kinds of data:
 
-- **The main LimaCharlie API** — sensors, detections, org info, and more, via
-  `lc.api('GET', '/v1/...')`. This is the default.
+- **The main LimaCharlie API** — sensors, detections, organization data, and more,
+  through `lc.api('GET', '/v1/...')`. This is the default.
 - **First-party services** — historical event **Search**, **Cases**, **Replay**,
-  and **AI** — by adding `{ service: '...' }` to the call. See
+  and **AI**. Add `{ service: '...' }` to the call. See
   [Recipe: query historical events](#recipe-query-historical-events-with-search).
-- **External websites** — only if the app explicitly declares them (and you
-  approve them on the consent screen). See
+- **External websites** — only if the app declares them and you approve them on the
+  consent screen. See
   [Recipe: call an external service](#recipe-call-an-external-service).
 
-Each call needs a matching permission, which appears on the consent screen. For
-the exact `lc.api` rules, services, and limits, see the
+Each call needs a matching permission, which appears on the consent screen. For the
+exact `lc.api` rules, services, and limits, see the
 [Reference](reference.md#the-lcapi-call).
 
 ---
 
 ## Recipe: a KPI dashboard
 
-A row of big numbers is the quickest win for an at-a-glance view.
+A row of big numbers is the fastest way to build a summary view.
 
 **Ask the assistant:**
 > *"A dashboard with two big numbers: total sensors and sensors online right now."*
@@ -132,16 +134,17 @@ A row of big numbers is the quickest win for an at-a-glance view.
 
 **Permissions:** `sensor.list` (read-only).
 
-Each value starts as a `.lc-spinner`, swapped for the number once the data
-arrives. Do this — and wrap calls in `try`/`catch` — in every data-backed app so
-it shows progress and surfaces errors instead of sitting on a blank dash.
+Each value starts as a `.lc-spinner`. The app replaces the spinner with the number
+when the data arrives. Do this in every app that uses data, and put each call in a
+`try`/`catch` block. The app then shows progress and errors instead of an empty
+page.
 
 ---
 
 ## Recipe: a data table
 
-Tables are the workhorse of security tooling. Use `.lc-table` and fill the rows
-from an API call.
+Tables are a basic tool in security work. Use `.lc-table` and fill the rows from an
+API call.
 
 **Ask the assistant:**
 > *"A table of my sensors showing the hostname and whether each one is online,
@@ -189,18 +192,17 @@ from an API call.
 
 ![A console-styled "Sensors" card with a Refresh button, listing sensor hostnames with green "online" status badges.](../assets/images/apps/sensors-table.png)
 
-**Permissions:** `sensor.list`. Want more columns (platform, last seen, external
-IP)? Just ask the assistant — it confirms the exact field names against your live
-data.
+**Permissions:** `sensor.list`. For more columns (platform, last seen, external
+IP), ask the assistant. It confirms the exact field names against your live data.
 
 ---
 
 ## Recipe: a chart or graph
 
-Charts use `lc.chart(target, spec)` — a themed wrapper over **Chart.js**, the same
-engine the LimaCharlie console charts with. You point it at an element, hand it a
-`{ type, data, options }` spec, and it draws a chart that already matches your
-theme and re-colors itself when you toggle dark mode.
+Charts use `lc.chart(target, spec)`, a themed wrapper over **Chart.js**. This is
+the same engine that the LimaCharlie console uses for its charts. Give the helper
+an element and a `{ type, data, options }` spec. It draws a chart that matches your
+theme and changes its colors when you switch to dark mode.
 
 **Ask the assistant:**
 > *"A doughnut chart of online vs offline sensors."*
@@ -232,33 +234,33 @@ theme and re-colors itself when you toggle dark mode.
 
 **Permissions:** `sensor.list` (read-only).
 
-A few things the chart helper does for you:
+The chart helper does these tasks for you:
 
-- **Colors itself from your theme.** Leave datasets uncolored and they're assigned
-  the console palette automatically — pie and doughnut charts get one color per
-  slice. Toggle dark mode and the chart re-themes live. Pass an explicit
-  `backgroundColor` array to choose specific colors (e.g. green for online, red
-  for offline).
+- **Colors itself from your theme.** Datasets that you leave uncolored get the
+  console palette automatically. Pie charts and doughnut charts get one color for
+  each slice. When you switch to dark mode, the chart changes its theme live. To
+  choose specific colors, pass an explicit `backgroundColor` array (e.g. green for
+  online, red for offline).
 - **Supports the usual chart types** — `bar`, `line`, `doughnut`, `pie`, and more.
-  Switch by changing `type`. For a bar chart of activity over time, feed `labels`
-  (e.g. days) and a `datasets` array of counts.
-- **No setup or downloads.** The charting engine is provided by the runtime. Don't
-  add your own chart library — external scripts are blocked.
+  To change the type, change `type`. For a bar chart of activity over time, supply
+  `labels` (e.g. days) and a `datasets` array of counts.
+- **No setup or downloads.** The runtime supplies the charting engine. Do not add
+  your own chart library, because external scripts are blocked.
 
 !!! tip "Give the chart a height"
-    A chart needs a container with a height or it renders invisible. Put the
+    A chart needs a container with a height, or the chart is invisible. Put the
     `<canvas>` in a box with an explicit height (`style="height:280px"`), as above.
 
-To chart a trend over time (detections per day, events per hour), feed the chart
-from a historical **Search** — see the next recipe.
+To draw a trend over time (detections for each day, events for each hour), supply
+the chart from a historical **Search**. The next recipe shows how.
 
 ---
 
 ## Recipe: query historical events with Search
 
-To look at historical telemetry and detections, use the **Search** service (the
-same engine as the Query Console). It's a two-step call: start a query, then read
-the result. Add `{ service: 'search' }` to route to it.
+To look at historical telemetry and detections, use the **Search** service, the
+same engine as the Query Console. The call has two steps: start a query, then read
+the result. Add `{ service: 'search' }` to route the call to the service.
 
 **Ask the assistant:**
 > *"Count the events across all sensors in the last 24 hours and show it as a big
@@ -308,22 +310,22 @@ the result. Add `{ service: 'search' }` to route to it.
 
 ![A single KPI card showing "265,563" above the label "Events (last 24h)".](../assets/images/apps/events-count.png)
 
-**Requires:** the `search` service declared on the app, plus the `insight.evt.get`
-permission — the assistant sets both up. A `COUNT(...)` projection returns the exact
-total in a single aggregate row, no matter how many events match.
+**Requires:** the `search` service declared on the app, and the `insight.evt.get`
+permission. The assistant sets up both. A `COUNT(...)` projection returns the exact
+total in one aggregate row, for any number of matched events.
 
 !!! note "Let the assistant write LCQL"
-    LimaCharlie's query language (LCQL) has its own syntax that's validated against
-    your organization's data. Don't hand-write it — describe what you want to
-    count or find, and the assistant generates and validates the query. See
-    [LCQL Examples](../4-data-queries/lcql-examples.md) for what's possible.
+    The LimaCharlie query language (LCQL) has its own syntax, and it is validated
+    against the data of your organization. Do not write it by hand. Describe what
+    you want to count or find, and the assistant generates and validates the query.
+    See [LCQL Examples](../4-data-queries/lcql-examples.md) for what is possible.
 
 ---
 
 ## Recipe: an embedded sensor panel
 
-An app can appear *on a sensor's page* and automatically know which sensor you're
-viewing. The console passes the sensor's ID into `lc.ctx.context.sid`.
+An app can appear *on the page of a sensor* and know which sensor you look at. The
+console passes the ID of the sensor into `lc.ctx.context.sid`.
 
 **Ask the assistant:**
 > *"A panel that shows up on each sensor's page with that sensor's hostname and
@@ -363,17 +365,18 @@ viewing. The console passes the sensor's ID into `lc.ctx.context.sid`.
 
 **Permissions:** `sensor.get`.
 
-When you build this, tell the assistant you want it on sensor pages so it sets the
-**location** to *within a sensor* and the **expected context** to `sid`. See
+When you build this app, tell the assistant that you want it on sensor pages. The
+assistant then sets the **location** to *within a sensor* and the **expected
+context** to `sid`. See
 [Choosing where an app appears](creating-and-managing-apps.md#choosing-where-an-app-appears).
 
 ---
 
 ## Recipe: call an external service
 
-An app can call an outside website — for example, to enrich an indicator with a
-third-party service — but only if that site is **declared up front** and **shown to
-you on the consent screen**. By default an app can reach nothing external.
+An app can call an outside website, for example to enrich an indicator with a
+third-party service. The site must be **declared before use** and **shown to you on
+the consent screen**. By default, an app can reach no external site.
 
 **Ask the assistant:**
 > *"Look up the reputation of an IP address using <my threat-intel service> and
@@ -405,24 +408,24 @@ you on the consent screen**. By default an app can reach nothing external.
 
 ![The IP lookup app: an input containing "8.8.8.8" with a "Look up" button, and a monospace card below showing the returned JSON (hostname dns.google, city Mountain View, org AS15169 Google LLC).](../assets/images/apps/ip-lookup.png)
 
-This runs as-is: it calls [ipinfo.io](https://ipinfo.io), a free, CORS-enabled IP
-lookup, so you only need to declare `https://ipinfo.io` as an allowed origin. Swap
-in your own threat-intel provider the same way — declare its origin and adjust the
-URL.
+This example runs without changes. It calls [ipinfo.io](https://ipinfo.io), a free
+IP lookup service that allows CORS, so you declare only `https://ipinfo.io` as an
+allowed origin. To use your own threat-intel provider, declare its origin and
+change the URL.
 
 !!! warning "External access is a data-exfiltration surface — declare it carefully"
-    Any LimaCharlie data your app can read could be sent to a declared external
-    site. That's why declaring one makes the consent screen warn every viewer.
-    Only add external origins you trust, and request the **fewest** read
-    permissions the app needs. Note external calls use your app's own `fetch`
-    (with no LimaCharlie key attached), not `lc.api`.
+    Any LimaCharlie data that your app can read can go to a declared external site.
+    For this reason, a declared site makes the consent screen warn every viewer.
+    Add only external origins that you trust, and request the **fewest** read
+    permissions that the app needs. External calls use the app's own `fetch`, with
+    no LimaCharlie key attached, and not `lc.api`.
 
 !!! note "The external site must allow browser calls"
-    The app's `fetch` is a cross-origin browser request, so the site must return
-    permissive CORS headers (`Access-Control-Allow-Origin`) — many APIs don't —
-    and it must be reachable from your network (security setups commonly block
-    DNS-over-HTTPS and other uncommon endpoints). A `Failed to fetch` with no
-    network request means the origin is undeclared, CORS-blocked, or
+    The `fetch` of the app is a cross-origin browser request, so the site must
+    return permissive CORS headers (`Access-Control-Allow-Origin`). Many APIs do
+    not. The site must also be reachable from your network, because security setups
+    commonly block DNS-over-HTTPS and other uncommon endpoints. A `Failed to fetch`
+    with no network request means that the origin is undeclared, CORS-blocked, or
     network-blocked.
 
 ## Where to go next
@@ -432,4 +435,4 @@ URL.
 - [Creating & Managing Apps](creating-and-managing-apps.md) — build, manage, and
   place your app.
 - [Config Hive: Apps](../7-administration/config-hive/apps.md) — the record format
-  and programmatic management.
+  and management with code.

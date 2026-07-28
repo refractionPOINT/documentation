@@ -1,17 +1,17 @@
 # Findings & Triage
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and
+    configuration formats on this page can change before general
+    availability. Contact LimaCharlie to request access.
 
-Everything Cloud Security detects lands in one place: a merged, risk-ranked
-findings worklist. CSPM misconfigurations, graph-derived attack paths, and
-identity (CIEM) risks are all findings with the same shape, the same triage
-verbs, and the same automation events.
+Everything that Cloud Security detects goes to one place: a merged,
+risk-ranked findings worklist. CSPM misconfigurations, graph-derived attack
+paths, and identity (CIEM) risks are all findings with the same shape, the
+same triage verbs, and the same automation events.
 
 !!! info "In the console it's called **Risks**"
-    The worklist is the **Risks** page. Lens tabs slice it without losing the
+    The worklist is the **Risks** page. Lens tabs divide it but keep the
     unified ranking: *All risks*, *Public exposure & misconfig*, *Identity*,
     *Vulnerabilities*, and *Data*. Everything below is the same
     data through the CLI/API.
@@ -28,8 +28,8 @@ resource is sensitive. Each finding carries:
 - `finding_class` — one of `toxic_combination`, `public_exposure`,
   `ciem_risk`, `privilege_escalation`, `vulnerability`, `misconfig`,
   `coverage_gap`, `device_posture`.
-- `severity` (`CRITICAL` … `INFO`), `lc_risk`, and a `risk_breakdown`
-  explaining the score.
+- `severity` (`CRITICAL` … `INFO`), `lc_risk`, and a `risk_breakdown` that
+  explains the score.
 - The affected resource (`resource_urn`, `resource_name`, `resource_type`,
   `account`, `region`), related resources, and — for path findings — the
   full `path` of hops.
@@ -37,20 +37,20 @@ resource is sensitive. Each finding carries:
   change).
 - Vulnerability context where applicable: `vulns` (CVEs with fix versions),
   `epss`, `in_kev`.
-- Runtime context: `runtime_sids` — the LimaCharlie sensors running on the
+- Runtime context: `runtime_sids` — the LimaCharlie sensors that run on the
   affected asset, when the fusion mapping resolves any.
 
-Attack-path and `toxic_combination` findings headline the durable **workload
-group** rather than a single ephemeral node: a GKE/EKS/AKS node pool, a GCE
+Attack-path and `toxic_combination` findings show the durable **workload
+group** instead of a single ephemeral node: a GKE/EKS/AKS node pool, a GCE
 managed instance group, an AWS Auto Scaling group, or an Azure VM scale set.
-The group is carried on `source_scope` / `target_scope`, so remediation reads
-as one shared fix for the whole pool instead of one finding per short-lived VM.
+`source_scope` / `target_scope` carry the group, so remediation is one shared
+fix for the whole pool instead of one finding for each short-lived VM.
 
-For identity (CIEM) findings, access is scored by the **capability** a grant
-confers — `data_admin` › `data_write` › `data_read` › `metadata` › `none` —
-not by the mere existence of the grant. "Reaches sensitive data" gates on
-`data_read`-or-higher; `metadata`/`none` grants surface as a lower-severity
-reconnaissance signal, not a top data-access risk.
+For identity (CIEM) findings, the **capability** that a grant confers scores
+the access — `data_admin` › `data_write` › `data_read` › `metadata` › `none`
+— not the existence of the grant alone. "Reaches sensitive data" gates on
+`data_read` or higher. `metadata`/`none` grants appear as a reconnaissance
+signal with lower severity, not as a top data-access risk.
 
 List, filter, and paginate server-side:
 
@@ -64,17 +64,17 @@ limacharlie cloudsec finding list \
 Repeatable filters are OR within a key and AND across keys. Free-text search
 is `-q`; pagination is keyset-based (`next_cursor` from one page becomes
 `--cursor` for the next). `finding facets` returns the cross-filtered facet
-counts that drive the console's filter rail, and `finding get <id>` returns
-one finding in full.
+counts that drive the filter rail in the web app, and `finding get <id>`
+returns one finding in full.
 
 ## Dispositions
 
-A finding is `open` until the sweep observes the condition gone (automatic
-close) or an operator dispositions it:
+A finding is `open` until the sweep sees that the condition is gone
+(automatic close), or until an operator dispositions it:
 
 | Kind | Meaning |
 |---|---|
-| `mitigated` | The risk was fixed operator-side; treated as closed. |
+| `mitigated` | The operator fixed the risk; the finding counts as closed. |
 | `accepted` | Known and accepted, optionally until an expiry (`expires_at`, unix seconds) — after which it reopens. |
 | `false_positive` | The finding was wrong. |
 | `open` | Clears a previous disposition and reopens the finding (owner and ticket are kept). |
@@ -97,8 +97,8 @@ The `bulk-resolve` route applies one disposition to many findings at once, but
 it does **not** accept `open` — reopen findings one at a time with
 `finding resolve <id> --kind open`.
 
-In the console, the same dispositions are one-click buttons on a finding, plus
-the workflow actions built on top of them:
+In the web app, the same dispositions are one-click buttons on a finding,
+with the workflow actions that are built on them:
 
 | Button | What it does |
 |---|---|
@@ -119,27 +119,27 @@ limacharlie cloudsec finding set-owner fnd_0a1b... --owner alice@acme.com
 limacharlie cloudsec finding set-ticket fnd_0a1b... --ticket JIRA-1234
 ```
 
-Dispositions can also be applied *as policy* — a `suppression`-typed
+You can also apply dispositions *as policy* — a `suppression`-typed
 `cloudsec_policy` record auto-dispositions matching findings (see
 [Automation & IaC](automation.md#suppression-rules-finding-disposition-policy)).
-An operator's explicit disposition always wins over policy.
+The explicit disposition of an operator always wins over policy.
 
 !!! info "Permissions"
-    Reading findings requires `cloudsec.get`; every disposition, owner,
-    ticket, and chokepoint write requires `cloudsec.set`.
+    To read findings, you need `cloudsec.get`. Every disposition, owner,
+    ticket, and chokepoint write needs `cloudsec.set`.
 
 ## Chokepoints — fix one thing
 
-Attack paths tend to share hops. The chokepoint view ranks resources by how
-many distinct attack paths each one sits on, so remediation can be framed as
-"fixing this one security group closes 41 of 63 paths":
+Attack paths often share hops. The chokepoint view ranks resources by the
+number of distinct attack paths that each one is on. Remediation then reads
+as "a fix to this one security group closes 41 of 63 paths":
 
 ```bash
 limacharlie cloudsec chokepoint list
 ```
 
-A chokepoint that is understood and tolerated (e.g. a bastion by design) can
-be dismissed from the risk overview — and restored later:
+You can dismiss a chokepoint that you understand and accept (for example, a
+bastion by design) from the risk overview, and restore it later:
 
 ```bash
 limacharlie cloudsec chokepoint dismiss "lcrn:..." --reason "bastion by design"
@@ -148,7 +148,7 @@ limacharlie cloudsec chokepoint restore "lcrn:..."
 
 ## Overview, changes, and trend
 
-Three read endpoints power the at-a-glance layer:
+Three read endpoints supply the summary layer:
 
 ```bash
 # Score, severity distribution, top paths, coverage, trend — one call.
@@ -167,10 +167,10 @@ Every lifecycle transition emits an event into the organization's event
 stream, so D&R rules, Outputs, and the Cases loop consume findings like any
 other telemetry. Two families:
 
-**Detection-truth lifecycle** (emitted by the projector as the sweep observes
-the world):
+**Detection-truth lifecycle** (emitted by the projector when the sweep
+observes the world):
 
-- `cloud_finding.created` — a new finding; the full finding object rides under
+- `cloud_finding.created` — a new finding; the full finding object is under
   `event/finding` (including `runtime_sids`).
 - `cloud_finding.updated` — the content of an already-open finding materially
   changed (a severity flip, a changed vuln set); payload names the
@@ -178,18 +178,18 @@ the world):
   `finding`.
 - `cloud_finding.closed` — the condition is gone; `{finding_id, fingerprint,
   finding_class}`.
-- `cloud_finding.still_open` — re-asserted at most once per day for open
-  findings that carry a linked ticket, the heartbeat that keeps a Case honest
-  when the cloud was never actually fixed.
+- `cloud_finding.still_open` — re-asserted at most once a day for open
+  findings that carry a linked ticket, the heartbeat that keeps a Case
+  correct when the cloud was not fixed.
 
 **Operator-disposition verbs** (emitted by the write handlers, flat payload
 `{finding_id, fingerprint, finding_class, actor, note?}`):
 `cloud_finding.resolved`, `cloud_finding.dismissed`, `cloud_finding.reopened`,
 `cloud_finding.assigned`.
 
-**Summary:** on the first-ever projection (or a rebuild) the platform emits a
+**Summary:** on the first-ever projection (or a rebuild) the cloud emits a
 single `cloudsec.sync_completed` (`{total, by_class, by_severity}`) instead of
-a per-finding `created` flood — first-sync suppression.
+a flood of `created` events, one for each finding — first-sync suppression.
 
 See [Automation & IaC](automation.md#findings-cases-automation) for the
 ready-made Cases loop that keys on `fingerprint`, and the

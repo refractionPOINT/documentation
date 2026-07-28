@@ -1,12 +1,12 @@
 # DigitalOcean
 
-The DigitalOcean CLI, or `doctl`, is the official CLI for the DigitalOcean API. With this component of the Cloud CLI Extension, you can interact with DigitalOcean directly from LimaCharlie.
+The DigitalOcean CLI, or `doctl`, is the official CLI for the DigitalOcean API. This component of the Cloud CLI Extension lets you interact with DigitalOcean directly from LimaCharlie.
 
 This extension uses [DigitalOcean's official `doctl` CLI tool](https://github.com/digitalocean/doctl). [Reference documentation](https://docs.digitalocean.com/reference/doctl/reference/) is also available.
 
 ## Example
 
-The following example of a response action will enumerate a list of compute droplets within a DigitalOcean instance.
+This example of a response action lists the compute droplets in a DigitalOcean instance.
 
 ```yaml
 - action: extension request
@@ -20,10 +20,10 @@ The following example of a response action will enumerate a list of compute drop
 
 ## Credentials
 
-To utilize `doctl` capabilities, you will need:
+To use the `doctl` capabilities, you need:
 
-- A personal access token. See DigitalOcean's [create-personal-access-token reference](https://docs.digitalocean.com/reference/api/create-personal-access-token/).
-- Create a secret in the secrets manager in the following format:
+- A personal access token. See the [create-personal-access-token reference](https://docs.digitalocean.com/reference/api/create-personal-access-token/) from DigitalOcean.
+- Create a secret in the secrets manager in this format:
 
   ```text
   personalAccessToken

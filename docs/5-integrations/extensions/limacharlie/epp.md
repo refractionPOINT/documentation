@@ -2,75 +2,86 @@
 
 ## Overview
 
-The Endpoint Protection (EPP) management in LimaCharlie enables users to view the status of existing EPP solutions (including Windows Free Defender), manage parameters of the deployment and unify alerting from the deployment at scale. This makes it perfect for teams wanting a unified view of the EPP solution, or service providers looking to offer Managed EPP to their customers at scale.
+Endpoint Protection (EPP) management in LimaCharlie lets you see the status of existing EPP solutions, which include Windows Free Defender. It also lets you manage the parameters of the deployment and unify the alerts from the deployment at scale. Teams that need one view of the EPP solution can use it. Service providers that offer Managed EPP to their customers at scale can also use it.
 
-The only requirement is for the LimaCharlie agent to be deployed and the EPP Extension enabled (free).
+The only requirement is to deploy the LimaCharlie agent and to enable the EPP Extension (free).
 
-Once deployed, EPP can be used natively along with the rest of LimaCharlie's automation and routing capabilities.
+After you deploy EPP, you can use it directly with the other LimaCharlie automation and routing capabilities.
 
 ## How it Works
 
-LimaCharlie Endpoint Protection integrates with third-party EDR solutions to provide a better view of security operations and extend agent's capabilities. Currently this extension applies to:
+LimaCharlie Endpoint Protection integrates with third-party EDR solutions. The integration gives a better view of security operations and extends the capabilities of the agent. This extension applies to:
 
 - Microsoft Windows Defender
 
-The LimaCharlie agent communicates with Windows Defender to determine its status, transfer events, and trigger remediation commands. LimaCharlie Endpoint Protection codifies the best practices of collecting events and alerting on detections. When enabled, this extension creates a starter set of  rules. In addition to alerting, these rules can be customized to better align with the operational complexity of user's environments. The LC Endpoint Protection extension provides a reliable and cost efficient way of securing endpoints at scale.
+The LimaCharlie agent communicates with Windows Defender to find its status, transfer events, and trigger remediation commands. LimaCharlie Endpoint Protection codifies the best practices to collect events and to alert on detections. When you enable this extension, it creates a starter set of rules. These rules alert you, and you can also customize them for the operational complexity of your environment. The LC Endpoint Protection extension is a reliable and cost efficient way to secure endpoints at scale.
 
-The Endpoint Protection add-on requires agent version `4.33.5` or higher.
+The Endpoint Protection add-on needs agent version `4.33.5` or higher.
 
 ## Enabling and configuring Endpoint Protection
 
-To enable Endpoint Protection, first ensure LimaCharlie Endpoint Agent version is 4.33.5 and above, [update](../../../2-sensors-deployment/endpoint-agent/versioning-upgrades.md) if necessary.
+To enable Endpoint Protection, do these steps:
 
-Navigate to the [Endpoint Protection extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-epp) in the Add-Ons marketplace. Choose the target Organization and select `Subscribe`.
+1. Make sure the LimaCharlie Endpoint Agent version is 4.33.5 or above. If necessary, [update the agent](../../../2-sensors-deployment/endpoint-agent/versioning-upgrades.md).
+2. Open the [Endpoint Protection extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-epp) in the Add-Ons marketplace.
+3. Choose the target Organization.
+4. Select `Subscribe`.
 
-![To enable Endpoint Protection, first ensure LimaCharlie Endpoint Agent version is 4](../../../assets/images/image(335).png)
+    ![To enable Endpoint Protection, first ensure LimaCharlie Endpoint Agent version is 4](../../../assets/images/image(335).png)
 
-Once subscribed, you can see the Endpoint Protection in the list of Extensions.
+After you subscribe, Endpoint Protection is in the list of Extensions.
 
 ![Once subscribed, you can see the Endpoint Protection in the list of Extensions](../../../assets/images/image(332).png)
 
-The Endpoint Protection extension does two things once both sync settings are enabled:
+The Endpoint Protection extension does two things when both sync settings are enabled:
 
-1. Creates an artifact collection rule named `defender-log-streaming`
+1. It creates an artifact collection rule named `defender-log-streaming`
 
-   - This rule adds a WEL pattern that collects MS Defender logs, `wel://Microsoft-Windows-Windows Defender/Operational:*` so that LimaCharlie receives the events the Defender produces.
+    - This rule adds a WEL pattern that collects MS Defender logs, `wel://Microsoft-Windows-Windows Defender/Operational:*`. LimaCharlie then receives the events that Defender produces.
 
-     > Note
-     >
-     > If you already have Defender logs coming in via the Artifact extension, you can uncheck the `Sync Extension Config` box to avoid duplicating entries.
-2. Creates D&R rules
+        > Note
+        >
+        > If Defender logs already come in through the Artifact extension, clear the `Sync Extension Config` box to avoid duplicate entries.
 
-   - Generates several D&R rules that alert on various detections and actions taken by Defender.![Defender D&R rules generated by the EPP extension](../../../assets/images/image(291).png)
+2. It creates D&R rules
+
+    - The extension generates several D&R rules that alert on detections and actions by Defender.![Defender D&R rules generated by the EPP extension](../../../assets/images/image(291).png)
+
 3. To apply the Artifact extension configuration and D&R rules, click `Apply Configuration`.
 
-When the SYNC toggles are on, the collection rules and D&R rules are continuously synchronized with LimaCharlie library of best practices.
+When the SYNC toggles are on, LimaCharlie synchronizes the collection rules and D&R rules continuously with its library of best practices.
 
-Once the extension is enabled, it also extends the Web UI with Endpoint Protection functionality, as described below.
+The extension also adds Endpoint Protection functions to the Web UI, as described below.
 
 ## Using the Endpoint Protection extension
 
-Endpoint Protection capabilities are used in three ways.
+You can use the Endpoint Protection capabilities in three ways.
 
 ### Verify Protection
 
-Select a Windows Sensor in the organization. In the Sensor Overview, there is a new section, "Endpoint Protection" that shows the current protection status. Verify that Defender is listed as active on the sensor.
+1. Select a Windows Sensor in the organization.
+2. In the Sensor Overview, find the new "Endpoint Protection" section. This section shows the current protection status.
+3. Check that Defender is active on the sensor.
 
 ![Verify Protection Select a Windows Sensor in the organization](../../../assets/images/image(333).png)
 
 ### Perform Scan
 
-Select a Windows Sensor.
-
-Click on File System. Select the folder, and click on the scan icon  `Scan with EPP`
+1. Select a Windows Sensor.
+2. Click File System.
+3. Select the folder.
+4. Click the scan icon `Scan with EPP`.
 
 ### Endpoint Protection Commands
 
-Select a Windows Sensor. Open the Sensor Console As you type "epp" you'll see the available commands. Try `epp_status`  - it will return the status.
+1. Select a Windows Sensor.
+2. Open the Sensor Console.
+3. Type "epp". The console shows the available commands.
+4. Type `epp_status`. The command returns the status.
 
 > Events required in Exfil config
 >
-> The EPP solution relies on some new events. They are now defaults, and the extension adds them to existing orgs. In rare case you may need to add them manually to Sensor / Event Collection / Event Collection or your Infra As Code. Here is the list:
+> The EPP solution uses some new events. These events are now defaults, and the extension adds them to existing orgs. In rare cases you must add them manually to Sensor / Event Collection / Event Collection or to your Infra As Code. This is the list:
 >
 > ```text
 > EPP_STATUS_REP,EPP_LIST_EXCLUSIONS_REP,EPP_ADD_EXCLUSION_REP,EPP_REM_EXCLUSION_REP,

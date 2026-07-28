@@ -5,18 +5,19 @@
     configuration formats described here may change before general
     availability. Contact us if you would like access.
 
-Collects your OpenAI platform organization as an AI-security surface: projects,
-members and service accounts, API keys (with last-used timestamps, so dormant
-and over-scoped keys surface), org Admin API keys, mTLS certificates, and
-audit-log availability posture.
+This connector collects your OpenAI platform organization as a surface for AI
+security. It collects projects, members, service accounts, and API keys. The API
+keys include the time of last use, which shows you the keys that are dormant or
+have too many permissions. The connector also collects the Admin API keys of the
+organization, the mTLS certificates, and the availability of the audit log.
 
-**Auth model:** an **Admin API key** created with the read-only
-`api.management.read` scope, calling the OpenAI Administration API.
+**Auth model:** an **Admin API key** with the read-only `api.management.read`
+scope. The connector uses the key with the OpenAI Administration API.
 
 ## Prerequisites
 
-- **Organization Owner** on the OpenAI platform account — only owners can
-  create Admin API keys.
+- **Organization Owner** on the OpenAI platform account. Only an owner can
+  create an Admin API key.
 
 ## Create the Admin API key
 
@@ -27,21 +28,22 @@ audit-log availability posture.
 4. Copy the key (`sk-admin-…`) — it is displayed once.
 
 !!! danger "Scope the key when you create it"
-    Grant `api.management.read` **during creation**. Keys whose scopes are
-    edited after the fact have been observed to keep failing with
-    *"Missing scopes: api.management.read"*. If a key misbehaves, delete it and
-    create a fresh one with the scope selected up front.
+    Select `api.management.read` **when you create the key**. A key whose scopes
+    you change later can continue to fail with *"Missing scopes:
+    api.management.read"*. If a key fails, delete it. Then create a new key and
+    select the scope at creation.
 
 !!! tip "Read-only by design"
-    `api.management.read` is a true read-only scope. The collector never writes
-    to your organization; it only lists projects, users, keys, certificates,
-    and audit-log availability.
+    `api.management.read` is a read-only scope. The collector does not write to
+    your organization. It only lists projects, users, keys, certificates, and the
+    availability of the audit log.
 
 ## Optional: enable audit logging
 
-The org audit log is a separate toggle in the OpenAI organization settings.
-It is not required for the connection, but without it there is no
-configuration-change forensics — the `audit_logs` check reports that.
+The audit log of the organization is a separate setting in the OpenAI
+organization settings. The connection does not need it. But without the audit
+log, you have no forensic record of changes to the configuration. The
+`audit_logs` check reports this condition.
 
 ## Create the credentials secret
 
@@ -49,8 +51,8 @@ configuration-change forensics — the `audit_logs` check reports that.
 {"admin_api_key": "sk-admin-..."}
 ```
 
-You may also paste the bare key string; it is wrapped into this shape
-automatically.
+You can also paste the key string alone. LimaCharlie then puts the key into
+this shape for you.
 
 ```bash
 limacharlie hive set --hive-name secret --key openai-admin-key \
@@ -68,13 +70,14 @@ internal_domains: [example.com]
 refresh: 6h
 ```
 
-`openai_org_id` (`org-…`) is **optional**: the Admin key already implies its
-organization, which the collector discovers. Setting it turns that into an
-assertion — a mismatch fails the connection immediately rather than silently
-sweeping the wrong organization. Useful when one team manages several OpenAI
-orgs.
+`openai_org_id` (`org-…`) is **optional**. The Admin key already identifies its
+organization, and the collector finds that organization. If you set
+`openai_org_id`, the collector checks the value. A value that does not match
+makes the connection fail immediately, instead of a sweep of the wrong
+organization. Set this value when one team manages more than one OpenAI
+organization.
 
-In the web app: **Add provider → OpenAI**, then set **Credentials** and
+In the web app, click **Add provider → OpenAI**. Then set **Credentials** and
 **Refresh interval**.
 
 ## Verify
@@ -85,25 +88,26 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
-| `auth` | ✅ | The Admin key was rejected, or lacks `api.management.read`. Nothing else is probed. |
-| `projects` | ✅ | Project enumeration denied — the sweep has no accounts to walk. |
-| `project_keys` | ✅ | Per-project API-key inventory denied — no key hygiene (dormant/over-scoped keys). Passes with a note if the org has no projects yet. |
-| `admin_keys` | — | Org Admin-API-key hygiene (dormant / never-expiring admin keys) unavailable. |
-| `certificates` | — | mTLS certificate hygiene unavailable. Passes with a note when the org uses no certificates. |
-| `audit_logs` | — | Audit-log availability posture unavailable. Passes with a note when audit logging is simply not enabled. |
+| `auth` | ✅ | OpenAI rejected the Admin key, or the key does not have `api.management.read`. The collector does not do the other checks. |
+| `projects` | ✅ | OpenAI denied the list of projects. The sweep then has no accounts to examine. |
+| `project_keys` | ✅ | OpenAI denied the inventory of API keys for each project. You then get no report on dormant keys or keys with too many permissions. This check passes with a note if the organization has no projects. |
+| `admin_keys` | — | No report on the Admin API keys of the organization, such as dormant keys and keys that do not expire. |
+| `certificates` | — | No report on the mTLS certificates. This check passes with a note if the organization uses no certificates. |
+| `audit_logs` | — | No report on the availability of the audit log. This check passes with a note if audit logging is not enabled. |
 
 ## Troubleshooting
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `auth` fails: *Missing scopes: api.management.read* | The key was created without the scope, or the scope was added afterwards | Create a **new** Admin key with the scope selected at creation |
-| `auth` fails: 401 | Not an Admin key (a project key `sk-…` was used), or the key was revoked | Create an Admin key (`sk-admin-…`) as an Organization Owner |
-| Connection fails with an org mismatch | `openai_org_id` does not match the key's organization | Correct or remove `openai_org_id` |
-| Key inventory looks empty | The organization has no projects, or keys live in projects the key cannot see | Confirm projects exist under **Settings → Organization → Projects** |
+| `auth` fails: *Missing scopes: api.management.read* | You created the key without the scope, or you added the scope later | Create a **new** Admin key and select the scope at creation |
+| `auth` fails: 401 | The key is not an Admin key (you used a project key `sk-…`), or the key is revoked | As an Organization Owner, create an Admin key (`sk-admin-…`) |
+| The connection fails because the organization does not match | `openai_org_id` is not the organization of the key | Correct `openai_org_id`, or remove it |
+| The inventory of keys is empty | The organization has no projects, or the keys are in projects that the key cannot read | Check that projects exist in **Settings → Organization → Projects** |
 
 ## Known limitations
 
-MFA/SSO enforcement, IP allow-lists, and the connector registry are
-console-only settings with no Administration API surface, so they are not
-collected. Data-plane objects (vector stores, files, assistants) require a
-separate per-project credential and are not part of this connector.
+The Administration API does not give access to the settings for MFA and SSO
+enforcement, IP allow-lists, and the connector registry. These settings are
+available only in the console, so the connector does not collect them. Data-plane
+objects, such as vector stores, files, and assistants, need a separate credential
+for each project. They are not part of this connector.

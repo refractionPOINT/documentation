@@ -5,10 +5,10 @@
 Output events and detections to a syslog target.
 
 - `dest_host`: the IP or DNS and port to connect to, format `www.myorg.com:514`.
-- `is_tls`: if `true` will output over TCP/TLS.
-- `is_strict_tls`: if `true` will enforce validation of TLS certs.
-- `is_no_header`: if `true` will not emit a Syslog header before every message. This effectively turns it into a TCP output.
-- `structured_data`: arbitrary field to include in syslog "Structured Data" headers. Sometimes useful for cloud SIEMs integration.
+- `is_tls`: if `true`, the output sends data over TCP/TLS.
+- `is_strict_tls`: if `true`, the output validates TLS certs.
+- `is_no_header`: if `true`, the output does not send a Syslog header before each message. This makes it a TCP output.
+- `structured_data`: a field of your choice to include in syslog "Structured Data" headers. This field can help with integration into cloud SIEMs.
 
 Example:
 

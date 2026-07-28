@@ -5,24 +5,25 @@
     configuration formats described here may change before general
     availability. Contact us if you would like access.
 
-Collects identity posture from Google Workspace — users, groups and
-membership, admin roles, user security posture, devices, and inbound-SSO
-profiles — via the Admin SDK and Cloud Identity APIs.
+This connector collects the identity posture from Google Workspace with the
+Admin SDK API and the Cloud Identity API. It collects the users, the groups and
+their members, the admin roles, the security posture of each user, the devices,
+and the profiles for inbound SSO.
 
-**Auth model:** a **Google Cloud service account** with **domain-wide
-delegation (DWD)** that **impersonates a Workspace super admin** to read
+**Auth model:** a **Google Cloud service account** with **domain-wide delegation
+(DWD)**. The service account impersonates a Workspace super admin to read the
 directory data.
 
 ## Prerequisites
 
-1. A GCP **service account** with a JSON key (a dedicated one, or reuse your
-   GCP collector service account).
+1. A GCP **service account** with a JSON key. Create a new service account, or
+   use the service account of your GCP collector.
 2. In that service account's GCP project, **enable**:
     - **Admin SDK API** (`admin.googleapis.com`)
-    - **Cloud Identity API** (`cloudidentity.googleapis.com`) — needed for
-      inbound-SSO and Cloud Identity device surfaces.
-3. A real **Workspace Super Admin** account to impersonate
-   (e.g. `admin@example.com`).
+    - **Cloud Identity API** (`cloudidentity.googleapis.com`). This API is
+      necessary for the inbound-SSO profiles and the Cloud Identity devices.
+3. An actual **Workspace Super Admin** account to impersonate, such as
+   `admin@example.com`.
 
 ## Required OAuth scopes
 
@@ -38,7 +39,7 @@ directory data.
 | ChromeOS devices | `https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly` |
 | Cloud Identity devices | `https://www.googleapis.com/auth/cloud-identity.devices.readonly` |
 
-Copy-paste block for the DWD scopes field (one comma-separated line):
+Copy this block into the field for the DWD scopes. It is one line, and commas separate the scopes:
 
 ```text
 https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.group.readonly,https://www.googleapis.com/auth/admin.directory.group.member.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/cloud-identity.inboundsso.readonly,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly,https://www.googleapis.com/auth/cloud-identity.devices.readonly
@@ -46,32 +47,36 @@ https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.google
 
 ## Register domain-wide delegation
 
-In the **Google Admin console** → **Security → Access and data control → API
-controls → Manage Domain-Wide Delegation → Add new**:
+In the **Google Admin console**, go to **Security → Access and data control →
+API controls → Manage Domain-Wide Delegation → Add new**. Then give these
+values:
 
-- **Client ID** = the service account's **numeric OAuth client ID** (from the
-  service-account JSON key's `client_id`, or GCP Console → IAM & Admin →
-  Service Accounts → the service account → *Unique ID*).
-- **OAuth scopes** = the full comma-separated list above.
+- **Client ID**: the **numeric OAuth client ID** of the service account. Take
+  this value from the `client_id` field of the JSON key. You can also find it in
+  the GCP Console at **IAM & Admin → Service Accounts →** the service account
+  **→ *Unique ID***.
+- **OAuth scopes**: the full list above, with commas between the scopes.
 
 !!! warning "Register the entire scope list, exactly"
-    Two Google behaviors bite here:
+    Two behaviors of Google cause problems here:
 
-    - **All-or-nothing token mint:** when LimaCharlie requests a token, if
-      *any* requested scope is not authorized for the client, Google rejects
-      the **whole** request. Registering only
-      `admin.directory.user.readonly` will still fail because other surfaces
-      request additional scopes.
-    - **Literal string match:** the broader `…/admin.directory.user` does
-      **not** satisfy the narrower `…/admin.directory.user.readonly`. No
-      typos or trailing spaces.
-    - DWD changes can take ~10 minutes (occasionally up to 24h) to propagate.
+    - **Google gives all the scopes or none of them.** When LimaCharlie asks for
+      a token, Google rejects the **full** request if the client does not have
+      authorization for *any one* of the scopes. If you register only
+      `admin.directory.user.readonly`, the request still fails, because other
+      surfaces ask for more scopes.
+    - **Google matches the scope string exactly.** The larger
+      `…/admin.directory.user` scope does **not** satisfy the smaller
+      `…/admin.directory.user.readonly` scope. Make no spelling errors, and put
+      no spaces at the end.
+    - A change to DWD can need about 10 minutes to propagate, and sometimes as
+      much as 24 hours.
 
 ## Create the credentials secret
 
-The Workspace provider record has **no field for the impersonation admin** —
-it lives **inside the secret**, which is a **wrapper** around the
-service-account key:
+The provider record for Workspace has **no field for the admin to
+impersonate**. That value is **inside the secret**. The secret is a **wrapper**
+around the key of the service account:
 
 ```json
 {
@@ -81,16 +86,16 @@ service-account key:
 }
 ```
 
-- `service_account_json` — the **entire raw Google service-account key JSON**,
-  nested as this key's value.
-- `admin_email` — the Super Admin to impersonate.
-- `domain` — your primary Workspace domain.
+- `service_account_json`: the **full JSON key of the Google service account**,
+  as the value of this key.
+- `admin_email`: the Super Admin to impersonate.
+- `domain`: your primary Workspace domain.
 
 !!! danger "Do not flatten the wrapper"
-    Do **not** place `admin_email` / `domain` at the top level next to the
-    service-account-key fields. LimaCharlie reads the key but finds no admin
-    to impersonate, mints a token with no subject, and Google returns
-    **`HTTP 400: Invalid Input`** on the first directory call.
+    Do **not** put `admin_email` and `domain` at the top level with the fields
+    of the service-account key. LimaCharlie then reads the key but finds no admin
+    to impersonate. It makes a token with no subject, and Google returns
+    **`HTTP 400: Invalid Input`** on the first call to the directory.
 
 Store it:
 
@@ -99,8 +104,9 @@ limacharlie hive set --hive-name secret --key gw-credentials \
     --input-file gw-secret.json
 ```
 
-Or in the web app: **Organization Settings → Secrets Manager → Add**, name it
-`gw-credentials`, and paste the JSON.
+You can also do this in the web app. Go to **Organization Settings → Secrets
+Manager → Add**. Give the secret the name `gw-credentials`, then paste the
+JSON.
 
 ## Create the provider record
 
@@ -113,8 +119,9 @@ credentials: hive://secret/gw-credentials
 internal_domains: [example.com]
 ```
 
-In the web app: **Add provider → Google Workspace**, then set **Customer ID**
-(`my_customer`), **Credentials** (`gw-credentials`), and **Refresh interval**.
+In the web app, click **Add provider → Google Workspace**. Then set **Customer
+ID** (`my_customer`), **Credentials** (`gw-credentials`), and **Refresh
+interval**.
 
 ## Verify
 
@@ -124,19 +131,19 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
-| `core` | ✅ | Authentication plus the directory user read. A failure here means the delegation is wrong — nothing else can be probed meaningfully. |
-| `groups` | ✅ | Groups and membership unavailable — the group edges that complete the GCP IAM picture are missing. |
-| `security` | — | Per-user security posture (2SV enrolment/enforcement) unavailable. |
-| `roles` | — | Admin-role assignments unavailable. |
-| `sso` | — | Inbound-SSO profile posture unavailable. |
-| `devices_mobile` | — | Mobile device inventory unavailable. |
-| `devices_chromeos` | — | ChromeOS device inventory unavailable. |
-| `devices_ci` | — | Cloud Identity device inventory unavailable. |
+| `core` | ✅ | This check authenticates the service account and reads the directory users. If it fails, the delegation is not correct, and the other checks give no useful result. |
+| `groups` | ✅ | No groups and no members. The graph then has no group edges, which are necessary to complete the view of GCP IAM. |
+| `security` | — | No security posture for each user, such as the enrolment in 2SV and the enforcement of 2SV. |
+| `roles` | — | No assignments of admin roles. |
+| `sso` | — | No posture for the inbound-SSO profiles. |
+| `devices_mobile` | — | No inventory of the mobile devices. |
+| `devices_chromeos` | — | No inventory of the ChromeOS devices. |
+| `devices_ci` | — | No inventory of the Cloud Identity devices. |
 
 ## Troubleshooting
 
 | `provider test` error | Cause | Fix |
 |---|---|---|
-| `HTTP 400: Invalid input` on the user check | Secret is missing or mis-nested the impersonation admin → token has no subject → `my_customer` unresolvable | Use the **wrapper** envelope above: nest the key under `service_account_json`, with `admin_email` / `domain` as siblings |
-| `token mint failed (HTTP 401): scope not granted to the delegated admin` | DWD missing scopes (all-or-nothing mint), a non-`.readonly` variant, or not yet propagated | Register the **full** scope list exactly; wait for propagation; confirm the service account's client ID matches |
-| `HTTP 403: … API has not been used in project …` | Admin SDK / Cloud Identity API not enabled | Enable the named API in the service account's project |
+| `HTTP 400: Invalid input` on the check of the users | The secret has no admin to impersonate, or the admin is at the wrong level. The token then has no subject, and Google cannot resolve `my_customer` | Use the **wrapper** shown above. Put the key under `service_account_json`, and put `admin_email` and `domain` beside it |
+| `token mint failed (HTTP 401): scope not granted to the delegated admin` | DWD does not have all the scopes, or a scope is not the `.readonly` form, or the change did not propagate | Register the **full** list of scopes exactly. Wait for the change to propagate. Check that the client ID of the service account is correct |
+| `HTTP 403: … API has not been used in project …` | The Admin SDK API or the Cloud Identity API is not enabled | Enable the API that the message names, in the project of the service account |

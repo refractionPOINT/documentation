@@ -1,18 +1,18 @@
 # Standard Operating Procedures (SOPs)
 
-A Standard Operating Procedure is a document you store in your organization that
-tells AI agents how *your* team wants a job done. Where [AI Skills](skills.md) are
-reusable capabilities an agent can invoke and [AI Memory](memory.md) is what an agent
-has learned, an SOP is organizational policy: the escalation path for a ransomware
-detection, who must approve an endpoint isolation, which hosts are never to be
-touched during business hours.
+A Standard Operating Procedure is a document that you store in your organization. It
+tells AI agents how *your* team wants a job done. [AI Skills](skills.md) are
+reusable capabilities that an agent invokes, and [AI Memory](memory.md) is what an
+agent learned. An SOP is organizational policy: the escalation path for a ransomware
+detection, who must approve the isolation of an endpoint, and which hosts must stay
+untouched during business hours.
 
-SOPs are plain documents — LimaCharlie does not execute them. They are written by
-humans, read by agents, and followed as instructions. That makes them the primary
-way to steer agent behaviour without editing agent prompts.
+SOPs are plain documents. LimaCharlie does not execute them. People write them,
+agents read them, and agents obey them as instructions. An SOP is therefore the main
+way to steer agent behaviour without a change to the agent prompts.
 
-SOPs live in the `sop` [Config Hive](../7-administration/config-hive/index.md),
-scoped to a single organization.
+SOPs are in the `sop` [Config Hive](../7-administration/config-hive/index.md), and
+each SOP is scoped to a single organization.
 
 ## Record format
 
@@ -21,8 +21,8 @@ fields:
 
 | Field | Required | Purpose |
 |---|---|---|
-| `text` | Yes | The procedure itself. Free-form; markdown is the convention. |
-| `description` | No | A one-line summary used to decide whether the SOP applies. |
+| `text` | Yes | The procedure. Free-form text; markdown is the convention. |
+| `description` | No | A one-line summary that decides if the SOP applies. |
 
 ```yaml
 data:
@@ -45,47 +45,48 @@ usr_mtd:
   tags: [incident-response, tier-1]
 ```
 
-The only validation applied is that `text` must be non-empty. Nothing else about
-the content is enforced, so write for the reader — an LLM deciding what to do next.
+The only validation is that `text` must not be empty. No other rule applies to the
+content. Write for the reader: an LLM that must decide what to do next.
 
 ### Writing an effective `description`
 
-The `description` is load-bearing. Agents scan the list of SOPs and match
-descriptions against the task in front of them, then fetch only the ones that look
-relevant. A vague description ("IR stuff") means the SOP is never opened; a specific
-one ("Standard procedure for confirmed ransomware on an endpoint") means it is.
+The `description` is load-bearing. An agent scans the list of SOPs, matches each
+description against its current task, then fetches only the SOPs that match. With a
+vague description ("IR stuff"), the agent never opens the SOP. With a specific
+description ("Standard procedure for confirmed ransomware on an endpoint"), the agent
+opens it.
 
 ### Limits
 
 - Maximum record size: 1 MB per SOP.
 
 !!! warning "New SOPs are created disabled"
-    Like every Hive record, an SOP is created **disabled** unless you pass
-    `--enabled` or set `usr_mtd.enabled: true`. Set it deliberately — an SOP is only
-    meaningful if the agents reading it treat it as active policy.
+    Enable each new SOP with `--enabled` or with `usr_mtd.enabled: true`. Like every
+    Hive record, an SOP is created **disabled**. Set the value deliberately — an SOP
+    has an effect only when the agents that read it treat it as active policy.
 
 ## How agents use SOPs
 
-Nothing injects SOPs into an agent automatically. Agents load them, on their own,
+No component injects SOPs into an agent automatically. An agent loads them itself,
 in two steps:
 
 1. **List** the SOPs in the organization and read the names and descriptions.
-2. **Fetch by key** only the SOPs whose description matches the task at hand, then
-   follow the procedure.
+2. **Fetch by key** only the SOPs with a description that matches the current task.
+   Then obey the procedure.
 
-Agents built from the LimaCharlie agent library announce the match in their
-transcript — `Following SOP: <name>` — so you can audit adherence after the fact.
+Agents from the LimaCharlie agent library announce the match in their
+transcript — `Following SOP: <name>` — so you can audit adherence later.
 
-This means the granularity of your SOPs matters. One giant `security-policy`
-document forces the agent to load everything for every task; a set of narrowly
-described SOPs (`ransomware-response`, `after-hours-escalation`,
-`isolation-approval`) lets it pull only what applies.
+The granularity of your SOPs is therefore important. One large `security-policy`
+document forces the agent to load everything for every task. A set of narrow SOPs
+(`ransomware-response`, `after-hours-escalation`, `isolation-approval`) lets the
+agent load only what applies.
 
 !!! note "Listing returns full records"
     `limacharlie sop list` and `GET /v1/hive/sop/{oid}` return every SOP in full,
-    including `text`. Agents are instructed to read only the names and descriptions
-    at that stage and re-fetch the body with `sop get`, but budget context
-    accordingly if you keep many large SOPs.
+    and this includes `text`. Agents are instructed to read only the names and
+    descriptions at that step, then to fetch the body again with `sop get`. If you
+    keep many large SOPs, plan the context budget for this.
 
 ## Permissions
 
@@ -97,17 +98,16 @@ described SOPs (`ransomware-response`, `after-hours-escalation`,
 | Read metadata | `sop.get.mtd` |
 | Update metadata | `sop.set.mtd` |
 
-An agent that only needs to follow procedures should be issued `sop.get` and
-`sop.get.mtd` — read-only. Grant `sop.set` only to agents that are expected to
-author policy.
+Give the read-only pair `sop.get` and `sop.get.mtd` to an agent that only obeys
+procedures. Grant `sop.set` only to agents that write policy.
 
 ## Managing SOPs
 
 ### Web interface
 
-SOPs are managed under **Automation → SOPs** in the organization view, where you can
+Manage SOPs under **Automation → SOPs** in the organization view. There you can
 create, edit, tag, enable, and disable them. In an interactive AI session, the
-`/sops` [slash command](rich-cards.md) renders the same list inline.
+`/sops` [slash command](rich-cards.md) shows the same list in the chat.
 
 ### CLI
 
@@ -137,8 +137,8 @@ limacharlie sop tag add --key ransomware-response -t incident-response --oid <oi
 limacharlie sop delete --key ransomware-response --confirm --oid <oid>
 ```
 
-The input file takes the same shape as the record above — a `data` block with
-`text` and `description`, plus an optional `usr_mtd` block.
+The input file has the same shape as the record above: a `data` block with
+`text` and `description`, and an optional `usr_mtd` block.
 
 ### REST API
 
@@ -196,7 +196,7 @@ for name, rec in sops.list().items():
 
 ## Related
 
-- [AI Skills](skills.md) — reusable instruction sets an agent invokes as capabilities.
-- [AI Memory](memory.md) — what an agent has learned and should recall later.
-- [Config Hive](../7-administration/config-hive/index.md) — the store SOPs live in.
+- [AI Skills](skills.md) — reusable instruction sets that an agent invokes as capabilities.
+- [AI Memory](memory.md) — what an agent learned and must recall later.
+- [Config Hive](../7-administration/config-hive/index.md) — the store that holds SOPs.
 - [Permissions](../8-reference/permissions.md) — the full permission reference.

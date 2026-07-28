@@ -1,37 +1,37 @@
 # Git Sync
 
-The Git Sync Extension is a tool that automates the management of Infrastructure-as-Code (IaC) configurations. It simplifies the process of deploying and managing infrastructure by synchronizing changes between a Git repository and target organizations.
+The Git Sync Extension automates the management of Infrastructure-as-Code (IaC) configurations. It synchronizes changes between a Git repository and target organizations. This makes the deployment and management of infrastructure less complex.
 
 **Key features:**
 
 - **Centralized Configuration:** Stores all IaC configurations in a single Git repository.
-- **Recurring Apply:** Can automatically sync IaC changes between Git and LC organizations at regular intervals.
-- **Recurring Export:** Can automatically export IaC from LC organizations to GitHub at regular intervals.
-- **Export Request:** Allows you to export the configuration of an Organization into the Git repository.
-- **Automated Deployment:** Helps automate the deployment process, reducing manual effort.
-- MSSP**-Friendly:** Designed to accommodate multiple organizations within a single repository, allowing for global configurations to be shared between orgs.
-- **Flexible Configuration:** Allows for customization and additional configuration directories.
+- **Recurring Apply:** Can synchronize IaC changes between Git and LC organizations automatically at regular intervals.
+- **Recurring Export:** Can export IaC from LC organizations to GitHub automatically at regular intervals.
+- **Export Request:** Lets you export the configuration of an Organization into the Git repository.
+- **Automated Deployment:** Helps automate the deployment process. This decreases manual work.
+- MSSP**-Friendly:** Designed for many organizations in a single repository. Orgs can share global configurations.
+- **Flexible Configuration:** Lets you customize the configuration and add more configuration directories.
 - **Transparent Operations:** Tracks operations through an extension Sensor.
 
-By using `ext-git-sync`, you can streamline your IaC workflows, improve consistency, and reduce the risk of errors.
+Use `ext-git-sync` to make your IaC workflows more efficient, improve consistency, and decrease the risk of errors.
 
 ## Use Cases
 
 ### Sync FROM Git
 
-If you have a properly structured git repository containing org configurations, the extension can sync the running org configurations with the contents of the configs in git.
+If your git repository has the correct structure and contains org configurations, the extension can synchronize the running org configurations with the configs in git.
 
 ![d2 (1).png "pull config(1).png"](../../../assets/images/d2-(1).png "pull_config(1).png")
 
 ### Export TO Git
 
-Assuming you have an empty git repository, you can configure the extension to export the current org configuration to the repository. It will be placed in an `exports` subdirectory.
+If you have an empty git repository, you can configure the extension to export the current org configuration to it. The extension puts the configuration in an `exports` subdirectory.
 
 ![d2 (2).png "push config(1).png"](../../../assets/images/d2-(2).png "push_config(1).png")
 
 ## Git Repo Structure
 
-For applying org configs from a git repository, the repo must adhere to the following structure. The root of the repository must contain an `orgs` directory with `[org-id]` child directories, each containing an `index.yaml` .
+To apply org configs from a git repository, the repo must obey this structure. The root of the repository must contain an `orgs` directory. The `orgs` directory must contain `[org-id]` child directories, and each one must contain an `index.yaml`.
 
 ```text
 .
@@ -40,9 +40,9 @@ For applying org configs from a git repository, the repo must adhere to the foll
         └── index.yaml [required]
 ```
 
-The `index.yaml` determines which other files in the repo are included in the configuration for this org.
+The `index.yaml` file decides which other files in the repo are part of the configuration for this org.
 
-For instance, assume all of the configurations for this org were unique to this org and could be nested inside of the org's directory.
+For example, assume that all configurations for this org are unique to it, and that they are inside the directory of the org.
 
 ```text
 .
@@ -67,7 +67,7 @@ For instance, assume all of the configurations for this org were unique to this 
         └── resources.yaml
 ```
 
-Notice that all configurations for this org are contained within the org's own directory. In this case, the `index.yaml` would simply contain references to the relative path of this org's configuration files. See below for an example of the contents of `index.yaml` for this use case.
+All configurations for this org are in the directory of the org. In this case, the `index.yaml` file contains the relative paths of the configuration files for this org. The next example shows the contents of `index.yaml` for this use case.
 
 ```yaml
 version: 3
@@ -91,7 +91,7 @@ include:
 
 ### Sharing configurations across multiple orgs
 
-Now, assume you have a global rule set you want to apply across many orgs. You could structure the repo similar to the example below.
+Assume that you have a global rule set that you want to apply to many orgs. You can structure the repo as in the next example.
 
 ```text
 .
@@ -107,7 +107,7 @@ Now, assume you have a global rule set you want to apply across many orgs. You c
         └── index.yaml
 ```
 
-The corresponding `index.yaml` at each org level would look similar to the following
+The related `index.yaml` file at each org level is similar to this
 
 ```yaml
 version: 3
@@ -118,7 +118,7 @@ include:
 
 ### Exporting configurations
 
-Configuration exports will be placed in a separate `exports` subdirectory to avoid overwriting configurations that are pushed across multiple organizations.
+The extension puts configuration exports in a separate `exports` subdirectory. This stops the exports from overwriting configurations that you push to many organizations.
 
 ```text
 .
@@ -146,26 +146,26 @@ Configuration exports will be placed in a separate `exports` subdirectory to avo
 
 ## Setting up Git Sync with Github
 
-This guide walks you through the process of configuring Git synchronization between GitHub and LimaCharlie, allowing for automated deployment and version control of your security configurations.
+This guide explains how to configure Git synchronization between GitHub and LimaCharlie. Git synchronization gives you automated deployment and version control of your security configurations.
 
 ### Step 0: Making a Git Sync specific SSH Key
 
-- First create the directory
+- Create the directory
 
 `mkdir -p ~/.ssh/gitsync`
 
-- Set appropriate permissions for the directory
+- Set the correct permissions on the directory
 
 `chmod 700 ~/.ssh/gitsync`
 
-- Now generate the SSH key
+- Generate the SSH key
 
 `ssh-keygen -t ed25519 -C "limacharlie-gitsync" -f ~/.ssh/gitsync/id_ed25519`
 
 ### Step 1: Generate GitHub Deploy Keys
 
-1. Navigate to your GitHub repository
-2. Click on the **Settings** tab
+1. Open your GitHub repository
+2. Click the **Settings** tab
 3. In the left sidebar, select **Deploy keys**
 4. Click the **Add deploy key** button
 5. Enter a descriptive title for your key (e.g., "LimaCharlie Git Sync Integration")
@@ -176,7 +176,7 @@ This guide walks you through the process of configuring Git synchronization betw
 ### Step 2: Store SSH Private Key in LimaCharlie
 
 1. Log in to your LimaCharlie account
-2. Navigate to the **Secret Manager** section of your Organization
+2. Open the **Secret Manager** section of your Organization
 3. Click **Create New Secret**
 4. Choose a descriptive name for your secret (e.g., "github-deploy-key")
 5. Paste the **private** part of your SSH key into the value field
@@ -184,29 +184,29 @@ This guide walks you through the process of configuring Git synchronization betw
 
 ### Step 3: Configure Git Sync in LimaCharlie
 
-1. Navigate to the **Git Sync** section in LimaCharlie
+1. Open the **Git Sync** section in LimaCharlie
 2. Under the **SSH Key** section, select **Secret Manager**
 3. From the dropdown menu, select the secret you created in Step 2
 4. Set the **user name** to `git`
 5. Copy the SSH URL from your GitHub repository (found on the repository's main page, under Code)
 6. Paste the SSH URL into the **repository** URL field in LimaCharlie
 7. Configure the **branch** name (required)
-8. Select the push and pull options which allow you to specify which items to push to or pull from Git configurations.
-9. Optionally, select push and pull schedules if you wish to regularly sync or export your Infrastructure as Code configurations to and from LimaCharlie. This will create D&R rules on the backend that kick off the push and pull actions on the selected schedule/interval.
+8. Select the push and pull options. These options set which items to push to or pull from Git configurations.
+9. Optionally, select push and pull schedules to synchronize or export your Infrastructure as Code configurations to and from LimaCharlie at regular times. This creates D&R rules in the cloud that start the push and pull actions on the selected schedule or interval.
 10. Click **save settings**.
 
 ### Step 4: Verify Integration
 
-1. Perform a test commit to your GitHub repository by clicking "Push to Git" in the upper right corner.
+1. Do a test commit to your GitHub repository. Click "Push to Git" in the upper right corner.
 
-2. Verify that your configuration has been pushed to Github.
+2. Check that your configuration is now in Github.
 
 ### Troubleshooting
 
-If you encounter synchronization issues:
+If you have synchronization problems:
 
-- Verify that the deploy key has proper write permissions
-- Ensure the correct SSH URL format is used (should begin with `git@github.com:`)
-- Check that the private key in Secret Manager matches the public key added to GitHub
+- Check that the deploy key has write permissions
+- Make sure that the SSH URL has the correct format (it must begin with `git@github.com:`)
+- Check that the private key in Secret Manager matches the public key that you added to GitHub
 
 [Infrastructure](infrastructure.md)

@@ -6,12 +6,12 @@ Build custom detection logic with automated response actions.
 
 - [Detection and Response Examples](examples.md) - Sample detection rules
 - [Detection on Alternate Targets](alternate-targets.md) - Detections beyond endpoint events
-- [False Positive Rules](false-positives.md) - Managing false positives
+- [False Positive Rules](false-positives.md) - How to manage false positives
 - [Writing and Testing Rules](tutorials/writing-testing-rules.md) - Rule development guide
 - [Stateful Rules](stateful-rules.md) - Rules with state tracking
 - [Sensor Variables](sensor-variables.md) - Share state across rules with per-sensor variables
-- [Unit Tests](unit-tests.md) - Testing detection rules
-- [Replay](../5-integrations/services/replay.md) - Replaying events for testing
+- [Unit Tests](unit-tests.md) - Tests for detection rules
+- [Replay](../5-integrations/services/replay.md) - Replay of events for tests
 
 ## Programmatic Management
 
@@ -213,7 +213,7 @@ Build custom detection logic with automated response actions.
     ```
 
     !!! warning
-        The API **replaces** `usr_mtd` entirely. Sending only `{"enabled":false}` will reset tags, expiry, and comment to their defaults. Always read the current metadata first and resend all fields.
+        The API **replaces** all of `usr_mtd`. If you send only `{"enabled":false}`, the API resets tags, expiry, and comment to their defaults. Always read the current metadata first, then send all fields again.
 
 === "Python"
 

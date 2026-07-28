@@ -2,22 +2,22 @@
 
 ## Overview
 
-LimaCharlie can ingest Carbon Black events from a number of storage locations. Typically, an organization would export Carbon Black data via the API to a storage mechanism, such as an S3 bucket, which would then be ingested by LimaCharlie.
+LimaCharlie can ingest Carbon Black events from many storage locations. An organization usually exports Carbon Black data through the API to a storage location, such as an S3 bucket. LimaCharlie then ingests the data from that location.
 
-Carbon Black events are observable in Detection & Response rules via the `carbon_black` platform.
+You see Carbon Black events in Detection & Response rules through the `carbon_black` platform.
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify them when you use the binary adapter or create a webhook adapter. If you use an adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter uses.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself to LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, such as `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: a name that you choose for this adapter. LimaCharlie generates the Sensor IDs (SID) from this name. See below.
 
 ## Config File
 
-VMWare Carbon Black data can be exported via the API to an S3 bucket, and then ingested with LimaCharlie. The following command utilizes a CLI Adapter to ingest these events
+You can export VMWare Carbon Black data through the API to an S3 bucket, then ingest it with LimaCharlie. This command uses a CLI adapter to ingest these events
 
 ```bash
 ./lc_adapter s3 client_options.identity.installation_key=<INSTALLATION_KEY> \
@@ -30,14 +30,14 @@ secret_key=XXXXXXXX  \
 "prefix=events/org_key=NKZAAAEM/"
 ```
 
-Here's a breakdown of the above example:
+This is an explanation of the example above:
 
-- `lc_adapter`: simply the CLI Adapter.
-- `s3`: the data will be collected from an AWS S3 bucket.
+- `lc_adapter`: the CLI adapter.
+- `s3`: the adapter collects the data from an AWS S3 bucket.
 - `client_options.identity.installation_key=....`: the Installation Key value from LimaCharlie.
-- `client_options.identity.oid=....`: the Organization ID from LimaCharlie the installation key above belongs to.
-- `client_options.platform=carbon_black`: this indicates the data received will be Carbon Black events from their API.
-- `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor IDs generated for the Carbon Black sensors from this Adapter later if you have to re-install the Adapter.
+- `client_options.identity.oid=....`: the LimaCharlie Organization ID that owns the installation key above.
+- `client_options.platform=carbon_black`: this value shows that the received data is Carbon Black events from the Carbon Black API.
+- `client_options.sensor_seed_key=....`: the value that identifies this instance of the adapter. Record it. If you re-install the adapter, this value lets you re-use the Sensor IDs that LimaCharlie generated for the Carbon Black sensors.
 - `bucket_name:....`: the name of the S3 bucket holding the data.
 - `access_key:....`: the AWS Access Key for the API key below.
 - `secret_key:....`: the API key for AWS that has access to this bucket.

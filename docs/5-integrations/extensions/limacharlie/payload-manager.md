@@ -1,13 +1,13 @@
 # Payload Manager
 
-[Payloads](../../../2-sensors-deployment/endpoint-agent/payloads.md), such as scripts, pre-built binaries, or other files, can be deployed to LimaCharlie sensors for any reason necessary.
+You can deploy [Payloads](../../../2-sensors-deployment/endpoint-agent/payloads.md) to LimaCharlie sensors for any purpose. A payload is a script, a pre-built binary, or another file.
 
-One method of adding payloads to an Organization is via the web UI on the payloads screen. This is suitable for ad-hoc payload needs, however does not scale past a handful of payloads, or for multiple organizations requiring access the same payload(s).
+One method to add payloads to an Organization is the payloads screen in the web app. This method is suitable for ad-hoc payloads. It does not scale past a few payloads, or to many organizations that need the same payload(s).
 
-The payload manager allows you to create, maintain, and automatically create/update payloads within your organization(s). Furthermore, payload configurations can be saved and utilized across multiple organizations using LimaCharlie's Infrastructure as Code capabilities.
+The payload manager lets you create and maintain payloads in your organization(s). It also creates and updates payloads automatically. You can save payload configurations and use them across many organizations with the Infrastructure as Code capabilities of LimaCharlie.
 
-Payloads added in the payload manager will be synced once every 24 hours per org.
+LimaCharlie syncs the payloads that you add in the payload manager one time every 24 hours for each org.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs. This structure gives you full control of security operations. It also supports multi-tenant setups for managed security providers, or for enterprises that manage many departments or clients.
 
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
+Infrastructure as Code (IaC) uses code to automate the management and provisioning of IT infrastructure. With IaC, you scale, maintain, and deploy resources consistently. In LimaCharlie, IaC lets security teams deploy and manage sensors, rules, and other security infrastructure programmatically. The result is repeatable configurations and faster response times. IaC also keeps the best practices of infrastructure-as-code in cybersecurity operations.

@@ -2,7 +2,7 @@
 
 ## Format
 
-A yara record in `hive` has a very basic format:
+A yara record in `hive` has a basic format:
 
 ```json
 {
@@ -10,13 +10,13 @@ A yara record in `hive` has a very basic format:
 }
 ```
 
-The `data` portion of the records in this hive must have a single key called `rule` who's value will be the yara rule content used by various LimaCharlie components.
+The `data` part of a record in this hive must have one key called `rule`. The value of this key is the yara rule content that different LimaCharlie components use.
 
-A single rule record can contain a series of actual Yara rule, like this: <https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar>
+One rule record can contain a series of yara rules, like this: <https://github.com/Yara-Rules/rules/blob/master/malware/APT_APT1.yar>
 
 ## Permissions
 
-The `yara` hive requires the following permissions for the various operations:
+The `yara` hive needs these permissions for its operations:
 
 - `yara.get`
 - `yara.set`
@@ -26,14 +26,14 @@ The `yara` hive requires the following permissions for the various operations:
 
 ## Usage
 
-Yara rules can be create in the `yara` Hive. Those rules will then be available, either through the `ext-yara` Extension, or directly using the `yara_scan` command directly using the reference `hive://yara/your-rule-name`.
+You can create Yara rules in the `yara` Hive. The `ext-yara` Extension can then use those rules. The `yara_scan` command can also use them directly with the reference `hive://yara/your-rule-name`.
 
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All API and SDK examples require an API key with the appropriate permissions. See [API Keys](../access/api-keys.md) for setup instructions.
+    All API and SDK examples need an API key with the correct permissions. See [API Keys](../access/api-keys.md) for setup instructions.
 
-YARA sources stored in the `yara` hive can be managed via the Hive API or through the dedicated YARA source CLI commands. The Go SDK also provides dedicated YARA methods on the Organization object.
+You can manage the YARA sources in the `yara` hive with the Hive API, or with the dedicated CLI commands for YARA sources. The Go SDK also has dedicated YARA methods on the Organization object.
 
 ### List YARA Sources
 
@@ -144,7 +144,7 @@ YARA sources stored in the `yara` hive can be managed via the Hive API or throug
 
 ### Create / Update a YARA Source
 
-The data payload uses a `rule` key containing the YARA rule content.
+The data payload uses a `rule` key that contains the YARA rule content.
 
 === "REST API"
 
@@ -268,16 +268,16 @@ The data payload uses a `rule` key containing the YARA rule content.
 
 ## Example
 
-Let's create a new Yara rule using the LimaCharlie CLI in a terminal.
-Assuming you have a Yara rule in the `rule.yara` file.
+This example creates a new Yara rule with the LimaCharlie CLI in a terminal.
+The example assumes that you have a Yara rule in the `rule.yara` file.
 
-Load the rule in the LimaCharlie Hive via the CLI:
+Load the rule into the LimaCharlie Hive with the CLI:
 
 ```bash
 limacharlie hive set yara --key my-rule --data rule.yara --data-key rule
 ```
 
-You should get a confirmation that the rule was created, including metadata of the rule associated OID:
+The CLI returns a confirmation that it created the rule. The confirmation includes the metadata of the rule and the OID:
 
 ```json
 {
@@ -290,7 +290,7 @@ You should get a confirmation that the rule was created, including metadata of t
 }
 ```
 
-Next, assuming you want to issue a scan command directly to a Sensor (via the Console or a rule):
+Next, to send a scan command directly to a Sensor, from the web app or from a rule, use this command:
 
 ```text
 yara_scan hive://yara/my-rule

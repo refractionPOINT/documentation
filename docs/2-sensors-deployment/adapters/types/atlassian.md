@@ -1,6 +1,6 @@
 # Atlassian
 
-[Atlassian](https://www.atlassian.com/) makes a suite of products that help foster enterprise work management, IT service management, and Agile development. Atlassian's products include:
+[Atlassian](https://www.atlassian.com/) makes products for enterprise work management, IT service management, and Agile development. The Atlassian products include:
 
 - Bitbucket
 - Confluence
@@ -8,23 +8,23 @@
 - Opsgenie
 - Trello
 
-Atlassian has [extensive documentation](https://confluence.atlassian.com/alldoc/atlassian-documentation-32243719.html) for both their Cloud and Data Center/Server editions.
+Atlassian has [full documentation](https://confluence.atlassian.com/alldoc/atlassian-documentation-32243719.html) for the Cloud and the Data Center/Server editions.
 
-Currently, LimaCharlie supports ingestion of Jira events. Jira events can be ingested in LimaCharlie via a `json` webhook Adapter.
+LimaCharlie supports the ingestion of Jira events. A `json` webhook adapter ingests Jira events into LimaCharlie.
 
 ## Adapter Deployment
 
-Jira events are ingested via a cloud-to-cloud webhook Adapter, configured to receive JSON events. In the creation of the Adapter, we map fields directly to the expected Atlassian events. The steps of creating this Adapter and enabling the input include:
+A cloud-to-cloud webhook adapter ingests Jira events. You configure the adapter to receive JSON events, and you map the fields to the Atlassian events. To create the adapter and enable the input, do these steps:
 
-1. Creating the webhook Adapter via the LimaCharlie CLI.
-2. Discovering the URL created for the webhook Adapter.
-3. Providing the completed URL to Jira for webhook events.
+1. Create the webhook adapter with the LimaCharlie CLI.
+2. Find the URL that LimaCharlie creates for the webhook adapter.
+3. Give the complete URL to Jira for webhook events.
 
 ### 1. Creating the LimaCharlie Webhook Adapter
 
-These steps are adapted from the [generic webhook adapter creation guide](../tutorials/webhook-adapter.md).
+These steps come from the [generic webhook adapter creation guide](../tutorials/webhook-adapter.md).
 
-Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details. The following configuration has been provided to configure a webhook Adapter for ingesting Jira events:
+A webhook adapter needs a set of parameters: the organization ID, an Installation Key, a platform, and mapping details. This configuration sets up a webhook adapter that ingests Jira events:
 
 ```json
 {
@@ -48,37 +48,37 @@ Creating a Webhook Adapter requires a set of parameters, including organization 
 }
 ```
 
-The mapping above is based on the expected webhook event from Jira. Note that in the mapping above, we make the following change:
+The mapping above matches the webhook event from Jira. The mapping makes these two changes:
 
-- `event_type_path` is mapped to the `webhookEvent` field
-- `event_time_path` is mapped to the `timestamp` field
+- `event_type_path` maps to the `webhookEvent` field
+- `event_time_path` maps to the `timestamp` field
 
 ### 2. Building the Webhook URL
 
-After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
+After you create the webhook, get the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. To complete the webhook URL, you need this information:
 
 - Organization ID
 - Webhook name (from the config)
 - Secret (from the config)
 
-Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.io`, the format of the URL would be:
+If the returned domain is `9157798c50af372c.hook.limacharlie.io`, the URL has this format:
 
 `https://9157798c50af372c.hook.limacharlie.io/OID/HOOKNAME/SECRET`
 
-Note that the `secret` value can be provided in the webhook URL or as an HTTP header named `lc-secret`.
+You can give the `secret` value in the webhook URL or in an HTTP header named `lc-secret`.
 
 ### 3. Providing the URL to Jira for Webhook Events
 
-Within the Atlassian Admin window, navigate to **Jira Administration** > **Jira settings** > **Advanced** > **WebHooks**. Select **+ Create a WebHook**.
+In the Atlassian Admin window, go to **Jira Administration** > **Jira settings** > **Advanced** > **WebHooks**. Select **+ Create a WebHook**.
 
 ![image.png](../../../assets/images/image(178).png)
 
-- Choose an appropriate name to differentiate that this is a LimaCharlie webhook
-- Provide the webhook URL (see step 2 above)
-- (optional) Provide a description
-- (optional) Provide a JQL query to select certain issues that will trigger Webhooks. The default selection is *All issues*.
+- Choose a name that identifies the webhook as a LimaCharlie webhook
+- Give the webhook URL (see step 2 above)
+- (optional) Give a description
+- (optional) Give a JQL query that selects the issues that trigger webhooks. The default selection is *All issues*.
 
-Within the WebHook creation dialog, you can also select the granularity of events to send via the WebHook. High-level event categories include:
+In the WebHook creation dialog, you can also select which events the webhook sends. The main event categories are:
 
 - Issues
   - Issue events
@@ -93,9 +93,9 @@ Within the WebHook creation dialog, you can also select the granularity of event
 - Project-related
 - Jira Software-related
 
-By default, issues will be sent as JSON, which is natively accepted by LimaCharlie. Save your WebHook configuration, and perform an action that you know will trigger the event.
+By default, Jira sends issues as JSON. LimaCharlie accepts JSON directly. Save your WebHook configuration, then do an action that triggers the event.
 
-If configured properly, you should see your Jira events in LimaCharlie. Here's an example event:
+If the configuration is correct, your Jira events appear in LimaCharlie. This is an example event:
 
 ```json
 {
@@ -298,4 +298,4 @@ If configured properly, you should see your Jira events in LimaCharlie. Here's a
 }
 ```
 
-Note that the Jira "webhookEvent" becomes the event type, also represented in the LimaCharlie Adapter timeline.
+The Jira "webhookEvent" becomes the event type. The LimaCharlie adapter timeline also shows this event type.

@@ -1,6 +1,6 @@
 # Adapters
 
-Adapters enable log ingestion from external sources into LimaCharlie. They transform various log formats into normalized LimaCharlie events.
+Adapters ingest logs from external sources into LimaCharlie. They change many log formats into normalized LimaCharlie events.
 
 ## Deployment Options
 

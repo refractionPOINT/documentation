@@ -1,8 +1,8 @@
 # Secure Annex
 
-[Secure Annex](https://secureannex.com/) is a browser extension security platform that provides a comprehensive analysis of the Chrome extensions installed across your organization's endpoints.
+[Secure Annex](https://secureannex.com/) is a security platform for browser extensions. It analyzes the Chrome extensions that are installed on the endpoints in your organization.
 
-The Secure Annex LimaCharlie Extension allows you to query the Secure Annex API with the IDs of Chrome extensions installed on endpoints within your organization in order to get detailed information about the extensions. You can then perform additional analysis or craft rules based on the results.
+The Secure Annex LimaCharlie Extension queries the Secure Annex API with the IDs of the Chrome extensions on the endpoints in your organization. The query returns detailed information about the extensions. You can then do more analysis, or write rules that use the results.
 
 API endpoints available for querying are:
 
@@ -13,42 +13,42 @@ API endpoints available for querying are:
 - /urls
 - /analysis
 
-This is currently only supported on Windows, macOS, and Chrome sensors.
+At this time, only Windows, macOS, and Chrome sensors support this.
 
 ## Setup
 
 1. Sign up and get an API key at <https://app.secureannex.com/settings/api>
 2. Subscribe to the Secure Annex extension in LimaCharlie - <https://app.limacharlie.io/add-ons/extension-detail/ext-secureannex>
-3. Add the API key to the Secure Annex extension configuration within LimaCharlie
+3. Add the API key to the configuration of the Secure Annex extension in LimaCharlie
 
 ## Usage
 
 ### Manually in the GUI
 
-You can trigger an extension request manually within the web app by clicking the `Get extensions from endpoint` button. This will allow you to choose a sensor, or sensors via a Sensor Selector, to get extensions from. See [sensor selector expression examples](../../../8-reference/sensor-selector-expressions.md).
+To trigger an extension request manually, click the `Get extensions from endpoint` button in the web app. Then choose the sensor, or the sensors, to get extensions from. To choose many sensors, use a Sensor Selector. See [sensor selector expression examples](../../../8-reference/sensor-selector-expressions.md).
 
-The extensions are gathered from endpoints via the reliable tasking extension, which appends `secureannex_extensions` to the investigation ID of the `RECEIPT` or `OS_PACKAGES_REP` event in order to trigger an extension request to query Secure Annex. The results will be in the timeline of the `ext-secureannex` sensor.
+The reliable tasking extension collects the extensions from the endpoints. It adds `secureannex_extensions` to the investigation ID of the `RECEIPT` or `OS_PACKAGES_REP` event. This triggers an extension request that queries Secure Annex. The results are in the timeline of the `ext-secureannex` sensor.
 
 ### Automatically via D&R Rules
 
-Upon subscribing to the Secure Annex extension, several D&R rules are added to your organization in a **disabled state** to help you get more use out of the extension and automate your detections. They are as follows:
+When you subscribe to the Secure Annex extension, LimaCharlie adds several D&R rules to your organization in a **disabled state**. These rules help you use the extension and automate your detections. The rules are:
 
 - `ext-secureannex-detect-vulnerabilities`
-  - This will look at the vulnerabilities and associated severities in the `vulnerability` results returned, and create detections on high and critical vulnerabilities found
+  - This rule looks at the vulnerabilities and their severities in the `vulnerability` results. It creates detections for the high and critical vulnerabilities that it finds
 - `ext-secureannex-detect-risk-rating`
-  - This will look at the risks and associated severities in the `manifest` results returned, and create detections on high and critical severities found
+  - This rule looks at the risks and their severities in the `manifest` results. It creates detections for the high and critical severities that it finds
 - `ext-secureannex-get-extensions-windows`
-  - This schedules a base64 encoded PowerShell script to run every 24 hours to query Windows sensors for installed Chrome extensions, and bring back a list of the extension IDs and versions
-  - The results will have a `secureannex_extensions` investigation ID associated that will allow LimaCharlie to automatically create Secure Annex extension requests with the IDs and versions included to perform a full analysis and bring back the results into the `ext-secureannex` sensor
+  - This rule schedules a base64 encoded PowerShell script every 24 hours. The script queries Windows sensors for installed Chrome extensions and returns a list of the extension IDs and versions
+  - The results have a `secureannex_extensions` investigation ID. LimaCharlie uses this ID to create Secure Annex extension requests that include the IDs and versions. The requests do a full analysis and return the results to the `ext-secureannex` sensor
 - `ext-secureannex-get-extensions-mac`
-  - This schedules a base64 encoded bash script to run every 24 hours to query macOS sensors for installed Chrome extensions, and bring back a list of the extension IDs and versions
-  - The results will have a `secureannex_extensions` investigation ID associated that will allow LimaCharlie to automatically create Secure Annex extension requests with the IDs and versions included to perform a full analysis and bring back the results into the `ext-secureannex` sensor
+  - This rule schedules a base64 encoded bash script every 24 hours. The script queries macOS sensors for installed Chrome extensions and returns a list of the extension IDs and versions
+  - The results have a `secureannex_extensions` investigation ID. LimaCharlie uses this ID to create Secure Annex extension requests that include the IDs and versions. The requests do a full analysis and return the results to the `ext-secureannex` sensor
 - `ext-secureannex-get-extensions-chrome`
-  - This schedules the `OS_PACKAGES` command to run every 24 hours to query Chrome sensors for installed Chrome extensions, and bring back a list of the extension IDs and versions
-  - The results will have an investigation ID associated that will allow LimaCharlie to automatically create Secure Annex extension requests with the IDs and versions included to perform a full analysis and bring back the results into the `ext-secureannex` sensor
+  - This rule schedules the `OS_PACKAGES` command every 24 hours. The command queries Chrome sensors for installed Chrome extensions and returns a list of the extension IDs and versions
+  - The results have an investigation ID. LimaCharlie uses this ID to create Secure Annex extension requests that include the IDs and versions. The requests do a full analysis and return the results to the `ext-secureannex` sensor
 
-If you wish to use these, you need to enable them first. You can also copy the contents of these rules and create your own so they are no longer managed by the Secure Annex extension if you wish to modify them.
+To use these rules, first enable them. To change a rule, copy its contents and create your own rule. The Secure Annex extension does not manage your own rules.
 
 ### Results
 
-Results will show up in the live feed and timeline of the `ext-secureannex` Sensor.
+Results show in the live feed and the timeline of the `ext-secureannex` Sensor.

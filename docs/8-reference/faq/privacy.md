@@ -1,18 +1,18 @@
 # FAQ - Privacy
 
-LimaCharlie is a highly configurable security infrastructure-as-a-service platform. It allows users to control which data they ingest into the platform from various locations, including endpoints and cloud services.
+LimaCharlie is a configurable platform for security infrastructure-as-a-service. Users control which data they ingest into the platform. The data comes from endpoints, cloud services, and other locations.
 
 ## Collection of personally identifiable information (PII)
 
-The LimaCharlie platform focuses on the collection of machine telemetry. This type of telemetry does not generally contain personally identifiable information. The LimaCharlie Sensor does not typically monitor PII-heavy areas such as the contents of email messages or documents. Consequently, manually stripping PII generally is not necessary. Users may choose to ingest their own sources of information. In those cases where LimaCharlie does not have knowledge of the nature of the ingested data, configuration mechanisms are available to users to specify fields they wish to drop or transform in order to better preserve privacy.
+The LimaCharlie platform collects machine telemetry. This type of telemetry does not usually contain personally identifiable information. The LimaCharlie Sensor does not usually monitor areas that hold much PII, such as the contents of email messages or documents. You therefore do not need to remove PII manually. Users can also ingest their own sources of data, and LimaCharlie does not know the nature of that data. For that data, users configure which fields to drop or to transform to protect privacy.
 
-We urge users to take a thoughtful approach to the types of data they collect, as they play a crucial role in preserving the privacy of their users. This sense of responsibility is key to maintaining a secure environment.
+Be careful about the types of data that you collect. Your choice of data has a large effect on the privacy of your users. This responsibility helps you to keep a secure environment.
 
 ## Types of data LimaCharlie collects
 
-The LimaCharlie Sensor gathers telemetry from endpoints. The type of data collected is user-configurable and controlled behind role-based access controls. This telemetry contains basic details about endpoints, such as IP address, platform name, OS & package version numbers, IP addresses, etc.
+The LimaCharlie Sensor collects telemetry from endpoints. Users configure the type of data that the sensor collects, and role-based access controls protect that data. The telemetry contains basic details about endpoints. Examples are the IP address, the platform name, and the version numbers of the OS and the packages.
 
-Core sensor telemetry is collected and presented in JSON format.
+Core sensor telemetry is collected and shown in JSON format.
 
 *Example telemetry:*
 
@@ -80,7 +80,7 @@ Core sensor telemetry is collected and presented in JSON format.
 }
 ```
 
-By default, the following types of telemetry are collected on Windows-based systems:
+On Windows systems, the sensor collects these types of telemetry by default:
 
 AUTORUN_CHANGE
  CODE_IDENTITY
@@ -141,7 +141,7 @@ AUTORUN_CHANGE
  WEL
  YARA_DETECTION
 
-Users can opt in / out of collection of event types on a per-platform basis. The default list varies based on OS platform and may change over time. For a full list of events, along with descriptions and samples, please see [Events](../../4-data-queries/events/index.md).
+For each platform, users can enable or disable the collection of an event type. The default list is different for each OS platform, and it can change. For a full list of events with descriptions and samples, see [Events](../../4-data-queries/events/index.md).
 
 ## Examples of LimaCharlie Sensor Data
 
@@ -174,4 +174,4 @@ Users can opt in / out of collection of event types on a per-platform basis. The
 14. Users
     ![sensor 15](../../assets/images/sensor-15.png)
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. A sensor is a scalable, serverless method to connect the endpoints of an organization to the cloud securely.

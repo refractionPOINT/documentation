@@ -2,15 +2,15 @@
 
 Output events and detections to a Google Cloud BigQuery Table.
 
-For a practical use case of this output, see this [tutorial on pushing Velociraptor data to BigQuery](../../tutorials/velociraptor-bigquery.md).
+For a use case of this output, see the [tutorial on pushing Velociraptor data to BigQuery](../../tutorials/velociraptor-bigquery.md).
 
-- `schema`: describes the column names, data types, and other information; should match the text-formatted schema from bigquery
+- `schema`: the column names, data types, and other information; must match the text-formatted schema from bigquery
 - `table`: the table name where to send data.
 - `dataset`: the dataset name where to send data.
 - `project`: the project name where to send the data.
 - `secret_key`: the secret json key identifying a service account.
 - `sec_per_file`: the number of seconds after which a batch of data is loaded.
-- `custom_transform`: should align with the schema fields/formats
+- `custom_transform`: must align with the fields and formats of the schema
 
 Example:
 

@@ -1,16 +1,16 @@
 # 1Password
 
-The 1Password CLI brings 1Password to the terminal, allowing you to interact with a 1Password instance from LimaCharlie.
+The 1Password CLI gives access to 1Password from the terminal. It lets you interact with a 1Password instance from LimaCharlie.
 
 This extension uses [1Password's native CLI](https://developer.1password.com/docs/cli).
 
 ## 1Password Account Types
 
-Please note that some 1Password functionality is limited to 1Password Business. Please validate you have the correct type of account(s) to ensure that commands run.
+Some 1Password functions are limited to 1Password Business. Check that you have the correct type of account, to make sure that the commands run.
 
 ## Example
 
-Returns a list of all items the account has read access to by default.
+By default, this returns a list of all the items that the account can read.
 
 ```yaml
 - action: extension request
@@ -24,9 +24,9 @@ Returns a list of all items the account has read access to by default.
 
 ## Credentials
 
-To utilize 1Password's automated CLI capabilities, you will need to create and utilize a Service Account. See 1Password's [Service Accounts getting-started guide](https://developer.1password.com/docs/service-accounts/get-started/) for more detail.
+To use the automated CLI capabilities of 1Password, create and use a Service Account. For more detail, see the [Service Accounts getting-started guide](https://developer.1password.com/docs/service-accounts/get-started/) from 1Password.
 
-- Create a secret in the secrets manager in the following format:
+- Create a secret in the secrets manager in this format:
 
 ```text
 serviceAccountToken

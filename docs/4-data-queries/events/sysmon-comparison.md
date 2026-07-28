@@ -2,9 +2,9 @@
 
 System Monitor, or "Sysmon", is a Windows server and device driver that monitors and logs operating system activity. It is part of the Sysinternals toolkit. See Microsoft's [Sysmon download and reference page](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon).
 
-Many organizations deploy Sysmon and structure their detection events around Sysmon-specific event logs, which can offer granular insight into operating system changes. LimaCharlie's EDR telemetry can offer similar events, allowing you to write detections against these events directly.
+Many organizations deploy Sysmon and build their detection events around Sysmon event logs. These logs give detailed information about changes to the operating system. The EDR telemetry of LimaCharlie gives similar events, and you can write detections against these events directly.
 
-A comparison of LimaCharlie vs. Sysmon is as follows:
+The table below compares Sysmon events to LimaCharlie events:
 
 | Sysmon Event | LimaCharlie Event |
 | --- | --- |
@@ -22,10 +22,10 @@ A comparison of LimaCharlie vs. Sysmon is as follows:
 | Event ID 17 (PipeEvent Created) | NEW\_NAMED\_PIPE |
 | Event ID 18 (PipeEvent Connected) | OPEN\_NAMED\_PIPE |
 
-Why not both? ¯\*(ツ)*/¯
+You can also use both.
 
-Note, LC's Endpoint Agent is easily able to [consume Sysmon events](../../2-sensors-deployment/tutorials/sysmon-logs.md) as well.
+The LimaCharlie sensor can also [consume Sysmon events](../../2-sensors-deployment/tutorials/sysmon-logs.md).
 
 ## Executable Tracking
 
-Recent updates to Sysmon also include the ability to capture and store information about binaries identified on a system. You can replicate this functionality in LimaCharlie with the [BinLib extension](../../5-integrations/extensions/limacharlie/binlib.md).
+Recent updates to Sysmon can also capture and store information about binaries found on a system. You can do the same in LimaCharlie with the [BinLib extension](../../5-integrations/extensions/limacharlie/binlib.md).

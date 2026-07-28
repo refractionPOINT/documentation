@@ -2,13 +2,13 @@
 
 ## Overview
 
-LimaCharlie can ingest [Microsoft 365 Defender logs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide) via three methods [Azure Event Hub](azure-event-hub.md) Adapter, the [Microsoft Defender API](https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-create-app-nativeapp), or a Custom Webhook
+LimaCharlie can ingest [Microsoft 365 Defender logs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender?view=o365-worldwide) with three methods: the [Azure Event Hub](azure-event-hub.md) Adapter, the [Microsoft Defender API](https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-create-app-nativeapp), or a Custom Webhook
 
 Microsoft has [documentation for creating an Event Hub](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 
 Telemetry Platform: `msdefender`
 
-> Use `client_options.platform: msdefender` for **both** ingestion methods. The `msdefender` parser understands the Streaming API `records` envelope (Event Hub) as well as bare Graph `alerts_v2` alert objects (API adapter), extracting event types and timestamps automatically and mapping raw device telemetry to native LimaCharlie event types (`NEW_PROCESS`, `NETWORK_CONNECTIONS`, etc.) with one sensor per Defender device. Do not substitute `json` — it bypasses this parser and requires manual field mappings.
+> Use `client_options.platform: msdefender` for **both** ingestion methods. The `msdefender` parser reads the Streaming API `records` envelope (Event Hub) and also bare Graph `alerts_v2` alert objects (API adapter). It extracts event types and timestamps automatically. It maps raw device telemetry to native LimaCharlie event types (`NEW_PROCESS`, `NETWORK_CONNECTIONS`, and others), with one sensor for each Defender device. Do not use `json` instead. The `json` platform does not use this parser and needs manual field mappings.
 
 ## Data Collected
 
@@ -21,20 +21,20 @@ Telemetry Platform: `msdefender`
 
 ### Microsoft Defender API
 
-The API adapter polls Microsoft Graph's `/security/alerts_v2` endpoint every 30 seconds. This provides **security alerts** from Microsoft Defender products including:
+The API adapter polls Microsoft Graph's `/security/alerts_v2` endpoint every 30 seconds. It gives **security alerts** from Microsoft Defender products, which include:
 
 - Defender for Endpoint
 - Defender for Office 365
 - Defender for Identity
 - Defender for Cloud Apps
 
-These are curated, high-fidelity alerts that Microsoft has already correlated and enriched.
+These are curated, high-fidelity alerts that Microsoft correlated and enriched.
 
 For alert schema details, see [Microsoft's alerts_v2 API documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-alert).
 
 ### Azure Event Hub (Streaming API)
 
-When using Event Hub with Defender, you receive **raw telemetry** via the Defender Streaming API. This includes detailed event tables such as:
+When you use Event Hub with Defender, you receive **raw telemetry** through the Defender Streaming API. The telemetry includes event tables such as:
 
 - **DeviceProcessEvents** - Process creation and execution
 - **DeviceNetworkEvents** - Network connections
@@ -43,13 +43,13 @@ When using Event Hub with Defender, you receive **raw telemetry** via the Defend
 - **DeviceRegistryEvents** - Registry modifications
 - **DeviceEvents** - Miscellaneous security events
 
-This provides full endpoint telemetry for custom detection rules and threat hunting.
+This method gives full endpoint telemetry for custom detection rules and threat hunting.
 
 For the complete list of supported streaming event types, see [Microsoft's Defender XDR streaming event types documentation](https://learn.microsoft.com/en-us/defender-xdr/supported-event-types).
 
 ### Defender API Configuration
 
-To collect data via the Microsoft Defender API, configure an App Registration in Azure with the following permission:
+To collect data through the Microsoft Defender API, configure an App Registration in Azure with this permission:
 
 - `SecurityAlert.Read.All`
 
@@ -61,24 +61,24 @@ Then create a Defender adapter in LimaCharlie with:
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify these options if you use the binary adapter or create a webhook adapter. If you use an Adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself with LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, for example `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter. Sensor IDs (SID) are generated from this name, see below.
 
 ### Adapter-specific Options
 
-- `connection_string` - The connection string provided in Azure for connecting to the Azure Event Hub, including the `EntityPath=...` at the end which identifies the Hub Name (this component is sometimes now shown in the connection string provided by Azure).
+- `connection_string` - The connection string that Azure gives you to connect to the Azure Event Hub. It includes the `EntityPath=...` at the end, which identifies the Hub Name (this component is sometimes now shown in the connection string provided by Azure).
 
 ## Guided Deployment
 
-In the LimaCharlie web app, you can find a Microsoft Defender helper for connecting to an existing Azure Event Hub and ingesting Microsoft Defender logs.
+The LimaCharlie web app has a Microsoft Defender helper. Use it to connect to an existing Azure Event Hub and to ingest Microsoft Defender logs.
 
 ### CLI Deployment
 
-The following example configuration ingests Microsoft Defender logs from an Azure Event Hub to LimaCharlie.
+The example configuration below ingests Microsoft Defender logs from an Azure Event Hub into LimaCharlie.
 
 ```bash
 ./lc_adapter azure_event_hub client_options.identity.installation_key=<INSTALLATION_KEY> \

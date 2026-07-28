@@ -1,16 +1,16 @@
 # Event Schemas
 
-Since LimaCharlie standardizes on JSON, including arbitrary sources of data, it means that Schema in LimaCharlie is generally dynamic.
+LimaCharlie standardizes on JSON for all data sources. Because of this, a schema in LimaCharlie is dynamic.
 
-To enable users to create schemas in external systems that expect more strictly typed data, LimaCharlie makes a Schema API available.
+LimaCharlie supplies a Schema API. Use this API to create schemas in external systems that need more strictly typed data.
 
-This Schema API exposes the "learned" schema from specific event types. As data comes into LimaCharlie, the Schema API will accumulate the list of fields and types observed for those specific events. In turn, the API allows you to retrieve this learned schema.
+The Schema API exposes the "learned" schema of specific event types. When data comes into LimaCharlie, the API collects the fields and the types that it sees for those events. You can then retrieve this learned schema.
 
 ## API
 
 ### Listing Schemas
 
-The list of all available schemas can get retrieved by doing a `GET` to `api.limacharlie.io/v1/orgs/YOUR-OID/schema`.
+To get the list of all available schemas, do a `GET` to `api.limacharlie.io/v1/orgs/YOUR-OID/schema`.
 
 The returned data looks like:
 
@@ -32,7 +32,7 @@ The returned data looks like:
 }
 ```
 
-Each element in the list of schema is composed of a prefix and a value.
+Each element in the list of schemas has a prefix and a value.
 
 Prefixes can be:
 
@@ -42,11 +42,11 @@ Prefixes can be:
 - `art` for an Artifact Event.
 - `sched` for Scheduling Events.
 
-The value is generally the Event Type except for Detections where it is the `cat` (detection name).
+The value is the Event Type. For Detections, the value is the `cat` (detection name).
 
 ### Retrieveing Schema Definition
 
-Retrieving a specific schema definition can be done by doing a `GET` on `api.limacharlie.io/v1/orgs/YOUR-OID/schema/EVENT-TYPE`, where the `EVENT-TYPE` is one of the exact keys returned by the listing API above.
+To retrieve a specific schema definition, do a `GET` on `api.limacharlie.io/v1/orgs/YOUR-OID/schema/EVENT-TYPE`. The `EVENT-TYPE` is one of the exact keys that the listing API above returns.
 
 The returned data looks like:
 
@@ -83,15 +83,15 @@ The returned data looks like:
 }
 ```
 
-The `schema.elements` data returned is composed of a prefix and a value.
+Each element in the returned `schema.elements` data has a prefix and a value.
 
 The prefix is one of:
 
-- `i` indicating the element is an Integer.
-- `s` indicating the element is a String.
-- `b` indicating the element is a Boolean.
+- `i` shows that the element is an Integer.
+- `s` shows that the element is a String.
+- `b` shows that the element is a Boolean.
 
-The value is a path within the JSON. For example, the schema above would represent the following event:
+The value is a path in the JSON. For example, the schema above represents this event:
 
 ```json
 {
@@ -127,7 +127,7 @@ The value is a path within the JSON. For example, the schema above would represe
 
 ## Event Structure Reference
 
-All events in LimaCharlie follow a canonical structure with two top-level objects: `routing` and `event`. Understanding this structure is essential for writing D&R rules, LCQL queries, and configuring outputs.
+All events in LimaCharlie use a canonical structure with two top-level objects: `routing` and `event`. You must know this structure to write D&R rules, to write LCQL queries, and to configure outputs.
 
 ### Top-Level Structure
 
@@ -140,7 +140,7 @@ All events in LimaCharlie follow a canonical structure with two top-level object
 
 ### The `routing` Object
 
-The `routing` object contains **metadata** about the event - information about where it came from, when it occurred, and how it relates to other events. This metadata is consistent across all event types, making it useful for correlation, filtering, and investigation.
+The `routing` object contains **metadata** about the event: the source of the event, the time of the event, and the relation to other events. This metadata is the same for all event types. Use it for correlation, for filtering, and for investigation.
 
 #### Core Routing Fields
 
@@ -197,7 +197,7 @@ The `event` object contains **event-specific data** that varies by event type. F
 
 #### Accessing Fields in D&R Rules
 
-In Detection & Response rules, you access fields using the `event/` and `routing/` path prefixes:
+In Detection & Response rules, use the `event/` and `routing/` path prefixes to access fields:
 
 ```yaml
 detect:
@@ -215,7 +215,7 @@ detect:
 
 #### Event Correlation Using Routing
 
-The `routing/this`, `routing/parent`, and `routing/target` hashes enable powerful event correlation:
+The `routing/this`, `routing/parent`, and `routing/target` hashes let you correlate events:
 
 ```yaml
 # Track all events from a specific process
@@ -227,35 +227,35 @@ detect:
 
 ### Relationship to Other Structures
 
-> For a dedicated explanation of the `routing` metadata envelope shared by events and detections, see [The `routing` Section](routing.md).
+> Events and detections share the `routing` metadata envelope. For a dedicated explanation, see [The `routing` Section](routing.md).
 
-**Events → Detections**: When a D&R rule matches an event, a Detection is created. The Detection inherits the `routing` object from the triggering event and adds detection-specific metadata.
+**Events → Detections**: When a D&R rule matches an event, a Detection is created. The Detection inherits the `routing` object from the event that triggered the rule. It then adds detection-specific metadata.
 
-**Events → Outputs**: Events can be routed to external systems via the "event" output stream. The full event structure (both `routing` and `event`) is sent.
+**Events → Outputs**: You can send events to external systems through the "event" output stream. The full event structure, both `routing` and `event`, is sent.
 
-**Events → Audit**: Audit logs track platform actions and have a different structure. See the Output Stream Structures documentation for details.
+**Events → Audit**: Audit logs track platform actions and use a different structure. For details, see the Output Stream Structures documentation.
 
 ### Platform-Specific Considerations
 
 #### Windows Events
 
-- Often include nested structures like `event/EVENT/System/EventID` for Windows Event Logs
+- Windows Event Logs often include nested structures such as `event/EVENT/System/EventID`
 - Process events include detailed parent information in `event/PARENT`
 
 #### Linux Events
 
 - File paths use forward slashes
-- Process events may include user/group information
+- Process events can include user and group information
 
 #### Cloud Adapter Events
 
-- May have custom `event` structures based on the source system
-- `routing/event_type` reflects the adapter and event type (e.g., `WEL`, `AdvancedHunting-DeviceEvents`)
+- Can have custom `event` structures that depend on the source system
+- `routing/event_type` shows the adapter and event type (e.g., `WEL`, `AdvancedHunting-DeviceEvents`)
 
 ### Best Practices
 
-1. **Use routing fields for correlation**: `sid`, `hostname`, `this`, `parent` are consistent across all events
-2. **Filter by event_type early**: Most D&R rules should specify `event:` at the top level for performance
-3. **Leverage platform and architecture**: Use `routing/plat` and `routing/arch` for OS-specific logic
+1. **Use routing fields for correlation**: `sid`, `hostname`, `this`, and `parent` are the same across all events
+2. **Filter by event_type early**: For performance, most D&R rules should specify `event:` at the top level
+3. **Leverage platform and architecture**: For logic that is specific to an OS, use `routing/plat` and `routing/arch`
 4. **Understand timestamp format**: `routing/event_time` is Unix milliseconds (not seconds)
-5. **Hash consistency**: `routing/this` and `routing/parent` use the same hashing algorithm, enabling cross-event tracking
+5. **Hash consistency**: `routing/this` and `routing/parent` use the same hashing algorithm, so you can track an object across events

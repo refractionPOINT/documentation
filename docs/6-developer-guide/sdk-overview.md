@@ -1,6 +1,6 @@
 # Command Line Interface
 
-The LimaCharlie CLI is installed as part of the [Python SDK](sdks/python-sdk.md) package.
+The [Python SDK](sdks/python-sdk.md) package installs the LimaCharlie CLI.
 
 ```bash
 pip install limacharlie
@@ -10,33 +10,33 @@ The CLI uses a `limacharlie <noun> <verb>` command pattern. Every command suppor
 
 ## Authentication
 
-Authenticating the CLI can be done in a few ways.
+You can authenticate the CLI in different ways.
 
 ### Option 1 - Logging In
 
-The simplest is to login to an Organization using an [API key](../7-administration/access/api-keys.md).
+The most simple method is to log in to an Organization with an [API key](../7-administration/access/api-keys.md).
 
-Use `limacharlie auth login` to store credentials locally. You will need an `OID` (Organization ID) and an API key, and (optionally) a `UID` (User ID), all of which you can get from the Access Management --> REST API section of the web interface.
+Use `limacharlie auth login` to store the credentials on your computer. You need an `OID` (Organization ID) and an API key. A `UID` (User ID) is optional. Get these values from the Access Management --> REST API section of the web interface.
 
-The login interface supports named environments, or a default one used when no environment is selected.
+The login interface supports named environments. It uses a default environment when you select no environment.
 
-To list available organizations:
+To list the available organizations:
 
 ```bash
 limacharlie auth list-orgs
 ```
 
-Setting a given organization in the current shell session can be done like this:
+To set an organization for the current shell session, use this command:
 
 ```bash
 limacharlie auth use-org my-dev-org
 ```
 
-You can also specify a `UID` (User ID) during login to use a *user* API key representing the total set of permissions that user has (see User Profile in the web interface).
+You can also give a `UID` (User ID) at login. The CLI then uses a *user* API key that has the full set of permissions of that user. See User Profile in the web interface.
 
 ### Option 2 - Environment Variables
 
-You can use the `LC_OID` and `LC_API_KEY` and `LC_UID` environment variables to replace the values used logging in. The environment variables will be used if no other credentials are specified.
+Use the `LC_OID`, `LC_API_KEY`, and `LC_UID` environment variables in place of the values from the login. The CLI uses these environment variables if you specify no other credentials.
 
 ## Docker Image
 
@@ -56,7 +56,7 @@ docker run -v ${HOME}/.limacharlie:/root/.limacharlie:ro refractionpoint/limacha
 
 ### Search / Query
 
-[LimaCharlie Query Language (LCQL)](../4-data-queries/lcql-examples.md) provides a flexible, intuitive and interactive way to explore your data in LimaCharlie.
+[LimaCharlie Query Language (LCQL)](../4-data-queries/lcql-examples.md) gives you a flexible and interactive way to explore your data in LimaCharlie.
 
 ```bash
 limacharlie search --help
@@ -64,11 +64,11 @@ limacharlie search --help
 
 ### ARLs
 
-[Authenticated Resource Locators (ARLs)](../8-reference/authentication-resource-locator.md) describe a way to specify access to a remote resource, supporting many methods, including authentication data, and all that within a single string.
+[Authenticated Resource Locators (ARLs)](../8-reference/authentication-resource-locator.md) specify access to a remote resource in one string. They support many access methods and can include authentication data.
 
-ARLs can be used in the [YARA manager](../5-integrations/extensions/limacharlie/yara-manager.md) to import rules from GitHub repositories and other locations.
+You can use ARLs in the [YARA manager](../5-integrations/extensions/limacharlie/yara-manager.md) to import rules from GitHub repositories and other locations.
 
-Testing an ARL before applying it somewhere can be helpful to shake out access or authentication errors beforehand. You can test an ARL and see what files are fetched, and their contents, by running the following command:
+Test an ARL before you use it somewhere. A test finds access errors and authentication errors early. This command tests an ARL and shows which files it gets, and their contents:
 
 ```bash
 limacharlie arl get -a [github,Yara-Rules/rules/email]
@@ -76,7 +76,7 @@ limacharlie arl get -a [github,Yara-Rules/rules/email]
 
 ### Streaming
 
-Stream events, detections, or audit logs in real-time. Uses pull-mode spouts (HTTPS) or push-mode firehose listeners (TLS).
+Stream events, detections, or audit logs in real time. The command uses pull-mode spouts (HTTPS) or push-mode firehose listeners (TLS).
 
 ```bash
 # Stream events (pull-mode via stream.limacharlie.io, works through NATs and proxies)
@@ -92,27 +92,27 @@ limacharlie stream audit
 
 ### Sync (Infrastructure as Code)
 
-The `pull` command will fetch the organization configuration and write it to a local YAML file.
+The `pull` command gets the organization configuration and writes it to a local YAML file.
 
 ```bash
 limacharlie sync pull --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca
 ```
 
-Then `push` can upload the configuration specified in the YAML file to your organization. The `--dry-run` simulates the sync and displays the changes that would occur.
+The `push` command then uploads the configuration in the YAML file to your organization. The `--dry-run` flag simulates the sync and shows the changes that it would make.
 
 ```bash
 limacharlie sync push --dry-run --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca --config /path/to/template.yaml
 ```
 
-All these capabilities are also supported directly by the `Configs` SDK class (`limacharlie.sdk.configs`).
+The `Configs` SDK class (`limacharlie.sdk.configs`) also supports all these capabilities.
 
-The Sync functionality supports all common useful configurations. Use the hive flags (`--hive-dr-general`, `--hive-fp`, `--outputs`, etc.) to control which resource types are synced. See `limacharlie sync --help` for all options.
+The Sync function supports all common useful configurations. Use the hive flags (`--hive-dr-general`, `--hive-fp`, `--outputs`, etc.) to control which resource types the CLI syncs. See `limacharlie sync --help` for all options.
 
-To understand better the config format, do a `pull` from your organization. Notice the use of the `include` statement. Using this statement you can combine multiple config files together, making it ideal for the management of complex rule sets and their versioning.
+To learn the config format, do a `pull` from your organization. Look at the `include` statement. This statement combines more than one config file into one configuration. Use it to manage complex rule sets and their versions.
 
 ### Spot Checks
 
-Used to perform Organization-wide checks for specific indicators of compromise. Supports many types of IoCs like file names, directories, registry keys, file hashes and YARA signatures.
+Do checks for specific indicators of compromise across the Organization. Spot checks support many types of IoC, such as file names, directories, registry keys, file hashes, and YARA signatures.
 
 ```bash
 limacharlie spotcheck --help
@@ -144,7 +144,7 @@ limacharlie artifact --help
 
 ### Replay
 
-Perform [Replay](../5-integrations/services/replay.md) jobs from the CLI.
+Run [Replay](../5-integrations/services/replay.md) jobs from the CLI.
 
 ```bash
 limacharlie replay --help
@@ -160,7 +160,7 @@ limacharlie dr --help
 
 ### Events & Detections
 
-Print out to STDOUT events or detections matching the parameter.
+Print the events or the detections that match the parameter to STDOUT.
 
 ```bash
 limacharlie event --help
@@ -169,7 +169,7 @@ limacharlie detection --help
 
 ### List Sensors
 
-Print out all basic sensor information for all sensors matching the [selector](../8-reference/sensor-selector-expressions.md).
+Print the basic sensor information for all sensors that match the [selector](../8-reference/sensor-selector-expressions.md).
 
 ```bash
 limacharlie sensor list --selector 'plat == windows'
@@ -177,9 +177,9 @@ limacharlie sensor list --selector 'plat == windows'
 
 ### Add Users
 
-Add single or multiple users to a LimaCharlie organization. Added users will be sent an email to confirm their address, enable the account and create a new password.
+Add one user or more users to a LimaCharlie organization. Each new user gets an email. The email asks the user to confirm the address, enable the account, and create a new password.
 
-Keep in mind that this action operates in the user context which means you need to use a user scoped API key. For more information on how to obtain one, see <https://api.limacharlie.io/static/swagger/#getting-a-jwt>
+This action operates in the user context, so you must use a user scoped API key. To get one, see <https://api.limacharlie.io/static/swagger/#getting-a-jwt>
 
 Add a single user:
 
@@ -208,7 +208,7 @@ limacharlie user add --file users_to_add.txt
 
 ### AI Sessions
 
-Create, inspect, and attach to [AI Sessions](../9-ai-sessions/index.md) directly from the terminal. The CLI exposes both ownership models the backend supports — **org-owned** sessions (started from an `ai_agent` Hive template, billed against the org's stored Anthropic key) and **user-owned** sessions (started fresh, billed against your personal Claude credential).
+Create, inspect, and attach to [AI Sessions](../9-ai-sessions/index.md) from the terminal. The CLI exposes both ownership models that the cloud supports: **org-owned** sessions and **user-owned** sessions. An org-owned session starts from an `ai_agent` Hive template, and the cloud bills it against the org's stored Anthropic key. A user-owned session starts fresh, and the cloud bills it against your personal Claude credential.
 
 ```bash
 # --- Org-owned: run an ai_agent Hive record as a template, with overrides.
@@ -228,6 +228,6 @@ limacharlie ai chats list --status running          # list your chat sessions
 limacharlie ai chats terminate --id <SESSION_ID>
 ```
 
-The `ai session attach --interactive` command works for either kind of session: it sends prompts when you own the session (user-owned), and falls back to read-only with a notice when the session is org-owned (the backend exposes only a read-only WebSocket for those by design).
+The `ai session attach --interactive` command works with both kinds of session. It sends prompts when you own the session (user-owned). When the session is org-owned, it shows a notice and becomes read-only, because the cloud exposes only a read-only WebSocket for those sessions by design.
 
 See [AI Sessions — Command Line Interface](../9-ai-sessions/cli.md) for the full command reference, override semantics, the org-vs-user split, and stream output formatting.

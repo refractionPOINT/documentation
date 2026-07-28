@@ -1,12 +1,12 @@
 # Microsoft 365
 
-The CLI **for Microsoft 365** is a tool created to help manage Microsoft 365 tenant(s) and SharePoint framework projects. With this component of the Cloud CLI Extension, you can interact with a Microsoft 365 tenant(s) directly from LimaCharlie.
+The CLI **for Microsoft 365** is a tool that helps you manage Microsoft 365 tenants and SharePoint framework projects. This component of the Cloud CLI Extension lets you interact with Microsoft 365 tenants directly from LimaCharlie.
 
 This extension uses [the PnP Microsoft 365 CLI](https://github.com/pnp/cli-microsoft365).
 
 ## Example
 
-The following example disables the user account with the provided user ID.
+This example disables the user account that has the given user ID.
 
 ```yaml
 - action: extension request
@@ -27,9 +27,9 @@ The following example disables the user account with the provided user ID.
 
 ## Credentials
 
-- Per the Microsoft 365 CLI documentation, multiple authentication mechanisms are available. The current LimaCharlie implementation uses a client secret. See Microsoft's [Register an app quickstart](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app) for provisioning details.
-- Upon invocation, LimaCharlie will first run the `m365 login` command with the credentials provided.
-- Create a secret in the secrets manager in the following format:
+- The Microsoft 365 CLI documentation shows that many authentication mechanisms are available. LimaCharlie now uses a client secret. For details about how to provision an app, see the [Register an app quickstart](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app) from Microsoft.
+- When you call the extension, LimaCharlie first runs the `m365 login` command with the credentials that you supply.
+- Create a secret in the secrets manager in this format:
 
   ```text
   appID/clientSecret/tenantID

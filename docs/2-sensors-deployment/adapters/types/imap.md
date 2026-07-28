@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Adapter allows you to ingest emails as events from an IMAP server.
+This Adapter ingests emails from an IMAP server as events.
 
 ## Configurations
 
@@ -10,15 +10,15 @@ Adapter Type: `imap`
 
 - `client_options`: see [common adapter configuration](../usage.md).
 - `server`: the domain and port of the IMAP server, like `imap.gmail.com:993`.
-- `username`: the user name to log in to IMAP as.
-- `password`: the password for the above user name.
+- `username`: the user name for the IMAP login.
+- `password`: the password for the user name above.
 - `inbox_name`: the name of the inbox to monitor.
-- `is_insecure`: do NOT connect using SSL.
+- `is_insecure`: do NOT connect with SSL.
 - `from_zero`: collect all existing emails in the inbox.
-- `include_attachments`: send attachment data to LimaCharlie, used to generate attachment hashes in the cloud.
+- `include_attachments`: send attachment data to LimaCharlie. The cloud uses this data to generate attachment hashes.
 - `max_body_size`: only send attachments below this many bytes to LimaCharlie.
-- `attachment_ingest_key`: if specified, an [Ingestion Key](../../../7-administration/access/api-keys.md) used to ingest attachment as Artifacts into LimaCharlie.
-- `attachment_retention_days`: the number of days to retain Artifact attachment for.
+- `attachment_ingest_key`: if set, an [Ingestion Key](../../../7-administration/access/api-keys.md) that ingests attachments into LimaCharlie as Artifacts.
+- `attachment_retention_days`: the number of days to keep the Artifact attachment.
 
 ### Configuration File Example
 
@@ -51,9 +51,9 @@ imap:
 
 ## Use Cases
 
-Although this Adapter can be used on any IMAP server for any inbox, it is often used to perform enterprise wide analysis and alerting using Email Journaling.
+You can use this Adapter with any IMAP server and any inbox. A frequent use is analysis and alerting across an enterprise with Email Journaling.
 
-Email Journaling is supported by all major email platforms to perform analysis at scale. It generally involves enabling a data flow of all emails on the platform towards a specific email account where all emails accumulate.
+All major email platforms support Email Journaling for analysis at scale. Email Journaling sends all emails on the platform to one email account, where the emails accumulate.
 
 Documentation for common platforms:
 
@@ -62,7 +62,7 @@ Documentation for common platforms:
 
 ## Example Format
 
-Emails ingested through the IMAP Adapter are in raw format so that detailed header information can be included and analyzed. Below is an example of an email received into LimaCharlie from a Google Workspace mailbox:
+The IMAP Adapter ingests emails in raw format, so each event keeps the full header information for analysis. This example shows an email that LimaCharlie received from a Google Workspace mailbox:
 
 ```json
 {

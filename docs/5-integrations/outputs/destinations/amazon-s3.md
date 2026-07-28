@@ -2,16 +2,16 @@
 
 Output events and detections to an Amazon S3 bucket.
 
-If you have your own visualization stack, or you just need the data archived, you can output directly to Amazon S3. This way you don't need any infrastructure.
+If you have your own visualization stack, or if you only need an archive of the data, output directly to Amazon S3. You then do not need your own infrastructure.
 
 - `bucket`: the path to the AWS S3 bucket.
 - `key_id`:  the id of the AWS auth key.
 - `secret_key`: the AWS secret key to auth with.
 - `sec_per_file`: the number of seconds after which a file is cut and uploaded (default 120, maximum 3600).
-- `is_compression`: if set to "true", data will be gzipped before upload.
+- `is_compression`: if set to "true", LimaCharlie gzips the data before upload.
 - `is_indexing`: if set to "true", files are written under a time-based directory structure (`year/month/day/hour/`) instead of flat files with random names. See [File organization](#file-organization) below.
-- `region_name`: the region name of the bucket, it is recommended to set it, though not always required.
-- `endpoint_url`: optionally specify a custom endpoint URL, usually used with region\_name to output to S3-compatible 3rd party services.
+- `region_name`: the region name of the bucket. Set this parameter, although it is not always needed.
+- `endpoint_url`: an optional custom endpoint URL. Use it with region\_name to output to third-party services that are compatible with S3.
 - `dir`: the directory prefix
 - `is_no_sharding`: do not add a shard directory at the root of the files generated.
 
@@ -30,7 +30,7 @@ is_compression: "true"
 
 ## File Organization
 
-By default, each batch of data is uploaded as a flat file with a random (UUID) name at the root of the bucket (or under `dir` if set). File names carry no ordering, so this mode is best suited for pipelines that list and consume all new objects regardless of name.
+By default, LimaCharlie uploads each batch of data as a flat file with a random (UUID) name. The file goes to the root of the bucket, or under `dir` if you set it. File names have no order. Use this mode for pipelines that list and consume all new objects without regard to the name.
 
 To organize files by date and time, set `is_indexing` to `"true"`. Files are then written under a time-based directory structure:
 
@@ -40,13 +40,13 @@ To organize files by date and time, set `is_indexing` to `"true"`. Files are the
 
 For example: `logs/1/2026/7/7/13/d1b2c3d4-e5f6-7890-abcd-ef1234567890_12.gz`
 
-- The timestamp components are in **UTC** and reflect when the batch was uploaded.
+- The timestamp components are in **UTC**. They show when LimaCharlie uploaded the batch.
 - Data files begin with a `d` prefix.
-- `shard` is a single hexadecimal character used to spread write load across key prefixes. If you prefer paths to start directly at the year, set `is_no_sharding` to `"true"`.
-- Directory components are not zero-padded (July is `7`, not `07`), so a plain lexical sort of object keys will not be strictly chronological; parse the path components numerically if ordering matters.
-- The frequency at which new files are created is controlled by `sec_per_file`.
+- `shard` is a single hexadecimal character that spreads the write load across key prefixes. To make paths start at the year, set `is_no_sharding` to `"true"`.
+- Directory components have no zero padding (July is `7`, not `07`). A lexical sort of object keys is therefore not chronological. If the order is important, parse the path components as numbers.
+- The `sec_per_file` parameter controls how often LimaCharlie creates a new file.
 
-The `is_compression` flag, if on, will compress each file as a GZIP when uploaded (adding a `.gz` extension). It is recommended you enable `is_compression`.
+If you enable the `is_compression` flag, LimaCharlie compresses each file as a GZIP at upload and adds a `.gz` extension. LimaCharlie recommends that you enable `is_compression`.
 
 ## AWS IAM Configuration
 
@@ -57,7 +57,7 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 5. Click on the user you just created and click on the `Security Credentials` tab
 6. Click `Create access key`
 7. Select `Other` and click `Next`
-8. Provide a description (optional) and click `Create access key`
+8. Give a description (optional) and click `Create access key`
 9. Take note of the "Access key", "Secret access key" and ARN name for the user (starts with "arn:", shown on the user summary screen).
 
 ## AWS S3 Configuration
@@ -67,7 +67,7 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 3. Click `Create bucket`
 4. Click on your newly created bucket and click on the `Permissions` tab
 5. Select `Bucket policy` and click `Edit`
-6. Input the policy in [sample below](#policy-sample) where you replace the `<<USER_ARN>>` with the ARN name of the user you created and the `<<BUCKET_NAME>>` with the name of the bucket you just created.
+6. Enter the policy from the [Policy Sample](#policy-sample) section. Replace `<<USER_ARN>>` with the ARN name of the user that you created. Replace `<<BUCKET_NAME>>` with the name of the bucket that you created.
 7. Click `Save Changes`
 
 ### Policy Sample
@@ -91,12 +91,12 @@ The `is_compression` flag, if on, will compress each file as a GZIP when uploade
 
 ## LimaCharlie Configuration
 
-1. Back in the LimaCharlie GUI, in your organization view, click `Outputs` and `Add Output`
-2. Select the stream you would like to send (events, detections, etc)
+1. In the LimaCharlie web app, in your organization view, click `Outputs` and then `Add Output`
+2. Select the stream that you want to send (events, detections, etc)
 3. Select the `Amazon S3` destination
-4. Give it a name, enter the bucket name, key\_id, and secret\_key you noted from AWS, and any other parameters you wish to configure
+4. Give the output a name. Enter the bucket name, key\_id, and secret\_key that you noted from AWS. Enter any other parameters that you want to configure
 5. Click `Save Output`
-6. After a minute, the data should start getting written to your bucket
+6. After about a minute, LimaCharlie starts to write the data to your bucket
 
 ## Related articles
 

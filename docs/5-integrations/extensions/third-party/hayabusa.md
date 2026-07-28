@@ -2,17 +2,17 @@
 
 Hayabusa Extension Pricing
 
-While it is free to enable the Hayabusa extension, pricing is applied to downloaded and processed artifacts -- $0.02/GB for the original artifact, and $0.5/GB for the generation of the Hayabusa artifact.
+The Hayabusa extension is free to enable, but downloaded and processed artifacts have a price: $0.02/GB for the original artifact, and $0.5/GB to generate the Hayabusa artifact.
 
-The [Hayabusa](https://github.com/Yamato-Security/hayabusa) extension allows you to run Hayabusa against a specified event log (.evtx) or a collection of event logs (.zip).
+The [Hayabusa](https://github.com/Yamato-Security/hayabusa) extension lets you run Hayabusa against one event log (.evtx) or a collection of event logs (.zip).
 
-Hayabusa is a Windows event log fast forensics timeline generator and threat hunting tool created by the Yamato Security group in Japan.
+Hayabusa is a fast forensics tool for Windows event logs. It generates timelines and helps you hunt for threats. The Yamato Security group in Japan created it.
 
-LimaCharlie will automatically kick off the analysis based off of the artifact ID provided in a  rule action, or you can run it manually via the extension.
+LimaCharlie starts the analysis automatically from the artifact ID in a rule action. You can also run the analysis by hand from the extension.
 
 ## Configuration
 
-When enabled, you may configure the response of a D&R rule to run a Hayabusa analysis against an artifact event. Consider the following example D&R rule:
+After you enable the extension, you can configure the response of a D&R rule to run a Hayabusa analysis against an artifact event. See this example D&R rule:
 
 **Detect:**
 
@@ -37,7 +37,7 @@ artifact type: wel
        min_rule_level: '{{ "informational" }}'
 ```
 
-Note that the only required field here is the `artifact_id`. The other values supplied in the example are the defaults.
+The only required field is `artifact_id`. The other values in the example are the defaults.
 
 ## Results
 
@@ -47,17 +47,17 @@ hayabusa update-rules
 hayabusa csv-timeline -f /path/to/your/artifact --RFC-3339 -p timesketch-$profile --min-level $min_rule_level --no-wizard --quiet -o $artifact_id.csv -U
 ```
 
-Upon running Hayabusa, a CSV file is generated. The CSV file will be uploaded as a LimaCharlie artifact.
+Hayabusa generates a CSV file when it runs. The CSV file is uploaded as a LimaCharlie artifact.
 
-The resulting CSV is compatible with Timesketch, and can be imported [as a timeline](https://timesketch.org/guides/user/upload-data/).
+The CSV is compatible with Timesketch, and you can import it [as a timeline](https://timesketch.org/guides/user/upload-data/).
 
-Outputting your data to Google BigQuery is another option, and is [outlined here](../../tutorials/hayabusa-bigquery.md)
+You can also output your data to Google BigQuery. For the steps, see [Hayabusa to BigQuery](../../tutorials/hayabusa-bigquery.md).
 
-Several events will be pushed to the `ext-hayabusa` Sensor timeline:
+These events are sent to the `ext-hayabusa` Sensor timeline:
 
-- `hayabusa_results`: contains the results summary from the Hayabusa output
+- `hayabusa_results`: contains the summary of the results from the Hayabusa output
 - `hayabusa_artifact`: contains the `artifact_id` of the CSV file that was uploaded to LimaCharlie
-- `hayabusa_event`: many of these will be sent to the timeline if you check the checkbox or parameter for `Send to timeline`, and it contains the raw contents of the Hayabusa CSV output in JSON format
+- `hayabusa_event`: contains the raw contents of the Hayabusa CSV output in JSON format. If you set the checkbox or the parameter for `Send to timeline`, many of these events go to the timeline
 
 ## Arguments
 
@@ -65,29 +65,29 @@ Several events will be pushed to the `ext-hayabusa` Sensor timeline:
 - `profile`: either `minimal`, `standard`, `verbose`, `all-field-info`, `all-field-info-verbose`, `super-verbose`, `timesketch-minimal`, or `timesketch-verbose`
 
   - Default: `timesketch-verbose`
-  - [More details](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#7-timesketch-minimal-profile-output)
-- `min_rule_level`: `informational`, `low`, `medium`, `high`, or `critical`, [more details](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#dfir-timeline-commands-1)
+  - [Hayabusa timesketch-minimal profile output](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#7-timesketch-minimal-profile-output)
+- `min_rule_level`: `informational`, `low`, `medium`, `high`, or `critical`, see [Hayabusa DFIR timeline commands](https://github.com/Yamato-Security/hayabusa?tab=readme-ov-file#dfir-timeline-commands-1)
 
   - Default: `informational`
-- `send_to_timeline`: whether or not to ingest the Hayabusa results into the sensor timeline as events, boolean, default `true`
+- `send_to_timeline`: boolean that controls if the Hayabusa results are ingested into the sensor timeline as events, default `true`
 
 ## Usage
 
-If you use the LimaCharlie Velociraptor extension, a good use case of this extension would be to trigger Hayabusa analysis upon ingestion of a Velociraptor KAPE files artifact.
+If you use the LimaCharlie Velociraptor extension, you can trigger a Hayabusa analysis when LimaCharlie ingests a Velociraptor KAPE files artifact.
 
-Go to Extensions / Velociraptor, and run Collect Artifact request.
+Go to Extensions / Velociraptor. Run the Collect Artifact request.
 
 ![hayabusa 1](../../../assets/images/hayabusa-1.png)
 
-Kick off a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Velociraptor extension
+Start a `Windows.KapeFiles.Targets` artifact collection in the LimaCharlie Velociraptor extension
 
 **Argument options:**
 
 - `EventLogs=Y`
    ![hayabusa 2](../../../assets/images/hayabusa-2.png)
-- `KapeTriage=Y` - this is an option, however the extension will first take all .evtx files out of the triage collection and send them through Hayabusa, and ignore the rest, so there is more overhead involved, versus just using `EventLogs=Y`.
+- `KapeTriage=Y` - this is also an option. The extension takes all .evtx files out of the triage collection, sends them through Hayabusa, and ignores the rest. This adds more overhead than `EventLogs=Y`.
 
-Configure a D&R rule to look for these events upon ingestion, and then trigger the Hayabusa extension:
+Configure a D&R rule to look for these events at ingestion, and then trigger the Hayabusa extension:
 
 **Detect:**
 
@@ -119,9 +119,9 @@ rules:
 
 Note
 
-This capability depends on setting the parameter to send Hayabusa output to the sensor timeline with `send_to_timeline: true`
+This capability needs the parameter that sends the Hayabusa output to the sensor timeline: `send_to_timeline: true`
 
-Assuming you want Hayabusa detections of a certain `Level` or severity sent directly to your LimaCharlie detections stream, you can use the following D&R rule to accomplish this:
+To send Hayabusa detections of a given `Level` or severity directly to your LimaCharlie detections stream, use this D&R rule:
 
 **Detect:**
 
@@ -145,7 +145,7 @@ rules:
     Hayabusa - {{ .event.results.Level }} - {{ .event.results.message }}
 ```
 
-The resulting detection would look something like this:
+The detection looks like this:
 
 ```json
 {

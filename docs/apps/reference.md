@@ -1,44 +1,44 @@
 # Reference
 
 The technical reference for app authors: the record fields, the `window.lc`
-runtime your code calls, the design system, charting, permissions, and limits.
+runtime that your code calls, the design system, charting, permissions, and limits.
 
-For the canonical record format and how to manage apps with the API, SDKs, or CLI,
-see [Config Hive: Apps](../7-administration/config-hive/apps.md). For task-focused
-examples, see [Building Blocks & Recipes](building-blocks-and-recipes.md).
+For the canonical record format and for management of apps with the API, SDKs, or
+CLI, see [Config Hive: Apps](../7-administration/config-hive/apps.md). For
+task-focused examples, see
+[Building Blocks & Recipes](building-blocks-and-recipes.md).
 
 ## What an app is
 
 An app is a **single, self-contained `<body>` fragment** — your HTML, inline CSS,
-and inline JavaScript — stored in the `app` config hive. The console renders it
-inside a sandboxed `<iframe>` and injects three things ahead of your content: a
-strict Content-Security-Policy, the design-system stylesheet, and the `window.lc`
-runtime. You write only the body; the host owns the document shell.
+and inline JavaScript — stored in the `app` config hive. The console renders the
+fragment inside a sandboxed `<iframe>`. Before your content, the console injects
+three items: a strict Content-Security-Policy, the design-system stylesheet, and
+the `window.lc` runtime. You write only the body. The host owns the document shell.
 
 ## Record fields
 
-The fields you set when authoring an app (the `data` payload of an `app` hive
-record). This is a summary — see
-[Config Hive: Apps](../7-administration/config-hive/apps.md) for the authoritative
-definition and validation.
+These are the fields that you set when you write an app (the `data` payload of an
+`app` hive record). This is a summary. For the authoritative definition and
+validation, see [Config Hive: Apps](../7-administration/config-hive/apps.md).
 
 | Field | Required | Purpose |
 | --- | --- | --- |
-| `display_name` | Yes | Name shown in the launcher and embeds (≤ 256 chars). |
+| `display_name` | Yes | The name shown in the launcher and in embeds (≤ 256 chars). |
 | `html` | Yes | The self-contained `<body>` fragment to render. |
-| `description` | No | Short blurb (≤ 4096 chars). |
+| `description` | No | Short description (≤ 4096 chars). |
 | `icon` | No | Emoji, icon id, or small data-URI (≤ 256 chars). |
-| `required_permissions` | No | LimaCharlie permissions the app needs (≤ 64). See [Permissions](#permissions-and-consent). |
-| `allowed_origins` | No | External `https` sites the app may contact (≤ 32). See [External origins](#external-origins). |
-| `required_services` | No | First-party services the app calls: `search`, `replay`, `cases`, `ai` (≤ 16). |
+| `required_permissions` | No | LimaCharlie permissions that the app needs (≤ 64). See [Permissions](#permissions-and-consent). |
+| `allowed_origins` | No | External `https` sites that the app can contact (≤ 32). See [External origins](#external-origins). |
+| `required_services` | No | First-party services that the app calls: `search`, `replay`, `cases`, `ai` (≤ 16). |
 | `locations` | No | Where the app appears (≤ 8). See [Locations and context](#locations-and-context). |
-| `expected_context` | No | Context keys the app expects when embedded (≤ 32). |
-| `schema_version` | No | App format version. Omitted is treated as `1`. |
+| `expected_context` | No | Context keys that the app expects when it is embedded (≤ 32). |
+| `schema_version` | No | App format version. If you omit it, the value is `1`. |
 
 ## The `window.lc` runtime
 
-The console injects a trusted runtime as `window.lc`. It's the only bridge between
-your app and LimaCharlie.
+The console injects a trusted runtime as `window.lc`. It is the only connection
+between your app and LimaCharlie.
 
 ```js
 await lc.ready            // resolves after the secure handshake — await before any call
@@ -53,34 +53,35 @@ lc.onThemeChange(cb)                 // live theme updates; returns an unsubscri
 ```
 
 !!! warning "Always `await lc.ready` first"
-    `lc.ctx` is empty and calls fail until the handshake completes. Begin every app
+    `lc.ctx` is empty and calls fail until the handshake completes. Start every app
     with `await lc.ready`.
 
 ### The `lc.api` call
 
 `lc.api(method, path, body?, opts?)` makes a LimaCharlie API call. The console
-attaches a temporary, permission-scoped key — **never put an API key in an app.**
+attaches a temporary key that is scoped to permissions. **Never put an API key in
+an app.**
 
 - **Paths are site-relative**, under `/v1`: `lc.api('GET', '/v1/who')`,
   `lc.api('GET', '/v1/sensors/' + oid)`. Absolute URLs, other hosts, and writes to
   the `app` hive itself are rejected.
-- **Targeting a service.** Pass `opts.service` to route to a first-party service
-  instead of the main API. The service must be listed in the app's
-  `required_services`. The console host-pins the call and sends the same scoped
-  key, but does **not** rewrite your path — use the path the service expects.
+- **Targeting a service.** Pass `opts.service` to route the call to a first-party
+  service instead of the main API. The `required_services` field of the app must
+  list the service. The console host-pins the call and sends the same scoped key,
+  but it does **not** rewrite your path. Use the path that the service expects.
 
 | Service | What it's for | Path shape |
 | --- | --- | --- |
 | `search` | Historical event search (LCQL) — the Query Console engine | `POST /v1/search/` → `GET /v1/search/<queryId>/` |
 | `cases` | Case management | `GET /api/v1/cases` |
 | `ai` | AI sessions / agents | `/v1/...` |
-| `replay` | Sensor telemetry replay (distinct from `search`) | service-specific |
+| `replay` | Sensor telemetry replay (different from `search`) | service-specific |
 
-- **Errors** reject with an `Error` carrying `code` and `status`. The `code` is one
-  of: `denied`, `rate_limited`, `unauthorized`, `http`, `timeout`, `aborted`,
-  `malformed`. Catch and show `e.code`.
+- **Errors** reject with an `Error` that carries `code` and `status`. The `code` is
+  one of: `denied`, `rate_limited`, `unauthorized`, `http`, `timeout`, `aborted`,
+  `malformed`. Catch the error and show `e.code`.
 - **Limits:** about **10 requests/second** (burst 20), **8 concurrent**, request
-  body up to **256 KB**, and a **70-second** timeout per call.
+  body up to **256 KB**, and a **70-second** timeout for each call.
 
 ```js
 try {
@@ -92,26 +93,27 @@ try {
 
 ### The `lc.chart` helper
 
-`lc.chart(target, spec)` draws a themed chart using **Chart.js v4**, provided by
-the runtime (only when your app references `lc.chart`). Don't add your own chart
-library — external scripts are blocked.
+`lc.chart(target, spec)` draws a themed chart with **Chart.js v4**. The runtime
+supplies Chart.js, but only when your app references `lc.chart`. Do not add your
+own chart library, because external scripts are blocked.
 
-- **`target`** is a `<canvas>` element or its id, or any container element/id. If
-  it isn't a canvas, one is created inside it. Give the container an explicit
-  **height** or the chart renders invisible.
-- **`spec`** is `{ type, data, options }`, exactly like Chart.js. `type` can be
+- **`target`** is a `<canvas>` element or its id, or any container element or id.
+  If the target is not a canvas, the helper creates one inside it. Give the
+  container an explicit **height**, or the chart is invisible.
+- **`spec`** is `{ type, data, options }`, exactly as in Chart.js. `type` can be
   `bar`, `line`, `doughnut`, `pie`, and so on.
-- **Theming is automatic.** Datasets you leave uncolored get the console palette
-  (`--lc-accent`, `--lc-positive`, `--lc-warning`, `--lc-danger`, `--lc-muted`).
-  Axis, grid, and text colors track the live theme and re-render on dark-mode
-  toggle.
-- **Returns** the Chart instance — call `.update()` or `.destroy()`. Calling
-  `lc.chart` again on the same target replaces the previous chart cleanly.
+- **Theming is automatic.** Datasets that you leave uncolored get the console
+  palette (`--lc-accent`, `--lc-positive`, `--lc-warning`, `--lc-danger`,
+  `--lc-muted`). Axis, grid, and text colors track the live theme and render again
+  when you toggle dark mode.
+- **Returns** the Chart instance. Call `.update()` or `.destroy()`. If you call
+  `lc.chart` again on the same target, it replaces the previous chart cleanly.
 
 ### Reacting to theme changes
 
-Theme tokens update live. If you draw something custom (not with the design-system
-classes or `lc.chart`), subscribe to re-color it:
+Theme tokens update live. If you draw custom content, and you do not use the
+design-system classes or `lc.chart`, subscribe to the theme to color the content
+again:
 
 ```js
 const stop = lc.onThemeChange((theme) => {
@@ -122,10 +124,10 @@ const stop = lc.onThemeChange((theme) => {
 
 ## Design system
 
-The runtime injects CSS variables (`--lc-*`) derived from the live console theme
-and a component stylesheet (`.lc-*`) that uses only those variables. **Compose the
-classes and reference the variables; never hardcode colors or fonts** — that's what
-keeps apps on-brand and dark-mode aware.
+The runtime injects CSS variables (`--lc-*`) that come from the live console theme.
+It also injects a component stylesheet (`.lc-*`) that uses only those variables.
+**Combine the classes and reference the variables. Never hardcode colors or
+fonts.** These rules keep apps in the brand style and aware of dark mode.
 
 ### Tokens
 
@@ -161,45 +163,46 @@ keeps apps on-brand and dark-mode aware.
 | `.lc-mono` | Monospace text |
 | `.lc-spinner` | Loading spinner |
 
-Links, headings, and `code` / `pre` are styled for you as well.
+The design system also styles links, headings, and `code` / `pre`.
 
 ## Permissions and consent
 
-An app declares the permissions it needs in `required_permissions`. Two rules
-bound this:
+An app declares the permissions that it needs in `required_permissions`. Two rules
+limit this:
 
-- **At authoring time**, you can only declare permissions you yourself hold. Each
-  must be a real, non-root, issuable permission.
+- **At authoring time**, you can declare only the permissions that you hold. Each
+  permission must be a real, non-root, issuable permission.
 - **At view time**, the app runs with the **intersection** of its declared
-  permissions and the *viewer's* own permissions. Anything the viewer lacks is
-  simply dropped — the app runs without it and can never gain it.
+  permissions and the permissions of the *viewer*. Each permission that the viewer
+  does not hold is dropped. The app runs without that permission and can never get
+  it.
 
 The [consent screen](creating-and-managing-apps.md#understanding-the-consent-screen)
-classifies permissions so viewers understand the risk:
+puts permissions in classes, so that viewers understand the risk:
 
 | Class | Meaning | Examples |
 | --- | --- | --- |
-| **Dangerous** | Privilege-changing or billing actions | `apikey.ctrl`, `user.ctrl`, `billing.ctrl` |
+| **Dangerous** | Actions that change privileges or billing | `apikey.ctrl`, `user.ctrl`, `billing.ctrl` |
 | **Sensitive read** | Reads secrets, raw telemetry, or audit logs | `secret.get`, `insight.evt.get`, `audit.get` |
 | **Write** | Changes state or takes action | `sensor.task`, `dr.set`, `secret.del` |
 | **Read** | Read-only | `sensor.list`, `sensor.get` |
 
-Dangerous and sensitive-read permissions trigger stronger warnings and require
-re-consent every browser session. Request the **fewest** permissions an app needs,
-and prefer read-only (`*.get`, `*.list`). See
-[Permissions](../8-reference/permissions.md) for the full catalog.
+Dangerous permissions and sensitive-read permissions cause stronger warnings, and
+they need consent again in each browser session. Request the **fewest** permissions
+that an app needs, and prefer read-only permissions (`*.get`, `*.list`). For the
+full catalog, see [Permissions](../8-reference/permissions.md).
 
 ## External origins
 
-By default an app can reach **no** external website — only LimaCharlie, via
-`lc.api`. To let an app's own `fetch` call an outside service, list it in
-`allowed_origins`. Each entry:
+By default, an app can reach **no** external website. It can reach only
+LimaCharlie, through `lc.api`. To let the app's own `fetch` call an outside
+service, list the service in `allowed_origins`. Each entry:
 
 - must use **`https`**;
 - is **scheme + host** only, with an optional port — **no** path, query, fragment,
   credentials, or wildcards (e.g. `https://intel.example.com` or
   `https://intel.example.com:8443`);
-- is shown to every viewer on the consent screen, with a warning that data could
+- appears on the consent screen for every viewer, with a warning that data can
   leave LimaCharlie.
 
 Calls to declared origins use your app's own `fetch` and carry **no** LimaCharlie
@@ -207,8 +210,9 @@ key. Up to 32 origins.
 
 ## Locations and context
 
-`locations` controls where an app may appear; `expected_context` declares the
-identifiers it needs when embedded (the console passes them into `lc.ctx.context`).
+`locations` controls where an app can appear. `expected_context` declares the
+identifiers that the app needs when it is embedded, and the console passes them
+into `lc.ctx.context`.
 
 | Location | Where it appears | Typical context |
 | --- | --- | --- |
@@ -218,28 +222,30 @@ identifiers it needs when embedded (the console passes them into `lc.ctx.context
 | `within_a_case` | A case's page | case identifier |
 | `within_a_dr_rule` | A D&R rule's page | rule identifier |
 
-An app can declare several locations. Embedded surfaces beyond sensors are rolling
-out — see [Choosing where an app appears](creating-and-managing-apps.md#choosing-where-an-app-appears).
+An app can declare several locations. Embedded surfaces other than sensors are
+becoming available. See
+[Choosing where an app appears](creating-and-managing-apps.md#choosing-where-an-app-appears).
 
 ## Hard rules and limits
 
-Apps are validated when authored *and* when mounted. Some issues **block** the app;
-others **warn** because the sandbox's Content-Security-Policy already neutralizes
-them at runtime (the app silently breaks instead).
+Apps are validated when you write them *and* when they are mounted. Some problems
+**block** the app. Other problems give a **warning**, because the
+Content-Security-Policy of the sandbox already stops them at runtime. The app then
+breaks with no message.
 
-**Blocked** (the app won't save or run):
+**Blocked** (the app does not save or run):
 
 - Empty HTML, HTML over **3 MB**, or more than **20,000** elements.
-- A `<base>` element, or an app-supplied `<meta http-equiv>` — the host owns the
-  document shell and the CSP.
+- A `<base>` element, or a `<meta http-equiv>` that the app supplies. The host owns
+  the document shell and the CSP.
 
-**Warned** (allowed, but blocked by CSP at runtime, so they won't work):
+**Warned** (allowed, but the CSP blocks them at runtime, so they do not work):
 
 - External `<script src>`, external stylesheets, `@import` — inline everything.
-- Nested `<iframe>`, `<embed>`, `<object>`, or `<form>` posting to an external
+- Nested `<iframe>`, `<embed>`, `<object>`, or `<form>` that posts to an external
   action.
-- Direct network calls (`fetch`, `XMLHttpRequest`, `WebSocket`) to anything not in
-  `allowed_origins` — use `lc.api` for LimaCharlie data.
+- Direct network calls (`fetch`, `XMLHttpRequest`, `WebSocket`) to anything that is
+  not in `allowed_origins` — use `lc.api` for LimaCharlie data.
 
 **Record limits:** unknown fields are rejected; total record size up to **10 MB**;
 field caps as listed under [Record fields](#record-fields).
@@ -248,12 +254,12 @@ field caps as listed under [Record fields](#record-fields).
 
 1. Output a single self-contained `<body>` fragment — no `<html>`, `<head>`,
    `<base>`, or `<meta http-equiv>`.
-2. Inline all JavaScript and CSS — no external resources.
-3. Read LimaCharlie data through `lc.api`; never embed a key or prompt for
+2. Inline all JavaScript and CSS. Do not use external resources.
+3. Read LimaCharlie data through `lc.api`. Never embed a key and never ask for
    credentials.
-4. Only contact external sites you declared in `allowed_origins`.
-5. Style with `.lc-*` classes and `--lc-*` tokens — never hardcode colors or fonts.
-6. Request the least permission necessary; prefer read-only.
+4. Contact only the external sites that you declared in `allowed_origins`.
+5. Style with `.lc-*` classes and `--lc-*` tokens. Never hardcode colors or fonts.
+6. Request the least permission necessary. Prefer read-only permissions.
 
 ## Where to go next
 
@@ -261,4 +267,4 @@ field caps as listed under [Record fields](#record-fields).
 - [Creating & Managing Apps](creating-and-managing-apps.md) — build, manage, place,
   and consent.
 - [Config Hive: Apps](../7-administration/config-hive/apps.md) — record format and
-  programmatic management.
+  management with code.

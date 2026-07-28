@@ -1,32 +1,32 @@
 # Single Sign-On
 
-Single sign-on (SSO) is available at no extra cost for customers that leverage LimaCharlie's custom branded offering. If this applies to your Organization, and if you are interested in using the SSO, please submit a [Custom Branding / SSO Request](https://limacharlie.io/custom-branding).
+Single sign-on (SSO) has no extra cost for customers who use the custom branded offering of LimaCharlie. If this applies to your Organization and you want to use SSO, submit a [Custom Branding / SSO Request](https://limacharlie.io/custom-branding).
 
-If your organization does not currently have a custom branded site with LimaCharlie, you can learn about the requirements, costs & get started here.
+If your organization does not have a custom branded site with LimaCharlie, you can learn the requirements and the costs before you start.
 
 ## Strict SSO Enforcement
 
-LimaCharlie offers the ability to implement strict SSO enforcement. This means that SSO can be configured as the only authentication option.
+LimaCharlie can enforce SSO strictly. You can configure SSO as the only authentication option.
 
-With this capability, you may say that any user with your email domain @example.com must authenticate via Google. This way you can disable the login + password, GitHub, and Microsoft login options for users with your email domain (@example.com) - regardless if they are logging in via your custom branded site, or via app.limacharlie.io
+For example, you can declare that each user with your email domain @example.com must authenticate through Google. You can then disable the login and password option, the GitHub option, and the Microsoft option for users with your email domain (@example.com). This applies to your custom branded site and to app.limacharlie.io.
 
 ## How It Works
 
-LimaCharlie's single sign-on functionality lets companies add their own SSO option that goes through their authentication server instead of through Google or something else. Identity Platform acts as the coordinator here. After configuring new Providers in Identity Platform, the app only needs to specify a provider ID, and then Identity Platform will handle talking to the company's auth server.
+Single sign-on lets a company add its own SSO option. The option uses the authentication server of the company instead of Google or another provider. Identity Platform coordinates this exchange. After you configure new Providers in Identity Platform, the app gives only a provider ID. Identity Platform then communicates with the auth server of the company.
 
 ## User Experience
 
-The high-level user experience is as follows:
+The user experience is as follows:
 
-- For organizations that choose to use SSO, the SSO will be enforced. Users going to custom branded versions of the LimaCharlie site will be presented with only the option to login through SSO, if their domain has the SSO configuration.
+- LimaCharlie enforces SSO for the organizations that select it. A user who opens a custom branded version of the LimaCharlie site sees only the SSO login option, if the domain of the user has the SSO configuration.
 
-![sso 1](../../assets/images/sso-1.png)
+    ![sso 1](../../assets/images/sso-1.png)
 
-- The same user going to the non-branded site would still be presented with all other authentication options. However, a user would only be able to use the authentification option approved for their domain.
+- The same user on the non-branded site still sees all the other authentication options. But the user can use only the authentication option that is approved for their domain.
 
-![sso 2](../../assets/images/sso-2.png)
+    ![sso 2](../../assets/images/sso-2.png)
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment for security data, configurations, and assets. Each Organization has its own sensors, detection rules, data sources, and outputs. This structure supports multi-tenant setups for managed security providers, and for enterprises with many departments or clients.
 
 ## Related Articles
 

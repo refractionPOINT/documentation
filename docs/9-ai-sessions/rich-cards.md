@@ -1,42 +1,42 @@
 # Rich Cards & Slash Commands
 
-In interactive sessions, the agent can render **rich cards** — interactive UI
-elements that appear inline in the chat instead of plain text. A card might be a
+In interactive sessions, the agent can show **rich cards**. These are interactive UI
+elements that appear in the chat instead of plain text. A card can be a
 clickable list of your organizations, a detail view of a D&R rule, a form that
-collects a secret, or a billing summary. Many of the same cards can also be summoned
-directly with **slash commands**, without waiting on the agent.
+collects a secret, or a billing summary. You can also open many of the same cards
+directly with **slash commands**, and you do not wait for the agent.
 
 !!! note "Where this applies"
-    Rich cards are a feature of the interactive chat experience (the web UI and the
-    "Chat with FDE" surface). Fire-and-forget [D&R-driven sessions](dr-sessions.md)
-    don't render cards.
+    Rich cards are part of the interactive chat experience (the web app and the
+    "Chat with FDE" surface). [D&R-driven sessions](dr-sessions.md)
+    do not show cards.
 
 ## How cards work
 
-When the agent wants to show structured information, it emits a small descriptor
-describing which card to render and the data to populate it with. The web app
-validates that data against the card's schema and renders the matching component.
-Cards that collect sensitive input (for example, a secret value) are schema-locked
-so the agent cannot pre-fill the fields it shouldn't see.
+To show structured information, the agent emits a small descriptor. The descriptor
+names the card to show and gives the data for it. The web app checks that data
+against the schema of the card, then shows the matching component.
+Cards that collect sensitive input, for example a secret value, are schema-locked.
+The agent cannot pre-fill the fields that it must not see.
 
-There are roughly forty card types. They fall into a few groups:
+About forty card types exist. They are in these groups:
 
 - **Resource cards** — detail and list views of LimaCharlie resources: organizations,
   secrets, D&R rules, false-positive rules, YARA rules, lookups, sensors,
   installation keys, cases, detections, users, roles, outputs, adapters, artifacts,
   AI agents / skills / memories, playbooks, and SOPs.
-- **Interactive cards** — actions that go beyond display: a billing and usage view,
+- **Interactive cards** — cards that do more than show data: a billing and usage view,
   a secret-intake form, and a feedback form.
-- **Share card** — share what you built (an editable message that opens X, LinkedIn,
-  Reddit, the device share sheet, or copies a link — nothing posts automatically)
-  and, for org admins, invite teammates by email and role in one step.
-- **Onboarding cards** — a welcome/trust block shown to brand-new users.
+- **Share card** — share what you built. The card gives an editable message that opens X,
+  LinkedIn, Reddit, or the device share sheet, or copies a link. The card posts nothing
+  automatically. An org admin can also invite teammates by email and role in one step.
+- **Onboarding cards** — a welcome/trust block for new users.
 
 ## Slash commands
 
-Typing `/` in the chat input opens a menu of commands. These render a card
-**client-side**, without an agent round-trip — handy when you already know exactly
-what you want. Common examples:
+Type `/` in the chat input to open a menu of commands. These commands show a card
+**client-side**, with no round-trip to the agent. Use them when you know which
+card you want. Common examples:
 
 | Command | Renders |
 |---------|---------|
@@ -50,5 +50,5 @@ what you want. Common examples:
 | `/yara [filter]` | YARA rules |
 | `/lookups [filter]` | Lookup tables |
 
-The agent can also emit any of these cards itself in the course of a conversation —
-for example, returning a clickable list of matching rules instead of a wall of text.
+The agent can also emit any of these cards during a conversation. For example, it can
+return a clickable list of matching rules instead of a long block of text.

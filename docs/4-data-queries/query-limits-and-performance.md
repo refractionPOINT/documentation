@@ -1,121 +1,121 @@
 # Query Limits & Performance
 
-This page describes the operational limits that apply to Query Console and LCQL searches - how many queries you can run at once and how long a query may run - along with guidance on how large an aggregation can reasonably get and how to write efficient queries that stay within those limits and cost less. It also covers the different query types, since how a query executes determines how it behaves against these limits.
+This page describes the operational limits for the Query Console and for LCQL searches. The limits control how many queries you can run at the same time and how long a query can run. This page also gives guidance about how large an aggregation can be. It shows how to write efficient queries that stay inside the limits and cost less. It also describes the query types, because the way that a query executes decides how the query behaves against these limits.
 
 ## Query Types
 
-How a query executes - and therefore how it behaves against the limits below - depends on what it does. LCQL queries fall into four kinds:
+The way that a query executes depends on what the query does. This also decides how the query behaves against the limits below. There are four kinds of LCQL query:
 
 | Query type | What it does | Execution |
 |------------|--------------|-----------|
-| **Stateless** | Evaluates each event independently against the filter and returns the matching events. This is the default. | Paged: results come back a page at a time, and you fetch more on demand. |
-| **Projection** | Adds a projection clause at the end of the query to return only selected or renamed fields instead of whole events. | Paged, as long as it only selects or renames fields; `GROUP BY`, `ORDER BY`, or an aggregation function make it whole-timeline. |
-| **Aggregation** | Uses aggregation functions in the projection (`COUNT`, `COUNT_UNIQUE`, `GROUP BY`, and similar) to summarize matching events. | Whole timeline: the entire selected time range is scanned before any result is returned. |
-| **Stateful** | Uses a filter that correlates across events, such as `with child`, so a match depends on more than one event. | Whole timeline: the entire selected time range is scanned before any result is returned. |
+| **Stateless** | Evaluates each event on its own against the filter and returns the matching events. This is the default. | Paged: the results come back one page at a time, and you fetch more pages on demand. |
+| **Projection** | Adds a projection clause at the end of the query. The query returns only selected or renamed fields, not whole events. | Paged, if it only selects or renames fields. `GROUP BY`, `ORDER BY`, or an aggregation function make it whole-timeline. |
+| **Aggregation** | Uses aggregation functions in the projection (`COUNT`, `COUNT_UNIQUE`, `GROUP BY`, and similar) to summarize matching events. | Whole timeline: the query scans the full selected time range before it returns a result. |
+| **Stateful** | Uses a filter that correlates across events, such as `with child`, so a match depends on more than one event. | Whole timeline: the query scans the full selected time range before it returns a result. |
 
-**Paged** queries (a stateless filter, or a projection that only selects fields) stream results incrementally and rarely run long. **Whole-timeline** queries (anything that sorts, groups, aggregates, or correlates across events) must scan the full range before returning, so they consume the most resources and are the ones that can reach the [query timeout](#query-timeouts).
+**Paged** queries (a stateless filter, or a projection that only selects fields) return the results in increments and seldom run long. **Whole-timeline** queries sort, group, aggregate, or correlate across events. They must scan the full range before they return a result. They use the most resources, and they are the queries that can reach the [query timeout](#query-timeouts).
 
 ## Data Sources (Streams)
 
-Every query runs against one data *stream*, chosen with the Source dropdown in the Query Console or the `stream` parameter in the API, CLI, and SDKs. The stream determines which kind of records the query scans:
+Every query runs against one data *stream*. Select the stream with the Source dropdown in the Query Console, or with the `stream` parameter in the API, CLI, and SDKs. The stream decides which kind of records the query scans:
 
 | Stream | Console label | Contains |
 |--------|---------------|----------|
-| `event` | Events | Raw telemetry collected from endpoints, adapters, and other sensors. This is the default. |
-| `detection` | Detections | Detections produced by your D&R rules. |
+| `event` | Events | Raw telemetry from endpoints, adapters, and other sensors. This is the default. |
+| `detection` | Detections | Detections that your D&R rules produce. |
 | `audit` | Platform Audit | Platform audit records, such as configuration changes and user actions. |
 
-A query only sees data from the stream it targets - a query on the `event` stream will not match detections, and vice versa. When the `stream` parameter is omitted it defaults to `event`. If a query returns nothing you expected to see, confirm you are searching the intended stream.
+A query only sees data from the stream that it targets. A query on the `event` stream does not match detections, and a query on the `detection` stream does not match events. If you do not give the `stream` parameter, the default is `event`. If a query does not return the data that you expect, make sure that you search the correct stream.
 
 ## Concurrent Queries
 
-Each organization can run several queries at the same time. Every organization is guaranteed a minimum of **10 concurrent queries**, and the effective limit may be higher depending on your region and plan.
+Each organization can run several queries at the same time. Every organization gets a minimum of **10 concurrent queries**. The true limit can be higher, and depends on your region and plan.
 
-Both interactive Query Console searches and searches issued through the API, CLI, or SDKs count toward this limit. A paginated query counts as active for the entire time it is fetching pages, not only at the moment it starts.
+Query Console searches and searches from the API, CLI, or SDKs both count against this limit. A paginated query is active for all the time that it fetches pages, not only when it starts.
 
-When the limit is reached, additional queries are rejected with an `HTTP 429` (too many concurrent queries) response until one of the in-flight queries finishes. Retry the rejected query once an earlier one completes.
+When you reach the limit, the cloud rejects more queries with an `HTTP 429` (too many concurrent queries) response. This continues until one of the queries in flight finishes. Retry the rejected query after an earlier query completes.
 
 !!! tip
-    If you regularly run automation or dashboards that need more headroom, contact support to request a higher concurrent-query limit for your organization.
+    Contact support to ask for a higher concurrent-query limit for your organization. Do this if you run automation or dashboards that need more capacity.
 
 ## Query Timeouts
 
-A single query has a maximum execution time of roughly **8 to 9 minutes**. If a query exceeds this deadline it returns an error rather than partial results.
+A single query has a maximum execution time of about **8 to 9 minutes**. If a query goes past this deadline, it returns an error and not partial results.
 
-**Paged queries (a stateless filter or a field-only projection).** Each page fetches a bounded number of events and returns quickly, so paged queries should effectively never reach the timeout. When you need more results, fetch the next page rather than trying to widen a single request.
+**Paged queries (a stateless filter or a field-only projection).** Each page fetches a limited number of events and returns quickly. Because of this, a paged query almost never reaches the timeout. When you need more results, fetch the next page. Do not make one request wider.
 
-**Whole-timeline queries (sorting, aggregation, and stateful).** Sorting (`ORDER BY`), aggregations (`COUNT`, `COUNT_UNIQUE`, `GROUP BY`), and stateful filters (such as `with child`) must scan the entire selected time range before they can return results, because the outcome is only complete once every matching event has been evaluated. Over a very large time range or a high volume of data, the scan can exceed the timeout and the query returns an error. See [Query Types](#query-types) for the distinction.
+**Whole-timeline queries (sorting, aggregation, and stateful).** Sorting (`ORDER BY`), aggregations (`COUNT`, `COUNT_UNIQUE`, `GROUP BY`), and stateful filters (such as `with child`) must scan the full selected time range before they return results. The result is complete only after the query evaluates every matching event. On a very large time range, or with a high volume of data, the scan can go past the timeout and the query returns an error. See [Query Types](#query-types) for the difference between the query types.
 
 !!! note "Working around whole-timeline timeouts"
-    If a large aggregation times out, narrow the time range and split the work into several smaller queries that each cover an incremental slice of the range, then combine the results yourself.
+    If a large aggregation times out, make the time range smaller. Split the work into several smaller queries. Each query covers one slice of the range. Then combine the results yourself.
 
-    For example, instead of a single 24-hour aggregation, run the same aggregation over 24 consecutive one-hour windows and add the per-window counts together for the full-range total. Keep the query identical and only change the time range for each run:
+    For example, do not run one 24-hour aggregation. Run the same aggregation over 24 one-hour windows, then add the counts of the windows together to get the total for the full range. Keep the query the same and change only the time range for each run:
 
     ```lcql
     plat == windows | WEL | event/EVENT/System/EventID == "4625" | COUNT(event) as FailedAttempts
     ```
 
-    Each one-hour window stays well under the timeout. Set the time range per run using the Console time picker (absolute from/to), the CLI `set_time`, or the API `startTime` / `endTime` parameters.
+    Each one-hour window stays well below the timeout. Set the time range for each run with the Console time picker (absolute from/to), the CLI `set_time`, or the API `startTime` / `endTime` parameters.
 
-    Splitting and summing works for additive aggregations like `COUNT`; a `COUNT_UNIQUE` result cannot simply be added across windows. For stateful queries (`with child`), narrow the scope instead, since splitting can miss correlations that span a window boundary.
+    You can split and add additive aggregations such as `COUNT`. But you cannot add a `COUNT_UNIQUE` result across windows. For stateful queries (`with child`), make the scope smaller instead, because a split can miss correlations that cross a window boundary.
 
 ## Aggregation Limits
 
-Aggregations build in-memory groupings as they scan, so very high-cardinality aggregations become slow and unreliable. Treat the following as recommended guardrails for dependable results:
+An aggregation builds groups in memory as it scans. Thus an aggregation with very high cardinality becomes slow and unreliable. Use these values as guardrails for dependable results:
 
 - `GROUP BY` distinct groups: keep well under **~1,000,000** distinct groups.
 - `COUNT_UNIQUE` distinct values per field per group: keep well under **~5,000,000** distinct values.
 
-The usual cause of blowing past these numbers is grouping by a near-unique field (see [Anti-patterns](#anti-patterns) below). Group by a coarser field, or narrow the scope, so the number of groups stays bounded.
+The usual cause of a value above these numbers is a query that groups by a near-unique field (see [Anti-patterns](#anti-patterns) below). Group by a coarser field, or make the scope smaller, to keep the number of groups limited.
 
 !!! tip
-    Add `ORDER BY(...) LIMIT N` to bound the output, and project only the fields you need to shrink each row. See [Writing Efficient and Performant Queries](#writing-efficient-and-performant-queries) below.
+    Add `ORDER BY(...) LIMIT N` to limit the output. Project only the fields that you need, to make each row smaller. See [Writing Efficient and Performant Queries](#writing-efficient-and-performant-queries) below.
 
 ## Query Progress and Cost Reporting
 
-Because a query can scan a large amount of data, the API reports both a pre-flight estimate before you run it and the actual progress and cost as results stream back. A query scans stored telemetry in discrete units called *batches*; the batch counts below are what drive a progress bar.
+A query can scan a large amount of data. Because of this, the API reports an estimate before you run the query, and the true progress and cost while the results come back. A query scans stored telemetry in separate units that are called *batches*. The batch counts below drive a progress bar.
 
 ### Pre-flight estimate (validate)
 
-The [validate endpoint](index.md#validate-query-syntax) returns an estimate of how much work a query represents before you run it:
+The [validate endpoint](index.md#validate-query-syntax) returns an estimate of the work of a query before you run it:
 
-- `batchesInScope` - the total number of batches the query will scan. This is the denominator for a progress bar.
+- `batchesInScope` - the total number of batches that the query scans. This is the denominator for a progress bar.
 - `eventsInScope` / `bytesInScope` - the estimated number of events and bytes in scope.
-- `estimatedPrice` - the estimated cost, derived from the events in scope.
+- `estimatedPrice` - the estimated cost, from the events in scope.
 
 ### Progress while paging
 
-Each page of a running search reports how much of the query is complete so far in its `cumulativeStats`:
+While a search runs, each page reports how much of the query is complete in its `cumulativeStats`:
 
-- `batchesInScope` - the total batches in scope (denominator); the same value for every page of the search.
-- `batchesCompleted` - the batches processed so far across all pages (numerator).
+- `batchesInScope` - the total batches in scope (denominator). This value is the same for every page of the search.
+- `batchesCompleted` - the batches that the query processed so far across all pages (numerator).
 
-Render progress as `batchesCompleted / batchesInScope`, clamped to 0-100%. This is exactly how the Query Console progress bar is computed. The per-page `batchesProcessed` field reports the batches handled by that single page. Byte- and event-weighted ratios (`bytesScanned / bytesInScope`, `eventsScanned / eventsInScope`) are also available as a smoother signal, but the batch ratio is the reliable one; guard against a zero denominator.
+Show the progress as `batchesCompleted / batchesInScope`, clamped to 0-100%. The Query Console computes its progress bar in this way. The per-page `batchesProcessed` field reports the batches of that one page. Byte and event ratios (`bytesScanned / bytesInScope`, `eventsScanned / eventsInScope`) are also available and give a smoother signal. But the batch ratio is the reliable one. Guard against a denominator of zero.
 
 ### Actual cost per page
 
-Every page also returns the actual billing for the data it processed, so you do not have to trust the estimate for cost:
+Every page also returns the true billing for the data that it processed. Thus you do not have to trust the estimate for the cost:
 
-- `billedEvents` / `freeEvents` - the events on this page that were billed versus covered by a free-tier window (`billedEvents + freeEvents == eventsScanned`).
-- `estimatedPrice` - the price for this page, derived from the actual `billedEvents`. The running totals across all pages are carried in `cumulativeStats`.
+- `billedEvents` / `freeEvents` - the events on this page that are billed, compared to the events that a free-tier window covers (`billedEvents + freeEvents == eventsScanned`).
+- `estimatedPrice` - the price for this page, from the true `billedEvents`. The `cumulativeStats` field carries the running totals across all pages.
 
 !!! warning "Estimates are approximate - rely on the per-page billing for cost"
-    The pre-flight `estimatedPrice`, `eventsInScope`, and related validate estimates are approximations. Their accuracy varies with the query type and with internal optimizations that reduce how much data actually has to be scanned, which are not always reflected in the estimate. Treat the estimate as a planning aid only and never rely on it as the exact cost. The authoritative cost is the actual billing (`billedEvents` and the `estimatedPrice` derived from it) returned with each page and accumulated in `cumulativeStats`.
+    The pre-flight `estimatedPrice`, `eventsInScope`, and the related validate estimates are approximations. Their accuracy changes with the query type and with internal optimizations that decrease how much data the query must scan. The estimate does not always include these optimizations. Use the estimate only to plan, and never as the exact cost. The authoritative cost is the true billing (`billedEvents` and the `estimatedPrice` from it). Each page returns this billing, and `cumulativeStats` accumulates it.
 
 ### Building a Progress Bar
 
-The Query Console renders its progress bar with this formula:
+The Query Console draws its progress bar with this formula:
 
 ```text
 progress = clamp(batchesCompleted / batchesInScope, 0, 100%)
 ```
 
-Use `batchesInScope` as the denominator - from the [validate response](#pre-flight-estimate-validate) before the search starts, or from each page's `cumulativeStats` once it is running - and the per-page `cumulativeStats.batchesCompleted` as the numerator. Two rules keep the bar well-behaved:
+Use `batchesInScope` as the denominator. Get this value from the [validate response](#pre-flight-estimate-validate) before the search starts, or from the `cumulativeStats` of each page after the search starts. Use the per-page `cumulativeStats.batchesCompleted` as the numerator. Two rules keep the bar correct:
 
-- **Guard the denominator.** `batchesInScope` is `0` (or absent) until the scope is known, so treat progress as unavailable rather than dividing by zero.
-- **Clamp the ratio.** `batchesCompleted` can briefly exceed `batchesInScope` when a batch is re-opened across page boundaries, so clamp to 100%. A page's `completed` flag is the authoritative "done" signal.
+- **Guard the denominator.** `batchesInScope` is `0` (or absent) until the scope is known. Show the progress as unavailable. Do not divide by zero.
+- **Clamp the ratio.** `batchesCompleted` can be more than `batchesInScope` for a short time when a batch is re-opened across page boundaries. Clamp the value to 100%. The `completed` flag of a page is the authoritative "done" signal.
 
-The examples below take one Search API page response (a parsed `SearchResponse`) and return a percentage in the range 0-100.
+The examples below take one Search API page response (a parsed `SearchResponse`). They return a percentage in the range 0-100.
 
 === "Python"
 
@@ -152,29 +152,29 @@ The examples below take one Search API page response (a parsed `SearchResponse`)
           end'
     ```
 
-See [Run an LCQL Query](index.md#run-an-lcql-query) for how to discover `$SEARCH_HOST` and obtain a JWT.
+See [Run an LCQL Query](index.md#run-an-lcql-query) to find `$SEARCH_HOST` and get a JWT.
 
 ## Writing Efficient and Performant Queries
 
-Query cost is measured by the amount of data churned (billed per 200,000 events evaluated), and speed tracks the same factor: the fewer events a query has to scan and the less data it has to return, the faster and cheaper it is. The patterns below reduce both.
+The cost of a query depends on the amount of data churned (billed for each 200,000 events evaluated). The speed depends on the same factor. A query that scans fewer events and returns less data is faster and costs less. The patterns below improve both the speed and the cost.
 
 ### Prefer Projections (Select Only the Fields You Need)
 
-By default a query returns whole events. Adding a projection clause (the segment after the final `|`) returns only the fields you name, which reduces the data transferred, speeds up the query, and lowers cost.
+By default, a query returns whole events. A projection clause (the segment after the last `|`) returns only the fields that you name. This decreases the data transferred, makes the query faster, and lowers the cost.
 
-Non-aggregation query. Instead of returning every field of each matching event:
+Non-aggregation query. This query returns every field of each matching event:
 
 ```lcql
 -1h | * | NETWORK_CONNECTIONS | event/PORT > 1000
 ```
 
-project just the two fields you actually care about:
+Project only the two fields that you need:
 
 ```lcql
 -1h | * | NETWORK_CONNECTIONS | event/PORT > 1000 | event/IP_ADDRESS as IP event/PORT as Port
 ```
 
-Aggregation query. Projections also define what an aggregation emits. This returns only the source IP and its failed-logon count, sorted and capped:
+Aggregation query. A projection also defines what an aggregation returns. This query returns only the source IP and its count of failed logons, sorted and capped:
 
 ```lcql
 -24h | plat == windows | WEL | event/EVENT/System/EventID == "4625" | event/EVENT/EventData/IpAddress as SourceIP COUNT(event) as FailedAttempts GROUP BY(SourceIP) ORDER BY(FailedAttempts desc) LIMIT 50
@@ -182,62 +182,62 @@ Aggregation query. Projections also define what an aggregation emits. This retur
 
 ### Narrow the Scope Early
 
-Restrict what the query has to scan before it reaches the filter:
+Limit the data that the query scans before it reaches the filter:
 
-- Use the [Sensor Selector](../8-reference/sensor-selector-expressions.md) instead of `*` so only relevant sensors are searched (see below).
-- Set the Event Type to the specific events you need rather than searching all event types.
-- Use the tightest time range that answers your question.
+- Use the [Sensor Selector](../8-reference/sensor-selector-expressions.md) and not `*`, so that the query searches only the applicable sensors (see below).
+- Set the Event Type to the specific events that you need. Do not search all event types.
+- Use the smallest time range that answers your question.
 
-Each of these lowers the number of events churned, which makes the query both faster and cheaper.
+Each of these decreases the number of events churned. This makes the query faster and cheaper.
 
-**Targeting sensors by ID.** When you know exactly which sensors you care about, matching on `sid` is the most efficient selector of all, because it narrows the scan to specific sensors before any events are read:
+**Targeting sensors by ID.** A match on `sid` is the most efficient selector. Use it when you know the exact sensors that you want. It limits the scan to specific sensors before the query reads any events:
 
 - A single sensor: `sid == "<sensor-id>"`.
 - A specific set of sensors: combine terms with `or`, as in `sid == "<sid1>" or sid == "<sid2>" or sid == "<sid3>"`.
 
-When you do not know the IDs, select by attribute instead - for example `plat == windows`, `"prod" in tags`, or by `hostname`. Sensor IDs are UUIDs, and a selector value that starts with a number must be backtick-quoted; see the [Sensor Selector reference](../8-reference/sensor-selector-expressions.md) for the full operator list and quoting rules.
+When you do not know the IDs, select by attribute - for example `plat == windows`, `"prod" in tags`, or `hostname`. Sensor IDs are UUIDs. You must put backticks around a selector value that starts with a number. See the [Sensor Selector reference](../8-reference/sensor-selector-expressions.md) for the full list of operators and the rules for quotes.
 
 ### Bound Output with ORDER BY and LIMIT
 
-For "top N" style questions, always add `ORDER BY(...) LIMIT N` so the result set is capped instead of returning every matching row. See [Sorting and Limiting Results](lcql-examples.md#sorting-and-limiting-results) for the full syntax.
+For "top N" questions, always add `ORDER BY(...) LIMIT N`. This caps the result set, and the query does not return every matching row. See [Sorting and Limiting Results](lcql-examples.md#sorting-and-limiting-results) for the full syntax.
 
 ### Aggregate Instead of Pulling Raw Events
 
-When you only need counts or summaries, use `COUNT`, `COUNT_UNIQUE`, and `GROUP BY` rather than downloading raw events and counting them yourself. Aggregating in the query returns a small summary instead of a large event stream.
+When you need only counts or summaries, use `COUNT`, `COUNT_UNIQUE`, and `GROUP BY`. Do not download raw events and count them yourself. An aggregation in the query returns a small summary and not a large stream of events.
 
 ### Split Large Aggregations
 
-If an aggregation over a wide time range is slow or times out, break it into smaller incremental time windows and combine the results, as described in [Working around whole-timeline timeouts](#query-timeouts) above.
+If an aggregation over a wide time range is slow or times out, divide it into smaller time windows and combine the results. [Working around whole-timeline timeouts](#query-timeouts) above describes this method.
 
 ### Anti-patterns
 
 !!! warning "Avoid these patterns"
-    - `*` sensor selector with no Event Type filter over a wide time range - this scans everything and is the slowest, most expensive shape of query.
-    - Returning whole events when you only need a few fields - add a projection instead.
-    - Grouping by a near-unique field such as a full command line, a raw timestamp, or a per-event identifier - this produces millions of groups and blows past the aggregation guardrails. Group by a coarser field.
-    - Unbounded aggregations with no `LIMIT` - cap the output with `ORDER BY(...) LIMIT N`.
+    - Do not use the `*` sensor selector with no Event Type filter over a wide time range. This query scans everything, and it is the slowest and most expensive query.
+    - Do not return whole events when you need only a few fields. Add a projection.
+    - Do not group by a near-unique field such as a full command line, a raw timestamp, or a per-event identifier. This makes millions of groups and goes past the aggregation guardrails. Group by a coarser field.
+    - Do not run an aggregation with no `LIMIT`. Cap the output with `ORDER BY(...) LIMIT N`.
 
 ## Troubleshooting
 
 ### The query is rejected before it runs
 
-[Validate the query](index.md#validate-query-syntax) first - the validate endpoint reports syntax errors without scanning any data. Common causes:
+[Validate the query](index.md#validate-query-syntax) first. The validate endpoint reports syntax errors and does not scan any data. Common causes:
 
-- **Field paths use `/`, not dots.** Write `event/FILE_PATH`, not `event.FILE_PATH`. Nested fields chain with slashes, as in `event/PARENT/FILE_PATH`.
+- **Field paths use `/`, not dots.** Write `event/FILE_PATH`, not `event.FILE_PATH`. Nested fields join with slashes, as in `event/PARENT/FILE_PATH`.
 - **A selector value that starts with a number must be backtick-quoted**, for example `` plat == `1password` ``.
 - **Projection and aggregation go in the final clause**, after the last `|`. See [LCQL Examples](lcql-examples.md).
 
 ### The query returns no results
 
-- **Wrong stream.** A query only sees the stream it targets. If you expected detections, query the `detection` stream rather than `event`. See [Data Sources (Streams)](#data-sources-streams).
-- **Time range.** Confirm the range actually covers the data. In the Query Console, times use the timezone from your User Settings; API, CLI, and SDK times are Unix epoch seconds.
-- **Selector too narrow.** An overly specific Sensor Selector or Event Type can exclude the data you want - widen it and re-run.
-- **Field name.** A misspelled or non-existent field simply never matches. Use the Available Fields panel or the [event schema](../8-reference/event-schemas.md) to confirm field names.
+- **Wrong stream.** A query only sees the stream that it targets. If you want detections, query the `detection` stream and not the `event` stream. See [Data Sources (Streams)](#data-sources-streams).
+- **Time range.** Make sure that the range covers the data. In the Query Console, times use the timezone from your User Settings. API, CLI, and SDK times are Unix epoch seconds.
+- **Selector too narrow.** A Sensor Selector or Event Type that is too specific can exclude the data that you want. Make it wider and run the query again.
+- **Field name.** A field name with a spelling error, or a field that does not exist, never matches. Use the Available Fields panel or the [event schema](../8-reference/event-schemas.md) to check field names.
 
 ### The query is rejected as too busy or times out
 
-- **`HTTP 429` (too many concurrent queries).** You have reached the [concurrent-query limit](#concurrent-queries). Wait for an in-flight query to finish, then retry.
-- **Timeout.** Long-running aggregations over large ranges can hit the [query timeout](#query-timeouts). Narrow the range or split the query into smaller windows.
+- **`HTTP 429` (too many concurrent queries).** You reached the [concurrent-query limit](#concurrent-queries). Wait for a query in flight to finish, then retry.
+- **Timeout.** A long aggregation over a large range can reach the [query timeout](#query-timeouts). Make the range smaller, or divide the query into smaller windows.
 
 ## See Also
 

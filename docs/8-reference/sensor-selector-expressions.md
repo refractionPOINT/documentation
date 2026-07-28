@@ -1,8 +1,8 @@
 # Reference: Sensor Selector Expressions
 
-Many components in LimaCharlie require selecting a set of Sensors based on some characteristics. The selector expression is a text field that describe what matching characteristics the selector is looking for.
+Many components in LimaCharlie must select a set of Sensors by their characteristics. The selector expression is a text field that describes the characteristics that the selector matches.
 
-The following fields are available in this evaluation:
+These fields are available in this evaluation:
 
 - `sid`: the Sensor ID
 - `oid`: the Organization ID
@@ -19,10 +19,10 @@ The following fields are available in this evaluation:
 - `isolated`: a boolean True if the sensor's network is isolated
 - `should_isolate`: a boolean True if the sensor is marked to be isolated
 - `kernel`: a boolean True if the sensor has some sort of "kernel" enhanced visibility
-- `did`: the Device ID the sensor belongs to
-- `tags`: the list of tags the sensor currently has
+- `did`: the Device ID that the sensor belongs to
+- `tags`: the list of tags that the sensor has now
 
-The following are the available operators:
+These operators are available:
 
 - `==`: equals
 - `!=`: not equal
@@ -35,15 +35,15 @@ The following are the available operators:
 Here are some examples:
 
 - all sensors with the test tag: `test in tags`
-- all windows boxes with an internal IP starting in 10.3.x.x: `` plat == windows and int_ip matches `^10\.3\..*` ``
-- all 1password sensors, strings starting with a number need to be quoted with a backtick: `` plat == `1password` ``
+- all windows hosts with an internal IP that starts with 10.3.x.x: `` plat == windows and int_ip matches `^10\.3\..*` ``
+- all 1password sensors; you must put a backtick around a string that starts with a number: `` plat == `1password` ``
 - all linux with network isolation or evil tag: `plat == linux or (isolated == true or evil in tags)`
 - all azure related platforms: `plat contains "azure"`
 
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
+In LimaCharlie, a Sensor ID is a unique identifier for each deployed sensor. It separates individual sensors across the infrastructure of an organization, and lets LimaCharlie track, manage, and communicate with each endpoint. The Sensor ID is critical when LimaCharlie sends commands, collects telemetry, and monitors activity. It links actions and data to a specific device or endpoint.
 
-In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+In LimaCharlie, an Organization ID is a unique identifier for each tenant or customer account. It separates the organizations in the platform, and lets LimaCharlie manage resources, permissions, and data segregation securely. The Organization ID keeps all telemetry, configurations, and operations isolated and specific to each organization. It gives multi-tenant support and a clear separation between customer environments.
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+Installation keys are Base64-encoded strings that you give to Sensors and Adapters to associate them with the correct Organization. You create installation keys for each organization. Use them to label and control your deployment population.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless solution that connects the endpoints of an organization to the cloud securely.

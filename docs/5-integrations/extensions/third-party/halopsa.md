@@ -1,28 +1,28 @@
 # HaloPSA
 
-[HaloPSA](https://halopsa.com/) is a professional services automation platform used by MSPs for ticketing, asset management, and time tracking.
+MSPs use [HaloPSA](https://halopsa.com/) for ticketing, asset management, and time tracking. It is a professional services automation platform.
 
-The HaloPSA LimaCharlie Extension exposes outbound HaloPSA actions to D&R rules and AI agents: ticket lifecycle (create/update/search), notes and billable time entries, asset linkage from LC sensor telemetry to the MSP CMDB, and client/site lookup.
+The HaloPSA LimaCharlie Extension gives outbound HaloPSA actions to D&R rules and AI agents. These actions cover the ticket lifecycle (create, update, and search), notes, and billable time entries. They also link LC sensor telemetry to assets in the MSP CMDB, and look up clients and sites.
 
 ## Setup
 
 ### 1. Create a HaloPSA API application
 
-In HaloPSA, create an API application (under **Configuration → Integrations → HaloPSA API**) and configure it for the OAuth2 `client_credentials` flow:
+In HaloPSA, create an API application under **Configuration → Integrations → HaloPSA API**. Configure it for the OAuth2 `client_credentials` flow:
 
 - **Authentication Method:** Client ID and Secret (Services)
-- **Login Type:** Log on as **Agent** — pick the HaloPSA agent that should own the tickets, actions, and assets this extension creates.
-- **Permissions:** grant `edit:tickets`, `edit:assets`, `read:customers`
+- **Login Type:** Log on as **Agent**. Select the HaloPSA agent that owns the tickets, actions, and assets that this extension creates.
+- **Permissions:** grant `edit:tickets`, `edit:assets`, and `read:customers`
 
 These three scopes are the verified least-privilege set for the six actions below:
 
-- `edit:tickets` covers `create_ticket`, `update_ticket`, `search_tickets`, and `add_action`. Actions are a HaloPSA ticket sub-resource — there is no separate `read:actions` or `edit:actions` scope (the HaloPSA token endpoint rejects them as `invalid_scope`).
+- `edit:tickets` covers `create_ticket`, `update_ticket`, `search_tickets`, and `add_action`. An action is a sub-resource of a HaloPSA ticket. There is no separate `read:actions` or `edit:actions` scope; the HaloPSA token endpoint rejects them as `invalid_scope`.
 - `edit:assets` covers asset lookup and the create-if-missing path in `link_asset_to_ticket`.
-- `read:customers` covers `lookup_client_site` for both clients *and* sites (sites are a customer sub-resource). The extension never writes clients or sites, so `edit:customers` is not required.
+- `read:customers` covers `lookup_client_site` for both clients *and* sites (a site is a sub-resource of a customer). The extension never writes clients or sites, so you do not need `edit:customers`.
 
-If you'd rather not enumerate scopes, the extension's default of `all` also works.
+If you do not want to list the scopes, the default of `all` in the extension also works.
 
-Copy the **Client ID** and **Client Secret** — you will need them in the next step. Refer to HaloPSA's own product documentation for the current UI path; the labels above may differ slightly across HaloPSA versions.
+Copy the **Client ID** and the **Client Secret**. You need them in the next step. For the current path in the UI, see the HaloPSA product documentation. The labels above can differ between HaloPSA versions.
 
 ### 2. Subscribe to the extension
 
@@ -30,7 +30,7 @@ Subscribe to `ext-halopsa` from the LimaCharlie **Marketplace** (Extensions → 
 
 ### 3. Store the client secret
 
-In **Secrets Manager**, create a new secret (for example `halopsa-client-secret`) and paste the HaloPSA Client Secret as its value.
+In **Secrets Manager**, create a new secret, for example `halopsa-client-secret`. Paste the HaloPSA Client Secret as its value.
 
 ### 4. Configure the extension
 
@@ -38,17 +38,17 @@ In **Extensions → ext-halopsa → Configuration**, fill in:
 
 | Field | Value |
 | --- | --- |
-| `instance_url` | Your HaloPSA tenant URL, e.g. `https://acme.halopsa.com` |
+| `instance_url` | The URL of your HaloPSA tenant, for example `https://acme.halopsa.com` |
 | `client_id` | The Client ID from step 1 |
-| `client_secret` | A reference to the secret created in step 3, e.g. `hive://secret/halopsa-client-secret` |
-| `tenant` | (optional) Tenant identifier — only needed on shared-auth hosted deployments |
-| `scope` | (optional) OAuth2 scopes (space-separated). Defaults to `all`. |
+| `client_secret` | A reference to the secret from step 3, for example `hive://secret/halopsa-client-secret` |
+| `tenant` | (optional) Tenant identifier. Needed only on hosted deployments with shared authentication |
+| `scope` | (optional) OAuth2 scopes, separated by spaces. Defaults to `all`. |
 
-The configuration is validated at save time against `instance_url`, `client_id`, and `client_secret`. If the OAuth2 token cannot be obtained, requests will surface a `401` from the upstream HaloPSA API.
+At save time, the configuration is validated against `instance_url`, `client_id`, and `client_secret`. If the OAuth2 token cannot be obtained, requests show a `401` from the upstream HaloPSA API.
 
 ## Actions
 
-The extension exposes six actions, all accepting a JSON request body when invoked from a D&R rule via `extension request`.
+The extension gives six actions. Each action accepts a JSON request body when a D&R rule calls it with `extension request`.
 
 ### `create_ticket`
 
@@ -72,13 +72,13 @@ Open a new ticket. Only `summary` is required.
 | `parent_id` | int | Parent ticket id (for sub-tickets). |
 | `asset_ids` | list of int | Asset ids to attach. |
 | `customfields` | list of object | Each entry `{name\|id, value}`. |
-| `extra` | object | Raw HaloPSA ticket fields to merge into the request — escape hatch for fields not modeled above. |
+| `extra` | object | Raw HaloPSA ticket fields to merge into the request. Use it for fields that the list above does not model. |
 
-Returns the created ticket, including its assigned `id`.
+Returns the new ticket and its assigned `id`.
 
 ### `update_ticket`
 
-Update an existing ticket. Use to change status (which drives HaloPSA status → outcome → workflow transitions), reassign, set priority, or set the linked assets.
+Update an existing ticket. Use this action to change the status, to reassign the ticket, to set the priority, or to set the linked assets. A status change drives the HaloPSA status → outcome → workflow transitions.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -88,62 +88,62 @@ Update an existing ticket. Use to change status (which drives HaloPSA status →
 | `status_id` | int | New status id. |
 | `agent_id` | int | New assignee. |
 | `priority_id` | int | New priority. |
-| `asset_ids` | list of int | **Replaces** the ticket's asset list. Use `link_asset_to_ticket` to merge a new asset into the existing list. |
+| `asset_ids` | list of int | **Replaces** the asset list of the ticket. Use `link_asset_to_ticket` to merge a new asset into the existing list. |
 | `customfields` | list of object | Custom fields to set. |
 | `extra` | object | Raw HaloPSA ticket fields to merge. |
 
 ### `search_tickets`
 
-Search/list tickets. Useful to deduplicate before creating, or to look up existing work for an asset.
+Search tickets or list them. Use this action to avoid duplicates before you create a ticket, or to find existing work for an asset.
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| `search` | string | Free-text search across ticket summary/details. |
+| `search` | string | Free-text search across the summary and the details of a ticket. |
 | `client_id` | int | Restrict to a client. |
 | `agent_id` | int | Restrict to an assignee. |
-| `status_ids` | string | Comma-separated status ids. |
+| `status_ids` | string | Status ids, separated by commas. |
 | `tickettype_id` | int | Restrict to a ticket type. |
 | `page_size` | int | Default `50`. |
 | `page_no` | int | Default `1` (1-based). |
-| `order` | string | Order-by field (e.g. `id`). |
+| `order` | string | Order-by field (for example `id`). |
 | `orderdesc` | bool | Descending order. |
 
 Returns `{ "record_count": N, "tickets": [...] }`.
 
 ### `add_action`
 
-Append a HaloPSA Action to a ticket: a private note (agents only) or a public reply (visible to the end-user), optionally with billable time. Useful for AI agents to record triage findings and log work time.
+Append a HaloPSA Action to a ticket. The Action is a private note (agents only) or a public reply that the end-user sees. It can also carry billable time. AI agents can use this action to record triage findings and work time.
 
 | Field | Type | Notes |
 | --- | --- | --- |
 | `ticket_id` | int | **Required.** Ticket id to append to. |
-| `note` | string | **Required.** Note/reply content. |
+| `note` | string | **Required.** Content of the note or the reply. |
 | `hiddenfromuser` | bool | `true` (default) = private; `false` = public reply. |
-| `timetaken` | int | Time taken on this action (whole hours only). For fractional hours, pass via `extra.timetaken`. |
-| `actionchargehours` | int | Billable hours (whole hours only). For fractional hours, pass via `extra.actionchargehours`. |
+| `timetaken` | int | Time taken on this action (whole hours only). For fractional hours, use `extra.timetaken`. |
+| `actionchargehours` | int | Billable hours (whole hours only). For fractional hours, use `extra.actionchargehours`. |
 | `outcome` | string | Outcome label (drives HaloPSA workflow transitions). Defaults to `Note`. |
 | `extra` | object | Raw HaloPSA action fields to merge. |
 
-> Defaults to **private** (`hiddenfromuser=true`) to avoid accidentally pushing security notes to end-users. Set `hiddenfromuser: false` explicitly for a public reply.
+> The default is **private** (`hiddenfromuser=true`), so that security notes do not go to end-users by accident. For a public reply, set `hiddenfromuser: false`.
 
 ### `link_asset_to_ticket`
 
-Resolve a hostname to a HaloPSA asset under the given client/site, optionally creating the asset if missing, and attach it to the ticket. Bridges LC sensor telemetry to the MSP CMDB.
+Resolve a hostname to a HaloPSA asset under the given client or site, then attach the asset to the ticket. The action can also create the asset if it does not exist. This action links LC sensor telemetry to the MSP CMDB.
 
 | Field | Type | Notes |
 | --- | --- | --- |
 | `ticket_id` | int | **Required.** Ticket id to link the asset to. |
-| `hostname` | string | **Required.** Hostname to resolve (matched via `inventory_number` / `key_field`). |
+| `hostname` | string | **Required.** Hostname to resolve. The match uses `inventory_number` or `key_field`. |
 | `client_id` | int | Required when the asset must be created. |
 | `site_id` | int | Used on asset create. |
 | `asset_type_id` | int | Required when the asset must be created (HaloPSA rejects asset creates without an asset type). |
-| `create_if_missing` | bool | If `true` (default), create the asset when no match is found. |
+| `create_if_missing` | bool | If `true` (default), create the asset when there is no match. |
 
-Returns `{ "asset_id": N, "asset_created": bool, "asset": {...}, "ticket": {...} }`. The link is idempotent — re-running against an already-linked asset will not produce duplicates.
+Returns `{ "asset_id": N, "asset_created": bool, "asset": {...}, "ticket": {...} }`. The link is idempotent. If you run the action again on an asset that is already linked, it makes no duplicates.
 
 ### `lookup_client_site`
 
-Resolve a HaloPSA client or site id from a name. Useful as plumbing for AI agents that need to map an LC org to a Halo client.
+Resolve a HaloPSA client id or site id from a name. AI agents use this action to map an LC org to a Halo client.
 
 | Field | Type | Notes |
 | --- | --- | --- |
@@ -153,11 +153,11 @@ Resolve a HaloPSA client or site id from a name. Useful as plumbing for AI agent
 | `page_size` | int | Default `50`. |
 | `page_no` | int | Default `1`. |
 
-Returns `{ "record_count": N, "clients": [...] }` or `{ "record_count": N, "sites": [...] }` depending on `type`.
+Returns `{ "record_count": N, "clients": [...] }` or `{ "record_count": N, "sites": [...] }`, based on `type`.
 
 ## Detection & Response
 
-Example response action that opens a HaloPSA ticket for a detection:
+This example response action opens a HaloPSA ticket for a detection:
 
 ```yaml
 - action: extension request
@@ -173,11 +173,11 @@ Example response action that opens a HaloPSA ticket for a detection:
 ```
 
 > **Wrap literal strings in `{{ "..." }}`.**
-> Values under `extension request` are evaluated as templates. A bare string without `{{ }}` is interpreted as a [gjson](https://github.com/tidwall/gjson) path against the event and, if it doesn't resolve, the key is silently dropped from the payload.
+> The values under `extension request` are evaluated as templates. A bare string without `{{ }}` is read as a [gjson](https://github.com/tidwall/gjson) path into the event. If the path does not resolve, the key is dropped from the payload without a message.
 
-`extension request` actions are fire-and-forget — the rule engine does not surface the response back into the rule's evaluation context, so the freshly-created ticket id is not available to a subsequent action in the same rule. Workflows that need to chain (open a ticket, then link an asset, then add a note) belong in a [Playbook](../limacharlie/playbook.md) or an AI agent, which can hold the ticket id between calls.
+`extension request` actions do not return a result. The rule engine does not put the response into the evaluation context of the rule. The id of the new ticket is therefore not available to a later action in the same rule. A workflow that must chain steps (open a ticket, link an asset, then add a note) belongs in a [Playbook](../limacharlie/playbook.md) or in an AI agent. A Playbook or an AI agent can hold the ticket id between calls.
 
-To append triage findings on an existing ticket (for example from a Playbook or AI agent that already knows the ticket id), use `add_action`:
+Use `add_action` to append triage findings to an existing ticket. For example, a Playbook or an AI agent that already knows the ticket id can call it:
 
 ```yaml
 - action: extension request
@@ -193,6 +193,6 @@ To append triage findings on an existing ticket (for example from a Playbook or 
 
 ## Notes
 
-- The OAuth2 access token returned by HaloPSA is cached per `(org, instance_url, client_id, secret)` for the lifetime of a client. Rotating the secret in the Secrets Manager evicts the cached client on the next surfaced `401`.
-- `actionchargehours` will only result in a billable charge if the tenant has a charge rate configured for the agent posting the action; otherwise HaloPSA accepts the value but reports `Charge Rate: No Charge`.
-- HaloPSA represents a ticket's main body as the first entry in its action timeline — `update_ticket.details` replaces that first entry rather than mutating a separate body field.
+- HaloPSA returns an OAuth2 access token. The token is cached for each `(org, instance_url, client_id, secret)` for the lifetime of a client. If you rotate the secret in the Secrets Manager, the next `401` evicts the cached client.
+- `actionchargehours` results in a billable charge only if the tenant has a charge rate for the agent that posts the action. If there is no charge rate, HaloPSA accepts the value but reports `Charge Rate: No Charge`.
+- HaloPSA keeps the main body of a ticket as the first entry in its action timeline. `update_ticket.details` replaces that first entry. It does not change a separate body field.

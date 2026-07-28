@@ -1,12 +1,12 @@
 # Lookup Manager
 
-The Lookup Manager Extension allows you to create, maintain & automatically refresh lookups in the Organization to then reference them in Detection & Response Rules.
+The Lookup Manager Extension lets you create, maintain, and automatically refresh lookups in the Organization. You can then reference these lookups in Detection & Response Rules.
 
-The saved Lookup Configurations can be managed across tenants using Infrastructure as Code extension. To manage lookup versions across all of your tenants, update the file under the original Authenticated Resource Locator.
+You can manage the saved Lookup Configurations across tenants with the Infrastructure as Code extension. To manage lookup versions across all of your tenants, update the file under the original Authenticated Resource Locator.
 
-Every 24 hours, LimaCharlie will sync all of the lookups in the configuration. Lookups can also be manually synced by clicking the `Manual Sync` button on the extension page. When a lookup configuration is added, it will **not** be automatically synced immediately, unless you click on `Manual Sync`.
+Every 24 hours, LimaCharlie syncs all of the lookups in the configuration. To sync the lookups manually, click the `Manual Sync` button on the extension page. When you add a lookup configuration, LimaCharlie does **not** sync it immediately. To sync it immediately, click `Manual Sync`.
 
-Lookup sources can be either direct links (URLs) to a given lookup or [ARLs](../../../8-reference/authentication-resource-locator.md).
+A lookup source is a direct link (URL) to a lookup, or an [ARL](../../../8-reference/authentication-resource-locator.md).
 
 Example JSON lookup: [LOLDrivers API](https://loldrivers.io/api/drivers.json)
 
@@ -14,9 +14,9 @@ Example JSON lookup: [LOLDrivers API](https://loldrivers.io/api/drivers.json)
 
 ### Option 1: Preconfigured Lookups
 
-LimaCharlie provides a curated list of several publicly available JSON lookups for use within your organization. These are provided in the lookup manager GUI.
+LimaCharlie supplies a curated list of public JSON lookups for your organization. The lookup manager GUI shows these lookups.
 
-See [lc-public-lookups](https://github.com/refractionpoint/lc-public-lookups) for the contents of each public lookup.
+For the contents of each public lookup, see [lc-public-lookups](https://github.com/refractionpoint/lc-public-lookups).
 
 ![image (1).png "Screenshot 2024 10 22 at 13.23.35(2).png"](../../../assets/images/image-(1).png "Screenshot 2024-10-22 at 13.23.35(2).png")
 
@@ -24,23 +24,29 @@ See [lc-public-lookups](https://github.com/refractionpoint/lc-public-lookups) fo
 
 ### Option 2: Publicly available Lookups
 
-Giving the lookup configuration a name, the URL *or* [ARL](../../../8-reference/authentication-resource-locator.md), and clicking the Save button will create the new lookup source to sync to your lookups.
+Give the lookup configuration a name and the URL *or* [ARL](../../../8-reference/authentication-resource-locator.md). Then click the Save button. LimaCharlie creates the new lookup source and syncs it to your lookups.
 
 `[github,my-org/my-repo-name/path/to/lookup]`
 
 ### Option 3: Private Lookup Repository
 
-To use a lookup from a private Github repository you will need to make use of an [Authentication Resource Locator](../../../8-reference/authentication-resource-locator.md).
+To use a lookup from a private GitHub repository, you need an [Authentication Resource Locator](../../../8-reference/authentication-resource-locator.md).
 
-**Step 1: Create a token in GitHub**
-In GitHub go to *Settings* and click *Developer settings* in the left hand side bar.
+**Step 1: Create a token in GitHub.** Do these steps:
 
-Next click *Personal access token* followed by *Generate new token*. Select repo permissions and finally *Generate token*.
+1. In GitHub, go to *Settings*.
+2. Click *Developer settings* in the left side bar.
+3. Click *Personal access token*.
+4. Click *Generate new token*.
+5. Select the repo permissions.
+6. Click *Generate token*.
 
-**Step 2: Connect LimaCharlie to your GitHub Repository**
-Inside of LimaCharlie, click on *Lookup Manager* in the left hand menu. Then click *Add New Lookup Configuration*.
+**Step 2: Connect LimaCharlie to your GitHub Repository.** Do these steps:
 
-Give your lookup a name and then use the token you generated with the following format linked to your repository.
+1. In LimaCharlie, click *Lookup Manager* in the left menu.
+2. Click *Add New Lookup Configuration*.
+3. Give your lookup a name.
+4. Use the token that you generated in the format below, with the link to your repository.
 
 `[github,my-org/my-repo-name/path/to/lookup,token,bfuihferhf8erh7ubhfey7g3y4bfurbfhrb]`
 

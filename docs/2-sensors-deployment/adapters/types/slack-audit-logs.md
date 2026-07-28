@@ -1,22 +1,22 @@
 # Slack Audit Logs
 
-[Slack audit logs](https://api.slack.com/admins/audit-logs) allow for ingestion of audit events in a Slack Enterprise Grid organization. Events can be ingested directly from the Slack API via a cloud-to-cloud or CLI Adapter.
+[Slack audit logs](https://api.slack.com/admins/audit-logs) supply the audit events of a Slack Enterprise Grid organization. You can ingest these events directly from the Slack API with a cloud-to-cloud Adapter or with a CLI Adapter.
 
-Slack telemetry can be addressed via the `slack` platform.
+Use the `slack` platform to address Slack telemetry.
 
-**Note**: Audit Logs via API are only available to Slack workspaces on the Enterprise Grid plan.
+**Note**: Audit Logs through the API are available only to Slack workspaces on the Enterprise Grid plan.
 
 ## Adapter Deployment
 
-Slack Audit Logs can be collected directly from the Slack API, via a cloud-to-cloud Adapter, or via the CLI Adapter. You will need a Slack App OAuth token prior to deploying this Adapter. More information on generating Slack OAuth tokens can be found [at this link](https://api.slack.com/authentication/token-types).
+You can collect Slack Audit Logs directly from the Slack API, with a cloud-to-cloud Adapter or with the CLI Adapter. You need a Slack App OAuth token before you deploy this Adapter. For more information about how to generate Slack OAuth tokens, see [Slack token types](https://api.slack.com/authentication/token-types).
 
 ### Cloud-to-Cloud Adapter
 
-Slack API telemetry can be configured directly from the LimaCharlie web application. Under `Sensors List`, select `+ Add Sensor > Slack Audit Logs`. After providing an Installation Key will be prompted to provide an Adapter Name and a Slack App OAuth Token.
+Configure Slack API telemetry in the LimaCharlie web application. Under `Sensors List`, select `+ Add Sensor > Slack Audit Logs`. After you give an Installation Key, the web app asks for an Adapter Name and a Slack App OAuth Token.
 
 ### Deploying via the CLI Adapter
 
-The LimaCharlie CLI Adapter can also be used to ingest Slack events, if you do not wish to create a cloud-to-cloud connector. The following sample configuration can be used to create a Slack CLI Adapter:
+You can also use the LimaCharlie CLI Adapter to ingest Slack events if you do not want to create a cloud-to-cloud Adapter. Use the sample configuration below to create a Slack CLI Adapter:
 
 ```yaml
 slack:

@@ -1,12 +1,12 @@
 # Okta
 
-The Okta CLI allows you to interact with your Okta instance(s) via the command line. With this component of the Cloud CLI Extension, you can interact with Okta directly from LimaCharlie.
+The Okta CLI lets you interact with your Okta instances from the command line. This component of the Cloud CLI Extension lets you interact with Okta directly from LimaCharlie.
 
 This extension uses [the Okta CLI](https://cli.okta.com/manual/).
 
 ## Example
 
-The following example returns a list of registered Okta applications.
+This example returns a list of registered Okta applications.
 
 ```yaml
 - action: extension request
@@ -20,10 +20,10 @@ The following example returns a list of registered Okta applications.
 
 ## Credentials
 
-To make use of the Okta CLI, you will need:
+To use the Okta CLI, you need:
 
-- An API key. See Okta's [Create an API token guide](https://developer.okta.com/docs/guides/create-an-api-token/main/).
-- Create a secret in the secrets manager in the following format:
+- An API key. See the [Create an API token guide](https://developer.okta.com/docs/guides/create-an-api-token/main/) from Okta.
+- Create a secret in the secrets manager in this format:
 
 ```text
 okta_domain/api_key
@@ -31,11 +31,11 @@ okta_domain/api_key
 
 ## Available Commands
 
-> All "USERID" fields require the Okta User ID, not the user's name
+> All "USERID" fields need the Okta User ID, not the name of the user
 
 ### Get User Details
 
-Fetches a user from your Okta organization.
+Gets a user from your Okta organization.
 
 #### Command
 
@@ -102,9 +102,9 @@ user get 00untroxqpl08VcNC5d7
 
 ### Get List of Users
 
-Lists users that do not have a status of "DEPROVISIONED" (by default), up to the maximum (200 for most orgs), with pagination in most cases. A subset of users can be returned that match a supported filter expression or search criteria.
+By default, this lists the users that do not have a status of "DEPROVISIONED", up to the maximum (200 for most orgs). Most responses use pagination. The command can return a subset of users that match a supported filter expression or search criteria.
 
-> This command takes an optional filter. If no filter is provided, all users are returned. For more information on Okta's query filters, visit <https://developer.okta.com/docs/reference/user-query/#filter-users>
+> This command takes an optional filter. If you do not give a filter, the command returns all users. For more information about the query filters of Okta, see <https://developer.okta.com/docs/reference/user-query/#filter-users>
 
 #### Command
 
@@ -161,7 +161,7 @@ user list
 
 Deactivates a user.
 
-> This operation can only be performed on users that do not have a "DEPROVISIONED" status.
+> You can do this operation only on users that do not have a "DEPROVISIONED" status.
 
 #### Command
 
@@ -185,7 +185,7 @@ None
 
 Activates a user.
 
-> This operation can only be performed on users with a "STAGED" status.
+> You can do this operation only on users that have a "STAGED" status.
 
 #### Command
 
@@ -207,7 +207,7 @@ None
 
 ### Expire User Password
 
-This operation transitions the user to the status of "PASSWORD\_EXPIRED" so that the user is required to change their password at their next login.
+This operation moves the user to the status "PASSWORD\_EXPIRED". The user must then change the password at the next login.
 
 #### Command
 
@@ -229,9 +229,9 @@ None
 
 ### Suspend User
 
-Suspends a user. The user will have a status of "SUSPENDED" when the process is complete.
+Suspends a user. The user has a status of "SUSPENDED" when the process is complete.
 
-> This operation can only be performed on users with an "ACTIVE" status.
+> You can do this operation only on users that have an "ACTIVE" status.
 
 #### Command
 
@@ -253,9 +253,9 @@ None
 
 ### Unsuspend User
 
-Unsuspends a user and returns them to the "ACTIVE" state. This operation can only be performed on users that have a "SUSPENDED" status.
+Unsuspends a user and returns the user to the "ACTIVE" state. You can do this operation only on users that have a "SUSPENDED" status.
 
-> This operation can only be performed on users that have a "SUSPENDED" status.
+> You can do this operation only on users that have a "SUSPENDED" status.
 
 #### Command
 
@@ -277,7 +277,7 @@ None
 
 ### Unlock User
 
-Unlocks a user with a "LOCKED\_OUT" status and returns them to "ACTIVE" status. Users will be able to login with their current password.
+Unlocks a user that has a "LOCKED\_OUT" status and returns the user to "ACTIVE" status. The user can then log in with the current password.
 
 #### Command
 

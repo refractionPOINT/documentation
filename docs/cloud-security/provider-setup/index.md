@@ -5,11 +5,12 @@
     configuration formats described here may change before general
     availability. Contact us if you would like access.
 
-[Getting Started](../getting-started.md) walks the end-to-end flow with a
-Google Cloud example. This section is the per-provider companion: for **every**
-supported platform, the exact scopes and permissions the collector needs, the
-click-by-click steps to create the credential in that platform, the
-credential-secret format, and the first-run failures with their fixes.
+[Getting Started](../getting-started.md) shows the end-to-end flow with a
+Google Cloud example. This section is the companion for each provider. For
+**every** supported platform it gives the exact scopes and permissions that the
+collector needs. It also gives the click-by-click steps to create the
+credential in that platform, the credential-secret format, and the fixes for
+the first-run failures.
 
 It assumes the organization is already subscribed to the `ext-cloud-security`
 extension (step 1 of
@@ -24,7 +25,7 @@ extension (step 1 of
 | [Microsoft Azure](azure.md) | Cloud infra | App registration + Reader on the subscription + Graph consent |
 | [Microsoft Entra ID](entra.md) | Identity | App registration + Graph consent (directory only, no Azure needed) |
 | [Okta](okta.md) | Identity | API Services app (private-key JWT) + 5 read scopes + a read-only admin role |
-| [Google Workspace](google-workspace.md) | Identity | Service account with domain-wide delegation impersonating a super admin |
+| [Google Workspace](google-workspace.md) | Identity | Service account with domain-wide delegation that impersonates a super admin |
 | [1Password](onepassword.md) | Identity | SCIM bridge URL + bearer token (optionally a Connect server) |
 | [Auth0](auth0.md) | Identity | M2M application authorized on the Management API with read scopes |
 | [Cloudflare](cloudflare.md) | SaaS | One scoped read-only API token + the account ID |
@@ -43,13 +44,13 @@ Every provider connection is **two Hive records**:
 | Piece | Hive | Holds |
 |---|---|---|
 | **Provider record** | `cloudsec_provider` | Non-secret config (scope, account/subscription IDs, regions) plus a **reference** to the credential. |
-| **Credential secret** | `secret` | The actual credential (key/token). Referenced from the provider record as `hive://secret/<name>` — **never inlined**. |
+| **Credential secret** | `secret` | The actual credential (key/token). The provider record references it as `hive://secret/<name>` — **never inlined**. |
 
 The full field reference for the provider record is in
 [Configuration](../configuration.md#cloudsec_provider).
 
-Store the credential first, then reference it. The
-[secret](../../7-administration/config-hive/secrets.md) record's value is the
+Store the credential first, then reference it. The value of the
+[secret](../../7-administration/config-hive/secrets.md) record is the
 credential blob:
 
 ```bash
@@ -61,28 +62,28 @@ where `secret.json` is `{"secret": "<the credential JSON, as a string>"}`.
 
 !!! tip "Bare keys are accepted for single-key providers"
     For [OpenAI](openai.md), [Anthropic](anthropic.md), and
-    [LimaCharlie](limacharlie.md) you may store the raw key string instead of a
-    JSON object — it is wrapped into the documented shape automatically. Every
-    other provider needs the JSON object exactly as its page documents.
+    [LimaCharlie](limacharlie.md) you can store the raw key string instead of a
+    JSON object. LimaCharlie wraps it into the documented shape automatically.
+    Every other provider needs the JSON object exactly as its page documents.
 
 ### Always preflight before saving
 
-`provider test` connects with the credential *ephemerally* (it is never stored)
-and probes every permission surface a sweep needs:
+`provider test` connects with the credential *temporarily* — it is never
+stored — and probes every permission surface that a sweep needs:
 
 ```bash
 limacharlie cloudsec provider test --input-file provider.yaml
 ```
 
-The response is a per-check report; each check carries `id`, `name`,
-`required`, `ok`, and a human-readable `detail`. **`report.ok` is the verdict
-over the required checks only.** A failed **optional** check means that surface
-degrades gracefully — an inventory type goes unobserved — rather than the
-connection failing, and its `detail` names exactly what you lose.
+The response is a report with one entry for each check. Each check carries
+`id`, `name`, `required`, `ok`, and a readable `detail`. **`report.ok` is the
+verdict over the required checks only.** A failed **optional** check does not
+fail the connection: that surface degrades gracefully and an inventory type
+stays unobserved. Its `detail` names what you lose.
 
 Every provider page lists its check IDs and what each one means.
 
-Once a record passes preflight, save it:
+After a record passes preflight, save it:
 
 ```bash
 limacharlie hive set --hive-name cloudsec_provider --key <name> \
@@ -90,8 +91,8 @@ limacharlie hive set --hive-name cloudsec_provider --key <name> \
 ```
 
 !!! note "In the web app"
-    Everything here can also be done under **Cloud Security → Settings →
-    Providers → Add provider**, with secrets managed under **Organization
+    You can also do all of this under **Cloud Security → Settings →
+    Providers → Add provider**. Manage secrets under **Organization
     Settings → Secrets Manager**. The **Test Provider** button runs the same
     preflight.
 
@@ -99,24 +100,25 @@ limacharlie hive set --hive-name cloudsec_provider --key <name> \
 
 | Field | Purpose |
 |---|---|
-| `internal_domains` | Your own email domains. A human identity outside them is classified **external**, and external access to sensitive resources is one of the highest-signal finding classes. The collector discovers the primary cloud-org domain by itself; **secondary domains must be listed here** or your own staff are falsely flagged external. |
+| `internal_domains` | Your own email domains. A human identity outside them is classified **external**, and external access to sensitive resources is one of the finding classes with the highest signal. The collector discovers the primary domain of the cloud org by itself. **List the secondary domains here**, or your own staff are wrongly marked external. |
 | `refresh` | Re-enumeration cadence as a Go duration (`6h`, `24h`). Minimum `5m`; empty uses the service default. |
-| `sync_now` | Any opaque value; **changing it** triggers an immediate re-sweep. |
-| `feed_subscription` | Optional Pub/Sub subscription (`projects/{p}/subscriptions/{s}`) carrying a change feed, for seconds-latency updates between full sweeps. |
+| `sync_now` | Any opaque value. **When you change it**, an immediate re-sweep starts. |
+| `feed_subscription` | Optional Pub/Sub subscription (`projects/{p}/subscriptions/{s}`) that carries a change feed, for updates with seconds of latency between full sweeps. |
 
 ## Principles that apply everywhere
 
-- **Read-only.** Every credential documented here is read-only, except where a
-  platform offers no read-only surface for something — those cases are called
-  out explicitly on the provider's page.
+- **Read-only.** Every credential in this section is read-only. Where a
+  platform gives no read-only surface for something, the provider's page states
+  it.
 - **Least privilege.** Grant the required set first, confirm with
-  `provider test`, then add optional grants only for the surfaces you want.
+  `provider test`, then add optional grants only for the surfaces that you
+  want.
 - **Nothing is stored inline.** Credentials live in the `secret` hive and are
   referenced. The provider record never holds key material, and credentials are
   never written to logs.
 - **Partial grants are supported.** A denied optional surface leaves that
-  inventory type *unobserved*; it never fails the sweep or deletes
-  previously-collected rows.
+  inventory type *unobserved*. It never fails the sweep and never deletes rows
+  that were collected before.
 
 ## Credential-secret quick reference
 

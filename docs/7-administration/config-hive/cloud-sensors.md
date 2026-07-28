@@ -12,7 +12,7 @@
 
 ## Command-Line Usage
 
-Hive secrets can be managed from the command-line, via the `limacharlie hive` command. Positional and optional arguments for command-line usage are below:
+You can manage hive secrets from the command line with the `limacharlie hive` command. The positional and optional arguments for command-line usage are below:
 
 ```yaml
 usage: limacharlie hive [-h] [-k KEY] [-d DATA] [-pk PARTITIONKEY] [--etag ETAG] [--expiry EXPIRY] [--enabled ENABLED] [--tags TAGS] action hive_name

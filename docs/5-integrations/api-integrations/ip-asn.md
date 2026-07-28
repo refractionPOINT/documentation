@@ -2,9 +2,9 @@
 
 > No Subscription Required
 >
-> LimaCharlie provides access to this integration free of charge for all users, so no additional subscription is required.
+> LimaCharlie gives all users access to this integration free of charge. You do not need a subscription.
 
-With the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo) subscribed, the `ip-asn` resource can be used as an API-based lookup to resolve IP addresses to their Autonomous System Number (ASN) and organization.
+If you subscribe to the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo), you can use the `ip-asn` resource as an API-based lookup. The lookup resolves an IP address to its Autonomous System Number (ASN) and organization.
 
 ```yaml
 event: USER_LOGIN
@@ -17,12 +17,12 @@ metadata_rules:
   path: autonomous_system_number
 ```
 
-Step-by-step, this rule will do the following:
+This rule does these steps:
 
-- Upon seeing a `USER_LOGIN` event, retrieve the `event/SOURCE_IP` value and look it up via the `api/ip-asn` resource
-- Upon receiving a response from `api/ip-asn`, evaluate it using `metadata_rules` to see if the ASN matches 13335 (Cloudflare)
+- When a `USER_LOGIN` event occurs, the rule gets the `event/SOURCE_IP` value and looks it up with the `api/ip-asn` resource
+- When `api/ip-asn` sends a response, the rule evaluates it with `metadata_rules` to see if the ASN matches 13335 (Cloudflare)
 
-The format of the metadata returned looks like this:
+The metadata has this format:
 
 ```json
 {
@@ -31,9 +31,9 @@ The format of the metadata returned looks like this:
 }
 ```
 
-The ASN data comes from the MaxMind GeoLite2-ASN database. For more information, visit [maxmind.com](http://www.maxmind.com).
+The ASN data comes from the MaxMind GeoLite2-ASN database. For more information, see [maxmind.com](http://www.maxmind.com).
 
 ## See Also
 
 - [IP Geolocation](ip-geolocation.md) — country, city, and location data
-- [Behavioral Detection — First-Seen with Lookup Metadata](../../3-detection-response/behavioral-detection.md#first-seen-with-lookup-metadata) — using ASN in suppression keys
+- [Behavioral Detection — First-Seen with Lookup Metadata](../../3-detection-response/behavioral-detection.md#first-seen-with-lookup-metadata) — how to use ASN in suppression keys

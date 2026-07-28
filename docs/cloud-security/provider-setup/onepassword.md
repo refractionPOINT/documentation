@@ -5,61 +5,65 @@
     configuration formats described here may change before general
     availability. Contact us if you would like access.
 
-Collects the 1Password account directory — users and groups with membership —
-into the identity graph, unified by email with your cloud and IdP identities.
-Optionally, a **1Password Connect** server adds vault (secret-store) inventory.
+This connector collects the account directory of 1Password into the identity
+graph. The directory contains the users, the groups, and the members of each
+group. The graph joins these identities to your cloud identities and IdP
+identities by email address. A **1Password Connect** server can also add an
+inventory of the vaults, which are the stores for your secrets.
 
-**Auth model:** the account's **SCIM bridge** and its **bearer token**. This is
-the same provisioning endpoint your identity provider uses; the collector reads
-it read-only.
+**Auth model:** the **SCIM bridge** of the account and its **bearer token**. Your
+identity provider uses this same provisioning endpoint. The collector only reads
+from it.
 
 ## Prerequisites
 
-- **1Password Business**, with **automated provisioning** set up (hosted
-  provisioning or a self-hosted SCIM bridge).
+- **1Password Business**, with **automated provisioning** in operation. Use
+  hosted provisioning or a self-hosted SCIM bridge.
 - The **SCIM base URL** and its **bearer token**.
-- *(Optional)* a running **1Password Connect** server plus a Connect token, if
-  you want vault inventory.
+- *(Optional)* a **1Password Connect** server that runs, and a Connect token.
+  These are necessary only for an inventory of the vaults.
 
 ## Get the SCIM URL and bearer token
 
-1. Sign in to your 1Password account on the web as an owner/administrator.
+1. As an owner or an administrator, sign in to your 1Password account on the web.
 2. Open **Integrations** (the provisioning setup page).
-3. Copy the **SCIM URL** and the **bearer token** shown there.
+3. Copy the **SCIM URL** and the **bearer token** that the page shows.
 
 | Deployment | SCIM base URL |
 |---|---|
 | Hosted provisioning | `https://provisioning.1password.com/scim/v2` |
-| Self-hosted SCIM bridge | Your bridge's own URL, e.g. `https://scim.example.com` |
+| Self-hosted SCIM bridge | The URL of your bridge, such as `https://scim.example.com` |
 
-Do not include a trailing slash. Use exactly the URL your identity provider is
-configured with — the collector appends `/Users` and `/Groups` to it, so a
-wrong base path shows up immediately as a failed `scim_users` check.
+Do not put a slash at the end. Use the same URL that you configured in your
+identity provider. The collector adds `/Users` and `/Groups` to this URL.
+A base path that is not correct therefore makes the `scim_users` check fail
+immediately.
 
 !!! info "Why the two forms differ"
-    Hosted provisioning serves SCIM under a `/scim/v2` path, while a
-    self-hosted bridge serves it at the **root** of its own domain (the address
-    you open in a browser to reach the bridge's status page). Both are correct
-    for their deployment — copy whichever your Integrations page shows.
+    Hosted provisioning gives SCIM at a `/scim/v2` path. A self-hosted bridge
+    gives SCIM at the **root** of its own domain. The root is the address that you
+    open in a browser to see the status page of the bridge. Each form is correct
+    for its deployment. Copy the form that your Integrations page shows.
 
 !!! info "This is the provisioning credential, not a new one"
-    The bearer token and the `scimsession` file are cryptographically linked.
-    If you ever regenerate credentials from the Integrations page, update both
-    your identity provider **and** this secret.
+    Cryptography links the bearer token and the `scimsession` file. If you make
+    new credentials from the Integrations page, you must update your identity
+    provider **and** this secret.
 
 !!! tip "Read-only by construction"
-    The collector only issues `GET /Users` and `GET /Groups`. The SCIM token is
-    account-scoped and all-or-nothing — 1Password does not offer a narrower
-    read-only variant.
+    The collector sends only `GET /Users` and `GET /Groups`. The scope of the
+    SCIM token is the full account, and you cannot reduce it. 1Password does not
+    give a read-only token with a smaller scope.
 
 ## Optional: 1Password Connect for vault inventory
 
 [1Password Connect](https://developer.1password.com/docs/connect/) is a
-self-hosted server you deploy alongside your account. Follow 1Password's Connect
-documentation to deploy the server and issue an access token, then include
-`connect_url` and `connect_token` in the secret. The collector reads only
-`GET /v1/vaults` — vault names and metadata, never item contents. Without
-Connect configured, vault inventory is simply unobserved.
+self-hosted server that you deploy with your account. Obey the Connect
+documentation of 1Password to deploy the server and to make an access token. Then
+put `connect_url` and `connect_token` in the secret. The collector reads only
+`GET /v1/vaults`. This gives the names and the metadata of the vaults, and never
+the contents of an item. If you do not configure Connect, the collector does not
+inventory the vaults.
 
 ## Create the credentials secret
 
@@ -72,8 +76,8 @@ Connect configured, vault inventory is simply unobserved.
 }
 ```
 
-`connect_url` / `connect_token` are optional; omit both if you are not running
-Connect.
+`connect_url` and `connect_token` are optional. If you do not run Connect, leave
+out both.
 
 ```bash
 limacharlie hive set --hive-name secret --key onepassword-scim \
@@ -92,7 +96,7 @@ internal_domains: [example.com]
 refresh: 6h
 ```
 
-In the web app: **Add provider → 1Password**, then set **SCIM URL**,
+In the web app, click **Add provider → 1Password**. Then set **SCIM URL**,
 **Credentials**, and **Refresh interval**.
 
 ## Verify
@@ -103,15 +107,15 @@ limacharlie cloudsec provider test --input-file provider.yaml
 
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
-| `scim_users` | ✅ | The bearer token was rejected or the SCIM URL is wrong — this both authenticates and reads the user directory. Nothing else is probed on failure. |
-| `scim_groups` | ✅ | Group and membership inventory unavailable. |
-| `connect_vaults` | — | Vault (secret-store) inventory unavailable. Passes with a note when Connect is simply not configured. |
+| `scim_users` | ✅ | 1Password rejected the bearer token, or the SCIM URL is not correct. This check both authenticates the token and reads the user directory. If it fails, the collector does not do the other checks. |
+| `scim_groups` | ✅ | No inventory of the groups and their members. |
+| `connect_vaults` | — | No inventory of the vaults, which are the stores for your secrets. This check passes with a note if you did not configure Connect. |
 
 ## Troubleshooting
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `scim_users` fails with 404 | The base URL is missing (or wrongly carrying) the `/scim/v2` path | Copy the SCIM URL verbatim from the Integrations page |
-| `scim_users` fails with 401 | The bearer token is wrong, or credentials were regenerated | Copy the current token from the Integrations page |
-| `scim_users` fails to connect | The SCIM bridge is not reachable from the public internet, or is behind an allowlist | Self-hosted bridges must be reachable; confirm DNS and TLS |
-| `connect_vaults` fails | Connect URL/token wrong, or the Connect token has no vault access | Verify the Connect server is running and the token grants read on the vaults you want inventoried |
+| `scim_users` fails with 404 | The base URL does not have the `/scim/v2` path, or it has the path when it must not | Copy the SCIM URL exactly from the Integrations page |
+| `scim_users` fails with 401 | The bearer token is not correct, or you made new credentials | Copy the current token from the Integrations page |
+| `scim_users` cannot connect | The public internet cannot reach the SCIM bridge, or an allowlist blocks it | A self-hosted bridge must be reachable. Check the DNS records and the TLS certificate |
+| `connect_vaults` fails | The Connect URL or the Connect token is not correct, or the token has no access to the vaults | Check that the Connect server runs. Also check that the token gives read access to the vaults that you want in the inventory |

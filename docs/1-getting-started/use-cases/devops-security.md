@@ -1,18 +1,18 @@
 # Security Monitoring for DevOps
 
-Ditch the data silos and sluggish response – LimaCharlie illuminates your DevOps pipeline, automates threat detection and response, and fosters real-time collaboration, empowering you to build secure and resilient software at record speed.
+LimaCharlie gives visibility into your DevOps pipeline, automates threat detection and response, and supports collaboration in real time. With this data you can build secure and resilient software quickly.
 
 ## Problems monitoring DevOps security
 
-- **Blind Spots in the Pipeline:** Siloed DevOps data from code repositories, third-party tools, and SaaS platforms leaves security teams in the dark, unable to detect threats hidden within routine operations.
-- **Reactive Response, Slowed Agility:** Manual security checks and sluggish incident response hinder DevOps agility, creating vulnerable gaps between development and deployment.
-- **DevSecOps Disconnect:** Disparate tools and fragmented communication between security and operations teams lead to inefficient incident response and missed opportunities for proactive mitigation.
+- **Blind Spots in the Pipeline:** DevOps data stays siloed in code repositories, third-party tools, and SaaS platforms. Security teams cannot see this data, so they do not detect the threats that hide in routine operations.
+- **Reactive Response, Slowed Agility:** Manual security checks and slow incident response decrease DevOps agility. They also create vulnerable gaps between development and deployment.
+- **DevSecOps Disconnect:** Security teams and operations teams use different tools and do not communicate well. This makes incident response inefficient and causes missed opportunities to mitigate threats early.
 
 ## LimaCharlie's solution
 
-- **Unified Visibility Across the Flow:** LimaCharlie's architecture effortlessly ingests telemetry from all your DevOps data sources, providing a unified view of your entire pipeline from code commits to production deployments.
-- **Automated Threat Detection and Response:** Leverage LimaCharlie's pre-built and custom detection rules to automatically identify suspicious activities within your DevOps data. Trigger instant alerts and pre-defined response actions, including stopping deployments, rolling back changes, or notifying teams.
-- **Centralized Collaboration for Faster Response:** Break down silos with LimaCharlie's collaborative platform. Security and operations teams can visualize incidents across the pipeline, analyze threats jointly, and orchestrate coordinated responses in real-time.
+- **Unified Visibility Across the Flow:** The architecture of LimaCharlie ingests telemetry from all your DevOps data sources. It gives one view of the full pipeline, from code commits to production deployments.
+- **Automated Threat Detection and Response:** Use the pre-built and custom detection rules of LimaCharlie to identify suspicious activity in your DevOps data automatically. The rules send immediate alerts and start pre-defined response actions. These actions can stop a deployment, roll back changes, or notify teams.
+- **Centralized Collaboration for Faster Response:** Remove silos with the collaborative platform of LimaCharlie. Security teams and operations teams can see incidents across the pipeline, analyze threats together, and coordinate their response in real time.
 
 ## What's Next
 

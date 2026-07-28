@@ -1,39 +1,39 @@
 # Adapters as a Service
 
-In some cases, users may need to install the LimaCharlie Adapter with persistence, to ensure that data collection survives a reboot and/or other disruptions.
+Sometimes you must install the LimaCharlie Adapter with persistence. Persistence keeps data collection active after a reboot or another disruption.
 
-To accommodate this need, the LimaCharlie adapter can be installed as a service.
+You can install the LimaCharlie adapter as a service.
 
 ## Service Installation
 
 ### Windows
 
-To install the Windows LimaCharlie adapter as a service, insert the `-install:<service_name>` flag in the command line, following the adapter executable name.
+To install the Windows LimaCharlie adapter as a service, use the `-install:<service_name>` flag. Put the flag after the name of the adapter executable.
 
-For example:
+For example, replace this command:
 
 `./lc_adapter.exe azure_event_hub client_options.identity.installation_key=...`
 
-would be replaced with
+with this command:
 
 `./lc_adapter.exe -install:azure_collection azure_event_hub client_options.identity.installation_key=...`
 
-This would create a service named `azure_collection` with the adapter config.
+The second command creates a service named `azure_collection` with the adapter config.
 
-Remember, adapter configurations can be provided via two methods:
+You can give adapter configurations in two ways:
 
-- In the command line, as part of a list of flags
-- Via a YAML config file
+- In the command line, as a list of flags
+- In a YAML config file
 
-**Note:** The service will point to `lc_adapter.exe` based on its path at the creation of the service. If you wish to move the adapter to a permanent location, please do so before creating the service.
+**Note:** The service points to `lc_adapter.exe` at the path that the file has when you create the service. Move the adapter to its permanent location before you create the service.
 
 ### Linux / systemd
 
-To install a LimaCharlie adapter as a service on a Linux system with systemd, you will need a service file, the adapter binary, and your adapter command.
+On a Linux system with systemd, you need a service file, the adapter binary, and your adapter command.
 
 #### Adapter Binary
 
-Download one of the [adapter binaries](deployment.md) and apply the necessary permissions:
+Download one of the [adapter binaries](deployment.md). Then set the necessary permissions:
 
 ```bash
 wget -O /path/to/adapter-directory/lc-adapter $ADAPTER_BINARY_URL
@@ -42,7 +42,7 @@ chmod +x /path/to/adapter-directory/lc-adapter
 
 #### Service File - /etc/systemd/system/limacharlie-adapter-name.service
 
-You will replace `$ADAPTER_COMMAND` in the service file with your actual adapter command below.
+In the service file, replace `$ADAPTER_COMMAND` with your own adapter command.
 
 ```bash
 [Unit]
@@ -65,7 +65,7 @@ WantedBy=multi-user.target
 
 #### Adapter Command
 
-Your adapter command may differ depending on your use case--this is an example of a [file](types/file.md) adapter to ingest logs from a JSON file.
+Your adapter command changes with your use case. This example uses a [file](types/file.md) adapter to ingest logs from a JSON file.
 
 ```bash
 /path/to/adapter-directory/lc-adapter file file_path=/path/to/logs.json client_options.identity.installation_key=<INSTALLATION KEY> client_options.identity.oid=<ORG ID> client_options.platform=json client_options.sensor_seed_key=<SENSOR SEED KEY> client_options.mapping.event_type_path=<EVENT TYPE FIELD> client_options.hostname=<HOSTNAME>
@@ -87,7 +87,7 @@ To remove a Windows LimaCharlie Adapter service, use the `-remove:<service_name>
 
 ### Linux
 
-If your service is running with a systemd script, you can disable and remove it with the following:
+If a systemd script runs your service, disable and remove it with these commands:
 
 ```bash
 sudo systemctl stop lc-adapter-name

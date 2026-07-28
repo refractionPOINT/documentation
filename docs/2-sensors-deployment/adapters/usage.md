@@ -1,19 +1,19 @@
 # Adapter Usage
 
-The Adapter can be used to access many different sources and many different event types. The main mechanisms specifying the source and type of events are:
+The Adapter can access many sources and many event types. The main mechanisms that specify the source and the type of events are:
 
-1. Adapter Type: this indicates the technical source of the events, like `syslog` or S3 buckets.
-2. Platform: the platform indicates the type of events that are acquired from that source, like `text` or `carbon_black`.
+1. Adapter Type: this shows the technical source of the events, like `syslog` or S3 buckets.
+2. Platform: the platform shows the type of events that come from that source, like `text` or `carbon_black`.
 
-Depending on the Adapter Type specified, configurations that can be specified will change. Running the adapter with no command line arguments will list all available Adapter Types and their configurations.
+The configurations that you can set change with the Adapter Type. To list all available Adapter Types and their configurations, run the adapter with no command line arguments.
 
-Configurations can be provided to the adapter in one of three ways:
+You can give configurations to the adapter in one of three ways:
 
-1. By specifying a configuration file.
-2. By specifying the configurations via the command line in the format `config-name=config-value`.
-3. By specifying the configurations via the environment variables in the format `config-name=config-value`.
+1. In a configuration file.
+2. On the command line, in the format `config-name=config-value`.
+3. In environment variables, in the format `config-name=config-value`.
 
-Here's an example config as a config file for an adapter using the `file` method of collection:
+This example shows a configuration file for an adapter that uses the `file` collection method:
 
 ```yaml
 file: // The root of the config is the adapter collection method.
@@ -30,9 +30,9 @@ file: // The root of the config is the adapter collection method.
 
 ## Multi-Adapter
 
-It is possible to execute multiple instances of adapters of the same type within the same adapter process, for example to have a single adapter process monitor files in multiple directories with slightly different configurations.
+You can run more than one adapter instance of the same type in the same adapter process. For example, one adapter process can monitor files in several directories with different configurations.
 
-This is achieved by using a configuration file (as described above) with multiple YAML "documents" within like this:
+To do this, use a configuration file (as described above) that contains more than one YAML "document", like this:
 
 ```yaml
 file:
@@ -75,23 +75,23 @@ file:
 
 ## Runtime Configuration
 
-The Adapter runtime supports some custom behaviors to make it more suitable for specific deployment scenarios:
+The Adapter runtime supports custom behaviors for specific deployments:
 
-- `healthcheck`: an integer that specifies a port to start an HTTP server on that can be used for healthchecks.
+- `healthcheck`: an integer that gives a port. The adapter starts an HTTP server on this port for healthchecks.
 
 ## Core Configuration
 
-All Adapter types support the same `client_options`, plus type-specific configurations. The following configurations are *required* for every Adapter:
+All Adapter types support the same `client_options`, plus type-specific configurations. These configurations are *required* for every Adapter:
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) for this adapter.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself to LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, like `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: any name for this adapter. LimaCharlie generates Sensor IDs (SID) from this name, see below.
 - `client_options.hostname`: a hostname for the adapter.
 
 ### Example
 
-Using inline parameters:
+With inline parameters:
 
 ```bash
 ./lc-adapter file file_path=/path/to/logs.json \
@@ -103,7 +103,7 @@ Using inline parameters:
   client_options.hostname=<HOSTNAME>
 ```
 
-Using Docker:
+With Docker:
 
 ```bash
 docker run -d --rm -it -p 4404:4404/udp refractionpoint/lc-adapter syslog \
@@ -117,7 +117,7 @@ docker run -d --rm -it -p 4404:4404/udp refractionpoint/lc-adapter syslog \
   is_udp=true
 ```
 
-Using a configuration file:
+With a configuration file:
 
 ```bash
 ./lc-adapter file config_file.yaml
@@ -127,34 +127,34 @@ Using a configuration file:
 
 ### Transformation Order
 
-Data sent via USP can be formatted in many different ways. Data is processed in a specific order as a pipeline:
+Data that you send through USP can have many formats. The data is processed as a pipeline, in this order:
 
-1. Regular Expression with named capture groups parsing a string into a JSON object.
+1. A regular expression with named capture groups parses a string into a JSON object.
 2. Built-in (in the cloud) LimaCharlie parsers that apply to specific `platform` values (like `carbon_black`).
 3. The various "extractors" defined, like `EventTypePath`, `EventTimePath`, `SensorHostnamePath` and `SensorKeyPath`.
-4. Custom `Mappings` directives provided by the client.
+4. Custom `Mappings` directives from the client.
 
 ### Configurations
 
-The following configurations allow you to customize the way data is ingested by the platform, including mapping and redefining fields such as the event type path and time.
+These configurations change how the cloud ingests the data. They also map and redefine fields such as the event type path and the event time.
 
-- `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). The name of each group will be used as the key in the converted JSON parsing.
-- `client_options.mapping.parsing_grok:`  grok pattern parsing for structured data extraction from unstructured log messages. Grok patterns combine regular expressions with predefined patterns to simplify log parsing and field extraction.
-- `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
-- `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
-- `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
-- `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
-- `client_options.mapping.event_time_timezone`: specifies the timezone for parsing timestamps that don't include timezone information. Uses IANA timezone names (e.g., `America/New_York`, `Europe/London`, `UTC`). If not specified, timestamps without timezone info are treated as UTC.
+- `client_options.mapping.parsing_re`: regular expression with [named capture groups](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/blob/master/01-chapter2.markdown#named-matches). Each group name becomes a key in the converted JSON.
+- `client_options.mapping.parsing_grok:`  a grok pattern that extracts structured data from unstructured log messages. Grok patterns combine regular expressions with predefined patterns.
+- `client_options.mapping.sensor_key_path`: shows which component of the events represents the unique sensor identifier.
+- `client_options.mapping.sensor_hostname_path`: shows which component of the event is the hostname of the resulting Sensor in LimaCharlie.
+- `client_options.mapping.event_type_path`: shows which component of the event is the Event Type of the resulting event in LimaCharlie. It also supports template strings that are based on each event.
+- `client_options.mapping.event_time_path`: shows which component of the event is the Event Time of the resulting event in LimaCharlie.
+- `client_options.mapping.event_time_timezone`: the timezone to use for timestamps that have no timezone information. Use IANA timezone names (for example, `America/New_York`, `Europe/London`, `UTC`). If you do not set this option, timestamps with no timezone information are UTC.
 - `client_options.mapping.rename_only`: *deprecated*
 - `client_options.mapping.mappings`: *deprecated*
 - `client_options.mapping.transform`: a Transform to apply to events.
-- `client_options.mapping.drop_fields`: a list of field paths to be dropped from the data before being processed and retained.
+- `client_options.mapping.drop_fields`: a list of field paths to remove from the data before the data is processed and kept.
 
 ### Parsing
 
 #### Named Group Parsing
 
-If the data ingested in LimaCharlie is text (a syslog line for example), you may automatically parse it into a JSON format. To do this, you need to define one of the following:
+If the data that LimaCharlie ingests is text (a syslog line, for example), you can parse it into JSON automatically. To do this, define one of these options:
 
 - a grok pattern, using the `client_options.mapping.parsing_grok` option
 - a regular expression, using the `client_options.mapping.parsing_re` option
@@ -165,14 +165,14 @@ If the data ingested in LimaCharlie is text (a syslog line for example), you may
 
 Grok patterns use the following syntax:
 
-The grok pattern line must start with **message:** , followed by the patterns, as in the example below
+The grok pattern line must start with **message:** , and then the patterns, as in the example below
 
 - `%{PATTERN_NAME:field_name}` - Extract a pattern into a named field
 - `%{PATTERN_NAME}` - Match a pattern without extraction
 
-Custom patterns can be defined using the pattern name as a key
+To define custom patterns, use the pattern name as a key
 
-This means that the patterns should not include extracted field names called message as it will conflict with the assumed root of the grok pattern called message.
+The patterns must not include an extracted field name called message. That name conflicts with the assumed root of the grok pattern, which is also called message.
 
 ##### Built-in Patterns
 
@@ -221,7 +221,7 @@ client_options:
 
 ##### Timezone Handling
 
-Many log sources emit timestamps without timezone information (e.g., `2024-01-01 12:00:00` or `Jan 15 14:30:22`). By default, LimaCharlie interprets these as UTC. If your logs use local time, you can specify the timezone using `event_time_timezone`:
+Many log sources send timestamps with no timezone information (for example, `2024-01-01 12:00:00` or `Jan 15 14:30:22`). By default, LimaCharlie reads these as UTC. If your logs use local time, set the timezone with `event_time_timezone`:
 
 ```yaml
 client_options:
@@ -243,7 +243,7 @@ The timezone must be a valid [IANA timezone name](https://en.wikipedia.org/wiki/
 | `Asia/Tokyo` | Japan Standard Time |
 | `UTC` | Coordinated Universal Time |
 
-> **Note:** Unix epoch timestamps (e.g., `1704067200`) are timezone-agnostic and are not affected by this setting.
+> **Note:** Unix epoch timestamps (for example, `1704067200`) have no timezone, and this setting does not change them.
 
 #### Regular Expressions
 
@@ -259,7 +259,7 @@ Nov 09 10:57:09 penguin PackageKit[21212]: daemon quit
 (?P<date>... \d\d \d\d:\d\d:\d\d) (?P<host>.+) (?P<exe>.+?)\[(?P<pid>\d+)\]: (?P<msg>.*)
 ```
 
-which would result in the following event in LimaCharlie:
+This gives the following event in LimaCharlie:
 
 ```json
 {
@@ -273,19 +273,19 @@ which would result in the following event in LimaCharlie:
 
 #### Key/Value Parsing
 
-Alternatively you can specify a regular expression that does NOT contain Named Groups, like this:
+As an alternative, you can give a regular expression that does NOT contain Named Groups, like this:
 
 ```text
 (?:<\d+>\s*)?(\w+)=(".*?"|\S+)
 ```
 
-When in this mode, LimaCharlie assumes the regular expression will generate a list of matches where each match has 2 submatches, and submatch index 1 is the Key name, and submatch index 2 is the value. This is compatible with logs like CEF for example where the log could look like:
+In this mode, LimaCharlie expects the regular expression to generate a list of matches. Each match has 2 submatches. Submatch index 1 is the Key name, and submatch index 2 is the value. This mode works with logs such as CEF, where the log can look like this:
 
 ```text
 <20>hostname=my-host log_name=http_logs timestamp=....
 ```
 
-which would end up generating:
+This generates:
 
 ```json
 {
@@ -305,11 +305,11 @@ Namely:
 - Event Type
 - Event Time
 
-You may specify certain fields from the JSON logs to be extracted into these common fields.
+You can select fields from the JSON logs to extract into these common fields.
 
-This process is done by specifying the "path" to the relevant field in the JSON data. Paths are like a directory path using `/` for each sub directory except that in our case, they describe how to get to the relevant field from the top level of the JSON.
+To do this, give the "path" to the field in the JSON data. A path is like a directory path that uses `/` for each sub directory. In this case, the path shows how to get to the field from the top level of the JSON.
 
-For example, using this event:
+For example, with this event:
 
 ```json
 {
@@ -323,18 +323,18 @@ For example, using this event:
 }
 ```
 
-The following paths would yield the following results:
+These paths give these results:
 
 - `a`: `x`
 - `b`: `y`
 - `c/d/e`: `z`
 
-The following extractors can be specified:
+You can specify these extractors:
 
-- `client_options.mapping.sensor_key_path`: indicates which component of the events represent unique sensor identifiers.
-- `client_options.mapping.sensor_hostname_path`: indicates which component of the event represents the hostname of the resulting Sensor in LimaCharlie.
-- `client_options.mapping.event_type_path`: indicates which component of the event represents the Event Type of the resulting event in LimaCharlie. It also supports template strings based on each event.
-- `client_options.mapping.event_time_path`: indicates which component of the event represents the Event Time of the resulting event in LimaCharlie.
+- `client_options.mapping.sensor_key_path`: shows which component of the events represents the unique sensor identifier.
+- `client_options.mapping.sensor_hostname_path`: shows which component of the event is the hostname of the resulting Sensor in LimaCharlie.
+- `client_options.mapping.event_type_path`: shows which component of the event is the Event Type of the resulting event in LimaCharlie. It also supports template strings that are based on each event.
+- `client_options.mapping.event_time_path`: shows which component of the event is the Event Time of the resulting event in LimaCharlie.
 
 ### Indexing
 
@@ -346,9 +346,9 @@ Indexing occurs in one of 3 ways:
 
 #### User Defined Indexing
 
-An Adapter can be configured to do custom indexing on the data it feeds.
+You can configure an Adapter to do custom indexing on the data that it feeds.
 
-This is done by setting the `indexing` element in the `client_options`. This field contains a list of index descriptors.
+To do this, set the `indexing` element in the `client_options`. This field contains a list of index descriptors.
 
 An index descriptor can have the following fields:
 
@@ -367,7 +367,7 @@ path: userAgent
 index_type: user
 ```
 
-Put together in a client option, you could have:
+In a client option, this can look like this:
 
 ```text
 {
@@ -401,13 +401,13 @@ This is the list of currently supported index types:
 
 ### Sensor IDs
 
-USP Clients generate LimaCharlie Sensors at runtime. The ID of those sensors (SID) is generated based on the Organization ID (OID) and the Sensor Seed Key.
+USP Clients generate LimaCharlie Sensors at runtime. LimaCharlie generates the ID of those sensors (SID) from the Organization ID (OID) and the Sensor Seed Key.
 
-This implies that if want to re-key an IID (perhaps it was leaked), you may replace the IID with a new valid one. As long as you use the same OID and Sensor Seed Key, the generated SIDs will be stable despite the IID change.
+If you must re-key an IID because it leaked, replace the IID with a new valid one. If you keep the same OID and Sensor Seed Key, the generated SIDs stay stable after the IID change.
 
 ### Discovering adapter types and finding an adapter's sensor
 
-The CLI can enumerate the supported adapter types, describe their configuration schema, and locate the sensor an adapter produced. These commands work for both `cloud-adapter` (the hosted set) and `external-adapter` (the on-prem set); the examples below use `cloud-adapter`.
+The CLI can list the supported adapter types, show their configuration schema, and find the sensor that an adapter produced. These commands work for both `cloud-adapter` (the hosted set) and `external-adapter` (the on-prem set). The examples below use `cloud-adapter`.
 
 List the supported adapter/sensor type names:
 
@@ -415,30 +415,30 @@ List the supported adapter/sensor type names:
 limacharlie cloud-adapter list-types
 ```
 
-Note that `external-adapter list-types` lists the on-prem set, which differs from the cloud set.
+`external-adapter list-types` lists the on-prem set, which is different from the cloud set.
 
-Show the configuration field listing for one adapter type. This indicates where each field lives (for example, `hostname` under `client_options`). Add `--output json` for the raw schema:
+Show the configuration field listing for one adapter type. The listing shows where each field is (for example, `hostname` under `client_options`). Add `--output json` for the raw schema:
 
 ```bash
 limacharlie cloud-adapter schema --type <t>
 limacharlie cloud-adapter schema --type <t> --output json
 ```
 
-Find the live sensor(s) an adapter produced, matched by installation-key IID:
+Find the live sensors that an adapter produced, matched by installation-key IID:
 
 ```bash
 limacharlie cloud-adapter sensors --key <adapter-record>
 ```
 
-An empty result means the adapter has not delivered any events yet; the sensor materializes on the first event.
+An empty result means that the adapter did not deliver any events yet. The sensor appears on the first event.
 
 ## Validating Configurations
 
-Before deploying an adapter to production, you can validate your configuration and test parsing rules to ensure data will be correctly ingested.
+Before you deploy an adapter to production, validate your configuration and test the parsing rules. This makes sure that the data is ingested correctly.
 
 ### Validating Adapter Configuration
 
-The adapter binary supports a `--validate` flag that checks your configuration without actually starting the adapter:
+The adapter binary supports a `--validate` flag. This flag checks your configuration, but it does not start the adapter:
 
 ```bash
 # Validate a YAML config file
@@ -448,11 +448,11 @@ The adapter binary supports a `--validate` flag that checks your configuration w
 ./lc_adapter --validate wel evt_sources=Security,System client_options.identity.oid=... client_options.identity.installation_key=... client_options.platform=wel
 ```
 
-This will:
+The flag does the following:
 
-1. Parse and validate the configuration structure
-2. Check for required fields (OID, installation key, platform, etc.)
-3. Report any configuration errors without connecting to LimaCharlie
+1. Parses and validates the configuration structure
+2. Checks for required fields (OID, installation key, platform, etc.)
+3. Reports configuration errors, and does not connect to LimaCharlie
 
 Exit codes:
 
@@ -461,19 +461,19 @@ Exit codes:
 
 ### Testing Parsing with Sample Data
 
-The adapter also supports a `--test-parsing` flag that sends sample data to the LimaCharlie validation API to verify your parsing rules work correctly:
+The adapter also supports a `--test-parsing` flag. This flag sends sample data to the LimaCharlie validation API to check that your parsing rules work correctly:
 
 ```bash
 # Test parsing with a sample log file
 ./lc_adapter --test-parsing sample.log syslog config.yaml
 ```
 
-This will:
+The flag does the following:
 
-1. Read sample data from the specified file
-2. Send it to the LimaCharlie validation API with your mapping configuration
-3. Display the parsed events or any parsing errors
-4. Exit with error (code 1) if no events were parsed (likely misconfigured parsing rules)
+1. Reads sample data from the file that you specify
+2. Sends the data to the LimaCharlie validation API with your mapping configuration
+3. Shows the parsed events or the parsing errors
+4. Exits with an error (code 1) if it parsed no events. This usually means that the parsing rules are incorrect.
 
 Exit codes:
 
@@ -503,7 +503,7 @@ Event 1:
   }
 ```
 
-Example error output when no events are parsed (e.g., regex doesn't match):
+Example error output when the adapter parses no events (for example, the regex does not match):
 
 ```text
 starting
@@ -526,11 +526,11 @@ Suggestions:
 parsing test failed: no events parsed from sample data
 ```
 
-**Note**: The config must contain a valid API key (not just an installation key) in `client_options.identity.installation_key` for API authentication.
+**Note**: For API authentication, the config must contain a valid API key in `client_options.identity.installation_key`. An installation key is not enough.
 
 ### Testing Parsing via Python CLI
 
-You can also test parsing using the LimaCharlie Python CLI:
+You can also test parsing with the LimaCharlie Python CLI:
 
 ```bash
 # Validate with a text file containing sample logs
@@ -546,24 +546,24 @@ limacharlie usp validate --platform json --mapping-file mapping.yaml --input-fil
 limacharlie usp validate --platform text --mapping-file mapping.yaml --input-file sample.log --output-format json
 ```
 
-The validation API processes your sample data through the actual parsing engine and returns:
+The validation API processes your sample data with the parsing engine and returns:
 
-- **On success**: Parsed events showing how data will be transformed
-- **On failure**: Specific error messages indicating what went wrong
+- **On success**: the parsed events, which show how the data is transformed
+- **On failure**: error messages that show the problem
 
 ### Common Validation Issues
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
-| `missing platform` | No `platform` field in client_options | Add `client_options.platform` (e.g., `text`, `json`, `cef`) |
+| `missing platform` | No `platform` field in client_options | Add `client_options.platform` (for example, `text`, `json`, `cef`) |
 | `missing oid` | No organization ID configured | Add `client_options.identity.oid` |
 | `missing installation_key` | No installation key configured | Add `client_options.identity.installation_key` |
-| `regex pattern did not match` | Parsing regex doesn't match input format | Test regex against actual sample data |
-| `no events parsed from sample data` | Regex doesn't match, wrong platform, or empty input | Verify parsing_re matches your data, check platform type, ensure sample file has content |
+| `regex pattern did not match` | The parsing regex does not match the input format | Test the regex against your sample data |
+| `no events parsed from sample data` | The regex does not match, the platform is wrong, or the input is empty | Check that parsing_re matches your data, check the platform type, and make sure that the sample file has content |
 
 ### SDK Validation
 
-For programmatic validation, the Python SDK provides the `validateUSP` method:
+For programmatic validation, use the `validateUSP` method in the Python SDK:
 
 ```python
 from limacharlie import Manager

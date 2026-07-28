@@ -1,33 +1,33 @@
 # Sensor Connectivity
 
-The network connection required by the LimaCharlie Sensor is very simple. It requires a single TCP connection over port 443 to a specific domain, and optionally another destination for the [Artifact Collection](../4-data-queries/events/index.md) service.
+The network connection that the LimaCharlie Sensor needs is simple. The sensor needs one TCP connection over port 443 to a specific domain. Optionally, it also needs another destination for the [Artifact Collection](../4-data-queries/events/index.md) service.
 
-The specific domains are listed in the Sensor Downloads section of your Organization's dashboard. They will vary depending on the datacenter you chose to create your organization in. To find yours, see the screenshots below.
+The Sensor Downloads section of the dashboard for your Organization lists the specific domains. The domains change with the datacenter that you chose for your organization. To find your domains, see the screenshots below.
 
-Currently, web proxies are not supported, but since LimaCharlie requires a single connection to a single dedicated domain, it makes creating a single exception safe and easy.
+Web proxies are not supported at this time. LimaCharlie needs one connection to one dedicated domain, so you can add one safe exception.
 
 ## Proxy Tunneling
 
 The LimaCharlie sensor supports unauthenticated proxy tunneling through [HTTP CONNECT](https://en.wikipedia.org/wiki/HTTP_tunnel).
 
-This allows the LimaCharlie connection to go through the proxy in an opaque way (since the sensor does not support SSL interception).
+The LimaCharlie connection goes through the proxy in an opaque way, because the sensor does not support SSL interception.
 
-To activate this feature, set the `LC_PROXY` environment variable to the DNS or hostname of the proxy to use. For example you could use: `LC_PROXY=proxy.corp.com:8080`.
+To enable this feature, set the `LC_PROXY` environment variable to the DNS name or the hostname of the proxy. For example: `LC_PROXY=proxy.corp.com:8080`.
 
 ### Windows
 
-On Windows, you may use a light auto-detection of a globally-configured, unauthenticated proxy.
+On Windows, you can use a simple auto-detection of a global, unauthenticated proxy.
 
-To enable this, set the same environment variable to the `-` value, like `LC_PROXY=-`. This will make the sensor query the registry key `HKLM\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ProxyServer` and use its value as the proxy destination.
+To enable this, set the same environment variable to the `-` value, like `LC_PROXY=-`. The sensor then reads the registry key `HKLM\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ProxyServer` and uses its value as the proxy destination.
 
-Also on Windows, in some cases the environment variable changes do not propagate to all processes in the expected way. Usually a reboot of the machine will fix it, but for machines that cannot be rebooted you have the ability to set a special value to the environment variable (deletion is usually problematic but setting a var works) that will disable the proxy specifically: `!`. So if you set the `LC_PROXY` variable to `!` (exclamation mark), the proxy will be disabled.
+Also on Windows, changes to an environment variable sometimes do not propagate to all processes. A reboot of the machine usually corrects this. If you cannot reboot the machine, set the `LC_PROXY` variable to `!` (exclamation mark). This value disables the proxy. Deletion of the variable is usually problematic, but a new value works.
 
 ## Certificate Revocation Checks on Restricted Networks (Windows)
 
-On Windows, when the sensor verifies code signatures it performs certificate revocation checks, which can attempt to reach CRL/OCSP endpoints over the network. On air-gapped or tightly restricted networks those lookups may stall or fail.
+On Windows, the sensor does certificate revocation checks when it verifies code signatures. These checks can try to reach CRL/OCSP endpoints on the network. On air-gapped or tightly restricted networks, these lookups can stall or fail.
 
-Setting the `LC_LOCAL_CACHE_ONLY_REVOCATION_CHECK` environment variable to `1` (or `true`) on the sensor process makes these revocation checks use only the local cache and never reach out to the network.
+Set the `LC_LOCAL_CACHE_ONLY_REVOCATION_CHECK` environment variable to `1` (or `true`) on the sensor process. The revocation checks then use only the local cache and do not use the network.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, Sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless method to connect the endpoints of an organization to the cloud in a secure way.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives full control of security operations. This structure supports multi-tenant setups for managed security providers, or for enterprises that manage many departments or clients.

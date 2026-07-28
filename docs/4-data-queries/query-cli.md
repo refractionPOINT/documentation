@@ -1,49 +1,48 @@
 # Query with CLI
 
-The command line interface found in the Python CLI/SDK can be invoked like `limacharlie search` once installed (`pip install limacharlie`).
+The command line interface is part of the Python CLI/SDK. Install it with `pip install limacharlie`. Then start it with `limacharlie search`.
 
 ## Context
 
-To streamline day to day usage, the first 3 components of the query are set seperatly and remain between queries.
- These 3 component can be set through the following commands:
+You set the first 3 components of the query separately, and they stay the same between queries. Use these commands to set them:
 
-1. `set_time` to set the timeframe of the query, like `set_time -3h` based on the [ParseDuration()](https://pkg.go.dev/time#ParseDuration) strings.
-2. `set_sensors` to set the sensors who's data is queried, like `set_sensors plat == windows`, based on the [sensor selector](../8-reference/sensor-selector-expressions.md) grammar.
-3. `set_events` to set the events that should be queried, space separated like `NEW_PROCESS DNS_REQUEST`. This command supports tab completion.
+1. Use `set_time` to set the time range of the query, for example `set_time -3h`. The value uses the [ParseDuration()](https://pkg.go.dev/time#ParseDuration) strings.
+2. Use `set_sensors` to set the sensors that the query reads, for example `set_sensors plat == windows`. The value uses the [sensor selector](../8-reference/sensor-selector-expressions.md) grammar.
+3. Use `set_events` to set the events to query, space separated, for example `NEW_PROCESS DNS_REQUEST`. This command supports tab completion.
 
-Once set, you can specify the last component(s): the Filter, and the Projection.
+After you set these components, give the last components: the Filter and the Projection.
 
-Several other commands are avaible to make your job easier:
+Other commands are also available:
 
-- `set_limit_event` to set a maximum number of events to scan during the query.
-- `set_output` to mirror the queries and their results to a file.
-- `set_format` to display results either in `json` or `table`.
-- `stats` to display the total costs incurred from the queries during this session.
+- Use `set_limit_event` to set the maximum number of events to scan in the query.
+- Use `set_output` to copy the queries and their results to a file.
+- Use `set_format` to show the results in `json` or `table` format.
+- Use `stats` to show the total cost of the queries in this session.
 
 ## Querying
 
 ### Paged Mode
 
-The main method of running a query as described above (in paged mode) is to use the `q` (for "query") command.
+To run a query in paged mode, as described above, use the `q` (for "query") command.
 
-Paged mode means that an initial subset of the results will be returned (usually in the 1000s of elements) and if you want to fetch more of the results, you can use the `n` (for "next") command to fetch the next page.
+In paged mode, the query returns a first subset of the results, usually some thousands of elements. To get more results, use the `n` (for "next") command to fetch the next page.
 
-Some queries cannot be done in paged mode, like queries that do aggregation or queries that use a stateful filter (like `with child`). In those cases, all results over the entire timeline are computed.
+Some queries cannot run in paged mode: queries that do aggregation, and queries that use a stateful filter such as `with child`. For these queries, all results over the entire timeline are computed.
 
 For example:
 `q event/DOMAIN_NAME contains 'google' | event/DOMAIN_NAME as domain COUNT_UNIQUE(routing/sid) as count GROUP BY(domain)`
 
-This command supports tab completion for elements of the query, like `event/DO` + "tab" will suggest `event/DOMAIN_NAME` or other relevant elements that exist as part of the schema.
+This command supports tab completion for elements of the query. For example, `event/DO` + "tab" suggests `event/DOMAIN_NAME` or other elements in the schema.
 
 ### Non Paged Mode
 
-You can also force a full query over all the data (no paging) by using the "query all" (`qa`) command like:
+To force a full query over all the data, with no paging, use the "query all" (`qa`) command:
 
 `qa event/DOMAIN_NAME contains 'google' | event/DOMAIN_NAME as domain COUNT_UNIQUE(routing/sid) as count GROUP BY(domain)`
 
 ### Dry Run
 
-To simulate running a query, use the `dryrun` command. This will query the LimaCharlie API and return to you an aproximate worst case cost for the query (assuming you fetch all pages over its entire time range).
+To simulate a query, use the `dryrun` command. The command queries the LimaCharlie API and returns an approximate worst-case cost for the query. The cost assumes that you fetch all pages over the entire time range.
 
 For example:
 `dryrun event/COMMAND_LINE contains "powershell" and event/FILE_PATH not contains "powershell"`

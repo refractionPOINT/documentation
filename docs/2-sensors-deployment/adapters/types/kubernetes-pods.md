@@ -2,9 +2,9 @@
 
 ## Overview
 
-This Adapter allows you to ingest the logs from the pods running in a Kubernetes cluster.
+This Adapter lets you ingest the logs from the pods that run in a Kubernetes cluster.
 
-The adapter relies on local filesystem access to the standard Kubernetes pod logging structure. This means the adapter is best run as a Daemon Set in Kubernetes with the pod logs location mounted (usually `/var/log/pods`).
+The adapter needs local filesystem access to the standard structure of Kubernetes pod logs. For this reason, it is best to run the adapter as a Daemon Set in Kubernetes, with the location of the pod logs mounted (usually `/var/log/pods`).
 
 A [public Docker container](https://hub.docker.com/r/refractionpoint/lc-adapter-k8s-pods) is available as `refractionpoint/lc-adapter-k8s-pods`.
 
@@ -15,7 +15,7 @@ Adapter Type: `k8s_pods`
 The following fields are required for configuration:
 
 - `client_options`: see [common adapter configuration](../usage.md).
-- `root`: The root of the Kubernetes directory storing logs, usually `/var/log/pods`.
+- `root`: The root of the Kubernetes directory that stores logs, usually `/var/log/pods`.
 
 ### Infrastructure as Code Deployment
 

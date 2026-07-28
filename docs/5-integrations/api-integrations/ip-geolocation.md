@@ -2,9 +2,9 @@
 
 > No Subscription Required
 >
-> LimaCharlie provides access to this integration free of charge for all users, so no additional subscription is required.
+> LimaCharlie gives all users access to this integration free of charge. You do not need a subscription.
 
-With the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo) subscribed, it can be used as an API-based lookup.
+If you subscribe to the `ip-geo` [add-on](https://app.limacharlie.io/add-ons/detail/ip-geo), you can use it as an API-based lookup.
 
 ```yaml
 event: CONNECTED
@@ -17,12 +17,12 @@ metadata_rules:
   path: country/is_in_european_union
 ```
 
-Step-by-step, this rule will do the following:
+This rule does these steps:
 
-- Upon seeing a `CONNECTED` event, retrieve the `routing/ext_ip` value and send it to MaxMind via the `api/ip-geo` resource
-- Upon receiving a response from `api/ip-geo`, evaluate it using `metadata_rules` to see if the country associated with the IP is located in the EU
+- When a `CONNECTED` event occurs, the rule gets the `routing/ext_ip` value and sends it to MaxMind through the `api/ip-geo` resource
+- When `api/ip-geo` sends a response, the rule evaluates it with `metadata_rules` to see if the country of the IP is in the EU
 
-The format of the metadata returned is documented in the [MaxMind DB Reader (Python) repository](https://github.com/maxmind/MaxMind-DB-Reader-python) and looks like this:
+The [MaxMind DB Reader (Python) repository](https://github.com/maxmind/MaxMind-DB-Reader-python) documents the format of the metadata. The metadata has this format:
 
 ```json
 {
@@ -79,4 +79,4 @@ The format of the metadata returned is documented in the [MaxMind DB Reader (Pyt
 }
 ```
 
-The geolocation data comes from the maxmind GeoLite2 database. For more information, visit [maxmind.com](http://www.maxmind.com).
+The geolocation data comes from the maxmind GeoLite2 database. For more information, see [maxmind.com](http://www.maxmind.com).

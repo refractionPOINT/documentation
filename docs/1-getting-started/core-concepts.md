@@ -4,52 +4,54 @@
 
 ### Endpoint Agents
 
-The LimaCharlie endpoint agent is a cross platform endpoint Sensor. It is a low-level, light-weight sensor which executes detection and response functionality in real-time.
+The LimaCharlie endpoint agent is a cross platform sensor. The sensor is small, runs at a low level, and does detection and response in real time.
 
-The sensor provides a wide range of advanced capability.
+The sensor has many capabilities.
 
-- Flight Data Recorder (FDR) type functionality like Processes, Network Connections, Domain Name requests etc.
-- Host isolation, automated response rules, intelligent local caching of events for in-depth Incident Response (IR) as well as some forensic features like dumping memory.
+- Flight Data Recorder (FDR) functions such as processes, network connections, and domain name requests.
+- Host isolation, automated response rules, and a local cache of events for Incident Response (IR). Forensic functions such as memory dumps are also available.
 
-Sensors are designed to limit the potential for abuse resulting from unauthorized access to the LimaCharlie platform. This is achieved by limiting open-ended commands which might enable an attacker to covertly upload malicious software to your hosts. This means the LimaCharlie sensor is extremely powerful but also keeps its "read-only" qualities on your infrastructure. Of course, all access and interactions with the hosts are also logged for audit both within the cloud and tamper-proof forwarding to your own infrastructure.
+Sensors limit the damage that an attacker can do with unauthorized access to the LimaCharlie platform. The sensor does not accept open-ended commands. An attacker therefore cannot use the sensor to upload malicious software to your hosts in secret. The sensor keeps its "read-only" qualities on your infrastructure. The cloud logs all access to the hosts and all interaction with them for audit. It also forwards these logs to your own infrastructure in a tamper-proof form.
 
-Full commands list is in the [Endpoint Agent Commands](../8-reference/endpoint-commands.md) section.
+The [Endpoint Agent Commands](../8-reference/endpoint-commands.md) section gives the full list of commands.
 
 ### Adapters
 
-The LimaCharlie Adapter allows for real-time ingestion of any structured data, such as logs or telemetry, into the LimaCharlie platform, treating it as a first-class data source. This enables users to apply detection and response rules or send data to other outputs. Adapters support formats like JSON, Syslog, and CEFL, and can be deployed on-premise or cloud-to-cloud, either with or without the EDR sensor. For known sources like cloud platforms or Windows Event Logs, built-in mappings simplify data ingestion. Text-based Adapters allow for custom mapping and automation of any structured text. Additionally, pre-defined Adapters offer guided setups for common data sources like AWS CloudTrail and GuardDuty, while specialized connectors like Office 365 and Slack are supported with detailed configuration guidance. Some cloud-to-cloud Adapters, such as AWS S3, delete data after ingestion, so dedicated buckets with proper permissions are recommended.
+The LimaCharlie Adapter ingests any structured data, such as logs or telemetry, into the LimaCharlie platform in real time. The platform treats this data like any other data source. You can then apply detection and response rules to the data, or send the data to other outputs. Adapters support formats such as JSON, Syslog, and CEFL. You can deploy an adapter on-premise or cloud-to-cloud, with or without the EDR sensor.
+
+Built-in mappings make ingestion more simple for known sources such as cloud platforms or Windows Event Logs. Text-based Adapters support custom mappings and automation for any structured text. Pre-defined Adapters give guided setups for common data sources such as AWS CloudTrail and GuardDuty. LimaCharlie also supports specialized adapters such as Office 365 and Slack, with detailed configuration instructions. Some cloud-to-cloud Adapters, such as AWS S3, delete the data after ingestion. Use a dedicated bucket with the correct permissions for these adapters.
 
 ## Installation Keys
 
-Installation Keys are used to install a sensor. By specifying a key during installation the sensor can cryptographically be tied to your account.
+You use an Installation Key to install a sensor. The key ties the sensor cryptographically to your account.
 
-Get more details in the [Installation Keys section](../2-sensors-deployment/installation-keys.md).
+The [Installation Keys section](../2-sensors-deployment/installation-keys.md) gives more details.
 
 ## Tags
 
-Sensors can have Tags associated with them. Tags are added during creation or dynamically through the UI, API or Detection & Response Rules.
+Sensors can have Tags. You add a Tag when you create the sensor. You can also add a Tag later with the web app, the API, or Detection & Response Rules.
 
-Get more information in the [Sensor tags section](../2-sensors-deployment/sensor-tags.md).
+The [Sensor tags section](../2-sensors-deployment/sensor-tags.md) gives more information.
 
 ## Detection & Response Rules
 
-The Detection & Response Rules act as an automation engine. The Detection component is a rule that either matches an event or not. If the Detection component matches, the Response component of the rule is actioned. This can be used to automatically investigate, mitigate or apply Tags.
+Detection & Response Rules are an automation engine. The Detection component matches an event, or it does not match. If the Detection component matches, LimaCharlie runs the Response component of the rule. The Response component can investigate, mitigate, or apply Tags automatically.
 
-Detailed explanation in the [Detection & Response section](../3-detection-response/index.md).
+The [Detection & Response section](../3-detection-response/index.md) gives a detailed explanation.
 
 ## Insight
 
-Insight is our built-in data retention and search feature. It is enabled by default and included within our 2 sensor free tier as well.
+Insight is the built-in feature for data retention and search. It is enabled by default, and it is included in the free tier of 2 sensors.
 
-We configure everything for you so that you get access to one year of your data for visualization and searching.
+LimaCharlie configures Insight for you. You get access to one year of your data to visualize and query.
 
-You don't *have to* use the built-in data retention; you can forward data directly to your infrastructure if preferred. However, it is generally much simpler and a better experience to use Insight. If you do disable Insight, any data already collected will remain stored and searchable for the original retention period. If you prefer not to use Insight, go through the next section (Outputs).
+You do not *have to* use the built-in data retention. You can send data directly to your infrastructure instead. But Insight is usually more simple to use. If you disable Insight, the data that LimaCharlie already collected stays stored and searchable for the original retention period. If you do not want to use Insight, read the next section (Outputs).
 
 ## Outputs
 
-If you are using Insight (data retention) this section is optional.
+If you use Insight (data retention), this section is optional.
 
-LimaCharlie can relay the data somewhere for longer term storage and analysis. Where that data is sent depends on which Outputs are activated. You can have as many Output modules active as you want, so you can send it to multiple syslog destinations using the Syslog Output module and then send it to some cold storage over an Scp Output module.
+LimaCharlie can send the data to another location for long-term storage and analysis. The Outputs that you activate control the destination of the data. You can activate as many Output modules as you want. For example, you can send the data to several syslog destinations with the Syslog Output module, and also send it to cold storage with the Scp Output module.
 
 Output is also split between four categories:
 
@@ -58,13 +60,13 @@ Output is also split between four categories:
 - audit
 - deployment
 
-Selecting a Stream when creating an Output will select the relevant type of data to flow through it.
+When you create an Output, select a Stream. The Stream sets the type of data that moves through the Output.
 
-More details and exact configuration possibilities in the [Outputs section](../5-integrations/outputs/index.md).
+The [Outputs section](../5-integrations/outputs/index.md) gives more details and the exact configuration options.
 
 ## LimaCharlie Data Structures
 
-Understanding the core data structures in LimaCharlie is essential for working with Detection & Response rules, LCQL queries, and outputs. All data in LimaCharlie flows through one of four primary structures.
+You must know the core data structures in LimaCharlie to work with Detection & Response rules, LCQL queries, and outputs. All data in LimaCharlie moves through one of four primary structures.
 
 ### The Four Core Structures
 
@@ -74,7 +76,7 @@ Understanding the core data structures in LimaCharlie is essential for working w
 **Structure**: Two top-level objects - `routing` (metadata) and `event` (event-specific data)
 **Examples**: Process execution (NEW_PROCESS), DNS queries (DNS_REQUEST), network connections (NETWORK_CONNECTIONS), Windows Event Logs (WEL)
 
-Events are the foundation of LimaCharlie. They capture what's happening on your endpoints and in your infrastructure. Every event includes:
+Events are the foundation of LimaCharlie. They record what happens on your endpoints and in your infrastructure. Every event includes:
 
 - `routing` object: Consistent metadata like sensor ID, timestamp, hostname, platform
 - `event` object: Event-type-specific data like file paths, command lines, network addresses
@@ -87,10 +89,10 @@ Events are the foundation of LimaCharlie. They capture what's happening on your 
 **Structure**: Includes original event's `routing`, the triggering `detect` (event data), plus detection metadata
 **Key Fields**: `cat` (detection name), `source`, `detect_id`, `priority`, `detect_mtd` (metadata), `detect_data` (extracted IOCs)
 
-When a D&R rule matches an event, LimaCharlie creates a Detection. Detections inherit the event's routing information and add:
+When a D&R rule matches an event, LimaCharlie creates a Detection. A Detection inherits the routing information of the event and adds:
 
 - Detection metadata: rule name, author, priority, tags
-- Extracted data: Structured IOCs pulled from the event
+- Extracted data: Structured IOCs taken from the event
 - Links: References to documentation or playbooks
 
 [See complete Detection Structure Reference](../3-detection-response/tutorials/writing-testing-rules.md)
@@ -101,10 +103,10 @@ When a D&R rule matches an event, LimaCharlie creates a Detection. Detections in
 **Structure**: Flat object with `oid`, `ts` (timestamp), and audit-specific fields
 **Examples**: Configuration changes, user actions, API calls, sensor deployments
 
-Audit logs track what happens in your LimaCharlie organization:
+Audit logs record what happens in your LimaCharlie organization:
 
-- Who performed actions (`ident` - identity)
-- What was affected (`entity` - object)
+- Who did the actions (`ident` - identity)
+- What the action affected (`entity` - object)
 - Action characteristics (`mtd` - metadata)
 - Error messages (`component`, `error`)
 
@@ -118,27 +120,27 @@ Audit logs track what happens in your LimaCharlie organization:
 
 #### For D&R Rules
 
-D&R rules operate on Events and produce Detections. Understanding the Event structure helps you:
+D&R rules operate on Events and produce Detections. Knowledge of the Event structure helps you to:
 
 - Access the right fields with `event/` and `routing/` paths
 - Filter by event type, platform, or sensor
-- Correlate related events using `routing/this` and `routing/parent`
+- Correlate related events with `routing/this` and `routing/parent`
 
 #### For LCQL Queries
 
-LCQL can query all three primary streams (event, detect, audit). Knowing the structure helps you:
+LCQL can query all three primary streams (event, detect, audit). Knowledge of the structure helps you to:
 
 - Select the right fields for investigation
 - Join data across streams
-- Filter efficiently using the correct field paths
+- Filter efficiently with the correct field paths
 
 #### For Outputs
 
-Each output stream type has a different structure. Understanding this helps you:
+Each output stream type has a different structure. Knowledge of the structure helps you to:
 
 - Configure the right stream for your destination
 - Build parsers for external systems
-- Filter data before sending it
+- Filter data before you send it
 
 ### Data Flow: Event → Detection
 
@@ -177,7 +179,7 @@ All LimaCharlie structures use consistent path patterns:
 
 ## API Keys
 
-The API keys are represented as UUIDs. They are linked to your specific organization and enable you to programmatically acquire authorization tokens that can be used on our REST API. See the [API key section](../7-administration/access/api-keys.md) for more details.
+API keys are UUIDs. Each key is linked to one organization. You use a key to get authorization tokens for the REST API from your programs. The [API key section](../7-administration/access/api-keys.md) gives more details.
 
 ---
 

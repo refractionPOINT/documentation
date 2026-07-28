@@ -2,15 +2,15 @@
 
 ## Strelka Extension Pricing
 
-Note that usage of ext-strelka will incur usage of Artifact Exporting (applied to processed artifacts at a rate of $0.02/GB) as well as webhook data received in LimaCharlie and the related costs on top of the ext-strelka specific pricing.
+Use of ext-strelka also uses Artifact Exporting, at a rate of $0.02/GB for the processed artifacts. It also causes webhook data to arrive in LimaCharlie. These related costs are added to the specific price of ext-strelka.
 
 [Strelka](https://github.com/target/strelka) is a real-time file scanning system used for threat hunting, threat detection, and incident response.
 
-The Strelka extension receives files using Artifacts by specifying an `artifact_id` in the `run_on` request. The extension will then process the file and return the results to the caller as well as send the results to its related Sensor.
+The Strelka extension receives files as Artifacts. Give an `artifact_id` in the `run_on` request. The extension then processes the file and returns the results to the caller. It also sends the results to its related Sensor.
 
 ## Configuration
 
-Example  rule that processes all Artifacts ingested with the type `zeek-extract`:
+Example rule that processes all Artifacts ingested with the type `zeek-extract`:
 
 **Detect:**
 
@@ -34,7 +34,7 @@ value: zeek-extract
 
 ## Usage
 
-If you use the LimaCharlie [Zeek](zeek.md) extension, a good use case would be to trigger a Zeek analysis upon ingestion of a PCAP artifact, which will generate the necessary Zeek artifacts to trigger the Strelka extension in the above example.
+If you use the LimaCharlie [Zeek](zeek.md) extension, you can start a Zeek analysis when LimaCharlie ingests a PCAP artifact. The analysis generates the Zeek artifacts that trigger the Strelka extension in the example above.
 
 **Detect:**
 

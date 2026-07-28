@@ -1,49 +1,65 @@
 # Cloud Security: API, Infrastructure-as-Code, and Case Automation
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is currently in **Private Beta**. The features, APIs, and
+    configuration formats on this page can change before general
+    availability. Contact LimaCharlie to request access.
 
-This page is the operator reference for automating LimaCharlie Cloud Security: the
-public REST API surface, the Hive records that ARE the Infrastructure-as-Code
-surface (providers, policies, saved queries), and the D&R recipes that close the
-loop between cloud findings and Cases.
+This page is the operator reference for the automation of LimaCharlie Cloud
+Security. It describes the public REST API surface, the Hive records that are the
+Infrastructure-as-Code surface (providers, policies, and saved queries), and the
+D&R recipes that connect cloud findings to Cases.
 
 ## The REST API
 
-All Cloud Security routes live under `https://api.limacharlie.io/v1/cloudsec/{oid}/…`
+All Cloud Security routes are under `https://api.limacharlie.io/v1/cloudsec/{oid}/…`
 and appear in the public OpenAPI spec at
-[`/openapi`](https://api.limacharlie.io/openapi). Reads require the `cloudsec.get`
-permission, finding-triage writes require `cloudsec.set`, and every route requires
-the organization to be subscribed to the `ext-cloud-security` extension (a `403`
-tells you to subscribe).
+[`/openapi`](https://api.limacharlie.io/openapi). Reads need the `cloudsec.get`
+permission. Writes that triage findings need `cloudsec.set`. Every route needs the
+organization to have a subscription to the `ext-cloud-security` extension. A `403`
+response tells you to subscribe.
 
-The read surface includes: `findings` (risk-ranked worklist with keyset pagination
-and server-side filters), `findings/facets`, `findings/classes` (the canonical
-finding-class enum), `attack-paths` (with the same filter selectors), `chokepoints`
-(incl. the principal-exposure metrics), `ciem/public-access`, `ciem/facets`,
-`ciem/identity` (the Identity 360 view, `?urn=`), `inventory` (+`inventory/facets`),
-`data-security/facets`, `topology` (server-side estate aggregates), `compliance`
-(+`compliance/frameworks`, `compliance/assignments`), `policy/vocabulary` (the
-classification-policy vocabulary), `providers/manifest` (what a provider collects),
-`caasm/assets`, `caasm/coverage`, `caasm/policy`, `overview` (incl. the per-tenant
-`usage` metering block), `risk-trend`, `changes`, `scan-status`, `query` (the graph
-DSL), and `graph/neighbors`. There is also a multi-org (no `{oid}`)
-`fleet/overview` route that rolls risk up across every tenant you manage. Three
-read-only preview POSTs help you author policy before you commit it —
-`simulate/resources` (test a classification/coverage/exclusion matcher against
-stored inventory), `simulate/findings` (test a suppression matcher against open
-findings), and `policy/suggest` (live matcher-value autocomplete from the tenant
-estate). See the [API Reference](../cloud-security/api-reference.md) for the full
-route list and response shapes.
+The read surface includes these routes:
+
+- `findings` — the risk-ranked worklist, with keyset pagination and server-side
+  filters
+- `findings/facets` and `findings/classes` — the facets and the canonical enum of
+  finding classes
+- `attack-paths` — the same filter selectors apply
+- `chokepoints` — includes the metrics for the exposure of principals
+- `ciem/public-access`, `ciem/facets`, and `ciem/identity` — the Identity 360 view
+  uses `?urn=`
+- `inventory`, `inventory/facets`, and `data-security/facets`
+- `topology` — server-side aggregates for the estate
+- `compliance`, `compliance/frameworks`, and `compliance/assignments`
+- `policy/vocabulary` — the vocabulary for the classification policy
+- `providers/manifest` — what a provider collects
+- `caasm/assets`, `caasm/coverage`, and `caasm/policy`
+- `overview` — includes the `usage` metering block for each tenant
+- `risk-trend`, `changes`, and `scan-status`
+- `query` — the graph DSL
+- `graph/neighbors`
+
+The `fleet/overview` route is a multi-org route with no `{oid}`. It totals the risk
+across every tenant that you manage.
+
+Three read-only preview POSTs help you write a policy before you commit it:
+
+- `simulate/resources` — test a matcher for classification, coverage, or exclusion
+  against the stored inventory
+- `simulate/findings` — test a suppression matcher against open findings
+- `policy/suggest` — live autocomplete of matcher values from the tenant estate
+
+For the full route list and the response shapes, see the
+[API Reference](../cloud-security/api-reference.md).
 
 ### CSV export
 
-Add `?format=csv` to `findings`, `inventory`, `compliance`, or `query` to stream the
-result as a CSV attachment instead of JSON. The server walks the full filtered set
-itself (your filter query parameters apply; paging parameters are ignored), capped
-at 100,000 rows with a trailing `#`-comment row as the truncation notice.
+Add `?format=csv` to `findings`, `inventory`, `compliance`, or `query`. The route
+then streams the result as a CSV attachment instead of JSON. The server reads the
+full filtered set itself. Your filter query parameters apply, but the server ignores
+the paging parameters. The limit is 100,000 rows, with a `#`-comment row at the end
+as the truncation notice.
 
 ```bash
 curl -H "Authorization: Bearer $JWT" \
@@ -51,20 +67,21 @@ curl -H "Authorization: Bearer $JWT" \
   -o findings.csv
 ```
 
-The compliance CSV carries one row per control including the proving finding ids —
-the auditor-facing evidence export.
+The compliance CSV has one row for each control, and includes the ids of the
+findings that prove the control. This is the evidence export for auditors.
 
 ## Hive is the IaC surface
 
-Cloud Security is configured entirely through Hive records. Anything you can click
-in the console you can `limacharlie hive set` — which makes tenant onboarding and
-multi-tenant policy management a script, not a UI workflow.
+You configure Cloud Security fully through Hive records. Every setting that you can
+click in the web app, you can also set with `limacharlie hive set`. Tenant
+onboarding and policy management for many tenants are therefore a script, not a
+workflow in the web app.
 
 | Hive | Record | Purpose |
 |---|---|---|
-| `cloudsec_provider` | one per connection | what to collect — one of thirteen connectors spanning cloud infra, identity/IdP, SaaS, AI, and LimaCharlie self-inventory (see [Providers](../cloud-security/providers.md) for the full list) |
-| `cloudsec_policy` | many, typed by `policy_type` | `classification` (crown jewels), `coverage` (EDR expectation), `emission` (event feed), `exclusions` (resource escape hatch), `suppression` (finding disposition rules), `compliance` (scoped framework assignment) |
-| `cloudsec_query` | one per saved query | org-shared saved graph queries (the Query Console library) |
+| `cloudsec_provider` | one for each connection | what to collect — one of thirteen connectors for cloud infrastructure, identity and IdP, SaaS, AI, and LimaCharlie self-inventory (for the full list, see [Providers](../cloud-security/providers.md)) |
+| `cloudsec_policy` | many, typed by `policy_type` | `classification` (sensitive resources), `coverage` (EDR expectation), `emission` (event feed), `exclusions` (resources to exclude), `suppression` (rules for the disposition of findings), `compliance` (scoped framework assignment) |
+| `cloudsec_query` | one for each saved query | saved graph queries that the organization shares (the Query Console library) |
 
 ### Onboarding a tenant (recipe)
 
@@ -102,7 +119,7 @@ limacharlie hive set --hive-name cloudsec_policy --key classification \
 
 ### Multi-tenant policy push (recipe)
 
-The same records applied to N organizations is the MSSP fleet-policy story:
+Apply the same records to many organizations to get an MSSP fleet policy:
 
 ```bash
 for OID in $(cat tenant-oids.txt); do
@@ -113,11 +130,11 @@ done
 
 ### Suppression rules (finding disposition policy)
 
-A `suppression`-typed `cloudsec_policy` record dispositions matching findings
-automatically — the "accept this known risk in the sandbox for 90 days" mechanic.
-An operator's own disposition always wins, deleting a rule releases exactly its own
-findings on the next cycle, and criticals are never auto-suppressed unless a rule's
-`max_severity` says `critical` explicitly.
+A `cloudsec_policy` record with the `suppression` type dispositions matching
+findings automatically. Use it to accept a known risk in the sandbox for 90 days.
+The disposition of an operator always has priority. If you delete a rule, the next
+cycle releases only the findings of that rule. Critical findings are never
+auto-suppressed unless the `max_severity` of a rule is `critical`.
 
 ```json
 {
@@ -152,28 +169,37 @@ findings on the next cycle, and criticals are never auto-suppressed unless a rul
 }
 ```
 
-Save it as a `cloudsec_query` record and it appears in every teammate's Query
-Console and as a pinnable Explore lens. The `schedule` and `detection` blocks are
-accepted (so IaC written today survives the scheduled-query phase) but inert.
+Save it as a `cloudsec_query` record. It then appears in the Query Console of every
+teammate, and as an Explore lens that you can pin. The API accepts the `schedule`
+and `detection` blocks, but they are inert. IaC that you write today therefore stays
+valid in the scheduled-query phase.
 
 ## Findings ↔ Cases automation
 
-Cloud findings emit lifecycle events into the organization's own event stream via
-the internally-provisioned `cloudsec` webhook adapter: `cloud_finding.created`
-(carries the full finding under `finding`), `cloud_finding.closed`
-(`{finding_id, fingerprint, finding_class}`), and `cloud_finding.still_open`
-(re-asserted at most once per day for open findings with a linked ticket). D&R
-rules match these like any event; the Cases extension actions close the loop.
-For richer automation the same stream also carries `cloud_finding.updated` (an
-open finding's content materially changed — a severity flip or vuln-set change)
-and the operator-disposition verbs `cloud_finding.resolved` / `.dismissed` /
-`.reopened` / `.assigned` (for auditing human triage decisions).
+Cloud findings send lifecycle events into the event stream of the organization. The
+`cloudsec` webhook adapter, which LimaCharlie provisions internally, carries these
+events:
 
-The console installs these three rules with one click (Settings → Cloud Security →
-Cases, an opt-in), or write them yourself:
+- `cloud_finding.created` — carries the full finding under `finding`
+- `cloud_finding.closed` — carries `{finding_id, fingerprint, finding_class}`
+- `cloud_finding.still_open` — re-asserted at most one time each day, for open
+  findings with a linked ticket
 
-**Auto-case on high/critical findings** (async, grouped, storm-safe — one case per
-rule category per window, and first-sync floods are summarized upstream):
+D&R rules match these events like any other event, and the actions of the Cases
+extension complete the automation. For more automation, the same stream also
+carries these events:
+
+- `cloud_finding.updated` — the content of an open finding changed in a material
+  way, such as a change of severity or of the vulnerability set
+- `cloud_finding.resolved`, `.dismissed`, `.reopened`, and `.assigned` — the
+  disposition verbs of an operator, for the audit of human triage decisions
+
+The web app installs these three rules for you (Settings → Cloud Security →
+Cases, an opt-in). You can also write them yourself:
+
+**Auto-case on high/critical findings** (asynchronous and grouped, safe against
+storms — one case for each rule category in each window. Upstream code summarizes
+the floods of findings from the first sync):
 
 ```yaml
 detect:
@@ -209,7 +235,7 @@ respond:
       note: "Finding closed: condition no longer detected by sweep"
 ```
 
-**Reopen a case that was closed while the cloud wasn't actually fixed:**
+**Reopen a case that was closed but the cloud is not fixed:**
 
 ```yaml
 detect:
@@ -226,11 +252,12 @@ respond:
       note: "Linked cloud finding is still open — verified by latest sweep"
 ```
 
-`update_case` resolves the case through the detection index (`detect_id` = the
-finding fingerprint), so the rules never need a case number; a finding with no
-linked case is a no-op. Cases never close findings — findings are detection truth
-and close when the sweep confirms the fix (or via operator/policy disposition).
+`update_case` finds the case through the detection index, where `detect_id` is the
+fingerprint of the finding. The rules therefore never need a case number. If a
+finding has no linked case, the action does nothing. Cases never close findings.
+Findings are the truth of detection, and they close when the sweep confirms the fix,
+or through a disposition by an operator or a policy.
 
-**Non-Cases shops:** route the same `cloud_finding.*` events to Jira/ServiceNow via
-an Output on the `cloudsec` adapter's stream and key your tickets on `fingerprint`
-the same way.
+**Non-Cases shops:** send the same `cloud_finding.*` events to Jira or ServiceNow
+with an Output on the stream of the `cloudsec` adapter. Key your tickets on
+`fingerprint` in the same way.

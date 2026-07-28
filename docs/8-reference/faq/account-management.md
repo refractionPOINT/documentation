@@ -2,57 +2,63 @@
 
 ## How Can I Create More Than Two Organizations?
 
-By default, LimaCharlie has a limit of two organizations. If you need to create more organizations, please reach out to the support team and we will change this limit.
+By default, LimaCharlie has a limit of two organizations. To create more organizations, contact the support team. The support team changes this limit for you.
 
 ## How Do I Delete an Organization?
 
-Please navigate to the bottom of the Billing & Usage section of the organization you want to delete, and click Delete Organization button. Note that this action is final and cannot be undone.
+1. Open the Billing & Usage section of the organization that you want to delete.
+2. At the bottom of the page, click the Delete Organization button.
+
+This action is final. You cannot undo it.
 
 ![account 3](../../assets/images/account-3.png)
 
 ## Is There a Way to Wipe an Organization?
 
-You can wipe the data retention by deleting the `Insight` add-on (using `DELETE /insight/{oid}`) and re-enabling it again. Please note that disabling `Insight` (unsubscribing from the marketplace) will only pause data collection but will **not** delete historical telemetry. To permanently delete all stored telemetry for a selected organization, you must explicitly issue a delete operation, and this action cannot be undone.
+To wipe the data retention, delete the `Insight` add-on with `DELETE /insight/{oid}`, then enable it again. If you disable `Insight` (unsubscribe from the marketplace), data collection only pauses. Historical telemetry is **not** deleted. To delete all stored telemetry for an organization permanently, you must issue an explicit delete operation. You cannot undo this action.
 
-To wipe the configuration, you can use Templates / Infrastructure as Code functionality with the `is_force` flag to remove everything. To learn more about the infrastructure as code, visit [Infrastructure Extension](../../5-integrations/extensions/limacharlie/infrastructure.md).
+To wipe the configuration, use the Templates / Infrastructure as Code function with the `is_force` flag to remove everything. For more about infrastructure as code, see [Infrastructure Extension](../../5-integrations/extensions/limacharlie/infrastructure.md).
 
 ## Can I Transfer Ownership of an Organization?
 
-You can transfer ownership of an organization to any other entity. The request needs to be initiated by the current owner (billing or legal contact) of the organization. To do so, contact [support@limacharlie.io](mailto:support@limacharlie.io).
+You can transfer ownership of an organization to any other entity. The current owner of the organization (the billing or legal contact) must start the request. To start the request, contact [support@limacharlie.io](mailto:support@limacharlie.io).
 
 ## I Created an Account and Have Been Given Access, but I Do Not Seem to Have Access to Other Organizations
 
-With LimaCharlie's granular role-based access control you can be granted access in one of two ways:
+LimaCharlie has granular role-based access control. You can get access in one of two ways:
 
 - On a per-organization basis
-- To a set of organizations using [Organization Groups](../../7-administration/access/user-access.md)
+- To a set of organizations with [Organization Groups](../../7-administration/access/user-access.md)
 
-You'll want to ask the person who granted access if they added you to the individual organizations, or if they'd set up an organization group.  Either method works, but they'll have to ensure that either you're added to each organization individually, or that they set up a group.
+Ask the person who gave you access which method that person used. Both methods work, but that person must add you to each organization one by one, or set up a group.
 
 ## How Can I Update My Time Zone?
 
-All dates and times displayed in the web app follow the user preferred time zone.
+The web app shows all dates and times in the time zone that the user prefers.
 
-To set your time zone, navigate to the settings icon in the right hand corner and select `Manage User Settings`.
+To set your time zone, click the settings icon in the right hand corner and select `Manage User Settings`.
 
 ![account 1](../../assets/images/account-1.png)
 
-You can set your preferred time zone under `Display` section of the `User Settings`; all changes are saved automatically.
+Set your preferred time zone in the `Display` section of the `User Settings`. All changes are saved automatically.
 
 ![account 2](../../assets/images/account-2.png)
 
 ## How Can I Unsubscribe/Cancel/Delete My Limacharlie Account?
 
-You can unsubscribe / cancel your subscription from app.limacharlie.io by logging in and going to the Billing & Usage under the Billing section. Click the Delete Organization button at the bottom of the page and follow the instructions on screen.
+1. Log in to app.limacharlie.io.
+2. Go to Billing & Usage in the Billing section.
+3. At the bottom of the page, click the Delete Organization button.
+4. Obey the instructions on the screen.
 
 ![account 3](../../assets/images/account-3.png)
 
 ## Why Didn't I Receive My Account Activation Email?
 
-Account activation emails are sent when you sign up for a new LimaCharlie account. If you do not see the activation email in your inbox, it can typically be found in a spam / junk folder. If you're a user of Microsoft Office 365, or similar service that has server-side filtering, you may wish to check your online Quarantine (or equivalent). See the [Microsoft instructions](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/quarantine-email-messages?view=o365-worldwide) for details.
+LimaCharlie sends an account activation email when you sign up for a new account. If the email is not in your inbox, look in the spam or junk folder. If you use Microsoft Office 365, or a similar service with server-side filtering, check your online Quarantine (or the equivalent). For details, see the [Microsoft instructions](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/quarantine-email-messages?view=o365-worldwide).
 
-Please reach out to our support team and we can verify if a successful delivery response message was received from your mail server.
+Contact the support team. The support team can check if your mail server sent a successful delivery response.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives you full control over security operations. This structure supports flexible, multi-tenant setups for managed security providers, and for enterprises that manage many departments or clients.
 
-Infrastructure as Code (IaC) automates the management and provisioning of IT infrastructure using code, making it easier to scale, maintain, and deploy resources consistently. In LimaCharlie, IaC allows security teams to deploy and manage sensors, rules, and other security infrastructure programmatically, ensuring streamlined, repeatable configurations and faster response times, while maintaining infrastructure-as-code best practices in cybersecurity operations.
+Infrastructure as Code (IaC) uses code to manage and provision IT infrastructure. It makes resources easier to scale, to maintain, and to deploy in a consistent way. In LimaCharlie, IaC lets security teams deploy and manage sensors, rules, and other security infrastructure programmatically. The result is repeatable configurations and faster response times, with the best practices of infrastructure as code in cybersecurity operations.

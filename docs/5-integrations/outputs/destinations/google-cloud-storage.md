@@ -2,17 +2,17 @@
 
 Output events and detections to a GCS bucket.
 
-Looking for Google Chronicle?
+You can also use this output with Google Chronicle.
 
-If you already use Google Chronicle, we make it easy to send telemetry you've collected in LimaCharlie to Chronicle. You can get that set up by creating an Output in LimaCharlie to a GCS bucket.
+If you use Google Chronicle, you can send the telemetry that you collect in LimaCharlie to Chronicle. To set this up, create an output in LimaCharlie to a GCS bucket.
 
 - `bucket`: the path to the GCS bucket.
-- `secret_key`: the secret json key identifying a service account.
+- `secret_key`: the secret json key that identifies a service account.
 - `sec_per_file`: the number of seconds after which a file is cut and uploaded (default 120, maximum 3600).
-- `is_compression`: if set to "true", data will be gzipped before upload.
+- `is_compression`: if set to "true", the data is gzipped before upload.
 - `is_indexing`: if set to "true", files are written under a time-based directory structure (`year/month/day/hour/`) instead of flat files with random names. See [File organization](#file-organization) below.
-- `dir`: the directory prefix where to output the files on the remote host.
-- `is_no_sharding`: do not add a shard directory at the root of the files generated.
+- `dir`: the directory prefix for the files on the remote host.
+- `is_no_sharding`: do not add a shard directory at the root of the generated files.
 
 Example:
 
@@ -37,7 +37,7 @@ is_compression: "true"
 
 ## File Organization
 
-By default, each batch of data is uploaded as a flat file with a random (UUID) name at the root of the bucket (or under `dir` if set). File names carry no ordering, so this mode is best suited for pipelines that list and consume all new objects regardless of name.
+By default, each batch of data is uploaded as a flat file with a random (UUID) name at the root of the bucket, or under `dir` if you set it. The file names have no order. Use this mode for pipelines that list and consume all new objects, and that ignore the names.
 
 To organize files by date and time, set `is_indexing` to `"true"`. Files are then written under a time-based directory structure:
 
@@ -47,11 +47,11 @@ To organize files by date and time, set `is_indexing` to `"true"`. Files are the
 
 For example: `logs/1/2026/7/7/13/d1b2c3d4-e5f6-7890-abcd-ef1234567890_12.gz`
 
-- The timestamp components are in **UTC** and reflect when the batch was uploaded.
+- The timestamp components are in **UTC**. They show when the batch was uploaded.
 - Data files begin with a `d` prefix.
-- `shard` is a single hexadecimal character used to spread write load across key prefixes. If you prefer paths to start directly at the year, set `is_no_sharding` to `"true"`.
-- Directory components are not zero-padded (July is `7`, not `07`), so a plain lexical sort of object keys will not be strictly chronological; parse the path components numerically if ordering matters.
-- The frequency at which new files are created is controlled by `sec_per_file`.
+- `shard` is a single hexadecimal character that spreads the write load across key prefixes. To make the paths start at the year, set `is_no_sharding` to `"true"`.
+- Directory components are not zero-padded (July is `7`, not `07`). A plain lexical sort of the object keys is thus not strictly chronological. If the order is important, parse the path components as numbers.
+- The `sec_per_file` value controls how often a new file is created.
 
 ## Related articles
 

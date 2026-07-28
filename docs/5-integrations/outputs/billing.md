@@ -1,10 +1,10 @@
 # Output Billing
 
-LimaCharlie aims to bill outputs at cost. This means that as a default outputs are billed accordingly to the [published pricing](https://limacharlie.io/pricing).
+LimaCharlie aims to bill outputs at cost. By default, LimaCharlie bills outputs at the [published pricing](https://limacharlie.io/pricing).
 
-An exception to this is outputs that use Google Cloud Platform mechanism where the destination region is the same as the one the relevant LimaCharlie datacenter lives in. In those cases, outputs are not billed.
+There is one exception. If an output uses a Google Cloud Platform mechanism, and the destination region is the same as the region of the relevant LimaCharlie datacenter, LimaCharlie does not bill the output.
 
-Here is a list of the relevant regions for the various LimaCharlie datacenter.
+These are the relevant regions for each LimaCharlie datacenter.
 
 - USA: `us-central1`
 - Canada: `northamerica-northeast1`
@@ -13,7 +13,7 @@ Here is a list of the relevant regions for the various LimaCharlie datacenter.
 - India: `asia-south1`
 - Australia: `australia-southeast1`
 
-The supported GCP mechanism for free output are:
+These GCP mechanisms support free output:
 
 - `gcs`
 - `pubsub`
@@ -21,4 +21,4 @@ The supported GCP mechanism for free output are:
 
 Google Cloud Platform general region list: <https://cloud.google.com/about/locations>
 
-IP ranges of GCP resources per region change over time. Google publishes these ranges as a JSON file here: <https://www.gstatic.com/ipranges/cloud.json>
+The IP ranges of GCP resources for each region change over time. Google publishes these ranges as a JSON file: <https://www.gstatic.com/ipranges/cloud.json>

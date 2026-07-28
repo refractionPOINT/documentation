@@ -2,13 +2,13 @@
 
 The LimaCharlie Agentic SecOps Workspace (ASW) is a unified platform for modern cybersecurity operations.
 
-The ASW delivers core cybersecurity capabilities and infrastructure via a public cloud model: on-demand, pay-per-use, and API-first. For the cybersecurity industry, this is a paradigm shift comparable to how the IT public cloud revolutionized IT.
+The ASW supplies core cybersecurity capabilities and infrastructure with a public cloud model: on-demand, pay-per-use, and API-first. For the cybersecurity industry, this change is as large as the change that the IT public cloud made to IT.
 
-For cybersecurity startups and builders, the Agentic SecOps Workspace offers a robust foundation to create valuable products and services. The ASW helps innovators get to market faster, build genuinely independent businesses, increase their probability of success, and scale successful offerings with ease.
+For cybersecurity startups and builders, the Agentic SecOps Workspace is a foundation for new products and services. The ASW helps innovators to get to market faster, to build independent businesses, to increase their probability of success, and to scale successful offerings.
 
 ## 3 ways to go to market more effectively
 
-The Agentic SecOps Workspace provides the tools and infrastructure needed to secure any given organization—and is designed to be flexible and highly customizable. Because of this, the ASW enables many different types of solutions. Individual builders' use cases can vary significantly. Nevertheless, all startups and product developers using the platform will benefit from the following three recommendations:
+The Agentic SecOps Workspace supplies the tools and infrastructure to secure an organization. It is flexible, and you can customize it. The ASW therefore supports many different types of solutions. The use cases of individual builders are very different. But these three recommendations help all startups and product developers that use the platform:
 
 - Focus on Your Core Value
 - Reduce Up-front Costs
@@ -16,56 +16,65 @@ The Agentic SecOps Workspace provides the tools and infrastructure needed to sec
 
 ### Focus on Your Core Value
 
-The Agentic SecOps Workspace delivers foundational, well-understood security technologies as capabilities: as open, cloud-native primitives instead of black-box tools. Here's how builders can use this fact to create better products and service offerings:
+The Agentic SecOps Workspace supplies basic, well-understood security technologies as capabilities. They are open, cloud-native primitives, not black-box tools. Builders can use these capabilities to make better products and services:
 
-**Clarify your differentiators.** In a crowded marketplace where buyers are already wary of tool sprawl, it's difficult to stand out—and challenging to convince buyers to take on another vendor. To succeed, startups must demonstrate clear value and differentiate themselves. Determine what sets you apart, and where you can deliver the greatest value to customers. This is where your internal engineering resources should be focused.
+**Clarify your differentiators.** The marketplace is crowded, and buyers are already careful about too many tools. It is difficult to be different, and difficult to persuade a buyer to accept one more vendor. To succeed, a startup must show clear value and must be different from the competition. Find what makes you different, and find where you can give the most value to customers. Use your internal engineering resources on that work.
 
-**Offload infrastructure work.** The Agentic SecOps Workspace offers the kinds of mature cybersecurity capabilities that teams used to have to develop themselves or purchase as part of a product. This includes things like: Deploying endpoint capabilities via a multiplatform agent, alerting and correlating logs from any source, automating real-time analysis and response regardless of the environment, routing telemetry data to any destination, performing historical threat hunts, isolating endpoints from a network remotely, and many more.
+**Offload infrastructure work.** The Agentic SecOps Workspace supplies mature cybersecurity capabilities. In the past, a team had to develop these capabilities or buy them as part of a product. The capabilities include:
 
-In short, cybersecurity builders no longer need to "reinvent the wheel" in order to get to market. Here again, the clear analogy is to the IT public cloud. Most software developers today wouldn't invest in physical servers or develop complex, in-house solutions to handle application deployment and scaling. They would simply leverage cloud-based services like AWS Lambda or Azure Functions and run their applications without ever worrying about the underlying infrastructure.
+- Deployment of endpoint capabilities with a multiplatform agent
+- Alerts and correlation for logs from any source
+- Automated real-time analysis and response in any environment
+- Telemetry data sent to any destination
+- Historical threat hunts
+- Remote isolation of endpoints from a network
 
-Similarly, by using the infrastructure capabilities of the ASW, cybersecurity builders can spend their time and resources on their core value proposition—thereby reducing maintenance and integration challenges, eliminating external dependencies, and avoiding the risk that comes from building on someone else's product.
+There are many more capabilities.
 
-**Work with ASW engineers to develop custom integrations.** The Agentic SecOps Workspace is a vendor-neutral provider of tooling and infrastructure for the cybersecurity industry. It is not a potential competitor.
+Cybersecurity builders therefore do not need to build these capabilities again to get to market. The IT public cloud is a clear analogy. Most software developers today do not buy physical servers, and they do not develop complex in-house solutions to deploy and scale an application. They use cloud services such as AWS Lambda or Azure Functions, and they run their applications without work on the infrastructure below.
 
-As you develop on the ASW, reach out to LimaCharlie engineers for support in creating customized integrations, advice on best practices for a configurations or deployments, or feature requests that you'd like to see in the development roadmap. The ASW's public cloud business model means that the platform succeeds when its users succeed, so someone will always be on hand to help.
+In the same way, the infrastructure capabilities of the ASW let cybersecurity builders spend their time and resources on their core value. This reduces maintenance and integration work, removes external dependencies, and removes the risk to build on the product of another company.
 
-By building on a public cloud for cybersecurity, startups can focus on what they do best without having to develop and maintain DIY solutions—and without putting their business in the hands of a traditional vendor.
+**Work with ASW engineers to develop custom integrations.** The Agentic SecOps Workspace supplies vendor-neutral tools and infrastructure for the cybersecurity industry. It is not a possible competitor.
+
+When you develop on the ASW, contact the LimaCharlie engineers. They give support for custom integrations, advice about the best practices for a configuration or a deployment, and a channel for the feature requests that you want on the development roadmap. With the public cloud business model of the ASW, the platform succeeds when its users succeed. Help is therefore always available.
+
+A public cloud for cybersecurity lets a startup give attention to its own strengths. The startup does not develop and maintain DIY solutions, and it does not put its business in the hands of a traditional vendor.
 
 ### Reduce up-front costs
 
-The Agentic SecOps Workspace has a transparent, pay-per-use pricing model and delivers all capabilities on demand. In addition, the platform offers a number of valuable free resources. This helps builders to cut costs and reduce initial investment in several ways:
+The Agentic SecOps Workspace has a transparent, pay-per-use pricing model, and it supplies all capabilities on demand. The platform also gives many free resources. Builders can therefore cut costs and reduce the initial investment in several ways:
 
-**Conduct research and develop a prototype for free.** The ASW gives all users access to a fully featured free tier that includes two sensors. There is thus zero up-front cost to begin researching the platform, testing your idea, or even developing a prototype. Start by seeing if the ASW is the right choice for your project. Then, save money on early-stage development work once you begin.
+**Conduct research and develop a prototype for free.** The ASW gives all users a free tier with full features and two sensors. There is no up-front cost to research the platform, to test your idea, or to develop a prototype. First, decide if the ASW is the correct choice for your project. Then save money on the early development work.
 
-**Build without lock-in.** The ASW's pricing model means you only pay for what you need, for as long as you use it. You don't have to deal with mandatory minimums, long-term contracts, complex licensing, or termination fees. This enables you to create on the platform secure in the knowledge that you are not committed to a given level of spending before your growth justifies it—and that you aren't locked into your infrastructure provider.
+**Build without lock-in.** With the pricing model of the ASW, you pay only for what you need, and only for the time that you use it. There are no mandatory minimums, long-term contracts, complex licenses, or termination fees. You can therefore build on the platform with no commitment to a level of spend before your growth needs it. You are also not locked to your infrastructure provider.
 
-**Use available ASW resources to save money.** Building on the ASW also offers several direct and indirect ways to lower costs during development.
+**Use available ASW resources to save money.** The ASW gives several direct and indirect ways to lower costs during development.
 
-The Agentic SecOps Workspace is designed to be as user-friendly and easy to master as possible. In addition, the ASW is supported by extensive documentation, an active community forum of users, and a learning library full of tutorials and walkthroughs. This means developers will spend less time learning a new technology—and more time building.
+The Agentic SecOps Workspace is designed to be user-friendly and quick to master. The ASW also has extensive documentation, an active community forum of users, and a learning library with tutorials and walkthroughs. Developers therefore spend less time on a new technology and more time on their product.
 
-In addition, you can make use of more direct forms of assistance. Users can reach out to ASW engineers at any time for help. Qualified builders can also apply for a $1000 platform credit through the platform's Cybersecurity Infrastructure Grant Program. Leverage these resources to reduce your development costs and ensure that your engineers are spending their time on tasks that add the most value.
+More direct help is also available. A user can contact the ASW engineers at any time. A qualified builder can apply for a $1000 platform credit through the Cybersecurity Infrastructure Grant Program of the platform. Use these resources to reduce your development costs and to make sure that your engineers work on the tasks with the most value.
 
-**Meet compliance needs with free storage.** All telemetry data brought into the ASW is stored for the cost of ingestion for one full year. If your project has data retention or compliance needs, leverage the ASW's default storage capability to help keep your data storage costs down.
+**Meet compliance needs with free storage.** The ASW stores all telemetry data that comes into it for one full year, for the cost of ingestion. If your project has data retention or compliance needs, use the default storage of the ASW to keep your storage costs low.
 
-**Take advantage of discounted pricing.** If you've decided to build with the ASW for the foreseeable future—or if your product or service has started to see significant uptake—use discounted pricing options to save money as you grow. The Agentic SecOps Workspace provides volume-based discounts to help you improve your savings as usage increases, as well as annual or multi-year discounts for those ready to commit to longer-term platform usage.
+**Take advantage of discounted pricing.** Use the discount options to save money when you grow. These options apply if you decide to build with the ASW for a long time, or if your product or service gets significant uptake. The Agentic SecOps Workspace gives volume-based discounts that increase your savings when your usage increases. It also gives annual and multi-year discounts if you can commit to longer use of the platform.
 
-The ASW gives cybersecurity builders many of the competitive advantages the IT public cloud offers to startups in other verticals—and a high degree of direct assistance and support as well.
+The ASW gives cybersecurity builders many of the competitive advantages that the IT public cloud gives to startups in other verticals. It also gives much direct help and support.
 
 ### Build to scale
 
-The Agentic SecOps Workspace enables scalable cybersecurity operations. Here's how developers can benefit from building on such a platform:
+The Agentic SecOps Workspace makes cybersecurity operations scalable. Developers get these benefits when they build on the platform:
 
-**Future-proof your infrastructure.** Cybersecurity startups often turn to open-source or custom-built infrastructure to save money and stay independent. But while this approach may work early on, its limitations become apparent over time. It's possible to build performant and successful cybersecurity projects on open-source or DIY technologies.
+**Future-proof your infrastructure.** Cybersecurity startups often use open-source or custom-built infrastructure to save money and to stay independent. This approach can work at the start, but its limits become clear with time. It is possible to build fast and successful cybersecurity projects on open-source or DIY technologies.
 
-However, many businesses that take this route experience difficulties when they grow. The complexity, integration challenges, and troubleshooting work that are manageable with a small user base can quickly become untenable at scale. Before basing a part of your project on a custom or open-source solution, consider the challenges you will encounter later on if you are successful. You may be better served by using the ASW for that aspect of your offering.
+But many businesses that use this method get difficulties when they grow. A small user base keeps the complexity, the integration work, and the troubleshooting controllable. At a large scale, the same work becomes impossible. Before you build a part of your project on a custom or open-source solution, think about the problems that success brings later. The ASW can be a better choice for that part of your offering.
 
-**Build on a scalable platform.** The Agentic SecOps Workspace is designed to help organizations scale their security operations. Basic assumptions of the platform include things like multitenancy, flexibility, open APIs, and rich automation capabilities. Builders should plan to scale from the outset—leveraging the ASW's engineering-centric approach to support future growth by developing architectures, integrations, and workflows that will enable scaling without limits.
+**Build on a scalable platform.** The Agentic SecOps Workspace helps organizations to scale their security operations. The basic assumptions of the platform include multitenancy, flexibility, open APIs, and many automation capabilities. Plan for scale from the start. Use the engineering-centric approach of the ASW to support future growth, and develop architectures, integrations, and workflows that scale without limits.
 
-Any successful cybersecurity business will encounter challenges as it attempts to increase its customer support or its development work. However, building on an engineering-centric platform enables startups to plan for the future from day one—and makes growth easier and more trouble-free.
+Each successful cybersecurity business gets problems when it increases its customer support or its development work. But an engineering-centric platform lets a startup plan for the future from the first day. Growth then causes fewer problems.
 
-**Scale with your revenue.** A major problem for early-stage cybersecurity startups is that they must spend money on fixed infrastructure costs without having enough users for that to be profitable. If funding runs out before a product–market fit is found, the business fails.
+**Scale with your revenue.** An early-stage cybersecurity startup must pay fixed infrastructure costs, but it does not have enough users to make a profit. If the funding stops before the startup finds a product–market fit, the business fails.
 
-The Agentic SecOps Workspace offers an alternative route. Leverage the ASW's pay-per-use pricing to scale your infrastructure spending with your revenue. Even if you start off with a small customer base, you won't be losing money on infrastructure costs. Conserve your resources and allocate your spending to development, marketing, and sales efforts instead.
+The Agentic SecOps Workspace gives a different method. Use the pay-per-use pricing of the ASW to scale your infrastructure spend with your revenue. If you start with a small customer base, you do not lose money on infrastructure costs. Keep your resources, and spend them on development, marketing, and sales.
 
-The ASW offers builders a firm foundation for success. It provides a platform that is built to scale—and its pay-as-you-go pricing helps startups extend their runway and grow gradually and safely.
+The ASW is a firm foundation for the success of a builder. The platform is built to scale. Its pay-as-you-go pricing helps a startup to extend its runway and to grow slowly and safely.

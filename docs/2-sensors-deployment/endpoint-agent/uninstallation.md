@@ -1,12 +1,12 @@
 # Endpoint Agent Uninstallation
 
-There are multiple options available to uninstall the LimaCharlie Sensor, depending on the operating system and/or method of installation. macOS and Windows systems allow for easy uninstallation via sensor commands or  rules. Linux systems may require additional steps, as detailed below.
+You can uninstall the LimaCharlie Sensor in more than one way. The method depends on the operating system and on the installation method. On macOS and Windows, you can uninstall with sensor commands or with rules. Linux systems can need more steps, as described below.
 
 ## Manually Uninstalling the Endpoint Agent
 
-When uninstalling macOS and Windows Sensors, please attempt to utilize a method similar to sensor deployment. For example, if sensors were deployed via a package manager, then the same package manager may have uninstall options as well. This will help keep software inventories up to date.
+To uninstall macOS and Windows Sensors, use a method that is similar to the deployment method. For example, if you deployed the sensors with a package manager, the same package manager can have uninstall options. This keeps software inventories up to date.
 
-Details on manual uninstallation is found at the bottom of each respective OS' installation procedures.
+The installation procedure for each operating system gives details about manual uninstallation at the end.
 
 ## Uninstalling Endpoint Agents from the Platform
 
@@ -14,26 +14,26 @@ Details on manual uninstallation is found at the bottom of each respective OS' i
 
 For macOS and Windows operating systems, you can uninstall a sensor with the `uninstall` command. See the [endpoint commands reference](../../8-reference/endpoint-commands.md#uninstall) for more detail.
 
-On Windows, the command defaults to uninstalling the sensor as if installed from the direct installer exe. If an MSI was used for installation, you can add a `--msi` flag to the `uninstall` command to trigger an uninstallation that is compatible with MSI.
+On Windows, the command uninstalls the sensor as if you installed it from the direct installer exe. If you installed the sensor with an MSI, add the `--msi` flag to the `uninstall` command. The flag starts an uninstallation that is compatible with MSI.
 
 #### Native vs Legacy Uninstall
 
-By default, the `uninstall` command uses the legacy procedure: the sensor runs a shell command that invokes the on-disk agent's own uninstaller. This works on every sensor version.
+By default, the `uninstall` command uses the legacy procedure. The sensor runs a shell command that calls the uninstaller of the on-disk agent. This works on every sensor version.
 
-Adding the `--native` flag instead instructs the sensor to uninstall itself using its built-in (native) uninstall procedure, without spawning a shell command:
+The `--native` flag tells the sensor to uninstall itself with its built-in (native) uninstall procedure. The sensor does not start a shell command:
 
 ```bash
 uninstall --is-confirmed --native
 ```
 
 !!! note
-    The `--native` flag requires sensor version **5.3.3 or later**. Sensors running an older version silently ignore the native uninstall request — the task appears to be sent successfully, but nothing happens on the endpoint. If you are unsure of a sensor's version, omit `--native` to use the legacy procedure.
+    The `--native` flag needs sensor version **5.3.3 or later**. A sensor with an older version ignores the native uninstall request without a message. The task looks successful, but nothing occurs on the endpoint. If you do not know the version of a sensor, omit `--native` to use the legacy procedure.
 
-The `--msi` flag takes precedence over `--native`: the native procedure does not unregister the MSI product, so sensors installed via MSI should continue to use `--msi`.
+The `--msi` flag takes precedence over `--native`. The native procedure does not unregister the MSI product. For sensors that you installed with an MSI, continue to use `--msi`.
 
 ### SDK
 
-To run the uninstall command against *all* Sensors, a simple loop with the SDK in Python would work:
+To run the uninstall command against *all* Sensors, use a loop with the Python SDK:
 
 ```python
 from limacharlie.client import Client
@@ -49,7 +49,7 @@ for sensor_info in org.list_sensors():
 
 ### Using a D&R Rule
 
-As an alternative approach, you can also use a Detection & Response (D&R) rule to automatically trigger an uninstall of the LimaCharlie sensor when a sensor connects to the LimaCharlie cloud.  Below is an example of the rule you can use for this purpose. This example is specific to Windows-based endpoints, but can be modified based on your needs:
+You can also use a Detection & Response (D&R) rule to start an uninstall of the LimaCharlie sensor automatically. The rule runs when a sensor connects to the LimaCharlie cloud. The example rule below is for Windows endpoints, but you can change it for your needs:
 
 ```yaml
 # Detect
@@ -65,4 +65,4 @@ op: is windows
 
 ## Package Management Tools
 
-For Package Management tools, and other enterprise application-management tools, we recommend utilizing the integrated program removal options, rather than installing from LimaCharlie. This will help keep software inventories up to date.
+For Package Management tools, and other enterprise tools that manage applications, use the integrated options that remove programs, and not an installation from LimaCharlie. This keeps software inventories up to date.

@@ -1,12 +1,12 @@
 # SDK Documentation
 
-Programmatic access to LimaCharlie via official SDKs.
+Programmatic access to LimaCharlie through the official SDKs.
 
 ## Available SDKs
 
 ### [Python SDK](python-sdk.md)
 
-The Python SDK offers a full-featured interface for security automation, data analysis, and rapid prototyping. It also includes the [command line interface](../sdk-overview.md).
+The Python SDK gives a complete interface for security automation, data analysis, and rapid prototyping. It also includes the [command line interface](../sdk-overview.md).
 
 ```bash
 pip install limacharlie
@@ -16,7 +16,7 @@ pip install limacharlie
 
 ### [Python SDK v4](python-sdk-v4.md) (Deprecated)
 
-The previous major version of the Python SDK. Deprecated and slated for removal in a future release — kept for users maintaining existing v4 integrations. New code should use the v5 [Python SDK](python-sdk.md).
+The previous major version of the Python SDK. It is deprecated and will be removed in a future release. It stays available for users that maintain existing v4 integrations. Use the v5 [Python SDK](python-sdk.md) for new code.
 
 ```bash
 pip install "limacharlie<5"
@@ -26,7 +26,7 @@ pip install "limacharlie<5"
 
 ### [Go SDK](go-sdk.md)
 
-The Go SDK provides a type-safe client library for building security automation, integrations, and custom tools.
+The Go SDK is a type-safe client library. Use it to build security automation, integrations, and custom tools.
 
 ```bash
 go get github.com/refractionPOINT/go-limacharlie/limacharlie

@@ -1,32 +1,32 @@
 # Feedback
 
-The Feedback extension enables interactive feedback requests across external channels. It sends approval/denial prompts, acknowledgement requests, or free-form questions to Slack, Telegram, Microsoft Teams, email, or a built-in web UI. It collects responses and dispatches them to LimaCharlie subsystems (case notes via ext-cases, playbook triggers via ext-playbook, or AI agent sessions via the AI Sessions API).
+The Feedback extension sends interactive feedback requests to external channels. It can send an approve-or-deny prompt, an acknowledgement request, or a free-form question. The channel can be Slack, Telegram, Microsoft Teams, email, or a built-in web UI. The extension collects the responses and sends them to LimaCharlie subsystems: case notes through ext-cases, playbook triggers through ext-playbook, or AI agent sessions through the AI Sessions API.
 
-Designed for AI-driven and human-initiated workflows where operator approval or input is required before taking an automated action. For example, a D&R rule or playbook can ask a human "Should we isolate host compromised-01?" and wait for a response before proceeding.
+Use the extension in AI-driven and human-initiated workflows that need operator approval or input before an automated action. For example, a D&R rule or a playbook can ask a person "Should we isolate host compromised-01?". The rule then waits for a response before it continues.
 
 ## Enabling the Extension
 
-Navigate to the [Feedback extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-feedback) in the marketplace. Select the organization you wish to enable it for, and select **Subscribe**.
+Open the [Feedback extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-feedback) in the marketplace. Select the organization that you want to enable the extension for. Select **Subscribe**.
 
-On subscription, the extension automatically:
+When you subscribe, the extension automatically:
 
 1. Creates a webhook adapter for the organization
-2. Installs a D&R rule that routes feedback responses to the extension for processing
+2. Installs a D&R rule that sends feedback responses to the extension for processing
 
-No additional configuration is required. You can immediately start configuring channels and sending feedback requests.
+No more configuration is necessary. You can configure channels and send feedback requests immediately.
 
 ## Concepts
 
 ### Channels
 
-A **channel** defines how feedback requests are delivered to respondents. Each channel has a name and a type. Channels are configured through the extension config (see [Channel Configuration](#channel-configuration)).
+A **channel** defines how the extension delivers feedback requests to respondents. Each channel has a name and a type. You configure channels in the extension config. For more information, see [Channel Configuration](#channel-configuration).
 
 | Channel Type | Description | In-Chat Buttons | Requirements |
 |-------------|-------------|:---------------:|--------------|
-| `web` | Built-in web UI. Returns a shareable URL that displays the question with response buttons or text input. | N/A | None |
-| `slack` | Sends an interactive Block Kit message to a Slack channel with action buttons. | Yes | A [Slack Tailored Output](../../outputs/destinations/slack.md) with `slack_api_token` and `slack_channel`. See [Slack Setup](#slack-setup). |
-| `telegram` | Sends a message with inline keyboard buttons to a Telegram chat via Bot API. | Yes | A [Telegram Tailored Output](../../outputs/destinations/telegram.md) with `bot_token` and `chat_id`. See [Telegram Setup](#telegram-setup). |
-| `ms_teams` | Sends an Adaptive Card to a Microsoft Teams channel via webhook. A button links to the web UI for response. | No (link to web UI) | A [Microsoft Teams Tailored Output](../../outputs/destinations/ms-teams.md) with `webhook_url`. See [Microsoft Teams Setup](#microsoft-teams-setup). |
+| `web` | Built-in web UI. Returns a URL that you can share. The page shows the question with response buttons or a text input. | N/A | None |
+| `slack` | Sends an interactive Block Kit message with action buttons to a Slack channel. | Yes | A [Slack Tailored Output](../../outputs/destinations/slack.md) with `slack_api_token` and `slack_channel`. See [Slack Setup](#slack-setup). |
+| `telegram` | Sends a message with inline keyboard buttons to a Telegram chat through the Bot API. | Yes | A [Telegram Tailored Output](../../outputs/destinations/telegram.md) with `bot_token` and `chat_id`. See [Telegram Setup](#telegram-setup). |
+| `ms_teams` | Sends an Adaptive Card to a Microsoft Teams channel through a webhook. A button links to the web UI, where the respondent answers. | No (link to web UI) | A [Microsoft Teams Tailored Output](../../outputs/destinations/ms-teams.md) with `webhook_url`. See [Microsoft Teams Setup](#microsoft-teams-setup). |
 | `email` | Sends an HTML email with the question and a link to the web approval page. | No (link to web UI) | An [SMTP Tailored Output](../../outputs/destinations/smtp.md) with `dest_host`, `dest_email`, `from_email`, and SMTP credentials. See [Email Setup](#email-setup). |
 
 ### Feedback Types
@@ -41,39 +41,39 @@ Each feedback type has a dedicated action:
 
 ### Feedback Destinations
 
-When a respondent answers, the extension dispatches the response to the configured destination:
+When a respondent answers, the extension sends the response to the configured destination:
 
 | Destination | Behavior |
 |-------------|----------|
-| `case` | Adds a note to the specified case via ext-cases. Requires a `case_id`. |
-| `playbook` | Triggers the specified playbook via ext-playbook with the response data. Requires a `playbook_name`. |
-| `ai_agent` | Starts an AI agent session with the response data appended to the agent's prompt. Requires an `ai_agent_name` referencing an `ai_agent` hive record. |
+| `case` | Adds a note to the specified case through ext-cases. Needs a `case_id`. |
+| `playbook` | Triggers the specified playbook through ext-playbook with the response data. Needs a `playbook_name`. |
+| `ai_agent` | Starts an AI agent session. The extension adds the response data to the prompt of the agent. Needs an `ai_agent_name` that refers to an `ai_agent` hive record. |
 
 ### Response Content
 
-Each feedback request can include optional JSON data per choice. When the respondent selects a choice, the corresponding content is included in the dispatched response. This allows automation to carry structured payloads through the human decision point.
+Each feedback request can include optional JSON data for each choice. When the respondent selects a choice, the extension includes the related content in the response that it sends. Automation can then carry structured payloads through the human decision point.
 
 - For `request_simple_approval`, use `approved_content` and `denied_content`.
 - For `request_acknowledgement`, use `acknowledged_content`.
-- For `request_question`, no content fields are available -- the respondent's free-form text IS the response.
+- For `request_question`, there are no content fields. The free-form text from the respondent is the response.
 
 ### Timeouts
 
-All feedback actions accept an optional timeout. When `timeout_seconds` is set (minimum 60), the system automatically responds with a default choice if no human responds before the deadline. The timeout response flows through the same webhook/D&R/dispatch path as a normal response, with `responder` set to `"timeout"`.
+All feedback actions accept an optional timeout. If you set `timeout_seconds` (minimum 60) and no person responds before the deadline, the extension responds with a default choice. The timeout response uses the same webhook, D&R, and dispatch path as a normal response. In a timeout response, `responder` is `"timeout"`.
 
 | Parameter | Applies To | Description |
 |-----------|-----------|-------------|
-| `timeout_seconds` | All actions | Number of seconds to wait before auto-responding (minimum 60) |
-| `timeout_choice` | `request_simple_approval` | Which choice to auto-select: `approved` or `denied`. Required when `timeout_seconds` is set. |
-| `timeout_content` | All actions | JSON data to include in the timeout response (overrides the per-choice content). Required for `request_question` when `timeout_seconds` is set. |
+| `timeout_seconds` | All actions | Number of seconds to wait before an automatic response (minimum 60) |
+| `timeout_choice` | `request_simple_approval` | The choice to select automatically: `approved` or `denied`. Necessary when you set `timeout_seconds`. |
+| `timeout_content` | All actions | JSON data to include in the timeout response. It replaces the content of the choice. Necessary for `request_question` when you set `timeout_seconds`. |
 
-For `request_acknowledgement`, the timeout choice is always `acknowledged`. For `request_question`, the timeout choice is always `answered` and `timeout_content` provides the automatic answer.
+For `request_acknowledgement`, the timeout choice is always `acknowledged`. For `request_question`, the timeout choice is always `answered`, and `timeout_content` gives the automatic answer.
 
-When a timeout is configured, the channel message includes a note like "(Auto-denied in 5 minutes if no response)" so the respondent knows the deadline.
+If you configure a timeout, the channel message includes a note such as "(Auto-denied in 5 minutes if no response)". The note shows the deadline to the respondent.
 
 ## Channel Configuration
 
-Channels are managed through the extension config, not via extension actions. You can configure channels through the LimaCharlie web UI (extension settings page), via the CLI, or through infrastructure-as-code with git-sync.
+You manage channels in the extension config, not with extension actions. You can configure channels in the LimaCharlie web app (the extension settings page), with the CLI, or as infrastructure-as-code with git-sync.
 
 === "CLI"
     ```bash
@@ -98,7 +98,7 @@ Channels are managed through the extension config, not via extension actions. Yo
     ```
 
 === "Infrastructure as Code"
-    Channels can be managed via [git-sync](git-sync.md) by including the extension config in your synced repository:
+    You can manage channels with [git-sync](git-sync.md). Add the extension config to your synced repository:
     ```yaml
     # extension_config/ext-feedback
     channels:
@@ -118,7 +118,7 @@ Channels are managed through the extension config, not via extension actions. Yo
         output_name: my-smtp-output
     ```
 
-For all channel types except `web`, the `output_name` field references a LimaCharlie [Tailored Output](../../outputs/index.md) that holds the credentials for the channel.
+For all channel types except `web`, the `output_name` field refers to a LimaCharlie [Tailored Output](../../outputs/index.md) that holds the credentials for the channel.
 
 ## Sending Feedback Requests
 
@@ -172,7 +172,7 @@ The response includes:
 }
 ```
 
-The `url` is the shareable link to the web UI where the respondent can answer. For Slack, Telegram, Microsoft Teams, and email channels, no URL is returned in the response -- the message is sent directly to the configured channel.
+The `url` is the link to the web UI where the respondent answers. You can share this link. For Slack, Telegram, Microsoft Teams, and email channels, the response contains no URL. The extension sends the message directly to the configured channel.
 
 ### Acknowledgement
 
@@ -250,7 +250,7 @@ The response event includes `choice: "answered"` and a `text` field with the res
 
 ### D&R Rule Example
 
-A D&R rule can request human approval before taking automated action. The response is dispatched to a playbook that performs the action.
+A D&R rule can request human approval before an automated action. The extension sends the response to a playbook that does the action.
 
 **Detection:**
 
@@ -282,11 +282,11 @@ value: /usr/bin/suspicious-tool
     timeout_choice: '{{ "denied" }}'
 ```
 
-The `timeout_seconds: 300` and `timeout_choice: "denied"` ensure the rule auto-denies if no one responds within 5 minutes, preventing the workflow from hanging indefinitely.
+The `timeout_seconds: 300` and `timeout_choice: "denied"` values make sure that the rule denies automatically if no person responds in 5 minutes. The workflow does not wait forever.
 
 ### Playbook Example
 
-A playbook can request approval during execution:
+A playbook can request approval while it runs:
 
 ```python
 def playbook(sdk, data):
@@ -315,33 +315,33 @@ def playbook(sdk, data):
 
 ## Response Flow
 
-1. A feedback request is created and stored with a 7-day TTL
-2. The question is delivered via the configured channel (Slack message or web URL)
-3. The respondent clicks a button or submits a text response (or the timeout fires if configured)
-4. The response is routed through the organization's webhook adapter (authenticated via `lc-secret` header)
-5. A D&R rule matches the response event and triggers the extension's `process_response` action
-6. The extension atomically claims the request (preventing duplicate processing) and dispatches the response to the configured destination
+1. The extension creates the feedback request and stores it with a 7-day TTL
+2. The extension delivers the question through the configured channel (a Slack message or a web URL)
+3. The respondent clicks a button or sends a text response (or the timeout occurs, if you configured one)
+4. The response goes through the webhook adapter of the organization (the `lc-secret` header authenticates it)
+5. A D&R rule matches the response event and triggers the `process_response` action of the extension
+6. The extension claims the request atomically (this stops duplicate processing) and sends the response to the configured destination
 
-If a timeout is configured and no human responds before the deadline, the system automatically sends a response with the configured default choice. The timeout response includes `responder: "timeout"` so downstream automation can distinguish it from human responses.
+If you configure a timeout and no person responds before the deadline, the extension sends a response with the configured default choice. The timeout response includes `responder: "timeout"`. Downstream automation can use this value to tell a timeout response from a human response.
 
-Feedback requests expire after **7 days**. Expired requests show an error in the web UI and are rejected by the extension.
+Feedback requests expire after **7 days**. An expired request shows an error in the web UI, and the extension rejects it.
 
-Responses are protected against replay: once a response is processed, any duplicate deliveries (from webhook retries or replay) are rejected. This also prevents races between a human response and a timeout firing simultaneously -- whichever is processed first claims the request.
+The extension protects responses against replay. After it processes a response, it rejects duplicate deliveries from webhook retries or replay. This also stops a race between a human response and a timeout that occur at the same time. The first response that the extension processes claims the request.
 
 ## Slack Setup
 
 To use Slack channels:
 
-1. Create a Slack App with "Interactivity & Shortcuts" enabled
+1. Create a Slack App and enable "Interactivity & Shortcuts"
 2. Set the Request URL to the Slack callback endpoint: `https://feedback-system.limacharlie.io/callback/slack`
-3. Install the app to your Slack workspace and note the Bot User OAuth Token
+3. Install the app in your Slack workspace and record the Bot User OAuth Token
 4. In LimaCharlie, create a [Slack Tailored Output](../../outputs/destinations/slack.md) with:
     - `slack_api_token`: the Bot User OAuth Token
     - `slack_channel`: the target channel (e.g. `#security-ops`)
-5. Add a Slack channel to your extension config referencing the output name (see [Channel Configuration](#channel-configuration)). For example, a channel with `name: "ops"`, `channel_type: "slack"`, and `output_name: "my-slack-output"`.
+5. Add a Slack channel to your extension config that refers to the output name. For more information, see [Channel Configuration](#channel-configuration). For example, use a channel with `name: "ops"`, `channel_type: "slack"`, and `output_name: "my-slack-output"`.
 
 !!! note
-    For `request_question` feedback type, Slack shows a "Respond" button that links to the web UI, since Slack interactive messages do not support inline text input fields.
+    For the `request_question` feedback type, Slack shows a "Respond" button that links to the web UI. Slack interactive messages do not support inline text input fields.
 
 ## Telegram Setup
 
@@ -350,12 +350,12 @@ To use Telegram channels, you need a Telegram bot and a LimaCharlie Tailored Out
 ### Step 1: Create a Telegram Bot
 
 1. Open Telegram and start a conversation with [**@BotFather**](https://t.me/BotFather) ([Telegram Bot API documentation](https://core.telegram.org/bots#botfather))
-2. Send `/newbot` and follow the prompts to choose a name and username
-3. BotFather will respond with a **bot token** (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`). Save this token.
-4. Add the bot to the Telegram group or channel where you want feedback messages delivered
-5. Get the **chat ID** of the group or channel. You can do this by:
-    - Adding the bot to the group, sending a message, then checking `https://api.telegram.org/bot<TOKEN>/getUpdates` for the `chat.id` field
-    - For channels, the chat ID is typically a negative number like `-1001234567890`
+2. Send `/newbot`. Obey the prompts to choose a name and a username.
+3. BotFather responds with a **bot token** (e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`). Save this token.
+4. Add the bot to the Telegram group or channel that receives the feedback messages
+5. Get the **chat ID** of the group or channel:
+    - Add the bot to the group, send a message, then look for the `chat.id` field at `https://api.telegram.org/bot<TOKEN>/getUpdates`
+    - For channels, the chat ID is usually a negative number such as `-1001234567890`
 
 For more information, see the [Telegram Bot API documentation](https://core.telegram.org/bots/api).
 
@@ -368,7 +368,7 @@ In LimaCharlie, create a Telegram [Tailored Output](../../outputs/index.md) with
 
 ### Step 3: Add a Telegram Channel
 
-Add a channel to your extension config referencing the output name:
+Add a channel to your extension config that refers to the output name:
 
 ```yaml
 channels:
@@ -379,33 +379,33 @@ channels:
 
 ### How Telegram Responses Work
 
-For `simple_approval` and `acknowledgement` feedback types, Telegram messages include **inline keyboard buttons** (Approve/Deny or Acknowledge) that the respondent can tap directly in the chat. The response is processed immediately without leaving Telegram.
+For the `simple_approval` and `acknowledgement` feedback types, Telegram messages include **inline keyboard buttons** (Approve/Deny or Acknowledge). The respondent taps a button in the chat. The extension processes the response immediately, and the respondent stays in Telegram.
 
-For `request_question`, a "Respond" button links to the web UI since Telegram inline keyboards do not support text input.
+For `request_question`, a "Respond" button links to the web UI. Telegram inline keyboards do not support text input.
 
-When a response is received, the original Telegram message is updated to show the choice and who responded.
+When the extension receives a response, it updates the original Telegram message. The message then shows the choice and the respondent.
 
 !!! note
-    The extension automatically registers a webhook with the Telegram bot (using [`setWebhook`](https://core.telegram.org/bots/api#setwebhook)) to receive button-click callbacks. If the bot is also used for other webhook-based integrations, the ext-feedback webhook registration will override the existing one. Use a dedicated bot for ext-feedback if this is a concern.
+    The extension automatically registers a webhook with the Telegram bot to receive the callbacks from button clicks. It uses [`setWebhook`](https://core.telegram.org/bots/api#setwebhook) for this registration. If you also use the bot for other webhook integrations, the ext-feedback registration replaces the existing webhook. Use a dedicated bot for ext-feedback if this is a problem.
 
 ## Microsoft Teams Setup
 
 To use Microsoft Teams channels, you need a Teams Workflow webhook URL and a LimaCharlie Tailored Output.
 
 !!! warning "Incoming Webhooks retired"
-    Microsoft retired Office 365 Connectors (including Incoming Webhooks) from Teams. You must use a Power Automate Workflow as described below.
+    You must use a Power Automate Workflow, as described in the next steps. Microsoft retired Office 365 Connectors (including Incoming Webhooks) from Teams.
 
 ### Create a Workflow Webhook
 
-1. In Microsoft Teams, navigate to the channel where you want feedback messages
+1. In Microsoft Teams, open the channel that receives the feedback messages
 2. Click **...** (More options) next to the channel name
 3. Select **Workflows**
-4. Search for and select the **Send webhook alerts to a channel** template
+4. Find and select the **Send webhook alerts to a channel** template
 5. Give the workflow a name (e.g. "LimaCharlie Feedback") and authenticate your account
-6. Click **Next**, confirm the Team and Channel, then click **Add workflow**
+6. Click **Next**, confirm the Team and the Channel, then click **Add workflow**
 7. Copy the webhook URL from the confirmation dialog
 
-For details, see [Create incoming webhooks with Workflows](https://support.microsoft.com/en-us/office/create-incoming-webhooks-with-workflows-for-microsoft-teams-8ae491c7-0394-4861-ba59-055e33f75498).
+For more information, see [Create incoming webhooks with Workflows](https://support.microsoft.com/en-us/office/create-incoming-webhooks-with-workflows-for-microsoft-teams-8ae491c7-0394-4861-ba59-055e33f75498).
 
 ### Create the Tailored Output
 
@@ -415,7 +415,7 @@ In LimaCharlie, create a Microsoft Teams [Tailored Output](../../outputs/index.m
 
 ### Add a Teams Channel
 
-Add a channel to your extension config referencing the output name:
+Add a channel to your extension config that refers to the output name:
 
 ```yaml
 channels:
@@ -426,7 +426,7 @@ channels:
 
 ### How Teams Responses Work
 
-Feedback requests are delivered as [Adaptive Cards](https://learn.microsoft.com/en-us/adaptive-cards/) in the Teams channel. The card displays the question and a button that opens the web approval page in a browser. Responses are collected through the web UI.
+The extension delivers feedback requests as [Adaptive Cards](https://learn.microsoft.com/en-us/adaptive-cards/) in the Teams channel. The card shows the question and a button that opens the web approval page in a browser. The extension collects the responses through the web UI.
 
 ## Email Setup
 
@@ -436,15 +436,15 @@ To use email channels, you need an SMTP server and a LimaCharlie Tailored Output
 
 In LimaCharlie, create an SMTP [Tailored Output](../../outputs/index.md) with:
 
-- `dest_host`: SMTP server address, optionally with port (e.g. `smtp.example.com:587`). Defaults to port 587 if not specified.
+- `dest_host`: the SMTP server address, with an optional port (e.g. `smtp.example.com:587`). If you do not give a port, the default is 587.
 - `dest_email`: the recipient email address (e.g. `soc@example.com`)
 - `from_email`: the sender email address (e.g. `limacharlie@example.com`)
-- `username` (optional): SMTP authentication username
-- `password` (optional): SMTP authentication password
+- `username` (optional): the username for SMTP authentication
+- `password` (optional): the password for SMTP authentication
 
 ### Add an Email Channel
 
-Add a channel to your extension config referencing the output name:
+Add a channel to your extension config that refers to the output name:
 
 ```yaml
 channels:
@@ -455,7 +455,7 @@ channels:
 
 ### How Email Responses Work
 
-The extension sends an HTML email containing the feedback question and a **Respond** button that links to the web approval page. Responses are collected through the web UI.
+The extension sends an HTML email with the feedback question and a **Respond** button. The button links to the web approval page. The extension collects the responses through the web UI.
 
 ## Actions Reference
 
@@ -464,7 +464,7 @@ The extension sends an HTML email containing the feedback question and a **Respo
 | `request_simple_approval` | Yes | Send a feedback request with Approve/Deny buttons |
 | `request_acknowledgement` | Yes | Send a feedback request with an Acknowledge button |
 | `request_question` | Yes | Send a question with a free-form text input |
-| `process_response` | No | Internal: processes a response received via webhook |
+| `process_response` | No | Internal: processes a response that comes through the webhook |
 
 ### request_simple_approval Parameters
 
@@ -478,9 +478,9 @@ The extension sends an HTML email containing the feedback question and a **Respo
 | `ai_agent_name` | When destination is `ai_agent` | Name of the `ai_agent` hive record to start a session with |
 | `approved_content` | No | JSON data included when the respondent approves |
 | `denied_content` | No | JSON data included when the respondent denies |
-| `timeout_seconds` | No | Auto-respond after this many seconds if no response (minimum 60) |
-| `timeout_choice` | When `timeout_seconds` is set | Choice to auto-select on timeout: `approved` or `denied` |
-| `timeout_content` | No | JSON data for the timeout response (overrides the choice's content) |
+| `timeout_seconds` | No | Respond automatically after this many seconds if there is no response (minimum 60) |
+| `timeout_choice` | When `timeout_seconds` is set | Choice to select automatically on timeout: `approved` or `denied` |
+| `timeout_content` | No | JSON data for the timeout response. It replaces the content of the choice. |
 
 ### request_acknowledgement Parameters
 
@@ -493,8 +493,8 @@ The extension sends an HTML email containing the feedback question and a **Respo
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
 | `ai_agent_name` | When destination is `ai_agent` | Name of the `ai_agent` hive record to start a session with |
 | `acknowledged_content` | No | JSON data included when the respondent acknowledges |
-| `timeout_seconds` | No | Auto-acknowledge after this many seconds if no response (minimum 60) |
-| `timeout_content` | No | JSON data for the timeout response (overrides `acknowledged_content`) |
+| `timeout_seconds` | No | Acknowledge automatically after this many seconds if there is no response (minimum 60) |
+| `timeout_content` | No | JSON data for the timeout response. It replaces `acknowledged_content`. |
 
 ### request_question Parameters
 
@@ -506,5 +506,5 @@ The extension sends an HTML email containing the feedback question and a **Respo
 | `case_id` | When destination is `case` | Case to add the response note to |
 | `playbook_name` | When destination is `playbook` | Playbook to trigger with the response |
 | `ai_agent_name` | When destination is `ai_agent` | Name of the `ai_agent` hive record to start a session with |
-| `timeout_seconds` | No | Auto-answer after this many seconds if no response (minimum 60) |
-| `timeout_content` | When `timeout_seconds` is set | JSON data used as the automatic answer on timeout (required for question type) |
+| `timeout_seconds` | No | Answer automatically after this many seconds if there is no response (minimum 60) |
+| `timeout_content` | When `timeout_seconds` is set | JSON data for the automatic answer on timeout. Necessary for the question type. |

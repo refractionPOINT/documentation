@@ -2,19 +2,19 @@
 
 ## Overview
 
-Actions in LimaCharlie Detection & Response () rules define what happens after a detection is triggered. Common actions include generating reports, tagging sensors, isolating networks, and the frequently used `task` action, which sends commands to an Endpoint Agent to interrogate or take action on the endpoint. This is useful for tasks like gathering system information or isolating a compromised endpoint. Suppression settings manage repetitive alerts by limiting action frequency, ensuring efficient automation and response workflows.
+Actions in LimaCharlie Detection & Response () rules define what happens after a detection triggers. Common actions generate reports, tag sensors, and isolate networks. The `task` action is used often: it sends commands to an Endpoint Agent to interrogate the endpoint or to act on it. Use it to collect system information or to isolate a compromised endpoint. Suppression settings manage repetitive alerts because they limit how often an action runs.
 
 > For more information on how to use Actions, read Detection & Response rules.
 
 ## Suppression
 
-Suppression is valuable to help manage repetitive or noisy alerts.
+Suppression helps you manage repetitive or noisy alerts.
 
 ### Reduce Frequency
 
-In some cases, you may want to limit the number of times a specific Action is executed over a certain period of time. You can achieve this through `suppression`. This feature is supported in every Actions.
+To limit how many times a specific Action runs in a period of time, use `suppression`. Every Action supports this feature.
 
-A suppression descriptor can be added to an Action like:
+Add a suppression descriptor to an Action like this:
 
 ```yaml
 - action: report
@@ -28,11 +28,11 @@ A suppression descriptor can be added to an Action like:
       - 'evil-process-detected'
 ```
 
-The above example means that the `evil-process-detected` detection will be generated up to once per hour per `FILE_PATH`. Beyond the first `report` with a given `FILE_PATH`, during the one hour period, new `report` actions from this rule will be skipped.
+In the example, the `evil-process-detected` detection is generated a maximum of one time each hour for each `FILE_PATH`. After the first `report` with a given `FILE_PATH`, the rule skips new `report` actions for the one hour period.
 
-The `is_global: true` means that the suppression should operate globally within the Org (tenant), if the value was `false`, the suppression would be scoped per-Sensor.
+`is_global: true` makes the suppression operate globally in the Org (tenant). If the value is `false`, the suppression is scoped for each Sensor.
 
-The `keys` parameter is a list of strings that support [templating](../4-data-queries/template-transforms.md). Together, the unique combination of values of all those strings (ANDed) will be the uniqueness key this suppression rule uses. By adding to the keys the `{{ .event.FILE_PATH }}` template, we indicate that the `FILE_PATH` of the event generating this `report` is part of the key, while the constant string `evil process-detected` is just a convenient way for us to specify a value related to this specific detection. If the `evil process-detected` component of the key was not specified, then *all* actions that also just specify the `{{ .event.FILE_PATH }}` would be contained in this suppression. This means that using `is_global: true` and a complex key set, it is possible to suppress some actions across multiple Actions across multiple D&R rules.
+The `keys` parameter is a list of strings that support [templating](../4-data-queries/template-transforms.md). Together, the unique combination of the values of all these strings (ANDed) is the uniqueness key that this suppression rule uses. The `{{ .event.FILE_PATH }}` template in the keys makes the `FILE_PATH` of the event that generates this `report` part of the key. The constant string `evil process-detected` sets a value that is related to this specific detection. Without the `evil process-detected` component of the key, this suppression contains *all* actions that also specify only `{{ .event.FILE_PATH }}`. With `is_global: true` and a complex key set, you can suppress actions across many Actions and many D&R rules.
 
 Key templates support three namespaces:
 
@@ -40,7 +40,7 @@ Key templates support three namespaces:
 - `{{ .routing.* }}` — routing metadata (sid, hostname, etc.)
 - `{{ .mtd.* }}` — detection metadata from lookup operators (e.g., GeoIP country, threat intel category)
 
-The `.mtd` namespace contains the metadata returned by lookup operators in the detection. This allows suppression keys to incorporate derived values. For example, using the [IP Geolocation](../5-integrations/api-integrations/ip-geolocation.md) lookup to key suppression on the resolved country:
+The `.mtd` namespace contains the metadata that lookup operators return in the detection. Suppression keys can therefore use derived values. This example uses the [IP Geolocation](../5-integrations/api-integrations/ip-geolocation.md) lookup to key suppression on the resolved country:
 
 ```yaml
 detect:
@@ -62,17 +62,17 @@ respond:
         - '{{ .mtd.lcr___api_ip_geo.country.iso_code }}'
 ```
 
-The metadata key name is derived from the resource name with special characters replaced by underscores. See [Behavioral Detection](../3-detection-response/behavioral-detection.md) for more patterns.
+The metadata key name comes from the resource name, with underscores in place of special characters. For more patterns, see [Behavioral Detection](../3-detection-response/behavioral-detection.md).
 
 > Supported Time Period Formats
 >
-> LimaCharlie supports the following formats for time periods: **ns**, **us** (or **µs**, both are accepted), **ms**, **s**, **m**, **h** (nanoseconds, microseconds, milliseconds, seconds, minutes, and hours, respectively)
+> LimaCharlie supports these formats for time periods: **ns**, **us** (or **µs**, both are accepted), **ms**, **s**, **m**, **h** (nanoseconds, microseconds, milliseconds, seconds, minutes, and hours, respectively)
 
 ### Threshold Activation
 
-The other way to use suppression is using the `min_count` parameter. When set, the specific action will be suppressed until `min_count` number of activations have been received in that period.
+The other way to use suppression is the `min_count` parameter. When it is set, the action is suppressed until the cloud receives `min_count` activations in that period.
 
-Here's an example of this:
+Here is an example:
 
 ```yaml
 - action: report
@@ -83,19 +83,19 @@ Here's an example of this:
     period: 24h
 ```
 
-The above example means the `high-alerts` detection will be generated once per hour but only after the rule the action belongs to has matched 3 times within that period.
+In the example, the `high-alerts` detection is generated one time each hour, but only after the rule that contains the action matches 3 times in that period.
 
-This could be useful if you wanted to create higher order alerts that trigger a different type of detection, or send a page alert to a SOC, when more than X alerts occurred on a single host per period.
+Use this to create higher order alerts. These alerts trigger a different type of detection, or send a page alert to a SOC, when more than X alerts occur on a single host in a period.
 
-> Note: Both `min_count` and `max_count` must be specified when setting a threshold.
+> Note: You must specify both `min_count` and `max_count` when you set a threshold.
 
 ### Variable Count
 
-It is also possible to increment a suppression by a value that's not one (`1`). This is achieved using the `count_path` parameter, which is a path (like `event/record/v`) pointing to an integer that should be used to increment the suppression counter.
+You can also increment a suppression by a value that is not one (`1`). Use the `count_path` parameter. It is a path (like `event/record/v`) to an integer that increments the suppression counter.
 
-This is useful for things like billing alerts, where we set a threshold activation (meaning "alert me if above X") where the threshold is reached by increments of billable values.
+This is useful for billing alerts. You set a threshold activation (it means "alert me if above X"), and increments of billable values get to the threshold.
 
-Here's an example of this:
+Here is an example:
 
 ```yaml
 detect:
@@ -118,13 +118,13 @@ respond:
         period: 24h
 ```
 
-The above will alert (generate a detection in this case) when 1MB (1024 x 1024 x 1) of bytes have been billed by the Strelka Extension based on the `bytes_scanned` SKU, per 24h.
+The example alerts (it generates a detection) when the Strelka Extension bills 1MB (1024 x 1024 x 1) of bytes for the `bytes_scanned` SKU in 24h.
 
-It does so by incrementing the suppression counter by the billed value (found in `event/record/v`), resetting after 24h, and if the value of 1MB is reached, alert once and only once.
+It increments the suppression counter by the billed value from `event/record/v`. The counter resets after 24h. When the value gets to 1MB, the rule alerts one time only.
 
 ## Available Actions
 
-Actions allow you to specify "what" happens after a detection is found.
+Actions specify what happens after a detection is found.
 
 ### add tag, remove tag
 
@@ -139,13 +139,13 @@ Adds or removes Tags on the sensor.
 
 #### Optional Parameters
 
-The `add tag` action can optionally take a `ttl` parameter that is a number of seconds the tag should remain applied to the sensor.
+The `add tag` action can take an optional `ttl` parameter. It is the number of seconds that the tag stays applied to the sensor.
 
-The `add tag` action can optionally have the `entire_device` parameter set to `true`. When enabled, the new tag will apply to the entire Device ID, meaning that every sensor that shares this Device ID will have the tag applied (and relevant TTL). If a Device ID is unavailable for the sensor, it will still be tagged.
+The `add tag` action can also set the optional `entire_device` parameter to `true`. The new tag then applies to the entire Device ID: every sensor that shares this Device ID gets the tag and the relevant TTL. If the sensor has no Device ID, the sensor is still tagged.
 
-This can be used as a mechanism to synchronize and operate changes across an entire device. A D&R rule could detect a behavior and then tag all sensors on the device so they may act accordingly, like start doing full pcap.
+Use this mechanism to synchronize changes across an entire device. A D&R rule can detect a behavior and then tag all sensors on the device, so that each sensor acts accordingly, for example to start full pcap.
 
-For example, this would apply the `full_pcap` to all sensors on the device for 5 minutes:
+For example, this applies the `full_pcap` to all sensors on the device for 5 minutes:
 
 ```yaml
 - action: add tag
@@ -156,7 +156,7 @@ For example, this would apply the `full_pcap` to all sensors on the device for 5
 
 ### add var, del var
 
-Add or remove a value from the [sensor variables](../3-detection-response/sensor-variables.md) associated with a sensor. Variables set here can be referenced in detection rules using the `[[variable_name]]` syntax.
+Add or remove a value in the [sensor variables](../3-detection-response/sensor-variables.md) of a sensor. Detection rules can refer to these variables with the `[[variable_name]]` syntax.
 
 ```yaml
 - action: add var
@@ -165,13 +165,13 @@ Add or remove a value from the [sensor variables](../3-detection-response/sensor
   ttl: 30 # optional
 ```
 
-The `add var` action can optionally take a `ttl` parameter that is a number of seconds the variable should remain in state for the sensor. The `value` parameter supports lookback syntax (`<<path>>`) to extract values from the triggering event.
+The `add var` action can take an optional `ttl` parameter. It is the number of seconds that the variable stays in the state of the sensor. The `value` parameter supports lookback syntax (`<<path>>`) that extracts values from the event that triggers the rule.
 
 For detailed usage, including how to read variables in detection rules, see [Sensor Variables](../3-detection-response/sensor-variables.md).
 
 ### extension request
 
-Perform an asynchronous request to an extension the Organization is subscribed to.
+Send an asynchronous request to an extension that the Organization subscribes to.
 
 ```yaml
 - action: extension request
@@ -182,37 +182,37 @@ Perform an asynchronous request to an extension the Organization is subscribed t
     pid: event.PROCESS_ID
 ```
 
-The `extension request` parameters will vary depending on the extension (see the relevant extension's schema). The `extension request` parameter is a [transform](../4-data-queries/template-transforms.md).
+The `extension request` parameters change with the extension (see the schema of that extension). The `extension request` parameter is a [transform](../4-data-queries/template-transforms.md).
 
-You can also specify a `based on report: true` parameter. When true (defaults to false), the transform for the `extension request` will be based on the latest `report` action's report instead of the original event. This means you MUST have a `report` action *before* the `extension request`.
+You can also specify a `based on report: true` parameter. When it is true (the default is false), the transform for the `extension request` uses the report of the most recent `report` action, not the original event. You MUST then put a `report` action *before* the `extension request`.
 
 ### isolate network
 
-Isolates the sensor from the network in a persistent fashion (if the sensor/host reboots, it will remain isolated). Only works on platforms supporting the `segregate_network` [sensor command](endpoint-commands.md#segregate_network).
+Isolates the sensor from the network persistently. If the sensor or host reboots, the sensor stays isolated. This action works only on platforms that support the `segregate_network` [sensor command](endpoint-commands.md#segregate_network).
 
 ```text
 - action: isolate network
 ```
 
-When the network isolation feature is used, LimaCharlie will block connections to all destinations other than the LimaCharlie cloud (so that you can perform an investigation, take remediation actions, and then ultimately remove the isolation to resume normal network operation). The host will maintain internet connectivity to allow for you to perform those actions.
+When you use network isolation, LimaCharlie blocks connections to all destinations other than the LimaCharlie cloud. You can then investigate, do remediation actions, and finally remove the isolation to start normal network operation again. The host keeps internet connectivity so that you can do those actions.
 
-> The `segregate_network` command is stateless, so if the endpoint reboots, it will not be in effect. The isolate network command in D&R rules is stateful, so it sets a flag in the cloud to make sure the endpoint remains isolated even after reboots.
+> The `segregate_network` command is stateless. If the endpoint reboots, the command is no longer in effect. The isolate network command in D&R rules is stateful. It sets a flag in the cloud that keeps the endpoint isolated after a reboot.
 
 ### seal
 
-Seals the sensor in a persistent fashion (if the sensor/host reboots, it will remain sealed). Only works on platforms supporting the `seal` [sensor command](endpoint-commands.md).
+Seals the sensor persistently. If the sensor or host reboots, the sensor stays sealed. This action works only on platforms that support the `seal` [sensor command](endpoint-commands.md).
 
 ```text
 - action: seal
 ```
 
-Sealing a sensor enables tamper resistance, preventing direct modifications to the installed EDR.
+A sealed sensor has tamper resistance. Tamper resistance stops direct changes to the installed EDR.
 
-> The `seal` command is stateless, so if the endpoint reboots, it will not be in effect. The seal command in D&R rules is stateful, so it sets a flag in the cloud to make sure the endpoint remains sealed even after reboots.
+> The `seal` command is stateless. If the endpoint reboots, the command is no longer in effect. The seal command in D&R rules is stateful. It sets a flag in the cloud that keeps the endpoint sealed after a reboot.
 
 ### unseal
 
-Removes the seal status of a sensor that had it set using `seal`.
+Removes the seal status of a sensor that was sealed with `seal`.
 
 ```text
 - action: unseal
@@ -222,7 +222,7 @@ Removes the seal status of a sensor that had it set using `seal`.
 
 Forwards the matched event to an Output identified by `name` in the `tailored` stream.
 
-This allows you to create highly granular Outputs for specific events.
+You can create granular Outputs for specific events.
 
 The `name` parameter is the name of the Output.
 
@@ -235,7 +235,7 @@ Example:
 
 ### rejoin network
 
-Removes the isolation status of a sensor that had it set using `isolate network`.
+Removes the isolation status of a sensor that was isolated with `isolate network`.
 
 ```text
 - action: rejoin network
@@ -253,30 +253,30 @@ Removes the isolation status of a sensor that had it set using `isolate network`
   detect_data:  # additional free-form field that can be used for extraction of specific elements
 ```
 
-Reports the match as a detection. Think of it as an alert. Detections go a few places:
+Reports the match as a detection. A detection is an alert. Detections go to these destinations:
 
 - The `detection` Output stream
 - The organization's Detections page (if `insight` is enabled)
 - The D&R rule engine, for chaining detections
 
-The `name`, `metadata` and `detect_data` parameters support [string templates](../4-data-queries/template-transforms.md) like `detected {{ .cat }} on {{ .routing.hostname }}`, note that the context of the transform is the detection itself and not the original event, so you would refer to `.detect.event.USER_NAME` and not `.event.USER_NAME` for example.
+The `name`, `metadata` and `detect_data` parameters support [string templates](../4-data-queries/template-transforms.md) like `detected {{ .cat }} on {{ .routing.hostname }}`. The context of the transform is the detection itself, not the original event. For example, refer to `.detect.event.USER_NAME` and not to `.event.USER_NAME`.
 
-The `metadata` is generally used to populate information about the rule, its author, remediation etc.
+The `metadata` usually holds information about the rule, its author, remediation etc.
 
-The `detect_data` is generally used to extract specific parts of the detected event into a known format that can be common across multiple detection, like extracting the `domain` or `hash` field for example.
+The `detect_data` usually extracts specific parts of the detected event into a known format that many detections can share, for example the `domain` field or the `hash` field.
 
 #### Limiting Scope
 
-There is a mechanism for limiting scope of a `report`, prefixing `name` with `__` (double underscore). This will cause the detection
-generated to be visible to chained D&R rules and Services, but the detection will *not* be sent to the Outputs for storage.
+To limit the scope of a `report`, put the prefix `__` (double underscore) on `name`. Chained D&R rules and Services
+then see the detection, but the detection is *not* sent to the Outputs for storage.
 
-This is a useful mechanism to automate behavior using D&R rules without generating extra traffic that is not useful.
+Use this mechanism to automate behavior with D&R rules and not generate extra traffic that has no use.
 
 #### Optional Parameters
 
-The `priority` parameter, if set, should be an integer. It will be added to the root of the detection report as `priority`.
+The `priority` parameter, if set, must be an integer. It is added to the root of the detection report as `priority`.
 
-The `metadata` parameter, if set, can include any data. It will be added to the root of the detection report as `detect_mtd`. This can be used to include information for internal use like reference numbers or URLs.
+The `metadata` parameter, if set, can include any data. It is added to the root of the detection report as `detect_mtd`. Use it for internal information such as reference numbers or URLs.
 
 ### task
 
@@ -286,9 +286,9 @@ The `metadata` parameter, if set, can include any data. It will be added to the 
   investigation: susp-process-inv
 ```
 
-Sends a task in the `command` parameter to the sensor that the event under evaluation is from.
+Sends the task in the `command` parameter to the sensor that sent the event under evaluation.
 
-An optional `investigation` parameter can be given to create a unique identifier for the task and any events emitted from the sensor as a result of the task.
+Give the optional `investigation` parameter to create a unique identifier. The identifier applies to the task and to the events that the sensor emits because of the task.
 
 The `command` parameter supports [string templates](../4-data-queries/template-transforms.md) like `artifact_get {{ .event.FILE_PATH }}`.
 
@@ -296,7 +296,7 @@ The `command` parameter supports [string templates](../4-data-queries/template-t
 
 ### undelete sensor
 
-Un-deletes a sensor that was previously deleted.
+Un-deletes a sensor that was deleted before.
 
 ```yaml
 detect:
@@ -309,20 +309,20 @@ respond:
     - action: undelete sensor
 ```
 
-This can be used in conjunction with the `deleted_sensor` event to allow sensors to rejoin the fleet.
+Use this action with the `deleted_sensor` event to let sensors rejoin the fleet.
 
 ### wait
 
-Adds a delay (up to 1 minute) before running the next response action.
+Adds a delay (a maximum of 1 minute) before the next response action runs.
 
-This can be useful if a previous response action needs to finish running (i.e. a command or payload run via `task`) before you can execute the next action.
+Use this action if a previous response action must finish (for example a command or payload that `task` runs) before the next action can run.
 
-> The `wait` action will block processing any events from that sensor for the specified duration of time. This is because D&R rules are run at wire-speed and in-order.
+> The `wait` action blocks all events from that sensor for the specified duration of time. This is because D&R rules run at wire-speed and in-order.
 
 The `duration` parameter supports two types of values:
 
-- A string describing a duration, like `5s` for 5 seconds or `10ms` for 10 milliseconds, as defined by [this function call](https://pkg.go.dev/time#ParseDuration).
-- An integer representing a number of seconds.
+- A string that describes a duration, like `5s` for 5 seconds or `10ms` for 10 milliseconds, as defined by [the ParseDuration function](https://pkg.go.dev/time#ParseDuration).
+- An integer that is a number of seconds.
 
 Example:
 
@@ -340,7 +340,7 @@ and
 
 ### add hive tag
 
-Adds a tag to a Hive record. This can be used to mark some Hive records like D&R rules automatically.
+Adds a tag to a Hive record. Use it to mark Hive records such as D&R rules automatically.
 
 ```yaml
 - action: add hive tag
@@ -349,7 +349,7 @@ Adds a tag to a Hive record. This can be used to mark some Hive records like D&R
   tag: high-hit
 ```
 
-Unless the rule is not expected to hit often, you likely want to couple this with a `suppression` statement to avoid doing a lot of tagging of the same rules like:
+If you expect the rule to hit often, couple this action with a `suppression` statement. Suppression stops repeated tagging of the same rules:
 
 ```yaml
 - action: add hive tag
@@ -378,9 +378,9 @@ Removes a tag from a Hive record.
 
 ### start ai agent
 
-Spawns a Claude AI session to perform automated investigation, analysis, or response actions. See [AI Sessions](../9-ai-sessions/index.md) for full documentation.
+Starts a Claude AI session that does automated investigation, analysis, or response actions. For full documentation, see [AI Sessions](../9-ai-sessions/index.md).
 
-This action supports two modes: **inline mode** (all parameters in the rule) and **definition mode** (referencing a pre-configured AI agent from the Hive via `definition: hive://ai_agent/<name>`).
+This action supports two modes: **inline mode** (all parameters in the rule) and **definition mode** (a reference to a pre-configured AI agent from the Hive with `definition: hive://ai_agent/<name>`).
 
 #### Inline Mode
 
@@ -397,14 +397,14 @@ This action supports two modes: **inline mode** (all parameters in the rule) and
   definition: hive://ai_agent/my-triage-bot
 ```
 
-This action launches a fully-managed Claude Code session that can investigate events, query LimaCharlie data via the auto-installed `limacharlie` CLI, and generate reports.
+This action starts a fully-managed Claude Code session. The session can investigate events, query LimaCharlie data with the auto-installed `limacharlie` CLI, and generate reports.
 
 #### Required Parameters (Inline Mode)
 
 | Parameter | Description |
 |-----------|-------------|
 | `prompt` | Instructions for Claude. Supports [template strings](../4-data-queries/template-transforms.md). |
-| `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to reference a [Hive Secret](../7-administration/config-hive/secrets.md). |
+| `anthropic_secret` | Your Anthropic API key. Use `hive://secret/<name>` to refer to a [Hive Secret](../7-administration/config-hive/secrets.md). |
 
 #### Required Parameters (Definition Mode)
 
@@ -418,12 +418,12 @@ This action launches a fully-managed Claude Code session that can investigate ev
 |-----------|-------------|
 | `name` | Session name. Supports template strings. (Inline mode only.) |
 | `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. (Inline mode only.) |
-| `lc_uid_secret` | LimaCharlie User ID. Required when `lc_api_key_secret` is a user API key. Use `hive://secret/<name>`. (Inline mode only.) |
-| `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. (Inline mode only.) |
-| `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. (Both modes.) |
+| `lc_uid_secret` | LimaCharlie User ID. Needed when `lc_api_key_secret` is a user API key. Use `hive://secret/<name>`. (Inline mode only.) |
+| `idempotent_key` | Unique key that stops duplicate sessions. Supports template strings. (Inline mode only.) |
+| `debounce_key` | Serializes sessions: only one active session for each key. New requests wait behind the active session and start when it ends. Supports template strings. (Both modes.) |
 | `data` | Extract event fields to include in the prompt as JSON. (Inline mode only.) |
 | `profile` | Inline session configuration (tools, model, limits, external MCP servers). (Inline mode only.) |
-| `profile_name` | Reference a saved profile by name. (Inline mode only.) |
+| `profile_name` | Refer to a saved profile by name. (Inline mode only.) |
 
 #### Example: Inline Mode
 

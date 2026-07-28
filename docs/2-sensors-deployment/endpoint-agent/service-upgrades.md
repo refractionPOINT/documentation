@@ -1,15 +1,15 @@
 # Service Upgrades
 
-The LimaCharlie endpoint agent consists of two components that are versioned independently:
+The LimaCharlie endpoint agent has two components with independent version numbers:
 
-- **On-disk agent** — the service binary installed on the host. It handles core identity, cryptography, and transport. This component rarely changes and is what gets replaced during a service upgrade.
-- **Over-the-air core** — the main functional component that delivers detection and response capabilities. It is downloaded from the LimaCharlie cloud and updated frequently. See [Versioning & Upgrades](versioning-upgrades.md) for managing over-the-air updates.
+- **On-disk agent** — the service binary on the host. It does core identity, cryptography, and transport. This component changes rarely, and a service upgrade replaces it.
+- **Over-the-air core** — the main component that supplies detection and response functions. It is downloaded from the LimaCharlie cloud and updated often. To manage over-the-air updates, see [Versioning & Upgrades](versioning-upgrades.md).
 
-The procedures on this page upgrade the **on-disk agent** only. This is useful when a new service binary is needed for bug fixes, platform compatibility, or to gain support for new on-disk features. Over-the-air core updates happen separately through the LimaCharlie cloud and do not require a service upgrade.
+The procedures on this page upgrade the **on-disk agent** only. Use them when you need a new service binary for bug fixes, platform compatibility, or support for new on-disk features. The LimaCharlie cloud updates the over-the-air core separately, and that update does not need a service upgrade.
 
-The upgrade process stops the running service, replaces the binary with the new version, and restarts the service. If the new version fails to start, an automatic rollback to the previous version occurs.
+The upgrade stops the service, replaces the binary with the new version, and starts the service again. If the new version does not start, the upgrade rolls back to the previous version automatically.
 
-!!! note "Prerequisites" - The command must be run with **root** (Linux/macOS) or **Administrator** (Windows) privileges. - No installation key is required for upgrades.
+!!! note "Prerequisites" - Run the command with **root** (Linux/macOS) or **Administrator** (Windows) privileges. - Upgrades do not need an installation key.
 
 ## Upgrade to Latest Version
 
@@ -27,10 +27,10 @@ The upgrade process stops the running service, replaces the binary with the new 
 
 ## Upgrade or Downgrade to a Specific Version
 
-The `--version` flag can be used to move to any available sensor version, whether newer or older than the currently installed version. This is useful for rolling back to a known-good version or pinning to a specific release.
+Use the `--version` flag to move to any available sensor version, newer or older than the installed version. Use the flag to roll back to a known-good version or to pin a specific release.
 
 !!! note
-The `--version` flag requires sensor version **4.33.28 or later**.
+The `--version` flag needs sensor version **4.33.28 or later**.
 
 === "Linux / macOS"
 
@@ -46,10 +46,10 @@ The `--version` flag requires sensor version **4.33.28 or later**.
 
 ## Upgrade Using a Downloaded Sensor Binary
 
-If you have already downloaded a sensor binary, you can upgrade the installed service directly by running it with the `-u` flag. This performs the same in-place upgrade without needing the shell installer.
+If you already downloaded a sensor binary, run it with the `-u` flag to upgrade the installed service. This does the same in-place upgrade, but it does not need the shell installer.
 
 !!! note
-The `-u` flag requires sensor version **4.33.28 or later**.
+The `-u` flag needs sensor version **4.33.28 or later**.
 
 === "Linux / macOS"
 
@@ -65,9 +65,9 @@ The `-u` flag requires sensor version **4.33.28 or later**.
 
 ## Upgrade from the Cloud with the `upgrade_core` Command (Beta)
 
-Instead of running an installer on the host, you can task a sensor to upgrade its own on-disk agent with the `upgrade_core` sensor command. The sensor downloads, verifies, and installs the requested release itself — no local shell access or installer download is required. The automatic rollback on a failed start applies here as well.
+You can task a sensor to upgrade its own on-disk agent with the `upgrade_core` sensor command, instead of running an installer on the host. The sensor downloads, checks, and installs the requested release. Local shell access and an installer download are not necessary. The automatic rollback on a failed start also applies here.
 
-The native upgrade procedure is currently in beta, so the `--beta` flag is required; the command is rejected without it.
+The native upgrade procedure is in beta, so you must give the `--beta` flag. Without the flag, the command is rejected.
 
 ```bash
 limacharlie sensor task <SID> upgrade_core --beta
@@ -76,16 +76,16 @@ limacharlie sensor task <SID> upgrade_core --beta
 Optional flags:
 
 - `--force`: upgrade even if the sensor already reports the latest available release.
-- `--version`: pin the exact release to install (e.g. `5.3.3`) instead of the latest; downgrades are allowed.
+- `--version`: pin the exact release to install (e.g. `5.3.3`) instead of the latest. Downgrades are allowed.
 
 !!! note
-The `upgrade_core` command requires sensor version **5.3.3 or later**. Sensors running an older version silently drop the request and no upgrade takes place.
+The `upgrade_core` command needs sensor version **5.3.3 or later**. A sensor with an older version drops the request without a message, and no upgrade occurs.
 
 See the [endpoint commands reference](../../8-reference/endpoint-commands.md#upgrade_core) for more detail.
 
 ## Advanced: Forcing an Upgrade
 
-By default an in-place upgrade (`-u`) only replaces the installed service when the supplied binary is newer than what is installed. To re-apply or move to a build that is not strictly newer (for example to re-deploy a known-good version), set the `LC_UPGRADE_SKIP_VERSION_CHECK` environment variable to `1` (or `true`) on the upgrade process. This bypasses the version comparison and replaces the installed service unconditionally.
+By default, an in-place upgrade (`-u`) replaces the installed service only when the supplied binary is newer than the installed binary. To re-apply a build, or to move to a build that is not newer, set the `LC_UPGRADE_SKIP_VERSION_CHECK` environment variable to `1` (or `true`) on the upgrade process. For example, use the variable to deploy a known-good version again. The variable skips the version comparison and always replaces the installed service.
 
 !!! warning
-Use this only when you intend to override the version check. The automatic rollback on a failed start still applies, but skipping the check makes it possible to deliberately downgrade the on-disk agent.
+Set this variable only when you want to override the version check. The automatic rollback on a failed start still applies. But without the version check, you can downgrade the on-disk agent deliberately.

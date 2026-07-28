@@ -1,21 +1,21 @@
 # WEL Monitoring
 
-LimaCharlie's Agentic SecOps Workspace transforms Windows Event Log monitoring by providing real-time visibility, streamlined infrastructure, and powerful detection and response capabilities. Effectively monitor and protect your Windows environments, ensuring rapid detection and response to potential security incidents.
+The LimaCharlie Agentic SecOps Workspace changes how you monitor the Windows Event Log. It gives visibility in real time, simpler infrastructure, and detection and response capabilities. You can monitor and protect your Windows environments and respond quickly to a security incident.
 
 ## WEL monitoring problems
 
-- **Limited real-time visibility:** Traditional WEL monitoring solutions often rely on periodic log collection, resulting in delayed visibility into potential security incidents, limiting real-time visibility.
-- **Complex and costly infrastructure:** Forwarding WEL data to a centralized monitoring system typically requires additional infrastructure, such as log collectors and forwarders, which can be complex to set up and maintain, as well as costly to scale.
-- **Difficulty in creating custom detection rules:** Writing custom rules to detect malicious behavior in WEL data can be challenging, especially when dealing with large volumes of logs and a lack of standardized formats.
+- **Limited real-time visibility:** Traditional WEL monitoring solutions collect logs at intervals. Visibility into a possible security incident is therefore delayed, and there is little visibility in real time.
+- **Complex and costly infrastructure:** To send WEL data to a central monitoring system, you need more infrastructure, such as log collectors and forwarders. This infrastructure is difficult to set up and maintain, and expensive to scale.
+- **Difficulty in creating custom detection rules:** Custom rules that detect malicious behavior in WEL data are difficult to write. Large volumes of logs and the absence of a standard format add to the difficulty.
 
 ### LimaCharlie's solution
 
-- **Real-time WEL ingestion:** LimaCharlie's Sensor enables direct, real-time importation of WEL data, eliminating the need for complex forwarding infrastructure and reducing costs and management overhead.
-- **Powerful Detection & Response (****) engine**: Ingested WEL data is automatically indexed against common indicators of compromise (IoCs) and processed through LimaCharlie's advanced Detection and Response engine, enabling rapid detection of malicious activity.
-- **Flexible and customizable rule creation:** With WEL data structured as JSON, security teams can easily create custom D&R rules to detect and respond to specific Windows events as they occur, tailoring the monitoring process to their unique needs and environment.
-- **Historical log analysis:** Import historical event log data from disk, empowering teams to conduct in-depth investigations and gain valuable context around endpoint activity.
+- **Real-time WEL ingestion:** The LimaCharlie Sensor imports WEL data directly and in real time. You do not need a complex forwarding infrastructure, so costs and management work are lower.
+- **Detection & Response (****) engine**: LimaCharlie indexes the ingested WEL data against common indicators of compromise (IoCs). It then sends the data through the Detection and Response engine, which detects malicious activity quickly.
+- **Flexible and customizable rule creation:** WEL data is structured as JSON. Security teams can create custom D&R rules that detect and respond to specific Windows events when the events occur. Each team adapts the monitoring to its own environment.
+- **Historical log analysis:** Import historical event log data from disk. Teams can then do detailed investigations and get context about the activity on an endpoint.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, Sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless solution that connects the endpoints of an organization to the cloud securely.
 
 ## What's Next
 

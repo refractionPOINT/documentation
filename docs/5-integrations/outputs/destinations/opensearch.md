@@ -2,10 +2,10 @@
 
 Output events and detections to [OpenSearch](https://opensearch.org/).
 
-- `addresses`: the IPs or DNS where to send the data to
-- `index`: the index name to send data to
-- `username`: user name if using username/password auth
-- `password`: password if using username/password auth
+- `addresses`: the IPs or DNS names to send the data to
+- `index`: the index name to send the data to
+- `username`: the user name, if you authenticate with a user name and a password
+- `password`: the password, if you authenticate with a user name and a password
 
 Example:
 

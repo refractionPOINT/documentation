@@ -2,40 +2,40 @@
 
 ## Overview
 
-Payloads are executables or scripts that can be delivered and executed through LimaCharlie's Endpoint Agent.
+Payloads are executables or scripts that LimaCharlie's Endpoint Agent delivers and runs.
 
-Those payloads can be any executable or script natively understood by the endpoint. The main use case is to run something with specific functionality not available in the main LimaCharlie functionality. For example: custom executables provided by another vendor to cleanup a machine, forensic utilities or firmware-related utilities.
+A payload can be any executable or script that the endpoint understands. Use a payload to run a function that LimaCharlie does not supply. Examples are custom executables from another vendor that clean a machine, forensic utilities, and firmware utilities.
 
-We encourage you to look at LimaCharlie native functionality first as it has several advantages:
+Look at the native LimaCharlie functions first. They have these advantages:
 
-- Usually has better performance.
-- Data returned is always well structured JSON.
-- Can be tasked automatically and [Detection & Response Rules](../../3-detection-response/index.md) can be created from their data.
-- Data returned is indexed and searchable.
+- Performance is usually better.
+- The data that they return is always well structured JSON.
+- You can task them automatically, and you can create [Detection & Response Rules](../../3-detection-response/index.md) from their data.
+- The data that they return is indexed and searchable.
 
-It is possible to set the Payload's file extension on the endpoint by making the Payload name end with that extension. For example, naming a Payload `extract_everything.bat`, the Payload will be sent as a batch file (`.bat`) and executed as such.  This is also true for PowerShell files (`.ps1`).
+To set the file extension of the Payload on the endpoint, end the Payload name with that extension. For example, if you name a Payload `extract_everything.bat`, LimaCharlie sends it as a batch file (`.bat`) and runs it as one. This also applies to PowerShell files (`.ps1`).
 
 ## Lifecycle
 
-Payloads are uploaded to the LimaCharlie platform and given a name. The task `run` can then be used with the `--payload-name MY-PAYLOAD --arguments "-v EulaAccepted"` can be used to run the payload with optional arguments.
+You upload Payloads to the LimaCharlie cloud and give each one a name. Then use the `run` task with `--payload-name MY-PAYLOAD --arguments "-v EulaAccepted"` to run the payload with optional arguments.
 
-The STDOUT and STDERR data will be returned in a related `RECEIPT` event, up to 1 MB. If your payload generates more data, we recommend to pipe the data to a file on disk and use the `log_get` command to retrieve it.
+A related `RECEIPT` event returns the STDOUT and STDERR data, up to 1 MB. If your payload makes more data, send the data to a file on disk. Then use the `log_get` command to get the file.
 
-The payload is retrieved by the endpoint agent over HTTPS to the Ingestion API DNS endpoint. This DNS entry is available from the Sensor Download section of the web app if you need to allow it.
+The endpoint agent gets the payload over HTTPS from the Ingestion API DNS endpoint. If you must allow this DNS entry, find it in the Sensor Download section of the web app.
 
 ## Upload / Download via REST
 
-Creating and getting Payloads is done asynchronously. The relevant REST APIs will return specific signed URLs instead of the actual Payload. In the case of a retrieving an existing payload, simply doing an HTTP GET using the returned URL will download the payload content. When creating a Payload the returned URL should be used in an HTTP PUT using the URL like:
+LimaCharlie creates and gets Payloads asynchronously. The REST APIs return signed URLs, not the Payload. To get an existing payload, do an HTTP GET on the returned URL. To create a Payload, do an HTTP PUT on the returned URL:
 
 ```bash
 curl -X PUT "THE-SIGNED-URL-HERE" -H "Content-Type: application/octet-stream" --upload-file your-file.exe
 ```
 
-Note that the signed URLs are only valid for a few minutes.
+The signed URLs are valid for a few minutes only.
 
 ## Permissions
 
-Payloads are managed with two permissions:
+Two permissions manage Payloads:
 
-- `payload.ctrl` allows you to create and delete payloads.
-- `payload.use` allows you to run a given payload.
+- `payload.ctrl` lets you create and delete payloads.
+- `payload.use` lets you run a payload.

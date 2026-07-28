@@ -4,11 +4,11 @@
 
 ## Permissions
 
-There are three "sub-categories" within detection and response rules contained in Hive.
+Hive contains three "sub-categories" of detection and response rules.
 
-- `dr-general` pertains to rules that your Organization has created and/or controls.
-- `dr-managed` pertains to rules that you can use for detection, however are managed or curated by another party (i.e. Soteria rules).
-- `dr-service` is a protected namespace, and users will only ever have metadata permissions.
+- `dr-general` holds the rules that your Organization created or controls.
+- `dr-managed` holds rules that you can use for detection, but another party manages or curates them (for example, Soteria rules).
+- `dr-service` is a protected namespace. Users get only metadata permissions in it.
 
 ### dr-general
 
@@ -297,7 +297,7 @@ The D&R rules hive is named `dr-general`. Managed rules use `dr-managed`.
     ```
 
     !!! warning
-        The API **replaces** `usr_mtd` entirely. Sending only `{"enabled":false}` will reset tags, expiry, and comment to their defaults. Always read the current metadata first and resend all fields.
+        The API **replaces** all of `usr_mtd`. If you send only `{"enabled":false}`, the API resets tags, expiry, and comment to their defaults. Always read the current metadata first, then send all fields again.
 
 === "Python"
 
@@ -344,4 +344,4 @@ The D&R rules hive is named `dr-general`. Managed rules use `dr-managed`.
 
 ---
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives you full control over security operations. This structure supports flexible multi-tenant setups. It suits managed security providers, and enterprises that manage many departments or clients.

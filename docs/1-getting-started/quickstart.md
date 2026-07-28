@@ -1,87 +1,85 @@
 # Quickstart
 
-LimaCharlie is infrastructure to connect sources of security data, automate activity based on what's being observed, and forward data to where you need it. There's no *correct* way to use it - every environment is different.
+LimaCharlie is infrastructure that connects sources of security data, automates actions on the data that it sees, and sends the data where you need it. There is no *correct* way to use it, because every environment is different.
 
-That said, the majority of LimaCharlie users require basic endpoint detection and response (EDR) capabilities. This guide will cover:
+Most LimaCharlie users need basic endpoint detection and response (EDR) capabilities. This guide covers these tasks:
 
-1. Creating a new [Organization](#creating-an-organization)
-2. Deploying a [Sensor](#deploying-a-sensor) to the Organization
-3. Adding [Sigma rules](#adding-sigma-rules) to detect suspicious activity
-4. Forwarding detections to an external destination as an [Output](#output)
+1. Create a new [Organization](#creating-an-organization)
+2. Deploy a [Sensor](#deploying-a-sensor) to the Organization
+3. Add [Sigma rules](#adding-sigma-rules) to detect suspicious activity
+4. Forward detections to an external destination as an [Output](#output)
 
-All of this can be done within our free tier, which offers full platform functionality for up to two (2) sensors. If you haven't already signed up for a free account, please do so at [app.limacharlie.io](https://app.limacharlie.io).
-
-Let's get started!
+You can do all of these tasks in the free tier. The free tier gives full platform functionality for a maximum of two (2) sensors. If you do not have a free account, sign up at [app.limacharlie.io](https://app.limacharlie.io).
 
 ## Creating an Organization
 
-LimaCharlie organizations are isolated tenants in the cloud, conceptually equivalent to "projects". They can be configured to suit the needs of each deployment.
+LimaCharlie organizations are isolated tenants in the cloud. They are equivalent to "projects". You can configure each organization for the needs of its deployment.
 
-After accepting the initial Terms of Service, you'll be offered a prompt to create an organization in a selected `Region` with a globally unique `Name`.
+After you accept the initial Terms of Service, a prompt asks you to create an organization. Select a `Region` and give a globally unique `Name`.
 
 Region Selection
 
-The region that you select for an organization is permanent. Please also consider regulatory requirements for you and/or your customers' data.
+The region that you select for an organization is permanent. Also consider the regulatory requirements for your data and for the data of your customers.
 
-Once the organization is created, you'll be forwarded to our initial dashboard and Sensor list, which will be empty and ready for the next step.
+After LimaCharlie creates the organization, it shows the initial dashboard and the Sensor list. The list is empty and ready for the next step.
 
 ## Deploying a Sensor
 
-From the Sensors page in your new organization, click `Add Sensor` to open the setup flow for new sensors. Generally speaking, Sensors are executables that install on hosts and connect them to the LimaCharlie cloud to send telemetry, receive commands, and other capabilities.
+On the Sensors page of your new organization, click `Add Sensor`. This opens the setup flow for new sensors. Sensors are executables that install on hosts. They connect the hosts to the LimaCharlie cloud to send telemetry, receive commands, and give other capabilities.
 
 Sensors Overview
 
-For a full overview of types of sensors and their capabilities, check out Sensors.
+For a full overview of the types of sensors and their capabilities, see Sensors.
 
-The setup flow should make this process straightforward. For example's sake, let's say we're installing a sensor on a Windows 10 (64 bit) machine we have in front of us.
+This example installs a sensor on a Windows 10 (64 bit) machine.
 
-- Choose the Windows sensor type
-- Create an Installation Key - this registers the executable to communicate securely with your organization
-- Choose the `64 bit (.exe)` installer
-- Follow the on-screen instructions to execute the installer properly
-- See immediate feedback when the sensor registers successfully with the cloud
+1. Choose the Windows sensor type.
+2. Create an Installation Key. The key registers the executable to communicate securely with your organization.
+3. Choose the `64 bit (.exe)` installer.
+4. Obey the on-screen instructions to run the installer correctly.
+5. See the immediate feedback when the sensor registers with the cloud.
 
 Potential Issues
 
-Since sensors are executables that talk to the cloud, antivirus software and networking layers may interfere with installation. If you run into an issue, take a look at troubleshooting.
+Sensors are executables that communicate with the cloud. Antivirus software and network layers can interfere with the installation. If you get an issue, see troubleshooting.
 
-With a Windows sensor connected to the cloud, you should gain a lot of visibility into the endpoint. If we view the new sensor inside the web application, we'll have access to views such as:
+A Windows sensor that is connected to the cloud gives you much visibility into the endpoint. When you open the new sensor in the web app, you get views such as:
 
-- `Timeline`: the viewer for telemetry events being collected from the endpoint
-- `Processes`: the list of processes running on the endpoint, their level of network activity, and commands to manipulate processes (i.e. kill / pause / resume process, or view modules)
-- `File System`: an explorer for the endpoint's file system, right in the browser
-- `Console`: a safe shell-like environment for issuing commands
-- `Live Feed`: a running view of the live output of all the sensor's events
+- `Timeline`: the viewer for the telemetry events that LimaCharlie collects from the endpoint
+- `Processes`: the list of processes that run on the endpoint, their level of network activity, and commands to control processes (i.e. kill / pause / resume process, or view modules)
+- `File System`: an explorer for the file system of the endpoint, in the browser
+- `Console`: a safe shell-like environment to send commands
+- `Live Feed`: a live view of all the events of the sensor
 
-With telemetry coming in from the cloud, let's add rules to detect potentially malicious activity.
+Telemetry now comes in through the cloud. The next step adds rules to detect possible malicious activity.
 
 ## Adding Sigma Rules
 
-Writing security rules and automations from scratch is a huge effort. To set an open, baseline standard of coverage, LimaCharlie maintains a `sigma` add-on which can be enabled for free, and is kept up to date with the [openly maintained threat signatures](https://github.com/SigmaHQ/sigma).
+It takes much work to write security rules and automations from the start. LimaCharlie maintains a `sigma` add-on to give an open baseline of coverage. You can enable the add-on for free. LimaCharlie keeps it up to date with the [openly maintained threat signatures](https://github.com/SigmaHQ/sigma).
 
-Enabling the Sigma add-on will automatically apply rules to your organization to match these threat signatures so we can begin to see Detections on incoming endpoint telemetry.
+When you enable the Sigma add-on, LimaCharlie applies rules to your organization automatically. These rules match the threat signatures, and they make Detections on the endpoint telemetry that comes in.
 
 Writing Detection and Response rules
 
-Writing your own rules is outside the scope of this guide, but we do encourage checking out [Detection & Response](../3-detection-response/tutorials/writing-testing-rules.md) when you're finished.
+This guide does not explain how to write your own rules. After you finish this guide, read [Detection & Response](../3-detection-response/tutorials/writing-testing-rules.md).
 
 ## Output
 
-Security data generated from sensors is yours to do with as you wish. For example's sake, let's say we want to forward detections to an [Amazon S3 bucket](https://aws.amazon.com/s3/) for longer-lived storage of detections.
+The security data from your sensors is yours, and you can do what you want with it. This example sends detections to an [Amazon S3 bucket](https://aws.amazon.com/s3/) for longer storage of detections.
 
-From the Outputs page in your organization, click `Add Output` to open the setup flow for new outputs. Again, the setup flow should make this process straightforward.
+On the Outputs page of your organization, click `Add Output`. This opens the setup flow for new outputs.
 
-- Choose the Detections stream
-- Choose the Amazon S3 destination
-- Configure the Output and ensure it connects securely to the correct bucket:
-  - Output Name
-  - Bucket Name
-  - Key ID
-  - Secret Key
-  - Region
-- Optionally, you can view samples of the detection stream's data (assuming recent detections have occurred)
+1. Choose the Detections stream.
+2. Choose the Amazon S3 destination.
+3. Configure the Output. Make sure that it connects securely to the correct bucket:
+   - Output Name
+   - Bucket Name
+   - Key ID
+   - Secret Key
+   - Region
+4. Optionally, look at samples of the data in the detection stream. Samples are available only if there are recent detections.
 
-With this output in place you can extend the life of your detections beyond the 1 year LimaCharlie retains them, and stage them for any tool that can pull from S3.
+With this output in place, you can keep your detections for more than the 1 year that LimaCharlie retains them. You can also stage them for any tool that can pull from S3.
 
 ---
 

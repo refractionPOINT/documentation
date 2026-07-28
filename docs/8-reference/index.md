@@ -12,7 +12,7 @@ Technical reference documentation for LimaCharlie operators, commands, and schem
 
 - [Endpoint Commands](endpoint-commands.md) - Sensor command reference
 - [Sensor Selectors](sensor-selector-expressions.md) - Selector expression syntax
-- [ID Schema](id-schema.md) - Understanding LimaCharlie IDs
+- [ID Schema](id-schema.md) - The IDs that LimaCharlie uses
 
 ## Events
 

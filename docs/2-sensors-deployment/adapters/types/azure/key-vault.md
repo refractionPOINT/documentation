@@ -1,19 +1,19 @@
 # Azure Key Vault
 
-Azure [Key Vault](https://azure.microsoft.com/en-us/products/key-vault) is a product that helps safeguard cryptographic keys and other secrets used by cloud apps and services. LimaCharlie can ingest and natively parse Key Vault logs.
+Azure [Key Vault](https://azure.microsoft.com/en-us/products/key-vault) protects cryptographic keys and other secrets that cloud apps and services use. LimaCharlie can ingest and parse Key Vault logs directly.
 
 ## Log Ingestion
 
-Azure Key Vault logs can be ingested via:
+You can ingest Azure Key Vault logs through:
 
 - [Azure Event Hub](../azure-event-hub.md)
 - LimaCharlie [Webhooks](../../tutorials/webhook-adapter.md)
 
-When configuring the adapter, set `client_options.platform: azure_key_vault` to select the dedicated parser. Upon ingestion, the log `category` field is used to define the Event Type and the `time` field provides the event timestamp.
+When you configure the adapter, set `client_options.platform: azure_key_vault` to select the dedicated parser. At ingestion, the log `category` field sets the event type, and the `time` field supplies the event timestamp.
 
 ## Sample Event
 
-The following sample event is taken from Microsoft Azure documentation:
+This sample event comes from the Microsoft Azure documentation:
 
 ```json
 {

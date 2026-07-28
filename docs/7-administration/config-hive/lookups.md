@@ -2,13 +2,13 @@
 
 ## Format
 
-Lookups are dictionaries/maps/key-value-pairs where the key is a string. The lookup can then be queried by various parts of LimaCharlie (like rules). The value component of a lookup must be a dictionary and represents metadata associated with the given key, which will be returned to the rule using the lookup.
+A lookup is a dictionary, or map, of key-value pairs where each key is a string. Different parts of LimaCharlie, such as rules, can query the lookup. The value of a key must be a dictionary. It holds the metadata for that key, and LimaCharlie returns this metadata to the rule that uses the lookup.
 
-Lookup data can be ingested by specifying one of the following root keys indicating the format of the lookupd data:
+To ingest lookup data, specify one of these root keys. Each key shows the format of the lookup data:
 
-- `lookup_data`: represented direct as parsed JSON.
-- `newline_content`: a string where each key is separated by a newline, LimaCharlie will assume the metadata is empty.
-- `yaml_content`: a string in YAML format that contains a dictionary with the string keys and dictionary metadata like the `lookup_data`.
+- `lookup_data`: the data direct as parsed JSON.
+- `newline_content`: a string where a newline separates each key. LimaCharlie assumes that the metadata is empty.
+- `yaml_content`: a string in YAML format. It contains a dictionary with string keys and dictionary metadata, the same as `lookup_data`.
 
 ## Permissions
 
@@ -65,20 +65,25 @@ hives:
 
 ### Manually in the GUI
 
-Lookups can be added in the web interface by navigating to Automation --> Lookups. Name your lookup, choose the format, and copy paste the contents of your lookup in the `JSON data` field.
+To add a lookup in the web app:
 
-LimaCharlie also provides several publicly available lookups for use in your Organization. More information and the contents of these can be found on [GitHub](https://github.com/refractionpoint/lc-public-lookups). The contents of these lookups can be used here as well.
+1. Go to Automation --> Lookups.
+2. Give the lookup a name.
+3. Choose the format.
+4. Copy the contents of your lookup into the `JSON data` field.
+
+LimaCharlie also supplies several public lookups that you can use in your Organization. The [public lookups repository on GitHub](https://github.com/refractionpoint/lc-public-lookups) holds their contents and more information. You can use these contents here also.
 
 ![lookups](../../assets/images/lookups.png)
 
 ### Automatically via the Lookup Manager
 
-If your lookups change frequently and you wish to keep them up to date, LimaCharlie offers the lookup manager extension as a mechanism to automatically update your lookups every 24 hours. See the [Lookup Manager documentation](../../5-integrations/extensions/limacharlie/lookup-manager.md).
+If your lookups change often, use the lookup manager extension to keep them current. The extension updates your lookups automatically every 24 hours. See the [Lookup Manager documentation](../../5-integrations/extensions/limacharlie/lookup-manager.md).
 
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All API and SDK examples require an API key with the appropriate permissions. See [API Keys](../access/api-keys.md) for setup instructions.
+    All API and SDK examples need an API key with the correct permissions. See [API Keys](../access/api-keys.md) for setup instructions.
 
 ### List Lookups
 
@@ -201,7 +206,7 @@ If your lookups change frequently and you wish to keep them up to date, LimaChar
 Lookups support three data formats: `lookup_data` (key-value pairs), `newline_content` (newline-separated keys), and `yaml_content` (YAML string).
 
 !!! warning
-    New hive records are created **disabled by default** — D&R rules that reference the lookup will silently miss every key until you enable it. Each example below explicitly enables the lookup; drop the `enabled` portion to leave it disabled and enable it later via `limacharlie lookup enable --key …`.
+    The cloud creates new hive records **disabled by default**. Until you enable the lookup, D&R rules that reference it miss every key, and give no error. Each example below enables the lookup. To keep the lookup disabled, remove the `enabled` part, then enable it later with `limacharlie lookup enable --key …`.
 
 === "REST API"
 
@@ -289,7 +294,7 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
     }
     ```
 
-    The `--enabled` flag creates-and-enables the lookup in one shot. Omit it (and `usr_mtd.enabled` in the file) to leave the lookup disabled until you call `limacharlie lookup enable --key my-lookup`.
+    The `--enabled` flag creates and enables the lookup in one operation. Omit the flag, and omit `usr_mtd.enabled` in the file, to keep the lookup disabled. The lookup stays disabled until you call `limacharlie lookup enable --key my-lookup`.
 
 ### Delete a Lookup
 
@@ -363,7 +368,7 @@ Lookups support three data formats: `lookup_data` (key-value pairs), `newline_co
     ```
 
     !!! warning
-        The API **replaces** `usr_mtd` entirely. Sending only `{"enabled":false}` will reset tags, expiry, and comment to their defaults. Always read the current metadata first and resend all fields.
+        The API **replaces** all of `usr_mtd`. If you send only `{"enabled":false}`, the API resets tags, expiry, and comment to their defaults. Always read the current metadata first, then send all fields again.
 
 === "Python"
 
