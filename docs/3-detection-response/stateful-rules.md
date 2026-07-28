@@ -200,6 +200,14 @@ Stateful rules are forward-looking only and changing a rule will reset its state
 
 Practically speaking, this means that if you change a rule that detects `excel.exe -> cmd.exe`, `excel.exe` will need to be relaunched while the updated rule is running for it to then begin watching for `cmd.exe`.
 
+[Rule unit tests](unit-tests.md) do not cover stateful rules. They evaluate the `detect` block one event at a time with no cross-event state, so a rule using `with child`, `with descendant` or `with events` is **rejected outright when it carries a `tests` block**:
+
+```text
+error parsing rule: rule context does not support stateful operators
+```
+
+Use [Replay](../5-integrations/services/replay.md) to exercise a stateful rule instead — it compiles the rule with the full engine and runs it over historical sensor traffic or a list of events supplied in the request, so the correlation is actually evaluated.
+
 ### Using Events in Actions
 
 Using `report` to report a detection works according to the [Choosing Event to Report](#choosing-event-to-report) section earlier. Other actions have a subtle difference: they will *always* observe the latest event in the chain.

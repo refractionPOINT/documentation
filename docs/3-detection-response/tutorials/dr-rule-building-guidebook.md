@@ -1832,7 +1832,8 @@ tests:
 
 - `match` contains tests that should trigger the rule.
 - `non_match` contains tests that should NOT trigger the rule.
-- Each test is a list of events (to support stateful rules with multiple events).
+- Each test is a list of events, evaluated independently: a `match` test passes if **any** of its events matches, a `non_match` test fails if **any** of them matches. The list is a set of alternatives, not an ordered chain.
+- **Stateful rules cannot have `tests`.** A rule using `with child`, `with descendant` or `with events` is rejected when it carries a `tests` block (`rule context does not support stateful operators`); use [Replay](../../5-integrations/services/replay.md) for those. See [Unit Tests](../unit-tests.md).
 - Events must include both `event` and `routing` objects.
 - Platform values in `routing/plat` are numeric (e.g., `268435456` for Windows).
 
