@@ -173,6 +173,16 @@ LimaCharlie uses a granular permission system that controls access to all platfo
 | sop.get.mtd | View SOP metadata only |
 | sop.set.mtd | Modify SOP metadata only |
 
+### Organization Notes
+
+| Permission | Description |
+| --- | --- |
+| org_notes.get | Access organization notes |
+| org_notes.set | Create and modify organization notes |
+| org_notes.del | Delete organization notes |
+| org_notes.get.mtd | View organization note metadata only |
+| org_notes.set.mtd | Modify organization note metadata only |
+
 ### Apps
 
 | Permission | Description |

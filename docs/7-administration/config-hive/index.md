@@ -11,6 +11,7 @@ The Config Hive is LimaCharlie's hierarchical configuration store. It provides a
 - [Cloud Sensors](cloud-sensors.md) - Cloud sensor configurations
 - [Apps](apps.md) - User-authored, AI-generated mini web applications
 - [SOPs](../../9-ai-sessions/sops.md) - Standard Operating Procedures that AI agents read and follow
+- [Organization Notes](../../9-ai-sessions/org-notes.md) - Free-form reference documents about the organization, read by analysts and AI agents
 
 ## Usage
 
