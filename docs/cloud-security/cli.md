@@ -1,10 +1,5 @@
 # Command Line Interface
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 The `limacharlie cloudsec` command group (Python SDK/CLI v2) covers most of
 the Cloud Security API surface: the posture and inventory reads, findings
 triage, graph queries, policy previews, CSV exports, and the fleet roll-up.

@@ -1,10 +1,5 @@
 # Okta
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects the Okta directory as identity posture: users (with MFA factors and
 admin roles), groups and membership, application inventory and per-user app
 assignments, and external identity providers (federation / social trust).

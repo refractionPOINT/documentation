@@ -1,10 +1,5 @@
 # Microsoft Entra ID
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 A **directory-only** connection for organizations that use Entra ID or
 Microsoft 365 but have no Azure infrastructure to enumerate. It collects the
 tenant-global identity surface over Microsoft Graph: users, groups and

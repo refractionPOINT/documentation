@@ -1,10 +1,5 @@
 # Amazon Web Services
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Read-only inventory via an IAM identity that **assumes a read-only role**.
 Two topologies:
 

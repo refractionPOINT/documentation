@@ -1,10 +1,5 @@
 # Cloud Security
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 LimaCharlie Cloud Security is an agentless cloud-native application protection
 platform (CNAPP) built into the same tenant, permission model, and automation
 surface as the rest of LimaCharlie. It continuously enumerates your cloud,
@@ -55,9 +50,9 @@ demand, or continuously from a change feed. See
 ## How it works
 
 1. **Enable** the organization for the `ext-cloud-security` extension — the
-   subscription is the product's enable (and billing) gate. While Cloud
-   Security is in Private Beta, contact us to have it enabled for your
-   organization.
+   subscription is the product's enable (and billing) gate. Subscribe from
+   **Extensions → Cloud Security** in the console or with
+   `limacharlie extension subscribe --name ext-cloud-security`.
 2. **Connect providers**: one `cloudsec_provider` Hive record per cloud
    account / IdP tenant / AI org. A pre-save credential test probes every
    permission the collector needs and reports which are missing.

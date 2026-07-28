@@ -1,10 +1,5 @@
 # Getting Started with Cloud Security
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 This guide takes an organization from zero to a populated Cloud Security
 dashboard: enable the product, connect a provider, run the first sweep, and
 declare what matters. You can do all of it in the console or entirely as code —
@@ -16,25 +11,19 @@ Cloud Security is enabled per organization by subscribing to the
 `ext-cloud-security` extension — the subscription is both the enable gate and
 the billing hook.
 
-!!! info "Private Beta: contact us to enable"
-    While Cloud Security is in Private Beta, `ext-cloud-security` is not
-    publicly subscribable — you cannot turn it on yourself. Contact us and we
-    will enable it for your organization. Enabling it requires the
-    `billing.ctrl` and `user.ctrl` permissions and an active billing
-    subscription on the organization.
+Subscribe from the console with the **Subscribe** button on
+**Extensions → Cloud Security**, or in one command:
+
+```bash
+limacharlie extension subscribe --name ext-cloud-security --oid $OID
+```
+
+Subscribing requires the `billing.ctrl` and `user.ctrl` permissions.
 
 Confirm the organization is enabled:
 
 ```bash
 limacharlie extension list --oid $OID
-```
-
-Once the extension is publicly subscribable, the same enable is a single
-command (and a **Subscribe** button on **Extensions → Cloud Security** in the
-console):
-
-```bash
-limacharlie extension subscribe --name ext-cloud-security --oid $OID
 ```
 
 Until the organization is subscribed, every Cloud Security API route returns

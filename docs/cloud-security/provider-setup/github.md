@@ -1,10 +1,5 @@
 # GitHub
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects a GitHub organization: org settings, members (including outside
 collaborators) and teams (identities), repositories and their branch protection
 (data stores), installed GitHub Apps, deploy keys and Actions secrets (machine

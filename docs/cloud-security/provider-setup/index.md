@@ -1,10 +1,5 @@
 # Provider Setup
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 [Getting Started](../getting-started.md) walks the end-to-end flow with a
 Google Cloud example. This section is the per-provider companion: for **every**
 supported platform, the exact scopes and permissions the collector needs, the

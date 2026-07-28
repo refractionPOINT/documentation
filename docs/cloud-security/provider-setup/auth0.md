@@ -1,10 +1,5 @@
 # Auth0
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects the Auth0 tenant as identity posture: the user directory (with MFA
 state), roles and role membership, applications and their machine (M2M)
 identities, client grants as entitlement edges, APIs (resource servers), and
