@@ -2,9 +2,9 @@
 
 ## Overview
 
-This Adapter allows you to ingest files/blobs stored in Google Cloud Storage (GCS).
+This Adapter ingests files and blobs that are stored in Google Cloud Storage (GCS).
 
-Note that this adapter operates as a sink by default, meaning it will "consume" files from the GCS bucket by deleting them once ingested.
+By default, this adapter operates as a sink: it "consumes" the files in the GCS bucket. It deletes each file after it ingests the file.
 
 ## Configurations
 
@@ -12,9 +12,9 @@ Adapter Type: `gcs`
 
 - `client_options`: see [common adapter configuration](../usage.md).
 - `bucket_name`: the name of the bucket to ingest from.
-- `service_account_creds`: the string version of the JSON credentials for a (Google) Service Account to use accessing the bucket.
-- `prefix`: only ingest files with a given path prefix.
-- `single_load`: if `true`, the adapter will not operate as a sink, it will ingest all files in the bucket once and will then exit.
+- `service_account_creds`: the string version of the JSON credentials for a (Google) Service Account that accesses the bucket.
+- `prefix`: only ingest files that have this path prefix.
+- `single_load`: if `true`, the adapter does not operate as a sink. It ingests all files in the bucket one time and then exits.
 
 ### Infrastructure as Code Deployment
 

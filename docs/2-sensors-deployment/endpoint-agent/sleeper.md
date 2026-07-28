@@ -1,30 +1,30 @@
 # Sleeper Deployment
 
-LimaCharlie's usage-based billing enables incident responders to offer pre-deployments to their customers at almost zero cost. That is, they can deploy across an Organization's entire fleet and lay dormant in 'sleeper mode' at a cost of just $0.10 per 30 days. With agents deployed ahead of an incident, responders can offer competitive SLAs.
+The usage-based billing of LimaCharlie lets incident responders offer pre-deployments to their customers at almost no cost. Responders can deploy across the full fleet of an Organization. The sensors stay dormant in 'sleeper mode' at a cost of $0.10 per 30 days. Agents that are deployed before an incident let responders offer competitive SLAs.
 
-> Have more questions?
+> More questions?
 >
-> For more details on sleeper mode deployments, feel free to contact us at [answers@limacharlie.io](mailto:answers@limacharlie.io) or book a quick call with the engineering team to discuss your use case.
+> For more details about sleeper mode deployments, contact LimaCharlie at [answers@limacharlie.io](mailto:answers@limacharlie.io). You can also book a call with the engineering team to discuss your use case.
 
-Sleeper billing uses the following metrics:
+Sleeper billing uses these metrics:
 
 | Connected Time | Events Processed | Events Retained |
 | --- | --- | --- |
 | $0.10 per 30 days | $0.67 per 100,000 events | $0.17 per 100,000 events |
 
-Using sleeper deployments is done via Sensor tagging. Applying the `lc:sleeper` Tag to a Sensor will stop LimaCharlie telemetry collection activity on the host. Within 10 minutes of the tag being applied, the sensor will enter sleeper mode and will be billed only for its "Connected Time" as outlined above. If the tag is removed, normal operations resume within 10 minutes.
+You control sleeper deployments with Sensor tags. The `lc:sleeper` Tag on a Sensor stops the collection of LimaCharlie telemetry on the host. The sensor enters sleeper mode in 10 minutes or less after you apply the tag. LimaCharlie then bills only the "Connected Time" shown above. If you remove the tag, normal operation returns in 10 minutes or less.
 
-Using sleeper mode requires the organization in question to have billing enabled (a quota of at least 3 to be outside of the free tier).
+Sleeper mode needs the organization to have billing enabled. The quota must be at least 3 to be outside the free tier.
 
-This means a sample scenario around pre-deploying in an enterprise could look something like this:
+An example of a pre-deployment in an enterprise can be:
 
 1. Create a new Organization in LimaCharlie.
 2. Set the Quota to 3 to enable billing.
 3. Create a new Installation Key, and set the `lc:sleeper` tag on the key.
-4. Enroll any number of EDR sensors. Charges will apply as specified above. For example, if you deploy 100 Sensors in sleeper mode, total monthly costs will be $10.
-5. Whenever you need to "wake up" and use some of the EDRs, set the Quota to the number of Sensors you need (e.g. if you want to wake up 5 sensors, set the quota to at least 5), remove the `lc:sleeper` tag from the specific Sensors, and within 10 minutes they will be online, billed according to the quota.
-6. When you're done, just re-add the `lc:sleeper` tag and lower the Quota back down.
+4. Enroll any number of EDR sensors. The charges above apply. For example, 100 Sensors in sleeper mode cost $10 each month.
+5. Set the Quota to the number of Sensors that you need to "wake up". For example, to wake up 5 sensors, set the quota to at least 5. Remove the `lc:sleeper` tag from those Sensors. The Sensors come online in 10 minutes or less, and LimaCharlie bills them against the quota.
+6. Add the `lc:sleeper` tag again when you finish, then lower the Quota.
 
-Switching to sleeper mode does not change the binary on disk, however, the code running in memory does change. Whether putting an org into sleeper mode or changing versions, the binary on disk remains as-is.
+A change to sleeper mode does not change the binary on disk, but the code in memory does change. The binary on disk stays the same when you put an org into sleeper mode and when you change versions.
 
-The changes to sleeper mode go into effect without the need for a reboot. In sleeper mode, activities such as read other process' memory (e.g. [YARA](../../5-integrations/extensions/third-party/yara.md)) will stop.
+The changes to sleeper mode take effect without a reboot. In sleeper mode, operations that read the memory of other processes stop. A [YARA](../../5-integrations/extensions/third-party/yara.md) scan is an example of such an operation.

@@ -1,13 +1,13 @@
 # Command Line Interface
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and
+    configuration formats on this page can change before general
+    availability. Contact LimaCharlie to request access.
 
 The `limacharlie cloudsec` command group (Python SDK/CLI v2) covers the full
 Cloud Security API surface. Every command supports the global options
-(`--oid`, `--output json|yaml|csv|table`, `--filter <jmespath>`), and every
+(`--oid`, `--output json|yaml|csv|table`, `--filter <jmespath>`). Every
 command and subgroup answers `--ai-help` with task-oriented guidance.
 
 ```bash
@@ -15,10 +15,9 @@ pip install limacharlie
 limacharlie cloudsec --help
 ```
 
-Configuration (providers, policies, saved queries) is managed with the
-standard `limacharlie hive` commands — see
-[Configuration](configuration.md); this group is the query and triage
-surface.
+Manage configuration (providers, policies, saved queries) with the standard
+`limacharlie hive` commands — see [Configuration](configuration.md). This
+group is the query and triage surface.
 
 ## At a glance
 
@@ -101,25 +100,26 @@ limacharlie cloudsec fleet overview --group prod --limit 100
 ```
 
 The `export` subgroup streams the **entire** filtered set as a CSV
-(server-side keyset walk, capped at 100,000 rows) — use it for offline
-analysis. It is distinct from the per-page `--output csv`, which serializes
+(server-side keyset walk, with a cap of 100,000 rows). Use it for offline
+analysis. It is different from the per-page `--output csv`, which serializes
 only the current page of a normal list command. `export findings`,
-`export inventory`, and `export compliance` take the same filters as their
-`finding list` / `inventory list` / `compliance report` counterparts;
-`export query` takes the same `--named` / `--text` / `--query-json`
-selectors as `query run`.
+`export inventory`, and `export compliance` take the same filters as
+`finding list`, `inventory list`, and `compliance report`. `export query`
+takes the same `--named` / `--text` / `--query-json` selectors as
+`query run`.
 
-`fleet overview` is the multi-org board for MSSPs: pass `--oid` repeatedly
-(or `--group` to select a saved fleet group) to roll risk posture up across
-tenants. It carries `--trend-days`, `--limit`, and `--cursor` for paging the
-tenant list, and is the one command that does not resolve a single `--oid`.
+`fleet overview` is the multi-org board for MSSPs. Pass `--oid` more than
+one time, or pass `--group` to select a saved fleet group, to roll risk
+posture up across tenants. It carries `--trend-days`, `--limit`, and
+`--cursor` to page the tenant list. It is the one command that does not
+resolve a single `--oid`.
 
 !!! note "CLI is the query & triage surface"
-    Scheduled queries and workload-group views are **console + REST-API**
-    features with no CLI command — everything else (reads, findings triage,
-    graph queries, Topology, Identity 360, policy simulation and
-    autocomplete, exports, and fleet roll-up) is covered. Provider and
-    policy *records* are managed with `limacharlie hive` (see
+    Scheduled queries and workload-group views are **web app + REST-API**
+    features with no CLI command. The CLI covers everything else: reads,
+    findings triage, graph queries, Topology, Identity 360, policy
+    simulation and autocomplete, exports, and fleet roll-up. Manage provider
+    and policy *records* with `limacharlie hive` (see
     [Configuration](configuration.md)).
 
 ## Filtering and pagination
@@ -138,7 +138,8 @@ limacharlie cloudsec finding list --cursor "<next_cursor>" --limit 50
 ```
 
 Boolean tri-state flags (`--kev/--no-kev`, `--reachable/--no-reachable`)
-send the filter only when given, so the server default applies otherwise.
+send the filter only when you give them. If you do not give them, the server
+default applies.
 
 ## Scripting
 
@@ -155,5 +156,5 @@ for f in page["findings"]:
     print(f["lc_risk"], f["title"], f["resource_urn"])
 ```
 
-Each method mirrors one API route and returns the raw response dict; see the
+Each method mirrors one API route and returns the raw response dict. See the
 [API Reference](api-reference.md) for response shapes.

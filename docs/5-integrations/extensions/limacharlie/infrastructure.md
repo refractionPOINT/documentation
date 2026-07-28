@@ -1,40 +1,44 @@
 # Infrastructure
 
-The Infrastructure Extension allows you to perform infrastructure-as-code (IaC) modifications to your Organization. IaC modifications can be made in the web UI or via the LimaCharlie [CLI tool](https://github.com/refractionPOINT/python-limacharlie/#configs-1). Users can create new organizations from known templates or maintain a common configuration across multiple organizations.
+The Infrastructure Extension lets you make infrastructure-as-code (IaC) changes to your Organization. You can make IaC changes in the web app or with the LimaCharlie [CLI tool](https://github.com/refractionPOINT/python-limacharlie/#configs-1). You can create new organizations from known templates. You can also keep one common configuration across many organizations.
 
 > Scaling Organization Management
 >
-> If you're a managed service company or need to manage a large number of Organizations, consider LimaCharlie's [MSSP demo setup](https://github.com/refractionPOINT/mssp-demo).
+> If you are a managed service company, or if you must manage many Organizations, look at the LimaCharlie [MSSP demo setup](https://github.com/refractionPOINT/mssp-demo).
 
 ## Enabling the Infrastructure Extension
 
-To enable the Infrastructure extension, navigate to the [Infrastructure extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-infrastructure) in the marketplace. Select the organization you wish to enable the extension for, and select **Subscribe**.
+To enable the Infrastructure extension, do these steps:
+
+1. Open the [Infrastructure extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-infrastructure) in the marketplace.
+2. Select the organization that you want to enable the extension for.
+3. Select **Subscribe**.
 
 ![infra 1.png "image(234).png"](../../../assets/images/infra-1.png "image(234).png")
 
-After clicking **Subscribe**, the Infrastructure extension should be available almost immediately.
+After you select **Subscribe**, the Infrastructure extension becomes available almost immediately.
 
 > Where to start?
 >
-> IaC can be a powerful tool for rapidly deploying and managing Organizations within LimaCharlie. We provide [example templates and configurations](https://github.com/refractionPOINT/templates) on GitHub.
+> IaC deploys and manages Organizations in LimaCharlie quickly. LimaCharlie supplies [example templates and configurations](https://github.com/refractionPOINT/templates) on GitHub.
 
 ## Using the Infrastructure Extension
 
-Once enabled, you will see an Infrastructure as Code option under the **Organization Settings** within the LimaCharlie web UI. The extension also becomes available via the REST API.
+After you enable the extension, an Infrastructure as Code option shows under **Organization Settings** in the LimaCharlie web app. The extension also becomes available through the REST API.
 
 ![infra 2.png "image(240).png"](../../../assets/images/infra-2.png "image(240).png")
 
-Within the Infrastructure As Code module, you can:
+In the Infrastructure As Code module, you can do these actions:
 
-- **Apply a New Config** to an existing organization. Changes are made additively, and are good for merging new configuration parameters into your organization.
-- **Edit the Entire Configuration** for an existing organization. This is your current configuration, and can be modified directly in the web UI.
-- Perform **Fetch**, **Push**, or **Push-from-file** operations.
+- **Apply a New Config** to an existing organization. The extension adds the changes to the current configuration. Use this action to merge new configuration parameters into your organization.
+- **Edit the Entire Configuration** for an existing organization. This is your current configuration. You can change it directly in the web app.
+- Do **Fetch**, **Push**, or **Push-from-file** operations.
 
 ![infra 3.png "image(241).png"](../../../assets/images/infra-3.png "image(241).png")
 
 ## Actions via REST API
 
-The REST interface for the Infrastructure extension mimics the CLI tool. The following REST API actions can be sent to interact with the Infrastructure extension:
+The REST interface for the Infrastructure extension copies the CLI tool. Send these REST API actions to the Infrastructure extension:
 
 ```json
 {

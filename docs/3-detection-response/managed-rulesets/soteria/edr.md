@@ -1,6 +1,6 @@
 # Soteria EDR Rules
 
-Soteria's EDR ruleset provides coverage across Windows, Linux, and macOS. You can check the dynamic MITRE ATT&CK mapping here:
+The Soteria EDR ruleset covers Windows, Linux, and macOS. The dynamic MITRE ATT&CK mapping is available at these links:
 
 - [All rules](https://mitre-attack.github.io/attack-navigator/#layerURL=https%3A%2F%2Fstorage.googleapis.com%2Fsoteria-detector-mapping%2F%2Fall.json)
 - [Windows](https://mitre-attack.github.io/attack-navigator/#layerURL=https://storage.googleapis.com/soteria-detector-mapping//windows.json)
@@ -9,9 +9,9 @@ Soteria's EDR ruleset provides coverage across Windows, Linux, and macOS. You ca
 
 ## Data access
 
-Please note that Soteria won't get access to your data, and you won't be able to see or edit their rules - LimaCharlie acts as a broker between the two parties.
+Soteria does not get access to your data, and you cannot see or edit the Soteria rules. LimaCharlie is the broker between the two parties.
 
-The following events are utilized by Soteria rules. Please ensure that they are configured within your Organization:
+The Soteria rules use the events below. Make sure that these events are configured in your Organization:
 
 - `CODE_IDENTITY`
 - `DNS_REQUEST`
@@ -28,21 +28,21 @@ The following events are utilized by Soteria rules. Please ensure that they are 
 - `SENSITIVE_PROCESS_ACCESS`
 - `THREAD_INJECTION`
 
-This can also be done in the Add-ons Marketplace.
+You can also do this in the Add-ons Marketplace.
 
 ## Enabling Soteria's EDR Rules
 
-Soteria's EDR rules can be activated via two means.
+You can activate the Soteria EDR rules in two ways.
 
 ### Activating via the Web UI
 
-To enable Soteria's EDR ruleset, navigate to the **Extensions** section of the Add-On Marketplace and search for Soteria. You can also directly select `soteria-rules-edr`.
+To enable the Soteria EDR ruleset, open the **Extensions** section of the Add-On Marketplace. Search for Soteria. You can also select `soteria-rules-edr` directly.
 
 ![soteria edr 1](../../../assets/images/soteria-edr-1.png)
 
 #### Please note: Pricing may reflect when the screenshot was taken, not the actual pricing
 
-Under the Organization dropdown, select a tenant (organization) you want to subscribe to Soteria rules and click **Subscribe**.
+Under the Organization dropdown, select the organization that you want to subscribe to the Soteria rules. Click **Subscribe**.
 
 ![soteria edr 2](../../../assets/images/soteria-edr-2.png)
 
@@ -52,4 +52,4 @@ You can also manage add-ons from the **Subscriptions** menu under **Billing**.
 
 ### Infrastructure as Code
 
-Alternatively, to manage tenants and LimaCharlie functionality at scale, you can leverage our Infrastructure as Code functionality.
+To manage organizations and LimaCharlie functions at scale, you can also use the Infrastructure as Code functionality.

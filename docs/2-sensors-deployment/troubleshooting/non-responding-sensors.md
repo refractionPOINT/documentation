@@ -2,7 +2,7 @@
 
 ## Overview
 
-A common request is to alert an administrator if a Sensor that normally forwards data, stops or fails to send data. This LimaCharlie Playbook is meant to be triggered on a schedule by  rule. It checks for data sent, via the LimaCharlie Python SDK, within a given time window. If no data is sent during the time period, then an alert is generated, one per sensor.
+A common request is to alert an administrator when a Sensor that normally forwards data stops or does not send data. A rule triggers this LimaCharlie Playbook on a schedule. The playbook uses the LimaCharlie Python SDK to check for data that arrived in a given time window. If no data arrives in that time window, the playbook generates one alert for each sensor.
 
 ## Example Playbook Code
 

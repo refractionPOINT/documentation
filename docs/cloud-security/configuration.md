@@ -1,46 +1,46 @@
 # Configuration Reference
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and
+    configuration formats on this page can change before general
+    availability. Contact LimaCharlie to request access.
 
-Cloud Security is configured entirely through three Hive types. Anything the
-console can configure, `limacharlie hive set` can configure — which makes
-tenant onboarding and fleet-wide policy a script, not a UI workflow (see
-[Automation & IaC](automation.md) for recipes).
+You configure Cloud Security completely through three Hive types.
+`limacharlie hive set` can configure anything that the web app can
+configure. Tenant onboarding and fleet-wide policy are thus a script, not a
+manual workflow (see [Automation & IaC](automation.md) for recipes).
 
 | Hive | Records | Purpose |
 |---|---|---|
-| `cloudsec_provider` | one per cloud / IdP / SaaS / AI connection | what to collect and with which credential |
+| `cloudsec_provider` | one for each cloud / IdP / SaaS / AI connection | what to collect and with which credential |
 | `cloudsec_policy` | many, discriminated by `policy_type` | classification, coverage, emission, exclusions, suppression, compliance assignments |
-| `cloudsec_query` | one per saved query | shared saved graph queries |
+| `cloudsec_query` | one for each saved query | shared saved graph queries |
 
 !!! info "Permissions"
-    `cloudsec_provider` records are gated by the dedicated
-    `cloudsec_provider.get/set/del` permissions; `cloudsec_policy` and
-    `cloudsec_query` follow `cloudsec.get`/`cloudsec.set`.
+    The dedicated `cloudsec_provider.get/set/del` permissions gate
+    `cloudsec_provider` records. `cloudsec_policy` and `cloudsec_query` obey
+    `cloudsec.get`/`cloudsec.set`.
 
 ## cloudsec_provider
 
-One record per provider connection. `provider_type` discriminates; each type
-reads its own scope fields. The full per-provider walkthrough — including the
-credential shape for each — is in [Connecting Providers](providers.md); this is
-the field reference.
+One record for each provider connection. `provider_type` discriminates; each
+type reads its own scope fields. [Connecting Providers](providers.md) has
+the full walkthrough for each provider, including the credential shape. This
+page is the field reference.
 
 Common fields (all provider types):
 
 | Field | Meaning |
 |---|---|
 | `provider_type` | `gcp` \| `aws` \| `azure` \| `okta` \| `entra` \| `google_workspace` \| `1password` \| `auth0` \| `cloudflare` \| `github` \| `openai` \| `anthropic` \| `limacharlie` |
-| `credentials` | A `hive://secret/<name>` reference. The credential itself lives in the secret Hive — it is **not** stored inline. |
-| `compliance_credentials` | Optional second `hive://secret/<name>` reference for providers with a second credential plane (today: Anthropic's compliance/analytics key). |
+| `credentials` | A `hive://secret/<name>` reference. The credential itself is in the secret Hive — it is **not** stored inline. |
+| `compliance_credentials` | Optional second `hive://secret/<name>` reference for providers with a second credential plane (today: the compliance/analytics key of Anthropic). |
 | `internal_domains` | Your own email domains (bare domains, no `@`) beyond the discoverable primary — human identities outside this set are classified external. |
 | `sync_now` | Opaque nonce; change its value to trigger an on-demand sweep. |
-| `refresh` | Periodic re-enumeration cadence as a duration string (e.g. `"6h"`); empty uses the service default. |
-| `feed_subscription` | Optional fully-qualified Pub/Sub subscription carrying a cloud change feed, for event-driven freshness between full sweeps. |
+| `refresh` | Periodic re-enumeration cadence as a duration string (e.g. `"6h"`); if empty, the service default applies. |
+| `feed_subscription` | Optional fully-qualified Pub/Sub subscription that carries a cloud change feed, for event-driven freshness between full sweeps. |
 
-Per-provider scope fields:
+Scope fields for each provider:
 
 | `provider_type` | Fields |
 |---|---|
@@ -58,8 +58,9 @@ Per-provider scope fields:
 | `anthropic` | optional `anthropic_org_uuid` (required when only the compliance plane is connected); Console Admin key in `credentials`, optional compliance key in `compliance_credentials` |
 | `limacharlie` | exactly one of `limacharlie_oid` (org key) or `limacharlie_uid` (user key — the MSSP fleet case) |
 
-Use `limacharlie cloudsec provider test` to preflight a record before saving it
-— see [Getting Started](getting-started.md#test-the-credential-before-saving).
+Use `limacharlie cloudsec provider test` to preflight a record before you
+save it — see
+[Getting Started](getting-started.md#test-the-credential-before-saving).
 
 ## cloudsec_policy
 
@@ -86,15 +87,15 @@ the same matcher grammar:
 
 !!! warning "Matchers within a rule are ANDed"
     A rule matches a resource only when **every populated dimension matches**.
-    Within a single-valued dimension the listed patterns are OR alternatives
-    (`account_glob: ["a-*", "b-*"]` matches either); set-valued dimensions
-    (`label`, `tag`) require **all** entries. A **rule with no matcher matches
-    nothing**, and a populated dimension that cannot be evaluated for a given
-    resource **fails** the rule rather than being ignored. Separate rules in a
-    list compose with OR.
+    In a single-valued dimension, the listed patterns are OR alternatives
+    (`account_glob: ["a-*", "b-*"]` matches either). Set-valued dimensions
+    (`label`, `tag`) need **all** entries. A **rule with no matcher matches
+    nothing**. If a populated dimension cannot be evaluated for a resource, it
+    **fails** the rule; the rule does not ignore it. Separate rules in a list
+    compose with OR.
 
     (This is a change from earlier behavior, where dimensions within a rule were
-    ORed. The `store_kind` matcher has been folded into `resource_type`.)
+    ORed. The `store_kind` matcher is now part of `resource_type`.)
 
 #### Glob syntax
 
@@ -110,9 +111,9 @@ Every glob dimension (`account_glob`, `name_glob`, `region`, and suppression
 | `**` | any run **including** `/` (only differs from `*` on values containing `/`) |
 | `\c` | the literal character `c` |
 
-A pattern whose **first character is `!` is a negation**: within one list the
+A pattern whose **first character is `!` is a negation**. In one list the
 positive patterns OR together as before, and any matching negation **vetoes**
-the whole list. A list containing only negations matches everything it doesn't
+the whole list. A list with only negations matches everything that it does not
 exclude — `account_glob: ["!legion-*"]` means "every account **without** the
 `legion-` prefix". `\!` matches a literal leading `!`. Case-insensitive
 dimensions stay case-insensitive under negation.
@@ -124,13 +125,13 @@ region: ["!eu-*"]                        # everywhere outside the EU
 
 Not every dimension is honored on every surface — `tag` is compute-only,
 `content_class`/`public`/`classes` apply to data stores, and the `exclusions`
-emission list honors only account/name/provider. The console's policy editors
-enforce this per surface and offer live value **autocomplete** from your actual
-estate, plus a **Simulate** preview that shows which resources a rule matches
-before you save (see [Previewing policies](#previewing-policies)).
+emission list honors only account/name/provider. The policy editors in the web
+app enforce this for each surface. They also give live value **autocomplete**
+from your real estate, and a **Simulate** preview that shows which resources a
+rule matches before you save (see [Previewing policies](#previewing-policies)).
 
-Assign-side fields (not matchers): `name` (provenance), `classes` (the classes a
-`classification` data-store rule assigns), and `tier`
+Assign-side fields (not matchers): `name` (provenance), `classes` (the classes
+that a `classification` data-store rule assigns), and `tier`
 (`critical`/`high`/`medium`/`low`).
 
 ### `classification` — crown jewels
@@ -154,24 +155,24 @@ match resources and assign classes and/or a criticality tier, in three sections
 }
 ```
 
-Content-based sensitivity is expressed with `content_class` rules: the agentless
-scanner samples data stores and surfaces detected content classes (`pii`, `pci`,
-`phi`, `financial`) as facts on the resource, and a `content_class` rule is what
-turns a detection into a sensitivity claim. Your explicit policy always remains
+`content_class` rules express content-based sensitivity. The agentless scanner
+samples data stores and shows the detected content classes (`pii`, `pci`,
+`phi`, `financial`) as facts on the resource. A `content_class` rule turns a
+detection into a sensitivity claim. Your explicit policy always stays
 authoritative.
 
 !!! note "auto_classify has been replaced"
-    Earlier versions accepted an `auto_classify: true` boolean. It has been
-    retired in favor of explicit, previewable `content_class` rules — the same
+    Earlier versions accepted an `auto_classify: true` boolean. It is retired,
+    and explicit, previewable `content_class` rules replace it — the same
     detection, but visible in the policy and testable with Simulate. Remove
     `auto_classify` from any existing record.
 
 ### `coverage` — workload coverage expectations
 
-Declares which **cloud workloads** are expected to run a LimaCharlie sensor,
-with `required` and `exempt` resource-rule lists — the "EDR on production VMs"
-expectation, evaluated over the cloud inventory. An empty `required` means every
-compute resource is expected to be covered; `exempt` wins.
+Declares which **cloud workloads** must run a LimaCharlie sensor, with
+`required` and `exempt` resource-rule lists — the "EDR on production VMs"
+expectation, evaluated over the cloud inventory. An empty `required` means that
+every compute resource must be covered; `exempt` wins.
 
 !!! note "Distinct from the CAASM expected-coverage policy"
     `limacharlie cloudsec caasm policy set` manages a **separate** policy with a
@@ -191,7 +192,7 @@ Controls which Cloud Security events reach the organization's event stream:
 | `finding_events` | `cloud_finding.*` lifecycle events | on |
 | `ops_events` | operational events (sweep failures) | off |
 | `severity_floor` | drop finding events below this severity | none |
-| `suppress_first_sync` | emit one summary instead of a per-finding flood on the first / rebuild sweep | on |
+| `suppress_first_sync` | emit one summary instead of a flood of events, one for each finding, on the first / rebuild sweep | on |
 
 See [Findings are events too](findings.md#findings-are-events-too) for the full
 event taxonomy.
@@ -200,17 +201,18 @@ event taxonomy.
 
 Excludes matching resources from `collection` or `emission` (two
 independent rule lists; collection rules add `services` and `resource_types`
-matchers on top of the shared resource matchers). Use it for the million-object
-bucket that should not be enumerated, or the noisy account that should not emit
-events. Removal takes effect on the next sweep.
+matchers to the shared resource matchers). Use it for the bucket with a million
+objects that must not be enumerated, or the noisy account that must not emit
+events. A removal takes effect on the next sweep.
 
 ### `suppression` — finding disposition policy
 
 Auto-dispositions matching findings — see
 [Automation & IaC](automation.md#suppression-rules-finding-disposition-policy)
-for semantics and a worked example. Ordered `rules`; each rule's `match` accepts
-`finding_class`, `rule`, `account`, `urn_prefix`, `max_severity`; the `effect`
-is `kind` (`accepted`/`false_positive`), `reason` (required), `ttl_days`.
+for semantics and a worked example. Ordered `rules`; the `match` of each rule
+accepts `finding_class`, `rule`, `account`, `urn_prefix`, `max_severity`; the
+`effect` is `kind` (`accepted`/`false_positive`), `reason` (required),
+`ttl_days`.
 
 ### `compliance` — scoped assignments
 
@@ -234,25 +236,25 @@ A saved graph query, shared org-wide:
 ```
 
 `query` takes one of `named` (a query-pack reference), `text`, or `ast` (the raw
-DSL). Optional `ui` hints (view, columns) shape how the console renders results;
-the query appears in the [Query console and as an Explore lens](graph.md#graph-queries).
-`schedule` and `detection` blocks are accepted for forward-compatibility;
-turning a saved query into a scheduled detection source (emitting `cloud_query.*`
-events) is an emerging capability.
+DSL). Optional `ui` hints (view, columns) shape how the web app renders results.
+The query appears in the [Query console and as an Explore lens](graph.md#graph-queries).
+`schedule` and `detection` blocks are accepted for forward-compatibility. A
+saved query that becomes a scheduled detection source, and emits `cloud_query.*`
+events, is an emerging capability.
 
 ## Previewing policies
 
-Two read-only, `cloudsec.get`-gated aids make policy authoring safe — both are
-in the console policy editors, on the API, and on the CLI
+Two read-only aids, gated by `cloudsec.get`, make policy authoring safe. Both
+are in the policy editors of the web app, on the API, and on the CLI
 (`limacharlie cloudsec simulate` / `limacharlie cloudsec policy`):
 
 - **Simulate** evaluates an in-progress matcher against your real data before you
-  save. A resource matcher (classification / coverage / exclusions) is previewed
-  against stored inventory; a suppression matcher is previewed against open
-  findings. The result is a match count plus a bounded sample.
+  save. It previews a resource matcher (classification / coverage / exclusions)
+  against stored inventory, and a suppression matcher against open findings. The
+  result is a match count and a bounded sample.
 - **Vocabulary & autocomplete** feed the editors the closed vocabularies
   (resource types, providers, tiers, content classes) and live value suggestions
-  drawn from your estate's actual accounts and names.
+  drawn from the real accounts and names in your estate.
 
 See the [API Reference](api-reference.md#policy-authoring-simulate-vocabulary)
 for the underlying routes.

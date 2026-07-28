@@ -2,16 +2,16 @@
 
 ## Overview
 
-This Adapter allows you to connect to PandaDoc to fetch [API logs](https://developers.pandadoc.com/reference/list-api-logs).
+This Adapter lets you connect to PandaDoc and fetch [API logs](https://developers.pandadoc.com/reference/list-api-logs).
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify these options if you use the binary adapter or create a webhook adapter. If you use an Adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself with LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, for example `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter. Sensor IDs (SID) are generated from this name, see below.
 
 ### Adapter-specific Options
 
@@ -61,4 +61,4 @@ pandadoc:
 
 ## API Doc
 
-See the official [documentation](https://developers.pandadoc.com/reference/list-api-logs).
+See the official [PandaDoc API logs documentation](https://developers.pandadoc.com/reference/list-api-logs).

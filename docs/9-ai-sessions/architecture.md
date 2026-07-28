@@ -1,14 +1,14 @@
 # Architecture
 
-AI Sessions are fully-managed - you launch sessions and the platform handles provisioning,
-isolation, scaling, and teardown. This page gives a high-level view of how the
+AI Sessions are fully managed. You start sessions, and the platform does the
+provisioning, the isolation, the scaling, and the teardown. This page shows how the
 platform is organized and the principles that keep your data and credentials safe.
 
 ## How It's Organized
 
-At a high level there are three conceptual layers: a **control plane** that manages
-sessions and credentials, **isolated session environments** where the agents
-actually run, and a **real-time channel** that connects you to a live session.
+There are three conceptual layers: a **control plane** that manages sessions and
+credentials, **isolated session environments** where the agents run, and a
+**real-time channel** that connects you to a live session.
 
 ```mermaid
 flowchart TB
@@ -35,9 +35,9 @@ flowchart TB
 
 | Building block | What it does |
 |----------------|--------------|
-| **Control plane** | The front door for everything you do: registering, creating and managing sessions, storing profiles, and holding your encrypted credentials. Also records usage for billing. |
-| **Session environment** | Where an agent actually runs — an isolated, ephemeral environment with the LimaCharlie CLI, security tooling, and your configured tools. One per session. See [Runner Environment](runner-environment.md). |
-| **Real-time channel** | Carries your prompts, the agent's responses, tool-approval requests, and file transfers between you and a running session. See the [API Reference](api-reference.md) for the WebSocket protocol. |
+| **Control plane** | The entry point for everything that you do: registration, creation and management of sessions, storage of profiles, and storage of your encrypted credentials. It also records usage for billing. |
+| **Session environment** | Where an agent runs. It is an isolated, temporary environment with the LimaCharlie CLI, security tools, and the tools that you configured. There is one environment for each session. See [Runner Environment](runner-environment.md). |
+| **Real-time channel** | Carries your prompts, the responses of the agent, tool-approval requests, and file transfers between you and a running session. See the [API Reference](api-reference.md) for the WebSocket protocol. |
 | **Authentication service** | Lets you connect Claude Max credentials through a browser sign-in, with no local install. |
 
 ## Isolation & Trust

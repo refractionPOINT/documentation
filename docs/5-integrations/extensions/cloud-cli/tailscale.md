@@ -1,6 +1,6 @@
 # Tailscale
 
-The Tailscale CLI brings Tailscale's powerful software-defined networking, based on WireGuard, to the command line. This Extension allows you to interact with a Tailscale network(s) from LimaCharlie.
+The Tailscale CLI gives access to the software-defined networking of Tailscale, based on WireGuard, from the command line. This Extension lets you interact with Tailscale networks from LimaCharlie.
 
 This extension uses [Tailscale's native CLI](https://tailscale.com/kb/1031/install-linux).
 
@@ -20,10 +20,10 @@ Returns the current Tailscale status.
 
 ## Credentials
 
-To utilize Tailscale's CLI capabilities, you will need:
+To use the CLI capabilities of Tailscale, you need:
 
 - An [auth key](https://tailscale.com/kb/1085/auth-keys)
-- Create a secret in the secrets manager in the following format:
+- Create a secret in the secrets manager in this format:
 
 ```text
 authKey
@@ -31,4 +31,4 @@ authKey
 
 ## Command-line Interface
 
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+LimaCharlie Extensions let users expand and customize their security environments. Extensions integrate third-party tools, automate workflows, and add new capabilities. Organizations subscribe to Extensions. Each Extension gets specific permissions to interact with the infrastructure of the organization. An Extension can be private for custom use, or public to share with the community. This framework supports scalability, flexibility, and secure, repeatable deployments.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Adapter allows you to ingest AWS GuardDuty events via either an [S3 bucket](https://aws.amazon.com/s3/) or [SQS message queue](https://aws.amazon.com/sqs/).
+This adapter ingests AWS GuardDuty events from an [S3 bucket](https://aws.amazon.com/s3/) or from an [SQS message queue](https://aws.amazon.com/sqs/).
 
 [AWS GuardDuty](https://aws.amazon.com/guardduty/) helps you protect your AWS accounts with intelligent threat detection.
 
@@ -10,24 +10,24 @@ Telemetry Platform: `guard_duty`
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify them when you use the binary adapter or create a webhook adapter. If you use an adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter uses.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself to LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, such as `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: a name that you choose for this adapter. LimaCharlie generates the Sensor IDs (SID) from this name. See below.
 
 ### Adapter-specific Options
 
 #### Collecting AWS GuardDuty Logs via an S3 Bucket
 
-If collecting GuardDuty logs via an S3 bucket, you will need the following parameters:
+To collect GuardDuty logs from an S3 bucket, you need these parameters:
 
 - `bucket_name` - The name of the S3 bucket holding the data)
 - `secret_key` - The API key for AWS that has access to the respective bucket.
 - `access_key` - The AWS access key for the API key
 
-The following command will create an Adapter using the (1) Adapter binary and (2) logs stored in an S3 bucket:
+This command creates an adapter that uses the adapter binary and reads logs from an S3 bucket:
 
 ```bash
 ./lc_adapter s3 client_options.identity.installation_key=<INSTALLATION_KEY> \
@@ -41,14 +41,14 @@ client_options.hostname=guardduty-logs
 
 #### Collecting AWS GuardDuty Logs via an SQS Queue
 
-If collecting GuardDuty logs via an SQS queue, you will need the following parameters:
+To collect GuardDuty logs from an SQS queue, you need these parameters:
 
 - `secret_key` - The API key for AWS that has access to the respective bucket.
 - `access_key` - The AWS access key for the API key
-- `region` - The AWS region where the SQS instance lives
+- `region` - The AWS region that contains the SQS instance
 - `queue_url` - The URL to the SQS instance
 
-The following command will create an Adapter using the (1) Adapter binary and (2) logs stored in an SQS queue:
+This command creates an adapter that uses the adapter binary and reads logs from an SQS queue:
 
 ```bash
 ./lc_adapter sqs client_options.identity.installation_key=<INSTALLATION_KEY> \
@@ -64,6 +64,6 @@ region=<AWS-REGION>
 
 ## Guided Deployment
 
-Within the LimaCharlie web application, you can create an AWS GuardDuty Cloud Connector using the `+ Add Sensor` option.
+In the LimaCharlie web app, create an AWS GuardDuty cloud connector with the `+ Add Sensor` option.
 
 ![Add Sensor option for AWS GuardDuty Cloud Connector in the LimaCharlie web application](../../../assets/images/image(304).png)

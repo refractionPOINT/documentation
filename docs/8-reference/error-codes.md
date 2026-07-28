@@ -1,6 +1,6 @@
 # Reference: Error Codes
 
-The follow error codes are found within various Report (`*_REP`) events found within the [EDR Events](edr-events.md), often in response to an [endpoint agent command](endpoint-commands.md).
+These error codes occur in the Report (`*_REP`) events in the [EDR Events](edr-events.md). They are often a response to an [endpoint agent command](endpoint-commands.md).
 
 | Error Code | Value |
 | --- | --- |
@@ -47,12 +47,12 @@ The follow error codes are found within various Report (`*_REP`) events found wi
 
 ## Payload Specific
 
-When dealing with Payloads or Artifact collection, you may receive HTTP specific error codes:
+When you use Payloads or Artifact collection, you can receive HTTP-specific error codes:
 <https://developer.mozilla.org/en-US/docs/Web/HTTP/Status>
 
 ## Yara Specific
 
-When doing Yara scanning operations, you may receive Yara specific error codes.
+When you do Yara scanning operations, you can receive Yara-specific error codes.
 
-These are documented here:
+These codes are documented at:
 <https://github.com/VirusTotal/yara/blob/master/libyara/include/yara/error.h>

@@ -1,11 +1,11 @@
 # Output Stream Structures
 
-LimaCharlie routes data through four distinct output streams, each with a different structure and purpose. Understanding these structures is essential for:
+LimaCharlie routes data through four output streams. Each stream has a different structure and purpose. You must know these structures to do these tasks:
 
-- Configuring output destinations correctly
-- Building parsers in external systems (SIEM, data lake, etc.)
-- Filtering and transforming data before sending it
-- Integrating with webhooks, APIs, and automation platforms
+- Configure output destinations correctly
+- Build parsers in external systems (SIEM, data lake, etc.)
+- Filter and transform data before you send it
+- Integrate with webhooks, APIs, and automation platforms
 
 ## Overview of Output Streams
 
@@ -24,7 +24,7 @@ LimaCharlie routes data through four distinct output streams, each with a differ
 
 ### Structure
 
-All events follow a canonical two-level structure:
+All events use a canonical two-level structure:
 
 ```json
 {
@@ -104,13 +104,13 @@ The `event` object varies by `event_type`. Common event types include:
 
 ## 2. Detection Stream Structure
 
-**Purpose**: Alerts generated when D&R rules match events
+**Purpose**: Alerts that D&R rules generate when a rule matches an event
 
 **Stream Name**: `detect`
 
 ### Structure
 
-Detections include the original event's routing, the triggering event data, and detection-specific metadata:
+A detection includes the routing of the original event, the event data that triggered the rule, and metadata for the detection:
 
 ```json
 {
@@ -174,7 +174,7 @@ Detections include the original event's routing, the triggering event data, and 
 
 ### Key Field: detect_data
 
-The `detect_data` field contains **structured IOCs** extracted by the D&R rule. This is extremely valuable for:
+The `detect_data` field contains **structured IOCs** that the D&R rule extracted. This field is valuable for:
 
 - Automated enrichment (lookup IPs, domains, hashes)
 - SOAR playbook inputs
@@ -222,7 +222,7 @@ Example `detect_data` for different detection types:
 
 ### Structure
 
-Audit logs track actions within the LimaCharlie platform:
+Audit logs track actions in the LimaCharlie platform:
 
 ```json
 {
@@ -257,7 +257,7 @@ Audit logs track actions within the LimaCharlie platform:
 | `origin` | string | Origin of action (api, ui, cli, system) |
 | `time` | integer | Unix timestamp in seconds |
 | `ident` | string | Identity performing the action (email, API key name) |
-| `entity` | object | Object the action was performed on |
+| `entity` | object | Object that the action applies to |
 | `mtd` | object | Action characteristics (action type, source IP, etc.) |
 | `component` | string | Component name (for error messages) |
 | `error` | string | Error message (if applicable) |
@@ -347,8 +347,8 @@ Deployment events track sensor installations, removals, and updates:
 
 ### Use Cases
 
-- **Asset Tracking**: Monitor endpoint agent deployment status
-- **Compliance**: Ensure all required endpoints have sensors
+- **Asset Tracking**: Monitor the deployment status of each sensor
+- **Compliance**: Make sure that all necessary endpoints have sensors
 - **Lifecycle Management**: Track sensor versions and upgrades
 - **Alerting**: Detect unexpected sensor removals
 
@@ -394,11 +394,11 @@ secret_key: YOUR-SECRET-KEY
 
 ## Filtering and Transforming Streams
 
-**IMPORTANT**: Filter parameters use **newline-separated string format**, not YAML arrays. Each item must be on its own line within a multiline string.
+**IMPORTANT**: Filter parameters use a **newline-separated string format**, not YAML arrays. Put each item on its own line in a multiline string.
 
 ### Event Type Filtering
 
-Filter specific event types using whitelist/blacklist:
+Filter specific event types with a whitelist or a blacklist:
 
 ```yaml
 # Only send NEW_PROCESS and TERMINATE_PROCESS events
@@ -417,7 +417,7 @@ event_black_list: |
 - Use the pipe (`|`) operator for multiline strings in YAML
 - Each event type on its own line
 - No hyphens or list syntax
-- Empty lines and whitespace are automatically trimmed
+- Empty lines and whitespace are trimmed automatically
 
 ### Category Filtering
 
@@ -449,7 +449,7 @@ tag_black_list: |
   staging
 ```
 
-**Note**: The `tag` parameter accepts a single tag string. To filter multiple tags, use `tag_black_list` to exclude unwanted tags.
+**Note**: The `tag` parameter accepts one tag string. To filter more than one tag, use `tag_black_list` to exclude the unwanted tags.
 
 ### Rule Tag Filtering
 
@@ -468,7 +468,7 @@ rule_tag_black_list: |
   experimental
 ```
 
-**Use Case**: Rule tags help organize detections by threat type, compliance requirement, or confidence level.
+**Use Case**: Rule tags help you organize detections by threat type, compliance requirement, or confidence level.
 
 ---
 
@@ -483,19 +483,19 @@ rule_tag_black_list: |
 
 ### 2. Optimize Event Stream Volume
 
-Event streams can be high-volume. Consider:
+Event streams can have a high volume. Consider these options:
 
-- Filtering by `event_type` to send only relevant events
-- Using separate outputs for different event types
-- Sampling high-frequency events if full fidelity isn't needed
+- Filter by `event_type` to send only the relevant events
+- Use separate outputs for different event types
+- Sample high-frequency events if you do not need full fidelity
 
 ### 3. Parse Detection IOCs
 
-Always extract and process `detect_data` - it contains pre-parsed IOCs ready for enrichment and response.
+Always extract and process `detect_data`. It contains pre-parsed IOCs that are ready for enrichment and response.
 
 ### 4. Retain Audit Logs Separately
 
-Audit logs are critical for compliance and should be stored in tamper-proof, long-term storage separate from operational data.
+Audit logs are critical for compliance. Store them in tamper-proof, long-term storage that is separate from operational data.
 
 ### 5. Monitor Deployment Stream
 
@@ -509,7 +509,7 @@ Use deployment events to track sensor health and detect:
 
 ## Related Documentation
 
-- [The `routing` Section](../../8-reference/routing.md) - Deep dive into the metadata envelope shared by events and detections
+- [The `routing` Section](../../8-reference/routing.md) - Details about the metadata envelope that events and detections share
 - [Event Structure Reference](../../8-reference/event-schemas.md#event-structure-reference)
 - [Detection Structure](../../3-detection-response/tutorials/writing-testing-rules.md)
 - [LimaCharlie Data Structures](../../1-getting-started/core-concepts.md#limacharlie-data-structures)

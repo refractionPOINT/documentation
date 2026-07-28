@@ -20,7 +20,7 @@
 
 ## Overview
 
-The LimaCharlie Python SDK provides a comprehensive interface for interacting with the LimaCharlie Agentic SecOps Workspace. This SDK enables programmatic access to all platform features including sensor management, detection and response rules, real-time event streaming, and artifact collection.
+The LimaCharlie Python SDK is a complete interface to the LimaCharlie Agentic SecOps Workspace. This SDK gives programmatic access to all platform features. These features include sensor management, detection and response rules, real-time event streaming, and artifact collection.
 
 ### Key Features
 
@@ -81,7 +81,7 @@ The LimaCharlie SDK supports multiple authentication methods:
 
 ### Credential Resolution Order
 
-Credentials are resolved in priority order (highest first):
+The SDK resolves credentials in this priority order (highest first):
 
 1. Explicit parameters passed to `Client()`
 2. `LC_OID`, `LC_API_KEY`, `LC_UID` environment variables
@@ -123,7 +123,7 @@ org = Organization(client)
 
 ### Configuration File Format
 
-Create a file at `~/.limacharlie` or specify with `LC_CREDS_FILE` environment variable:
+Create a file at `~/.limacharlie`, or give the path in the `LC_CREDS_FILE` environment variable:
 
 ```yaml
 # Default credentials
@@ -196,7 +196,7 @@ with Client(oid='ORG_ID', api_key='API_KEY') as client:
 
 ## Organization
 
-The `Organization` class is the primary entry point for interacting with a LimaCharlie organization.
+The `Organization` class is the primary entry point to a LimaCharlie organization.
 
 ### Core Methods
 
@@ -288,7 +288,7 @@ new_org = Organization.create_org(client, 'my-new-org', location='us')
 
 ## Sensor Management
 
-The `Sensor` class provides detailed control over individual sensors.
+The `Sensor` class gives detailed control of each sensor.
 
 ### Listing and Getting Sensors
 
@@ -412,7 +412,7 @@ sensor.delete()
 
 ## Detection and Response Rules
 
-D&R rules can be managed through the Hive system or the `DRRules` convenience class.
+You can manage D&R rules through the Hive system or through the `DRRules` convenience class.
 
 ### Using Hive (Recommended)
 
@@ -526,7 +526,7 @@ result = replay.scan_events(
 
 ### Spout (Pull-based Streaming)
 
-The `Spout` pulls data from `stream.limacharlie.io` over HTTPS. Works through NATs and proxies. Best for short-term ad-hoc streaming.
+The `Spout` pulls data from `stream.limacharlie.io` over HTTPS. It works through NATs and proxies. Use it for short-term ad-hoc streaming.
 
 ```python
 from limacharlie.client import Client
@@ -550,7 +550,7 @@ finally:
 
 ### Firehose (Push-based Streaming)
 
-The `Firehose` creates a TLS server that LimaCharlie connects to and pushes data. Best for large-scale, long-running streaming.
+The `Firehose` creates a TLS server. LimaCharlie connects to this server and pushes data to it. Use it for large-scale streaming that runs for a long time.
 
 ```python
 from limacharlie.sdk.firehose import Firehose
@@ -593,7 +593,7 @@ url = artifacts.get_url('ARTIFACT_ID')
 
 ## Hive Operations
 
-The Hive is LimaCharlie's key-value storage system used for D&R rules, secrets, playbooks, SOPs, lookups, and more.
+The Hive is the LimaCharlie key-value storage system. It holds D&R rules, secrets, playbooks, SOPs, lookups, and more.
 
 ```python
 from limacharlie.sdk.hive import Hive, HiveRecord
@@ -779,7 +779,7 @@ except LimaCharlieError as e:
 
 ### Built-in Retry Logic
 
-The `Client` automatically retries on HTTP 429 (rate limit) and 504 (gateway timeout) with exponential backoff. No manual retry logic is needed for transient errors.
+The `Client` automatically retries on HTTP 429 (rate limit) and 504 (gateway timeout) with exponential backoff. You do not need your own retry logic for transient errors.
 
 ## Complete Examples
 

@@ -2,15 +2,15 @@
 
 ## Agent IDs
 
-An AgentID is a 5-tuple that completely describes a Sensor, while a Sensor ID is the smallest single unique identifier that can identify a sensor.
+An AgentID is a 5-tuple that describes a Sensor fully. A Sensor ID is the smallest single identifier that can identify a sensor.
 
-The AgentID's components look like this: `OID.IID.SID.PLATFORM.ARCHITECTURE`.
+The components of the AgentID are: `OID.IID.SID.PLATFORM.ARCHITECTURE`.
 
-For all components, a value of `0` indicates a wildcard that matches any value when comparing AgentIDs as masks.
+For all components, a value of `0` is a wildcard. The wildcard matches any value when you compare AgentIDs as masks.
 
 ## Architecture
 
-The architecture is an 8 bit integer that identifies the exact architecture the sensor runs on. The important values are:
+The architecture is an 8 bit integer that identifies the exact architecture that the sensor runs on. The important values are:
 
 - `1`: 32 bit (`x86`)
 - `2`: 64 bit (`x64`)
@@ -24,7 +24,7 @@ The architecture is an 8 bit integer that identifies the exact architecture the 
 
 Operating System Specifics
 
-Looking for more detailed version information on a specific operating system? Check out these vendor guides:
+For more detailed version information about a specific operating system, see these vendor guides:
 
 - [Microsoft Windows](https://learn.microsoft.com/en-us/windows/win32/sysinfo/operating-system-version)
 - [RHEL](https://access.redhat.com/articles/3078)
@@ -32,20 +32,20 @@ Looking for more detailed version information on a specific operating system? Ch
 
 ## Device IDs
 
-Given the breadth of platforms supported by LimaCharlie, it is not unusual for one "device" (laptop, server, mobile etc) to be visible from multiple sensors. A basic example of this might be:
+LimaCharlie supports many platforms. Thus, more than one sensor can see the same "device" (laptop, server, mobile etc). A basic example is:
 
-- We have a laptop, running macOS as its operating system and running a macOS sensor
-- The laptop is also running a Windows Virtual Machine, running a Windows sensor
+- A laptop uses macOS as its operating system, and runs a macOS sensor
+- The laptop also runs a Windows Virtual Machine, which runs a Windows sensor
 
-In this example, we're dealing with one piece of hardware, but two different sensors.
+In this example, there is one piece of hardware, but two different sensors.
 
-To help provide a holistic view of activity, LimaCharlie introduces the concept of a Device ID. This ID is mostly visible in the sensor's basic info and in the `routing` component of sensor events under the name `did` (Device ID).
+To give a full view of the activity, LimaCharlie has the Device ID. This ID shows in the basic info of the sensor, and in the `routing` component of sensor events with the name `did` (Device ID).
 
-This Device ID is automatically generated and assigned by LimaCharlie using correlation of specific low level events common to all the sensors. This means that if two sensors share a `did: 1234-5678...` ID, it means they are either on the same device or at least share the same visibility (they see the same activity from two angles).
+LimaCharlie generates and assigns the Device ID automatically. It correlates specific low level events that are common to all the sensors. If two sensors have the same `did: 1234-5678...` ID, they are on the same device, or they have the same visibility. Sensors with the same visibility see the same activity from two angles.
 
 ## Installer ID
 
-The Installer ID (IID) is a UUID that identifies a unique Installation Key. This allows us to cycle installation keys and repudiate old keys, in the event the key gets leaked.
+The Installer ID (IID) is a UUID that identifies a unique Installation Key. The IID makes it possible to cycle installation keys and to repudiate old keys if a key leaks.
 
 ## Organization ID
 
@@ -53,7 +53,7 @@ The Organization ID (OID) is a UUID which identifies a unique organization.
 
 ## Platform
 
-The platform is a 32-bit integer (in its hex format) which identifies the exact platform the sensor runs on. Sensor telemetry will display the `plat` value in decimal format. Although it is structured with a major and minor platform, the important values are:
+The platform is a 32-bit integer (in its hex format) that identifies the exact platform that the sensor runs on. Sensor telemetry shows the `plat` value in decimal format. The platform has a major part and a minor part, but the important values are:
 
 | Hex ID     | Decimal    | API Name                     | Platform Name                |
 |------------|------------|------------------------------|------------------------------|
@@ -121,22 +121,22 @@ The platform is a 32-bit integer (in its hex format) which identifies the exact 
 | 0xE0000000 | 3758096384 | office365                    | Microsoft/Office 365         |
 | 0xF0000000 | 4026531840 | sophos                       | Sophos                       |
 
-Tip: If you're writing a  rule to target a specific platform, consider using the `is platform` operator instead of the decimal value for easier readability.
+Tip: In a rule that targets a specific platform, use the `is platform` operator and not the decimal value. The rule is then easier to read.
 
 ## Sensor ID
 
 The Sensor ID (SID) is a UUID that identifies a unique sensor.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, Sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless method to connect the endpoints of an organization to the cloud securely.
 
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
+In LimaCharlie, a Sensor ID is a unique identifier for each deployed endpoint agent (sensor). It distinguishes individual sensors across the infrastructure of an organization. It lets LimaCharlie track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as commands, telemetry collection, and activity monitoring. It links actions and data accurately to a specific device or endpoint.
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+Installation keys are Base64-encoded strings that you give to Sensors and Adapters to connect them to the correct Organization. You create installation keys for each organization. The keys let you label and control your deployment population.
 
-In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+In LimaCharlie, an Organization ID is a unique identifier for each tenant or customer account. It distinguishes the organizations in the platform. It lets LimaCharlie manage resources, permissions, and the separation of data securely. The Organization ID keeps all telemetry, configurations, and operations isolated and specific to each organization. This gives multi-tenant support and a clear separation between customer environments.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives full control of security operations. This structure supports multi-tenant setups for managed security providers, and for enterprises that manage many departments or clients.
 
-In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+In LimaCharlie, an Organization ID (OID) is a unique identifier for each tenant or customer account. It distinguishes the organizations in the platform. It lets LimaCharlie manage resources, permissions, and the separation of data securely. The Organization ID keeps all telemetry, configurations, and operations isolated and specific to each organization. This gives multi-tenant support and a clear separation between customer environments.
 
-In LimaCharlie, a Sensor ID (SID) is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
+In LimaCharlie, a Sensor ID (SID) is a unique identifier for each deployed endpoint agent (sensor). It distinguishes individual sensors across the infrastructure of an organization. It lets LimaCharlie track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as commands, telemetry collection, and activity monitoring. It links actions and data accurately to a specific device or endpoint.

@@ -1,9 +1,9 @@
 # Connecting AI Assistants
 
-LimaCharlie can be accessed by AI assistants in three ways:
+AI assistants can access LimaCharlie in three ways:
 
 - **Claude Code Plugin** — Uses the `limacharlie` CLI for all operations, with pre-built skills and workflows (recommended)
-- **CLI with other Frontier Models** — The same `limacharlie` CLI driven by Gemini CLI, OpenAI Codex, or any shell-capable agent; the recommended path when you're not using Claude Code. See [Using the CLI with other Frontier Models](frontier-models.md)
+- **CLI with other Frontier Models** — The same `limacharlie` CLI, driven by Gemini CLI, OpenAI Codex, or another agent that can run shell commands. Use this method if you do not use Claude Code. See [Using the CLI with other Frontier Models](frontier-models.md)
 - **MCP Server** — A [Model Context Protocol](https://modelcontextprotocol.io/) endpoint for any MCP-compatible AI client
 
 ## Setup Options
@@ -12,18 +12,18 @@ Choose the setup method based on your AI client:
 
 | Method | Auth Type | Multi-Org |
 |--------|-----------|-----------|
-| **Option 1:** Claude Code Plugin | OAuth via CLI (browser login) | Yes |
+| **Option 1:** Claude Code Plugin | OAuth through the CLI (browser login) | Yes |
 | **Option 2:** HTTP MCP with OAuth | OAuth (browser login) | Yes |
 | **Option 3:** HTTP MCP with JWT | User API Key → JWT | Yes |
 | **Option 3:** HTTP MCP with API Key | Org API Key | No |
 
-**Recommendation:** Use Option 1 if you're using Claude Code — it provides the richest experience with pre-built skills and workflows, and uses the `limacharlie` CLI for all operations. If not using Claude Code, check whether your MCP client supports OAuth and use Option 2. Fall back to Option 3 (JWT or API key) only if OAuth isn't available in your client.
+**Recommendation:** Use Option 1 if you use Claude Code. Option 1 supplies pre-built skills and workflows, and uses the `limacharlie` CLI for all operations. If you do not use Claude Code, check if your MCP client supports OAuth, then use Option 2. Use Option 3 (JWT or API key) only if your client does not support OAuth.
 
 ---
 
 ## Option 1: Claude Code Plugin (Recommended)
 
-The LimaCharlie plugin provides the richest experience with pre-built skills, workflows, and multi-org support. Unlike Options 2–3, this plugin does **not** use an MCP server—it uses the `limacharlie` CLI for all API operations, which is automatically installed on session start.
+The LimaCharlie plugin supplies pre-built skills, workflows, and multi-org support. Unlike Options 2–3, this plugin does **not** use an MCP server. It uses the `limacharlie` CLI for all API operations, and it installs the CLI automatically when a session starts.
 
 ### Installation
 
@@ -34,7 +34,7 @@ Run these commands in Claude Code:
 /plugin install lc-essentials@lc-marketplace
 ```
 
-The plugin automatically installs the `limacharlie` CLI when a session starts. If auto-installation fails, install it manually:
+The plugin installs the `limacharlie` CLI automatically when a session starts. If the automatic installation fails, install the CLI manually:
 
 ```bash
 pipx install limacharlie   # preferred (isolated environment)
@@ -44,17 +44,17 @@ pip install --user limacharlie # fallback
 
 ### Authentication
 
-Authenticate the CLI via OAuth:
+Authenticate the CLI with OAuth:
 
 ```bash
 limacharlie auth login
 ```
 
-This opens your browser for LimaCharlie OAuth. Credentials persist across sessions automatically.
+The command opens your browser for LimaCharlie OAuth. The CLI keeps the credentials for later sessions automatically.
 
 ### Verify Setup
 
-Run the following to confirm authentication and list your organizations:
+Run this command to confirm the authentication and to list your organizations:
 
 ```bash
 limacharlie org list --output yaml
@@ -72,24 +72,24 @@ If your MCP client supports OAuth authentication, configure it to use the LimaCh
 https://mcp.limacharlie.io/mcp
 ```
 
-The client will handle the OAuth flow automatically, prompting you to authenticate via browser. This provides the same multi-org access as the Claude Code plugin.
+The client does the OAuth flow automatically and asks you to authenticate in a browser. This method gives the same multi-org access as the Claude Code plugin.
 
-Consult your MCP client's documentation to determine if OAuth is supported.
+Read the documentation of your MCP client to find if it supports OAuth.
 
 ---
 
 ## Option 3: HTTP MCP with Keys
 
-Use this method when your MCP client doesn't support OAuth.
+Use this method when your MCP client does not support OAuth.
 
 ### Multi-Org Access (JWT)
 
-To access all organizations associated with your user account, authenticate using a JWT generated from your **User API Key**.
+To access all organizations of your user account, authenticate with a JWT that you generate from your **User API Key**.
 
 #### Step 1: Get your User API Key
 
 1. Go to [app.limacharlie.io](https://app.limacharlie.io) → **User Profile** (top-right menu)
-2. Navigate to **API Keys**
+2. Go to **API Keys**
 3. Generate a User API Key
 
 #### Step 2: Generate a JWT
@@ -100,7 +100,7 @@ curl -X POST "https://jwt.limacharlie.io" \
   -d "uid=YOUR_USER_ID&secret=YOUR_USER_API_KEY"
 ```
 
-This returns a JWT valid for 1 hour. See [API Keys](../7-administration/access/api-keys.md) for details.
+The command returns a JWT that is valid for 1 hour. See [API Keys](../7-administration/access/api-keys.md) for details.
 
 #### Step 3: Configure your MCP client
 
@@ -118,19 +118,19 @@ This returns a JWT valid for 1 hour. See [API Keys](../7-administration/access/a
 }
 ```
 
-> **Note:** JWTs expire after 1 hour. You'll need to regenerate and update your configuration periodically.
+> **Note:** JWTs expire after 1 hour. Generate a new JWT and update your configuration at regular intervals.
 
 ---
 
 ### Single-Org Access (API Key)
 
-For simpler single-organization access, use an Organization API Key directly.
+For single-organization access, use an Organization API Key directly.
 
 **Get your credentials:**
 
 1. Go to your organization in [app.limacharlie.io](https://app.limacharlie.io) → **Access Management** → **REST API**
-2. Generate an API key with appropriate permissions
-3. Note your Organization ID (OID) from the URL or org settings
+2. Generate an API key with the necessary permissions
+3. Get your Organization ID (OID) from the URL or from the org settings
 
 **Claude Code:**
 
@@ -166,18 +166,18 @@ Ask your AI assistant: *"List my online sensors"*
 
 ## Permission Requirements
 
-The MCP server enforces the same permission model as the LimaCharlie REST API. The operations available to the AI assistant depend on the permissions granted to the authenticated user or API key.
+The MCP server enforces the same permission model as the LimaCharlie REST API. The permissions of the authenticated user or API key control which operations the AI assistant can do.
 
 ### How Permissions Work by Auth Method
 
 | Auth Method | Permission Source |
 |-------------|------------------|
-| **OAuth / JWT** | Inherits your user permissions for each organization. You can only perform actions your user account is authorized for. |
-| **Org API Key** | Uses the permissions assigned to the API key at creation time. Scoped to a single organization. |
+| **OAuth / JWT** | Inherits your user permissions for each organization. You can do only the actions that your user account is authorized to do. |
+| **Org API Key** | Uses the permissions that you assign to the API key when you create it. Scoped to one organization. |
 
 ### Permission Enforcement
 
-The API enforces permissions strictly. Any operation attempted without the required permission will fail with a `401` error that specifies the missing privilege. The AI assistant will surface these errors and indicate which permission is needed.
+The API enforces permissions strictly. An operation without the necessary permission fails with a `401` error that specifies the missing privilege. The AI assistant shows these errors and tells you which permission is necessary.
 
 ### Recommended Permissions by Use Case
 
@@ -185,7 +185,7 @@ The MCP server organizes its tools into capability profiles. Grant permissions b
 
 #### Read-Only Investigation
 
-For querying telemetry and reviewing configurations without making changes:
+To query telemetry and review configurations without changes:
 
 | Permission | Purpose |
 |------------|---------|
@@ -202,7 +202,7 @@ For querying telemetry and reviewing configurations without making changes:
 
 #### Threat Response
 
-For investigating and responding to incidents (includes all read-only permissions above, plus):
+To investigate and respond to incidents (includes all the read-only permissions above, plus):
 
 | Permission | Purpose |
 |------------|---------|
@@ -212,28 +212,28 @@ For investigating and responding to incidents (includes all read-only permission
 
 #### Detection Engineering
 
-For creating and managing detection rules (includes read-only permissions above, plus):
+To create and manage detection rules (includes the read-only permissions above, plus):
 
 | Permission | Purpose |
 |------------|---------|
-| `dr.set` | Create and modify D&R rules |
+| `dr.set` | Create and change D&R rules |
 | `dr.del` | Delete D&R rules |
 | `fp.ctrl` | Create and manage false positive rules |
-| `yara.set` | Create and modify YARA rules |
+| `yara.set` | Create and change YARA rules |
 | `yara.del` | Delete YARA rules |
-| `lookup.set` | Create and modify lookup tables |
+| `lookup.set` | Create and change lookup tables |
 | `lookup.del` | Delete lookup tables |
 
 #### Platform Administration
 
-For full platform management (includes all of the above, plus):
+To manage the full platform (includes all of the above, plus):
 
 | Permission | Purpose |
 |------------|---------|
 | `output.list`, `output.set`, `output.del` | Manage output configurations |
 | `secret.get`, `secret.set`, `secret.del` | Manage secrets |
 | `ikey.list`, `ikey.set`, `ikey.del` | Manage installation keys |
-| `org.conf.get`, `org.conf.set` | View and modify organization configuration |
+| `org.conf.get`, `org.conf.set` | View and change organization configuration |
 | `ext.request`, `ext.conf.get`, `ext.conf.set` | Manage extensions |
 | `playbook.get`, `playbook.set`, `playbook.del` | Manage playbooks |
 | `cloudsensor.get`, `cloudsensor.set`, `cloudsensor.del` | Manage cloud sensor adapters |
@@ -247,17 +247,17 @@ For full platform management (includes all of the above, plus):
 2. Click the Edit icon next to the user
 3. Assign permissions individually or select a pre-set permission scheme
 
-Newly added users start with **Unset** privileges (basic org information only). Always configure appropriate permissions after adding a user. See [User Access](../7-administration/access/user-access.md) for details.
+A new user starts with **Unset** privileges and sees only basic org information. Always configure the necessary permissions after you add a user. See [User Access](../7-administration/access/user-access.md) for details.
 
 **For Organization API keys:**
 
 1. Go to **Access Management** → **REST API**
 2. Create a new API key and select the required permissions
-3. Use the tables above to determine which permissions to grant based on your intended use case
+3. Use the tables above to find which permissions to grant for your use case
 
-> **Tip:** Follow the principle of least privilege — grant only the permissions needed for your use case. For read-only investigation workflows, avoid granting write permissions like `dr.set` or `sensor.task`.
+> **Tip:** Obey the principle of least privilege. Grant only the permissions that your use case needs. For read-only investigation workflows, do not grant write permissions such as `dr.set` or `sensor.task`.
 >
-> **Note:** Permissions granted through [Organization Groups](../7-administration/access/user-access.md#access-via-organization-groups) are additive on top of per-organization permissions and cannot reduce existing access.
+> **Note:** Permissions from [Organization Groups](../7-administration/access/user-access.md#access-via-organization-groups) add to the per-organization permissions. They cannot reduce existing access.
 
 For the full list of available permissions, see the [Permissions Reference](../8-reference/permissions.md).
 
@@ -265,11 +265,11 @@ For the full list of available permissions, see the [Permissions Reference](../8
 
 ## Capabilities
 
-Once connected, AI assistants can:
+After you connect an AI assistant, it can do these operations:
 
-- **Query telemetry** — Search historical sensor data using LCQL
+- **Query telemetry** — Search historical sensor data with LCQL
 - **Investigate endpoints** — Inspect processes, network connections, files, and more
-- **Manage detections** — Create and modify D&R rules, YARA rules, and false positive rules
+- **Manage detections** — Create and change D&R rules, YARA rules, and false positive rules
 - **Take response actions** — Isolate endpoints, kill processes, manage tags
 - **Search threat intelligence** — Query IOCs and map to MITRE ATT&CK
 - **Configure the platform** — Manage outputs, adapters, secrets, and playbooks
@@ -280,13 +280,13 @@ Once connected, AI assistants can:
 
 | Issue | Solution |
 |-------|----------|
-| "Unauthorized" error | Verify your API key and OID are correct. Ensure the API key has the required permissions for the operation — the error message will specify the missing privilege. |
+| "Unauthorized" error | Check that your API key and OID are correct. Make sure that the API key has the necessary permissions for the operation. The error message specifies the missing privilege. |
 | Plugin not appearing | Restart Claude Code after installation. |
 | OAuth login fails | Clear browser cookies for limacharlie.io and try again. |
 | CLI not found (plugin) | The plugin auto-installs the `limacharlie` CLI on session start. If it fails, install manually: `pipx install limacharlie` |
-| CLI not authenticated | Run `limacharlie auth login` to authenticate via browser OAuth. |
-| MCP tools not loading (Options 2–3) | Verify the MCP server URL and authentication headers are correct. |
-| "Missing privilege" on specific operations | The authenticated user or API key lacks the required permission. See [Permission Requirements](#permission-requirements) to identify which permissions to grant. |
+| CLI not authenticated | Run `limacharlie auth login` to authenticate with browser OAuth. |
+| MCP tools not loading (Options 2–3) | Check that the MCP server URL and the authentication headers are correct. |
+| "Missing privilege" on specific operations | The authenticated user or API key does not have the necessary permission. See [Permission Requirements](#permission-requirements) to find which permissions to grant. |
 
 ---
 

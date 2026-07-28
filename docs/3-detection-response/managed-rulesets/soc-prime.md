@@ -1,23 +1,26 @@
 # SOC Prime Rules
 
-To use SOC Prime rules in LimaCharlie, start by configuring lists in [SOC Prime](https://socprime.com/). See [SOC Prime's continuous content management guide](https://socprime.com/blog/enable-continuous-content-management-with-the-soc-prime-platform/) for instructions.
+To use SOC Prime rules in LimaCharlie, first configure lists in [SOC Prime](https://socprime.com/). For instructions, see [SOC Prime's continuous content management guide](https://socprime.com/blog/enable-continuous-content-management-with-the-soc-prime-platform/).
 
-After the lists have been configured, you can finish the configuration in LimaCharlie. Note that currently the SOC Prime API is not available for free users. It is available only for paid users or if they requested a trial.
+After you configure the lists, complete the configuration in LimaCharlie. The SOC Prime API is not available to free users. It is available only to paid users, or to users that requested a trial.
 
-First, enable the `socprime` add-on on the LimaCharlie marketplace.
+1. Enable the `socprime` add-on on the LimaCharlie marketplace.
 
-![image.png](../../assets/images/image(55).png)
+    ![image.png](../../assets/images/image(55).png)
 
-Then, navigate to the Integrations page in your Organization, enter the SOC Prime Key & click `Update`.
+2. In your Organization, open the Integrations page.
+3. Enter the SOC Prime Key.
+4. Click `Update`.
 
-![image.png](../../assets/images/image(56).png)
+    ![image.png](../../assets/images/image(56).png)
 
-When the Key is saved, you will get the ability to select the SOC Prime content lists you want to have populated in LimaCharlie as detection & response rules. After selecting the lists & clicking `Update`, you are all set to start receiving detections based on the SOC Prime lists.
+5. Select the SOC Prime content lists that you want in LimaCharlie as D&R rules.
+6. Click `Update`. LimaCharlie starts to send detections that are based on the SOC Prime lists.
 
-![image.png](../../assets/images/image(57).png)
+    ![image.png](../../assets/images/image(57).png)
 
-A detection that comes from the SOC Prime Lists, will have `socprime` listed as a detection author.
+A detection that comes from the SOC Prime lists shows `socprime` as the detection author.
 
 ![image.png](../../assets/images/image(58).png)
 
-Note that adding a new rule to a SOC Prime content list that is enabled in LC will see the new rule be applied during next sync (LimaCharlie syncs the SOC Prime rules every 3 hours).
+If you add a new rule to a SOC Prime content list that is enabled in LC, LimaCharlie applies the new rule at the next sync. LimaCharlie syncs the SOC Prime rules every 3 hours.

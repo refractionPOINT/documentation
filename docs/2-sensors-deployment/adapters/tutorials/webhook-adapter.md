@@ -1,12 +1,12 @@
 # Tutorial: Creating a Webhook Adapter
 
-LimaCharlie supports webhooks as a telemetry ingestion method. Webhooks are technically cloud [Adapters](../deployment.md), as they cannot be deployed on-prem or through the downloadable Adapter binary.
+LimaCharlie supports webhooks as a method to ingest telemetry. Webhooks are cloud [Adapters](../deployment.md), because you cannot deploy them on-prem or with the downloadable Adapter binary.
 
-Webhook adapters are created by enabling a webhook through the `cloud_sensor` Hive feature. Webhook creation will enable a specific URL that can receive webhooks from any platform. Received data will be ingested in LimaCharlie as a Sensor, similar to an Office365 or Syslog Adapter.
+To create a webhook adapter, enable a webhook with the `cloud_sensor` Hive feature. The webhook enables a specific URL that can receive webhooks from any platform. LimaCharlie ingests the received data as a Sensor, like an Office365 or Syslog Adapter.
 
 ## Creating a Webhook Adapter
 
-Webhook adapters can be created either through the webapp, API, or CLI. Before creation, let's look at the basic webhook configuration and values necessary to build the adapter.
+You can create a webhook adapter with the web app, the API, or the CLI. First, examine the basic webhook configuration and the values that the adapter needs.
 
 ```json
 {
@@ -31,21 +31,21 @@ Webhook adapters can be created either through the webapp, API, or CLI. Before c
 
 Field descriptions:
 
-- `secret`: this secret value will be part of the URL to accept your webhooks. It enables you to prevent or revoke unauthorized access to a hook.
-- `signature_secret`, `signature_header`, `signature_scheme`: placeholders for generic webhook signature validation. If you require a specific format, please get in touch with us.
-- `client_options.hostname`: provide your own name for the webhook adapter.
-- `client_options.identity.oid`: the OID of the organization you wish to send to.
-- `client_options.identity.installation_key`: the installation key to be used for the adapter.
-- `client_options.platform`: the data format (typically `json` for webhooks).
-- `client_options.sensor_seed_key`: an arbitrary value used to generate a stable Sensor ID.
+- `secret`: the secret value that is part of the URL that accepts your webhooks. Use it to stop or revoke unauthorized access to a hook.
+- `signature_secret`, `signature_header`, `signature_scheme`: placeholders for generic validation of webhook signatures. If you need a specific format, contact LimaCharlie.
+- `client_options.hostname`: your own name for the webhook adapter.
+- `client_options.identity.oid`: the OID of the organization that receives the data.
+- `client_options.identity.installation_key`: the installation key for the adapter.
+- `client_options.platform`: the data format (usually `json` for webhooks).
+- `client_options.sensor_seed_key`: an arbitrary value that generates a stable Sensor ID.
 
-When the above configuration is provided to LimaCharlie, a webhook adapter will appear and be available for webhook event ingestion. Here's an example of creating the above record through the LimaCharlie CLI:
+When you give this configuration to LimaCharlie, the webhook adapter appears and can ingest webhook events. This example creates the record with the LimaCharlie CLI:
 
 ```bash
 echo '{"sensor_type": "webhook", "webhook": {"secret": "some-secret-value-hard-to-predict", "signature_secret": "", "signature_header": "", "signature_scheme": "", "client_options": {"hostname": "<any_name>", "identity": {"oid": "<oid>", "installation_key": "<installation_key>"}, "platform": "json", "sensor_seed_key": "test-webhook"}}}' | limacharlie hive set cloud_sensor --key my-webhook --data -
 ```
 
-After creating the webhook, you will be provided with a geo-dependent URL, respective to your LimaCharlie Organization location. You can also retrieve your webhook URLs with either of the following commands:
+After you create the webhook, LimaCharlie gives you a geo-dependent URL for the location of your LimaCharlie Organization. You can also get your webhook URLs with one of these commands:
 
 - REST API: [getOrgURLs](https://api.limacharlie.io/static/swagger/#/Org/get_orgs__oid___urls)
 - Python SDK:
@@ -56,19 +56,19 @@ python3 -c "from limacharlie.client import Client; from limacharlie.sdk.organiza
 
 ## Using the webhook adapter
 
-After capturing the webhook URL in the previous step, only a few more pieces of data are necessary to construct the webhook ingestion.
+After you get the webhook URL in the previous step, you need only a few more values to construct the webhook ingestion.
 
-Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.io`, the format of the URL would be:
+If the returned domain is `9157798c50af372c.hook.limacharlie.io`, the URL format is:
 
 `https://9157798c50af372c.hook.limacharlie.io/OID/HOOKNAME/SECRET`, where:
 
-- OID is the Organization OID provided in the configuration above.
-- HOOKNAME is the name of the hook provided in the configuration above.
-- SECRET is the secret value provided in the configuration. You can provide the secret value in the URL or as an HTTP header named `lc-secret`.
+- OID is the Organization OID from the configuration above.
+- HOOKNAME is the name of the hook from the configuration above.
+- SECRET is the secret value from the configuration. Put the secret value in the URL, or in an HTTP header named `lc-secret`.
 
 ## Supported Webhook Format
 
-When sending data via POST requests to the URL, the body of your request is expected to be one or many JSON events. Supported formats include:
+When you send data with POST requests to the URL, the body of the request must be one or more JSON events. These formats are supported:
 
 - Simple JSON object:
 
@@ -84,6 +84,6 @@ When sending data via POST requests to the URL, the body of your request is expe
 {"some":"data"}
 ```
 
-Or, one of the above, but compressed using gzip.
+You can also compress one of these formats with gzip.
 
-With the completed webhook URL, you can begin sending events and will see them in the Timeline for your webhook Adapter.
+With the complete webhook URL, you can send events. The events are shown in the Timeline of your webhook Adapter.

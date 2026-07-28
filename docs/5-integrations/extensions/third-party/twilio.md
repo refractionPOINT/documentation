@@ -2,23 +2,23 @@
 
 ## Overview
 
-The [Twilio](https://www.twilio.com/) Extension allows you to send messages within Twilio. It requires you to setup the Twilio authentication in the **Integrations** section of your Organization.
+The [Twilio](https://www.twilio.com/) Extension lets you send messages with Twilio. You must set up the Twilio authentication in the **Integrations** section of your Organization.
 
-See Twilio's [SMS send-messages reference](https://www.twilio.com/docs/sms/send-messages) for more detail.
+For more detail, see the Twilio [SMS send-messages reference](https://www.twilio.com/docs/sms/send-messages).
 
 ## Setup
 
-To start leveraging the Twilio extension, first subscribe to the `ext-twilio` add-on that can be accessed from the LimaCharlie **Marketplace**.
+To use the Twilio extension, first subscribe to the `ext-twilio` add-on in the LimaCharlie **Marketplace**.
 
 ![twilio](../../../assets/images/twilio.png)
 
-After you have subscribed to the extension, setup the Twilio authentication in the `Secrets Manager` section of your organization.
+After you subscribe to the extension, set up the Twilio authentication in the `Secrets Manager` section of your organization.
 
-Authentication in Twilio uses two components--a SID and a token. The LimaCharlie Twilio secret will combine both components in a single field like `SID/TOKEN`.
+Twilio authentication uses two parts: a SID and a token. The LimaCharlie Twilio secret combines both parts in one field, in the form `SID/TOKEN`.
 
 ### Detection & Response
 
-Example Response portion of a  rule that sends a message out via Twilio as the response action:
+This example is the Response part of a rule. The response action sends a message with Twilio:
 
 ```yaml
 - action: extension request
@@ -30,4 +30,4 @@ Example Response portion of a  rule that sends a message out via Twilio as the r
     to: '{{ "+10123456789" }}'
 ```
 
-*Note that the* `{{ .event }}` *in the example above is the actual text that would be sent to the number you specify.*
+*The* `{{ .event }}` *in the example above is the text that the extension sends to the number that you specify.*

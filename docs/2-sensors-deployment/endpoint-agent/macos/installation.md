@@ -1,10 +1,10 @@
 # macOS Agent Installation - Older Versions (macOS 10.15 Catalina to macOS 14 Sonoma)
 
-This document provides details of how to install, verify, and uninstall the LimaCharlie Endpoint Agent on macOS (versions 10.15 Catalina though to macOS 14 Sonoma). We also offer documentation for [macOS 10.14 and prior](installation-older.md), and [macOS 10.15 and newer](sequoia.md).
+This document explains how to install, check, and uninstall the LimaCharlie Endpoint Agent on macOS (version 10.15 Catalina through macOS 14 Sonoma). There is also documentation for [macOS 10.14 and prior](installation-older.md), and [macOS 10.15 and newer](sequoia.md).
 
 ## Installer Options
 
-When running the installer from the command line, you can pass the following arguments:
+When you run the installer from the command line, you can pass these arguments:
 
 ```text
 -v: verbose logging output.
@@ -23,49 +23,52 @@ For the complete list of options, environment variables, and local files, see th
 ## Installation Flow
 
 1. Download the Sensor installer file. Installer for: [Intel Mac](https://downloads.limacharlie.io/sensor/mac/64) -or- [Apple Silicon Mac](https://downloads.limacharlie.io/sensor/mac/arm64).
-2. Add execute permission to the installer file via the command line
 
-> chmod +x lc\_sensor
+2. Add execute permission to the installer file from the command line.
 
-1. Run the installer via the command line. You'll pass the argument -i and your Installation Key.
+    > chmod +x lc\_sensor
 
-> sudo ./lc\_sensor -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
+3. Run the installer from the command line. Pass the -i argument and your Installation Key.
 
-![Basic installation](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/01-Basic_installation.png)
+    > sudo ./lc\_sensor -i YOUR\_INSTALLATION\_KEY\_GOES\_HERE
 
-You can obtain the installation key from the [Installation Keys](../../installation-keys.md) section of the LimaCharlie web application.
+    ![Basic installation](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/01-Basic_installation.png)
 
-The sensor will be installed as a launchctl service. Installation will trigger the sensors enrollment with the LimaCharlie cloud.
+    Get the installation key from the [Installation Keys](../../installation-keys.md) section of the LimaCharlie web app.
 
-![Installation success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/02-Installation_success.png)
+    The installer installs the sensor as a launchctl service. The installation starts the enrollment of the sensor with the LimaCharlie cloud.
 
-1. An application (`RPHCP.app`) will be installed in the /Applications folder and will automatically launch. You will be prompted to grant permissions for system extensions to be installed.
+    ![Installation success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/02-Installation_success.png)
 
-![Permissions required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/03-Permissions_Required.png)
+4. Answer the prompt that asks for permission to install system extensions. The installer puts an application (`RPHCP.app`) in the /Applications folder and starts it.
 
-1. Click the "Open System Preferences" button
+    ![Permissions required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/03-Permissions_Required.png)
 
-![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/04-System_Extension_Required.png)
+5. Click the "Open System Preferences" button.
 
-1. Unlock the preference pane using the padlock in the bottom left corner, then click the Allow button next to `System software from application "RPHCP" was blocked from loading.`
+    ![System Extensions Required](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/04-System_Extension_Required.png)
 
-![Unlocked](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/06-Allow_System_Software_Unlocked.png)
+6. Unlock the preference pane with the padlock in the bottom left corner.
 
-1. You'll be prompted to allow the application to Filter Network Content. Click the Allow button.
+7. Click the Allow button next to `System software from application "RPHCP" was blocked from loading.`
 
-![Network filter](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/07--Network_Filter.png)
+    ![Unlocked](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/06-Allow_System_Software_Unlocked.png)
 
-1. You'll be prompted to grant Full Disk Access. Check the checkbox next to the RPHCP app in System Preferences -> Privacy -> Full Disk Access
+8. Click the Allow button when the prompt asks you to let the application Filter Network Content.
 
-![Full disk access](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/08-Full_Disk_Access.png)
+    ![Network filter](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/07--Network_Filter.png)
 
-The installation is now complete and you should see a message indicating that the installation was successful.
+9. Select the checkbox next to the RPHCP app in System Preferences -> Privacy -> Full Disk Access when the prompt asks you to grant Full Disk Access.
+
+    ![Full disk access](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/08-Full_Disk_Access.png)
+
+The installation is now complete. A message shows that the installation was successful.
 
 ![Success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/09-Success.png)
 
 ## Verifying Installation
 
-To verify that the sensor was installed successfully, you can log into the LimaCharlie web application and see if the device has appeared in the Sensors section. Additionally, you can check the following on the device itself:
+To check that the installation was successful, log in to the LimaCharlie web app and look for the device in the Sensors section. You can also do these checks on the device:
 
 In a Terminal, run the command:
 
@@ -73,46 +76,46 @@ In a Terminal, run the command:
 
 ![Successful installation verification](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Verification/Verification-installation-successful.png)
 
-If the agent is running, this command should return records as shown above.
+If the sensor runs, this command returns records as shown above.
 
-You can also check the /Applications folder and launch the RPHCP.app.
+You can also open the /Applications folder and start the RPHCP.app.
 
 ![Applications folder](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/10-Applications.png)
 
-The application will show a message to indicate if the required permissions have been granted.
+The application shows a message that tells you if the necessary permissions are granted.
 
 ![App installed correctly](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Installation/11-App_Installed_Correctly.png)
 
-As described in the dialog, the RPHCP.app application must be left in the /Applications folder in order for it to continue operating properly.
+Keep the RPHCP.app application in the /Applications folder, as the dialog says. If you move it, the application does not continue to operate correctly.
 
 ### A note on permissions
 
-Apple has purposely made installing extensions (like the ones used by LimaCharlie) a process that requires several clicks on macOS. The net effect of this is that the first time the sensor is installed on a macOS system, permissions will need to be granted via System Preferences
+Apple deliberately makes the installation of extensions on macOS a process that needs several clicks. LimaCharlie uses such extensions. Thus, the first time that you install the sensor on a macOS system, you must grant permissions in System Preferences.
 
-Currently, the only way to automate the installation is to use an Apple-approved MDM solution. These solutions are often used by large organizations to manage their Mac fleet. If you are using such a solution, see your vendor's documentation on how to add extensions to the allow list which can be applied to your entire fleet.
+At present, the only way to automate the installation is an MDM solution that Apple approves. Large organizations often use these solutions to manage their macOS computers. If you use such a solution, see the documentation of your vendor. It explains how to add extensions to an allow list that applies to all your computers.
 
-We're aware this is an inconvenience and hope Apple will provide better solutions for security vendors in future.
+LimaCharlie knows that this is an inconvenience and hopes that Apple gives better solutions to security vendors in the future.
 
 ## Uninstallation Flow
 
 To uninstall the sensor:
 
-1. Run the installer via the command line. You'll pass the argument -c
+1. Run the installer from the command line. Pass the -c argument.
 
-> sudo ./hcp\_osx\_x64\_release\_4.23.0 -c
+    > sudo ./hcp\_osx\_x64\_release\_4.23.0 -c
 
-![Uninstall progress](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/1-Uninstall_Progress.png)
+    ![Uninstall progress](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/1-Uninstall_Progress.png)
 
-1. You will be prompted for credentials to modify system extensions. Enteryour password and press OK.
+2. Enter your password at the prompt for credentials to change system extensions. Then press OK.
 
-![Uninstall permissions](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/2-Uninstaller_Permissions.png)
+    ![Uninstall permissions](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/2-Uninstaller_Permissions.png)
 
-The related system extension will be removed and the `RPHCP.app` will be removed from the /Applications folder.
+    The uninstaller removes the related system extension. It also removes the `RPHCP.app` from the /Applications folder.
 
-1. You should see a message indicating that the uninstallation was successful.
+3. Look for the message that shows that the uninstallation was successful.
 
-![Uninstall success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/3-Uninstall_Success.png)
+    ![Uninstall success](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/images/Uninstallation/3-Uninstall_Success.png)
 
 ## Install Using MDM Solutions
 
-See our document [macOS Agent Installation with MDM Solutions](mdm-profiles.md) for the Mobile Device Management (MDM) Configuration Profile that can be used to deploy the LimaCharlie agent to an enterprise fleet.
+For the Mobile Device Management (MDM) Configuration Profile that deploys the LimaCharlie agent to an enterprise fleet, see [macOS Agent Installation with MDM Solutions](mdm-profiles.md).

@@ -2,15 +2,14 @@
 
 ## Is there an method for base64 decoding and inspection within Detect & Respond rules?
 
-Base64 decoding is not currently supported directly within D&R rules.
+D&R rules do not support base64 decoding directly.
 
-You can have your D&R rule detect base64 content and send it as an action to a Python playbook, where you can perform the necessary decoding and analysis.
+Your D&R rule can detect base64 content and send it as an action to a Python playbook. The playbook then does the decoding and the analysis.
 
-Why isn't this feature available? Base64 decoding in security contexts is rarely straightforward - it typically involves:
+Base64 decoding in a security context is rarely simple. It usually includes:
 
-- Extracting substrings rather than decoding entire fields
-- Handling special alphabets and custom encoding schemes
-- Managing different starting offsets
+- The extraction of substrings, instead of the decoding of complete fields
+- Special alphabets and custom encoding schemes
+- Different starting offsets
 
-While a basic full-field decoding parameter could potentially be added to operators, the complexity and variety of real-world base64 usage patterns make this a challenging feature to implement
-generically.
+It is possible to add a basic parameter to operators that decodes a full field. But base64 is used in many different and complex ways, so a generic feature is difficult to build.

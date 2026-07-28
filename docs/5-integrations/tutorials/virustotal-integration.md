@@ -1,16 +1,16 @@
 # VirusTotal Integration
 
-You can easily integrate LimaCharlie with VirusTotal to enhance your data enrichment and detections. You will need a VirusTotal API key in order to utilize this add-on.
+You can integrate LimaCharlie with VirusTotal to improve your data enrichment and your detections. You need a VirusTotal API key to use this add-on.
 
 VirusTotal Data Caching
 
-The free tier of VirusTotal allows four lookups per minute via the API. LimaCharlie employs a global cache of VirusTotal requests which should significantly reduce costs if you are using VirusTotal at scale. VirusTotal requests are cached for 3 days.
+The free tier of VirusTotal allows four lookups each minute through the API. LimaCharlie uses a global cache of VirusTotal requests. The cache can reduce your costs when you make many VirusTotal requests. LimaCharlie keeps VirusTotal requests in the cache for 3 days.
 
-Once you have your VirusTotal API key, you can add it in the Organization integrations section of the LimaCharlie web app.
+After you get your VirusTotal API key, add the key in the Organization integrations section of the LimaCharlie web app.
 
 ![vt key](../../assets/images/vt-key.png)
 
-Once you have entered your API key, you can then create a  rule to perform a lookup of a hash. For example, the following rule will let you know if there is a hit from VirusTotal on a hash with at least two different engines.
+After you enter the API key, create a D&R rule that does a lookup of a hash. The rule below matches when at least two VirusTotal engines report a hit on a hash.
 
 ```yaml
 path: event/HASH

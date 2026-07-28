@@ -2,7 +2,7 @@
 
 ## Overview
 
-The LimaCharlie Go SDK provides a comprehensive client library for interacting with the LimaCharlie security platform API. This SDK enables developers to programmatically manage sensors, detection rules, artifacts, organizational configurations, real-time event streaming, and more within the LimaCharlie ecosystem.
+The LimaCharlie Go SDK is a client library for the API of the LimaCharlie security platform. With this SDK, developers can manage sensors, detection rules, artifacts, organization configurations, real-time event streams, and more.
 
 **Repository**: [github.com/refractionPOINT/go-limacharlie](https://github.com/refractionPOINT/go-limacharlie)
 
@@ -45,7 +45,7 @@ go get github.com/refractionPOINT/go-limacharlie/firehose
 
 ## Authentication
 
-The SDK supports multiple authentication methods for flexible integration.
+The SDK supports several authentication methods.
 
 ### Environment Variables
 
@@ -500,7 +500,7 @@ for _, resp := range newResponses {
 
 #### Device Association
 
-Sensors may be associated with logical devices (when multiple sensors represent the same device):
+A sensor can have an associated logical device. This occurs when more than one sensor represents the same device:
 
 ```go
 sensor := org.GetSensor("sensor-id")
@@ -653,7 +653,7 @@ err = org.DRRuleDelete("rule-name", limacharlie.WithNamespace("custom"))
 
 ### Artifacts
 
-Artifacts are files or data collected from sensors for analysis.
+Artifacts are files or data that LimaCharlie collects from sensors for analysis.
 
 #### Creating Artifacts from Bytes
 
@@ -808,11 +808,11 @@ err = org.ArtifactRuleDelete("collect-temp-executables")
 
 ### Events and Data Streaming
 
-The SDK provides powerful real-time event streaming through the **Spout** system.
+The SDK gives real-time event streaming through the **Spout** system.
 
 #### Spout - Real-Time Event Streaming
 
-Spout provides WebSocket-based streaming of events, detections, audit logs, and more:
+Spout streams events, detections, audit logs, and more over a WebSocket:
 
 ```go
 import "github.com/refractionPOINT/go-limacharlie/limacharlie"
@@ -889,7 +889,7 @@ spout, err := limacharlie.NewSpout(
 
 #### Using Spout with FutureResults
 
-The Spout system integrates with sensor tasking for request/response workflows:
+The Spout system works with sensor tasking for request and response workflows:
 
 ```go
 // Organization with investigation ID enables interactive mode
@@ -1128,7 +1128,7 @@ err = org.ExtensionRequest(
 
 ### Installation Keys
 
-Installation keys are used for enrolling new sensors.
+You use installation keys to enroll new sensors.
 
 #### List Installation Keys
 
@@ -1190,11 +1190,11 @@ if err != nil {
 
 ### Outputs
 
-Outputs define where LimaCharlie sends events, detections, and other data. The SDK provides comprehensive output management through the `output.go` module.
+Outputs define where LimaCharlie sends events, detections, and other data. The `output.go` module of the SDK manages outputs.
 
 #### Supported Output Modules
 
-The SDK supports numerous output types via the `OutputTypes` struct:
+The SDK supports many output types through the `OutputTypes` struct:
 
 - **Cloud Storage**: `s3`, `gcs`, `azure_storage_blob`
 - **Messaging**: `pubsub`, `kafka`, `azure_event_hub`
@@ -1206,7 +1206,7 @@ The SDK supports numerous output types via the `OutputTypes` struct:
 
 ### Billing
 
-The SDK provides access to billing information and invoices through the billing service.
+The SDK gives access to billing information and invoices through the billing service.
 
 #### Get Billing Status
 
@@ -1309,7 +1309,7 @@ if reqs, ok := authReqs.Requirements["methods"].([]interface{}); ok {
 
 ### LCQL Queries
 
-LCQL (LimaCharlie Query Language) allows querying historical events and detections.
+With LCQL (LimaCharlie Query Language), you can query historical events and detections.
 
 #### Basic Query
 
@@ -1439,7 +1439,7 @@ response, err = org.Query(limacharlie.QueryRequest{
 
 ### Hive Configuration Management
 
-Hive is LimaCharlie's configuration management system for storing structured data.
+Hive is the LimaCharlie system that manages configuration. It stores structured data.
 
 #### Initialize Hive Client
 
@@ -1670,16 +1670,16 @@ The SDK includes automatic retry for transient failures (401, 429, 504).
 
 ### 1. Authentication Security
 
-- Store API keys in environment variables or secure vaults, never in code
-- Use JWT tokens with minimal required permissions
+- Store API keys in environment variables or in secure vaults, not in code
+- Use JWT tokens that have only the necessary permissions
 - Rotate API keys regularly
 - Never commit credentials to version control
 
 ### 2. Resource Management
 
-- Always call `org.Close()` when done
-- Use `defer spout.Shutdown()` to ensure cleanup
-- Close FutureResults when done: `defer future.Close()`
+- Always call `org.Close()` when you are done
+- Use `defer spout.Shutdown()` to make sure that cleanup occurs
+- Close FutureResults when you are done: `defer future.Close()`
 
 ### 3. Performance Optimization
 
@@ -1690,7 +1690,7 @@ The SDK includes automatic retry for transient failures (401, 429, 504).
 
 ## Firehose CLI Tool
 
-The `firehose` module provides a standalone CLI tool for streaming LimaCharlie data to local applications via TCP.
+The `firehose` module is a standalone CLI tool. It streams LimaCharlie data to local applications over TCP.
 
 ### Installation
 

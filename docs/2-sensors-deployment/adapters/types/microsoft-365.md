@@ -1,16 +1,16 @@
 # Microsoft 365
 
-Microsoft 365, formerly Office 365, is a product family of productivity software, collaboration and cloud-based services owned by Microsoft. This Adapter allows you to ingest audit events from the [Office 365 Management Activity API](https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference).
+Microsoft 365, formerly Office 365, is a family of products from Microsoft. It contains productivity software, collaboration tools, and cloud-based services. This Adapter lets you ingest audit events from the [Office 365 Management Activity API](https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference).
 
-Microsoft 365 events can be ingested in LimaCharlie and observed as the `office365` platform.
+LimaCharlie ingests Microsoft 365 events and shows them as the `office365` platform.
 
-> Always set `client_options.platform: office365` for this adapter. The `office365` parser extracts the event type (`Operation`) and timestamp (`CreationTime`) from unified audit log records automatically — no manual `mapping` is needed. Do not substitute `json`.
+> Always set `client_options.platform: office365` for this adapter. The `office365` parser extracts the event type (`Operation`) and the timestamp (`CreationTime`) from unified audit log records automatically. You do not need a manual `mapping`. Do not use `json` instead.
 >
-> **Note on naming:** The platform identifier `office365` reflects the legacy product name. Microsoft renamed Office 365 to Microsoft 365 in 2020.
+> **Note on naming:** The platform identifier `office365` comes from the legacy product name. Microsoft renamed Office 365 to Microsoft 365 in 2020.
 
 ## Adapter Deployment
 
-Microsoft 365 events are ingested via a cloud-to-cloud Adapter configured specifically to review M365 events. When creating an Adapter, the following data points are required:
+A cloud-to-cloud Adapter ingests Microsoft 365 events. You configure this Adapter specifically to review M365 events. When you create an Adapter, these values are required:
 
 - `domain`: Office 365 domain
 - `tenant_id`: Office 365 tenant ID
@@ -34,9 +34,9 @@ Microsoft 365 events are ingested via a cloud-to-cloud Adapter configured specif
 
 For the complete list of audit activities by workload, see [Microsoft's audit log activities documentation](https://learn.microsoft.com/en-us/purview/audit-log-activities).
 
-If creating a Microsoft 365 Adapter via the Web UI, the helper form will navigate you through providing these values.
+If you create a Microsoft 365 Adapter in the Web UI, the helper form guides you through these values.
 
-Establishing a cloud-to-cloud connector between LimaCharlie and Office 365 requires a few steps to provide the correct permissions for the [Office 365 Management Activity API](https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference).
+To connect LimaCharlie to Office 365, you must first do some steps. These steps give the correct permissions for the [Office 365 Management Activity API](https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-reference).
 
 ### Infrastructure as Code Deployment
 
@@ -75,29 +75,29 @@ office365:
 
 ### Preparing Office 365 details
 
-To establish an Office 365 adapter, we will need to complete a few steps within the Azure portal. Ensure that you have the correct permissions to set up a new App registration.
+To establish an Office 365 adapter, you must do some steps in the Azure portal. Make sure that you have the correct permissions to create a new App registration.
 
 - Within the Microsoft Azure portal, create a new App registration. See Microsoft's [App registration Quickstart](https://learn.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-- The LimaCharlie connector requires a secret for Office 365 data. You can create one under `Certificates & secrets`. Be sure to copy this value and save it somewhere - you can only view it once.
+- The LimaCharlie adapter needs a secret for Office 365 data. Create one under `Certificates & secrets`. Copy this value and save it - you can see it one time only.
 
 ![image.png](../../../assets/images/image(73).png)
 
-- Additionally, you'll need to ensure that the app has the correct permissions to view Office 365 data via the Management API. Within `API Permissions`, configure the following permissions:
+- The app must also have the correct permissions to view Office 365 data through the Management API. Within `API Permissions`, configure these permissions:
 
   - `ActivityFeed.Read` (Delegated & Application)
   - `ActivityFeed.ReadDlp` (Delegated & Application) *[if you want DLP permissions]*
 
 ![image.png](../../../assets/images/image(74).png)
 
-Additionally, you may need to grant admin consent to the above permissions.
+It is possible that you must also grant admin consent for these permissions.
 
-At this point, you should have all the details you need to configure the Adapter.
+You now have all the details that you need to configure the Adapter.
 
 ### Setting Up the Adapter
 
-Within the LimaCharlie web application, select `+ Add` Sensor, and then select `Office 365`:
+Within the LimaCharlie web app, select `+ Add` Sensor. Then select `Office 365`:
 
-You can select a pre-existing Installation Key or create a new one, unique for this adapter. Once an Installation Key is selected, you will be prompted with a form to finish setting up the adapter. Choose your desired adapter name, and provide the following values:
+Select an existing Installation Key, or create a new key for this adapter. After you select an Installation Key, the web app shows a form. Choose a name for the adapter and give these values:
 
 | Item | Azure Portal Location |
 | --- | --- |
@@ -108,7 +108,7 @@ You can select a pre-existing Installation Key or create a new one, unique for t
 | Client Secret | Created during creation in Certificates & secrets |
 | API Endpoint | `enterprise`, `gcc-gov`, `gcc-high-gov`, or `dod-gov` |
 
-Finally, you will also need to select a "Content Type" to import. This is the type of events you want to bring in to LimaCharlie. The options are as follows:
+You must also select a "Content Type" to import. This is the type of events that you want to ingest into LimaCharlie. The options are:
 
 - `Audit.AzureActiveDirectory`
 - `Audit.Exchange`
@@ -118,18 +118,18 @@ Finally, you will also need to select a "Content Type" to import. This is the ty
 
 Without a value, the default is *all of the above*.
 
-Click `Complete Cloud Installation`, and LimaCharlie will attempt to connect to the Microsoft Office 365 Management API and pull events.
+Click `Complete Cloud Installation`. LimaCharlie then tries to connect to the Microsoft Office 365 Management API and pull events.
 
 ## Sample Rule
 
-When ingested into LimaCharlie, Office 365 data can be referenced directly in your D&R rules. You could do this via a platform operator:
+After LimaCharlie ingests Office 365 data, you can reference the data directly in your D&R rules. One method is the platform operator:
 
 ```yaml
 op: is platform
 name: office365
 ```
 
-We can also reference Office 365 events directly. The following sample rule looks at `FileAccessed` events from anonymous user names, and reports accordingly.
+You can also reference Office 365 events directly. The sample rule below looks at `FileAccessed` events from anonymous user names and reports them.
 
 ```yaml
 # Detection
@@ -143,4 +143,4 @@ value: anon
   name: OneDrive File Accessed by Anonymous User
 ```
 
-Note that in the detection above, we pivot on the `FileAccessed` event, which is associated with SharePoint activity. Available event types will depend on source activity and events ingested. See Microsoft's [audit log activities reference](https://learn.microsoft.com/en-us/purview/audit-log-activities).
+The detection above uses the `FileAccessed` event, which is associated with SharePoint activity. The available event types depend on the source activity and the events that you ingest. See Microsoft's [audit log activities reference](https://learn.microsoft.com/en-us/purview/audit-log-activities).

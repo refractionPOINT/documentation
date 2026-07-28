@@ -1,6 +1,6 @@
 # Human-in-the-Loop Response Automation
 
-This tutorial walks through building an end-to-end workflow that detects a credential dumping tool, asks a SOC analyst for approval before isolating the host, and executes the response via a Python playbook. It demonstrates how D&R rules, the [Feedback extension](../extensions/limacharlie/feedback.md), and [Playbooks](../extensions/limacharlie/playbook.md) work together to implement human-in-the-loop security automation.
+This tutorial builds a workflow that detects a credential dumping tool. The workflow asks a SOC analyst for approval before it isolates the host, then does the response with a Python playbook. It shows how D&R rules, the [Feedback extension](../extensions/limacharlie/feedback.md), and [Playbooks](../extensions/limacharlie/playbook.md) work together for human-in-the-loop security automation.
 
 ## What You Will Build
 
@@ -30,23 +30,23 @@ NEW_PROCESS event (mimikatz.exe)
  the host  for monitoring
 ```
 
-**Why human-in-the-loop?** Automated isolation is effective but disruptive. A sysadmin running a legitimate tool on a server, or a red team engagement, can trigger credential-tool detections. Asking a human before isolating avoids costly false-positive disruptions while still ensuring fast response when the threat is real.
+**Reason for human-in-the-loop:** Automated isolation works, but it interrupts users. A sysadmin who runs a legitimate tool on a server, or a red team engagement, can trigger credential-tool detections. A question to a human before the isolation stops costly interruptions from false positives. The response is still fast when the threat is real.
 
 ## Prerequisites
 
-Subscribe to the following extensions in the [LimaCharlie marketplace](https://app.limacharlie.io/add-ons):
+Subscribe to these extensions in the [LimaCharlie marketplace](https://app.limacharlie.io/add-ons):
 
 - **Feedback** (`ext-feedback`) -- delivers approval requests and collects responses
-- **Playbook** (`ext-playbook`) -- executes Python playbooks
+- **Playbook** (`ext-playbook`) -- runs Python playbooks
 
-You also need a [Slack Tailored Output](../outputs/destinations/slack.md) configured with a `slack_api_token` and `slack_channel`. See [Feedback Slack Setup](../extensions/limacharlie/feedback.md#slack-setup) for details on creating a Slack App with interactivity enabled.
+You also need a [Slack Tailored Output](../outputs/destinations/slack.md) that has a `slack_api_token` and a `slack_channel`. To create a Slack App with interactivity enabled, see [Feedback Slack Setup](../extensions/limacharlie/feedback.md#slack-setup).
 
 !!! tip "No Slack?"
-    You can use any channel type ([Telegram](../extensions/limacharlie/feedback.md#telegram-setup), [Microsoft Teams](../extensions/limacharlie/feedback.md#microsoft-teams-setup), [email](../extensions/limacharlie/feedback.md#email-setup), or `web`). Replace the channel type in Step 1 accordingly. The D&R rule, playbook, and response flow are identical regardless of channel.
+    You can use any channel type ([Telegram](../extensions/limacharlie/feedback.md#telegram-setup), [Microsoft Teams](../extensions/limacharlie/feedback.md#microsoft-teams-setup), [email](../extensions/limacharlie/feedback.md#email-setup), or `web`). Replace the channel type in Step 1. The D&R rule, the playbook, and the response flow are the same for each channel.
 
 ## Step 1: Create a Feedback Channel
 
-Add a Slack channel to the Feedback extension config. This tells ext-feedback where to deliver approval requests.
+Add a Slack channel to the Feedback extension config. The channel tells ext-feedback where to deliver approval requests.
 
 === "CLI"
     ```bash
@@ -74,7 +74,7 @@ Add a Slack channel to the Feedback extension config. This tells ext-feedback wh
             comment: ""
     ```
 
-Verify the channel was created:
+Check that the channel exists:
 
 ```bash
 limacharlie feedback channel list
@@ -82,11 +82,11 @@ limacharlie feedback channel list
 
 ## Step 2: Write the D&R Rule
 
-This rule detects credential dumping tools and asks for human approval before taking action. The response is routed to a playbook that handles isolation or monitoring.
+This rule detects credential dumping tools and asks a human for approval before it acts. The response goes to a playbook that isolates the host or monitors it.
 
 ### Detection
 
-The detection matches processes whose file path ends with known credential dumping tool names:
+The detection matches a process with a file path that ends with the name of a known credential dumping tool:
 
 ```yaml
 op: or
@@ -109,11 +109,11 @@ rules:
 ```
 
 !!! note
-    This is a simplified detection for illustration. Production rules would include additional context (e.g., command-line arguments targeting `lsass`, hash lookups, or behavioral patterns).
+    This detection is simplified for the example. A production rule includes more context, such as command-line arguments that target `lsass`, hash lookups, or behavioral patterns.
 
 ### Response
 
-The response has two actions: report the detection, and request approval via ext-feedback.
+The response has two actions: it reports the detection, and it requests approval through ext-feedback.
 
 ```yaml
 - action: report
@@ -150,15 +150,15 @@ The response has two actions: report the detection, and request approval via ext
 
 **Key design decisions:**
 
-- **Suppression** prevents the same host from flooding the Slack channel. Keyed on hostname, it ensures at most one approval request per host per hour. Without this, a noisy process restarting repeatedly would generate dozens of Slack messages.
-- **Timeout** auto-denies after 10 minutes. The playbook still runs on timeout (with `responder: "timeout"`), so the host gets tagged for monitoring even if no one is watching Slack.
-- **`approved_content` / `denied_content`** carry the sensor ID and hostname through the human decision point, so the playbook has everything it needs to act without additional API calls to look up the sensor.
+- **Suppression** stops the same host from sending too many messages to the Slack channel. The key is the hostname, so each host sends a maximum of one approval request each hour. Without suppression, a noisy process that restarts many times creates dozens of Slack messages.
+- **Timeout** denies the request automatically after 10 minutes. The playbook still runs at the timeout (with `responder: "timeout"`), so the host is tagged for monitoring even if nobody watches Slack.
+- **`approved_content` / `denied_content`** carry the sensor ID and the hostname through the human decision. The playbook then has all the data that it needs to act, and it makes no more API calls to look up the sensor.
 
 ## Step 3: Create the Playbook
 
-Create a playbook named `handle-isolation-decision` in the Playbooks section (Automation > Playbooks in the web UI), or via Infrastructure as Code.
+Create a playbook named `handle-isolation-decision` in the Playbooks section (Automation > Playbooks in the web app), or with Infrastructure as Code.
 
-This playbook receives the feedback response and either isolates the host or tags it for monitoring.
+The playbook receives the feedback response. It isolates the host or tags it for monitoring.
 
 ### Playbook Code
 
@@ -217,7 +217,7 @@ def playbook(sdk, data):
 
 ### What the Playbook Receives
 
-When ext-feedback dispatches to a playbook, the `data` parameter contains:
+When ext-feedback sends the response to a playbook, the `data` parameter contains:
 
 | Field | Description |
 |-------|-------------|
@@ -227,11 +227,11 @@ When ext-feedback dispatches to a playbook, the `data` parameter contains:
 | `responder` | Username of the person who responded, or `"timeout"` |
 | `content` | The JSON from `approved_content` or `denied_content` (whichever matches the choice) |
 
-The `content` field is where the D&R rule's context (sensor ID, hostname, file path) arrives. This is why the `approved_content` and `denied_content` in the D&R rule include `sid` and `hostname` -- they travel through the feedback system and arrive intact in the playbook.
+The `content` field holds the context from the D&R rule: the sensor ID, the hostname, and the file path. For this reason, `approved_content` and `denied_content` in the D&R rule include `sid` and `hostname`. These values move through the feedback system and arrive intact in the playbook.
 
 ### Infrastructure as Code
 
-To manage the playbook via [git-sync](../extensions/limacharlie/git-sync.md):
+To manage the playbook with [git-sync](../extensions/limacharlie/git-sync.md):
 
 ```yaml
 hives:
@@ -292,11 +292,11 @@ hives:
 ```
 
 !!! warning
-    The playbook needs an API key with `sensor.set` permissions (for isolation and tagging). When triggering the playbook from a D&R rule, pass credentials via the `credentials` field, or configure the playbook extension with a default API key.
+    The playbook needs an API key with `sensor.set` permissions for isolation and tagging. When you trigger the playbook from a D&R rule, give the credentials in the `credentials` field. You can also configure the playbook extension with a default API key.
 
 ## Step 4: Test the Workflow
 
-You can test the full flow without waiting for a real detection by sending a feedback request directly from the CLI:
+To test the full flow without a real detection, send a feedback request from the CLI:
 
 ```bash
 limacharlie feedback request-approval \
@@ -308,13 +308,13 @@ limacharlie feedback request-approval \
   --timeout 120 --timeout-choice denied
 ```
 
-Replace `YOUR_SENSOR_SID` with a real sensor ID from your organization. After running this command:
+Replace `YOUR_SENSOR_SID` with a real sensor ID from your organization. After you run this command:
 
 1. A message appears in your Slack channel with **Approve** and **Deny** buttons
 2. Click **Approve** -- the `handle-isolation-decision` playbook runs and isolates the sensor
 3. Click **Deny** -- the playbook tags the sensor with `cred-tool-monitor` for 24 hours
 
-If you want to test without affecting a real sensor, use the `web` channel instead to get a URL you can open in a browser:
+To test without a change to a real sensor, use the `web` channel. It gives you a URL that you can open in a browser:
 
 ```bash
 limacharlie feedback channel add --name test-web --type web
@@ -327,13 +327,13 @@ limacharlie feedback request-approval \
   --denied-content '{"sid": "test-sid", "hostname": "workstation-42", "file_path": "mimikatz.exe", "action": "monitor"}'
 ```
 
-The CLI returns a `url` you can open in your browser to respond.
+The CLI returns a `url` that you can open in your browser to respond.
 
 ## How It All Fits Together
 
 1. A `NEW_PROCESS` event fires when mimikatz.exe runs on an endpoint
 2. The D&R rule matches and sends a `request_simple_approval` to ext-feedback
-3. Suppression checks whether this host already has a pending request (keyed on hostname, 1-hour window) -- if so, the action is skipped
+3. Suppression checks if this host already has a pending request (keyed on hostname, 1-hour window) -- if it does, the action is skipped
 4. ext-feedback delivers the question to Slack with Approve/Deny buttons
 5. A SOC analyst clicks **Approve** (or the 10-minute timeout fires and auto-denies)
 6. ext-feedback routes the response through the webhook adapter and D&R pipeline
@@ -342,10 +342,10 @@ The CLI returns a `url` you can open in your browser to respond.
 
 ## Extending the Pattern
 
-**Escalation chain:** If the timeout fires, have the playbook send a second feedback request to a different channel (e.g., `management-approvals`) with a shorter timeout before auto-isolating.
+**Escalation chain:** When the timeout occurs, let the playbook send a second feedback request to a different channel, such as `management-approvals`. Give this second request a shorter timeout before the automatic isolation.
 
-**Multi-step workflow:** Chain multiple feedback requests. For example, after isolation approval, ask "Run memory forensics on this host?" with the response going to a second playbook that triggers [Velociraptor](../extensions/third-party/velociraptor.md) or a [Dumper](../extensions/limacharlie/dumper.md) collection.
+**Multi-step workflow:** Chain many feedback requests. For example, after the approval of the isolation, ask "Run memory forensics on this host?". Send the response to a second playbook that starts a [Velociraptor](../extensions/third-party/velociraptor.md) or [Dumper](../extensions/limacharlie/dumper.md) collection.
 
-**Audit trail:** Set the feedback destination to `case` instead of `playbook` to log every approval decision as a case note, creating a reviewable audit trail.
+**Audit trail:** Set the feedback destination to `case` instead of `playbook`. Each approval decision becomes a case note, which gives you an audit trail that you can review.
 
-**AI agent follow-up:** Set the feedback destination to `ai_agent` to start an AI agent session when the human responds. The agent receives the feedback response appended to its prompt, allowing it to take context-aware automated action based on the human's decision.
+**AI agent follow-up:** Set the feedback destination to `ai_agent` to start an AI agent session when the human responds. The agent gets the feedback response at the end of its prompt. The agent can then take automated action that uses the context of the human decision.

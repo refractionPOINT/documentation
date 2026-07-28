@@ -1,14 +1,14 @@
 # Ingesting Sysmon Event Logs
 
-Sysmon can be a valuable addition to any defender's toolkit, given it's verbosity and generous log data. It's worth noting that LimaCharlie's native EDR capabilities mirror much of the same telemetry. However, Sysmon and LimaCharlie can be combined to provide granular coverage across Windows systems.
+Sysmon is a valuable addition to the tools of a defender, because it gives verbose log data. The native EDR capabilities of LimaCharlie collect much of the same telemetry. But you can combine Sysmon and LimaCharlie to get granular coverage of Windows systems.
 
-With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WEL) streaming capabilities to bring logs into the Sensor timeline.
+After you deploy Sysmon, use the native Windows Event Log (WEL) streaming capability of LimaCharlie to bring the logs into the Sensor timeline.
 
 1. Install [Sysmon](https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon) on the endpoint.
 
-   - This can easily be done via LimaCharlie's Payload functionality, with a  rule, or manually.
-   - Please note that the LimaCharlie agent must be restarted in order for Sysmon data to show up in the timeline.
-   - Example rule to deploy Sysmon via payloads on Windows systems tagged with `deploy-sysmon`:
+   - Do this with the Payload functionality of LimaCharlie, with a rule, or manually.
+   - You must restart the LimaCharlie agent before the Sysmon data is shown in the timeline.
+   - Example rule that deploys Sysmon with payloads on Windows systems that have the `deploy-sysmon` tag:
 
      ```powershell
      detect:
@@ -43,31 +43,31 @@ With Sysmon deployed, you can utilize LimaCharlie's native Windows Event Log (WE
        command: restart
      ```
 
-2. Within the Organization where you wish to collect Sysmon data, go to the `Event Collection > Event Collection Rules` section.
+2. In the Organization where you want to collect Sysmon data, go to the `Event Collection > Event Collection Rules` section.
 
-![ingest sysmon 1](../../assets/images/ingest-sysmon-1.png)
+    ![ingest sysmon 1](../../assets/images/ingest-sysmon-1.png)
 
-1. Ensure that for Windows systems, `WEL` events are collected.
+3. Make sure that `WEL` events are collected for Windows systems.
 
-![ingest sysmon 2](../../assets/images/ingest-sysmon-2.png)
+    ![ingest sysmon 2](../../assets/images/ingest-sysmon-2.png)
 
-1. Go to the `Artifact Collection` section and add a new collection rule with the following path to bring in all Sysmon events:
+4. Go to the `Artifact Collection` section. Add a new collection rule with this path to bring in all Sysmon events:
 
-`wel://Microsoft-Windows-Sysmon/Operational:*`
+    `wel://Microsoft-Windows-Sysmon/Operational:*`
 
-![ingest sysmon 3](../../assets/images/ingest-sysmon-3.png)
+    ![ingest sysmon 3](../../assets/images/ingest-sysmon-3.png)
 
-**Note:** You can use tagging or other filters to narrow down the systems that logs are collected from.
+    **Note:** You can use tags or other filters to limit the systems that the logs come from.
 
-Event Filtering
+    Event Filtering
 
-You can filter events by event ID to import select events. For example:
+    You can filter events by event ID to import select events. For example:
 
-`wel://Microsoft-Windows-Sysmon/Operational:16`
+    `wel://Microsoft-Windows-Sysmon/Operational:16`
 
-`wel://Microsoft-Windows-Sysmon/Operational:25`
+    `wel://Microsoft-Windows-Sysmon/Operational:25`
 
-1. Allow up to 10 minutes for data to come into LimaCharlie after setting up a new Artifact Collection rule. Data will flow in real-time after that point.
-2. Navigate to the Timeline view of a Sensor to confirm that Sysmon logs are present. You can search for Event Type `WEL` and Search for `Microsoft-Windows-Sysmon` to validate the telemetry.
+5. Wait up to 10 minutes for the data to arrive in LimaCharlie after you set up a new Artifact Collection rule. After that point, the data flows in real time.
+6. Go to the Timeline view of a Sensor to confirm that the Sysmon logs are present. Search for the Event Type `WEL` and for `Microsoft-Windows-Sysmon` to validate the telemetry.
 
-![image.png](../../assets/images/image(96).png)
+    ![image.png](../../assets/images/image(96).png)

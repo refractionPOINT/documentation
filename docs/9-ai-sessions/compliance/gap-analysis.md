@@ -1,17 +1,17 @@
 # Gap Analysis
 
-The [`compliance-gap`](skills.md#compliance-gap) skill produces an on-demand markdown report comparing an organization's currently-deployed configuration against the framework's recommended baseline. This page explains how to read the report, what each section means, and how to act on the findings.
+The [`compliance-gap`](skills.md#compliance-gap) skill makes a markdown report on demand. The report compares the deployed configuration of an organization against the recommended baseline of the framework. This page explains how to read the report, what each section means, and how to act on the findings.
 
-Gap analysis is the primary way to assess compliance posture in `lc-compliance`. There is no backend gap-analyzer agent — gap reports are engineering punch lists, not audit evidence, and so they are produced interactively and live only in your Claude Code chat.
+Gap analysis is the main way to assess the compliance posture in `lc-compliance`. There is no gap-analyzer agent in the cloud. Gap reports are engineering punch lists, not audit evidence. The skill therefore makes them interactively, and they stay only in your Claude Code chat.
 
 ## When to run a gap analysis
 
 Common occasions:
 
-- **Before an audit window opens.** Three to six weeks before an external assessor begins fieldwork is the most valuable moment — there is still time to remediate.
-- **After onboarding a new tenant or new scope.** When sensors are first tagged into scope (e.g., a new acquisition's endpoints get the `cde` tag), run a gap analysis to confirm the framework's expectations are met.
-- **After a plugin update.** When the bundled recommended baseline changes, the gap analysis identifies any new rules that should be deployed.
-- **As a regular cadence.** Quarterly or monthly gap analyses surface drift (rules disabled, sensors offline, extensions unsubscribed) before they become audit findings.
+- **Before an audit window opens.** The best time is three to six weeks before an external assessor starts fieldwork. You then still have time to remediate.
+- **After onboarding a new tenant or new scope.** Run a gap analysis when you first tag sensors into scope, for example when the endpoints of a new acquisition get the `cde` tag. The analysis confirms that the organization meets the expectations of the framework.
+- **After a plugin update.** When the bundled recommended baseline changes, the gap analysis shows the new rules that you should deploy.
+- **As a regular cadence.** A gap analysis each quarter or each month shows drift before it becomes an audit finding. Drift includes disabled rules, offline sensors, and unsubscribed extensions.
 
 ## Running the skill
 
@@ -19,7 +19,7 @@ Common occasions:
 /lc-compliance:compliance-gap pci-dss --oid <your-oid>
 ```
 
-The skill queries the organization through the standard LimaCharlie CLI session, diffs the deployed configuration against the framework's `recommended-rules.yaml` baseline, and prints the report to your chat. Nothing is written to the organization.
+The skill queries the organization through the standard LimaCharlie CLI session. It compares the deployed configuration against the `recommended-rules.yaml` baseline of the framework, and it prints the report to your chat. It writes nothing to the organization.
 
 For NIST 800-53, scope the analysis to a FIPS 199 baseline:
 
@@ -35,7 +35,7 @@ For CIS v8, scope to an Implementation Group:
 
 ## Anatomy of a gap report
 
-The report has a consistent structure across frameworks. A sample run against a PCI DSS org looks like this:
+The structure of the report is the same for all frameworks. This is a sample run against a PCI DSS organization:
 
 ````text
 # PCI DSS v4.0 Gap Analysis (Interactive)
@@ -87,85 +87,85 @@ The sections in the report:
 
 ### Header
 
-The header carries the **organization name and UUID** so reports can be attributed unambiguously, the **timestamp** the report was generated (always UTC), the **recommended set version** (a date string indicating which bundled baseline the analysis ran against), the framework's **verification level** (so readers can calibrate trust appropriately), and the **scope** (which sensors were considered in-scope based on the framework's tag convention).
+The header carries the **organization name and UUID**, so that each report has a clear owner. It gives the **timestamp** of the report, always in UTC. It gives the **recommended set version**: a date string that shows which bundled baseline the analysis used. It gives the **verification level** of the framework, so that readers know how much to trust the content. It gives the **scope**: the sensors that the analysis treated as in scope, from the tag convention of the framework.
 
 ### Summary
 
-A one-glance count of issues across six categories. The counts are not weighted by severity — a missing low-priority D&R rule and a missing critical exfil event each contribute one to the count. Use the Prioritized Remediation section for priority.
+A count of the issues in six categories. The counts have no weight for severity. A missing D&R rule with low priority and a missing critical exfil event each add one to the count. Use the Prioritized Remediation section for priority.
 
 ### A. Telemetry Gaps
 
-Events the framework's recommended baseline expects the in-scope sensors to be collecting, that are absent from the org's deployed exfil profile. Broken down by sensor platform (Windows, Linux, macOS) because exfil profiles are platform-specific.
+The events that the recommended baseline of the framework expects from the in-scope sensors, but that the deployed exfil profile of the organization does not collect. The report groups them by sensor platform (Windows, Linux, macOS), because an exfil profile is specific to one platform.
 
-A telemetry gap means the rule downstream cannot fire even if deployed, because the underlying event isn't being collected. **Fix these before deploying the corresponding D&R rules.**
+A telemetry gap means that the downstream rule cannot fire, because the sensor does not collect the event. This is true even if you deploy the rule. **Correct these gaps before you deploy the related D&R rules.**
 
 ### B. Artifact Collection Gaps
 
-Rules from the recommended baseline that collect specific artifacts (PowerShell Operational logs, Windows Defender logs, Task Scheduler logs, etc.) which are not deployed. These rules subscribe the sensor to additional log sources that go beyond standard exfil.
+Rules from the recommended baseline that collect specific artifacts and that are not deployed. Examples are PowerShell Operational logs, Windows Defender logs, and Task Scheduler logs. These rules subscribe the sensor to more log sources than standard exfil.
 
 ### C. FIM Gaps
 
-File-integrity-monitoring rules that are not deployed. FIM in LimaCharlie is provided by the `ext-integrity` extension. The gap report explicitly flags whether `ext-integrity` is subscribed to the organization — if it is not, all FIM rules in the baseline will be reported as gaps, and subscribing the extension is the first remediation step.
+File-integrity-monitoring rules that are not deployed. The `ext-integrity` extension supplies FIM in LimaCharlie. The gap report states if the organization has a subscription to `ext-integrity`. If it does not, the report shows all FIM rules in the baseline as gaps, and the first remediation step is to subscribe to the extension.
 
 See the [Integrity extension](../../5-integrations/extensions/limacharlie/integrity.md).
 
 ### D. D&R Rule Gaps
 
-D&R rule names from the recommended baseline that are not present in the org's deployed rule set. The report shows the top 10 by default with a count of the remainder; the full list is accessible via the skill's interactive follow-up.
+D&R rule names from the recommended baseline that are not in the deployed rule set of the organization. By default, the report shows the top 10 and a count of the others. To get the full list, ask the skill in an interactive follow-up.
 
-Each entry carries the framework's control citation and, where the bundled implementation document includes it, the MITRE ATT&CK technique the rule targets. The latter is useful for cross-referencing against an existing detection engineering roadmap.
+Each entry carries the control citation of the framework. If the bundled implementation document includes it, the entry also carries the MITRE ATT&CK technique that the rule targets. Use the technique to cross-reference an existing roadmap for detection engineering.
 
 ### E. Name Drift
 
-Deployed rules whose names are *close to but not identical to* a recommended-baseline name. This usually indicates one of two things:
+Deployed rules with names that are *close to but not identical to* a name in the recommended baseline. There are two usual causes:
 
-- The org deployed a rule manually with a slightly different name, missing the canonical naming convention by a few characters
-- A previous version of the baseline used a different name, and the rule has not been renamed to match the current bundled name
+- The organization deployed a rule manually with a different name that misses the canonical convention for names by some characters
+- A previous version of the baseline used a different name, and nobody renamed the rule to match the current bundled name
 
-Name-drift candidates are surfaced for **manual review**, not auto-remediation — the report does not attempt to merge them with their canonical counterparts. To remediate, either rename the deployed rule to match the canonical name, or accept the drift and treat both as in-scope.
+The report shows name-drift candidates for **manual review**, not for automatic remediation. It does not try to merge them with their canonical equivalents. To remediate, rename the deployed rule to the canonical name, or accept the drift and treat both names as in scope.
 
 ### F. Sensor Coverage
 
-In-scope sensors that have not reported in more than 7 days. The skill uses a uniform 7-day threshold across all frameworks; per-framework citations attached to each row identify which control(s) the offline sensor risks failing (e.g., PCI DSS Req 10.7.x for cardholder-data environments, HIPAA §164.312(b) for ePHI systems).
+In-scope sensors that sent no report for more than 7 days. The skill uses the same threshold of 7 days for all frameworks. Each row carries the citations of the framework. These citations show the controls that the offline sensor can fail, for example PCI DSS Req 10.7.x for cardholder-data environments, or HIPAA §164.312(b) for ePHI systems.
 
-A sensor showing here is, in audit terms, an organization that has stopped collecting required telemetry from an in-scope system. Investigate before the auditor finds it.
+In audit terms, a sensor in this section shows an organization that stopped the collection of necessary telemetry from an in-scope system. Investigate the sensor before the auditor finds it.
 
 ### G. Deployed Extras (informational)
 
-Rules deployed in the org that are **not** part of the recommended baseline. These are never flagged as gaps — extras are usually intentional (custom detections, threat-intel-driven rules, organization-specific tuning). The list is informational so operators can confirm the deployed set is intentional.
+Rules that are deployed in the organization but are **not** part of the recommended baseline. The report never shows them as gaps. Extras are usually intentional: custom detections, rules from threat intelligence, and tuning for the organization. The list is informational, so that operators can confirm that the deployed set is intentional.
 
 ### Prioritized Remediation
 
-A short ordered list, typically 4–6 items, reflecting the most impactful gap-closing actions. The ordering takes into account dependencies (e.g., subscribe `ext-integrity` *before* deploying FIM rules) and control criticality (sensor coverage and authentication-logging controls usually rank highest).
+A short ordered list, usually 4–6 items, with the actions that close the most important gaps. The order accounts for dependencies, for example a subscription to `ext-integrity` *before* the deployment of FIM rules. It also accounts for the criticality of the control. Sensor coverage and controls for authentication logging usually rank highest.
 
 ## Acting on the report
 
-The report is a punch list. Typical follow-up paths:
+The report is a punch list. The usual next actions:
 
 | Section | Remediation skill or action |
 |---|---|
-| A. Telemetry gaps | Edit the org's exfil profile — see [Exfil extension](../../5-integrations/extensions/limacharlie/exfil.md) |
+| A. Telemetry gaps | Edit the exfil profile of the organization — see [Exfil extension](../../5-integrations/extensions/limacharlie/exfil.md) |
 | B. Artifact collection gaps | Run [`compliance-baseline-deploy --apply --kinds artifact`](skills.md#compliance-baseline-deploy) |
-| C. FIM gaps | Subscribe [Integrity extension](../../5-integrations/extensions/limacharlie/integrity.md), then `--kinds fim` |
-| D. D&R rule gaps | Run [`compliance-baseline-deploy --apply --kinds dr`](skills.md#compliance-baseline-deploy) for the full set, or write/import targeted rules |
-| E. Name-drift candidates | Manual rename of deployed rules, or accept the drift |
-| F. Sensor-coverage issues | Investigate the offline sensors; if decommissioned, remove from scope |
+| C. FIM gaps | Subscribe to the [Integrity extension](../../5-integrations/extensions/limacharlie/integrity.md), then use `--kinds fim` |
+| D. D&R rule gaps | Run [`compliance-baseline-deploy --apply --kinds dr`](skills.md#compliance-baseline-deploy) for the full set, or write or import targeted rules |
+| E. Name-drift candidates | Rename the deployed rules manually, or accept the drift |
+| F. Sensor-coverage issues | Investigate the offline sensors. If a sensor is decommissioned, remove it from scope |
 | G. Deployed extras | No action — informational only |
 
 ## Persisting a gap report
 
-The skill writes the report to your Claude Code chat. It does not write to the LimaCharlie organization. If you want the report persisted for an auditor to reference, paste the markdown into a [Case](../../5-integrations/extensions/limacharlie/cases.md) note, or store it in your GRC platform of choice.
+The skill writes the report to your Claude Code chat. It does not write to the LimaCharlie organization. To keep the report for an auditor, paste the markdown into a [Case](../../5-integrations/extensions/limacharlie/cases.md) note, or store it in your GRC system.
 
-This separation is deliberate: gap reports are engineering punch lists with a short half-life. Audit evidence is what the case-reviewer agent produces continuously inside the case queue. Conflating the two would invite auditors to treat a snapshot punch list as compliance evidence, which it is not.
+This separation is deliberate. Gap reports are engineering punch lists that become old quickly. The case-reviewer agent produces the audit evidence continuously inside the case queue. If you mix the two, auditors can treat a snapshot punch list as compliance evidence, and it is not compliance evidence.
 
 ## Multi-tenant gap analysis
 
-The skill operates on a single organization per invocation. For a portfolio of organizations (an MSSP book of business, a parent organization with multiple subsidiaries), invoke the skill once per `--oid`. Each report is independent and can be sent to the relevant customer, business unit, or compliance team.
+The skill operates on one organization for each call. For a portfolio of organizations, such as an MSSP book of business or a parent organization with subsidiaries, call the skill one time for each `--oid`. Each report is independent, and you can send it to the customer, business unit, or compliance team.
 
-If you find yourself running the same gap analysis across many orgs on a regular cadence, consider scripting the iteration around the skill invocation, or surface a feature request — a multi-org roll-up is not currently a built-in capability of the plugin.
+If you run the same gap analysis across many organizations at regular times, write a script around the call to the skill, or send a feature request. A roll-up across organizations is not a built-in capability of the plugin.
 
 ## See also
 
 - [Skills Reference](skills.md#compliance-gap) — full argument reference for the gap-analysis skill
-- [Frameworks](frameworks.md) — per-framework recommended scope tags and verification levels
-- [Case-Reviewer Agent](case-reviewer-agent.md) — the continuous evidence-production complement to ad-hoc gap analysis
+- [Frameworks](frameworks.md) — recommended scope tags and verification levels for each framework
+- [Case-Reviewer Agent](case-reviewer-agent.md) — the continuous production of evidence that completes ad-hoc gap analysis

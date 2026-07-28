@@ -2,28 +2,28 @@
 
 ## Overview
 
-This Adapter allows you to connect to Zendesk to fetch [account activity logs](https://developer.zendesk.com/api-reference/ticketing/account-configuration/audit_logs/#list-audit-logs).
+This Adapter connects to Zendesk and gets [account activity logs](https://developer.zendesk.com/api-reference/ticketing/account-configuration/audit_logs/#list-audit-logs).
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always set these options when you use the binary adapter or when you create a webhook adapter. If you use an Adapter helper in the web app, you do not set these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself with LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, such as `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: a name that you choose for this adapter. LimaCharlie generates the Sensor IDs (SID) from this name, as described below.
 
 ### Adapter-specific Options
 
 Adapter Type: `zendesk`
 
 - `api_token`: your Zendesk API token
-- `zendesk_domain`: your Zendesk domain, like `initech.zendesk.com`
-- `zendesk_email`: your Zendesk email address that created the API token
+- `zendesk_domain`: your Zendesk domain, such as `initech.zendesk.com`
+- `zendesk_email`: the Zendesk email address that created the API token
 
 ### CLI Deployment
 
-[Adapter binaries](../deployment.md#adapter-binaries) are available on the deployment page.
+You can get the [Adapter binaries](../deployment.md#adapter-binaries) on the deployment page.
 
 ```bash
 chmod +x /path/to/lc_adapter
@@ -67,4 +67,4 @@ zendesk:
 
 ## API Doc
 
-See the official [documentation](https://developer.zendesk.com/api-reference/ticketing/account-configuration/audit_logs/#list-audit-logs).
+See the official [Zendesk audit logs API reference](https://developer.zendesk.com/api-reference/ticketing/account-configuration/audit_logs/#list-audit-logs).

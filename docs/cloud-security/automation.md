@@ -1,14 +1,14 @@
 # Automation & Infrastructure-as-Code
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and
+    configuration formats on this page can change before general
+    availability. Contact LimaCharlie to request access.
 
-Everything Cloud Security does is scriptable: configuration is Hive records,
-the query/triage surface is the [REST API](api-reference.md) and
-[CLI](cli.md), and findings flow through the standard event pipeline. This
-page collects the operator recipes.
+You can script everything that Cloud Security does. Configuration is Hive
+records. The query and triage surface is the [REST API](api-reference.md)
+and the [CLI](cli.md). Findings go through the standard event pipeline.
+This page collects the operator recipes.
 
 ## Onboarding a tenant
 
@@ -51,7 +51,7 @@ limacharlie hive set --hive-name cloudsec_policy --key classification \
 
 ## Multi-tenant policy push
 
-The same records applied to N organizations is the MSSP fleet-policy story:
+For MSSP fleet policy, apply the same records to N organizations:
 
 ```bash
 for OID in $(cat tenant-oids.txt); do
@@ -61,22 +61,23 @@ done
 ```
 
 !!! tip "Fleet-wide roll-up"
-    Beyond pushing policy to N orgs, the cross-tenant fleet board rolls risk
-    up across every org you manage — `limacharlie cloudsec fleet overview`
-    (see the [CLI](cli.md)), the multi-org `fleet/overview` route (see the
-    [API Reference](api-reference.md)), and the console's Cloud Security Fleet
-    view. It's the MSSP read half of the same fleet story.
+    The cross-tenant fleet board also rolls risk up across every org that
+    you manage. Use `limacharlie cloudsec fleet overview` (see the
+    [CLI](cli.md)), the multi-org `fleet/overview` route (see the
+    [API Reference](api-reference.md)), or the Cloud Security Fleet view in
+    the web app. This is the read half of the same fleet workflow for an
+    MSSP.
 
 ## Suppression rules (finding disposition policy)
 
 A `suppression`-typed `cloudsec_policy` record dispositions matching
 findings automatically — the "accept this known risk in the sandbox for 90
-days" mechanic. An operator's own disposition always wins; deleting a rule
-releases exactly its own findings on the next cycle; criticals are never
-auto-suppressed unless a rule's `max_severity` says `critical` explicitly.
-The `account` matcher takes globs, including leading-`!` negation —
-`"account": ["!prod-*"]` scopes a rule to every account **outside** `prod-*`
-(see [Glob syntax](configuration.md#glob-syntax)).
+days" mechanic. The disposition of an operator always wins. If you delete a
+rule, it releases only its own findings on the next cycle. The cloud
+auto-suppresses critical findings only when the `max_severity` of a rule is
+`critical`. The `account` matcher takes globs, including leading-`!`
+negation — `"account": ["!prod-*"]` scopes a rule to every account
+**outside** `prod-*` (see [Glob syntax](configuration.md#glob-syntax)).
 
 ```json
 {
@@ -101,8 +102,8 @@ The `account` matcher takes globs, including leading-`!` negation —
 
 ## Saved queries
 
-Save a graph query as a `cloudsec_query` record and it appears in every
-teammate's query console:
+Save a graph query as a `cloudsec_query` record. It then appears in the
+query console of every teammate:
 
 ```json
 {
@@ -120,8 +121,8 @@ shape.
 
 Add `?format=csv` to `findings`, `inventory`, `compliance`, or `query` to
 stream the result as a CSV attachment instead of JSON. The server walks the
-full filtered set itself (filter parameters apply; paging parameters are
-ignored), capped at 100,000 rows with a trailing `#`-comment row as the
+full filtered set itself (filter parameters apply; the server ignores paging
+parameters). The cap is 100,000 rows, with a trailing `#`-comment row as the
 truncation notice:
 
 ```bash
@@ -130,15 +131,15 @@ curl -H "Authorization: Bearer $JWT" \
   -o findings.csv
 ```
 
-The compliance CSV carries one row per control including the proving finding
-ids — the auditor-facing evidence export.
+The compliance CSV carries one row for each control, including the finding
+ids that prove it. This is the evidence export for auditors.
 
 !!! note "CLI `--output csv` is per-page"
-    The CLI's global `--output csv` formats the rows the command returned —
-    one page. For a full-estate export use the `?format=csv` server-side
-    walk above, or the `limacharlie cloudsec export` subgroup
-    (`export findings|inventory|compliance|query [-o file]`), which drives the
-    same server-side full-set walk and writes the CSV to a file.
+    The global `--output csv` of the CLI formats the rows that the command
+    returned — one page. For a full-estate export, use the `?format=csv`
+    server-side walk above, or the `limacharlie cloudsec export` subgroup
+    (`export findings|inventory|compliance|query [-o file]`). The subgroup
+    drives the same server-side full-set walk and writes the CSV to a file.
 
 ## Findings ↔ Cases automation
 
@@ -146,13 +147,13 @@ Cloud findings emit lifecycle events into the organization's own event
 stream (see the [`emission` policy](configuration.md#emission-the-event-feed)):
 `cloud_finding.created` (carries the full finding under `finding`),
 `cloud_finding.closed` (`{finding_id, fingerprint, finding_class}`), and
-`cloud_finding.still_open` (re-asserted at most once per day for open
-findings with a linked ticket). D&R rules match these like any event; the
-Cases extension actions close the loop.
+`cloud_finding.still_open` (re-asserted at most once a day for open
+findings with a linked ticket). D&R rules match these like any event. The
+actions of the Cases extension complete the workflow.
 
 **Auto-case on high/critical findings** (async, grouped, storm-safe — one
-case per rule category per window, and first-sync floods are summarized
-upstream):
+case for each rule category in each window, and the cloud summarizes
+first-sync floods upstream):
 
 ```yaml
 detect:
@@ -188,7 +189,7 @@ respond:
       note: "Finding closed: condition no longer detected by sweep"
 ```
 
-**Reopen a case that was closed while the cloud wasn't actually fixed:**
+**Reopen a case that was closed but the cloud was not fixed:**
 
 ```yaml
 detect:
@@ -206,33 +207,34 @@ respond:
 ```
 
 `update_case` resolves the case through the detection index (`detect_id` =
-the finding fingerprint), so the rules never need a case number; a finding
+the finding fingerprint), so the rules never need a case number. A finding
 with no linked case is a no-op. Cases never close findings — findings are
-detection truth and close when the sweep confirms the fix (or via
-operator/policy disposition).
+detection truth and close when the sweep confirms the fix, or by an
+operator or policy disposition.
 
 !!! info "More lifecycle events for richer automation"
     The `created` / `closed` / `still_open` verbs above are the Cases loop,
-    but D&R rules can key off more of the finding lifecycle:
+    but D&R rules can key on more of the finding lifecycle:
 
-    - `cloud_finding.updated` — an **open** finding's content materially
-      changed (a severity flip or a change to its vuln set) without re-firing
-      on every sweep. Payload carries `changed[]` (the fields that moved),
-      `old_severity`, `new_severity`, and the full `finding` — the hook for
-      reacting to escalation (e.g. re-notify only when a finding crosses into
-      CRITICAL).
+    - `cloud_finding.updated` — the content of an **open** finding
+      materially changed (a severity flip or a change to its vuln set),
+      without a new event on every sweep. The payload carries `changed[]`
+      (the fields that moved), `old_severity`, `new_severity`, and the full
+      `finding`. Use it to react to escalation, for example to re-notify
+      only when a finding becomes CRITICAL.
     - `cloud_finding.resolved` / `.dismissed` / `.reopened` / `.assigned` —
-      the operator-disposition verbs, flat payload with an `actor` field, for
-      auditing human triage decisions (who accepted/muted/reopened what).
+      the operator-disposition verbs, flat payload with an `actor` field,
+      to audit human triage decisions (who accepted, muted, or reopened
+      what).
     - `cloudsec.sync_completed` — the first-sync summary
-      (`{total, by_class, by_severity}`) emitted once instead of a
-      per-finding `created` flood, so onboarding a large estate is one event,
-      not thousands.
+      (`{total, by_class, by_severity}`) emitted one time instead of a
+      flood of `created` events, one for each finding. A large estate then
+      gives one event at onboarding, not thousands.
     - `cloud_resource.created` / `.updated` / `.deleted` — inventory-level
-      change events, gated by the [`emission`
-      policy](configuration.md#emission-the-event-feed)'s `resource_events`
-      flag (**off by default**).
+      change events. The `resource_events` flag of the [`emission`
+      policy](configuration.md#emission-the-event-feed) gates them
+      (**off by default**).
 
-**Non-Cases shops:** route the same `cloud_finding.*` events to
-Jira/ServiceNow via an Output and key your tickets on `fingerprint` the same
+**Non-Cases shops:** route the same `cloud_finding.*` events to Jira or
+ServiceNow through an Output. Key your tickets on `fingerprint` the same
 way.

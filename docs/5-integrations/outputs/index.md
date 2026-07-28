@@ -14,7 +14,7 @@ Stream telemetry to external destinations.
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All API examples require an API key with the `output` permission. See [API Keys](../../7-administration/access/api-keys.md) for setup.
+    All API examples need an API key with the `output` permission. See [API Keys](../../7-administration/access/api-keys.md) for setup.
 
 ### List Outputs
 

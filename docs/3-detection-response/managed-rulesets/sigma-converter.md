@@ -1,14 +1,14 @@
 # Sigma Converter
 
-LimaCharlie is happy to contribute to the [Sigma Project](https://github.com/SigmaHQ/sigma) by maintaining the LimaCharlie Backend for Sigma, enabling most Sigma rules to be converted to the [Detection & Response rule](../examples.md) format.
+LimaCharlie contributes to the [Sigma Project](https://github.com/SigmaHQ/sigma) and maintains the LimaCharlie Backend for Sigma. The backend converts most Sigma rules to the [Detection & Response rule](../examples.md) format.
 
-A LimaCharlie Service is available to apply [many of those converted rules](https://github.com/refractionPOINT/sigma-limacharlie/tree/rules) with a single click to an Organization.
+A LimaCharlie Service applies [many of those converted rules](https://github.com/refractionPOINT/sigma-limacharlie/tree/rules) to an Organization with one click.
 
-For cases where you either have your own Sigma rules, or you would like to convert/apply specific rules yourself, the Sigma Converter service described below can help streamline the process.
+If you have your own Sigma rules, or if you want to convert and apply specific rules yourself, use the Sigma Converter service that is described below.
 
 ## Converter Service
 
-The Converter service converts one or many Sigma rules into the LimaCharlie  rule format. It can accomplish this via the following HTTPS endpoints available at <https://sigma.limacharlie.io/>:
+The Converter service converts one or more Sigma rules into the LimaCharlie rule format. It uses the HTTPS endpoints below, which are available at <https://sigma.limacharlie.io/>:
 
 ### Single Rule
 
@@ -16,7 +16,7 @@ Endpoint: `https://sigma.limacharlie.io/convert/rule`
  Verb: `POST`
  Form Parameters:
 
-- `rule`: the content of a literal Sigma rule to be converted.
+- `rule`: the content of a literal Sigma rule to convert.
 - `target`: optional [target](../alternate-targets.md) within LimaCharlie, one of `edr` (default) or `artifact`.
    Output Example:
 
@@ -38,7 +38,7 @@ Endpoint: `https://sigma.limacharlie.io/convert/repo`
  Verb: `POST`
  Form Parameters:
 
-- `repo`: the source where to access the rules to convert, one of:
+- `repo`: the source of the rules to convert, one of:
 
   - An HTTPS link to a direct resource like: `https://corp.com/my-rules.yaml`
   - A GitHub link to a file or repo like:

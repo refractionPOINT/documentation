@@ -2,9 +2,9 @@
 
 ## Overview
 
-This Adapter allows you to connect to an Azure Event Hub to fetch structured data stored there.
+This adapter connects to an Azure Event Hub and fetches the structured data in the hub.
 
-[Azure Event Hubs](https://azure.microsoft.com/en-us/products/event-hubs) are fully managed, real-time data ingestion services that allow for event streaming from various Microsoft Azure services. LimaCharlie can ingest either structured known data (such as JSON or XML) *or* known Microsoft data types, including:
+[Azure Event Hubs](https://azure.microsoft.com/en-us/products/event-hubs) are fully managed, real-time data ingestion services. They stream events from Microsoft Azure services. LimaCharlie can ingest known structured data, such as JSON or XML, *or* known Microsoft data types. The Microsoft data types include:
 
 - Azure Monitor (Platform: `azure_monitor`)
 - Entra ID [formerly Azure AD] (Platform: `azure_ad`)
@@ -14,13 +14,13 @@ This Adapter allows you to connect to an Azure Event Hub to fetch structured dat
 - Azure Network Security Group (Platform: `azure_network_security_group`)
 - Azure SQL Audit (Platform: `azure_sql_audit`)
 
-> **Choosing the platform:** the Event Hub is only a transport — `client_options.platform` selects the LimaCharlie parser and must match the data being streamed **into** the hub (see the list above). Use `json` only for custom or unknown data, in which case you must supply your own `mapping`. Note that `azure_event_hub_namespace` is **not** a generic value for "data arriving via Event Hub": it is used solely for ingesting an Event Hub namespace's own diagnostic logs.
+> **Choosing the platform:** the Event Hub is only a transport. `client_options.platform` selects the LimaCharlie parser, and it must match the data that streams **into** the hub (see the list above). Use `json` only for custom or unknown data. With `json`, you must supply your own `mapping`. `azure_event_hub_namespace` is **not** a generic value for "data that arrives through an Event Hub". It ingests only the diagnostic logs of an Event Hub namespace.
 
 Microsoft has [documentation for creating an Event Hub](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
 
 ## Configuring Data Streams
 
-When using Azure Event Hub, you must configure the source service to stream data to your Event Hub. The data you receive depends entirely on what you configure in Azure.
+When you use an Azure Event Hub, you must configure the source service to stream data to your Event Hub. The data that you receive depends on your configuration in Azure.
 
 ### For Entra ID (`azure_ad`)
 
@@ -46,7 +46,7 @@ See: [Defender XDR streaming event types](https://learn.microsoft.com/en-us/defe
 
 Configure **Diagnostic Settings** on individual Azure resources:
 
-1. Navigate to the Azure resource you want to monitor
+1. Go to the Azure resource that you want to monitor
 2. Go to **Diagnostic settings** and add a setting
 3. Select your Event Hub and choose logs/metrics to stream
 
@@ -54,29 +54,29 @@ See: [Stream Azure platform logs to Event Hub](https://learn.microsoft.com/en-us
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify them when you use the binary adapter or create a webhook adapter. If you use an adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter uses.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself to LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, such as `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: a name that you choose for this adapter. LimaCharlie generates the Sensor IDs (SID) from this name. See below.
 
 ### Adapter-specific Options
 
-- If using a binary Adapter, `azure_event_hub` will be the ingestion type.
-- `connection_string` - The connection string provided in Azure for connecting to the Azure Event Hub, including the `EntityPath=...` at the end which identifies the Hub Name (this component is sometimes now shown in the connection string provided by Azure).
+- With a binary adapter, the ingestion type is `azure_event_hub`.
+- `connection_string` - The connection string that Azure supplies for the Azure Event Hub. It includes the `EntityPath=...` part at the end, which identifies the hub name (this component is sometimes now shown in the connection string provided by Azure).
 
 ## Guided Deployment
 
-Azure Event Hub data can be pulled via either a cloud or binary Adapter.
+A cloud adapter or a binary adapter can pull Azure Event Hub data.
 
 ### Cloud-to-Cloud
 
-LimaCharlie offers several helpers within the webapp that allow you to ingest Microsoft data, such as Entra ID or Microsoft Defender, from Azure Event Hubs.
+The LimaCharlie web app has helpers that ingest Microsoft data, such as Entra ID or Microsoft Defender, from Azure Event Hubs.
 
 ### CLI Deployment
 
-The following example configures a binary Adapter to collect Microsoft Defender data from an Azure Event Hub:
+This example configures a binary adapter that collects Microsoft Defender data from an Azure Event Hub:
 
 ```bash
 ./lc_adapter azure_event_hub client_options.identity.installation_key=<INSTALLATION_KEY> \

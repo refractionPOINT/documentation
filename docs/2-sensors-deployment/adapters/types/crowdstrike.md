@@ -2,16 +2,16 @@
 
 ## Overview
 
-This Adapter allows you to connect to CrowdStrike Falcon Cloud to stream events as they happen in the CrowdStrike Falcon Console.
+This Adapter connects to CrowdStrike Falcon Cloud. It streams events as they occur in the CrowdStrike Falcon Console.
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify them when you use the binary adapter or create a webhook adapter. If you use an Adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
-- `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself to LimaCharlie.
+- `client_options.platform`: the type of data that this adapter ingests, for example `text`, `json`, `gcp`, or `carbon_black`.
+- `client_options.sensor_seed_key`: a name that you choose for this adapter. LimaCharlie generates the Sensor IDs (SID) from this name. See below.
 
 ### Adapter-specific Options
 
@@ -22,7 +22,7 @@ Adapter Type: `falconcloud`
 
 ### Manual Deployment
 
-[Adapter downloads](../deployment.md) are available on the deployment page.
+Get the [Adapter downloads](../deployment.md) from the deployment page.
 
 ```bash
 chmod +x /path/to/lc_adapter
@@ -60,4 +60,4 @@ sensor_type: "falconcloud"
 
 ## API Doc
 
-See the official [documentation](https://developer.crowdstrike.com/docs/openapi/) and [additional docs on the library used to access the Falcon APIs](https://github.com/CrowdStrike/gofalcon).
+See the official [CrowdStrike OpenAPI documentation](https://developer.crowdstrike.com/docs/openapi/) and the [documentation for the library that accesses the Falcon APIs](https://github.com/CrowdStrike/gofalcon).

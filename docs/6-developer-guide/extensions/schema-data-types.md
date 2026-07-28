@@ -2,17 +2,17 @@
 
 ## All Data Types
 
-The data types in your schema can be subdivided into three categories: Primitives, Code Blocks, and Objects (including records and tables). These data types allow for a cleaner UI and a more intuitive schema.
+The data types in your schema have three categories: Primitives, Code Blocks, and Objects (which include records and tables). These data types give a cleaner UI and a more intuitive schema.
 
-For a direct code reference, check out the type definitions in [Go](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go) or [Python](https://github.com/refractionPOINT/lc-extension/blob/master/python/lcextension/schema.py).
+For a direct code reference, see the type definitions in [Go](https://github.com/refractionPOINT/lc-extension/blob/master/common/config_schema.go) or [Python](https://github.com/refractionPOINT/lc-extension/blob/master/python/lcextension/schema.py).
 
 ### Before you Start
 
-When getting started, we recommend using the simplest data type applicable for each field in your schema to enable quick and reliable testing of your service.
+When you start, use the simplest data type that applies to each field in your schema. A simple data type lets you test your service quickly and reliably.
 
 ## Schema Element Fields
 
-Each field in a schema is a `SchemaElement` with the following properties:
+Each field in a schema is a `SchemaElement` with these properties:
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ Each field in a schema is a `SchemaElement` with the following properties:
 | `description` | string | Description of the field |
 | `placeholder` | string | Placeholder text to display |
 | `data_type` | string | One of the data types listed below |
-| `is_list` | bool | Whether this field accepts a list of items |
+| `is_list` | bool | Shows if this field accepts a list of items |
 | `display_index` | int | Controls the display order in the UI |
 | `default_value` | any | Default value for optional fields |
 | `object` | object | If `data_type` is `object` or `record`, contains the nested schema definition |
@@ -30,7 +30,7 @@ Each field in a schema is a `SchemaElement` with the following properties:
 
 ### Filters
 
-Filters can be applied to restrict valid values for certain data types:
+Use filters to restrict the valid values for certain data types:
 
 - `min` and `max`: apply to `integer`, `time`, and `duration` types
 - `whitelist` and `blacklist`: apply to `event_name` and `string` types
@@ -38,7 +38,7 @@ Filters can be applied to restrict valid values for certain data types:
 - `platforms`: applies to `sid` and `platform` types
 
 !!! note
-    Some filter combinations may not be fully supported for all types. Please reach out if a filter does not work as expected.
+    Not all filter combinations have full support for all types. Ask for help if a filter does not work as you expect.
 
 ## Primitives
 
@@ -48,8 +48,8 @@ Filters can be applied to restrict valid values for certain data types:
 | `text` | Multi-line text input |
 | `integer` | Numeric integer value |
 | `bool` | Boolean true/false toggle |
-| `enum` | Single selection from a list. Requires the `enum_values` field |
-| `complex_enum` | Detailed enum selection with categories, descriptions, and reference links. Requires the `complex_enum_values` field |
+| `enum` | Single selection from a list. Needs the `enum_values` field |
+| `complex_enum` | Detailed enum selection with categories, descriptions, and reference links. Needs the `complex_enum_values` field |
 | `sid` | Sensor ID selector from your Organization's sensors |
 | `oid` | Your Organization's ID |
 | `platform` | Platform selector |
@@ -61,12 +61,12 @@ Filters can be applied to restrict valid values for certain data types:
 | `url` | URL input |
 | `domain` | Domain name input |
 | `event_name` | Event name selector |
-| `yara_rule_name` | Selector from your Organization's YARA rules (requires appropriate permissions) |
+| `yara_rule_name` | Selector from your Organization's YARA rules (needs the appropriate permissions) |
 | `secret` | Selector from your Organization's secrets manager |
 
 ## Code Blocks
 
-The following code block data types are available:
+These code block data types are available:
 
 | Name | Description |
 | --- | --- |
@@ -76,15 +76,15 @@ The following code block data types are available:
 | `code` | Generic code editor |
 
 !!! note
-    YARA rule UI support is limited. Code blocks do not support the `is_list` field. If your extension requires a set of code blocks, wrap them in a key-value pair using the `record` data type (see Objects section below).
+    YARA rule UI support is limited. Code blocks do not support the `is_list` field. If your extension needs a set of code blocks, put them in a key-value pair with the `record` data type (see the Objects section below).
 
 ## Objects and Records
 
-Objects and records provide structured, nested data. Objects group related fields together, while records define key-value collections where keys are user-specified.
+Objects and records give structured, nested data. Objects group related fields together. Records define key-value collections in which the user specifies the keys.
 
 ### Single Objects
 
-Plain objects allow for nested fields. They are visually the same as if the nested fields were flattened. The parent object's description provides additional context.
+Plain objects allow nested fields. In the UI, they look the same as flattened nested fields. The description of the parent object gives more context.
 
 ```json
 {
@@ -126,7 +126,7 @@ Lists of objects display as tables in the UI. Enable `is_list` on an object to c
 
 ### Records
 
-Records use the `record` data type to define key-value collections where each entry has a user-specified key and a structured value. The `key` field in the object definition specifies the key's name and type. Optional `element_name` and `element_desc` fields provide UI labels for each entry.
+Records use the `record` data type to define key-value collections. Each entry has a key that the user specifies and a structured value. The `key` field in the object definition sets the name and the type of the key. The optional `element_name` and `element_desc` fields give UI labels for each entry.
 
 ```json
 {

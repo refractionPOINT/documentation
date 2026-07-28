@@ -2,11 +2,11 @@
 
 ## Rules Unit Tests
 
-A D&R rule record can optionally contain unit tests. These tests describe events that should match, and events that should not match. When a D&R rule is updated or created, LimaCharlie will simulate the rules and if the tests fail, an error is produced.
+A D&R rule record can contain unit tests. These tests describe the events that must match and the events that must not match. When you create or update a D&R rule, LimaCharlie simulates the rules. If the tests fail, LimaCharlie produces an error.
 
 ### Structure
 
-A typical D&R rule looks like:
+A typical D&R rule looks like this:
 
 ```json
 {
@@ -22,9 +22,9 @@ A typical D&R rule looks like:
 }
 ```
 
-The `match` and `non_match` both have the same format: they contain a list of lists of events. Each top list element is a unit test, and the content of a test is a list of events as would be seen by LimaCharlie. The reason for the test to be a list is to accomodate for [Stateful Detections](stateful-rules.md) which operate across multiple events.
+The `match` and `non_match` fields have the same format. Each field contains a list of lists of events. Each element of the top list is one unit test. The content of a test is a list of events in the form that LimaCharlie sees. A test is a list because [Stateful Detections](stateful-rules.md) operate across more than one event.
 
-Here's an example:
+Here is an example:
 
 ```json
 {

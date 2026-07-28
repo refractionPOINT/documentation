@@ -1,6 +1,6 @@
 # LimaCharlie Extensions
 
-Extensions built and maintained by LimaCharlie that extend the platform with additional capabilities.
+LimaCharlie builds and maintains these extensions. Each extension adds more capabilities to the platform.
 
 ## Available Extensions
 

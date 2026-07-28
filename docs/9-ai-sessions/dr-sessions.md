@@ -1,20 +1,20 @@
 # D&R-Driven AI Sessions
 
-D&R-Driven AI Sessions allow you to automatically spawn Claude AI sessions in response to detections, events, or any condition matched by a Detection & Response rule. This enables powerful automated investigation, triage, and response workflows.
+D&R-Driven AI Sessions start Claude AI sessions automatically in response to detections, events, or any condition that a Detection & Response rule matches. This gives you automated workflows for investigation, triage, and response.
 
 ## Overview
 
 When a D&R rule matches, the `start ai agent` response action launches a Claude session with:
 
-- A prompt containing the context you specify
-- The auto-installed `limacharlie` CLI for LimaCharlie operations (authenticated via `lc_api_key_secret`), plus any built-in tools and external MCP servers you configure
-- Optional event data extracted and included automatically
+- A prompt that contains the context that you specify
+- The auto-installed `limacharlie` CLI for LimaCharlie operations, authenticated by `lc_api_key_secret`, plus any built-in tools and external MCP servers that you configure
+- Optional event data that the action extracts and includes automatically
 
-The session runs autonomously, performing the investigation or analysis you've defined, and the results can be captured via outputs or stored for later review.
+The session runs autonomously and does the investigation or analysis that you defined. You can capture the results with outputs, or store them for later review.
 
 ## The `start ai agent` Action
 
-There are two ways to configure the action: **inline mode** (all parameters in the rule) or **definition mode** (referencing a pre-configured AI agent from the Hive).
+There are two ways to configure the action: **inline mode** (all parameters in the rule) or **definition mode** (a reference to a pre-configured AI agent in the Hive).
 
 ### Inline Mode
 
@@ -38,16 +38,16 @@ respond:
 
 | Parameter | Description |
 |-----------|-------------|
-| `name` | Session name. Supports template strings. Useful for identifying sessions in logs. |
+| `name` | Session name. Supports template strings. Useful to identify sessions in logs. |
 | `lc_api_key_secret` | LimaCharlie API key for org-level API access. Use `hive://secret/<name>`. |
-| `lc_uid_secret` | LimaCharlie User ID. Required when `lc_api_key_secret` is a user API key (as opposed to an org API key). Use `hive://secret/<name>`. |
-| `idempotent_key` | Unique key to prevent duplicate sessions. Supports template strings. |
-| `debounce_key` | Serializes sessions: only one active session per key. New requests queue behind the active session and re-fire when it ends. Supports template strings. |
+| `lc_uid_secret` | LimaCharlie User ID. Necessary when `lc_api_key_secret` is a user API key and not an org API key. Use `hive://secret/<name>`. |
+| `idempotent_key` | Unique key that stops duplicate sessions. Supports template strings. |
+| `debounce_key` | Serializes sessions: one active session for each key. New requests queue behind the active session and start again when it ends. Supports template strings. |
 | `data` | Extract event data fields to include in the prompt as JSON. |
-| `profile` | Inline session configuration (tools, model, limits, etc.). |
-| `profile_name` | Reference a saved profile by name. Currently only supported for user sessions; for D&R sessions, use inline `profile` instead. |
+| `profile` | Inline session configuration (tools, model, limits, and more). |
+| `profile_name` | Reference a saved profile by name. Supported only for user sessions at present. For D&R sessions, use inline `profile` instead. |
 
-> Note: You can specify either `profile` (inline) or `profile_name` (reference), but not both.
+> You can specify `profile` (inline) or `profile_name` (reference), but not both.
 
 ### Definition Mode
 
@@ -59,14 +59,14 @@ respond:
     definition: hive://ai_agent/my-triage-bot
 ```
 
-In definition mode, all session configuration (prompt, anthropic key, profile, etc.) comes from the referenced AI agent record. No other parameters are required.
+In definition mode, all session configuration (prompt, anthropic key, profile, and more) comes from the referenced AI agent record. You need no other parameters.
 
 #### Per-rule Augmentation
 
-A rule using `definition:` can also supply its own `prompt:` and/or `data:` fields. When present, they are merged with the values on the `ai_agent` record so a single agent definition can be reused across many rules with per-rule, task-specific augmentation:
+A rule that uses `definition:` can also supply its own `prompt:` and `data:` fields. LimaCharlie merges these with the values on the `ai_agent` record. One agent definition can therefore be reused across many rules, with task-specific augmentation for each rule:
 
-- **`prompt`** — appended to the `ai_agent` record's prompt with a blank line separating them. The agent's prompt acts as the stable core; the rule's prompt adds rule-specific flavor.
-- **`data`** — extracted from the event rule-side (templates, `secret://` and gjson callbacks resolve as usual) and merged with the `ai_agent` record's own data extraction. The merged dictionary is appended to the prompt as a single JSON code block. **Rule keys override agent keys on collision**, so a rule can substitute or add specific fields for its trigger.
+- **`prompt`** — appended to the prompt of the `ai_agent` record, with a blank line between them. The prompt of the agent is the stable core. The prompt of the rule adds detail for that rule.
+- **`data`** — extracted from the event on the rule side (templates, `secret://` and gjson callbacks resolve as usual) and merged with the data extraction of the `ai_agent` record. The merged dictionary is appended to the prompt as one JSON code block. **Rule keys override agent keys on collision**, so a rule can replace or add fields for its trigger.
 
 ```yaml
 respond:
@@ -82,7 +82,7 @@ respond:
       detection_name: "{{ .detect.cat }}"
 ```
 
-`debounce_key` can also be set at the action level even in definition mode (it overrides the value on the `ai_agent` record):
+You can also set `debounce_key` at the action level in definition mode. It overrides the value on the `ai_agent` record:
 
 ```yaml
 respond:
@@ -95,7 +95,7 @@ respond:
 
 ### Prompt Templating
 
-The `prompt` parameter supports LimaCharlie's template syntax. You can include event data directly in your instructions:
+The `prompt` parameter supports the template syntax of LimaCharlie. You can include event data directly in your instructions:
 
 ```yaml
 - action: start ai agent
@@ -131,7 +131,7 @@ The extracted data is appended to the prompt as a JSON code block.
 
 ### Idempotent Sessions
 
-Prevent duplicate sessions for the same event using `idempotent_key`:
+Use `idempotent_key` to stop duplicate sessions for the same event:
 
 ```yaml
 - action: start ai agent
@@ -140,13 +140,13 @@ Prevent duplicate sessions for the same event using `idempotent_key`:
   idempotent_key: "{{ .detect.detect_id }}"
 ```
 
-If a session with the same idempotent key was recently created (within 24 hours), the action is skipped.
+If a session with the same idempotent key was created in the last 24 hours, LimaCharlie skips the action.
 
 ### Debounced Sessions
 
-Use `debounce_key` to serialize sessions so only one runs at a time per key. When a session is already active for a given debounce key, new requests are queued. When the active session ends, the most recent queued request is automatically re-fired.
+Use `debounce_key` to serialize sessions, so that only one session runs at a time for each key. If a session is already active for a debounce key, LimaCharlie queues the new requests. When the active session ends, LimaCharlie starts the most recent queued request automatically.
 
-This is useful for workflows where multiple detections may fire in rapid succession but should be handled sequentially by a single agent (e.g., a triage bot processing cases one at a time).
+This is useful for workflows where many detections can fire quickly but one agent must handle them in sequence (for example, a triage bot that works cases one at a time).
 
 ```yaml
 - action: start ai agent
@@ -155,18 +155,18 @@ This is useful for workflows where multiple detections may fire in rapid success
   debounce_key: "triage-bot"
 ```
 
-Unlike `idempotent_key` which silently drops duplicates, `debounce_key` guarantees the latest request will eventually be processed — it just waits for the current session to finish first. Only the most recent pending request is kept per key. The key supports template strings for dynamic serialization:
+`idempotent_key` drops duplicates silently. `debounce_key` instead makes sure that the latest request is processed, but it waits for the current session to finish first. LimaCharlie keeps only the most recent pending request for each key. The key supports template strings for dynamic serialization:
 
 ```yaml
 # Serialize per sensor — one active investigation per endpoint
 debounce_key: "investigate-{{ .routing.sid }}"
 ```
 
-> **Debounce vs Idempotent**: Use `idempotent_key` when the same event should never create more than one session. Use `debounce_key` when each event should be processed, but sequentially rather than in parallel.
+> **Debounce vs Idempotent**: Use `idempotent_key` when the same event must never create more than one session. Use `debounce_key` when each event must be processed, but in sequence and not in parallel.
 
 ### Session Profiles
 
-Profiles let you configure Claude's behavior, available tools, and resource limits.
+Profiles let you configure the behavior of Claude, the available tools, and the resource limits.
 
 #### Inline Profile
 
@@ -202,11 +202,11 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
       API_KEY: hive://secret/external-api-key
 ```
 
-> LimaCharlie itself does **not** need an `mcp_servers` entry — the session reaches LimaCharlie through the auto-installed `limacharlie` CLI, authenticated by the `lc_api_key_secret` you provide. The `mcp_servers` map below is only for *external/third-party* tools (threat-intel, ticketing, etc.).
+> LimaCharlie itself does **not** need an `mcp_servers` entry. The session reaches LimaCharlie through the auto-installed `limacharlie` CLI, authenticated by the `lc_api_key_secret` that you supply. The `mcp_servers` map below is only for *external/third-party* tools (threat-intel, ticketing, and similar).
 
 #### Profile Options
 
-> The full pattern grammar for `allowed_tools` and `denied_tools` (built-in Claude Code tool names, `Bash(prefix:*)` scoping, and MCP `mcp__server__tool` names), along with the precedence rules and `permission_mode` semantics, lives on the dedicated [Tool Permissions & Profiles](tool-permissions.md) page. Unattended D&R agents typically want `permission_mode: bypassPermissions` so tool calls don't block on approval prompts.
+> The dedicated [Tool Permissions & Profiles](tool-permissions.md) page holds the full pattern grammar for `allowed_tools` and `denied_tools` (built-in Claude Code tool names, `Bash(prefix:*)` scoping, and MCP `mcp__server__tool` names). It also holds the precedence rules and the semantics of `permission_mode`. Unattended D&R agents usually need `permission_mode: bypassPermissions`, so that tool calls do not stop for approval prompts.
 
 | Option | Type | Description |
 |--------|------|-------------|
@@ -214,16 +214,16 @@ Profiles let you configure Claude's behavior, available tools, and resource limi
 | `denied_tools` | list | Tools Claude cannot use. Takes precedence over `allowed_tools`. See [Tool Permissions & Profiles](tool-permissions.md#allowed_tools-vs-denied_tools). |
 | `permission_mode` | string | `acceptEdits` (default), `plan`, or `bypassPermissions`. See [Tool Permissions & Profiles](tool-permissions.md#permission_mode). |
 | `model` | string | Claude model to use (e.g., `claude-sonnet-4-20250514`) |
-| `max_turns` | integer | Maximum conversation turns before auto-termination |
+| `max_turns` | integer | Maximum conversation turns before the session stops automatically |
 | `max_budget_usd` | float | Maximum spend limit in USD |
-| `one_shot` | boolean | When `true`, session completes all work for the initial prompt (including tools, skills, and subagents) then terminates automatically. Default: `true` for D&R-triggered sessions. |
+| `one_shot` | boolean | When `true`, the session completes all work for the initial prompt (including tools, skills, and subagents), then stops automatically. Default: `true` for D&R-triggered sessions. |
 | `ttl_seconds` | integer | Maximum session lifetime in seconds. Capped at 24 hours. |
 | `environment` | map | Environment variables. Values can use `hive://secret/` |
 | `mcp_servers` | map | External/third-party MCP server configurations (see below). Not needed for LimaCharlie access. |
 
 ### MCP Server Configuration
 
-MCP (Model Context Protocol) servers extend Claude's capabilities with *external/third-party* data sources and tools.
+MCP (Model Context Protocol) servers extend the capabilities of Claude with *external/third-party* data sources and tools.
 
 > You do **not** configure LimaCharlie here. The session already has the auto-installed `limacharlie` CLI for all LimaCharlie operations (authenticated by `lc_api_key_secret`). Reserve `mcp_servers` for outside services such as threat-intel, ticketing, or custom enrichment tools.
 
@@ -256,7 +256,7 @@ mcp_servers:
 
 ### Example 1: Basic Detection Investigation
 
-Automatically investigate when a suspicious process is detected:
+Investigate automatically when a rule detects a suspicious process:
 
 ```yaml
 detect:
@@ -284,7 +284,7 @@ respond:
 
 ### Example 2: Automated Triage with the LimaCharlie CLI
 
-The session reaches LimaCharlie through the auto-installed `limacharlie` CLI — just provide `lc_api_key_secret` so the CLI is authenticated. No `mcp_servers` entry is needed for LimaCharlie itself:
+The session reaches LimaCharlie through the auto-installed `limacharlie` CLI. Supply `lc_api_key_secret` to authenticate the CLI. LimaCharlie itself needs no `mcp_servers` entry:
 
 ```yaml
 detect:
@@ -319,7 +319,7 @@ respond:
 
 ### Example 3: Threat Hunting Automation
 
-Automatically investigate IoC matches from threat intelligence:
+Investigate IoC matches from threat intelligence automatically:
 
 ```yaml
 detect:
@@ -362,7 +362,7 @@ respond:
 
 ### Example 4: Custom Enrichment
 
-Use external tools via MCP for enrichment:
+Use external tools through MCP for enrichment:
 
 ```yaml
 respond:
@@ -391,11 +391,11 @@ respond:
 
 ### Example 5: Definition Mode with Hive AI Agent
 
-Instead of putting all session configuration inline in every D&R rule, you can store a reusable AI agent definition in the `ai_agent` hive and reference it by name.
+You can store a reusable AI agent definition in the `ai_agent` hive and reference it by name. You then do not need all the session configuration inline in every D&R rule.
 
 #### Step 1: Create the AI Agent Record
 
-Store the agent definition in the `ai_agent` hive (via the API, CLI, or infrastructure-as-code):
+Store the agent definition in the `ai_agent` hive with the API, the CLI, or infrastructure-as-code:
 
 ```yaml
 ai_agent:
@@ -457,7 +457,7 @@ ai_agent:
 
 #### Step 2: Reference It from D&R Rules
 
-The D&R rule becomes minimal — just a reference to the agent definition:
+The D&R rule becomes minimal. It holds only a reference to the agent definition:
 
 ```yaml
 detect:
@@ -473,89 +473,89 @@ respond:
     debounce_key: "investigate-{{ .routing.sid }}"
 ```
 
-This approach keeps D&R rules clean and lets you update the agent's behavior (prompt, model, tools, etc.) in one place without modifying every rule that uses it. The `debounce_key` can be overridden at the action level even in definition mode.
+This approach keeps D&R rules small. You update the behavior of the agent (prompt, model, tools, and more) in one place, and you do not change every rule that uses it. You can override the `debounce_key` at the action level in definition mode.
 
 !!! tip "Per-rule prompt and data augmentation"
-    Rules using `definition:` can additionally supply `prompt:` and/or `data:` to augment the referenced agent. The rule's prompt is appended to the agent's prompt (blank-line separated), and the rule's extracted data is merged into the agent's data extraction (rule keys override agent keys). See [Per-rule Augmentation](#per-rule-augmentation).
+    Rules that use `definition:` can also supply `prompt:` and `data:` to augment the referenced agent. LimaCharlie appends the prompt of the rule to the prompt of the agent, with a blank line between them. It merges the extracted data of the rule into the data extraction of the agent, and rule keys override agent keys. See [Per-rule Augmentation](#per-rule-augmentation).
 
 !!! tip "Reuse the same definition from the CLI"
-    The same `ai_agent` Hive record can be used as a template from the CLI with `limacharlie ai start-session --definition <name>`. Individual fields (prompt, model, budget, tool list, environment, credentials) can be overridden per run, so one definition doubles as both a D&R-driven agent and an ad-hoc CLI template. See [Command Line Interface](cli.md#limacharlie-ai-start-session) for the full list of override flags.
+    You can use the same `ai_agent` Hive record as a template from the CLI with `limacharlie ai start-session --definition <name>`. You can override single fields for each run (prompt, model, budget, tool list, environment, credentials). One definition is therefore both a D&R-driven agent and an ad-hoc CLI template. See [Command Line Interface](cli.md#limacharlie-ai-start-session) for the full list of override flags.
 
 #### AI Agent Record Fields
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `prompt` | string | Yes | Instructions for Claude. |
-| `anthropic_secret` | string | Conditional | Anthropic API key or `hive://secret/` reference. Required unless `bedrock:` or `vertex:` is set. See [Alternative AI Providers](alternative-providers.md). |
+| `anthropic_secret` | string | Conditional | Anthropic API key or `hive://secret/` reference. Necessary unless `bedrock:` or `vertex:` is set. See [Alternative AI Providers](alternative-providers.md). |
 | `bedrock` | object | Conditional | AWS Bedrock provider block (`region`, `access_key_id_secret`, `secret_access_key_secret`, `session_token_secret`, `bearer_token_secret`). Mutually exclusive with `anthropic_secret` and `vertex`. See [Alternative AI Providers](alternative-providers.md#amazon-bedrock). |
 | `vertex` | object | Conditional | Google Cloud Vertex AI provider block (`project_id`, `region`, `service_account_json_secret`). Mutually exclusive with `anthropic_secret` and `bedrock`. See [Alternative AI Providers](alternative-providers.md#google-cloud-vertex-ai). |
 | `lc_api_key_secret` | string | No | LimaCharlie API key or `hive://secret/` reference. |
-| `lc_uid_secret` | string | No | LimaCharlie User ID or `hive://secret/` reference. Required when `lc_api_key_secret` is a user API key. |
+| `lc_uid_secret` | string | No | LimaCharlie User ID or `hive://secret/` reference. Necessary when `lc_api_key_secret` is a user API key. |
 | `name` | string | No | Session name. Supports template strings. |
 | `data` | map | No | Event data extraction mapping. |
 | `allowed_tools` | list | No | Tools Claude can use. |
 | `denied_tools` | list | No | Tools Claude cannot use. |
 | `permission_mode` | string | No | `acceptEdits`, `plan`, or `bypassPermissions`. |
-| `model` | string | No | Claude model identifier. When using Bedrock or Vertex, use the provider-specific model ID format (see [Alternative AI Providers](alternative-providers.md)). |
+| `model` | string | No | Claude model identifier. With Bedrock or Vertex, use the model ID format of that provider (see [Alternative AI Providers](alternative-providers.md)). |
 | `max_turns` | integer | No | Maximum conversation turns. |
 | `max_budget_usd` | float | No | Maximum spend limit in USD. |
 | `ttl_seconds` | integer | No | Maximum session lifetime in seconds. |
-| `one_shot` | boolean | No | Auto-terminate after initial task. |
+| `one_shot` | boolean | No | Stop automatically after the initial task. |
 | `environment` | map | No | Environment variables (values can use `hive://secret/`). |
-| `mcp_servers` | map | No | External/third-party MCP server configurations. Not needed for LimaCharlie access (handled by the auto-installed CLI). |
+| `mcp_servers` | map | No | External/third-party MCP server configurations. Not needed for LimaCharlie access (the auto-installed CLI handles it). |
 
 ## Best Practices
 
 ### Prompt Design
 
-- **Be specific**: Tell Claude exactly what you want it to investigate and how to report findings
-- **Provide context**: Include relevant event data in the prompt
-- **Define outputs**: Specify the format you want for results (markdown, JSON, etc.)
-- **Set boundaries**: Clearly state what actions Claude should NOT take
+- **Be specific**: Tell Claude exactly what to investigate and how to report the findings
+- **Give context**: Include the relevant event data in the prompt
+- **Define outputs**: Specify the format you want for results (markdown, JSON, and similar)
+- **Set boundaries**: State clearly which actions Claude must NOT take
 
 ### Resource Limits
 
-- **Set max_turns**: Prevent runaway sessions that consume excessive resources
+- **Set max_turns**: Stop sessions that run away and use too many resources
 - **Set max_budget_usd**: Cap costs for each session
-- **Use ttl_seconds**: Automatically terminate long-running sessions
+- **Use ttl_seconds**: Stop long sessions automatically
 
 ### Security
 
 - **Store secrets in Hive**: Never hardcode API keys in D&R rules
-- **Limit tools**: Only allow tools Claude needs for the task
-- **Use denied_tools**: Explicitly block dangerous tools for sensitive operations
-- **Restrict MCP access**: Only configure MCP servers that are necessary
+- **Limit tools**: Allow only the tools that Claude needs for the task
+- **Use denied_tools**: Block dangerous tools explicitly for sensitive operations
+- **Restrict MCP access**: Configure only the MCP servers that you need
 
 ### Deduplication and Serialization
 
-- **Use idempotent_key**: Prevent duplicate sessions for the same event
-- **Use debounce_key**: Serialize sessions so only one runs at a time per key, with queued requests re-fired on completion
+- **Use idempotent_key**: Stop duplicate sessions for the same event
+- **Use debounce_key**: Serialize sessions so that only one runs at a time for each key. Queued requests start again when the active session completes
 - **Include unique identifiers**: Use `detect_id`, `this` atom, or similar unique values
-- **Combine with suppression**: Use D&R suppression to limit how often sessions are spawned
+- **Combine with suppression**: Use D&R suppression to limit how often LimaCharlie starts sessions
 
 ## Troubleshooting
 
 ### Session Not Starting
 
-- Verify the Anthropic API key is valid and stored correctly in Hive Secrets
-- Check that the D&R rule is enabled and matching events
-- Review D&R rule syntax for errors
+- Check that the Anthropic API key is valid and stored correctly in Hive Secrets
+- Check that the D&R rule is enabled and matches events
+- Review the D&R rule syntax for errors
 
 ### Session Failing
 
-- Check `max_turns` isn't too low for the task
-- Verify MCP server URLs and authentication
-- Review session logs for error messages
+- Check that `max_turns` is not too low for the task
+- Check the MCP server URLs and the authentication
+- Review the session logs for error messages
 
 ### Unexpected Behavior
 
 - Review the prompt for ambiguity
-- Check that `allowed_tools` includes necessary tools
-- Verify `denied_tools` isn't blocking required capabilities
+- Check that `allowed_tools` includes the necessary tools
+- Check that `denied_tools` does not block a necessary capability
 
 ## See Also
 
-- [Compliance Case-Reviewer Agent](compliance/case-reviewer-agent.md) -- A production example of a D&R-driven session: classifies every new case against framework control citations on `case_created` events. Useful as a reference for prompt structure, scope-check patterns, debounce keys, and case-write workflows.
+- [Compliance Case-Reviewer Agent](compliance/case-reviewer-agent.md) -- A production example of a D&R-driven session. It classifies every new case against framework control citations on `case_created` events. Use it as a reference for prompt structure, scope-check patterns, debounce keys, and case-write workflows.
 - [Tool Permissions & Profiles](tool-permissions.md) -- Configure `allowed_tools` / `denied_tools` for D&R sessions.
-- [Runner Environment](runner-environment.md) -- What's pre-installed in the session container.
+- [Runner Environment](runner-environment.md) -- What is pre-installed in the session container.
 - [Alternative AI Providers](alternative-providers.md) -- Route through AWS Bedrock or Google Cloud Vertex AI instead of Anthropic direct.

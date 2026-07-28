@@ -1,22 +1,26 @@
 # Tutorial: Ingesting Telemetry from Cloud-Based External Sources
 
-LimaCharlie allows for ingestion of logs or telemetry from any external source in real-time. It includes built-in parsing for popular formats, with the option to define your own for custom sources.
+LimaCharlie ingests logs or telemetry from any external source in real-time. It has built-in parsing for common formats. For a custom source, you can define your own parsing.
 
 There are two ways to ingest logs or telemetry from external sources:
 
 - Run the [LimaCharlie Adapter](../usage.md) on premises or on your cloud
-- Provide credentials for the destination and allow LimaCharlie cloud to connect directly (available for cloud-based Adapters)
+- Give the credentials for the destination and let the LimaCharlie cloud connect directly (available for cloud-based Adapters)
 
-To connect with the cloud-based external source, first ensure you have the appropriate `cloudsensor.*` permissions.
+To connect to a cloud-based external source, first make sure that you have the necessary `cloudsensor.*` permissions.
 
-After the permissions have been enabled, navigate to the `Sensors` page of the web app and click `Add Sensor`.
+After you enable the permissions, do these steps:
 
-Choose an external source you would like to ingest logs or telemetry from, or filter the list to only include `Cloud & External Sources` to see available options.
+1. In the web app, go to the `Sensors` page.
+2. Click `Add Sensor`.
+3. Choose the external source that you want to ingest logs or telemetry from. To see the available options, filter the list to `Cloud & External Sources`.
 
-If there is an external source you wish to connect that is not listed, you can still ingest via the LimaCharlie Adapter with self-defined parsing. Alternatively, please contact us to discuss adding this source in LimaCharlie.
+    If an external source is not in the list, you can ingest it with the LimaCharlie Adapter and your own parsing. You can also contact LimaCharlie to discuss support for that source.
 
-After selecting the Sensor type, choose or create an Installation Key. Then, enter the name for the sensor and provide method-specific credentials for connection.
+4. Choose or create an Installation Key.
+5. Enter the name for the sensor.
+6. Enter the method-specific credentials for the connection.
 
-If the sensor you selected is cloud-based, you will see the call to action `Complete Cloud Installation`.
+If the sensor that you selected is cloud-based, the `Complete Cloud Installation` action is shown.
 
-*Note: Sensors that support cloud to cloud communication, can also be installed by running an adapter on-prem or on cloud hosted by the customer. While it is a rare scenario, some customers might prefer that option when they do not want to share the sensor's API credentials with LimaCharlie.*
+*Note: You can also install a sensor that supports cloud to cloud communication with an adapter on-prem, or on a cloud that the customer hosts. This scenario is rare. Some customers prefer this option because they do not want to share the API credentials of the sensor with LimaCharlie.*

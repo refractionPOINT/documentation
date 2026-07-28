@@ -1,14 +1,14 @@
 # Config Hive: Secrets
 
-With its multitude of data ingestion and output options, LimaCharlie users can end up with a myriad of credentials and secret keys to faciliate unique data operations. However, not all users should be privy to these secret keys. Within the Config Hive, the `secrets` hive component allows you to decouple secrets from their usage or configuration across LimaCharlie. Furthermore, you can also grant permissions to users that allows them to see the configuration of an output, but not have access to the associated credentials.
+LimaCharlie has many options to ingest and to output data. Users can therefore collect many credentials and secret keys for these data operations. Not all users must see these secret keys. In the Config Hive, the `secrets` hive separates secrets from the places in LimaCharlie that use or configure them. You can also give a user the permission to see the configuration of an output, but not the credentials in it.
 
-The most common usage is for storing secret keys used by various [Adapters](../../2-sensors-deployment/adapters/usage.md) or [Outputs](../../5-integrations/outputs/testing.md). By referencing `secrets` within the Config Hive, we can configure these services without needing to reveal secret keys to all users.
+The most common use is to store the secret keys for [Adapters](../../2-sensors-deployment/adapters/usage.md) or [Outputs](../../5-integrations/outputs/testing.md). A reference to `secrets` in the Config Hive configures these services. You do not need to show the secret keys to all users.
 
-Watch the video below to learn more about hive secrets, or continue reading below.
+To learn more about hive secrets, watch the video below, or read the sections below.
 
 ## Format
 
-A secret record in `hive` has a very basic format:
+A secret record in `hive` has a basic format:
 
 ```json
 {
@@ -16,11 +16,11 @@ A secret record in `hive` has a very basic format:
 }
 ```
 
-The `data` portion of the records in this hive must have a single key called `secret` who's value will be used by various LimaCharlie components.
+The `data` part of a record in this hive must have one key called `secret`. Different LimaCharlie components use the value of this key.
 
 ## Permissions
 
-The `secret` hive requires the following permissions for the various operations:
+The `secret` hive needs these permissions for its operations:
 
 - `secret.get`
 - `secret.set`
@@ -30,25 +30,25 @@ The `secret` hive requires the following permissions for the various operations:
 
 ## Secret Management
 
-Over time, and with enough integrations, you may need to create and/or update secrets on demand. We provide quick options for both via either the LimaCharlie CLI or web app.
+With enough integrations, you must create or update secrets on demand. You can do both with the LimaCharlie CLI or with the web app.
 
 ### Creating Secrets
 
-With the appropriate permissions, users can create secrets in the following ways:
+With the correct permissions, you can create secrets in these ways:
 
-1. Using the LimaCharlie CLI, secrets can be created using the `limacharlie hive set secret` command (example below).
-2. Via the web app, under **Organization Settings** > **Secrets Manager**.
+1. With the LimaCharlie CLI, create a secret with the `limacharlie hive set secret` command (example below).
+2. In the web app, under **Organization Settings** > **Secrets Manager**.
 
 ### Updating Secrets
 
-Once they are set, secrets can be updated via the following methods:
+After you set a secret, you can update it with these methods:
 
-1. Using the LimaCharlie CLI, secrets can be updated using the `limacharlie hive update secret` command.
-2. Via the web app, **Organization Settings** > **Secrets Manager**. Select the secret you wish to update, and update in the dialog box. Click **Save Secret** to save changes in the platform.
+1. With the LimaCharlie CLI, update a secret with the `limacharlie hive update secret` command.
+2. In the web app, go to **Organization Settings** > **Secrets Manager**. Select the secret that you want to update, and change it in the dialog box. Click **Save Secret** to save the changes in the platform.
 
 ## Usage
 
-Using a secret in combination with an output has very few steps:
+To use a secret with an output, do these steps:
 
 1. Create a secret in the `secret` hive
 2. Create an Output and use the format `hive://secret/my-secret-name` as the value for a credentials field.
@@ -56,7 +56,7 @@ Using a secret in combination with an output has very few steps:
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All API and SDK examples require an API key with the appropriate permissions. See [API Keys](../access/api-keys.md) for setup instructions.
+    All API and SDK examples need an API key with the correct permissions. See [API Keys](../access/api-keys.md) for setup instructions.
 
 ### List Secrets
 
@@ -177,7 +177,7 @@ Using a secret in combination with an output has very few steps:
 ### Create / Update a Secret
 
 !!! warning
-    New hive records are created **disabled by default**. Each example below explicitly enables the secret — drop the `enabled` portion if you want the secret to start disabled and enable it later via `limacharlie secret enable --key …`.
+    The cloud creates new hive records **disabled by default**. Each example below enables the secret. To make the secret start disabled, remove the `enabled` part. You can then enable the secret later with `limacharlie secret enable --key …`.
 
 === "REST API"
 
@@ -252,7 +252,7 @@ Using a secret in combination with an output has very few steps:
     }
     ```
 
-    The `--enabled` flag creates-and-enables the record in one shot. Omit it (and `usr_mtd.enabled` in the file) to leave the secret disabled until you call `limacharlie secret enable --key my-secret`.
+    The `--enabled` flag creates and enables the record in one operation. Omit the flag, and omit `usr_mtd.enabled` in the file, to keep the secret disabled. The secret stays disabled until you call `limacharlie secret enable --key my-secret`.
 
 ### Delete a Secret
 
@@ -326,7 +326,7 @@ Using a secret in combination with an output has very few steps:
     ```
 
     !!! warning
-        The API **replaces** `usr_mtd` entirely. Sending only `{"enabled":false}` will reset tags, expiry, and comment to their defaults. Always read the current metadata first and resend all fields.
+        The API **replaces** all of `usr_mtd`. If you send only `{"enabled":false}`, the API resets tags, expiry, and comment to their defaults. Always read the current metadata first, then send all fields again.
 
 === "Python"
 
@@ -373,19 +373,19 @@ Using a secret in combination with an output has very few steps:
 
 ## Example
 
-Let's create a simple secret using the LimaCharlie CLI in a terminal. First, create a small file with the secret record in it:
+This example creates a secret with the LimaCharlie CLI in a terminal. First, create a small file that contains the secret record:
 
 ```text
 echo "my-secret-value" > my-secret
 ```
 
-Next, set this secret in Hive via the LimaCharlie CLI:
+Next, set this secret in Hive with the LimaCharlie CLI:
 
 ```bash
 limacharlie hive set secret --key my-secret --data my-secret --data-key secret
 ```
 
-You should get a confirmation that the secret was created, including metadata of the secret and associated OID:
+The CLI returns a confirmation that it created the secret. The confirmation includes the metadata of the secret and the OID:
 
 ```json
 {
@@ -398,15 +398,15 @@ You should get a confirmation that the secret was created, including metadata of
 }
 ```
 
-Next, create an output in the web app, using the value `hive://secret/my-secret` as the Secret Key value.
+Next, create an output in the web app. Use the value `hive://secret/my-secret` for the Secret Key.
 
 ![secret](../../assets/images/secret.png)
 
-And that's it! The output should start as expected, however when viewing the output's configuration, the secret should refer to the `hive` ARN, rather than the actual credentials.
+The output starts as expected. But when you view the configuration of the output, the secret shows the `hive` ARN and not the credentials.
 
 ## See Also
 
 - [Adapter Usage](../../2-sensors-deployment/adapters/usage.md) -- Common consumer of hive secrets.
 - [Outputs](../../5-integrations/outputs/index.md) -- Another common consumer of hive secrets.
-- [D&R-Driven AI Sessions](../../9-ai-sessions/dr-sessions.md) -- The `start ai agent` action consumes Anthropic and LC API keys via `hive://secret/<name>` references.
-- [Compliance Installation](../../9-ai-sessions/compliance/installation.md) -- The `compliance-deploy` skill stages a scoped LC API key and an Anthropic key in this hive as part of reviewer-agent deployment.
+- [D&R-Driven AI Sessions](../../9-ai-sessions/dr-sessions.md) -- The `start ai agent` action reads Anthropic and LC API keys through `hive://secret/<name>` references.
+- [Compliance Installation](../../9-ai-sessions/compliance/installation.md) -- The `compliance-deploy` skill puts a scoped LC API key and an Anthropic key in this hive when it deploys the reviewer agent.

@@ -1,21 +1,21 @@
 # Adapter Deployment
 
-Adapters can be deployed in one of two ways:
+You can deploy adapters in two ways:
 
-- **On-prem**, Adapters utilize the LC Adapter binary to ingest a data source and forward it to LimaCharlie.
-- **Cloud-to-cloud**, connects the LimaCharlie cloud directly with your cloud source and automatically ingests data.
+- **On-prem**, adapters use the LC Adapter binary to ingest a data source and send it to LimaCharlie.
+- **Cloud-to-cloud**, connects the LimaCharlie cloud directly with your cloud source and ingests data automatically.
 
-Which Adapter Do I Use for Cloud Data?
+Adapter choice for cloud data.
 
-You can use on-prem adapters to forward cloud data, or you could acquire the same data with a cloud-to-cloud connection. So, which one to use?
+You can use an on-prem adapter to send cloud data to LimaCharlie. You can also get the same data with a cloud-to-cloud connection.
 
-The answer lies in _how_ you want to send your data to LimaCharlie. Are you OK with configuring a connector from our platform, or would you rather use a bastion box in between? Either way works for us!
+The choice depends on _how_ you want to send your data to LimaCharlie. A cloud-to-cloud connection is configured in the LimaCharlie cloud. An on-prem adapter puts a bastion box between the source and LimaCharlie. Both methods work.
 
-The data ingested from adapters is parsed/mapped into JSON by LimaCharlie, according to the parameters you provided, unless using a pre-defined format.
+LimaCharlie parses and maps the data from adapters into JSON. It uses the parameters that you supply, unless you use a pre-defined format.
 
 ## Adapter Binaries
 
-Software-based, or "on-prem" adapters are available in the following formats:
+Software-based, or "on-prem", adapters are available in these formats:
 
 ### POSIX-compliant
 
@@ -41,21 +41,21 @@ Software-based, or "on-prem" adapters are available in the following formats:
 
 - <https://hub.docker.com/r/refractionpoint/lc-adapter>
 
-Another platform?
+Other platforms.
 
-If you need support for a specific platform, or require more information about supported platforms, please [let us know](https://www.limacharlie.io/contact).
+If you need support for a specific platform, or more information about supported platforms, [contact LimaCharlie](https://www.limacharlie.io/contact).
 
 ## On-Prem + Cloud Management
 
-LimaCharlie Adapters deployed manually (on-prem) also support cloud-based management. This makes the deployment of the adapter extremely easy while also making it easy to update the configs remotely after the fact. This is particularly critical for service providers that may be deploying adapters on customer networks where gaining access to the local adapter may be difficult.
+LimaCharlie Adapters that you deploy manually (on-prem) also support cloud-based management. With cloud-based management, you can update the configs remotely after the deployment. This is important for service providers that deploy adapters on customer networks, where access to the local adapter is difficult.
 
-To accomplish this, you need the `externaladapter.*` permissions.
+To do this, you need the `externaladapter.*` permissions.
 
 ### Preparing
 
-The first step of deploying this way is to create a new External Adapter record. These are found in the `external_adapter` Hive or under the Sensors section of the web app.
+First, create a new External Adapter record. These records are in the `external_adapter` Hive, or under the Sensors section of the web app.
 
-The content of an external adapter is exactly the same as a traditional [adapter configuration](usage.md) in YAML. It describes what you want your external adapter to do, like collect from file, operate as a syslog server etc. For example:
+The content of an external adapter is the same as a traditional [adapter configuration](usage.md) in YAML. It describes what your external adapter does, such as collection from a file or operation as a syslog server. For example:
 
 ```yaml
 sensor_type: syslog
@@ -72,22 +72,22 @@ syslog:
     port: 4242
 ```
 
-Once your external adapter record is created, take note of the `GUID` (Globally Unique ID) found under the `sys_mtd` section of the JSON record, or on the right-hand side of the record view in the web app
+After you create the external adapter record, find the `GUID` (Globally Unique ID). It is under the `sys_mtd` section of the JSON record, or on the right side of the record view in the web app
 
 .
 
-This `GUID` is a shared secret value you will use in the deployed adapter to reference it to the record it should update and operate from.
+The `GUID` is a shared secret. The deployed adapter uses the `GUID` to point to the record that it must update and operate from.
 
 ### Deploying
 
-Now that the configuration of the adapter is ready, you can deploy the adapter on-prem according to the [normal process](usage.md). The only difference is that instead of running it with the full configuration locally, you can run it with the `cloud` collection method like this:
+After the adapter configuration is ready, deploy the adapter on-prem with the [normal process](usage.md). Run the adapter with the `cloud` collection method instead of the full local configuration:
 
 ```bash
 ./lc_adapter cloud conf_guid=XXXXXXXXXXXXXXXXXXXXx oid=YYYYYYYYYYYYYYYYYYY
 ```
 
-This will start the adapter telling it to fetch the configuration it requires from the cloud based on the Organization ID (your tenant in LC) and the `GUID` of the record it should use.
+The adapter starts and fetches the configuration that it needs from the cloud. It uses the Organization ID (your tenant in LC) and the `GUID` of the record.
 
-From this point on, updating the record in LimaCharlie will automatically reconfigure the adapter on-prem, within about 1 minute of the change.
+After this, an update to the record in LimaCharlie reconfigures the on-prem adapter automatically, in about 1 minute.
 
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+Adapters ingest data in on-premise and cloud environments.

@@ -1,110 +1,110 @@
 # Writing and Testing Rules
 
 Detection & Response () Rules are similar to Google Cloud Functions or AWS Lambda.
-They allow you to push D&R rules to the LimaCharlie cloud where the rules will be applied
-in real-time to data coming from the sensors.
+You push D&R rules to the LimaCharlie cloud. The cloud applies the rules in real
+time to the data that comes from the sensors.
 
-D&R rules can also be applied to [Artifact Collection](../../5-integrations/extensions/limacharlie/artifact.md), but for now we will focus
-on the simple case where it is applied to Sensor events.
+You can also apply D&R rules to [Artifact Collection](../../5-integrations/extensions/limacharlie/artifact.md). This page describes
+the simple case: a rule that applies to sensor events.
 
-For a full list of all rule operators and detailed documentation see the [Detection and Response](../examples.md) section.
+For the full list of rule operators and more documentation, see the [Detection and Response](../examples.md) section.
 
 ## Life of a Rule
 
-D&R rules are generally applied on a per-event basis. When the rule is applied, the "detection"
-component of the rule is processed to determine if it matches. If there is a match, the "response"
-component is applied.
+The cloud usually applies a D&R rule to one event at a time. First, it evaluates the
+"detection" component of the rule to find if the rule matches. If the rule matches, the
+cloud applies the "response" component.
 
-The detection is processed one step at a time, starting at the root of the detection. If the
-root matches, the rule is considered to be matching.
+The cloud evaluates the detection one step at a time. It starts at the root of the
+detection. If the root matches, the rule matches.
 
-The detection component is composed of "nodes", where each node has an operator describing the
-logical evaluation. Most operators are simple, like `is`, `starts with` etc. These simple nodes
-can be combined with Boolean (true/false) logic using the `and` and `or` operators, which
-themselves reference a series of nodes. The `and` node matches if all the sub-nodes match, while
-the `or` node matches if any one of the sub-nodes matches.
+The detection component contains "nodes". Each node has an operator that describes the
+logical evaluation. Most operators are simple, such as `is` and `starts with`. You can
+combine simple nodes with Boolean (true/false) logic through the `and` and `or` operators,
+which reference a series of nodes. An `and` node matches if all of its sub-nodes match.
+An `or` node matches if one or more of its sub-nodes match.
 
-When evaluating an `or`, as soon as the first matching sub-node is found, the rest of the sub-nodes
-are skipped since they will have no impact on the final matching state of the "or". Similarly, failure of a sub-node in an "and" node will immediately terminate its evaluation.
+In an `or` node, the cloud stops at the first sub-node that matches. It skips the other
+sub-nodes, because they cannot change the result of the "or". In an "and" node, the first
+sub-node that fails stops the evaluation immediately.
 
-If the "detection" component is matched, then the "response" evaluation begins.
+If the "detection" component matches, the "response" evaluation starts.
 
-The "response" component is a list of actions that should be taken. When an action refers to a
-sensor, that sensor is assumed to be the sensor the event being evaluated is coming from.
+The "response" component is a list of actions to do. If an action refers to a sensor, that
+sensor is the sensor that sent the event.
 
-The best general strategy for D&R rules is to put the parts of the rule most likely
-to eliminate the event at the beginning of the rule, so that LC may move on to the next event
-as quickly as possible.
+Put the parts of the rule that most probably eliminate the event at the start of the rule.
+LC can then move to the next event more quickly.
 
 ## Introduction
 
 ### Goal
 
-The goal of is code lab will be to create a D&R rule to detect the MITRE ATT&CK framework
-[Control Panel Items](https://attack.mitre.org/techniques/T1196/) execution.
+This code lab creates a D&R rule that detects execution of
+[Control Panel Items](https://attack.mitre.org/techniques/T1196/) in the MITRE ATT&CK framework.
 
 ### Services Used
 
-This code lab will use the Replay service to validate and test the rule prior to pushing it to production.
+This code lab uses the Replay service to validate and test the rule before you push it to production.
 
 ## Setup and Requirements
 
-This code lab assumes you have access to a Linux host (MacOS terminal with `brew`). This
-code lab also assumes you have "owner" access to an LC Organization. If you don't have
-one already, create one, this code lab is compatible with the free tier that comes with
-all organizations.
+This code lab assumes that you have access to a Linux host (or a MacOS terminal with
+`brew`). It also assumes that you have "owner" access to an LC Organization. If you do not
+have one, create one. This code lab works with the free tier that comes with all
+organizations.
 
 ### Install CLI
 
-Interacting with LC can always be done via the [web app](https://app.limacharlie.io) but
-day to day operations and automation can be done via the Command Line Interface (CLI). This
-will make following this code lab easier.
+You can always interact with LC through the [web app](https://app.limacharlie.io), but you
+can do daily operations and automation with the Command Line Interface (CLI). This code lab
+uses the CLI.
 
-Install the CLI: `pip install limacharlie --user`. If you don't have `pip` installed, install
-it, the exact instructions will depend on your Linux distribution.
+Install the CLI: `pip install limacharlie --user`. If `pip` is not installed, install it.
+The exact instructions depend on your Linux distribution.
 
 ### Create REST API Key
 
-We need to create an API key we can use in the CLI to authenticate with LC. To do so, go
-to the REST API section of the web app.
+Create an API key that the CLI uses to authenticate with LC. Go to the REST API section of
+the web app.
 
 1. In the REST API section, click the "+" button in the top right of the page.
 2. Give your key a name.
-3. For simplicity, click the "Select All" button to enable all permissions. Obviously this would not be a recommended in a production environment,
-4. Click the copy-to-clipboard button for the new key and take note of it (pasting it in a temporary text note for example).
-5. Back on the REST API page, copy the "Organization ID" at the top of the page and keep note of it like the API key in the previous step.
+3. For simplicity, click the "Select All" button to enable all permissions. This is not recommended in a production environment.
+4. Click the copy-to-clipboard button for the new key. Keep a record of the key, for example in a temporary text note.
+5. On the REST API page, copy the "Organization ID" at the top of the page. Keep a record of it, as you did for the API key.
 
-The Organization ID (OID) identifies uniquely your organization while the API key grants specific permissions to this organization.
+The Organization ID (OID) is the unique identifier of your organization. The API key grants specific permissions to this organization.
 
 ### Login to the CLI
 
-Back in your terminal, log in with your credentials: `limacharlie auth login`.
+In your terminal, log in with your credentials: `limacharlie auth login`.
 
-1. When asked for the Organization ID, paste your OID from the previous step.
-2. When asked for a name for this access, you can leave it blank to set the default credentials.
-3. When asked for the secret API key, enter the key you got from the previous step.
+1. When the CLI asks for the Organization ID, paste the OID from the previous step.
+2. When the CLI asks for a name for this access, leave it blank to set the default credentials.
+3. When the CLI asks for the secret API key, enter the key from the previous step.
 
-You're done! If you issue a `limacharlie dr list` you should not get any errors.
+The setup is complete. If you run `limacharlie dr list`, the command shows no errors.
 
 ## Draft Rule
 
-To draft our rule, open your preferred text editor and save the rule to a file, we'll call it `T1196.rule`.
-The format of a rule is [YAML](https://en.wikipedia.org/wiki/YAML), if you are unfamiliar with it, there is benefit to spending a few minutes getting familiar. It won't take long as it is not overly complex.
+To draft the rule, open a text editor and save the rule to a file named `T1196.rule`.
+A rule uses the [YAML](https://en.wikipedia.org/wiki/YAML) format. If you do not know YAML, spend a few minutes to learn it. YAML is not complex.
 
-For our rules based on the [T1196](https://attack.mitre.org/techniques/T1196/) technique, we need
-to apply the following constraints:
+The rule is based on the [T1196](https://attack.mitre.org/techniques/T1196/) technique. It
+needs these constraints:
 
-1. It only applies to Windows.
-2. The event is a module (DLL for example on Windows) loading.
-3. The module loading ends with `.cpl` (control panel extension).
-4. The module is loading from outside of the `C:\windows\` directory.
+1. The rule applies to Windows only.
+2. The event is the load of a module (a DLL on Windows).
+3. The module that loads ends with `.cpl` (the control panel extension).
+4. The module loads from outside the `C:\windows\` directory.
 
-LC supports a lot of different event types, this means that the first thing we should strive to
-do to try to make the rule fail as quickly as possible is to filter all events we don't care about.
+LC supports many event types. To make the rule fail as quickly as possible, first filter out
+all events that do not matter.
 
-In this case, we only care about [CODE_IDENTITY](../../8-reference/edr-events.md#code_identity) events. We also know that
-our rule will use more than one criteria, and those criteria will be AND-ed together because we only
-want to match when they all match.
+This rule uses only [CODE_IDENTITY](../../8-reference/edr-events.md#code_identity) events. The rule also uses more than one
+criterion. The rule AND-s the criteria together, because it must match only when all of them
+match.
 
 ```yaml
 op: and
@@ -113,14 +113,14 @@ rules:
   -
 ```
 
-The above sets up the criteria #2 preceding it, with the AND-ing that will follow. Since the AND is at the
-top of our rule, and it has an `event:` clause, it will ensure that any event processed by this rule
-but is NOT a `CODE_IDENTITY` event will be skipped over right away.
+The block above sets up criterion #2 and the AND operation that follows. The `and` node is at
+the top of the rule, and it has an `event:` clause. Therefore, the rule skips any event that
+is NOT a `CODE_IDENTITY` event immediately.
 
-Next, we should look at the other criteria, and add them to the `rules:` list, which are all the sub-nodes
-that will be AND-ed together.
+Next, add the other criteria to the `rules:` list. This list holds all the sub-nodes that the
+rule AND-s together.
 
-Criteria #1 was to limit to Windows, that's easy:
+Criterion #1 limits the rule to Windows:
 
 ```yaml
 op: and
@@ -130,10 +130,10 @@ rules:
   -
 ```
 
-Next up is criteria #3 and #4. Both of those can be determined using the `FILE_PATH` component of the
-`CODE_IDENTITY` event. If you are unure what those events look like, the best way to get a positive confirmation
-of the structure is simply to open the Historic View, start a new process on that specific host and look for
-the relevant event. If we were to do this on a Windows host, we'd get an example like this one:
+Criteria #3 and #4 come next. The `FILE_PATH` component of the `CODE_IDENTITY` event gives
+both of them. To confirm the structure of these events, open the Historic View. Start a new
+process on that host. Then find the relevant event. On a Windows host, the event looks like
+this example:
 
 ```json
 {
@@ -175,13 +175,13 @@ the relevant event. If we were to do this on a Windows host, we'd get an example
 }
 ```
 
-This means what we want is to apply rules to the `event/FILE_PATH`. First part, #3 is easy, we just want
-to test for the `event/FILE_PATH` ends in `.cpl`, we can do this using the `ends with` operator.
+The rule therefore applies to `event/FILE_PATH`. For criterion #3, test that
+`event/FILE_PATH` ends with `.cpl`. Use the `ends with` operator.
 
-Most operators will use a `path` and a `value`. General convention is the `path` describes
-how to get to a value we want to compare within the event. So `event/FILE_PATH` says "starting in the `event`
-then get the `FILE_PATH`. The `value` generally represents a value we want to compare to the element found
-in the `path`. How it is compared depends on the operator.
+Most operators use a `path` and a `value`. The `path` describes how to get to the value that
+you want to compare in the event. For example, `event/FILE_PATH` means "start in the `event`,
+then get the `FILE_PATH`". The `value` is the value that you compare to the element at the
+`path`. The operator controls how the comparison works.
 
 ```yaml
 op: and
@@ -193,9 +193,9 @@ rules:
     value: .cpl
 ```
 
-That was easy, but we're missing a critical component! By default, D&R rules operate in a case sensitive mode.
-This means that the above node we added will match `.cpl` but will NOT match `.cPl`. To fix this, we just add
-the `case sensitive: false` statement.
+One critical component is missing. By default, D&R rules are case sensitive. The node above
+matches `.cpl` but does NOT match `.cPl`. To correct this, add the `case sensitive: false`
+statement.
 
 ```yaml
 op: and
@@ -209,9 +209,10 @@ rules:
   -
 ```
 
-Finally, we want to make sure the `event/FILE_PATH` is NOT in the `windows` directory. To do this, we will use
-a regular expression with a `matches` operator. But in this case, we want to EXCLUDE the paths that include
-the `windows` directory, so we want to "invert" the match. We can do this with the `not: true` statement.
+Last, make sure that `event/FILE_PATH` is NOT in the `windows` directory. Use a regular
+expression with the `matches` operator. The rule must EXCLUDE the paths that contain the
+`windows` directory, so it must invert the match. The `not: true` statement inverts the
+match.
 
 ```yaml
 op: and
@@ -229,20 +230,20 @@ rules:
     not: true
 ```
 
-Here we go, we're done drafting our first rule.
+The draft of the first rule is complete.
 
 ## Validate Rule
 
-What we want to do now is validate the rule. If the rule validates, it doesn't mean it's correct, it
-just means that the structure is correct, the operators we use are known, etc. It's the first pass at
-detecting possible formatting issues or typos.
+Now validate the rule. Validation does not show that the rule is correct. It shows that the
+structure is correct, that the operators are known, and so on. Validation is the first pass
+to find possible format problems or typos.
 
-To validate, we will simply leverage the Replay service. This service can be used to test rules or replay
-historical events against a rule. In this case however, we just want to start by validating.
+Validation uses the Replay service. This service can test rules or replay historical events
+against a rule. This step uses only the validation function.
 
-Up until now we focused on the "detection" part of the rule. But a full rule also contains a "response"
-component. So before we proceed, we'll add this structure. For a response, we will use a
-simple `action: report`. The `report` creates a "detection" (alert).
+The steps above cover only the "detection" part of the rule. A full rule also contains a
+"response" component. Add this structure before you continue. The response uses
+`action: report`. The `report` action creates a "detection" (alert).
 
 ```yaml
 detect:
@@ -264,58 +265,56 @@ respond:
     name: T1196
 ```
 
-Now validate the rule structure. Save the detect and respond components to separate files (`T1196_detect.yaml` and `T1196_respond.yaml`), then run:
+Now validate the structure of the rule. Save the detect and respond components to separate files (`T1196_detect.yaml` and `T1196_respond.yaml`), then run:
 
 `limacharlie dr validate --detect T1196_detect.yaml --respond T1196_respond.yaml`
 
-After a few seconds, you should see a response with `success: true` if the rule
-validates properly.
+After a few seconds, the response shows `success: true` if the rule is valid.
 
 ## Test rule
 
 ### Test Plan
 
-Now that we know our rule is generally sound, we need to test it against some events.
+The rule is now structurally sound. Test it against some events.
 
-Our test plan will take the following approach:
+The test plan uses these steps:
 
-1. Test a positive (a `.cpl` loading outside of `windows`).
-2. Test a negative for the major criteria:
+1. Test a positive match: a `.cpl` that loads outside `windows`.
+2. Test a negative match for each major criterion:
 
-   1. Test a non-`.cpl` loading outside of `windows` does not match.
-   2. Test a `.cpl` loading within `windows` does not match.
+   1. Test that a non-`.cpl` file that loads outside `windows` does not match.
+   2. Test that a `.cpl` that loads in `windows` does not match.
 3. Test on historical data.
 
-With this plan, #1 and #2 lend themselves well to [unit tests](https://en.wikipedia.org/wiki/Unit_testing)
-while #3 can be done more holistically by using Replay to run historical events
-through the rule and evaluate if there are any [false positives](https://en.wikipedia.org/wiki/False_positives_and_false_negatives).
+Steps #1 and #2 are a good match for [unit tests](https://en.wikipedia.org/wiki/Unit_testing).
+Step #3 uses Replay to run historical events through the rule and to find
+[false positives](https://en.wikipedia.org/wiki/False_positives_and_false_negatives).
 
-This may be excessive for you, or for certain rules which are very simple, we leave that
-evaluation to you. For the sake of this code lab, we will do a light version to demonstrate
-how to do tests.
+This plan can be more than you need, or more than a simple rule needs. You decide how much to
+test. This code lab uses a short version of the tests as a demonstration.
 
 ### Testing a Single Event
 
-To test #1 and #2, let's just create some synthetic events. It's always better to use
-real-world samples, but we'll leave that up to you.
+For tests #1 and #2, create some synthetic events. Real-world samples are better, but the
+choice is yours.
 
-Take the event sample we had in the "Draft Rule" section and copy it to two new files
-we will name `positive.json`, `negative-1.json` and `negative-2.json`.
+Take the event sample from the "Draft Rule" section and copy it to two new files that you
+name `positive.json`, `negative-1.json` and `negative-2.json`.
 
-Modify the `positive.json` file by renaming the `FILE_PATH` at the bottom from
-`"C:\\Windows\\System32\\setupcln.dll"` to `"C:\\temp\\System32\\setupcln.cpl"` so that
-the event now describes a `.cpl` loading in the `temp` directory, which we should detect.
+In `positive.json`, change the `FILE_PATH` at the bottom from
+`"C:\\Windows\\System32\\setupcln.dll"` to `"C:\\temp\\System32\\setupcln.cpl"`. The event
+then describes a `.cpl` that loads in the `temp` directory, and the rule must detect it.
 
-Then modify the `negative-1.json` file by changing the same `.dll` to `.cpl`. This should NOT
-match because the path is still in the `windows` directory.
+In `negative-1.json`, change the same `.dll` to `.cpl`. This event must NOT match, because
+the path is still in the `windows` directory.
 
-Then modify the `negative-2.json` file by changing the `windows` directory to `temp`. This
-should still NOT match because it's not a `.cpl`.
+In `negative-2.json`, change the `windows` directory to `temp`. This event must NOT match,
+because the file is not a `.cpl`.
 
-Now we can run our 3 samples against the rule using Replay,
+Now run the 3 samples against the rule with Replay.
 
-`limacharlie dr test --input-file T1196.rule --events positive.json` should output a result
-indicating the event matched (by actioning the `report`) like:
+The command `limacharlie dr test --input-file T1196.rule --events positive.json` shows that
+the event matched. The result contains the `report` action:
 
 ```json
 {
@@ -330,8 +329,8 @@ indicating the event matched (by actioning the `report`) like:
 ...
 ```
 
-`limacharlie dr test --input-file T1196.rule --events negative-1.json` should output a result
-indicating the event did NOT match like:
+The command `limacharlie dr test --input-file T1196.rule --events negative-1.json` shows that
+the event did NOT match:
 
 ```json
 {
@@ -343,17 +342,16 @@ indicating the event did NOT match like:
 }
 ```
 
-`limacharlie dr test --input-file T1196.rule --events negative-2.json` be the same as `negative-1.json`.
+The result of `limacharlie dr test --input-file T1196.rule --events negative-2.json` is the same as the result for `negative-1.json`.
 
 ### Testing Historical Data
 
-The final test is to run the rule against historical data. If you are not using an
-organization on the free tier, note that the Replay API is billed on usage. In the
-following step we will run against all historical data from the organization, so if
-your organization is not on the free tier and it is large, there may be non-trivial
-costs associated.
+The last test runs the rule against historical data. The Replay API is billed on usage if
+your organization is not on the free tier. The next step runs against all historical data
+from the organization. A large organization that is not on the free tier can therefore cause
+significant costs.
 
-Running our rule against the last week of data is simple:
+To run the rule against the last week of data, use these commands:
 
 ```bash
 START=$(date -d '7 days ago' +%s)
@@ -361,7 +359,7 @@ END=$(date +%s)
 limacharlie replay run --detect-file T1196_detect.yaml --respond-file T1196_respond.yaml --start $START --end $END
 ```
 
-No matches should look like that:
+A result with no matches looks like this:
 
 ```json
 {
@@ -375,13 +373,14 @@ No matches should look like that:
 
 ### Moving to Unit Tests
 
-Once your rule is done and you've evaluated various events for matches, you can move these to [D&R Rules Unit Tests](../unit-tests.md) so that the tests are run during rule update.
+After the rule is complete and you evaluate events for matches, move these events to
+[D&R Rules Unit Tests](../unit-tests.md). LC then runs the tests at each rule update.
 
 ## Publish Rule
 
-Now is the time to push the new rule to production, the easy part.
+Now push the new rule to production.
 
-Simply run `limacharlie dr set --key T1196 --input-file T1196.rule --enabled`
-and confirm it is operational by running `limacharlie dr list`.
-The `--enabled` flag creates the rule and enables it in one shot — without
-it the rule is stored disabled and would not fire on matching events.
+Run `limacharlie dr set --key T1196 --input-file T1196.rule --enabled`.
+Then run `limacharlie dr list` to confirm that the rule is operational.
+The `--enabled` flag creates the rule and enables it in one step. Without
+the flag, the cloud stores the rule as disabled, and the rule does not fire on matching events.

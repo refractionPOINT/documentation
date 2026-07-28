@@ -2,35 +2,35 @@
 
 Many areas of LimaCharlie support template strings and transforms.
 
-A template string allows you to customize the value of a configuration based on the context. For example to adjust the Detection Name a D&R rule to include a value from the detection itself. Transforms can also be used to select, modify, or remove fields upon data ingestion from an Adapter.
+A template string lets you set the value of a configuration from the context. For example, you can add a value from the detection to the Detection Name of a D&R rule. You can also use transforms to select, change, or remove fields when an Adapter ingests data.
 
-A transform allows you to change the shape of JSON data in flight to suit better your usage. This can mean moving, renaming, removing and adding fields in JSON. For example, it can allow you to create an Output that works with `DNS_REQUEST` events, but outputs only specific fields from the event.
+A transform changes the shape of JSON data while the data passes through LimaCharlie. You can move, rename, remove, and add fields in the JSON. For example, you can create an Output that works with `DNS_REQUEST` events but sends only specific fields from the event.
 
 ## Template Strings
 
 Template strings in LimaCharlie use the [Go `text/template` format](https://pkg.go.dev/text/template). [Hashicorp's Go template syntax tutorial](https://learn.hashicorp.com/tutorials/nomad/go-template-syntax) is also a useful reference.
 
-The most basic example for a D&R rule customizing the detection name looks like this:
+This example shows a D&R rule that sets the detection name:
 
 ```yaml
 - action: report
   name: Evil executable on {{ .routing.hostname }}
 ```
 
-Template strings also support some LimaCharlie-specific functions:
+Template strings also support functions that are specific to LimaCharlie:
 
-- `token`: applies an MD5 hashing function on the value provided.
-- `anon`: applies an MD5 hashing function on a secret seed value, plus the value provided.
-- `json`: marshals the input into a JSON string representation.
-- `prettyjson`: same as `json` but with indentation and newlines.
-- `parsetime`: parse a time format to another.
-- `split`: split a string based on a seperator param.
-- `join`: join a list into a string joined by another string.
-- `replace`: replace all string into the other.
-- `base`: return the file name in a file path.
-- `dir`: return the base directory path from a file path.
+- `token`: applies an MD5 hash function to the value that you supply.
+- `anon`: applies an MD5 hash function to a secret seed value plus the value that you supply.
+- `json`: converts the input into a JSON string.
+- `prettyjson`: the same as `json`, but with indentation and newlines.
+- `parsetime`: converts one time format to another.
+- `split`: splits a string on a separator parameter.
+- `join`: joins a list into one string with another string between the items.
+- `replace`: replaces all instances of one string with another string.
+- `base`: returns the file name in a file path.
+- `dir`: returns the base directory path from a file path.
 
-The `token` and `anon` functions can be used to partially anonymize data anywhere a template string is supported, for example:
+Use the `token` and `anon` functions to partly anonymize data. These functions work anywhere that supports a template string. For example:
 
 ```yaml
 - action: report
@@ -45,27 +45,27 @@ Other examples:
 
 ### Template Strings and Adapter Transforms
 
-Template strings can also be used with in conjunction the `client_options.mapping.transform` option in [Adapter configuration](../2-sensors-deployment/adapters/usage.md). These allow you to modify data prior to ingestion, having control over *what* fields get ingested and resulting field names.
+You can also use template strings with the `client_options.mapping.transform` option in the [Adapter configuration](../2-sensors-deployment/adapters/usage.md). This option lets you change data before ingestion. You control *what* fields LimaCharlie ingests and the names of the fields.
 
-The following options are available in Adapter configurations:
+Adapter configurations support these options:
 
 - `+` to add a field
 - `-` to remove a field
 
-Both support template strings, meaning you can add/remove values from the JSON data to replace/supplement other fields.
+Both options support template strings. You can add values to the JSON data or remove values from it, to replace or supplement other fields.
 
 #### Additive vs Replacement Mode
 
 A transform operates in one of two modes:
 
-- **Replacement mode** (default): when *no* keys in the transform are prefixed with `+` or `-`, the original event is discarded and the output is built from scratch using only the keys you defined. This is the same behavior described in the [Transforms](#transforms) section further down.
-- **Additive mode**: as soon as *any* key in the transform is prefixed with `+` or `-`, the entire transform switches to additive mode. The original event is preserved as the base, and the transform's keys add to, modify, or remove fields from it.
+- **Replacement mode** (default): if *no* keys in the transform have a `+` or `-` prefix, LimaCharlie discards the original event. It builds the output only from the keys that you defined. The [Transforms](#transforms) section below describes the same behavior.
+- **Additive mode**: if *any* key in the transform has a `+` or `-` prefix, the whole transform changes to additive mode. LimaCharlie keeps the original event as the base. The keys of the transform then add, change, or remove fields in that event.
 
-Mixing prefixed and non-prefixed keys in the same transform is allowed: the presence of even a single `+`/`-` key flips the whole map to additive mode, and the non-prefixed keys still take effect (replacing the values at those paths). This is usually what you want when augmenting an event, but it's important to know if you ever expect a non-prefixed key to mean "rebuild the event from this only".
+You can mix prefixed and non-prefixed keys in the same transform. One `+` or `-` key changes the whole map to additive mode, and the non-prefixed keys still apply. Each non-prefixed key replaces the value at its path. This behavior is usually what you want when you add data to an event. Remember this behavior if you expect a non-prefixed key to rebuild the event from that key only.
 
 #### Example: Renaming and Adding Fields
 
-If we had the following data:
+This is the input data:
 
 ```json
 { "event":
@@ -78,7 +78,7 @@ If we had the following data:
 }
 ```
 
-And we wanted to rename the `d` value to `c` on ingestion, remove the d value, and add a field called `hostname`, we could use the following configuration:
+This configuration renames the `d` value to `c` on ingestion, removes the d value, and adds a field named `hostname`:
 
 ```text
 ...
@@ -90,7 +90,7 @@ And we wanted to rename the `d` value to `c` on ingestion, remove the d value, a
          +hostname : '{{ "my-computer" }}',
 ```
 
-The resulting event to be ingested would be:
+LimaCharlie then ingests this event:
 
 ```json
 { "event":
@@ -106,9 +106,9 @@ The resulting event to be ingested would be:
 
 #### Example: Parsing a Stringified JSON Field in Place
 
-A common case with adapters (especially log sources like Parquet, Teleport, or audit logs) is an event that contains a field whose value is a JSON-encoded string rather than a nested object. Without parsing, that field will arrive in LimaCharlie as an opaque string and will not be queryable as structured data.
+Adapters often receive an event with a field that holds a JSON-encoded string instead of a nested object. This is common with log sources such as Parquet, Teleport, or audit logs. If nothing parses that field, it arrives in LimaCharlie as an opaque string. You cannot query it as structured data.
 
-Combining additive mode with the [`@parsejson` modifier](#custom-modifiers) lets you decode that string in place without rewriting the rest of the event. For example, given an event like:
+Additive mode with the [`@parsejson` modifier](#custom-modifiers) decodes that string in place. The rest of the event does not change. For example, this is an event:
 
 ```json
 {
@@ -118,7 +118,7 @@ Combining additive mode with the [`@parsejson` modifier](#custom-modifiers) lets
 }
 ```
 
-The following adapter configuration replaces `event_data` with the decoded object while leaving every other field untouched:
+This adapter configuration replaces `event_data` with the decoded object. Every other field stays the same:
 
 ```yaml
 client_options:
@@ -127,7 +127,7 @@ client_options:
       +event_data: "event_data|@parsejson"
 ```
 
-If you want to keep the raw string and add the parsed copy alongside it, use a different output key:
+To keep the raw string and add the parsed copy next to it, use a different output key:
 
 ```yaml
 client_options:
@@ -136,21 +136,21 @@ client_options:
       +event_data_parsed: "event_data|@parsejson"
 ```
 
-Both forms stay in additive mode (because the key is prefixed with `+`), so all the surrounding fields in the event are preserved.
+Both forms stay in additive mode because the key has a `+` prefix. LimaCharlie keeps all the other fields in the event.
 
 ## Transforms
 
 With Transforms, you specify a JSON object that describes the transformation.
 
-This object is in the shape of the final JSON you would like to transform to.
+This object has the shape of the final JSON that you want.
 
 Key names are the literal key names in the output. Values support one of 3 types:
 
-1. Template Strings, as described above. In this case, the template string will be generated and placed at the same place as the key in the transform object.
-2. A `gjson` selector. See the [gjson syntax reference](https://github.com/tidwall/gjson/blob/master/SYNTAX.md) for the selector syntax. It makes it possible to select subsets of input object and map it within the resulting object as defined by the transform.
-3. Other JSON objects which will be present in the output.
+1. Template Strings, as described above. LimaCharlie generates the template string and puts it at the same place as the key in the transform object.
+2. A `gjson` selector. For the selector syntax, see the [gjson syntax reference](https://github.com/tidwall/gjson/blob/master/SYNTAX.md). A selector selects a subset of the input object and maps that subset into the output object that the transform defines.
+3. Other JSON objects. These objects are present in the output.
 
-Let's look at an example, let's say this is the Input to our transform:
+This is an example Input to a transform:
 
 ```json
 {
@@ -231,7 +231,7 @@ Let's look at an example, let's say this is the Input to our transform:
 }
 ```
 
-And this is our Transform definition:
+This is the Transform definition:
 
 ```json
 {
@@ -246,7 +246,7 @@ And this is our Transform definition:
 }
 ```
 
-Then the resulting Output would be:
+The Output is:
 
 ```json
 {
@@ -285,7 +285,7 @@ Then the resulting Output would be:
 
 ### Transforming Output Data
 
-When passing events to an output, you have the option to transform the original event in multiple ways. When creating an output, Custom Transforms are applied in the CUSTOM TRANSFORM area of the screenshot below. In this example we are transforming a detection event to pass via a custom webhook to a web application.
+When you pass events to an output, you can transform the original event in more than one way. When you create an output, apply Custom Transforms in the CUSTOM TRANSFORM area of the screenshot below. This example transforms a detection event and sends it through a custom webhook to a web application.
 
 ![Output data transformation settings](../assets/images/image(310).png)
 
@@ -293,7 +293,7 @@ When passing events to an output, you have the option to transform the original 
 
 #### Extracting Fields from Telemetry
 
-Let's say you have the following 4625 failed logon and you want to send similar events to an output, but only certain fields.
+This is a 4625 failed logon event. You want to send events like it to an output, but only some of the fields.
 
 ```json
 {
@@ -336,7 +336,7 @@ Let's say you have the following 4625 failed logon and you want to send similar 
 }
 ```
 
-The following Output Transform would extract only the `IpAddress`, `TargetUserName`, `EventID`, and `SystemTime` the event was created. Notice, the newly mapped field names can be whatever you want.
+This Output Transform extracts only the `IpAddress`, `TargetUserName`, `EventID`, and the `SystemTime` when the event was created. The new field names can be any names that you want.
 
 ```json
 {
@@ -347,7 +347,7 @@ The following Output Transform would extract only the `IpAddress`, `TargetUserNa
 }
 ```
 
-The following example outputs text and specified fields using Template Strings.
+This example uses Template Strings to output text and specific fields.
 
 ```json
 {
@@ -355,7 +355,7 @@ The following example outputs text and specified fields using Template Strings.
 }
 ```
 
-The above example would generate the following output using the provided sample WEL.
+With the sample WEL event, the example generates this output.
 
 ```json
 {
@@ -365,9 +365,9 @@ The above example would generate the following output using the provided sample 
 
 ### Output as String / Passthrough
 
-The `custom_transform` in outputs can also be used to output pure text (non-JSON) from LimaCharlie. This is useful if, for example, you are ingesting syslog data, and want to forward this syslog data as-is to something else.
+You can also use the `custom_transform` field in outputs to send pure text (non-JSON) from LimaCharlie. For example, you ingest syslog data and want to forward that syslog data unchanged to another system.
 
-This is accomplished by specifying a Template String in the `custom_transform` field instead of a Transform. In those cases, when LimaCharlie determines the `custom_transform` string is not a valid Transform, it will interpret it as a Template String like:
+To do this, put a Template String in the `custom_transform` field instead of a Transform. If LimaCharlie finds that the `custom_transform` string is not a valid Transform, it reads the string as a Template String:
 
 ```json
 {
@@ -385,16 +385,15 @@ or
 
 ### Custom Modifiers
 
-Beyond the built-in modifiers for `gjson` (as seen in their [playground](https://gjson.dev/), LimaCharlie also implements several new modifiers:
+The [gjson playground](https://gjson.dev/) shows the built-in modifiers for `gjson`. LimaCharlie adds these modifiers:
 
-- `parsejson`: this modifier takes no arguments, it takes in as input a string that represents a JSON object and outputs the decoded JSON object.
-- `extract`: this modifier takes a single argument, `re` which is a regular expression that uses "named capture groups" (as defined in the [re2 documentation](https://github.com/google/re2/wiki/Syntax)). The group names become the keys of the output JSON object with the matching values.
-- `parsetime`: this modifier takes two arguments, `from` and `to`. It converts an input string from a given time format (using the [Go `time` library format constants](https://pkg.go.dev/time#pkg-constants)) and outputs the resulting time in the `to` format. Beyond those time constants, LimaCharlie also supports a `from` format of:
-  - `epoch_s`: a second based epoch timestamp
-  - `epoch_ms`: a millisecond based epoch timestamp
+- `parsejson`: this modifier takes no arguments. The input is a string that holds a JSON object. The output is the decoded JSON object.
+- `extract`: this modifier takes one argument, `re`. This argument is a regular expression that uses "named capture groups", as the [re2 documentation](https://github.com/google/re2/wiki/Syntax) defines them. The group names become the keys of the output JSON object, and the matching values become the values.
+- `parsetime`: this modifier takes two arguments, `from` and `to`. It reads an input string in the `from` time format and writes the time in the `to` format. Both formats use the [Go `time` library format constants](https://pkg.go.dev/time#pkg-constants). LimaCharlie also supports these `from` formats:
+  - `epoch_s`: an epoch timestamp in seconds
+  - `epoch_ms`: an epoch timestamp in milliseconds
 
-For example:
-The transform:
+For example, this transform:
 
 ```json
 {
@@ -418,7 +417,7 @@ applied to:
 }
 ```
 
-would result in:
+results in:
 
 ```json
 {

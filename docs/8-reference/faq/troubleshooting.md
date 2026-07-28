@@ -2,42 +2,42 @@
 
 ## Why is there no output in the console?
 
-When running Sensor [console commands](../endpoint-commands.md), you may encounter a "spinning wheel" or no output back from the Sensor. Oftentimes, this is due to the *response* event not enabled in [Event Collection](../../5-integrations/extensions/limacharlie/exfil.md). You will need to configure the response event in order to receive feedback in the console.
+When you run Sensor [console commands](../endpoint-commands.md), you can see a "spinning wheel" or no output from the Sensor. Usually, the *response* event is not enabled in [Event Collection](../../5-integrations/extensions/limacharlie/exfil.md). Configure the response event to get feedback in the console.
 
 For example, the `os_users` Sensor command has two components:
 
 - `OS_USERS_REQ` is the *request* event sent to the Sensor to collect OS user information.
 - `OS_USERS_REP` is the *response* event sent back by the Sensor containing the information of interest.
 
-Please ensure that you are collecting the `*_REP` events in order to display output in the console.
+Collect the `*_REP` events to show output in the console.
 
 ## Sensor Not Showing as Online
 
 ### Determining Online Status
 
-It is important to note that the online marker in the Web UI does not display real-time information. Instead it refreshes its status between every 30 seconds to every few minutes, depending on the page in question.
+The online marker in the Web UI does not show real-time information. It refreshes the status every 30 seconds to every few minutes, and the interval depends on the page.
 
-This means that an icon showing a sensor as not online may be lagging behind the actual status. If you need to get a positive feedback on whether the sensor is online or not, go to the "Sensors" page which refreshes status more often. Moving to the "Sensors" page also triggers a refresh of the status right away.
+An icon that shows a sensor as not online can be behind the actual status. For an accurate status, go to the "Sensors" page, which refreshes the status more often. The "Sensors" page also refreshes the status immediately when you open it.
 
 ### Reasons for Temporary Disconnect
 
-Sensors connect to the cloud via a semi-persistent SSL connection. In general, if a host has connectivity to the internet, the sensor should be online. There are, however, a few situations that result in the sensor temporarily disconnecting from the cloud for a few seconds. This means that if you notice a sensor is offline when you expect it to be online, give it 30 seconds, and in most situations it will come back online within 5 seconds.
+Sensors connect to the cloud with a semi-persistent SSL connection. If a host has a connection to the internet, the sensor is usually online. But some conditions disconnect the sensor from the cloud for a few seconds. If a sensor is offline when you expect it to be online, wait 30 seconds. In most conditions, the sensor comes back online in 5 seconds.
 
 ## Sensor Not Connecting
 
-Sensors connect to the LimaCharlie.io cloud via an SSL connection on port 443. Make sure your network allows such a connection. It is a very common port typically used for HTTPS so an issue is highly unlikely.
+Sensors connect to the LimaCharlie.io cloud with an SSL connection on port 443. Make sure that your network allows this connection. Port 443 is a common port for HTTPS, so a problem is unlikely.
 
-The sensor uses a pinned SSL certificate to talk to the cloud. This means that if you are in a network that enforces SSL inspection (a man-in-the-middle of the SSL connections sometimes used in large corporate environments), this may prevent the sensor from connecting. LimaCharlie uses a pinned certificate to ensure the highest level of security possible, as usage of off-the-shelf certificates can be leveraged by state-sponsored (or advanced) attackers.
+The sensor uses a pinned SSL certificate to communicate with the cloud. Some networks enforce SSL inspection, which is a man-in-the-middle of the SSL connections. Large corporate environments sometimes use SSL inspection, and it can stop the sensor from connecting. LimaCharlie uses a pinned certificate for the highest possible level of security, because state-sponsored or advanced attackers can use off-the-shelf certificates.
 
-If your network uses SSL inspection, we recommend you setup an exception for the LimaCharlie cloud domain relevant to you. Get in touch with us and we can provide you with the necessary information.
+If your network uses SSL inspection, add an exception for your LimaCharlie cloud domain. Contact LimaCharlie for the necessary information.
 
-Sensors since version 4.21.2 also generate a local log file able to be used to help pinpoint the level at which the connectivity fails. This log file is located:
+Sensors from version 4.21.2 also write a local log file. This log file helps you find the level at which the connection fails. The log file is at:
 
 - Windows: `c:\windows\system32\hcp.log`
 - MacOS: `/usr/local/hcp.log`
 - Linux: `./hcp.log`
 
-This log provides a simple line for each basic step of connectivity to the cloud. It only logs the first connection attempted to the cloud and rolls over every time the sensor starts. A successful connection should look like:
+The log has one line for each basic step of the connection to the cloud. It logs only the first connection attempt to the cloud, and it rolls over each time the sensor starts. A successful connection looks like this:
 
 ```text
 hcp launched
@@ -49,64 +49,64 @@ headers sent
 channel up
 ```
 
-If you are having trouble getting your sensor connected to the cloud, we recommend that you attempt the following on the host:
+If the sensor does not connect to the cloud, do these steps on the host:
 
 1. Restart the LimaCharlie service.
-2. Check that the service is running.
+2. Check that the service runs.
 
-   - The service process should be called `rphcp`.
-3. If the sensor still shows as not online, check the `hcp.log` file mentioned above:
+    - The name of the service process is `rphcp`.
+3. If the sensor still shows as not online, examine the `hcp.log` file above:
 
-   - Check that the "configs applied" step is reached. If not, it may indicate the Installation Key provided is wrong or has a typo.
-   - Check that the proxy is mentioned in the log if you are using a proxy configuration.
-   - Check that the "ssl connected" step is reached. If not, this indicates a network configuration issue connecting to the cloud.
-   - Check that the "channel up" step is reached. If not, this could indicate one of a few things:
+    - Check that the log reaches the "configs applied" step. If it does not, the Installation Key is wrong or has a typo.
+    - Check that the log shows the proxy, if you use a proxy configuration.
+    - Check that the log reaches the "ssl connected" step. If it does not, there is a network configuration problem in the connection to the cloud.
+    - Check that the log reaches the "channel up" step. If it does not, one of these causes is possible:
 
-     - Your sensor was deleted (through API or Web interface) from the org. If so, reinstall to get a new identity.
-     - Your Organization may be out-of-quota if more sensors than the maximum number you've set in the Billing section are trying to connect at once. Increase your quota and wait a few minutes to fix it.
-     - If this is a brand new sensor install, make sure the Installation Key you're using still exists in your Org. Once deleted, an Installation Key cannot be used for NEW sensors, but old sensors that were installed using it will still work fine.
+        - Your sensor was deleted from the org, through the API or the Web interface. Install the sensor again to get a new identity.
+        - Your Organization is out of quota. This occurs if more sensors try to connect at the same time than the maximum number in the Billing section. Increase your quota and wait a few minutes.
+        - For a new sensor install, make sure that the Installation Key still exists in your Org. After you delete an Installation Key, you cannot use it for NEW sensors, but the old sensors that used it continue to work.
 
 ## Sensor Not Responding
 
-Your sensor shows up as "online", but does not respond to interactive tasking.
+The sensor shows as "online", but does not respond to interactive tasking.
 
-The most common cause of this problem is a partial uninstall and reinstall of the sensor on the host. The sensor, when installed, creates local files that record the identity the sensor has with the cloud.
+The most common cause of this problem is a partial uninstall and reinstall of the sensor on the host. At installation, the sensor creates local files that record the identity of the sensor with the cloud.
 
-When uninstalling, the `-r` mode leaves these identification files behind, so that if you reinstall a new version of the sensor which talks to the same Org in LimaCharlie, the Sensor ID will be the same. On the other hand, the `-c` mode will remove all the identity files as well.
+At uninstallation, the `-r` mode keeps these identification files. If you then install a new version of the sensor that communicates with the same Org in LimaCharlie, the Sensor ID stays the same. The `-c` mode removes all the identity files also.
 
-If you uninstall with `-r` and re-enroll the sensor to a different Org, as can often happen during testing, the files on disk that include some cryptographic material will not match with what the cloud expects. This may result in taskings being refused by the sensor.
+If you uninstall with `-r` and enroll the sensor again to a different Org, the files on disk contain cryptographic material that does not match the material that the cloud expects. This occurs frequently during tests. The sensor can then refuse taskings.
 
-To make sure this is not what's happening, uninstall the sensor with `-c`. Double-check that the local files `hcp`, `hcp_hbs` and `hcp_conf` are deleted before reinstalling. On Windows these should be in `c:\windows\system32` while on macOS they should be in `/usr/local`.
+To remove this cause, uninstall the sensor with `-c`. Check that the local files `hcp`, `hcp_hbs` and `hcp_conf` are deleted before you install again. On Windows, these files are in `c:\windows\system32`. On macOS, they are in `/usr/local`.
 
 ## Sensor Duplication
 
-Sensor duplication can occur during certain types of installation or deployments, e.g. creation of virtual systems via a "gold image" that has LimaCharlie pre-installed.
+Sensor duplication can occur with some types of installation or deployment. For example, it occurs when you create virtual systems from a "gold image" that has LimaCharlie pre-installed.
 
-However, in niche cases we have seen examples of:
+In rare cases, these causes also occur:
 
-1. LimaCharlie unable to write it's own identity files to disk, causing a constant "new" sensor connection.
-2. Third-party security software on the system incorrectly categorizing LimaCharlie as malware, and killing the process before it can start.
+1. LimaCharlie cannot write its own identity files to disk. This causes a constant "new" sensor connection.
+2. Third-party security software on the system categorizes LimaCharlie as malware incorrectly, and stops the process before it starts.
 
-One method to troubleshoot and determine root cause is to utilize Sysinternals' [DebugView](https://learn.microsoft.com/en-us/sysinternals/downloads/debugview) to investigate the error caused during Sensor installaton/start-up.
+To find the root cause, use the Sysinternals [DebugView](https://learn.microsoft.com/en-us/sysinternals/downloads/debugview) tool. It shows the error during the installation or the start-up of the Sensor.
 
-Another quick troubleshooting technique may be to determine whether the Sensor process `rphcp.exe`
+Another troubleshooting method is to find whether the Sensor process `rphcp.exe`
 
 ## Upgrading Sensors
 
-To ensure the sensor version is up-to-date, open the "Install Sensors" page in the web app (under "Setup") and navigate to the "Upgrading Sensors" section.
+To make sure that the sensor version is current, open the "Install Sensors" page in the web app, under "Setup". Then go to the "Upgrading Sensors" section.
 
-Upgrading sensors is done transparently for you once you click the button in the web app interface. You do not need to re download installers (in fact the installer stays the same). The new version should be in effect across the organization within about 20 minutes.
+The upgrade of the sensors starts when you click the button in the web app. You do not need to download the installers again, because the installer stays the same. The new version is in effect across the organization in about 20 minutes.
 
 ## How can I tell which version of the sensor is running locally?
 
-The LimaCharlie sensor outputs a status file on the endpoint which allows you to see the:
+The LimaCharlie sensor writes a status file on the endpoint. The file shows the:
 
 - Sensor ID,
 - Organization ID,
 - Sensor version, and
 - the agent's service uptime.
 
-You can find this log data at the following location, based on your platform:
+The log data is at this location for each platform:
 
 | Platform | File Path |
 | --- | --- |
@@ -114,7 +114,7 @@ You can find this log data at the following location, based on your platform:
 | macOS | `/Library/Application Support/limacharlie/hcp_hbs_status.json` |
 | Windows | `c:\programdata\limacharlie\hcp_hbs_status.json` |
 
-The log data is formatted similarly to the example below:
+The log data has a format like this example:
 
 ```json
 {
@@ -128,15 +128,15 @@ The log data is formatted similarly to the example below:
 
 ## Sensor Troubleshooting Utility
 
-In some cases we may ask you for sensor health information from an endpoint that is having issues. To get this information, run the LC sensor interactively in the terminal with the -H flag.
+LimaCharlie can ask you for sensor health information from an endpoint that has problems. To get this information, run the LC sensor interactively in the terminal with the -H flag.
 
-On macOS run the command: `sudo /usr/local/bin/rphcp -H`
+On macOS, run the command: `sudo /usr/local/bin/rphcp -H`
 
-The diagnostic information will be displayed on screen, and saved to a file. The location of the output file will be shown at the bottom of the message shown on screen (on macOS, typically at `/Library/Application Support/limacharlie/``).
+The sensor shows the diagnostic information on screen and saves it to a file. The location of the output file is at the bottom of the message on screen (on macOS, usually at `/Library/Application Support/limacharlie/``).
 
-Note that the Sensor Troubleshooting Utility requires sensor [version 4.33.6](https://community.limacharlie.com/t/release-agent-with-sensor-troubleshooting-tool-webapp-4-2-3/276) or newer to be installed on disk on the impacted endpoint.
+The Sensor Troubleshooting Utility needs sensor [version 4.33.6](https://community.limacharlie.com/t/release-agent-with-sensor-troubleshooting-tool-webapp-4-2-3/276) or newer on disk on the impacted endpoint.
 
-You can find the output file at the following location, based on your platform:
+The output file is at this location for each platform:
 
 | Platform | File Path |
 | --- | --- |
@@ -144,7 +144,7 @@ You can find the output file at the following location, based on your platform:
 | macOS | `/Library/Application Support/limacharlie/sensor_health_YYYY_MM_DD_HH_MM.json` |
 | Windows | `c:\programdata\limacharlie\sensor_health_YYYY_MM_DD_HH_MM.json` |
 
-The log data is formatted similarly to the example below:
+The log data has a format like this example:
 
 ```json
 {
@@ -341,22 +341,22 @@ The log data is formatted similarly to the example below:
 
 ## Enabling Verbose and File Logging
 
-By default a released sensor logs almost nothing, to keep it quiet on production
-hosts. When diagnosing an issue you can raise the verbosity and route the output
-to a file using environment variables on the sensor process (set them in your
-systemd unit, launchd plist, or the Windows service environment so the running
-service inherits them):
+By default, a released sensor logs almost nothing, to stay quiet on production
+hosts. When you diagnose a problem, you can increase the verbosity and send the
+output to a file with environment variables on the sensor process. Set the
+variables in your systemd unit, your launchd plist, or the Windows service
+environment, so that the running service inherits them:
 
 | Variable | Effect |
 | --- | --- |
 | `LC_VERBOSE` | Set to `1`/`true` to enable verbose logging (same as the `-v` flag). |
 | `RPAL_LOG_LEVEL` | Sets the verbosity. Accepted values: `off`, `error` (alias `critical`), `warning` (alias `warn`), `info`, `debug`. Defaults to `warning` in release builds. |
-| `RPAL_LOG_FILE` | Path to a log file. Setting this is the opt-in that turns on logging for a release sensor: output is written to the file at `RPAL_LOG_LEVEL`. Without it (and without `LC_VERBOSE`), a release sensor stays silent. |
+| `RPAL_LOG_FILE` | Path to a log file. This variable turns on logging for a release sensor: the output goes to the file at `RPAL_LOG_LEVEL`. Without it (and without `LC_VERBOSE`), a release sensor stays silent. |
 
 !!! note
-In released sensors, `warning` is the most verbose level that produces output. The `info` and `debug` log statements are compiled out of release builds, so setting `RPAL_LOG_LEVEL` to `info` or `debug` has no additional effect over `warning`.
+In released sensors, `warning` is the most verbose level with output. The release builds do not include the `info` and `debug` log statements. A value of `info` or `debug` for `RPAL_LOG_LEVEL` has no more effect than `warning`.
 
-For example, to capture logs to a file while reproducing an issue:
+For example, to capture logs to a file when you reproduce a problem:
 
 === "Linux / macOS"
 
@@ -372,19 +372,19 @@ For example, to capture logs to a file while reproducing an issue:
     rphcp.exe -d -
     ```
 
-The log file can contain operational details about the host, so treat it as potentially sensitive and remove it once you are done troubleshooting.
+The log file can contain operational details about the host. Treat the file as sensitive and delete it after you complete the troubleshooting.
 
-See the [Agent CLI & Environment Reference](../../2-sensors-deployment/endpoint-agent/cli-reference.md)
-for the full list of supported options.
+For the full list of supported options, see the
+[Agent CLI & Environment Reference](../../2-sensors-deployment/endpoint-agent/cli-reference.md).
 
 ## Additional Help
 
-If these steps do not help, get in touch with us, and we will help you figure out the issue. The best way of contacting us is via our [Community Site](https://community.limacharlie.com/), followed by `support@limacharlie.io`.
+If these steps do not solve the problem, contact LimaCharlie for help. The first method of contact is the [Community Site](https://community.limacharlie.com/). The second method is `support@limacharlie.io`.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, Sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless method to connect the endpoints of an organization to the cloud securely.
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+Installation keys are Base64-encoded strings that you give to Sensors and Adapters to connect them to the correct Organization. You create installation keys for each organization. The keys let you label and control your deployment population.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives full control of security operations. This structure supports multi-tenant setups for managed security providers, and for enterprises that manage many departments or clients.
 
-In LimaCharlie, a Sensor ID is a unique identifier assigned to each deployed endpoint agent (sensor). It distinguishes individual sensors across an organization's infrastructure, allowing LimaCharlie to track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as sending commands, collecting telemetry, and monitoring activity, ensuring that actions and data are accurately linked to specific devices or endpoints.
+In LimaCharlie, a Sensor ID is a unique identifier for each deployed endpoint agent (sensor). It distinguishes individual sensors across the infrastructure of an organization. It lets LimaCharlie track, manage, and communicate with each endpoint. The Sensor ID is critical for operations such as commands, telemetry collection, and activity monitoring. It links actions and data accurately to a specific device or endpoint.

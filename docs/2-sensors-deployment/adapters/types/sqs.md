@@ -2,15 +2,15 @@
 
 ## Overview
 
-This Adapter allows you to ingest events received from an AWS SQS instance.
+This Adapter ingests the events that it receives from an AWS SQS instance.
 
 ## Configurations
 
 Adapter Type: `sqs`
 
 - `client_options`: see [common adapter configuration](../usage.md).
-- `access_key`: an Access Key from AWS used to access the queue.
-- `secret_key`: the secret key associated with the `access_key` used to access the queue.
+- `access_key`: an Access Key from AWS that gives access to the queue.
+- `secret_key`: the secret key for the `access_key` that gives access to the queue.
 - `queue_url`: the queue URL for the SQS instance.
 
 ### Infrastructure as Code Deployment

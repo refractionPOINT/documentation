@@ -1,20 +1,20 @@
 # Syslog
 
-Syslog is both a protocol and common logging format that consolidate events to a central location for storage. On \*nix systems, Syslog often outputs to predefined locations, such as `/var/log`. The LimaCharlie Adapter can be configured as a Syslog endpoint to collect events either via TCP or UDP.
+Syslog is a protocol and a common log format. It sends events to a central location for storage. On \*nix systems, Syslog usually writes to set locations, such as `/var/log`. You can configure the LimaCharlie Adapter as a Syslog endpoint that collects events over TCP or UDP.
 
-Syslog data can also be ingested via other data platforms, such as an S3 bucket.
+LimaCharlie can also ingest Syslog data through other data platforms, such as an S3 bucket.
 
-Syslog events are observed in LimaCharlie as the `text` platform.
+Syslog events appear in LimaCharlie as the `text` platform.
 
-A more detailed guide to syslog collection can be found in the [Log Collection Guide](../../log-collection-guide.md).
+The [Log Collection Guide](../../log-collection-guide.md) gives more detail about syslog collection.
 
 ## Adapter Deployment
 
-Given its ubiquity, Syslog can be ingested via a myriad of methods in both text/log and streaming formats. For non-streaming methods, please refer to the corresponding Adapter type (such as [S3](s3.md), [GCP](google-cloud-pubsub.md), etc.)
+Syslog is common, and many methods can ingest it in text/log formats and in streaming formats. For non-streaming methods, use the applicable Adapter type, such as [S3](s3.md) or [GCP](google-cloud-pubsub.md).
 
 ### Syslog-specific Configurations
 
-All Adapters share the [common client configuration options](../usage.md). A syslog Adapter has a few unique configuration options not found with other Adapter types. These include:
+All Adapters share the [common client configuration options](../usage.md). A syslog Adapter also has these unique configuration options:
 
 - `port`: port to listen for syslog from.
 - `iface`: the interface name to listen for new connections/packets from, defaults to all.
@@ -26,7 +26,7 @@ All Adapters share the [common client configuration options](../usage.md). A sys
 
 ### Collecting Syslog via Docker
 
-The following example walks through configuring a Docker container as a syslog Adapter.
+The example below shows how to configure a Docker container as a syslog Adapter.
 
 ```bash
 docker run --rm -it -p 1514:1514 refractionpoint/lc-adapter:latest syslog port=1514 \
@@ -39,24 +39,24 @@ docker run --rm -it -p 1514:1514 refractionpoint/lc-adapter:latest syslog port=1
   "client_options.mapping.mapping[0].dst_field=syslog_hostname"
 ```
 
-Here's a breakdown of the above example:
+The example uses these options:
 
-- `docker run --rm`: run a container and don't keep the contents around when it's stopped.
-- `-it`: make the container interactive so you can ctrl-c to stop it.
-- `-p 1514:1514`: allow the container to listen on port `1514` on the local host and use the same port within the container.
-- `refractionpoint/lc-adapter:latest`: this is the name of the public container provided by LimaCharlie.
-- `syslog`: the method the Adapter should use to collect data locally. The `syslog` value will operate as a syslog endpoint on the TCP port specified.
-- `port=1514`: the TCP port the Adapter should listen on. By default this is a normal TCP connection (not SSL), although SSL options exist.
+- `docker run --rm`: run a container and delete its contents when the container stops.
+- `-it`: make the container interactive, so that you can stop it with ctrl-c.
+- `-p 1514:1514`: let the container listen on port `1514` on the local host and use the same port in the container.
+- `refractionpoint/lc-adapter:latest`: the name of the public container from LimaCharlie.
+- `syslog`: the method that the Adapter uses to collect data locally. The `syslog` value operates as a syslog endpoint on the TCP port that you specify.
+- `port=1514`: the TCP port that the Adapter listens on. The default is a normal TCP connection (not SSL), but SSL options exist.
 - `client_options.identity.installation_key=....`: the Installation Key from LimaCharlie.
-- `client_options.identity.`OID`=....`: the Organization ID from LimaCharlie the installation key above belongs to.
-- `client_options.platform=text`: this indicates the type of data that will be received from this adapter. In this case it's syslog, so `text` lines.
-- `client_options.mapping.parsing_grok=....`: this is the grok expression describing how to interpret the text lines and how to convert them to JSON.
-- `client_options.sensor_seed_key=....`: this is the value that identifies this instance of the Adapter. Record it to re-use the Sensor generated for this Adapter later if you have to re-install the Adapter.
-- `client_options.mapping.rename_only=true`: only rename the field in mapping below, so keep the other original fields.
+- `client_options.identity.`OID`=....`: the Organization ID from LimaCharlie that the installation key above belongs to.
+- `client_options.platform=text`: the type of data that this adapter receives. For syslog, this is `text` lines.
+- `client_options.mapping.parsing_grok=....`: the grok expression that shows how to interpret the text lines and how to convert them to JSON.
+- `client_options.sensor_seed_key=....`: the value that identifies this instance of the Adapter. Record this value. It lets you re-use the Sensor of this Adapter if you must re-install the Adapter.
+- `client_options.mapping.rename_only=true`: rename only the field in the mapping below, and keep the other original fields.
 - `client_options.mapping.mapping[0].src_field=....`: the source field of the first mapping record.
 - `client_options.mapping.mapping[0].dst_field=....`: the destination field of the first mapping record.
 
-To test it, assuming we're on the same Debian box as the container, pipe the syslog to the container:
+To test the Adapter from the same Debian machine as the container, pipe the syslog to the container:
 
 ```text
 journalctl -f -q | netcat 127.0.0.1 1514
@@ -64,17 +64,17 @@ journalctl -f -q | netcat 127.0.0.1 1514
 
 ### Collecting Syslog via Binary Adapter
 
-The LimaCharlie binary Adapter can be deployed as a syslog listener. This option allows you to configure multiple syslog outputs to a single listener, and ingest multiple types of events with a single Adapter.
+You can deploy the LimaCharlie binary Adapter as a syslog listener. With this option, you can send many syslog outputs to one listener and ingest many types of events with one Adapter.
 
 #### Step 1: Create an installation key
 
-We recommend utilizing a unique installation key for this deployment, specifically with a `syslog` Tag. This allows for a level of delineation within  rules and outputs via Tags.
+Use a unique installation key for this deployment, with a `syslog` Tag. Tags let you separate this data in rules and outputs.
 
 #### Step 2: Create an Adapter config file
 
-Syslog events are typically ingested as `text`, however often have specific structures to them. Utilizing a config file allows for easy management of a regex string to extract relevant fields from syslog output.
+LimaCharlie usually ingests syslog events as `text`, but the events often have a specific structure. A config file lets you manage the regex string that extracts the necessary fields from the syslog output.
 
-The following example config file can be a starting point. However, you might need to modify the regex to match your specific message.
+Use the example config file below as a start. You can change the regex to match your messages.
 
 ```yaml
 syslog:
@@ -104,18 +104,18 @@ syslog:
 
 #### Step 3: Configure syslog output to send messages to a local listener
 
-This step will depend on the type of syslog daemon you are using (syslog, rsyslog, syslog-ng, etc.) Within the daemon configuration file, configure the desired facility(-ies) to direct to the local listener. In the following example, we configured `auth` and `authpriv` events to write to both `/var/log/audit.log` and `127.0.0.1:1514`.
+This step depends on the syslog daemon that you use (syslog, rsyslog, syslog-ng, and others). In the daemon configuration file, send the necessary facilities to the local listener. The example below writes `auth` and `authpriv` events to `/var/log/audit.log` and to `127.0.0.1:1514`.
 
 ```text
 auth,authpriv.*   /var/log/auth.log
 auth,authpriv.*   @@127.0.0.1:1514
 ```
 
-After applying the appropriate configuration, restart the syslog daemon.
+After you apply the configuration, restart the syslog daemon.
 
 #### Step 4: Confirm that syslog messages are sent to the correct location
 
-Utilizing a tool like `netcat`, you can listen on the appropriate port to confirm that messages are being sent. The following command will spawn a `netcat` listener on port 1514:
+Use a tool such as `netcat` to listen on the port and confirm that the daemon sends messages. The command below starts a `netcat` listener on port 1514:
 
 ```text
 nc -l -p 1514
@@ -123,7 +123,7 @@ nc -l -p 1514
 
 #### Step 5: Run the LimaCharlie Adapter
 
-Execute the binary Adapter with the syslog configuration file in order to start the LimaCharlie listener. If started correctly, you should see the following messages in `stdout`:
+Run the binary Adapter with the syslog configuration file to start the LimaCharlie listener. If the Adapter starts correctly, `stdout` shows these messages:
 
 ```text
 DBG <date>: usp-client connecting
@@ -131,4 +131,4 @@ DBG <date>: usp-client connected
 DBG <date>: listening for connections on :1514
 ```
 
-Double-check the LimaCharlie Sensors list, and you should see the text adapter with the respective hostname sending `Syslog` events.
+Open the LimaCharlie Sensors list. The text adapter with the applicable hostname sends `Syslog` events.

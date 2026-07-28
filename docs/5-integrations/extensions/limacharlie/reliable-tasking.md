@@ -1,34 +1,36 @@
 # Reliable Tasking
 
-The Reliable Tasking Extension enables you to task Sensor(s) that are currently offline. The extension queues the task in the cloud and automatically delivers it when the Sensor(s) come online.
+The Reliable Tasking Extension lets you task Sensor(s) that are offline. The extension queues the task in the cloud. It delivers the task automatically when the Sensor(s) come online.
 
 ## How It Works
 
 When you create a reliable task, the extension:
 
-1. Resolves the targeting criteria (`sid`, `tag`, or `selector`) to a list of sensors and records one queued task per sensor, with an expiry of `now + ttl`.
-2. Immediately attempts delivery to the sensors that are currently online.
-3. Retries delivery every time a targeted sensor reconnects to the cloud (on its `CONNECTED` event).
-4. Removes the queued task for a sensor once that sensor confirms receipt of the command.
+1. Resolves the targeting criteria (`sid`, `tag`, or `selector`) to a list of sensors. It records one queued task for each sensor, with an expiry of `now + ttl`.
+2. Tries delivery immediately to the sensors that are online.
+3. Tries delivery again each time a targeted sensor reconnects to the cloud (on its `CONNECTED` event).
+4. Removes the queued task for a sensor after that sensor confirms receipt of the command.
 
-Two properties follow from this design that are worth understanding:
+This design has two results:
 
-- **Delivery only happens while a sensor is connected.** Tasks are never pre-staged on an offline sensor; a task queued for an offline sensor exists only in the extension's queue until the sensor reconnects.
-- **The TTL is evaluated at delivery time.** At every delivery attempt, expired tasks are skipped. If a sensor is offline for the entire TTL and reconnects afterwards, the task is *not* delivered — the extension has given up on it.
+- **Delivery only happens when a sensor is connected.** The extension never pre-stages a task on an offline sensor. A task for an offline sensor stays only in the queue of the extension until the sensor reconnects.
+- **The extension checks the TTL at delivery time.** At each delivery attempt, the extension skips expired tasks. If a sensor is offline for the full TTL and reconnects after it, the extension does *not* deliver the task.
 
-> **Note:** The sensor commands `restart` and `upgrade_core` do not produce a receipt from the sensor, so they are considered confirmed (and removed from the queue) as soon as they are successfully sent to a connected sensor.
+> **Note:** The sensor commands `restart` and `upgrade_core` do not give a receipt from the sensor. The extension marks them as confirmed, and removes them from the queue, when it sends them to a connected sensor.
 
 ## Enabling the Reliable Tasking Extension
 
-To enable the Reliable Tasking extension, navigate to the [Reliable Tasking extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-reliable-tasking) in the marketplace. Select the Organization you wish to enable the extension for, and select **Subscribe**.
+1. Open the [Reliable Tasking extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-reliable-tasking) in the marketplace.
+2. Select the Organization for which you want to enable the extension.
+3. Select **Subscribe**.
 
-After clicking **Subscribe**, the Reliable Tasking extension should be available almost immediately.
+After you select **Subscribe**, the Reliable Tasking extension becomes available almost immediately.
 
 ## Using the Reliable Tasking Extension
 
-Once enabled, you will see a **Reliable Tasking** option under **Automation** within the LimaCharlie web UI. You can also interact with the extension via REST API.
+After you enable the extension, a **Reliable Tasking** option shows under **Automation** in the LimaCharlie web app. You can also use the extension through the REST API.
 
-Within the Reliable Tasking module, you can:
+In the Reliable Tasking module, you can:
 
 - Task Sensor(s)
 - Untask Sensor(s)
@@ -36,7 +38,7 @@ Within the Reliable Tasking module, you can:
 
 ## Actions via REST API
 
-The following REST API actions can be sent to interact with the Reliable Tasking extension:
+You can send these REST API actions to the Reliable Tasking extension:
 
 ### Create a Task
 
@@ -47,27 +49,27 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 --data 'oid=$YOUR_OID&action=task&data={"context":"version","selector":"plat==windows","task":"run --shell-command whoami","ttl":3600}'
 ```
 
-All parameters are provided in the request body as URL-encoded form data. The `data` parameter should contain a JSON object with the following fields:
+Give all parameters in the request body as URL-encoded form data. The `data` parameter must contain a JSON object with these fields:
 
 **Required Parameters:**
 
-- `task`: The command to execute, similar to a command-line `task` (e.g., `"run --shell-command whoami"`, `"mem_map --pid 4"`)
+- `task`: The command to run, similar to a command-line `task` (e.g., `"run --shell-command whoami"`, `"mem_map --pid 4"`)
 - One of `sid`, `tag`, or `selector` (targeting criteria):
   - `sid`: Target a single sensor by Sensor ID
   - `tag`: Target all sensors that have this tag
-  - `selector`: A [Sensor Selector Expression](../../../8-reference/sensor-selector-expressions.md) specifying which sensors should receive the task. Use `"*"` to target all sensors in the organization.
+  - `selector`: A [Sensor Selector Expression](../../../8-reference/sensor-selector-expressions.md) that specifies which sensors get the task. Use `"*"` to target all sensors in the organization.
     - Examples:
       - `"selector":"plat==windows"` - All Windows sensors
       - `"selector":"sid=='abc-123-def'"` - A specific sensor by ID
       - `"selector":"production in tags"` - All sensors with the "production" tag
-      - `"selector":"plat==linux and int_ip matches '^10\\.3\\..*'"` - Complex expressions using AND/OR logic
+      - `"selector":"plat==linux and int_ip matches '^10\\.3\\..*'"` - Complex expressions that use AND/OR logic
 
 **Optional Parameters:**
 
-- `context`: An identifier that will be reflected in the `investigation_id` of the corresponding `RECEIPT` or `_REP` event, allowing you to craft D&R rules based on the response
-- `ttl`: Time-to-live in seconds - how long the extension should keep trying to deliver the task to sensors that haven't acknowledged it. Defaults to 1 week (604800 seconds). There is no minimum value; short TTLs (even a few seconds) are valid and are a supported way to bound how late a task may be delivered. See [TTL and Delivery Guarantees](#ttl-and-delivery-guarantees).
+- `context`: An identifier that shows in the `investigation_id` of the matching `RECEIPT` or `_REP` event. Use it to write D&R rules on the response.
+- `ttl`: Time-to-live in seconds - how long the extension continues to try delivery to sensors that did not acknowledge the task. The default is 1 week (604800 seconds). There is no minimum value. Short TTLs, even a few seconds, are valid and are a supported way to bound how late a task can be delivered. See [TTL and Delivery Guarantees](#ttl-and-delivery-guarantees).
 
-For more details on sensor selector syntax and available fields (`sid`, `plat`, `tags`, `hostname`, `int_ip`, etc.), see the [Sensor Selector Expressions reference](../../../8-reference/sensor-selector-expressions.md).
+For more about the syntax of sensor selectors and the available fields (`sid`, `plat`, `tags`, `hostname`, `int_ip`, etc.), see the [Sensor Selector Expressions reference](../../../8-reference/sensor-selector-expressions.md).
 
 **Response:**
 
@@ -80,10 +82,10 @@ For more details on sensor selector syntax and available fields (`sid`, `plat`, 
 }
 ```
 
-- `task_id`: The unique ID for this tasking request across all targeted sensors. Keep it if you may need to [untask](#untask) later or correlate feedback events.
-- `total_sensors`: Number of sensors matched by the targeting criteria.
-- `tasked_sensors`: Sensors that were online and were sent the task immediately.
-- `queued_sensors`: Sensors that were offline; the task remains queued for them until they reconnect or the TTL expires.
+- `task_id`: The unique ID for this tasking request across all targeted sensors. Keep it to [untask](#untask) later or to correlate feedback events.
+- `total_sensors`: The number of sensors that match the targeting criteria.
+- `tasked_sensors`: The sensors that were online and got the task immediately.
+- `queued_sensors`: The sensors that were offline. The task stays in the queue for them until they reconnect or the TTL expires.
 
 **Additional Examples:**
 
@@ -123,13 +125,13 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 --data 'oid=$YOUR_OID&action=list&data={}'
 ```
 
-This returns the pending reliable tasks, organized per sensor and then per `task_id`, including the command, context, and expiry time of each queued task.
+This action returns the pending reliable tasks, grouped by sensor and then by `task_id`. Each queued task includes the command, the context, and the expiry time.
 
-Like `task` and `untask`, the `list` action accepts `sid`, `tag`, or `selector` to scope which sensors' queues are returned; the selector defaults to `*` (all sensors), which is why an empty `data` object works. Note that the scoping applies to *sensors*, not to the selector a task was originally created with. Tasks that have expired or have been confirmed received by the sensor are not listed.
+Like `task` and `untask`, the `list` action accepts `sid`, `tag`, or `selector` to scope which queues of sensors it returns. The selector defaults to `*` (all sensors), so an empty `data` object works. The scope applies to *sensors*, not to the selector that created the task. The action does not list tasks that expired or that the sensor confirmed.
 
 ### Untask
 
-The `untask` action deletes queued tasks, aborting delivery of ALL tasks that fit the given criteria. Use it to cancel tasks that have not yet been delivered (e.g., to sensors that are still offline).
+The `untask` action deletes queued tasks. It stops delivery of ALL tasks that match the given criteria. Use it to cancel tasks that the extension did not yet deliver, for example tasks for sensors that are still offline.
 
 ```bash
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
@@ -140,8 +142,8 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 
 **Parameters:**
 
-- One of `sid`, `tag`, or `selector` is required and scopes which sensors to untask (same semantics as `task`; use `"*"` to cover all sensors).
-- `task_id` (optional): Only remove tasks with this task ID (as returned by the `task` action). If omitted, ALL queued tasks on the matching sensors are removed.
+- One of `sid`, `tag`, or `selector` is necessary. It scopes which sensors to untask, with the same meaning as in `task`. Use `"*"` to cover all sensors.
+- `task_id` (optional): Remove only the tasks with this task ID, as returned by the `task` action. If you omit it, the action removes ALL queued tasks on the matching sensors.
 
 **Response:**
 
@@ -151,11 +153,11 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 }
 ```
 
-`deleted` is the number of queued task records that were actually removed.
+`deleted` is the number of queued task records that the action removed.
 
 **Examples:**
 
-Cancel a specific tasking request everywhere it is still queued:
+Cancel one tasking request on every sensor where it is still in the queue:
 
 ```bash
 curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-tasking' \
@@ -173,34 +175,34 @@ curl --location 'https://api.limacharlie.io/v1/extension/request/ext-reliable-ta
 --data 'oid=$YOUR_OID&action=untask&data={"sid":"sensor-123-abc"}'
 ```
 
-Untasking removes tasks from the delivery queue, which is the only place a not-yet-delivered task exists — so once `untask` returns, a queued task can no longer be delivered. A task that has already been delivered to a connected sensor cannot be recalled.
+The `untask` action removes tasks from the delivery queue. The queue is the only place where a task that is not yet delivered exists. After `untask` returns, the extension cannot deliver the queued task. You cannot recall a task that the extension already delivered to a connected sensor.
 
 ## TTL and Delivery Guarantees
 
-The `ttl` is the authoritative bound on how late a task may be delivered:
+The `ttl` is the authoritative bound on how late the extension can deliver a task:
 
-- The expiry (`creation time + ttl`) is checked at every delivery attempt. Once expired, a task is never delivered, including to a sensor that reconnects after the TTL has elapsed.
-- There is no minimum TTL. If you need "run this within the next 2 minutes or not at all", `"ttl":120` does exactly that.
-- Expired tasks do not appear in `list` results and require no cleanup, though calling `untask` on them is harmless.
+- The extension checks the expiry (`creation time + ttl`) at each delivery attempt. After a task expires, the extension never delivers it, even to a sensor that reconnects after the TTL.
+- There is no minimum TTL. For "run this in the next 2 minutes or not at all", `"ttl":120` does exactly that.
+- Expired tasks do not show in `list` results and need no cleanup. A call to `untask` on them causes no problem.
 
-If you are implementing your own timeout on top of reliable tasking (e.g., marking a task as failed after N seconds), the recommended pattern is:
+To build your own timeout on top of reliable tasking, for example to mark a task as failed after N seconds, use this pattern:
 
-1. Create the task with `ttl` set to your timeout. This guarantees the platform will not deliver it after your deadline.
-2. Optionally call `untask` with the `task_id` when you declare the timeout, as immediate cleanup.
+1. Create the task with `ttl` set to your timeout. The platform then does not deliver the task after your deadline.
+2. Call `untask` with the `task_id` when you declare the timeout. This step is optional and cleans up immediately.
 
-One caveat: the TTL bounds when delivery *starts*, not when results arrive. A sensor that reconnects just before expiry can still receive the task, and its `RECEIPT`/`_REP` events may arrive after your deadline. Design your response handling (D&R rules, `context` matching) to tolerate a late receipt for a task delivered near the end of its TTL.
+The TTL bounds when delivery *starts*, not when results arrive. A sensor that reconnects just before the expiry can still get the task. Its `RECEIPT` and `_REP` events can arrive after your deadline. Make your response handling (D&R rules, `context` matching) accept a late receipt for a task that the extension delivered near the end of its TTL.
 
 ## Monitoring Task Delivery
 
-The extension reports its activity as events in your organization through a webhook Adapter named `ext-reliable-tasking` (installed automatically on subscription). Each event's type reflects the action:
+The extension reports its activity as events in your organization. It uses a webhook Adapter named `ext-reliable-tasking`, which LimaCharlie installs automatically when you subscribe. The type of each event shows the action:
 
-- `add_task`: A new tasking request was recorded (includes `task_id`, targeting criteria, and `ttl`)
-- `try_task`: A targeted sensor is online and delivery is being attempted
-- `task_sent`: The task was sent to the sensor (includes `sid` and `task_id`)
-- `task_done`: The sensor confirmed receipt; the task is removed from the queue
-- `task_failure`: Sending the task to a sensor failed (includes the error)
+- `add_task`: The extension recorded a new tasking request (includes `task_id`, the targeting criteria, and `ttl`)
+- `try_task`: A targeted sensor is online, and the extension tries delivery
+- `task_sent`: The extension sent the task to the sensor (includes `sid` and `task_id`)
+- `task_done`: The sensor confirmed receipt, and the extension removed the task from the queue
+- `task_failure`: The extension failed to send the task to a sensor (includes the error)
 
-These events can be used in D&R rules to track fleet-wide completion or alert on failures, for example:
+Use these events in D&R rules to track completion across the fleet or to alert on failures. For example:
 
 ```yaml
 detect:
@@ -215,11 +217,11 @@ respond:
 
 ## Capturing Task Responses
 
-If you're using reliable tasks to issue commands across your sensors, you're probably going to want to view or act on the responses from these commands as well.
+If you use reliable tasks to send commands to your sensors, you can also see or act on the responses to these commands.
 
-If you add a value to the `context` parameter in the extension request, this value will be reflected in the `investigation_id` of the corresponding `RECEIPT` or `_REP` event, allowing you to craft a D&R rule based on the response.
+If you add a value to the `context` parameter in the extension request, that value shows in the `investigation_id` of the matching `RECEIPT` or `_REP` event. You can then write a D&R rule on the response.
 
-The above example cURL command has a `context` of `version` so the below D&R rule looks for that value.
+The example cURL command above has a `context` of `version`. The D&R rule below looks for that value.
 
 ### Example detect block
 
@@ -241,15 +243,15 @@ value: version
 
 ## Fanning Out at Scale
 
-A single `task` request fans out server-side: the extension resolves the `tag` or `selector` to the full sensor list, queues one task per sensor, and paces the deliveries itself. To send one command to many sensors, make **one** API call with a `tag` or `selector` — do not loop over sensors making one call per `sid`.
+One `task` request fans out on the server. The extension resolves the `tag` or the `selector` to the full list of sensors, queues one task for each sensor, and paces the deliveries. To send one command to many sensors, make **one** API call with a `tag` or a `selector`. Do not loop over the sensors and make one call for each `sid`.
 
-Like all LimaCharlie REST API calls, requests to the extension endpoint are subject to per-credential API rate limits, measured over a 60-second window. A client exceeding its quota receives an `HTTP 429` response that includes `X-RateLimit-Quota` (requests allowed per window) and `X-RateLimit-Period` (window length in seconds) headers; back off and retry after the window when you receive one. With server-side fan-out, even very large deployments should only need a handful of API calls, keeping you well below the limits.
+Like all LimaCharlie REST API calls, requests to the extension endpoint obey API rate limits for each credential, measured over a 60-second window. A client that exceeds its quota gets an `HTTP 429` response. The response includes the `X-RateLimit-Quota` header (requests allowed for each window) and the `X-RateLimit-Period` header (window length in seconds). After such a response, back off and retry after the window. With fan-out on the server, even large deployments need only a few API calls, which keeps you below the limits.
 
 ## Migrating Rule from legacy Service to new Extension
 
-***Note: LimaCharlie has migrated from Services to Extensions. Legacy services are no longer supported.***
+***Note: LimaCharlie migrated from Services to Extensions. Legacy services are no longer supported.***
 
-The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference the legacy reliable tasking service and convert them to use the extension.
+The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to check if any rules reference the legacy reliable tasking service, and to convert them to use the extension.
 
 Command line to preview Reliable Tasking rule conversion:
 
@@ -257,9 +259,9 @@ Command line to preview Reliable Tasking rule conversion:
 limacharlie extension convert_rules --name ext-reliable-tasking
 ```
 
-A dry-run response (default) will display the rule name being changed, a JSON of the service request rule and a JSON of the incoming extension request change.
+A dry-run response (the default) shows the name of the rule that changes, a JSON of the service request rule, and a JSON of the new extension request.
 
-To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-run`
+To apply the change to the rule, set the `--dry-run` flag to `--no-dry-run`.
 
 Command line to execute reliable tasking rule conversion:
 

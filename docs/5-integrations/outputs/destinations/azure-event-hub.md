@@ -4,7 +4,7 @@ Output events and detections to an Azure Event Hub (similar to PubSub and Kafka)
 
 - `connection_string`: the connection string provided by Azure.
 
-Note that the connection string should end with `;EntityPath=your-hub-name` which is sometimes missing from the "Connection String" provided by Azure.
+The connection string must end with `;EntityPath=your-hub-name`. The "Connection String" from Azure sometimes does not include this part.
 
 Example:
 

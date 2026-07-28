@@ -1,12 +1,12 @@
 # Tutorial: Ingesting OpenTelemetry Data via Webhook
 
-LimaCharlie webhook adapters support the [OpenTelemetry Protocol (OTLP)](https://opentelemetry.io/docs/specs/otlp/) over HTTP, allowing you to send OTel **logs**, **traces**, and **metrics** directly into LimaCharlie without running a separate collector.
+LimaCharlie webhook adapters support the [OpenTelemetry Protocol (OTLP)](https://opentelemetry.io/docs/specs/otlp/) over HTTP. You can send OTel **logs**, **traces**, and **metrics** directly into LimaCharlie without a separate collector.
 
-This builds on the standard [Webhook Adapter](webhook-adapter.md). If you haven't already, review that page first to understand webhook creation and configuration.
+This tutorial builds on the standard [Webhook Adapter](webhook-adapter.md). Read that page first to learn how to create and configure a webhook.
 
 ## How It Works
 
-OpenTelemetry SDKs and collectors export telemetry by sending HTTP POST requests to an OTLP endpoint. LimaCharlie's webhook gateway recognizes OTLP paths appended to the standard webhook URL and automatically parses the protobuf or JSON payloads into individual events.
+OpenTelemetry SDKs and collectors export telemetry with HTTP POST requests to an OTLP endpoint. The LimaCharlie webhook gateway recognizes OTLP paths that you add to the standard webhook URL. It parses the protobuf or JSON payloads into single events.
 
 The URL pattern is:
 
@@ -22,7 +22,7 @@ Where `<signal>` is one of:
 | `traces`  | `/v1/traces`  | Spans from OTel tracing SDKs                 |
 | `metrics` | `/v1/metrics` | Metric data points from OTel metrics SDKs    |
 
-This matches the standard OTLP HTTP path convention, so OTel SDKs work out of the box by setting the base endpoint URL to your webhook URL.
+This is the standard OTLP HTTP path convention. Set the base endpoint URL of the OTel SDK to your webhook URL, and the SDK operates correctly.
 
 ## Supported Content Types
 
@@ -35,9 +35,9 @@ This matches the standard OTLP HTTP path convention, so OTel SDKs work out of th
 
 ### 1. Create a Webhook Adapter
 
-Follow the [Webhook Adapter tutorial](webhook-adapter.md) to create a webhook. The configuration is identical - no special settings are needed for OTel support.
+Obey the [Webhook Adapter tutorial](webhook-adapter.md) to create a webhook. The configuration is the same - OTel support needs no special settings.
 
-For example, using the CLI:
+For example, with the CLI:
 
 ```bash
 echo '{
@@ -59,13 +59,13 @@ echo '{
 
 ### 2. Get Your Webhook URL
 
-Retrieve your hook domain:
+Get your hook domain:
 
 ```bash
 limacharlie org urls
 ```
 
-This returns a domain like `9157798c50af372c.hook.limacharlie.io`. Your full OTLP base endpoint is:
+The command returns a domain such as `9157798c50af372c.hook.limacharlie.io`. Your full OTLP base endpoint is:
 
 ```text
 https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret
@@ -73,7 +73,7 @@ https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret
 
 ### 3. Configure Your OTel SDK or Collector
 
-Set the OTLP HTTP exporter endpoint to your webhook URL. The OTel SDK will automatically append `/v1/logs`, `/v1/traces`, or `/v1/metrics` as needed.
+Set the OTLP HTTP exporter endpoint to your webhook URL. The OTel SDK adds `/v1/logs`, `/v1/traces`, or `/v1/metrics` automatically, as necessary.
 
 #### Environment Variables (any OTel SDK)
 
@@ -83,7 +83,7 @@ export OTEL_EXPORTER_OTLP_ENDPOINT="https://9157798c50af372c.hook.limacharlie.io
 export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
 ```
 
-You can also configure per-signal endpoints:
+You can also configure an endpoint for each signal:
 
 ```bash
 export OTEL_EXPORTER_OTLP_LOGS_ENDPOINT="https://9157798c50af372c.hook.limacharlie.io/<OID>/otel-hook/my-otel-secret/v1/logs"
@@ -93,7 +93,7 @@ export OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://9157798c50af372c.hook.limach
 
 #### OTel Collector Configuration
 
-If you're running an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/), configure an `otlphttp` exporter:
+If you run an [OpenTelemetry Collector](https://opentelemetry.io/docs/collector/), configure an `otlphttp` exporter:
 
 ```yaml
 exporters:
@@ -112,11 +112,11 @@ service:
 
 ## Event Format
 
-Each OTel record is converted into a JSON event and ingested as a LimaCharlie event on the webhook sensor's timeline. All events include an `otel_type` field to identify their type.
+LimaCharlie converts each OTel record into a JSON event. It ingests the event on the timeline of the webhook sensor. Each event has an `otel_type` field that identifies the type.
 
 ### Log Events
 
-Each OTel `LogRecord` becomes an event with the following fields:
+Each OTel `LogRecord` becomes an event with these fields:
 
 | Field                       | Description                                                    |
 |-----------------------------|----------------------------------------------------------------|
@@ -182,7 +182,7 @@ Each OTel `Span` becomes an event:
 
 ### Metric Events
 
-Each metric data point becomes a separate event. The `metric_type` field indicates the aggregation type:
+Each metric data point becomes a separate event. The `metric_type` field shows the aggregation type:
 
 | `metric_type`             | Description                          |
 |---------------------------|--------------------------------------|
@@ -192,7 +192,7 @@ Each metric data point becomes a separate event. The `metric_type` field indicat
 | `summary`                 | Pre-computed quantiles               |
 | `exponential_histogram`   | Distribution with exponential buckets|
 
-Common fields across all metric types:
+Common fields for all metric types:
 
 | Field                  | Description                                             |
 |------------------------|---------------------------------------------------------|
@@ -206,11 +206,11 @@ Common fields across all metric types:
 | `description`          | Metric description (if provided)                        |
 | `unit`                 | Metric unit (if provided)                               |
 
-For `gauge` and `sum` types, the `value` field contains the numeric value. For `sum`, additional fields `is_monotonic` and `aggregation_temporality` are included.
+For the `gauge` and `sum` types, the `value` field contains the numeric value. The `sum` type also has the `is_monotonic` and `aggregation_temporality` fields.
 
 ## Writing D&R Rules for OTel Events
 
-OTel events flow through the same D&R rule evaluation as regular webhook events. You can write rules that target the `otel_type` field or any other field in the event.
+The same D&R rule evaluation applies to OTel events and to other webhook events. You can write rules that target the `otel_type` field, or any other field in the event.
 
 Example D&R rule to detect error-level OTel logs:
 
@@ -230,7 +230,7 @@ respond:
 
 ## Backward Compatibility
 
-Standard (non-OTel) webhook requests to `/<OID>/<HOOKNAME>/<SECRET>` continue to work exactly as before. OTel support is activated only when the URL contains the `/v1/logs`, `/v1/traces`, or `/v1/metrics` suffix.
+Standard (non-OTel) webhook requests to `/<OID>/<HOOKNAME>/<SECRET>` continue to operate as before. OTel support starts only when the URL contains the `/v1/logs`, `/v1/traces`, or `/v1/metrics` suffix.
 
 ## Related Articles
 

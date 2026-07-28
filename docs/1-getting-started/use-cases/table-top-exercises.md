@@ -1,17 +1,17 @@
 # Table Top Exercises
 
-Enhance your security preparedness table-top exercises with LimaCharlie. Conduct realistic multi-platform simulations, optimize incident response procedures, and empower your team to face evolving cyber threats with confidence.
+Use LimaCharlie to improve the table-top exercises that prepare your security team. Run realistic simulations on many platforms, improve your incident response procedures, and prepare your team for cyber threats that change.
 
 ## Problems with table top exercises
 
-- **Costly and time-consuming setup:**Traditional tabletop exercises (TTX) often require dedicated infrastructure, extensive preparation, and significant resource investment, making them infrequent and burdensome.
-- **Limited platform capabilities:** Many TTX platforms lack cross-platform support, realistic attack simulations, and comprehensive reporting, hindering effective incident response training.
-- **Fragmented security awareness:** Traditional scenarios might not encompass multi-platform environments and evolving attack vectors, leaving security teams unprepared for real-world threats.
+- **Costly and time-consuming setup:** Traditional tabletop exercises (TTX) need dedicated infrastructure, long preparation, and many resources. Teams therefore run them rarely.
+- **Limited platform capabilities:** Many TTX platforms have no support for multiple platforms, no realistic attack simulations, and no full reporting. This limits the value of the incident response training.
+- **Fragmented security awareness:** A traditional scenario can omit environments with multiple platforms and new attack vectors. The security team is then not prepared for real threats.
 
 ## LimaCharlie's solution
 
-- **Pay-as-you-go platform:** Access LimaCharlie's fully featured capabilities with flexible, pay-as-you-go pricing. Conduct exercises as needed without costly upfront investments or long-term contracts.
-- **Rapid deployment and customization:** Get started with LimaCharlie's quickly and easily. Launch realistic cyber attack simulations within minutes, tailored to your specific environment and security concerns.
-- **Comprehensive multi-platform simulations:** Test your team's response to complex attack scenarios across Windows, macOS, Linux, and cloud environments, mimicking real-world threats. Leverage LimaCharlie's API to integrate your existing security tools, creating a truly holistic response simulation.
-- **Detailed reporting and insights:** Gain valuable insights from post-exercise reports that analyze team performance, identify skill gaps, and offer actionable recommendations for improving your incident response procedures.
-- **Customizable attack libraries:** Utilize pre-built or customize attack scenarios, based on Atomic Red Team, to run your training exercises. Based on your specific industry, threat landscape, and vulnerabilities, ensure you conduct relevant and valuable training exercises.
+- **Pay-as-you-go platform:** Use all LimaCharlie capabilities with pay-as-you-go pricing. Run an exercise when you need one, with no cost in advance and no long-term contract.
+- **Rapid deployment and customization:** Start with LimaCharlie in a short time. Start realistic simulations of cyber attacks in minutes, adapted to your environment and your security concerns.
+- **Multi-platform simulations:** Test the response of your team to complex attack scenarios on Windows, macOS, Linux, and cloud environments that copy real threats. Use the LimaCharlie API to integrate your existing security tools into one response simulation.
+- **Detailed reporting and insights:** Read the reports that the platform makes after an exercise. The reports analyze the performance of the team, show gaps in skills, and give recommendations to improve your incident response procedures.
+- **Customizable attack libraries:** Use the supplied attack scenarios, which are based on Atomic Red Team, or customize them for your training exercises. Adapt each exercise to your industry, your threat landscape, and your vulnerabilities to keep the training relevant.

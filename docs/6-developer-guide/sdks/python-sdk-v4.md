@@ -2,18 +2,17 @@
 
 !!! warning "Deprecated"
     Version 4 of the LimaCharlie Python SDK is deprecated and will be removed
-    in a future release. New code should use the
-    [Python SDK](python-sdk.md) (v5). This page is kept for users
-    maintaining existing v4 integrations. Both v4 and v5 target the same
-    LimaCharlie REST API, so the underlying capabilities available to your
-    code are unchanged.
+    in a future release. Use the [Python SDK](python-sdk.md) (v5) for new
+    code. This page stays available for users that maintain existing v4
+    integrations. v4 and v5 use the same LimaCharlie REST API, so your code
+    has the same capabilities with each version.
 
 ## Overview
 
-The v4 Python SDK is a thin abstraction over the LimaCharlie REST API,
-centered on the `Manager` object. The REST API supports more functionality
-than the SDK; if a REST endpoint you need is not exposed in v4, prefer
-migrating to v5 rather than extending v4.
+The v4 Python SDK is a thin abstraction of the LimaCharlie REST API. The
+`Manager` object is at its center. The REST API supports more functions
+than the SDK. If v4 does not expose a REST endpoint that you need, migrate
+to v5 instead of an extension to v4.
 
 - Source (v4 branch): <https://github.com/refractionPOINT/python-limacharlie/tree/v4>
 - REST API: <https://api.limacharlie.io>
@@ -48,23 +47,23 @@ Core dependencies (installed automatically):
 
 ## Authentication
 
-The SDK and CLI support several ways of providing credentials.
+The SDK and the CLI support several ways to give credentials.
 
 ### Logging In
 
-The simplest path is to log in with an
+The most direct method is to log in with an
 [API key](../../7-administration/access/api-keys.md):
 
 ```bash
 limacharlie login
 ```
 
-You will be prompted for an `OID` (Organization ID, in UUID format) and an
-API key, both available from the **REST API** section of the web interface.
+The CLI prompts you for an `OID` (Organization ID, in UUID format) and an
+API key. You get both from the **REST API** section of the web interface.
 
-The login flow supports named environments — credentials are stored under a
-chosen name, with one set used as the default when no environment is
-selected.
+The login flow supports named environments. The CLI stores credentials
+under a name that you choose. It uses one set as the default when you
+select no environment.
 
 To list available environments:
 
@@ -78,20 +77,20 @@ To activate a named environment in the current shell session:
 . <(limacharlie use dev-org)
 ```
 
-You can also provide a `UID` (User ID) at login to use a *user-scoped* API
-key, which carries the full set of permissions assigned to that user (see
-**User Profile** in the web interface).
+You can also give a `UID` (User ID) at login to use a *user-scoped* API
+key. This key has all the permissions of that user. See **User Profile** in
+the web interface.
 
 ### Environment Variables
 
-`LC_OID`, `LC_API_KEY`, and `LC_UID` can replace the values stored at login.
-Environment variables are used when no other credentials are explicitly
-provided.
+`LC_OID`, `LC_API_KEY`, and `LC_UID` can replace the values that you store
+at login. The SDK uses the environment variables when you give no other
+credentials.
 
 ### Credentials File
 
-When using `limacharlie login`, credentials are stored in plain text at
-`~/.limacharlie`:
+When you use `limacharlie login`, the CLI stores credentials in plain text
+at `~/.limacharlie`:
 
 ```yaml
 # Top-level / default credentials
@@ -112,14 +111,14 @@ env:
     # uid: xxx
 ```
 
-If you edit this file by hand, preserve the original ownership and `0600`
-permissions so that other users cannot read it. If storing plain-text
-credentials on disk is unacceptable for your environment, use environment
-variables instead.
+If you edit this file by hand, keep the original ownership and the `0600`
+permissions. Other users then cannot read the file. If your environment
+does not allow plain-text credentials on disk, use environment variables
+instead.
 
 ## Docker
 
-A Docker image with the latest tool is published at
+The latest tool is available as a Docker image at
 <https://hub.docker.com/r/refractionpoint/limacharlie>:
 
 ```bash
@@ -135,10 +134,10 @@ docker run -v "${HOME}/.limacharlie:/root/.limacharlie:ro" \
 The entry point for the SDK is the `Manager` object. It holds credentials
 and is bound to a specific Organization.
 
-You can authenticate `Manager` by passing an `oid` (and optionally a `uid`)
-together with either a `secret_api_key` or a `jwt`. Alternatively, pass a
-named `environment` from `limacharlie login`. If no credentials are
-provided, `Manager` falls back to the default environment.
+To authenticate `Manager`, give an `oid` (and optionally a `uid`) with
+either a `secret_api_key` or a `jwt`. As an alternative, give a named
+`environment` from `limacharlie login`. If you give no credentials,
+`Manager` uses the default environment.
 
 ### Importing
 
@@ -170,51 +169,50 @@ sensor.task('yara_scan -e *evil.exe ' + YARA_SIG)
 
 #### Manager
 
-The general-purpose component for organization-level operations: querying
-sensors, creating and removing Outputs, and so on.
+The general-purpose component for operations at the organization level:
+queries of sensors, creation and removal of Outputs, and more.
 
 #### Firehose
 
-`Firehose` listens on a local port for LimaCharlie data. Internally it
-creates a Syslog Output on LimaCharlie pointing at itself, and removes that
-Output on shutdown. Incoming data is added to `firehose.queue` (a standard
-`queue.Queue`) as it arrives.
+`Firehose` listens on a local port for LimaCharlie data. It creates a
+Syslog Output on LimaCharlie that points at itself, and it removes that
+Output at shutdown. It adds incoming data to `firehose.queue` (a standard
+`queue.Queue`) as the data arrives.
 
-It is a basic building block for automation against LimaCharlie.
+It is a basic component for automation with LimaCharlie.
 
 #### Spout
 
-`Spout` plays a similar role to `Firehose`, but does not require an open
-listening port. Instead it streams data over HTTPS from
-`stream.limacharlie.io`, which makes it work behind NATs and proxies.
+`Spout` has a similar function to `Firehose`, but it does not need an open
+listening port. It streams data over HTTPS from `stream.limacharlie.io`.
+Thus it works behind NATs and proxies.
 
-A `Spout` is created automatically when `Manager` is instantiated with
-`is_interactive=True` and an `inv_id`, in order to provide real-time
-feedback from sensor tasking.
+When you create a `Manager` with `is_interactive=True` and an `inv_id`, the
+SDK creates a `Spout` automatically. The `Spout` gives real-time feedback
+from sensor tasking.
 
 #### Sensor
 
 The object returned by `manager.sensor(sensor_id)`.
 
 It exposes `task`, `hostname`, `tag`, `untag`, `getTags`, and related
-functions, and is the main way to interact with a specific sensor.
+functions. It is the primary interface to a specific sensor.
 
-`task` sends a one-way task to a sensor; the response (if any) is not
-collected. To interact with a sensor in real time, instantiate `Manager`
-with `is_interactive=True` and use either `request` (returns a
-`FutureResults` object) or `simpleRequest` (blocks until the response is
-available).
+`task` sends a one-way task to a sensor. It does not collect the response.
+To interact with a sensor in real time, create a `Manager` with
+`is_interactive=True`. Then use `request` (it returns a `FutureResults`
+object) or `simpleRequest` (it blocks until the response is available).
 
 #### Artifacts
 
 `Artifacts` uploads
 [Artifact Collection](../../5-integrations/extensions/limacharlie/artifact.md)
-items to LimaCharlie without going through a sensor.
+items to LimaCharlie without a sensor.
 
 #### Payloads
 
 `Payloads` manages the executable
-[payloads](../../2-sensors-deployment/endpoint-agent/payloads.md) made
+[payloads](../../2-sensors-deployment/endpoint-agent/payloads.md) that are
 available to sensors.
 
 #### Replay
@@ -225,24 +223,24 @@ re-evaluate
 
 #### Search
 
-`Search` performs an IOC search across multiple organizations.
+`Search` does an IOC search across more than one organization.
 
 #### SpotCheck
 
-`SpotCheck` (also called Fleet Check) performs an active search — querying
-sensors directly rather than indexed history — for various IOCs across an
-organization's sensors.
+`SpotCheck` (also called Fleet Check) does an active search for IOCs across
+the sensors of an organization. It queries the sensors directly and not the
+indexed history.
 
 #### Configs
 
-`Configs` retrieves an organization's configuration as a config file, or
-applies a config file to an organization. This is the foundation of the
+`Configs` gets the configuration of an organization as a config file. It
+can also apply a config file to an organization. It is the base of the
 Infrastructure-as-Code workflow in v4.
 
 #### Webhook
 
-`Webhook` is a reference implementation for handling webhooks emitted by
-LimaCharlie, including verification of the shared-secret signature.
+`Webhook` is a reference implementation that handles the webhooks that
+LimaCharlie sends. It also checks the shared-secret signature.
 
 ### Examples
 
@@ -432,8 +430,8 @@ python -m limacharlie.Firehose 1.2.3.4:9424 event \
   --oid c82e5c17-d519-4ef5-a4ac-caa4a95d31ca
 ```
 
-Listens on `1.2.3.4:9424` for incoming connections from LimaCharlie.
-Receives only events from hosts tagged `fh_test`.
+This command listens on `1.2.3.4:9424` for incoming connections from
+LimaCharlie. It receives only events from hosts with the `fh_test` tag.
 
 ### Spout
 
@@ -442,10 +440,11 @@ python -m limacharlie.Spout event \
   --oid c82e5c17-d519-4ef5-a4ac-caa4a95d31ca
 ```
 
-Behaves like Firehose, but instead of accepting an incoming connection it
-streams data from `stream.limacharlie.io` over HTTPS. This means Spout
-works through NATs and proxies and is more convenient for short-lived
-ad-hoc output, though less reliable than a Firehose for very large volumes.
+Spout operates like Firehose, but it does not accept an incoming
+connection. It streams data from `stream.limacharlie.io` over HTTPS. Thus
+Spout works through NATs and proxies, and it is more convenient for
+short-lived ad-hoc output. But it is less reliable than a Firehose for very
+large volumes.
 
 ### Configs
 
@@ -455,13 +454,13 @@ limacharlie configs fetch --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca
 limacharlie configs push --dry-run --oid c82e5c17-d519-4ef5-a4ac-c454a95d31ca
 ```
 
-`fetch` writes the organization's configuration to a config file (default
-`lc_conf.yaml`) in YAML format.
+`fetch` writes the configuration of the organization to a config file in
+YAML format. The default file is `lc_conf.yaml`.
 
 `push` uploads the rules in the config file to the organization. The
 `--force` flag also removes active rules that are not present in the config
-file. `--dry-run` simulates the sync and prints the changes that would be
-made.
+file. `--dry-run` simulates the sync and prints the changes that the sync
+will make.
 
 `--config` selects an alternate config file. `--api-key` reads the API key
 from a file on disk (or from STDIN if `-` is given).
@@ -470,10 +469,9 @@ These capabilities are also available directly through the
 `limacharlie.Configs` object.
 
 The sync covers the common configurable surfaces. Flags such as
-`--no-rules` and `--no-outputs` exclude individual sections; see
-`limacharlie configs --help` for the full list. The `include` directive
-lets you compose multiple config files together, which is convenient for
-managing large rule sets.
+`--no-rules` and `--no-outputs` exclude single sections. For the full list,
+see `limacharlie configs --help`. The `include` directive combines more
+than one config file. This is convenient for large rule sets.
 
 ### Spot Checks
 
@@ -482,10 +480,10 @@ python -m limacharlie.SpotCheck \
   --no-macos --no-linux --tags vip --file 'c:\\evil.exe'
 ```
 
-Performs an organization-wide check for specific indicators of compromise.
-Available as the `SpotCheck` object or as a CLI module. Supports many IOC
-types including file names, directories, registry keys, file hashes, and
-YARA signatures.
+This command checks all of an organization for specific indicators of
+compromise. It is available as the `SpotCheck` object or as a CLI module.
+It supports many IOC types: file names, directories, registry keys, file
+hashes, and YARA signatures.
 
 For full usage:
 
@@ -499,7 +497,7 @@ python -m limacharlie.SpotCheck --help
 limacharlie search --help
 ```
 
-Performs IOC searches across all locally configured organizations.
+Does IOC searches across all organizations that you configured locally.
 
 ### Artifact Upload
 
@@ -509,7 +507,7 @@ limacharlie artifacts upload --help
 
 Uploads
 [Artifact Collection](../../5-integrations/extensions/limacharlie/artifact.md)
-items directly to LimaCharlie from the CLI (no agent required).
+items directly to LimaCharlie from the CLI. No sensor is necessary.
 
 ### Artifact Download
 
@@ -544,7 +542,7 @@ limacharlie events --help
 limacharlie detections --help
 ```
 
-Prints events or detections matching the given parameters to STDOUT.
+Prints the events or detections that match the given parameters to STDOUT.
 
 ### List Sensors
 
@@ -552,7 +550,7 @@ Prints events or detections matching the given parameters to STDOUT.
 limacharlie sensors --selector '*'
 ```
 
-Prints basic sensor information for all sensors matching the selector.
+Prints basic sensor information for each sensor that matches the selector.
 
 ### Extension
 
@@ -560,7 +558,7 @@ Prints basic sensor information for all sensors matching the selector.
 limacharlie extension --help
 ```
 
-Performs actions against
+Does actions on
 [Extensions](../../5-integrations/extensions/index.md) from the CLI.
 
 ### ARLs
@@ -569,8 +567,8 @@ Performs actions against
 limacharlie get-arl --help
 ```
 
-Prints the data returned from the given
-[ARL](../../8-reference/authentication-resource-locator.md). Example:
+Prints the data that the given
+[ARL](../../8-reference/authentication-resource-locator.md) returns. Example:
 
 ```bash
 limacharlie get-arl -a [github,Yara-Rules/rules/email]

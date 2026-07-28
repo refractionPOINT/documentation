@@ -1,194 +1,202 @@
 # Grid: Your AI Field Engineer
 
-Grid is the fastest way to put a working AI security engineer inside your
-environment. You describe the outcome you want in plain English — "triage
-quarantined phishing in our Google Workspace and open a case for anything
-risky" — and Grid stands up the automation that delivers it, then keeps
-watching over it for you.
+Grid puts a working AI security engineer in your environment. You describe the
+outcome that you want in plain English — "triage quarantined phishing in our
+Google Workspace and open a case for anything risky". Grid then builds the
+automation that delivers that outcome, and it continues to watch over it for
+you.
 
-No rule syntax to learn. No detection logic to write. No integrations to wire
-by hand. You bring the goal; Grid builds and runs the security program.
+Grid needs no rule syntax, no detection logic, and no manual integration work
+from you. You supply the goal, and Grid builds and runs the security program.
 
 !!! tip "The one-sentence version"
-    Grid takes a plain-language goal and turns it into running, supervised
-    security automation in your LimaCharlie organization — usually in a few
+    Grid takes a plain-language goal and makes it into supervised security
+    automation that runs in your LimaCharlie organization — usually in a few
     minutes.
 
 ## What Grid actually gives you
 
-When you onboard with Grid, you don't get a chatbot that answers questions and
-forgets. You get an **AI Field Deployed Engineer (FDE)** — a persistent,
-named expert that lives in your organization.
+Grid is not a chatbot that answers questions and then forgets them. When you
+onboard with Grid, you get an **AI Field Deployed Engineer (FDE)** — a
+persistent, named expert that stays in your organization.
 
-The FDE is modeled on a real Forward Deployed Engineer: the resident expert a
-security vendor embeds with a customer to design, build, and tune their setup.
-Two things make this different from a typical AI assistant:
+The FDE is modeled on a real Forward Deployed Engineer: the resident expert
+that a security vendor puts with a customer to design, build, and tune the
+setup of that customer. Two things make the FDE different from a usual AI
+assistant:
 
-- **It supervises; it doesn't do the grunt work itself.** To "automate
-  phishing triage," the FDE doesn't read your emails one by one. It *builds* a
-  dedicated worker agent whose only job is email triage, wires up the data
-  source and the trigger that feeds it, and gives it a place to file its
-  findings. Then the FDE steps back and watches that worker — is it doing a
-  good job, is the data still flowing, does it need tuning?
-- **It keeps working when you're not looking.** The FDE runs unattended on a
-  schedule you choose (anywhere from every 30 minutes to weekly). Every run it
-  re-checks the workers it built, looks for gaps, and improves what's drifting.
+- **It supervises. It does not do the repetitive work itself.** To "automate
+  phishing triage," the FDE does not read your emails one by one. It *builds* a
+  dedicated worker agent whose only job is email triage, connects the data
+  source and the trigger that feed it, and gives it a place to file its
+  findings. The FDE then watches that worker: the quality of the work, the flow
+  of the data, and the need for tuning.
+- **It continues to work when you do not watch it.** The FDE runs unattended on
+  a schedule that you choose (from every 30 minutes to every week). At each run
+  it checks the workers that it built, looks for gaps, and corrects what
+  drifts.
 
-Think of it as hiring an engineer who designs your security automation, builds
-it, and then shows up every day to make sure it's still working — except it
-does the first build in minutes and never takes a day off.
+The FDE is like an engineer that designs your security automation, builds it,
+and then comes back every day to make sure that it still works — but it does
+the first build in minutes and it never takes a day off.
 
 ## Built on battle-hardened infrastructure
 
-Grid is new. What it stands on is not.
+Grid is new. The infrastructure below it is not.
 
-Every worker agent, trigger, and detection Grid builds runs on the
+Every worker agent, trigger, and detection that Grid builds runs on the
 **LimaCharlie platform** — the same Agentic SecOps workspace that MSSPs and
-security teams already rely on to run detection and response across their
-fleets at scale. The data pipeline, the detection-and-response engine, the
-secrets vault, the case management, the audit trail — none of it is new code
-written for an AI demo. Grid is an expert *operator* of infrastructure that has
-been carrying real production security workloads for years.
+security teams already use to run detection and response across their fleets at
+scale. The data pipeline, the detection-and-response engine, the secrets vault,
+the case management, and the audit trail are not new code written for an AI
+demonstration. Grid is an expert *operator* of infrastructure that carried real
+production security workloads for years.
 
-That matters in two practical ways:
+This is important in two practical ways:
 
-- **Everything Grid builds is real LimaCharlie configuration** — D&R rules,
-  cloud adapters, playbooks, AI agents — that you can inspect, edit, export,
-  or run yourself. There is no Grid-only black box your automation is trapped
-  inside.
-- **The guardrails are platform guardrails.** Grid's permissions, data
-  residency, audit logging, and rollback are enforced by LimaCharlie itself,
-  not by the AI's good intentions (more on this below).
+- **Everything that Grid builds is real LimaCharlie configuration** — D&R
+  rules, cloud adapters, playbooks, AI agents — that you can inspect, edit,
+  export, or run yourself. Grid keeps no part of your automation in a Grid-only
+  black box.
+- **The guardrails are platform guardrails.** LimaCharlie itself enforces the
+  permissions, the data residency, the audit logging, and the rollback of Grid.
+  The good intentions of the AI do not enforce them (more on this below).
 
 ## How it works, end to end
 
-Grid runs as a short, guided conversation. Here is the whole arc:
+Grid runs as a short, guided conversation. These are all the steps:
 
 1. **You state the outcome.** Grid asks one main question: what do you want to
-   be true in this organization that isn't true today? You answer in plain
-   language. Grid leads with expert recommendations instead of quizzing you on
+   be true in this organization that is not true today? You answer in plain
+   language. Grid leads with expert recommendations and does not ask you for
    technical details.
-2. **Grid connects the data, if needed.** An FDE is worthless without the data
-   its outcome depends on. If the source you need (a SaaS feed, cloud logs,
-   endpoint telemetry) isn't flowing yet, Grid helps you connect it first —
-   walking you through credentials and picking the right adapter type for you.
-3. **Grid proposes a charter.** It writes a complete, plain-language plan: the
-   outcome, exactly what it will build, what runs automatically versus what
-   needs your approval, and how you'll know it's working. It validates this
-   against your *real* data before showing it to you — so the plan ships with
-   verified specifics, not guesses. You review it and reply **go** (or ask for
-   changes).
-4. **Grid builds the whole thing.** On its first run the FDE builds the
+2. **Grid connects the data, if necessary.** An FDE needs the data that its
+   outcome depends on. If the source that you need (a SaaS feed, cloud logs,
+   endpoint telemetry) does not flow yet, Grid helps you connect it first. Grid
+   guides you through the credentials and selects the correct adapter type for
+   you.
+3. **Grid proposes a charter.** It writes a complete plan in plain language:
+   the outcome, what it will build, what runs automatically, what needs your
+   approval, and how you will know that it works. Grid validates the plan
+   against your *real* data before it shows the plan to you, so the plan holds
+   verified details and not guesses. You review the plan and reply **go**, or
+   ask for changes.
+4. **Grid builds the whole solution.** At its first run, the FDE builds the
    *complete* solution end to end — every worker agent, every trigger, every
-   detection — and tests it before it hands back to you. No "phase one now,
-   the rest later."
+   detection — and tests it before it hands control back to you. There is no
+   "phase one now, the rest later."
 5. **Grid shows you what it built.** You get a visual map (the "story") of
-   everything now running in your organization: the FDE supervisor, every
-   worker it created, and how they connect.
-6. **Grid keeps watch.** From then on the FDE runs on its schedule, supervising
-   what it built and flagging anything that needs your attention.
+   everything that now runs in your organization: the FDE supervisor, every
+   worker that it created, and the connections between them.
+6. **Grid keeps watch.** After that, the FDE runs on its schedule. It
+   supervises what it built and flags anything that needs your attention.
 
 !!! note "Talking in outcomes, not plumbing"
-    Throughout, Grid deliberately speaks in outcomes and implications — "the
-    system will investigate each restore request and flag the risky ones,
-    costing roughly X" — not in LimaCharlie mechanics. You never need to know
-    what a D&R rule is to use Grid. The mechanics are there if you want them;
-    they're just never required.
+    Grid speaks in outcomes and implications — "the system will investigate
+    each restore request and flag the risky ones, at a cost of about X" — and
+    not in LimaCharlie mechanics. To use Grid, you do not need to know what a
+    D&R rule is. The mechanics are available if you want them, but they are
+    never necessary.
 
 ## Your first few minutes
 
-The quickest way to meet Grid is to give it a goal and watch it work.
+To meet Grid, give it a goal and watch it work.
 
-1. **Open Grid** and sign in (or create an account — Grid can stand up a brand
-   new organization for you as part of onboarding).
-2. **Describe the outcome you want.** Be concrete about the result, not the
-   method. Good first prompts:
+1. **Open Grid** and sign in. You can also create an account: Grid can create a
+   new organization for you as part of onboarding.
+2. **Describe the outcome that you want.** Be concrete about the result, not
+   about the method. Good first prompts:
     - *"Triage quarantined phishing in our Google Workspace and open a case for
       anything risky."*
     - *"Watch our cloud audit logs for risky permission changes and alert me
       before anything bad happens."*
     - *"Review endpoint detections each morning and summarize what actually
       matters."*
-3. **Answer the few questions Grid asks.** It will only ask for what it can't
-   figure out on its own — your goal, any hard constraints, and the occasional
-   judgment call where your preference has to win. If it needs a credential
-   (an API key, an LLM provider key), it gives you a secure form — you never
+3. **Answer the few questions that Grid asks.** Grid asks only for what it
+   cannot find on its own — your goal, any hard constraints, and the occasional
+   judgment call where your preference has to win. If Grid needs a credential
+   (an API key, an LLM provider key), it gives you a secure form. You never
    paste secrets into the chat.
-4. **Read the charter and reply `go`.** Take a moment to confirm what will run
-   on its own versus what will ask you first.
-5. **Watch it build,** then explore the story map of what now exists.
+4. **Read the charter and reply `go`.** Confirm what will run on its own and
+   what will ask you first.
+5. **Watch Grid build,** then examine the story map of what now exists.
 
-That's it. You now have a supervised AI engineer running in your org.
+You now have a supervised AI engineer that runs in your organization.
 
 !!! tip "Start small, then grow"
-    You don't have to automate everything at once. Give your FDE one clear
-    outcome to own. Once you trust it, open a chat and ask it to take on more.
+    You do not have to automate everything at the same time. Give your FDE one
+    clear outcome to own. When you trust it, open a chat and ask it to take on
+    more.
 
 ## You stay in control
 
-Autonomy is a dial you set, not a default you accept.
+You set the level of autonomy. It is not a default that you must accept.
 
-- **Approval gates.** During onboarding you decide which actions the FDE may
-  take on its own and which must ask a human first. Anything that changes your
-  environment, notifies people, or deletes something can be put behind an
-  approval step. When the FDE wants to do something gated, it opens a **case**
-  explaining what it wants to do, why, and the cost — and waits for your
-  go-ahead. Nothing risky happens silently.
-- **Least privilege, enforced by the platform.** Each FDE (and each worker it
-  builds) runs with its own scoped API key holding only the permissions its job
-  needs. That key — not the AI's prompt — is the real boundary. An action
-  outside its grant simply can't happen.
-- **Full audit trail.** Everything Grid does is ordinary LimaCharlie activity:
-  logged, attributable, and reviewable like any other operation in your org.
+- **Approval gates.** During onboarding you decide which actions the FDE can
+  take on its own and which actions must ask a human first. You can put an
+  approval step in front of any action that changes your environment, notifies
+  people, or deletes something. When the FDE wants to do a gated action, it
+  opens a **case** that explains what it wants to do, why, and the cost — and
+  then waits for your go-ahead. Nothing risky happens silently.
+- **Least privilege, enforced by the platform.** Each FDE (and each worker that
+  it builds) runs with its own scoped API key that holds only the permissions
+  its job needs. That key — not the prompt of the AI — is the real boundary. An
+  action outside its grant cannot happen.
+- **Full audit trail.** Everything that Grid does is ordinary LimaCharlie
+  activity: logged, attributable, and open to review like any other operation
+  in your organization.
 
 ## Everything is visible and reversible
 
-Grid never leaves you guessing about what it changed.
+Grid always shows you what it changed.
 
 - **The story map** shows the full graph of what an FDE owns — the supervisor,
   its workers, the triggers, the data sources, the playbooks — and how they
-  connect. It's the picture of your automation, kept current as the FDE builds.
-- **One-tag rollback.** Every single resource an FDE creates or touches is
-  tagged with that FDE's name. Removing an FDE and its *entire* footprint —
-  every worker, rule, and secret it ever made — is a single tag query. There's
-  no orphaned configuration left behind, and nothing you can't undo.
+  connect. It is the picture of your automation, and it stays current as the
+  FDE builds.
+- **One-tag rollback.** Every resource that an FDE creates or touches carries a
+  tag with the name of that FDE. To remove an FDE and its *entire* footprint —
+  every worker, rule, and secret that it ever made — you run one tag query. No
+  orphaned configuration stays behind, and you can undo everything.
 
 ## Talking to your FDE
 
-Your FDE isn't a fire-and-forget script. You can open a chat with it any time
-from the org overview ("**Chat with FDE**").
+Your FDE is not a script that you start and forget. You can open a chat with it
+at any time from the organization overview ("**Chat with FDE**").
 
-In a chat the FDE behaves differently from its unattended runs: it orients
-itself read-only, gives you a short plain-language status — what it's built,
-what's pending, anything unhealthy — and then waits for your direction. It
-won't run its build-and-supervise program while you're talking to it, so you
-can ask questions, request changes, or hand it new work without it charging off
-on its own. Lead it like you'd lead an engineer on your team.
+In a chat the FDE behaves differently from its unattended runs. It orients
+itself in read-only mode and gives you a short status in plain language — what
+it built, what is pending, anything unhealthy — and then waits for your
+direction. The FDE does not run its build-and-supervise program while you talk
+to it, so you can ask questions, request changes, or hand it new work without
+it going off on its own. Direct it as you direct an engineer on your team.
 
 ## What it costs
 
 A LimaCharlie organization runs on a free tier by default, and many Grid setups
 fit inside it. Some outcomes need paid components — a high-volume data feed,
-deployed endpoint sensors, or a deterministic playbook — and when that's the
-case Grid tells you *before* it builds: which paid piece the outcome needs, why,
-in plain terms, and what you'll need to do (add a payment method, raise a
-quota). If you'd rather not, Grid offers to re-scope to free-tier-only pieces.
-You never get a surprise bill from automation you didn't approve.
+deployed endpoint sensors, or a deterministic playbook — and in that case Grid
+tells you *before* it builds: which paid piece the outcome needs, why, in plain
+terms, and what you will need to do (add a payment method, raise a quota). If
+you do not want the paid piece, Grid offers to re-scope the plan to free-tier
+pieces only. You never get a surprise bill from automation that you did not
+approve.
 
 ## Where to go next
 
-Grid is the guided, outcome-first front door to LimaCharlie's AI capabilities.
-Everything it builds is standard platform configuration, so when you want to go
-deeper, the rest of these docs apply directly:
+Grid is the guided, outcome-first entry point to the AI capabilities of
+LimaCharlie. Everything that Grid builds is standard platform configuration, so
+when you want more depth, the rest of this documentation applies directly:
 
-- [AI Sessions Overview](index.md) — the AI runtime Grid's FDEs run on.
+- [AI Sessions Overview](index.md) — the AI runtime that the FDEs of Grid run
+  on.
 - [User Sessions](user-sessions.md) — interactive AI sessions, including the
   chat experience behind "Chat with FDE."
 - [D&R-Driven Sessions](dr-sessions.md) — how scheduled and event-triggered AI
-  runs work under the hood.
+  runs work internally.
 - [AI Memory](memory.md) — how an FDE remembers its charter and state across
   runs.
 - [Tool Permissions & Profiles](tool-permissions.md) — the permission model
-  that bounds what every agent can do.
+  that limits what every agent can do.
 - [Story Tags](../8-reference/story-tags.md) — the tagging schema behind the
   story map and one-tag rollback.

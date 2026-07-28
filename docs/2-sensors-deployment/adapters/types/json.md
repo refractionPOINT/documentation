@@ -2,22 +2,22 @@
 
 ## Overview
 
-This Adapter allows you to ingest JSON-formatted logs from a file. It uses the [File](file.md) adapter with `client_options.platform` set to `json`.
+This Adapter lets you ingest JSON-formatted logs from a file. It uses the [File](file.md) adapter with `client_options.platform` set to `json`.
 
-When ingesting JSON data, each line of the file is expected to contain a complete JSON object (one object per line). For JSON objects that span multiple lines, use the `multi_line_json: true` option.
+Each line of the file must contain one complete JSON object. If a JSON object spans multiple lines, use the `multi_line_json: true` option.
 
 Adapter type: `file`
 
 ## Configuration
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify these options if you use the binary adapter or create a webhook adapter. If you use an Adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself with LimaCharlie.
 - `client_options.platform`: set to `json` for JSON-formatted logs.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter. Sensor IDs (SID) are generated from this name.
 
-Since this adapter uses the file adapter under the hood, all [File adapter options](file.md) are available, including `no_follow`, `backfill`, `poll`, `multi_line_json`, and others.
+This adapter uses the file adapter, so all [File adapter options](file.md) are available. These options include `no_follow`, `backfill`, `poll`, `multi_line_json`, and more.
 
 ### Configuration File Example
 

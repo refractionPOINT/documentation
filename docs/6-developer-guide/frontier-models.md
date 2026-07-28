@@ -1,13 +1,13 @@
 # Using the CLI with other Frontier Models
 
-LimaCharlie's deepest AI integration is with Claude — [AI Sessions](../9-ai-sessions/index.md) in the browser and the [Claude Code plugin](mcp-server.md#option-1-claude-code-plugin-recommended) in the terminal. But the platform itself is API-first and model-agnostic: any agent that can run shell commands can operate it through the [`limacharlie` CLI](cli.md), whatever frontier model it runs on.
+The deepest AI integration of LimaCharlie is with Claude: [AI Sessions](../9-ai-sessions/index.md) in the browser and the [Claude Code plugin](mcp-server.md#option-1-claude-code-plugin-recommended) in the terminal. But the platform is API-first and model-agnostic. Any agent that can run shell commands can operate the platform through the [`limacharlie` CLI](cli.md), on any frontier model.
 
-The CLI is the recommended integration for agents that aren't Claude Code. Two things make it work especially well:
+The CLI is the recommended integration for agents other than Claude Code. Two properties make it work well:
 
-- Every command supports `--ai-help` — help text written specifically for LLM consumption, so an agent can teach itself the platform as it goes
-- It is scriptable: cron jobs, CI checks, and bulk operations work the same way for an agent as for a human
+- Every command supports `--ai-help`. This help text is written for an LLM, so an agent can learn the platform while it works
+- You can script it. Cron jobs, CI checks, and bulk operations work the same way for an agent and for a person
 
-The [MCP server](mcp-server.md) can be added alongside the CLI when you want structured tools with typed results, or used on its own for clients that can't run shell commands.
+Add the [MCP server](mcp-server.md) with the CLI when you want structured tools with typed results. You can also use the MCP server alone, for clients that cannot run shell commands.
 
 ## The CLI in 60 seconds
 
@@ -17,7 +17,7 @@ limacharlie auth login --oid YOUR_ORG_ID --api-key YOUR_API_KEY
 limacharlie auth whoami        # verify
 ```
 
-Or via Docker, with no Python needed:
+Or with Docker, which needs no Python:
 
 ```bash
 docker run -v ${HOME}/.limacharlie:/root/.limacharlie:ro refractionpoint/limacharlie:latest whoami
@@ -30,7 +30,7 @@ export LC_OID="your-org-id"
 export LC_API_KEY="your-api-key"
 ```
 
-The credentials file supports named environments, selected with `LC_CURRENT_ENV`:
+The credentials file supports named environments. Select an environment with `LC_CURRENT_ENV`:
 
 ```yaml
 oid: "default-org-id"
@@ -46,13 +46,13 @@ env:
 
 ### Scoping the agent's key
 
-Grant only what the agent needs — see [Permission Requirements](mcp-server.md#permission-requirements) for permission sets by use case, and [API Keys](../7-administration/access/api-keys.md) for creating keys.
+Grant only the permissions that the agent needs. See [Permission Requirements](mcp-server.md#permission-requirements) for permission sets by use case, and [API Keys](../7-administration/access/api-keys.md) to create keys.
 
-> **Tip:** make two keys — `ai-readonly` and `ai-responder` — and only export the responder key into your shell when you're actively doing response work. Never run an agent's auto-approval mode with a key that holds write permissions like `sensor.task` or `dr.set`.
+> **Tip:** Make two keys: `ai-readonly` and `ai-responder`. Export the responder key into your shell only when you do response work. Never run the auto-approval mode of an agent with a key that has write permissions such as `sensor.task` or `dr.set`.
 
 ## Teach the model the platform
 
-Regardless of tool, agents perform dramatically better with standing context about the platform: what the key concepts are, how LCQL works, and what the safety rules are. Save the following as a context file your agent loads automatically — `AGENTS.md` is a widely-supported convention (Codex, and Gemini CLI when configured; Claude Code reads `CLAUDE.md`).
+For any tool, agents work much better with standing context about the platform: the key concepts, the operation of LCQL, and the safety rules. Save the text below as a context file that your agent loads automatically. `AGENTS.md` is a widely-supported convention (Codex, and Gemini CLI when you configure it; Claude Code reads `CLAUDE.md`).
 
 ??? example "LimaCharlie agent context file (click to expand, copy into AGENTS.md)"
 
@@ -198,9 +198,9 @@ Setup for [Google's Gemini CLI](https://github.com/google-gemini/gemini-cli).
 npm install -g @google/gemini-cli    # or: brew install gemini-cli, or: npx @google/gemini-cli
 ```
 
-Authenticate by running `gemini` and signing in with Google, or export a `GEMINI_API_KEY` from AI Studio, or use Vertex AI.
+To authenticate, run `gemini` and sign in with Google. As an alternative, export a `GEMINI_API_KEY` from AI Studio, or use Vertex AI.
 
-Install the `limacharlie` CLI as shown above — Gemini CLI can run shell commands, so this alone gives the agent access to the full platform.
+Install the `limacharlie` CLI as shown above. Gemini CLI can run shell commands, so the CLI alone gives the agent access to the full platform.
 
 ### (Optional) Connect the MCP server
 
@@ -211,7 +211,7 @@ gemini mcp add limacharlie https://mcp.limacharlie.io/mcp --transport http \
   --header "Authorization: Bearer YOUR_API_KEY:YOUR_ORG_ID"
 ```
 
-Or edit `~/.gemini/settings.json` (user-wide) / `<project>/.gemini/settings.json` (project-scoped, wins on conflict) directly:
+Or edit `~/.gemini/settings.json` (user-wide) or `<project>/.gemini/settings.json` (project-scoped, wins on conflict) directly:
 
 ```json
 {
@@ -229,19 +229,19 @@ Or edit `~/.gemini/settings.json` (user-wide) / `<project>/.gemini/settings.json
 
 Notes:
 
-- `httpUrl` selects the streamable HTTP transport, which is what the LimaCharlie server uses. Don't confuse it with `url`, which is SSE.
-- The token format is `API_KEY` + colon + `ORG_ID` for an organization key. For multi-org access, exchange a *user* API key for a JWT (see [Connecting AI Assistants](mcp-server.md#option-3-http-mcp-with-keys)) and use `Bearer YOUR_JWT` instead — but JWTs expire after 1 hour, so the static `key:oid` form is more practical for a config file.
-- If you keep the token in the user-scoped file, `chmod 600 ~/.gemini/settings.json`. Avoid putting it in a project-scoped settings file that might get committed.
+- `httpUrl` selects the streamable HTTP transport, which the LimaCharlie server uses. Do not confuse `httpUrl` with `url`, which is SSE.
+- The token format for an organization key is `API_KEY` + colon + `ORG_ID`. For multi-org access, exchange a *user* API key for a JWT (see [Connecting AI Assistants](mcp-server.md#option-3-http-mcp-with-keys)) and use `Bearer YOUR_JWT` instead. But JWTs expire after 1 hour, so the static `key:oid` form is more practical for a config file.
+- If you keep the token in the user-scoped file, run `chmod 600 ~/.gemini/settings.json`. Do not put the token in a project-scoped settings file, which someone can commit.
 
-Verify: start `gemini` and run `/mcp` — you should see `limacharlie` as `CONNECTED` with its tool list.
+To confirm the connection, start `gemini` and run `/mcp`. The output shows `limacharlie` as `CONNECTED` with its tool list.
 
-The full server exposes a large number of tools, which costs context. Use `includeTools` to allowlist what you need, or `excludeTools` to cut what you don't (for example `"excludeTools": ["delete_sensor", "delete_org_note", "remove_org_user"]`).
+The full server exposes many tools, and the tool list costs context. Use `includeTools` to allowlist the tools that you need, or `excludeTools` to remove the tools that you do not need (for example `"excludeTools": ["delete_sensor", "delete_org_note", "remove_org_user"]`).
 
-> **Warning:** do not set `"trust": true` for the LimaCharlie server. Keeping trust off means Gemini asks before each tool call — exactly what you want when tools can isolate machines from the network.
+> **Warning:** Do not set `"trust": true` for the LimaCharlie server. When trust is off, Gemini asks before each tool call. This is necessary because the tools can isolate machines from the network.
 
 ### Context file
 
-Gemini CLI automatically loads context files named `GEMINI.md` from `~/.gemini/GEMINI.md`, the project root, and directories it works in. Save the [agent context file](#teach-the-model-the-platform) into your working directory as `GEMINI.md`. Or, to share one context file across tools, configure Gemini to also read `AGENTS.md` — in settings.json:
+Gemini CLI loads context files named `GEMINI.md` automatically from `~/.gemini/GEMINI.md`, the project root, and the directories where it works. Save the [agent context file](#teach-the-model-the-platform) into your working directory as `GEMINI.md`. To share one context file between tools, configure Gemini to read `AGENTS.md` also. In settings.json:
 
 ```json
 {
@@ -249,7 +249,7 @@ Gemini CLI automatically loads context files named `GEMINI.md` from `~/.gemini/G
 }
 ```
 
-Confirm it loaded with `/memory show`.
+Confirm the load with `/memory show`.
 
 ### Custom slash commands
 
@@ -275,7 +275,7 @@ take any response actions.
 """
 ```
 
-Then inside Gemini, run `/lc:triage` or `/lc:hunt 8.8.8.8`.
+Then, in Gemini, run `/lc:triage` or `/lc:hunt 8.8.8.8`.
 
 ### Headless / scripted usage
 
@@ -286,7 +286,7 @@ gemini -p "Use LimaCharlie tools to summarize the last 24h of detections by cate
   --output-format text > /tmp/lc-daily-report.md
 ```
 
-`--output-format json` gives you `{response, stats}` for piping into other tools; `stream-json` emits NDJSON events. The default approval mode requires confirmation for tool calls, which blocks headless runs — for unattended read-only jobs, either allowlist just the read tools you need (`tools.allowed` in settings, or `includeTools` on the MCP server) or — only with a read-only API key — `--approval-mode yolo`. Never combine yolo mode with a key that has `sensor.task` or `dr.set`.
+`--output-format json` gives you `{response, stats}` for a pipe into other tools. `stream-json` emits NDJSON events. The default approval mode needs confirmation for tool calls, which blocks headless runs. For unattended read-only jobs, allowlist only the read tools that you need (`tools.allowed` in settings, or `includeTools` on the MCP server). As an alternative, use `--approval-mode yolo`, but only with a read-only API key. Never combine yolo mode with a key that has `sensor.task` or `dr.set`.
 
 ## OpenAI Codex
 
@@ -298,20 +298,20 @@ Setup for [OpenAI's Codex CLI](https://github.com/openai/codex).
 npm install -g @openai/codex     # or: brew install --cask codex
 ```
 
-Authenticate with `codex login` (ChatGPT account, browser OAuth; `--device-auth` for headless boxes) or an API key: `echo $OPENAI_API_KEY | codex login --with-api-key`.
+Authenticate with `codex login` (ChatGPT account, browser OAuth; `--device-auth` for headless machines) or an API key: `echo $OPENAI_API_KEY | codex login --with-api-key`.
 
-Install the `limacharlie` CLI as shown above. One caveat: Codex's default sandbox blocks outbound network, so for `limacharlie` CLI calls to work you'll either approve escalations as they come, or set:
+Install the `limacharlie` CLI as shown above. The default sandbox of Codex blocks the outbound network. To make `limacharlie` CLI calls work, approve each escalation, or set:
 
 ```toml
 [sandbox_workspace_write]
 network_access = true
 ```
 
-(MCP tools, if you add them below, are unaffected — they run outside the sandbox.)
+(The sandbox does not affect the MCP tools that you add below. They run outside the sandbox.)
 
 ### (Optional) Connect the MCP server
 
-Codex configures MCP servers in `~/.codex/config.toml`. The LimaCharlie hosted server is a remote streamable-HTTP server, configured with `url`:
+Codex configures MCP servers in `~/.codex/config.toml`. The hosted LimaCharlie server is a remote streamable-HTTP server. Configure it with `url`:
 
 ```toml
 [mcp_servers.limacharlie]
@@ -327,13 +327,13 @@ Then in your shell profile:
 export LC_MCP_TOKEN="YOUR_API_KEY:YOUR_ORG_ID"
 ```
 
-`bearer_token_env_var` tells Codex to read the token from the environment and send `Authorization: Bearer <value>` — your secret stays out of the config file. The token format is `API_KEY` + colon + `ORG_ID` for an organization API key; for multi-org access, exchange a *user* API key for a JWT instead (see [Connecting AI Assistants](mcp-server.md#option-3-http-mcp-with-keys)).
+`bearer_token_env_var` tells Codex to read the token from the environment and to send `Authorization: Bearer <value>`. Your secret stays out of the config file. The token format for an organization API key is `API_KEY` + colon + `ORG_ID`. For multi-org access, exchange a *user* API key for a JWT instead (see [Connecting AI Assistants](mcp-server.md#option-3-http-mcp-with-keys)).
 
-Verify: start `codex` and type `/mcp` — you should see `limacharlie` connected with its tools. Outside a session: `codex mcp list`.
+To confirm the connection, start `codex` and type `/mcp`. The output shows `limacharlie` connected with its tools. Outside a session, run `codex mcp list`.
 
 ### Guardrails
 
-Codex lets you gate MCP tools per server and per tool. Auto-approve reads, prompt on everything else:
+Codex lets you gate MCP tools for each server and for each tool. Auto-approve the reads, and prompt for all other tools:
 
 ```toml
 [mcp_servers.limacharlie]
@@ -352,17 +352,17 @@ approval_mode = "approve"
 approval_mode = "approve"
 ```
 
-Or hard-disable destructive tools entirely:
+Or disable the destructive tools completely:
 
 ```toml
 disabled_tools = ["delete_sensor", "delete_org_note", "remove_org_user"]
 ```
 
-If the tool count is heavy on context, allowlist with `enabled_tools = [...]`.
+If the tool count costs too much context, allowlist tools with `enabled_tools = [...]`.
 
 ### Context file
 
-Codex automatically loads `AGENTS.md` from `~/.codex/AGENTS.md` (global), your repo root, and the working directory — later files win. Save the [agent context file](#teach-the-model-the-platform) as `AGENTS.md` in your working directory.
+Codex loads `AGENTS.md` automatically from `~/.codex/AGENTS.md` (global), your repo root, and the working directory. The later files win. Save the [agent context file](#teach-the-model-the-platform) as `AGENTS.md` in your working directory.
 
 ### Headless / scripted usage
 
@@ -372,11 +372,11 @@ codex exec -a never --sandbox read-only \
   -o /tmp/lc-daily-report.md
 ```
 
-Useful flags: `--json` (NDJSON event stream), `-o report.md` (write the final message to a file), `--sandbox read-only`, `-a never` (no approval prompts — only safe with a read-only LimaCharlie key). For finer command-level control (for example, allow `limacharlie search` unprompted but gate everything else), see Codex [execpolicy rules](https://developers.openai.com/codex/rules) in `~/.codex/rules/`.
+Useful flags: `--json` (NDJSON event stream), `-o report.md` (writes the final message to a file), and `--sandbox read-only`. The `-a never` flag removes the approval prompts. Use it only with a read-only LimaCharlie key. For control of each command, see the Codex [execpolicy rules](https://developers.openai.com/codex/rules) in `~/.codex/rules/`. For example, you can allow `limacharlie search` with no prompt but gate all other commands.
 
 ## Common tasks
 
-Each task below shows the **prompt** you'd give your agent, and **what's underneath** — the CLI commands and/or MCP tools the agent will (or should) reach for. Knowing the underlying calls helps you verify the agent did the right thing. Prompts work identically in Claude Code, Gemini CLI, and Codex.
+Each task below shows the **prompt** that you give to your agent, and **what's underneath**: the CLI commands and the MCP tools that the agent uses. The underlying calls help you check that the agent did the correct operation. The prompts work the same way in Claude Code, Gemini CLI, and Codex.
 
 ### Fleet visibility
 
@@ -389,11 +389,11 @@ limacharlie sensor list
 limacharlie sensor list --selector 'plat == windows'
 ```
 
-Or MCP `list_sensors` / `get_online_sensors`. For a sensor deep-dive (processes, network connections, autoruns), the MCP live-tasking tools `get_processes`, `get_network_connections`, and `get_autoruns` need the sensor online and a key with `sensor.task`.
+Or MCP `list_sensors` / `get_online_sensors`. To examine one sensor in detail (processes, network connections, autoruns), use the MCP live-tasking tools `get_processes`, `get_network_connections`, and `get_autoruns`. These tools need the sensor to be online and a key with `sensor.task`.
 
 ### Querying telemetry (LCQL)
 
-LCQL queries have four pipe-separated parts (plus optional projection) — see [Data & Queries](../4-data-queries/index.md) for the full reference and [LCQL Examples](../4-data-queries/lcql-examples.md) for more queries:
+An LCQL query has four pipe-separated parts and an optional projection. See [Data & Queries](../4-data-queries/index.md) for the full reference and [LCQL Examples](../4-data-queries/lcql-examples.md) for more queries:
 
 ```text
 <timeframe> | <sensor selector> | <event type(s)> | <filter> [ | <projection> ]
@@ -417,15 +417,15 @@ LCQL queries have four pipe-separated parts (plus optional projection) — see [
 -24h | plat == windows | CODE_IDENTITY | event/SIGNATURE/FILE_IS_SIGNED != 1 | event/FILE_PATH as Path event/HASH as Hash COUNT_UNIQUE(Hash) as Count GROUP BY(Path Hash)
 ```
 
-Run these with `limacharlie search run` or MCP `run_lcql_query`; `generate_lcql_query` has the platform build the query for you.
+Run these queries with `limacharlie search run` or MCP `run_lcql_query`. With `generate_lcql_query`, the platform builds the query for you.
 
-> **Cost tip:** LCQL queries scan the data lake. Have the agent use `dryrun` in `limacharlie search` (or MCP `validate_lcql_query` / `estimate_lcql_query`) before running broad queries.
+> **Cost tip:** LCQL queries scan the data lake. Tell the agent to use `dryrun` in `limacharlie search` (or MCP `validate_lcql_query` / `estimate_lcql_query`) before it runs broad queries.
 
 ### Detections
 
 > "Pull detections from the last 24 hours, group them by rule and severity, and tell me which ones look like real incidents vs noise. For anything interesting, pull the surrounding telemetry."
 
-Underneath: MCP `get_historic_detections` → `get_historic_events` for context. The key needs `insight.det.get` / `insight.evt.get`. To watch live instead:
+Underneath: MCP `get_historic_detections` → `get_historic_events` for context. The key needs `insight.det.get` / `insight.evt.get`. To watch the live stream instead:
 
 ```bash
 limacharlie stream detections     # also: stream events --tag vip, stream audit
@@ -437,7 +437,7 @@ For an IOC sweep ("search the whole org for this hash / domain / IP over the las
 
 > "Write a D&R rule that detects certutil.exe being used to download files, tags the sensor, and reports the detection. Validate it before showing me."
 
-Underneath — the agent drafts the YAML and manages it with the CLI:
+Underneath: the agent writes the YAML and manages it with the CLI:
 
 ```bash
 limacharlie dr list
@@ -445,15 +445,15 @@ limacharlie dr set --key my-rule --input-file rule.yaml --enabled
 limacharlie dr disable --key my-rule
 ```
 
-With MCP connected, it can also use `generate_dr_rule_detection` + `generate_dr_rule_respond`, then `validate_dr_rule_components`, and deploy with `set_rule` (needs `dr.set`). Either way, keep deployment behind an approval prompt. Before deploying, test against history: `limacharlie replay --help` replays historical telemetry through a rule.
+If MCP is connected, the agent can also use `generate_dr_rule_detection` and `generate_dr_rule_respond`, then `validate_dr_rule_components`, and deploy with `set_rule` (needs `dr.set`). In both methods, keep the deployment behind an approval prompt. Test against history before you deploy: `limacharlie replay --help` replays historical telemetry through a rule.
 
 ### Response actions ⚠️
 
-These change endpoint state. Keep them behind approval prompts (see the Gemini and Codex guardrail sections above), use a key with `sensor.task` only when needed, and have the agent confirm the exact sensor ID with you first.
+These actions change the state of an endpoint. Keep them behind approval prompts (see the Gemini and Codex guardrail sections above). Use a key with `sensor.task` only when you need it. Tell the agent to confirm the exact sensor ID with you first.
 
 > "FINANCE-03 looks compromised. Confirm its sensor ID with me, then isolate it from the network."
 
-Underneath: MCP `isolate_network` (verify with `is_isolated`, undo with `rejoin_network`). Isolation blocks all traffic except to the LimaCharlie cloud and persists across reboots. For evidence collection first: `get_processes`, `get_network_connections`, `get_autoruns`; for deeper forensics, `collect_velociraptor_artifact` and the artifacts API (`list_artifacts` / `get_artifact`, or `limacharlie artifact --help`).
+Underneath: MCP `isolate_network` (check with `is_isolated`, undo with `rejoin_network`). Isolation blocks all traffic except traffic to the LimaCharlie cloud, and it stays active after a reboot. To collect evidence first, use `get_processes`, `get_network_connections`, and `get_autoruns`. For deeper forensics, use `collect_velociraptor_artifact` and the artifacts API (`list_artifacts` / `get_artifact`, or `limacharlie artifact --help`).
 
 ### Infrastructure-as-Code
 
@@ -464,11 +464,11 @@ limacharlie sync pull --oid $LC_OID
 limacharlie sync push --dry-run --oid $LC_OID --config lc-config.yaml   # always dry-run first
 ```
 
-This pairs well with a coding agent: keep your org config in a repo, let the agent edit the YAML, review the diff, `sync push --dry-run`, then apply.
+A coding agent works well with this method. Keep your org config in a repo. Let the agent edit the YAML. Review the diff. Run `sync push --dry-run`. Then apply the config.
 
 ## Prompt library
 
-Copy-paste starting points for the workflows above.
+Copy these prompts as starting points for the workflows above.
 
 ### Orientation (start here on a new org)
 
@@ -566,37 +566,37 @@ Edit the pulled config to add a new D&R rule (file: rules/encoded-powershell.yam
 
 ### Gemini CLI: `/mcp` shows `DISCONNECTED`
 
-- Check the header format. It must be exactly `Authorization: Bearer YOUR_API_KEY:YOUR_ORG_ID` — API key first, then a colon, then the org ID (a UUID). Swapping them is the most common mistake.
-- Make sure you used `httpUrl` (streamable HTTP), not `url` (SSE), in settings.json.
-- Confirm the key still exists in **Access Management → REST API** and wasn't revoked.
+- Check the header format. It must be exactly `Authorization: Bearer YOUR_API_KEY:YOUR_ORG_ID`: the API key first, then a colon, then the org ID (a UUID). The most common mistake is to reverse the two values.
+- Make sure that you used `httpUrl` (streamable HTTP), not `url` (SSE), in settings.json.
+- Confirm that the key is still in **Access Management → REST API** and that nobody revoked it.
 - Run `gemini` with `-d` (debug) for connection details.
 
 ### Codex: server missing from `/mcp`
 
-- `codex mcp get limacharlie` — does the config parse and show what you expect?
-- If you used `bearer_token_env_var`, the env var must be exported in the shell that launched Codex. Check with `echo $LC_MCP_TOKEN` — it should print `key:oid`.
-- Raise `startup_timeout_sec` (default 10) if you're on a slow link.
+- Run `codex mcp get limacharlie`. Check that the config parses and shows the expected values.
+- If you used `bearer_token_env_var`, you must export the env var in the shell that started Codex. Check with `echo $LC_MCP_TOKEN`. It must print `key:oid`.
+- If your link is slow, increase `startup_timeout_sec` (default 10).
 
 ### HTTP 401 on specific tool calls / REST endpoints
 
-The key authenticated fine but lacks a permission. Match the failing operation to the permission tables in [Permission Requirements](mcp-server.md#permission-requirements) — for example, LCQL queries need `insight.evt.get` and live sensor commands need `sensor.task` — and add it to the key in the web app. Changes take effect immediately; reconnect the MCP server (or restart the CLI session) if results seem stale.
+The key authenticated correctly but does not have a permission. Match the operation that failed to the permission tables in [Permission Requirements](mcp-server.md#permission-requirements). For example, LCQL queries need `insight.evt.get`, and live sensor commands need `sensor.task`. Add the permission to the key in the web app. The change takes effect immediately. If the results seem stale, reconnect the MCP server or restart the CLI session.
 
 ### JWT calls suddenly failing after working
 
-JWTs expire after **one hour**. Re-exchange the API key for a fresh JWT (see [API Keys](../7-administration/access/api-keys.md)) or switch to the static `key:oid` bearer format for MCP, which doesn't expire.
+JWTs expire after **one hour**. Exchange the API key for a new JWT (see [API Keys](../7-administration/access/api-keys.md)), or change to the static `key:oid` bearer format for MCP, which does not expire.
 
 ### `limacharlie` CLI says unauthenticated
 
-- `limacharlie auth whoami` — what identity does it think you have?
-- Precedence: `LC_OID`/`LC_API_KEY` env vars override `~/.limacharlie`. A stale env var in your profile silently wins over a fresh `auth login`.
-- Multiple orgs: `limacharlie auth list-orgs` then `limacharlie auth use-org <name>`, or set `LC_CURRENT_ENV` to a named environment from the credentials file.
+- Run `limacharlie auth whoami` to see which identity the CLI uses.
+- Precedence: the `LC_OID` and `LC_API_KEY` env vars override `~/.limacharlie`. An old env var in your profile wins over a new `auth login`, with no message.
+- For multiple orgs, run `limacharlie auth list-orgs`, then `limacharlie auth use-org <name>`. Or set `LC_CURRENT_ENV` to a named environment from the credentials file.
 
 ### Live-sensor tools return nothing / time out
 
-Tools like `get_processes`, `get_network_connections`, and `yara_scan_process` task the actual endpoint — the sensor must be **online**. Check with `is_online` (MCP) or `limacharlie sensor list`. For offline sensors, queue commands via the Reliable Tasking extension (`reliable_tasking` MCP tool) instead. Historic-data tools (`run_lcql_query`, `get_historic_detections`, `get_historic_events`) work regardless of sensor state — they hit the data lake.
+Tools such as `get_processes`, `get_network_connections`, and `yara_scan_process` task the endpoint, so the sensor must be **online**. Check with `is_online` (MCP) or `limacharlie sensor list`. For offline sensors, queue the commands with the Reliable Tasking extension (`reliable_tasking` MCP tool) instead. The historic-data tools (`run_lcql_query`, `get_historic_detections`, `get_historic_events`) work in any sensor state, because they read the data lake.
 
 ### The agent picks wrong tools or writes bad LCQL
 
-- Make sure the [context file](#teach-the-model-the-platform) loaded: `/memory show` in Gemini; for Codex, verify `AGENTS.md` is in the repo root or `~/.codex/`.
-- LCQL help: the platform can write queries for the agent — tell it to use `generate_lcql_query` and `validate_lcql_query` rather than free-handing syntax.
+- Make sure that the agent loaded the [context file](#teach-the-model-the-platform). In Gemini, run `/memory show`. For Codex, check that `AGENTS.md` is in the repo root or in `~/.codex/`.
+- LCQL help: the platform can write queries for the agent. Tell the agent to use `generate_lcql_query` and `validate_lcql_query` instead of manual syntax.
 - CLI usage: remind the agent that every `limacharlie` command supports `--ai-help`.

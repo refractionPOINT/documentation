@@ -1,12 +1,12 @@
 # Google Cloud
 
-The Google Cloud command line interface, or gcloud CLI, allows you to create and manage Google Cloud resources and services directly on the command line. With this component of the Cloud CLI Extension, you can interact with Google Cloud directly from LimaCharlie.
+The Google Cloud command line interface, or gcloud CLI, lets you create and manage Google Cloud resources and services on the command line. This component of the Cloud CLI Extension lets you interact with Google Cloud directly from LimaCharlie.
 
 This extension uses [Google Cloud's native CLI tool](https://cloud.google.com/cli).
 
 ## Example
 
-The following example stops the specified GCP compute instance.
+This example stops the specified GCP compute instance.
 
 ```yaml
 - action: extension request
@@ -24,10 +24,10 @@ The following example stops the specified GCP compute instance.
 
 ## Credentials
 
-To utilize Google Cloud CLI capabilities, you will need:
+To use the Google Cloud CLI capabilities, you need:
 
-- A GCP service account JSON key. See Google Cloud's [service account keys guide](https://cloud.google.com/iam/docs/keys-create-delete).
-- Create a secret in the secrets manager in the following format:
+- A GCP service account JSON key. See the [service account keys guide](https://cloud.google.com/iam/docs/keys-create-delete) from Google Cloud.
+- Create a secret in the secrets manager in this format:
 
   ```json
   {

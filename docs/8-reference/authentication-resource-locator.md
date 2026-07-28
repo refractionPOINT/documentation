@@ -2,9 +2,9 @@
 
 ## Overview
 
-Many features in LimaCharlie require access to external resources, sometimes authenticated, provided by users.
+Many features in LimaCharlie need access to external resources that users supply. Some of these resources need authentication.
 
-Authenticated Resource Locators (ARLs) describe a way to specify access to a remote resource, supporting many methods, including authentication data, and all that within a single string.
+An Authenticated Resource Locator (ARL) specifies access to a remote resource in one string. The string supports many transport methods, and it can include authentication data.
 
 ## Format
 
@@ -21,9 +21,9 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
 ```
 
 - `methodName`: the transport to use, one of `http`, `https`, `gcs` and `github`.
-- `methodDest`: the actual destination of the transport. A domain and path for HTTP(S) and a bucket name and path for GCS.
+- `methodDest`: the destination of the transport. Give a domain and path for HTTP(S), or a bucket name and path for GCS.
 - `authType`: how to authenticate, one of `basic`, `bearer`, `token`, `gaia` or `otx`.
-- `authData`: the auth data, like `username:password` for `basic`, or access token values. If the value is a complex structure, like a `gaia` JSON service key, it must be base64-encoded.
+- `authData`: the authentication data, such as `username:password` for `basic`, or an access token value. If the value is a complex structure, such as a `gaia` JSON service key, you must base64-encode it.
 
 ## Examples
 
@@ -55,15 +55,15 @@ Authenticated Resource Locators (ARLs) describe a way to specify access to a rem
 
 `[github,myGithubUserOrOrg/repoName/path/to/file]`
 
-**Note:** The path to the repo is NOT the same as the URL. Utilize the UI breadcrumbs for the correct path.
-For example, in the following screenshot:
+**Note:** The path to the repo is NOT the same as the URL. Use the UI breadcrumbs to get the correct path.
+For example, in this screenshot:
 
 ![image 1734104784118](../assets/images/image-1734104784118.png)
 
 The GitHub user is: *romainmarcoux*
 The repo name is: *malicious-domains*
 The path is: *sources/alienvault-phishing-scam*
-So the ARL would be:  `[github,romainmarcoux/malicious-domains/sources/alienvault-phishing-scam]`
+So the ARL is:  `[github,romainmarcoux/malicious-domains/sources/alienvault-phishing-scam]`
 
 ### Retrieve from GitHub repo with Github Personal Access Token
 

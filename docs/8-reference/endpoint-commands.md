@@ -2,7 +2,7 @@
 
 ## Supported Commands by OS
 
-For commands which emit a report/reply event type from the agent, the corresponding event type is provided.
+For commands that emit a report or reply event type from the agent, the table gives the event type.
 
 | Command | Report/Reply Event | macOS | Windows | Linux | Chrome | Edge |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -76,9 +76,9 @@ Collect an artifact from a sensor by specifying a file path.
 
 - `file` (required): File path to collect from the sensor
 - `type` (optional): Artifact type (e.g., "pcap")
-- `payload_id` (optional): Idempotent payload ID for the request (auto-generated if not provided)
-- `days_retention` (optional): Number of days the artifact should be retained (default: 30)
-- `is_ignore_cert` (optional): If set, the sensor will ignore SSL certificate mismatches during artifact upload
+- `payload_id` (optional): Idempotent payload ID for the request (auto-generated if you do not give one)
+- `days_retention` (optional): Number of days to keep the artifact (default: 30)
+- `is_ignore_cert` (optional): If set, the sensor ignores SSL certificate mismatches when it uploads the artifact
 
 **Response Event:** FILE_GET_REP
 
@@ -99,7 +99,7 @@ List files and directories at a specified path on the endpoint.
 **Parameters:**
 
 - `rootdir` (positional): Root directory where to begin the listing from
-- `fileexp` (positional): File name expression supporting basic wildcards like `*` and `?` (e.g., "*.exe")
+- `fileexp` (positional): File name expression with basic wildcards such as `*` and `?` (e.g., "*.exe")
 - `-d, --depth` (optional): Maximum depth of the listing, defaults to a single level
 
 **Response Event:** DIR_LIST_REP
@@ -152,7 +152,7 @@ limacharlie sensor task <SID> dir_findhash --dir_path "/var" --hash <HASH_VALUE>
 
 ### dns_resolve
 
-Perform DNS resolution on the endpoint to determine what DNS server responds.
+Do a DNS resolution on the endpoint to find which DNS server responds.
 
 **Platforms:** macOS | Windows | Linux | Chrome | Edge
 
@@ -459,7 +459,7 @@ limacharlie sensor task <SID> get_debug_data
 
 ### hidden_module_scan
 
-Scan for hidden or stealthy modules loaded in process memory that may not appear in normal module lists.
+Scan for hidden or stealthy modules that are loaded in process memory. These modules can be absent from normal module lists.
 
 **Platforms:** Windows
 
@@ -740,7 +740,7 @@ Get a list of all running processes with detailed information.
 
 **Parameters:** None
 
-**Response Event:** EXISTING_PROCESS (multiple events, one per process)
+**Response Event:** EXISTING_PROCESS (many events, one for each process)
 
 **Usage Example:**
 
@@ -908,7 +908,7 @@ limacharlie sensor task <SID> rejoin_network
 
 ### run
 
-Execute a command or script on the endpoint (out-of-band execution).
+Run a command or script on the endpoint (out-of-band execution).
 
 **Platforms:** macOS | Linux
 
@@ -952,15 +952,15 @@ Uninstall the sensor from the endpoint.
 
 **Parameters:**
 
-- `--is-confirmed` (required): Must be specified as a confirmation that you want to uninstall the sensor
-- `--msi` (optional): Windows only — must be specified if the sensor was installed via MSI
+- `--is-confirmed` (required): Give this flag to confirm that you want to uninstall the sensor
+- `--msi` (optional): Windows only — give this flag if you installed the sensor with an MSI
 - `--native` (optional): Use the sensor's built-in (native) uninstall procedure instead of the default legacy shell-based procedure
 
-By default, the sensor uninstalls itself by running a shell command that invokes the on-disk agent's own uninstaller. This legacy procedure works on every sensor version. With `--native`, the sensor performs the uninstallation itself without spawning a shell command.
+By default, the sensor uninstalls itself with a shell command that calls the uninstaller of the on-disk agent. This legacy procedure works on every sensor version. With `--native`, the sensor does the uninstallation itself and starts no shell command.
 
-> **Note:** `--native` requires sensor version 5.3.3 or later. Older sensors silently ignore the native uninstall request — nothing happens on the endpoint. If you are unsure of a sensor's version, omit `--native`.
+> **Note:** `--native` needs sensor version 5.3.3 or later. Older sensors ignore the native uninstall request, and nothing happens on the endpoint. If you do not know the version of a sensor, omit `--native`.
 
-`--msi` takes precedence over `--native`: the native procedure does not unregister the MSI product, so sensors installed via MSI should use `--msi`.
+`--msi` has priority over `--native`. The native procedure does not unregister the MSI product, so a sensor that you installed with an MSI should use `--msi`.
 
 **Response Event:** None (sensor uninstalls and disconnects)
 
@@ -975,17 +975,17 @@ limacharlie sensor task <SID> uninstall --is-confirmed --native
 
 ### upgrade_core
 
-Task the sensor to upgrade its own on-disk agent (the installed service) to a new release. The sensor downloads, verifies, and installs the release itself; if the new version fails to start, it automatically rolls back to the previous one. See [Service Upgrades](../2-sensors-deployment/endpoint-agent/service-upgrades.md) for the full upgrade procedure.
+Task the sensor to upgrade its own on-disk agent (the installed service) to a new release. The sensor downloads, verifies, and installs the release itself. If the new version does not start, the sensor rolls back to the previous version. For the full upgrade procedure, see [Service Upgrades](../2-sensors-deployment/endpoint-agent/service-upgrades.md).
 
 **Platforms:** macOS | Windows | Linux
 
 **Parameters:**
 
-- `--beta` (required): Opt in to the native upgrade procedure; the command is rejected without it while the feature is in beta
+- `--beta` (required): Opt in to the native upgrade procedure. The command is rejected without this flag during the beta of the feature
 - `--force` (optional): Upgrade even if the sensor already reports the latest available release
 - `--version` (optional): Pin the exact release to install (e.g. `5.3.3`), downgrades included; defaults to the latest available release
 
-> **Note:** Requires sensor version 5.3.3 or later. Sensors running an older version silently drop the request and no upgrade takes place.
+> **Note:** Needs sensor version 5.3.3 or later. A sensor with an older version drops the request, and no upgrade occurs.
 
 **Response Event:** None
 
@@ -1245,18 +1245,18 @@ limacharlie sensor task <SENSOR_ID> <COMMAND_NAME> [--param value ...]
 **Response Events:**
 Most commands generate a response event (typically ending in `_REP`) that can be:
 
-- Viewed in the LimaCharlie web interface under Sensor > Timeline
-- Retrieved via API
+- Viewed in the LimaCharlie web app under Sensor > Timeline
+- Retrieved through the API
 - Triggered on with D&R rules
 
 **Error Handling:**
 Response events typically include an `ERROR` field:
 
-- `ERROR: 0` indicates success
-- Non-zero ERROR values indicate specific error conditions
+- `ERROR: 0` shows success
+- Non-zero ERROR values show specific error conditions
 
 **Permissions:**
-Some commands require elevated privileges (root/administrator) on the endpoint to execute successfully.
+Some commands need elevated privileges (root or administrator) on the endpoint to run correctly.
 
 **Timeouts:**
-Commands have default timeouts (typically 30-60 seconds). Long-running operations may timeout and can be made persistent using the Reliable Tasking extension.
+Commands have default timeouts (typically 30-60 seconds). A long operation can time out. To make such an operation persistent, use the Reliable Tasking extension.

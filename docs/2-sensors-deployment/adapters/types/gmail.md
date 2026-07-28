@@ -2,30 +2,30 @@
 
 ## Overview
 
-This Adapter collects telemetry from one or many Gmail mailboxes using the [Gmail REST API](https://developers.google.com/workspace/gmail/api/reference/rest). Beyond incoming-email telemetry, it can collect the mailbox configuration and change signals most relevant to **Business Email Compromise (BEC)** — the mail rules, forwarding, aliases, delegates, protocol access, and deletions an intruder uses to persist, exfiltrate mail, and cover their tracks.
+This adapter collects telemetry from one or more Gmail mailboxes with the [Gmail REST API](https://developers.google.com/workspace/gmail/api/reference/rest). It also collects the mailbox configuration and the change signals for **Business Email Compromise (BEC)**. These signals are the mail rules, forwarding, aliases, delegates, protocol access, and deletions that an intruder uses to keep access, exfiltrate mail, and hide activity.
 
-Each signal is an independent, opt-in **capability** that ships its own event type. They are all readable with the default `gmail.readonly` scope.
+Each signal is an independent **capability** that you enable, and each capability sends its own event type. The default `gmail.readonly` scope can read all of them.
 
-With the service-account flow the adapter can watch **many mailboxes at once** — an explicit list, or every mailbox in a Google Workspace domain via auto-discovery — and ships each mailbox to its own LimaCharlie sensor.
+With the service-account flow, the adapter can collect **many mailboxes at once**: an explicit list, or every mailbox in a Google Workspace domain through auto-discovery. The adapter sends each mailbox to its own LimaCharlie sensor.
 
 ## Capabilities
 
-Enable any combination with the `collect_*` flags. If you set none, the adapter defaults to message telemetry only (`collect_messages`).
+Enable any combination of the `collect_*` flags. If you set none, the adapter collects only message telemetry (`collect_messages`).
 
 | Flag | Event type(s) | What it gives you |
 | --- | --- | --- |
-| `collect_messages` | `gmail_message` | Incoming email as telemetry — the raw signal for phishing/lure detection. |
-| `collect_filters` | `gmail_filter` | Mail rules. Attackers create rules that auto-delete, auto-forward, or hide replies about invoices/wires. |
-| `collect_forwarding` | `gmail_forwarding_address`, `gmail_auto_forwarding` | Forwarding destinations and the account-wide auto-forward toggle — a classic mail-exfiltration vector. |
-| `collect_send_as` | `gmail_send_as` | Send-as / "from" identities. An added identity is an impersonation/persistence signal. |
-| `collect_delegates` | `gmail_delegate` | Mailbox delegates — granting a delegate is persistence. **Workspace only** (see note below). |
-| `collect_imap_pop` | `gmail_imap`, `gmail_pop` | IMAP/POP access settings. Enabling these allows bulk mailbox download via a desktop client. |
-| `collect_vacation` | `gmail_vacation` | The vacation responder, occasionally abused for harvesting/social engineering. |
+| `collect_messages` | `gmail_message` | Incoming email as telemetry. This is the raw signal to detect phishing and lures. |
+| `collect_filters` | `gmail_filter` | Mail rules. Attackers create rules that auto-delete, auto-forward, or hide replies about invoices and wires. |
+| `collect_forwarding` | `gmail_forwarding_address`, `gmail_auto_forwarding` | Forwarding destinations and the account-wide auto-forward setting. Attackers use these to exfiltrate mail. |
+| `collect_send_as` | `gmail_send_as` | Send-as / "from" identities. A new identity is a signal of impersonation or persistence. |
+| `collect_delegates` | `gmail_delegate` | Mailbox delegates. A new delegate gives persistence. **Workspace only** (see the note below). |
+| `collect_imap_pop` | `gmail_imap`, `gmail_pop` | IMAP/POP access settings. If these are enabled, a desktop client can download the full mailbox. |
+| `collect_vacation` | `gmail_vacation` | The vacation responder. Attackers sometimes abuse it for harvesting and social engineering. |
 | `collect_history` | `gmail_history` | Mailbox changes: message **deletions** and **label changes** (marking a security alert read, trashing the fraud thread). |
 
-> **Delegates are Workspace-only.** Google exposes the delegates listing only to service-account clients with domain-wide delegation. On a consumer account (or without delegation) the call returns an error, which the adapter logs and skips — it does not stop the adapter or affect the other capabilities.
+> **Delegates are Workspace-only.** Google gives the delegates listing only to service-account clients that have domain-wide delegation. On a consumer account, or without delegation, the call returns an error. The adapter logs the error and skips the capability. The adapter continues to run, and the other capabilities are not affected.
 
-The configuration-state capabilities (filters, forwarding, send-as, delegates, IMAP/POP, vacation) are **change-only**: an item is shipped when it first appears or its content changes, and suppressed otherwise. On adapter restart the in-memory dedupe state is empty, so the current state is re-emitted once as a fresh baseline — write detections against the *state* in these events rather than treating every event as a brand-new change.
+The configuration-state capabilities (filters, forwarding, send-as, delegates, IMAP/POP, vacation) are **change-only**. The adapter sends an item only when the item first appears or when its content changes. After an adapter restart, the in-memory dedupe state is empty, so the adapter sends the current state one time as a new baseline. Write detections against the *state* in these events, and do not treat every event as a new change.
 
 ## Authentication
 
@@ -33,7 +33,11 @@ Choose one of two modes.
 
 ### OAuth 2.0 refresh token (a single mailbox)
 
-For collecting one user's mailbox. Create an OAuth client (Desktop or Web) in the Google Cloud console, enable the Gmail API, and complete the authorization-code flow once to obtain a refresh token for the `gmail.readonly` scope.
+Use this mode to collect the mailbox of one user.
+
+1. Create an OAuth client (Desktop or Web) in the Google Cloud console.
+2. Enable the Gmail API.
+3. Complete the authorization-code flow one time. The flow gives a refresh token for the `gmail.readonly` scope.
 
 | Field | Description |
 | --- | --- |
@@ -43,7 +47,11 @@ For collecting one user's mailbox. Create an OAuth client (Desktop or Web) in th
 
 ### Service account with domain-wide delegation (Google Workspace)
 
-For monitoring Workspace mailboxes without per-user consent. Create a service account, enable domain-wide delegation, and in the Workspace Admin console authorize its client id for the `https://www.googleapis.com/auth/gmail.readonly` scope.
+Use this mode to monitor Workspace mailboxes without consent from each user.
+
+1. Create a service account.
+2. Enable domain-wide delegation for the service account.
+3. In the Workspace Admin console, authorize the client id of the service account for the `https://www.googleapis.com/auth/gmail.readonly` scope.
 
 | Field | Description |
 | --- | --- |
@@ -51,32 +59,32 @@ For monitoring Workspace mailboxes without per-user consent. Create a service ac
 | `service_account_file` | Path to the service account JSON key file (alternative to the inline form) |
 | `subject` | A single mailbox owner to impersonate, e.g. `user@yourdomain.com` |
 
-Provide the mailbox(es) with `subject` (one), `subjects` (a list), and/or `discover_mailboxes` (the whole domain). At least one of these is required.
+Select the mailboxes with `subject` (one mailbox), `subjects` (a list), or `discover_mailboxes` (the full domain). You can combine them. You must set at least one.
 
 ## Multiple mailboxes
 
-With the service-account flow, each mailbox is impersonated independently and **shipped to its own sensor**: when more than one mailbox is collected, the sensor seed key is derived as `<sensor_seed_key>/<mailbox-address>` and the sensor hostname is set to the mailbox address.
+With the service-account flow, the adapter impersonates each mailbox independently and sends each one **to its own sensor**. When the adapter collects more than one mailbox, the sensor seed key becomes `<sensor_seed_key>/<mailbox-address>`, and the sensor hostname becomes the mailbox address.
 
-There are two ways to enumerate mailboxes, and they can be combined (the union is collected):
+Two methods enumerate mailboxes. You can combine them, and the adapter collects the union:
 
-- **Static list** (`subjects`): list the mailboxes explicitly — good for a fixed set of high-value mailboxes (executives, finance, AP).
-- **Auto-discovery** (`discover_mailboxes`): enumerate the Workspace domain's mailboxes via the Admin SDK Directory API, re-run on `discovery_interval` (default 1h) so newly-provisioned mailboxes are picked up and deprovisioned ones dropped automatically. Suspended accounts are skipped unless `include_suspended` is set.
+- **Static list** (`subjects`): name each mailbox. Use this method for a fixed set of high-value mailboxes, such as executives, finance, and AP.
+- **Auto-discovery** (`discover_mailboxes`): enumerate the mailboxes of the Workspace domain with the Admin SDK Directory API. The adapter repeats discovery on `discovery_interval` (default 1h), so it adds new mailboxes and drops deprovisioned ones automatically. The adapter skips suspended accounts unless you set `include_suspended`.
 
-Auto-discovery has two extra requirements beyond the Gmail collection itself:
+Auto-discovery needs two items more than the Gmail collection:
 
-1. `admin_subject` — a Workspace admin user the service account impersonates for the Directory call.
+1. `admin_subject` — a Workspace admin user that the service account impersonates for the Directory call.
 2. An extra delegated scope — authorize the service account's client id for `https://www.googleapis.com/auth/admin.directory.user.readonly` in the Workspace Admin console.
 
-If a discovery pass fails or comes back empty while mailboxes are already being collected, the current set keeps collecting (with a warning logged) — discovery never tears down working mailboxes on a transient blip.
+If a discovery pass fails or returns nothing while the adapter already collects mailboxes, the current set continues to collect and the adapter logs a warning. A temporary failure of discovery does not stop the mailboxes that work.
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter:
+All adapters support the same `client_options`. Always set them when you use the binary adapter:
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) for this adapter.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify itself to LimaCharlie.
 - `client_options.platform`: `gmail`.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from.
+- `client_options.sensor_seed_key`: a name for this adapter. LimaCharlie generates Sensor IDs (SID) from this name.
 
 ### Adapter-specific Options
 
@@ -88,36 +96,36 @@ Adapter Type: `gmail`
 | `service_account_credentials` / `service_account_file` | — | Service-account flow credentials (Workspace). |
 | `subject` | — | Single mailbox to impersonate (service-account flow). |
 | `subjects` | — | Static list of mailboxes to impersonate. |
-| `discover_mailboxes` | `false` | Enumerate the domain's mailboxes via the Directory API. |
-| `admin_subject` | — | Admin user impersonated for the Directory API (required with `discover_mailboxes`). |
+| `discover_mailboxes` | `false` | Enumerate the mailboxes of the domain with the Directory API. |
+| `admin_subject` | — | Admin user to impersonate for the Directory API (necessary with `discover_mailboxes`). |
 | `customer` | `my_customer` | Directory API customer id (mutually exclusive with `domain`). |
 | `domain` | — | Restrict discovery to one domain of a multi-domain Workspace. |
 | `discovery_query` | — | Optional Directory API user search filter, e.g. `orgUnitPath='/Finance'`. |
-| `discovery_interval` | `1h` | How often discovery re-enumerates. |
+| `discovery_interval` | `1h` | How often discovery enumerates again. |
 | `include_suspended` | `false` | Also collect suspended mailboxes. |
-| `max_concurrent_polls` | `10` | Cap on how many mailboxes poll the Gmail API at once. |
+| `max_concurrent_polls` | `10` | Maximum number of mailboxes that poll the Gmail API at the same time. |
 | `collect_messages` … `collect_history` | see [Capabilities](#capabilities) | Capability toggles. |
 | `settings_poll_interval` | `15m` | Cadence for the configuration-state capabilities. |
-| `user_id` | `me` | Mailbox path segment for the refresh-token flow. Ignored by the service-account flow. |
-| `query` | `in:inbox` | Gmail [search query](https://support.google.com/mail/answer/7190) selecting messages. A time bound is appended automatically — do not add one. |
+| `user_id` | `me` | Mailbox path segment for the refresh-token flow. The service-account flow ignores it. |
+| `query` | `in:inbox` | Gmail [search query](https://support.google.com/mail/answer/7190) that selects messages. The adapter appends a time bound automatically. Do not add one. |
 | `scopes` | `gmail.readonly` | OAuth scopes to request. |
 | `format` | `full` | Message detail: `minimal`, `full`, `raw`, or `metadata`. |
 | `metadata_headers` | — | Headers to keep when `format` is `metadata`. |
-| `label_ids` | — | Only list messages carrying all of these label ids. |
+| `label_ids` | — | Only list messages that carry all of these label ids. |
 | `include_spam_trash` | `false` | Include SPAM and TRASH messages. |
 | `max_results` | `100` | Page size for the message listing (max 500). |
-| `poll_interval` | `5m` | Wait between message/history polls. |
-| `overlap` | `2m` | Window backdating to avoid gaps from late-indexed mail; re-listed messages are deduped. |
-| `initial_lookback` | `0` | On startup, reach back this far to backfill recent mail. |
-| `dedupe_ttl` | `168h` (7d) | How long a message id is remembered to suppress re-shipping. |
-| `retry_base_delay` / `max_retry_delay` / `max_retry_attempts` | `5s` / `30s` / `3` | Transient-failure retry tuning. |
+| `poll_interval` | `5m` | Wait between message and history polls. |
+| `overlap` | `2m` | Backdates the window to prevent gaps from mail that Gmail indexes late. The adapter dedupes messages that it lists again. |
+| `initial_lookback` | `0` | At startup, go back this far to backfill recent mail. |
+| `dedupe_ttl` | `168h` (7d) | How long the adapter remembers a message id and does not send it again. |
+| `retry_base_delay` / `max_retry_delay` / `max_retry_attempts` | `5s` / `30s` / `3` | Retry tuning for temporary failures. |
 
 ## How collection works
 
-- **Messages**: each poll lists message ids matching `query` over a rolling time window, fetches each message at the configured `format`, and forwards the full message resource verbatim. A deduper keyed on the immutable Gmail message id guarantees each message ships exactly once despite overlapping windows. The event timestamp is the message's `internalDate`.
-- **Configuration state**: polled on `settings_poll_interval`; only appearances and changes are shipped.
-- **History**: the first run records a baseline `historyId` and ships nothing; later polls list forward from the cursor, filtered to deletions and label changes. Gmail retains history for roughly a week — if the cursor ages out, the adapter re-baselines and resumes rather than stopping.
-- **Errors**: `401` triggers one transparent token refresh; `429`/`5xx`/`403` rate-limit errors are retried with backoff; persistently rejected credentials stop that mailbox's collector (other mailboxes are unaffected); a failing BEC capability is logged and skipped without affecting the others.
+- **Messages**: each poll lists the message ids that match `query` in a rolling time window. The adapter gets each message in the configured `format` and sends the full message resource unchanged. A deduper uses the immutable Gmail message id, so each message ships one time even when the windows overlap. The event timestamp is the `internalDate` of the message.
+- **Configuration state**: the adapter polls on `settings_poll_interval` and sends only new items and changes.
+- **History**: the first run records a baseline `historyId` and sends nothing. Later polls list forward from the cursor and keep only deletions and label changes. Gmail keeps history for about one week. If the cursor expires, the adapter makes a new baseline and continues instead of stopping.
+- **Errors**: a `401` causes one token refresh. The adapter retries `429`, `5xx`, and `403` rate-limit errors with backoff. Credentials that stay rejected stop the collector of that mailbox, but the other mailboxes continue. The adapter logs and skips a BEC capability that fails, and the other capabilities continue.
 
 ## CLI Deployment
 
@@ -140,7 +148,7 @@ chmod +x /path/to/lc_adapter
 
 ## Infrastructure as Code Deployment
 
-Full BEC monitoring of a Workspace mailbox — message telemetry plus the persistence, exfiltration, and tamper signals:
+This example gives full BEC monitoring of a Workspace mailbox: message telemetry with the persistence, exfiltration, and tamper signals.
 
 ```yaml
 # For cloud sensor deployment, store credentials as hive secrets:
@@ -169,7 +177,7 @@ gmail:
     sensor_seed_key: "gmail-sensor"
 ```
 
-Domain-wide auto-discovery — every mailbox in the Workspace, each on its own sensor:
+This example uses domain-wide auto-discovery. It collects every mailbox in the Workspace, each mailbox on its own sensor.
 
 ```yaml
 sensor_type: "gmail"
@@ -192,7 +200,7 @@ gmail:
 
 ## Sample Rule
 
-The BEC capabilities ship each signal under its own event type, so D&R rules can route directly on the signal. For example, flag every change to the account-wide auto-forwarding setting:
+The BEC capabilities send each signal with its own event type, so a D&R rule can match the signal directly. This example flags each change to the account-wide auto-forwarding setting:
 
 ```yaml
 # Detection
@@ -206,7 +214,7 @@ value: true
   name: Gmail auto-forwarding enabled
 ```
 
-> **Note:** the `gmail.metadata` scope does not allow the `q` search parameter. If you restrict the adapter to that scope, leave `query` empty and rely on `label_ids` / `include_spam_trash` instead. The default `gmail.readonly` scope covers every capability; the narrower `gmail.metadata` scope cannot read the settings sub-resources, so a capability using them will be logged and skipped.
+> **Note:** the `gmail.metadata` scope does not allow the `q` search parameter. If you limit the adapter to that scope, leave `query` empty and use `label_ids` and `include_spam_trash`. The default `gmail.readonly` scope covers every capability. The narrower `gmail.metadata` scope cannot read the settings sub-resources, so the adapter logs and skips a capability that uses them.
 
 ## API Docs
 

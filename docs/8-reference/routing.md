@@ -1,17 +1,17 @@
 # Reference: The `routing` Section
 
-Every event and every detection in LimaCharlie is made of two parts: the **payload** (what happened) and the **`routing`** (metadata about where it happened, when, and on which sensor). The `routing` section is the consistent "envelope" wrapped around otherwise free-form data.
+Every event and every detection in LimaCharlie has two parts: the **payload** (what happened) and the **`routing`** (metadata about where it happened, when, and on which sensor). The `routing` section is the consistent "envelope" around data that is otherwise free-form.
 
-If you have ever looked at a raw event and wondered what that block of `oid`, `sid`, `event_type`, `event_time`, `hostname`… at the top is for, this page is for you.
+This page explains the block of `oid`, `sid`, `event_type`, `event_time`, `hostname`… at the top of a raw event.
 
 ---
 
 ## The Mental Model: Envelope vs. Payload
 
-Think of a LimaCharlie event like a physical letter:
+A LimaCharlie event is similar to a physical letter:
 
-- The **envelope** (`routing`) is standardized. Every letter has a sender, a recipient, a postmark with a date, and an address. You can sort, route, and track letters using only the envelope, without ever opening them.
-- The **letter inside** (`event` or `detect`) is the actual content. It is different for every kind of message.
+- The **envelope** (`routing`) is standardized. Every letter has a sender, a recipient, a postmark with a date, and an address. You can sort, route, and track letters with only the envelope, and you do not open them.
+- The **letter inside** (`event` or `detect`) is the content. It is different for each kind of message.
 
 ```json
 {
@@ -30,15 +30,15 @@ Think of a LimaCharlie event like a physical letter:
 }
 ```
 
-The key insight: **the `event` object's fields change from one event type to another, but the `routing` object always has the same well-known fields.** That consistency is what makes `routing` so useful — you can write rules, queries, and outputs against it without knowing anything about the specific telemetry.
+**The fields of the `event` object change from one event type to another, but the `routing` object always has the same well-known fields.** This consistency makes `routing` useful. You can write rules, queries, and outputs against `routing` and know nothing about the specific telemetry.
 
-Where does it come from? You never write `routing` yourself. LimaCharlie's cloud builds it automatically as telemetry arrives, deriving the values from the sensor that reported the event (its identity, IP addresses, hostname, tags, etc.).
+You never write `routing` yourself. The LimaCharlie cloud builds it automatically when telemetry arrives. The cloud takes the values from the sensor that reported the event: its identity, IP addresses, hostname, tags, etc.
 
 ---
 
 ## A Fully Annotated Example
 
-Here is a real-world `NEW_PROCESS` event with every routing field explained inline:
+Here is a real `NEW_PROCESS` event. The inline comments explain every routing field:
 
 ```json
 {
@@ -73,7 +73,7 @@ Here is a real-world `NEW_PROCESS` event with every routing field explained inli
 
 ## Field Reference
 
-The exact set of fields present in `routing` depends on the source (an EDR endpoint produces more fields than a cloud log adapter), but the following are the standard ones.
+The set of fields in `routing` depends on the source. An EDR endpoint produces more fields than a cloud log adapter. These are the standard fields.
 
 ### Identity Fields
 
@@ -82,10 +82,10 @@ These answer **"who/what produced this?"**
 | Field | Type | Description |
 |-------|------|-------------|
 | `oid` | string (UUID) | **Organization ID.** The org that owns this telemetry. |
-| `sid` | string (UUID) | **Sensor ID.** Uniquely identifies the sensor (endpoint or adapter) that reported the event. The single most useful field for pivoting to a specific machine. |
-| `iid` | string (UUID) | **Installation Key ID.** The installation key used to enroll the sensor. Useful for grouping sensors deployed together. |
-| `did` | string (UUID) | **Device ID.** A more stable hardware identifier. Survives re-installs where the `sid` may change. |
-| `hostname` | string | Hostname reported by the sensor at the time of the event. |
+| `sid` | string (UUID) | **Sensor ID.** Uniquely identifies the sensor (endpoint or adapter) that reported the event. The most useful field to pivot to a specific machine. |
+| `iid` | string (UUID) | **Installation Key ID.** The installation key that enrolled the sensor. Use it to group sensors that you deployed together. |
+| `did` | string (UUID) | **Device ID.** A more stable hardware identifier. It stays the same across re-installs, but the `sid` can change. |
+| `hostname` | string | Hostname that the sensor reports at the time of the event. |
 | `moduleid` | integer | The internal sensor module / collector that generated the event. |
 
 ### Event Description Fields
@@ -94,8 +94,8 @@ These answer **"what happened and when?"**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `event_type` | string | The type of event, e.g. `NEW_PROCESS`, `DNS_REQUEST`, `NETWORK_CONNECTIONS`. This is what determines the shape of the `event` payload. |
-| `event_time` | integer | Timestamp the event occurred, as reported by the endpoint. **Unix time in milliseconds** (13 digits). |
+| `event_type` | string | The type of event, e.g. `NEW_PROCESS`, `DNS_REQUEST`, `NETWORK_CONNECTIONS`. It sets the shape of the `event` payload. |
+| `event_time` | integer | Timestamp of the event, as the endpoint reports it. **Unix time in milliseconds** (13 digits). |
 | `event_id` | string (UUID) | A globally unique identifier for this specific event occurrence. |
 
 ### Network / Location Fields
@@ -111,7 +111,7 @@ These answer **"what happened and when?"**
 |-------|------|-------------|
 | `plat` | integer | Platform code as an integer (e.g. `268435456` = Windows, `536870912` = Linux). See [ID Schema](id-schema.md#platform) for the full table. |
 | `arch` | integer | Architecture code (e.g. `1` = x86, `2` = x64). See [ID Schema](id-schema.md#architecture). |
-| `ext_plat` | string | **Extended platform** (only on multi-platform adapters, e.g. Carbon Black / CrowdStrike). Indicates the OS the *reported* endpoint runs, while `plat` describes the adapter itself. |
+| `ext_plat` | string | **Extended platform** (only on multi-platform adapters, e.g. Carbon Black / CrowdStrike). Shows the OS of the *reported* endpoint. `plat` describes the adapter itself. |
 
 ### Correlation Fields
 
@@ -119,24 +119,24 @@ These let you connect events to each other — see [Event Correlation](#event-co
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `this` | string (hash) | Hash uniquely identifying the primary object of the event (e.g. the process for a `NEW_PROCESS`). |
-| `parent` | string (hash) | Hash identifying the parent object (e.g. the parent process). |
-| `target` | string (hash) | Hash identifying a target object, when the event involves two objects (e.g. the process a remote thread was created in). Present only on relevant event types. |
-| `investigation_id` | string | Set when the event was produced in response to a command or investigation. Echoed back so you can correlate a request with its result. See [investigation_id](#investigation_id). |
+| `this` | string (hash) | Hash that uniquely identifies the primary object of the event (e.g. the process for a `NEW_PROCESS`). |
+| `parent` | string (hash) | Hash that identifies the parent object (e.g. the parent process). |
+| `target` | string (hash) | Hash that identifies a target object when the event has two objects (e.g. the process where a remote thread was created). Present only on relevant event types. |
+| `investigation_id` | string | Set when a command or investigation produces the event. It is echoed back, so that you can correlate a request with its result. See [investigation_id](#investigation_id). |
 
 ### Other Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `tags` | array[string] | The sensor's tags at the moment the event was generated. Note: this reflects tags *at event time*, which may differ from the sensor's current tags. |
+| `tags` | array[string] | The tags of the sensor at the moment the event was generated. These are the tags *at event time*, and they can be different from the current tags of the sensor. |
 
-> **Note:** Cloud-adapter and SaaS-log events (Office 365, GCP, Okta, etc.) carry the identity, event-description, and platform fields, but typically do **not** carry endpoint-specific fields like `this`/`parent`/`target`, `int_ip`, or process hashes — those only make sense for EDR telemetry.
+> **Note:** Cloud-adapter and SaaS-log events (Office 365, GCP, Okta, etc.) carry the identity, event-description, and platform fields. They usually do **not** carry endpoint-specific fields such as `this`/`parent`/`target`, `int_ip`, or process hashes. Those fields apply only to EDR telemetry.
 
 ---
 
 ## `routing` in Detections
 
-When a [D&R rule](../3-detection-response/index.md) matches an event and generates a **detection**, the detection **inherits the `routing` of the event that triggered it**. The triggering event's payload is copied into a `detect` field, and detection-specific metadata is added at the top level.
+When a [D&R rule](../3-detection-response/index.md) matches an event and generates a **detection**, the detection **inherits the `routing` of the event that triggered it**. The cloud copies the payload of the triggering event into a `detect` field, and adds detection-specific metadata at the top level.
 
 ```json
 {
@@ -159,13 +159,13 @@ When a [D&R rule](../3-detection-response/index.md) matches an event and generat
 }
 ```
 
-This is powerful: because the detection carries the original `routing`, you immediately know which sensor, host, and process the alert came from — and you can use the correlation hashes to take response actions against exactly the right object.
+The detection carries the original `routing`. You therefore know which sensor, host, and process sent the alert. You can also use the correlation hashes to run response actions against the correct object.
 
 ---
 
 ## Using `routing` in D&R Rules
 
-Inside Detection & Response rules, you reach into the `routing` object using the `routing/` path prefix (just as you use `event/` for payload fields).
+In Detection & Response rules, use the `routing/` path prefix to read the `routing` object. Use the `event/` prefix for payload fields.
 
 ```yaml
 detect:
@@ -187,7 +187,7 @@ detect:
       case sensitive: false
 ```
 
-You can also **template** routing values into response actions using the `<<routing/FIELD>>` syntax. For example, to kill the exact process that triggered a rule:
+You can also **template** routing values into response actions with the `<<routing/FIELD>>` syntax. For example, to kill the exact process that triggered a rule:
 
 ```yaml
 respond:
@@ -209,11 +209,11 @@ respond:
 
 The three hash fields turn a flat stream of events into a connected graph.
 
-- **`this`** — a stable hash identifying the object the event is *about* (for a `NEW_PROCESS`, the new process itself).
-- **`parent`** — the object that created/owns `this` (for a process, its parent process).
+- **`this`** — a stable hash that identifies the object the event is *about* (for a `NEW_PROCESS`, the new process itself).
+- **`parent`** — the object that creates or owns `this` (for a process, its parent process).
 - **`target`** — a third object, when an event acts on something else (e.g. a remote thread injected from one process *into* another).
 
-Because the hashes are computed consistently across events, you can follow them:
+The cloud computes the hashes consistently across events, so you can trace them:
 
 ```text
    explorer.exe                 (routing/this = AAA)
@@ -225,7 +225,7 @@ Because the hashes are computed consistently across events, you can follow them:
    powershell.exe  (routing/parent = BBB, routing/this = CCC)
 ```
 
-A later `DNS_REQUEST` made by that `powershell.exe` will carry `routing/this = CCC`, letting you tie the network activity back to the exact process chain. This is the foundation of [stateful rules](../3-detection-response/stateful-rules.md) and process-tree response actions like `deny_tree`.
+A later `DNS_REQUEST` from that `powershell.exe` carries `routing/this = CCC`. You can therefore link the network activity to the exact process chain. This is the basis of [stateful rules](../3-detection-response/stateful-rules.md) and of process-tree response actions such as `deny_tree`.
 
 ```yaml
 # Match any event coming from one specific process
@@ -239,9 +239,9 @@ detect:
 
 ## `investigation_id`
 
-When you issue a command to a sensor (for example via [Reliable Tasking](../5-integrations/extensions/limacharlie/reliable-tasking.md) or directly), you can attach an `investigation_id`. The sensor echoes that value into the `routing.investigation_id` of the resulting `RECEIPT` or `*_REP` response event.
+When you send a command to a sensor, you can attach an `investigation_id`. Send the command with [Reliable Tasking](../5-integrations/extensions/limacharlie/reliable-tasking.md) or directly. The sensor echoes that value into the `routing.investigation_id` of the `RECEIPT` or `*_REP` response event.
 
-This lets you correlate a request with its answer — for instance, writing a D&R rule that reacts to the result of a command you sent:
+You can then correlate a request with its answer. For example, write a D&R rule that reacts to the result of a command that you sent:
 
 ```yaml
 detect:
@@ -255,37 +255,37 @@ detect:
 
 ## Where You'll See `routing`
 
-The same `routing` envelope appears across multiple LimaCharlie surfaces:
+The same `routing` envelope appears on many LimaCharlie surfaces:
 
 | Surface | Notes |
 |---------|-------|
 | **`event` stream** | Every piece of sensor/adapter telemetry. |
-| **`detect` stream** | Detections inherit the triggering event's `routing`. |
+| **`detect` stream** | Detections inherit the `routing` of the triggering event. |
 | **`deployment` stream** | Sensor lifecycle events use the same `routing` envelope. |
-| **Outputs** | When you forward data to a SIEM, S3, webhook, etc., the full `{routing, event}` structure is sent. Parse `routing/event_type` to route to the right index. |
-| **LCQL queries** | Reference routing fields with the `routing/` prefix, e.g. `routing/hostname`. |
+| **Outputs** | When you forward data to a SIEM, S3, webhook, etc., LimaCharlie sends the full `{routing, event}` structure. Parse `routing/event_type` to route to the correct index. |
+| **LCQL queries** | Refer to routing fields with the `routing/` prefix, e.g. `routing/hostname`. |
 | **Schema API** | Learned schema elements are namespaced, e.g. `s:routing/sid`, `i:routing/event_time`. See [Event Schemas](event-schemas.md). |
 
-> The `audit` stream is the exception — audit logs use a different, flatter structure and do **not** have a `routing` object. See [Output Stream Structures](../5-integrations/outputs/stream-structures.md#3-audit-stream-structure).
+> The `audit` stream is the exception. Audit logs use a different, flatter structure and do **not** have a `routing` object. For details, see [Output Stream Structures](../5-integrations/outputs/stream-structures.md#3-audit-stream-structure).
 
 ---
 
 ## Frequently Asked Questions
 
 **Is `event_time` in seconds or milliseconds?**
-Milliseconds (a 13-digit number). Remember that LimaCharlie *API parameters* generally use seconds (10 digits), so divide `event_time` by 1000 when feeding it back into an API query.
+Milliseconds (a 13-digit number). LimaCharlie *API parameters* usually use seconds (10 digits). Divide `event_time` by 1000 before you use it in an API query.
 
 **What's the difference between `sid`, `did`, and `iid`?**
-`sid` identifies a *sensor installation*, `did` identifies the underlying *device/hardware* (more stable across re-installs), and `iid` identifies the *installation key* used to enroll. Use `sid` for day-to-day pivoting and `did` for long-term device tracking.
+`sid` identifies a *sensor installation*. `did` identifies the *device or hardware* below it, and is more stable across re-installs. `iid` identifies the *installation key* that enrolled the sensor. Use `sid` for daily pivoting and `did` for long-term device tracking.
 
 **Why do my cloud-adapter events have fewer routing fields than my EDR events?**
-Fields like `this`/`parent`/`target`, `int_ip`, and process hashes are endpoint concepts. Cloud and SaaS log sources don't have a process tree or a LAN IP, so those fields are simply absent.
+Fields such as `this`/`parent`/`target`, `int_ip`, and process hashes are endpoint concepts. Cloud and SaaS log sources have no process tree and no LAN IP, so those fields are absent.
 
 **Are the `tags` in routing the sensor's current tags?**
-No — they are a snapshot of the sensor's tags *at the moment the event was generated*. If you re-tag a sensor, older events keep the old tags.
+No. They are a snapshot of the tags of the sensor *at the moment the event was generated*. If you re-tag a sensor, older events keep the old tags.
 
 **Can I add my own fields to `routing`?**
-No. `routing` is built by the platform. To attach your own context, use `investigation_id` on commands, sensor tags, or fields inside the `event`/`detect` payload.
+No. The platform builds `routing`. To attach your own context, use `investigation_id` on commands, sensor tags, or fields in the `event`/`detect` payload.
 
 ---
 

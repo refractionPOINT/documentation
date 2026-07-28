@@ -1,12 +1,12 @@
 # Query Console
 
-Query and analyze your security telemetry using LimaCharlie Query Language (LCQL).
+Query and analyze your security telemetry with LimaCharlie Query Language (LCQL).
 
 ## Documentation
 
 - [LCQL Examples](lcql-examples.md) - Example queries for common use cases
-- [Query Console UI](query-console-ui.md) - Using the web-based query interface
-- [Query with CLI](query-cli.md) - Running queries from the command line
+- [Query Console UI](query-console-ui.md) - How to use the query interface in the web app
+- [Query with CLI](query-cli.md) - How to run queries from the command line
 - [Query Limits & Performance](query-limits-and-performance.md) - Concurrency and timeout limits, and how to write efficient queries
 
 ---
@@ -14,11 +14,11 @@ Query and analyze your security telemetry using LimaCharlie Query Language (LCQL
 ## Running Queries Programmatically
 
 !!! info "Prerequisites"
-    All API examples require an API key with the `insight` permission. See [API Keys](../7-administration/access/api-keys.md) for setup.
+    All API examples need an API key with the `insight` permission. For setup steps, see [API Keys](../7-administration/access/api-keys.md).
 
 ### Search API Endpoint
 
-There is no single search hostname. Each organization's search endpoint lives in the datacenter for the region where the organization was created, so you discover it from the API first and then send queries to that host. The Python SDK, Go SDK, and CLI do this automatically.
+There is no single search hostname. The search endpoint of an organization is in the datacenter for the region where the organization was created. First, get the endpoint from the API. Then send your queries to that host. The Python SDK, the Go SDK, and the CLI do this automatically.
 
 === "REST API"
 
@@ -30,13 +30,13 @@ There is no single search hostname. Each organization's search endpoint lives in
 
 === "Python"
 
-    The Python SDK resolves the search endpoint automatically from your OID; no manual step is required.
+    The Python SDK resolves the search endpoint automatically from your OID. There is no manual step.
 
 === "CLI"
 
-    The CLI resolves the search endpoint automatically from your OID; no manual step is required.
+    The CLI resolves the search endpoint automatically from your OID. There is no manual step.
 
-The bootstrap API host `https://api.limacharlie.io` is the same for every region and routes to the correct datacenter based on your OID. The REST examples below reuse the `$SEARCH_HOST` variable for the discovered hostname. For reference, the current production search endpoints per region are:
+The bootstrap API host `https://api.limacharlie.io` is the same for every region. It routes to the correct datacenter for your OID. The REST examples below reuse the `$SEARCH_HOST` variable for the hostname that you found. The current production search endpoints for each region are:
 
 | Region | Search endpoint |
 |--------|-----------------|
@@ -48,7 +48,7 @@ The bootstrap API host `https://api.limacharlie.io` is the same for every region
 | India | `https://4d897015b0815621.replay-search.limacharlie.io` |
 
 !!! tip "Use the bootstrap API, not a direct endpoint"
-    Discovering your search endpoint through the bootstrap API (`https://api.limacharlie.io/v1/orgs/{oid}/url`, the `url.search` field) is the recommended approach. The direct per-region hostnames above can change over time, whereas the bootstrap API always returns the current endpoint for your organization. Treat the table as a convenience reference only, and do not hardcode a direct endpoint.
+    Get your search endpoint through the bootstrap API (`https://api.limacharlie.io/v1/orgs/{oid}/url`, the `url.search` field). The direct hostnames for each region above can change with time, but the bootstrap API always returns the current endpoint for your organization. Use the table as a reference only. Do not hardcode a direct endpoint.
 
 ### Run an LCQL Query
 
@@ -183,7 +183,7 @@ The bootstrap API host `https://api.limacharlie.io` is the same for every region
     ```
 
 !!! note
-    The validate response also includes query-size fields (`batchesInScope`, `eventsInScope`, `bytesInScope`) and a running search returns per-page progress and actual billing. See [Query Progress and Cost Reporting](query-limits-and-performance.md#query-progress-and-cost-reporting) for how to build a progress bar and read the real cost.
+    The validate response also includes query-size fields (`batchesInScope`, `eventsInScope`, `bytesInScope`). A query that runs returns the progress for each page and the actual billing. To build a progress bar and read the real cost, see [Query Progress and Cost Reporting](query-limits-and-performance.md#query-progress-and-cost-reporting).
 
 ### Saved Queries
 

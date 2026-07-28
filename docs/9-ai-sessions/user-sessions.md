@@ -1,6 +1,6 @@
 # User AI Sessions
 
-User AI Sessions provide interactive access to Claude AI through the LimaCharlie web interface or API. Unlike D&R-driven sessions that run automatically, user sessions are manually initiated and allow real-time, bidirectional communication with Claude.
+User AI Sessions give you interactive access to Claude AI through the LimaCharlie web app or the API. D&R-driven sessions run automatically, but you start a user session manually. A user session gives real-time, bidirectional communication with Claude.
 
 ## Overview
 
@@ -8,20 +8,20 @@ User sessions give you:
 
 - **Interactive Claude Code**: Full Claude Code capabilities in a cloud-hosted environment
 - **Real-time communication**: WebSocket-based streaming of responses and tool usage
-- **Session management**: Create, list, and manage multiple sessions
-- **File transfer**: Upload and download files to/from session workspaces
+- **Session management**: Create, list, and manage many sessions
+- **File transfer**: Upload files to session workspaces and download files from them
 - **Profiles**: Save and reuse session configurations
 
 ## Getting Started
 
 ### Step 1: Registration
 
-Before using AI Sessions, you must register. Registration is available to LimaCharlie users with approved email domains.
+You must register before you use AI Sessions. LimaCharlie users with approved email domains can register.
 
-**Via Web UI:**
-Navigate to the AI Sessions section in the LimaCharlie web console and click "Register".
+**In the web app:**
+Go to the AI Sessions section in the LimaCharlie web app. Click "Register".
 
-**Via API:**
+**With the API:**
 
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/register \
@@ -30,7 +30,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/register \
 
 ### Step 2: Store Claude Credentials
 
-AI Sessions uses a Bring Your Own Key (BYOK) model. You provide your Anthropic credentials—either an API key or via Claude Max OAuth.
+AI Sessions uses a Bring Your Own Key (BYOK) model. You supply your Anthropic credentials: an API key, or Claude Max OAuth.
 
 #### Option A: API Key
 
@@ -47,35 +47,35 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/apikey \
 
 #### Option B: Claude Max OAuth
 
-If you have a Claude Max subscription, you can authenticate via OAuth:
+If you have a Claude Max subscription, you can authenticate with OAuth:
 
 1. Start the OAuth flow:
 
-```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/start \
-  -H "Authorization: Bearer $LC_JWT"
-```
+    ```bash
+    curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/start \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
 
-1. Poll for the authorization URL:
+2. Poll for the authorization URL:
 
-```bash
-curl https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id=<oauth_session_id> \
-  -H "Authorization: Bearer $LC_JWT"
-```
+    ```bash
+    curl https://ai-sessions.limacharlie.io/v1/auth/claude/url?session_id=<oauth_session_id> \
+      -H "Authorization: Bearer $LC_JWT"
+    ```
 
-1. Visit the URL in your browser and authorize
-2. Submit the authorization code:
+3. Open the URL in your browser and authorize.
+4. Submit the authorization code:
 
-```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/code \
-  -H "Authorization: Bearer $LC_JWT" \
-  -H "Content-Type: application/json" \
-  -d '{"session_id": "<oauth_session_id>", "code": "<authorization_code>"}'
-```
+    ```bash
+    curl -X POST https://ai-sessions.limacharlie.io/v1/auth/claude/code \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{"session_id": "<oauth_session_id>", "code": "<authorization_code>"}'
+    ```
 
 ### Step 3: Create a Session
 
-Create a new session to start working with Claude:
+Create a session to start work with Claude:
 
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/sessions \
@@ -89,7 +89,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/sessions \
 
 ### Step 4: Connect via WebSocket
 
-For real-time interaction, connect to the session via WebSocket:
+For real-time interaction, connect to the session with a WebSocket:
 
 ```javascript
 const ws = new WebSocket(
@@ -109,11 +109,11 @@ ws.send(JSON.stringify({
 ```
 
 !!! tip "Chat from the terminal"
-    The LimaCharlie CLI's `limacharlie ai chat` command starts a new user session and drops you straight into the interactive chat — no manual `POST /v1/sessions` + WebSocket bring-up. Pre-requisite is running `limacharlie ai auth claude login` (or `set-key`) once to register your Anthropic credential. See [Command Line Interface](cli.md#limacharlie-ai-chat) for the full flag set, and `ai session attach --id <SESSION_ID> --interactive` for re-attaching to a session you started earlier.
+    The `limacharlie ai chat` command in the LimaCharlie CLI starts a user session and opens the interactive chat. You do not send a manual `POST /v1/sessions` and you do not bring up a WebSocket. First, run `limacharlie ai auth claude login` (or `set-key`) one time to register your Anthropic credential. See [Command Line Interface](cli.md#limacharlie-ai-chat) for the full flag set. To attach again to a session that you started earlier, use `ai session attach --id <SESSION_ID> --interactive`.
 
 ## Session Profiles
 
-Profiles let you save and reuse session configurations. You can have up to 10 profiles, with one designated as the default.
+Profiles let you save and reuse session configurations. You can have a maximum of 10 profiles, and one of them is the default.
 
 ### Creating a Profile
 
@@ -138,16 +138,16 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles \
 |--------|------|-------------|
 | `name` | string | Profile name (max 100 characters) |
 | `description` | string | Profile description (max 500 characters) |
-| `allowed_tools` | list | Tools Claude can use. See [Tool Permissions & Profiles](tool-permissions.md) for the full pattern grammar. |
-| `denied_tools` | list | Tools Claude cannot use. Always wins over `allowed_tools`. See [Tool Permissions & Profiles](tool-permissions.md). |
+| `allowed_tools` | list | Tools that Claude can use. See [Tool Permissions & Profiles](tool-permissions.md) for the full pattern grammar. |
+| `denied_tools` | list | Tools that Claude cannot use. Always wins over `allowed_tools`. See [Tool Permissions & Profiles](tool-permissions.md). |
 | `permission_mode` | string | `acceptEdits`, `plan`, or `bypassPermissions`. See [Tool Permissions & Profiles](tool-permissions.md#permission_mode). |
 | `model` | string | Claude model to use |
 | `max_turns` | integer | Maximum conversation turns |
 | `max_budget_usd` | float | Maximum spend limit in USD |
-| `one_shot` | boolean | When `true`, session terminates after completing its initial work. Default: `false` for user sessions. |
+| `one_shot` | boolean | When `true`, the session ends after its initial work. Default: `false` for user sessions. |
 | `ttl_seconds` | integer | Maximum session lifetime in seconds |
 | `environment` | map | Environment variables passed to the session |
-| `mcp_servers` | map | External/third-party MCP server configurations. LimaCharlie access is handled by the auto-installed `limacharlie` CLI and does not need an entry here. |
+| `mcp_servers` | map | Configurations for external MCP servers. The auto-installed `limacharlie` CLI gives LimaCharlie access, so it needs no entry here. |
 
 ### Setting a Default Profile
 
@@ -158,7 +158,7 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/profiles/{profileId}/default 
 
 ### Capturing Settings from a Session
 
-You can create a new profile from an existing session's settings:
+You can create a profile from the settings of an existing session:
 
 ```bash
 curl -X POST https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/capture-profile \
@@ -171,48 +171,50 @@ curl -X POST https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/capture-
 
 ### What you see: Running / Waiting / Ended
 
-Across the UI — the sidebar, session lists, the live grid, the chat header — a
+In the web app — the sidebar, session lists, the live grid, and the chat header — a
 session shows one of three states, with an optional **needs-attention** flag:
 
 | State | Meaning |
 |-------|---------|
-| **Running** | The agent is actively working — thinking, running tools, or recovering. |
-| **Waiting** | The session is alive but idle — waiting for your next prompt, asleep but resumable, or blocked on an unanswered tool approval or question. |
+| **Running** | The agent works: it thinks, runs tools, or recovers. |
+| **Waiting** | The session is alive but idle. It waits for your next prompt, is asleep but resumable, or is blocked on a tool approval or question with no answer. |
 | **Ended** | The session is finished. The `end_reason` says why — see [End Reasons](#end-reasons) below. |
 
 **Needs attention** — when a Running or Waiting session is blocked on a tool approval
-or a question you haven't answered, the badge gains a trailing alert marker. If you
-send a prompt while a session is blocked, the chat shows a "message queued" notice
-with a button that scrolls the pending request into view.
+or on a question with no answer, the badge shows a trailing alert marker. If you
+send a prompt to a blocked session, the chat shows a "message queued" notice with a
+button that scrolls the pending request into view.
 
 ### Hibernation
 
-Idle sessions are automatically **hibernated**: the workspace is archived and the
-session becomes **dormant**, incurring storage cost but **zero compute** until you
-send a new message, at which point it resumes transparently. To you it simply stays
-"Waiting" the whole time and picks up where it left off — the conversation and
-working files are restored on resume.
+Idle sessions are **hibernated** automatically. The workspace is archived and the
+session becomes **dormant**. A dormant session has a storage cost but **zero
+compute** cost until you send a new message, and it then resumes. For you, the
+session stays "Waiting" the whole time and continues from the same point, because
+the conversation and the working files are restored on resume.
 
 ### Forking
 
-A dormant or ended session can be **forked** into a new session within its retention
-window. The fork inherits the source's **conversation context** but starts with the
-**forking user's profile** (its tools and capabilities). A fork preflight reports
-whether the source is forkable and which of its MCP servers are missing from your
-profiles, so you can acknowledge them before forking.
+You can **fork** a dormant or ended session into a new session inside its retention
+window. The fork inherits the **conversation context** of the source, but it starts
+with the **profile of the user who forks it**, and with the tools and capabilities of
+that profile. A fork preflight reports if the source is forkable, and which MCP
+servers of the source your profiles do not have, so you can acknowledge them before
+you fork.
 
 ### Resource limits
 
-Several [Profile Options](#profile-options) act as automatic termination triggers:
-`max_turns` ends the session after a number of turns, `max_budget_usd` when
-cumulative Claude cost exceeds the cap, `one_shot` after the initial task, and
-`ttl_seconds` sets the session lifetime (capped at 24 hours). A platform maximum
-session duration, set by your organization's tier, also applies. When one of these is
-reached the session moves to `ended` with the matching `end_reason` below.
+Some [Profile Options](#profile-options) end a session automatically. `max_turns`
+ends the session after a count of turns. `max_budget_usd` ends it when the total
+Claude cost goes above the cap. `one_shot` ends it after the initial task.
+`ttl_seconds` sets the session lifetime, with a maximum of 24 hours. A platform
+maximum for session duration, set by the tier of your organization, also applies.
+When the session reaches one of these limits, it moves to `ended` with the matching
+`end_reason` below.
 
 ### End Reasons
 
-When a session enters the `ended` state, the `end_reason` field indicates why:
+When a session enters the `ended` state, the `end_reason` field shows why:
 
 | Reason | Description |
 |--------|-------------|
@@ -220,7 +222,7 @@ When a session enters the `ended` state, the `end_reason` field indicates why:
 | `failed` | Session encountered an execution error |
 | `job_completed` | Session runner process exited |
 | `user_requested` | User terminated the session |
-| `org_api_requested` | Session was terminated via the org API |
+| `org_api_requested` | The org API terminated the session |
 | `max_duration_exceeded` | Session exceeded its maximum duration |
 | `startup_timeout` | Session failed to start within the allowed time |
 | `heartbeat_stale` | Lost connection to the session runner |
@@ -234,7 +236,7 @@ curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId} \
 
 ### Deleting Session Records
 
-After a session is terminated, you can delete its record:
+After you terminate a session, you can delete its record:
 
 ```bash
 curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/record \
@@ -247,52 +249,52 @@ curl -X DELETE https://ai-sessions.limacharlie.io/v1/sessions/{sessionId}/record
 
 1. Request an upload URL:
 
-```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload \
-  -H "Authorization: Bearer $LC_JWT" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filename": "data.csv",
-    "content_type": "text/csv",
-    "size": 1024
-  }'
-```
+    ```bash
+    curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "filename": "data.csv",
+        "content_type": "text/csv",
+        "size": 1024
+      }'
+    ```
 
-1. Upload the file to the signed URL:
+2. Upload the file to the signed URL:
 
-```bash
-curl -X PUT "{upload_url}" \
-  -H "Content-Type: text/csv" \
-  --data-binary @data.csv
-```
+    ```bash
+    curl -X PUT "{upload_url}" \
+      -H "Content-Type: text/csv" \
+      --data-binary @data.csv
+    ```
 
-1. Notify that upload is complete:
+3. Report that the upload is complete:
 
-```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload/complete \
-  -H "Authorization: Bearer $LC_JWT" \
-  -H "Content-Type: application/json" \
-  -d '{"upload_id": "{upload_id}"}'
-```
+    ```bash
+    curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/upload/complete \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{"upload_id": "{upload_id}"}'
+    ```
 
-The file will be available in the session at the `target_path` returned in step 1.
+The file is then available in the session at the `target_path` from step 1.
 
 ### Downloading Files
 
 1. Request a download URL:
 
-```bash
-curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/download \
-  -H "Authorization: Bearer $LC_JWT" \
-  -H "Content-Type: application/json" \
-  -d '{"path": "/workspace/output.txt"}'
-```
+    ```bash
+    curl -X POST https://ai-sessions.limacharlie.io/v1/io/sessions/{sessionId}/download \
+      -H "Authorization: Bearer $LC_JWT" \
+      -H "Content-Type: application/json" \
+      -d '{"path": "/workspace/output.txt"}'
+    ```
 
-1. Download the file from the signed URL:
+2. Download the file from the signed URL:
 
-```bash
-curl -o output.txt "{download_url}"
-```
+    ```bash
+    curl -o output.txt "{download_url}"
+    ```
 
 ### File Size Limits
 
@@ -324,7 +326,7 @@ Claude: I'll investigate this sensor. Let me start by gathering some
 
 ### Ad-hoc Analysis
 
-Perform quick analysis tasks:
+Do quick analysis tasks:
 
 ```text
 You: Analyze this list of IP addresses and tell me which ones
@@ -359,21 +361,21 @@ Claude: Here's how to create a D&R rule for detecting PowerShell
 
 ### Session Management
 
-- **Terminate when done**: Idle sessions are automatically hibernated to save resources, but explicitly terminating sessions you no longer need is still recommended
+- **Terminate when done**: Idle sessions are hibernated automatically to save resources, but terminate the sessions that you no longer need
 - **Use profiles**: Save common configurations for quick session creation
 - **Set resource limits**: Use `max_turns` and `max_budget_usd` to control costs
-- **Expect resume latency**: After a period of inactivity, your session may be hibernated. The first message after hibernation may take longer as the session resumes
+- **Expect resume latency**: After a period with no activity, your session can be hibernated. The first message after hibernation can take longer, because the session resumes first
 
 ### Security
 
-- **Limit tool access**: Only enable tools needed for your task
-- **Review tool usage**: Monitor what actions Claude is taking
-- **Be careful with Write/Edit**: These tools can modify files
+- **Limit tool access**: Enable only the tools that your task needs
+- **Review tool usage**: Monitor which actions Claude does
+- **Be careful with Write/Edit**: These tools can change files
 
 ### Performance
 
 - **Keep prompts focused**: Specific, clear prompts get better results
-- **Upload files for large data**: Use file transfer instead of pasting into prompts
+- **Upload files for large data**: Use file transfer instead of a paste into a prompt
 - **Use heartbeats**: Keep WebSocket connections alive with regular heartbeats
 
 ## Rate Limits
@@ -391,24 +393,24 @@ Claude: Here's how to create a D&R rule for detecting PowerShell
 
 ### Cannot Register
 
-- Verify your email domain is in the allowed list
+- Check that your email domain is in the allowed list
 - Check that your JWT token is valid
-- Contact support if the issue persists
+- Contact support if the problem continues
 
 ### Cannot Create Session
 
-- Ensure you have Claude credentials stored
-- Check you haven't exceeded the maximum session limit (10)
-- Verify your profile configuration is valid
+- Make sure that you stored Claude credentials
+- Check that you are below the maximum session limit (10)
+- Check that your profile configuration is valid
 
 ### WebSocket Connection Issues
 
-- Use the query parameter for JWT if header doesn't work
-- Send heartbeats every 30 seconds to keep connection alive
-- Check session status—connection only works for `running` sessions
+- Use the query parameter for the JWT if the header does not work
+- Send heartbeats every 30 seconds to keep the connection alive
+- Check the session status—the connection works only for `running` sessions
 
 ### Session Crashes
 
-- Check `max_turns` isn't being exceeded
-- Review the error message in session details
-- Ensure MCP server configurations are correct
+- Check that the session is below `max_turns`
+- Read the error message in the session details
+- Make sure that the MCP server configurations are correct

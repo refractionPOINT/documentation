@@ -1,8 +1,8 @@
 # EchoTrail
 
-[EchoTrail](https://echotrail.io/) is an API service that allows you to perform a lookup of a file name or hash value. EchoTrail will return a summary of statistical details that describes the behavior of the submitted value, as observed from their sensors over time.
+[EchoTrail](https://echotrail.io/) is an API service that does a lookup of a file name or a hash value. EchoTrail returns a summary of statistical details. The summary describes the behavior of the value that you submit, as seen by the EchoTrail sensors over time.
 
-LimaCharlie has an integration available for EchoTrail's `insights` API lookup, accepting one of the following:
+LimaCharlie has an integration for the EchoTrail `insights` API lookup. The lookup accepts one of these values:
 
 - MD5 Hash
 - SHA256 Hash
@@ -10,7 +10,7 @@ LimaCharlie has an integration available for EchoTrail's `insights` API lookup, 
 
 ## Detection & Response Rule
 
-The following detection and response rule utilizes a file name from a `NEW_PROCESS` event to query the EchoTrail `insights` API:
+This D&R rule takes a file name from a `NEW_PROCESS` event. It then queries the EchoTrail `insights` API:
 
 ```yaml
 event: NEW_PROCESS
@@ -19,7 +19,7 @@ path: event/FILE_PATH
 resource: lcr://api/echotrail-insights
 ```
 
-EchoTrail's response data includes the following:
+The response data from EchoTrail includes these details:
 
 ```json
 {

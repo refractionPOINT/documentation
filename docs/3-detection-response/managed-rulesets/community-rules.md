@@ -1,6 +1,6 @@
 # Community Rules
 
-Our Community Rules feature leverages the power of AI to quickly transform a plethora of third-party rules into LimaCharlie syntax so you can make them your own. The process is fast and efficient: Browse thousands of community rules, select one as a starting point, convert it to LimaCharlie syntax with one click, and customize it to your liking.
+The Community Rules feature uses AI to convert third-party rules into LimaCharlie syntax. Browse thousands of community rules and select one as a start. Convert it to LimaCharlie syntax with one click, then change it for your needs.
 
 ## Accessing the Community Rules
 
@@ -15,26 +15,26 @@ To access the Community Rules:
 7. Look in the upper right corner of the rule creation page for the Community Library button
 8. Click the Community Library button
 
-This takes you to the Community Rules search page, and gives you access to thousands of third-party detection rules. The library currently contains detection rules written by [Anvilogic](https://github.com/anvilogic-forge/armory/blob/main/detections/cloud/aws/aws_disableawsserviceaccess/aws_disableawsserviceaccess-splunk-awscloudtrail.yml), [Sigma](https://github.com/SigmaHQ/sigma/blob/master/rules/network/zeek/zeek_http_susp_file_ext_from_susp_tld.yml), [Panther](https://github.com/panther-labs/panther-analysis/blob/develop/rules/gsuite_activityevent_rules/google_workspace_many_docs_downloaded.yml), and [Okta](https://github.com/okta/customer-detections).
+The Community Rules search page opens and gives access to thousands of third-party detection rules. The library currently contains detection rules written by [Anvilogic](https://github.com/anvilogic-forge/armory/blob/main/detections/cloud/aws/aws_disableawsserviceaccess/aws_disableawsserviceaccess-splunk-awscloudtrail.yml), [Sigma](https://github.com/SigmaHQ/sigma/blob/master/rules/network/zeek/zeek_http_susp_file_ext_from_susp_tld.yml), [Panther](https://github.com/panther-labs/panther-analysis/blob/develop/rules/gsuite_activityevent_rules/google_workspace_many_docs_downloaded.yml), and [Okta](https://github.com/okta/customer-detections).
 
-> Rules are searchable by CVE number, keyword, or pre-defined descriptors (Tags). Searchable tags include attack techniques, MITRE ATT&CK id codes and other key rule identificators.
+> You can search for rules by CVE number, keyword, or pre-defined descriptors (Tags). Searchable tags include attack techniques, MITRE ATT&CK id codes, and other key rule identifiers.
 
 ![Community Rules Search Interface](../../assets/images/image(337).png)
 
 ## Loading a Community Rule
 
-Once you find the rule you want to use, import it to the organization by clicking "Load Rule", and our AI engine will create it using verified LimaCharlie syntax.
+When you find the rule that you want to use, click "Load Rule" to import it into the organization. The AI engine creates the rule with verified LimaCharlie syntax.
 
-> This process may take a few seconds so please be patient.
+> This process can take a few seconds.
 
-Once the rule is ready, it will return you to the Add Rule page in LimaCharlie. The Detect and Response sections of the rule will be filled out with LimaCharlie logic that includes explanatory comments. From here you can manage this rule just as you would any other D&R rule.
+When the rule is ready, LimaCharlie returns you to the Add Rule page. The Detect and Response sections of the rule contain LimaCharlie logic with explanatory comments. You can then manage this rule as you manage any other D&R rule.
 
 ## Digging Deeper
 
-As these rules are the property of third parties you may be interested in knowing more about their licensing or source code. This information is accessible through the Community Rules search page. To see these details click on a rule.
+These rules are the property of third parties. The Community Rules search page gives more information about their licensing and source code. To see these details, click a rule.
 
-The example below shows what appears when you click Anvilogic's Potential CVE-2021-44228 - Log4Shell rule
+The example below shows the result when you click the Anvilogic Potential CVE-2021-44228 - Log4Shell rule.
 
-Under the rule name you will see the options to load the rule, check its source code, and read additional licensing information. There is also a reference section at the bottom left corner of the window providing links related to the rule.
+Below the rule name are the options to load the rule, check its source code, and read more licensing information. A reference section in the bottom left corner of the window gives links that relate to the rule.
 
 ![Rule Details Example](https://lh7-rt.googleusercontent.com/docsz/AD_4nXf3SZQZu4j4kEp2Y0wpnoeHA0t_XaR5VqaoB9SupPHl0t91e-12QhMj0epDi742peW0gpu8e44HhJ4lDN1esspiMRUfpFr3W2aNiQcIeff2HhNCxmgp1h3oLqphpqJ8AohoDDxFdA?key=7BgiNipN3DxRQXGQyEk06w)

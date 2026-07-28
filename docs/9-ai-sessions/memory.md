@@ -1,30 +1,30 @@
 # AI Memory
 
-AI Memory is a per-agent key/value store for content that should outlive a single AI Session. Where [Skills](skills.md) capture *how* an agent works, memory captures *what it has learned* — facts about the environment, prior decisions, ongoing investigations, anything the agent should be able to recall the next time it runs.
+AI Memory is a key/value store for each agent. It holds content that must outlive one AI Session. [Skills](skills.md) record *how* an agent works. Memory records *what the agent learned*: facts about the environment, earlier decisions, open investigations, and anything else the agent must recall on its next run.
 
-Each agent owns one record, keyed by an agent identifier you pick. Inside that record, individual memories are addressed by filesystem-style names (`notes/today`, `cases/INC-123/timeline`, `runtime/last-seen-host`, …). Writes are partial: setting a single named memory does not require reading the rest of the record back, and concurrent writes against different memory names on the same agent do not need to coordinate.
+Each agent owns one record. You pick the agent identifier that keys the record. Inside the record, names in a filesystem style address each memory (`notes/today`, `cases/INC-123/timeline`, `runtime/last-seen-host`, …). Writes are partial. To set one named memory, you do not need to read the rest of the record. Parallel writes to different memory names on the same agent do not need to coordinate.
 
 ## How writes merge
 
-Memory uses a server-side partial-merge model so agents can update one entry at a time without round-tripping the whole record:
+Memory uses a partial-merge model on the server. An agent can update one entry at a time and does not send the whole record:
 
-- **Set** with `{"<name>": "<content>"}` replaces just that entry. Other memories on the agent are preserved.
-- **Set** with `{"<name>": null}` drops just that entry. Other memories are preserved.
-- **Delete the whole record** to remove every memory for an agent in one call.
+- **Set** with `{"<name>": "<content>"}` replaces that one entry. The other memories on the agent stay unchanged.
+- **Set** with `{"<name>": null}` deletes that one entry. The other memories stay unchanged.
+- **Delete the whole record** to remove all memories for an agent in one call.
 
-This means an agent can take notes incrementally throughout a session — `progress/step-1`, `progress/step-2` — without ever fetching the full record, and two agents (or two parallel turns) writing to disjoint memory names will not clobber each other.
+An agent can therefore add notes step by step during a session — `progress/step-1`, `progress/step-2` — and never fetch the full record. Two agents, or two parallel turns, that write to different memory names do not overwrite each other.
 
 ## Naming rules
 
-Memory names follow filesystem conventions:
+Memory names obey filesystem conventions:
 
 - Relative paths only — no leading `/`.
 - Forward slashes only — no `\`.
 - Canonical form — `./` and `../` segments are rejected.
 - No traversal above the record root.
-- Maximum 256 characters per name.
+- Maximum 256 characters for each name.
 
-Use the path structure to keep memories organised (`runtime/`, `notes/`, `cases/<id>/…`) — the store does not care about the segments, but a consistent layout makes it easier to enumerate or selectively wipe.
+Use the path structure to organize memories (`runtime/`, `notes/`, `cases/<id>/…`). The store ignores the segments, but a consistent layout makes it easier to list or delete a subset.
 
 ## Limits
 
@@ -46,7 +46,7 @@ Use the path structure to keep memories organised (`runtime/`, `notes/`, `cases/
 
 ### CLI
 
-The `ai-memory` command group draws a clear line between operating on one memory entry (`get`, `set`, `delete`, with both `--key` and `--memory-name`) and operating on the whole agent record (`list-records`, `delete-record`).
+The `ai-memory` command group separates two sets of commands. `get`, `set`, and `delete` operate on one memory entry and take both `--key` and `--memory-name`. `list-records` and `delete-record` operate on the whole agent record.
 
 ```bash
 # Enumerate every agent that has memory stored.
@@ -76,7 +76,7 @@ limacharlie ai-memory delete-record --key triage-bot --confirm
 
 ### REST API
 
-Memory lives in the `ai_memory` Hive. To set or drop one entry without disturbing the others, send only that entry under the `memories` field — the merge happens server-side:
+Memory is in the `ai_memory` Hive. To set or delete one entry and keep the others, send only that entry in the `memories` field. The server does the merge.
 
 ```bash
 # Set one memory (other memories preserved).
@@ -92,11 +92,11 @@ curl -s -X POST \
   --data-urlencode 'data={"memories":{"notes/today":null}}'
 ```
 
-Reading the record returns every memory under `data.memories`.
+A read of the record returns every memory under `data.memories`.
 
 ### Python SDK
 
-The `AiMemory` client wraps the partial-merge semantics so callers can operate on one entry at a time:
+The `AiMemory` client wraps the partial-merge behavior. A caller can operate on one entry at a time:
 
 ```python
 from limacharlie.client import Client
@@ -129,29 +129,29 @@ am.delete_record("triage-bot")
 
 ## Profile memory bank
 
-AI Memory (above) is an **org-scoped, per-agent** store managed through the
-`ai_memory` Hive. There is a second, distinct kind of memory: the **profile memory
-bank**, which is **per-user and lifecycle-coupled to a [profile](user-sessions.md#session-profiles)**.
+AI Memory (above) is an **org-scoped, per-agent** store in the
+`ai_memory` Hive. A second and different kind of memory exists: the **profile memory
+bank**. The bank is **per user, and its lifecycle is tied to a [session profile](user-sessions.md#session-profiles)**.
 
-When a session is launched from a profile, the bank's markdown files are mounted
-into the session workspace at `/workspace/.memory/<path>`, and edits the agent makes
-there during the session are synced back to the profile. It's useful for notes,
-runbooks, and reference material you want available in every session that uses a
-given profile, editable both by hand and by the agent.
+When you start a session from a profile, the markdown files of the bank are mounted
+into the session workspace at `/workspace/.memory/<path>`. The edits that the agent makes
+there during the session are synced back to the profile. Use the bank for notes,
+runbooks, and reference material that you need in every session with a given
+profile. You and the agent can both edit these files.
 
 | | AI Memory (`ai_memory`) | Profile memory bank |
 |---|---|---|
 | Scope | Organization, per agent | A single user's profile |
-| Managed via | CLI / API / SDK (Hive) | Profile management, mounted into the session |
-| Mounted in session | No (the agent reads/writes via tools) | Yes, at `/workspace/.memory/` |
+| Managed with | CLI / API / SDK (Hive) | Profile management, mounted into the session |
+| Mounted in session | No (the agent reads and writes with tools) | Yes, at `/workspace/.memory/` |
 | Limits | 1024 entries, 256-char names, 10 MB total | 100 entries, 64 KiB per entry, 5 MiB total |
 
-The bank is excluded from hibernation archives and re-mounted fresh on every start,
-so changes made through profile management while a session is dormant take effect on
+The bank is excluded from hibernation archives and mounted again on every start.
+Changes that you make with profile management during a dormant session take effect on
 the next resume.
 
 ## Related
 
 - [AI Skills](skills.md) — companion store for reusable instruction sets.
-- [User Sessions](user-sessions.md) — interactive sessions that may write to and read from memory.
+- [User Sessions](user-sessions.md) — interactive sessions that can read and write memory.
 - [D&R-Driven Sessions](dr-sessions.md) — automated sessions that can persist findings across runs.

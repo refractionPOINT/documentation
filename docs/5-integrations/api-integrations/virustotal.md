@@ -2,11 +2,11 @@
 
 ## API Keys
 
-The VirusTotal API key is added via the integrations menu within LimaCharlie.
+Add the VirusTotal API key in the integrations menu in LimaCharlie.
 
 ## Usage
 
-With the `vt` add-on subscribed and a VirusTotal API Key configured in the Integrations page, VirusTotal can be used as an API-based lookup.
+If you subscribe to the `vt` add-on and configure a VirusTotal API Key on the Integrations page, you can use VirusTotal as an API-based lookup.
 
 ```yaml
 event: CODE_IDENTITY
@@ -20,10 +20,10 @@ metadata_rules:
   length of: true
 ```
 
-Step-by-step, this rule will do the following:
+This rule does these steps:
 
-- Upon seeing a `CODE_IDENTITY` event, retrieve the `event/HASH` value and send it to VirusTotal via the `api/vt` resource.
-- Upon receiving a response from `api/vt`, evaluate it using `metadata_rules` to see if the length of the response is greater than 1 (in this case meaning that more than 1 vendor reporting a hash is bad).
+- When a `CODE_IDENTITY` event occurs, the rule gets the `event/HASH` value and sends it to VirusTotal through the `api/vt` resource.
+- When `api/vt` sends a response, the rule evaluates it with `metadata_rules` to see if the length of the response is greater than 1. Here, this means that more than 1 vendor reports that a hash is bad.
 
 ## Related Articles
 

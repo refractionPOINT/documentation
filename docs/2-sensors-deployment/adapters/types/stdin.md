@@ -2,7 +2,7 @@
 
 ## Overview
 
-This Adapter allows you to ingest data piped into the adapter's standard input. This is useful for integrating with tools or scripts that output log data to stdout, or for one-off ingestion of data from a command pipeline.
+This Adapter ingests the data that you pipe into the standard input of the adapter. Use it with tools or scripts that write log data to stdout, or to ingest data one time from a command pipeline.
 
 ## Configurations
 

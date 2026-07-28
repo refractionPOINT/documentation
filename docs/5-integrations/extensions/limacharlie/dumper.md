@@ -1,21 +1,21 @@
 # Dumper
 
-The Dumper Extension provides the ability to do dumping of several forensic artifacts on Windows hosts. It supports a single action, which is to dump.
+The Dumper Extension dumps several forensic artifacts on Windows hosts. It supports one action, which is to dump.
 
-It supports multiple targets -- `memory` to dump the memory of the host, and `mft` to dump the MFT of the file system to CSV. The extension then automates the ingestion of the resulting dump (and dump metadata) to LimaCharlie's [Artifact Ingestion system](artifact.md) where it can be downloaded or analyzed, and where you can create rules to automate detections of characteristics of those dumps.
+It supports two targets. `memory` dumps the memory of the host. `mft` dumps the MFT of the file system to CSV. The extension then sends the dump and the dump metadata to the LimaCharlie [Artifact Ingestion system](artifact.md). There you can download or analyze the dump. You can also create rules that detect characteristics of those dumps.
 
 ## Usage
 
-When enabled, dumper will be added to the Extensions view inside your Organization. It will accept the following parameters:
+When you enable dumper, LimaCharlie adds it to the Extensions view in your Organization. It accepts these parameters:
 
-- `sid` - a Sensor ID for the host to perform the memory dump
+- `sid` - a Sensor ID for the host to do the memory dump
 - `target` - memory or mft
-- `retention` - the number of days the memory dump should be retained for (default is 30)
-- `ignore_cert` - ignore cert errors for payload and collection purposes (default `false`)
+- `retention` - the number of days to keep the memory dump (default is 30)
+- `ignore_cert` - ignore certificate errors for payloads and collection (default `false`)
 
-Upon submission of a request, the extension will perform a full memory dump of a host and upload the resulting dumps to LimaCharlie's artifact ingestion system and delete the local dumps afterwards.
+After you submit a request, the extension does a full memory dump of the host. It uploads the dumps to the LimaCharlie artifact ingestion system. It then deletes the local dumps.
 
-Dumper requests can also be made via D&R rules. Here is is example of a D&R rule action that makes a request to Dumper:
+You can also make Dumper requests with D&R rules. This example shows a D&R rule action that makes a request to Dumper:
 
 ```yaml
 - action: extension request
@@ -30,4 +30,4 @@ Dumper requests can also be made via D&R rules. Here is is example of a D&R rule
 
 **Notes:**
 
-The dumper extension does not currently validate that the host has enough available disc space for the memory dump. Although the dumper extension is free, the resulting memory dumps uploaded to LimaCharlie are subject to external logs pricing. This add-on relies on other paid resources (payloads) billed based on usage.
+The dumper extension does not check that the host has enough free disc space for the memory dump. The dumper extension is free, but the memory dumps that you upload to LimaCharlie are subject to external logs pricing. This add-on uses other paid resources (payloads) that are billed based on usage.

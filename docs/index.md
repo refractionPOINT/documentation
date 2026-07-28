@@ -4,7 +4,7 @@ Welcome to the official documentation for **LimaCharlie** - the Agentic SecOps W
 
 ## What is LimaCharlie?
 
-LimaCharlie is the **Agentic SecOps Workspace** delivering security operations for the modern era. The platform provides comprehensive enterprise protection that brings together critical cybersecurity capabilities and eliminates integration challenges and security gaps for more effective protection against today's threats.
+LimaCharlie is the **Agentic SecOps Workspace** for security operations. The platform combines the security capabilities that an enterprise needs in one place. The single platform removes the work to integrate separate tools, and it removes the gaps in coverage between those tools. Protection against current threats is therefore more effective.
 
 ## Quick Navigation
 
@@ -14,7 +14,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     ---
 
-    New to LimaCharlie? Start here to learn the basics and get up and running quickly.
+    Learn the basics of LimaCharlie and make your first deployment.
 
     [:octicons-arrow-right-24: Quickstart Guide](1-getting-started/quickstart.md)
 
@@ -22,7 +22,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     ---
 
-    Build custom detection logic with automated response actions to protect your infrastructure.
+    Build custom detection logic with automatic response actions that protect your infrastructure.
 
     [:octicons-arrow-right-24: Detection Rules](3-detection-response/index.md)
 
@@ -30,7 +30,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     ---
 
-    Deploy sensors across Windows, Linux, macOS, Chrome, and configure log adapters.
+    Deploy sensors on Windows, Linux, macOS, and Chrome, and configure log adapters.
 
     [:octicons-arrow-right-24: Sensor Documentation](2-sensors-deployment/index.md)
 
@@ -46,7 +46,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     ---
 
-    Connect outputs to SIEMs, enable extensions, and integrate with third-party tools.
+    Connect outputs to SIEMs, enable extensions, and integrate third-party tools.
 
     [:octicons-arrow-right-24: Browse Integrations](5-integrations/index.md)
 
@@ -54,7 +54,7 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
     ---
 
-    Programmatic access via Go and Python SDKs for complete platform automation.
+    Use the Go and Python SDKs to automate the full platform with code.
 
     [:octicons-arrow-right-24: SDKs & APIs](6-developer-guide/index.md)
 
@@ -78,13 +78,13 @@ LimaCharlie is the **Agentic SecOps Workspace** delivering security operations f
 
 ## Platform Capabilities
 
-- **Agentic AI & Bring-Your-Own-LLM**: Run AI agents as full security operators with auditable, governed access to every platform capability
-- **Endpoint Detection & Response (EDR)**: Deploy sensors across multiple platforms
-- **Detection & Response Rules**: Build custom detection logic with automated responses
+- **Agentic AI & Bring-Your-Own-LLM**: Run AI agents as full security operators, with governed access to every platform capability that you can audit
+- **Endpoint Detection & Response (EDR)**: Deploy sensors on many platforms
+- **Detection & Response Rules**: Build custom detection logic with automatic responses
 - **Real-time Telemetry**: Centralized event streaming and data collection
 - **API Integrations**: Connect with threat intelligence, SIEM, and security tools
-- **Extensions & Add-ons**: Expand capabilities with purpose-built integrations
-- **Cloud-native Architecture**: Scalable, API-first platform for modern security operations
+- **Extensions & Add-ons**: Add capabilities with integrations that are built for one purpose
+- **Cloud-native Architecture**: Scalable, API-first platform for security operations
 
 ## Community & Support
 

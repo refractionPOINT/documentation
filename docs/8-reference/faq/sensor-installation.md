@@ -2,7 +2,7 @@
 
 ## How can I add LimaCharlie traffic to an allow list?
 
-The tables below show the hostnames and IPs used to connect to LimaCharlie. All connections use TCP port 443 and TLS 1.2+
+The tables below list the hostnames and IPs for connections to LimaCharlie. All connections use TCP port 443 and TLS 1.2+
 
 ## What Hostnames and IPs does LimaCharlie use for each region?
 
@@ -80,30 +80,30 @@ The tables below show the hostnames and IPs used to connect to LimaCharlie. All 
 
 ## How much data does the LimaCharlie Sensor produce per day?
 
-The amount of data that is produced by the sensor is dependent on how much, and what kind of activity is taking place on the endpoint. That being said, the average data produced per endpoint across thousands of deployments is approximately 1MB per day.
+The quantity of data depends on the quantity and the type of activity on the endpoint. Across thousands of deployments, the average is about 1MB for each endpoint each day.
 
 ## What resources does the LimaCharlie agent consume?
 
-The total footprint of the agent on disk combined with what is in memory is approximately 50MB. The agent typically runs under 1% CPU.
+The agent uses about 50MB in total, on disk and in memory. The agent usually runs at less than 1% CPU.
 
-Depending on what actions you may be performing it may increase (e.g. if you're doing a full YARA scan it's expected that the CPU usage will increase). When you use our YARA trickle scan, that also keeps CPU usage within reasonable bounds. You'll only see YARA scans spike CPU when you do a full manual scan.
+Some actions increase the CPU usage. For example, a full YARA scan increases the CPU usage. The YARA trickle scan keeps the CPU usage low. Only a full manual scan causes a large increase in CPU usage.
 
-Depending on the configuration of the agent (it's fully customizable), the network bandwidth will vary, but we typically see approximately 2MB per day on Windows hosts.
+The network bandwidth changes with the configuration of the agent, which you can customize. On Windows hosts, the bandwidth is usually about 2MB each day.
 
 ## Why does my sensor initially connect successfully but then disappear?
 
-Sometimes we see the agent connect to the LimaCharlie cloud, enrolls, then disconnects (which is normal the first time after enrollment) and never connects again, or it doesn't show that kernel has been acquired.
+Sometimes the agent connects to the LimaCharlie cloud and enrolls. It then disconnects, which is normal the first time after enrollment. After that, it never connects again, or it does not show that it acquired the kernel.
 
-This behavior is typical with SSL interception. Sometimes it's a network device, but at other times some security products on the host can do that without being very obvious.
+SSL interception usually causes this behavior. A network device can do the interception. A security product on the host can also do it, and this is less obvious.
 
-You can confirm if there is SSL interception by performing the following steps to check the SSL fingerprint of the LimaCharlie cloud from the host.
+To find SSL interception, do the steps below. The steps check the SSL fingerprint of the LimaCharlie cloud from the host.
 
 **Confirm the region of your** Organization
 
-If you already know where your organization's region is located, you can move to the next step. To verify the organization's region where the data is processed and stored, click `Add Sensor` from the `Sensors` view. You will then see the region listed under `Sensor Connectivity`.
+If you know the region of your organization, go to the next step. To find the region where the data is processed and stored, click `Add Sensor` in the `Sensors` view. The region shows under `Sensor Connectivity`.
 
 **Open the test URL**
-Via web browser, navigate to one of the below test URLs that corresponds to the correct region:
+In a web browser, go to the test URL for your region:
 
 [Test URL - US Region](https://9157798c50af372c.lc.limacharlie.io/)
 [Test URL - UK Region](https://70182cf634c346bd.lc.limacharlie.io/)
@@ -111,17 +111,17 @@ Via web browser, navigate to one of the below test URLs that corresponds to the 
 [Test URL - Europe Region](https://b76093c3662d5b4f.lc.limacharlie.io/)
 [Test URL - Canada Region](https://aae67d7e76570ec1.lc.limacharlie.io/)
 
-No website will open; you should get a "Your connection is not private" type of message instead.
+No website opens. Instead, you get a message similar to "Your connection is not private".
 
 ### Display the SSL Certificate
 
-By clicking near the URL bar on the exclamation mark, you will open a small menu and you can click "Certificate status"/"Certificate validity"/"Certificate is not valid" which will display the certificate information.
+Click the exclamation mark near the URL bar. A small menu opens. Click "Certificate status", "Certificate validity", or "Certificate is not valid" to show the certificate information.
 
 ### Confirm the SHA-1 and SHA-256 fingerprints
 
-The SHA-1 and SHA-256 fingerprints should match the values below that correspond to the region your organization is in.
+The SHA-1 and SHA-256 fingerprints must match the values below for the region of your organization.
 
-If the SHA-1 and SHA-256 fingerprints you are seeing do not match what's listed below, that's an indicator of the SSL interception.
+If the fingerprints that you see do not match the values below, SSL interception occurs.
 
 | Region | SHA-256 Fingerprint | SHA-1 Fingerprint |
 | --- | --- | --- |
@@ -133,26 +133,26 @@ If the SHA-1 and SHA-256 fingerprints you are seeing do not match what's listed 
 
 ## What happens if a host is offline?
 
-When the host is offline, the Sensor will keep collecting telemetry and store it locally in a "ring buffer" (which limits the total possible size). The buffer is ~60mb, so the amount of time it will cover will vary based on how much telemetry the individual endpoint generates. e.g. A domain controller will likely be generating many more events than a regular end user workstation.
+If the host is offline, the Sensor continues to collect telemetry. It stores the telemetry locally in a "ring buffer", which limits the total size. The buffer is ~60mb. The period that the buffer covers changes with the quantity of telemetry from the endpoint. For example, a domain controller generates many more events than a normal workstation.
 
-When the host is back online, the content of this buffer will be flushed to the cloud where detection and response rules will apply as usual.
+When the host is online again, the Sensor sends the content of the buffer to the cloud. The detection and response rules then apply as usual.
 
-The same ring buffer is used when the Sensor runs normally, even if data is not sent to the cloud in real-time. The cloud can then retroactively request the full or partial content of the ring buffer, bringing your telemetry current.
+The Sensor uses the same ring buffer in normal operation, even if it does not send the data to the cloud in real time. The cloud can then request all or part of the content of the ring buffer to make your telemetry current.
 
 ## How can I tell which Installation Key was used to enroll a sensor?
 
-On occasion you may need to check which installation key was used to enroll a sensor. You can do so by comparing the sensors `Installer ID` with the Installation Key's `Adapter Key` value.
+To find the installation key that enrolled a sensor, compare the `Installer ID` of the sensor with the `Adapter Key` value of the installation key.
 
-1. Go to the Sensors section and click into the sensor in question to view its details page. Take note of the `Installer ID`.
-2. Go to the Install Sensors section.  Click the copy icon under the `Adapter Key`.
-3. Compare these two values; the Installer ID on a sensor should be the same as the Adapter Key of the installation key used.
+1. In the Sensors section, open the details page of the sensor. Record the `Installer ID`.
+2. Go to the Install Sensors section. Click the copy icon below the `Adapter Key`.
+3. Compare the two values. The `Installer ID` of a sensor is the same as the `Adapter Key` of the installation key that the sensor used.
 
-If you need to check a large list of sensors, you can perform an export of all sensors from the main sensors list page, or use the LimaCharlie API.
+To check many sensors, export all sensors from the main sensors list page, or use the LimaCharlie API.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, Sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless method to connect the endpoints of an organization to the cloud securely.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives full control of security operations. This structure supports multi-tenant setups for managed security providers, and for enterprises that manage many departments or clients.
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+Installation keys are Base64-encoded strings that you give to Sensors and Adapters to connect them to the correct Organization. You create installation keys for each organization. The keys let you label and control your deployment population.
 
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+Adapters ingest data from on-premise environments and from cloud environments.

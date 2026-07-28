@@ -1,6 +1,6 @@
 # Tutorial: Ingesting Google Cloud Logs
 
-With LimaCharlie, you can easily ingest Google Cloud logs for further processing and automation. This article covers the following high-level steps of shipping logs from GCP into LimaCharlie:
+With LimaCharlie, you can ingest Google Cloud logs for more processing and automation. This article gives the high-level steps to send logs from GCP into LimaCharlie:
 
 1. Create a Log Sink to Pubsub in GCP
 2. Create a Subscription for the Topic
@@ -9,156 +9,146 @@ With LimaCharlie, you can easily ingest Google Cloud logs for further processing
 5. Create an Installation Key in LimaCharlie
 6. Run the LC Adapter to ingest the logs.
 
-Note: This tutorial is a synthesized version of this [official GCP article](https://cloud.google.com/logging/docs/export/configure_export_v2).
+Note: This tutorial is a synthesized version of the [official GCP article](https://cloud.google.com/logging/docs/export/configure_export_v2).
 
 ## Step 1: Create a Log Sink
 
-In your GCP Project, or Organization, go to the Logging product and the Logs Router section.
+1. In your GCP Project, or Organization, go to the Logging product and the Logs Router section.
 
-![image.png](../../../assets/images/image(145).png)
+    ![image.png](../../../assets/images/image(145).png)
 
-Click the Create Sink button, give it a Name and Description.
+2. Click the Create Sink button.
+3. Give the sink a Name and Description.
+4. In the Sink Destination, choose Cloud Pub/Sub Topic as a sink service.
+5. Below, select Create a Topic.
 
-In the Sink Destination choose Cloud Pub/Sub Topic as a sink service.
+    ![image.png](../../../assets/images/image(146).png)
 
-Below, select Create a Topic.
+6. Give the Topic an ID.
+7. Click Create Topic. The creation of the Topic takes a few seconds.
+8. Click Next.
+9. Choose the logs to include. Select only the logs that you want, because GCP logs can be verbose.
 
-![image.png](../../../assets/images/image(146).png)
+    ![image.png](../../../assets/images/image(147).png)
 
-Give the Topic an ID and click Create Topic.
+    To open the main logging interface, click the Preview Logs button in the top right. In that interface you can test different log selections.
 
-The Topic should now be creating, which can take a few seconds.
+    This example uses this log filter:
 
-Click Next.
+    ```text
+    logName:cloudaudit.googleapis.com
+    protoPayload.serviceName!="k8s.io"
+    protoPayload.serviceName!="compute.googleapis.com"
+    ```
 
-Now you need to choose which logs you want included. Be careful selecting exactly what you want as GCP logs can get very verbose.
+    This filter includes all cloudaudit logs, except some GKE and GCE logs.
 
-![image.png](../../../assets/images/image(147).png)
+10. Click Next. You can also define an exclusion filter. This example does not use one.
+11. Click Create Sink. A confirmation shows that the sink was created.
 
-Click the Preview Logs button in the top right to be taken to the main logging interface where you can experiment with selecting the right logs.
-
-For this example, let's use the following log filter:
-
-```text
-logName:cloudaudit.googleapis.com
-protoPayload.serviceName!="k8s.io"
-protoPayload.serviceName!="compute.googleapis.com"
-```
-
-This filter will include all cloudaudit logs, except some GKE and GCE logs.
-
-Click Next. You can optionally define an exclusion filter. Let's skip this step.
-
-Click Create Sink. You should get a confirmation the sink was created.
-
-![image.png](../../../assets/images/image(148).png)
+    ![image.png](../../../assets/images/image(148).png)
 
 ## Step 2: Create a Subscription
 
-Go to the Pubsub product.
+1. Go to the Pubsub product.
 
-![image.png](../../../assets/images/image(149).png)
+    ![image.png](../../../assets/images/image(149).png)
 
-Click on your new Topic.
+2. Click your new Topic.
+3. Click the Create Subscription button.
+4. Select Create Subscription.
 
-Click on the Create Subscription button and select Create Subscription.
+    ![image.png](../../../assets/images/image(150).png)
 
-![image.png](../../../assets/images/image(150).png)
-
-Give this Subscription a name, you will need this name later when configuring the Adapter.
-
-You can leave all other options to their default. Click Create.
+5. Give this Subscription a name. You need this name later, when you configure the Adapter.
+6. Keep the default value of all other options.
+7. Click Create.
 
 ## Step 3: Create a Service Account
 
-Head over to the IAM & Admin product. Then the Service Accounts section.
+1. Go to the IAM & Admin product, then to the Service Accounts section.
 
-![image.png](../../../assets/images/image(151).png)
+    ![image.png](../../../assets/images/image(151).png)
 
-Click Create Service Account.
+2. Click Create Service Account.
+3. Give the new Service Account a Name and Description.
+4. Click Create and Continue.
+5. Select the Pub/Sub Subscriber role.
 
-Give the new Service Account a Name and Description. Click Create and Continue.
+    ![image.png](../../../assets/images/image(152).png)
 
-Select a Role. You want to select Pub/Sub Subscriber.
+6. Click Continue.
+7. Click Done.
 
-![image.png](../../../assets/images/image(152).png)
-
-Click Continue. And finally click Done.
-
-This new Service Account has access to the Topic created.
+The new Service Account has access to the Topic that you created.
 
 ## [OPTIONAL] Step 4: Create a GCE Instance
 
-This step is optional. You may already have a machine you want to run the collector from, in which case you can skip this step.
+This step is optional. If you already have a machine that can run the collector, go to the next step.
 
-Head over to the Compute Engine product.
+1. Go to the Compute Engine product.
 
-![image.png](../../../assets/images/image(153).png)
+    ![image.png](../../../assets/images/image(153).png)
 
-Click the Create Instance button.
+2. Click the Create Instance button.
+3. Set these options. You can customize more options, but this tutorial does not use them.
 
-There is a lot you can customize here, but we'll skip over the more complex aspects you don't need to worry about here.
+    - Give the instance a name.
+    - Select a zone near the LimaCharlie datacenter that you use.
+    - As a Machine Type, select e2-micro (the smallest and cheapest machine type).
+    - In the Identity and API access section, select the Service Account that you created earlier. This sets the service account as the default identity of the machine. You then do not give your credentials to the LimaCharlie Adapter.
 
-- Give the instance a name.
-- Select a zone nearby the LimaCharlie datacenter you're using.
-- As a Machine Type, select e2-micro (the smallest and cheapest machine type).
-- In the Identity and API access section, select the Service Account you created earlier. This will set this service account as the default identity of the machine, which in turn means you won't have to specify your credentials to the LimaCharlie Adapter we're about to run.
+4. Click Create. This can take a minute.
+5. After the instance is created, click the SSH button to log on to the machine.
 
-Click Create. This may take a minute.
+    ![image.png](../../../assets/images/image(154).png)
 
-Once created, click the SSH button to log on the machine.
-
-![image.png](../../../assets/images/image(154).png)
-
-This will bring you to a console on the machine, ready to install the Adapter.
+A console opens on the machine. You can now install the Adapter.
 
 ## Step 5: Create an Installation Key in LimaCharlie
 
-In your Org in LimaCharlie, go to the Sensors > Installation Keys section.
+1. In your Org in LimaCharlie, go to the Sensors > Installation Keys section.
+2. Click the Create Installation Key button.
+3. Enter a name for the key. This name does not change the name of the source of the logs.
+4. Click the copy-to-clipboard button next to the Adapter Key column. **The value is a UUID. Keep it, because you need it in the next step.**
 
-Click the Create Installation Key button. Enter a name for the key. This name will not impact the name given to the source of the logs.
-
-Click on the copy-to-clipboard button next to the Adapter Key column. **The value should be a UUID, keep note of it, you'll need it in the next step.**
-
-![Click the Create Installation Key button](../../../assets/images/image(309).png)
+    ![Click the Create Installation Key button](../../../assets/images/image(309).png)
 
 ## Step 6: Run the Adapter
 
-First let's download the latest adapter for Linux.
+1. Download the latest adapter for Linux.
 
-```bash
-curl -L https://downloads.limacharlie.io/adapter/linux/64 -o lc_adapter
-chmod +x lc_adapter
-```
+    ```bash
+    curl -L https://downloads.limacharlie.io/adapter/linux/64 -o lc_adapter
+    chmod +x lc_adapter
+    ```
 
-We can confirm the adapter is running as expected:
+2. Check that the adapter runs.
 
-```bash
-./lc_adapter
-```
+    ```bash
+    ./lc_adapter
+    ```
 
-You should see all the options available to all the collection methods being printed to the console.
+    The console prints all the options that are available to all the collection methods.
 
-Now let's run the adapter with all the relevant configurations, replacing the various values necessary.
+3. Run the adapter with the necessary configuration. Replace each value with your own.
 
-```bash
-./lc_adapter pubsub \
-client_options.identity.installation_key=YOUR_INSTALLATION_KEY \
-client_options.identity.oid=YOUR_LC_OID \
-client_options.platform=gcp \
-sub_name=YOUR_SUBSCRIPTION_NAME \
-project_name=YOUR_GCP_PROJECT_NAME \
-client_options.sensor_seed_key=SOME_ARBITRARY_ADAPTER_NAME
-```
+    ```bash
+    ./lc_adapter pubsub \
+    client_options.identity.installation_key=YOUR_INSTALLATION_KEY \
+    client_options.identity.oid=YOUR_LC_OID \
+    client_options.platform=gcp \
+    sub_name=YOUR_SUBSCRIPTION_NAME \
+    project_name=YOUR_GCP_PROJECT_NAME \
+    client_options.sensor_seed_key=SOME_ARBITRARY_ADAPTER_NAME
+    ```
 
-You should see some text letting you know the adapter is connecting to LimaCharlie, and if any errors occur fetching data from pubsub.
+The adapter prints text about the connection to LimaCharlie. It also prints the errors that occur when it fetches data from pubsub.
 
-Within a few seconds you should see the new Sensor in your Sensor List in LimaCharlie.
+The new Sensor is shown in your Sensor List in LimaCharlie after a few seconds.
 
-Within a minute or two you should see the events flowing in the Timeline section of this new sensor.
+The events are shown in the Timeline section of the new sensor after one or two minutes.
 
-That's it, you're good to go!
-
-The next step towards production would be to run the Adapter as a service, or within tmux/screen on the Linux host. Alternatively you could also replicate the above setup using the [Docker container](https://hub.docker.com/r/refractionpoint/lc-adapter) and a serverless platform like Cloud Run.
+For production, run the Adapter as a service, or in tmux or screen on the Linux host. You can also repeat this setup with the [Docker container](https://hub.docker.com/r/refractionpoint/lc-adapter) and a serverless platform such as Cloud Run.
 
 For more documentation, see [Configuring Adapters](../usage.md).

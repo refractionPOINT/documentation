@@ -2,63 +2,63 @@
 
 ## Auto Generated UI
 
-The Extensions UI uses the information provided in the schema to auto-determine it's UI elements, and for most simple extensions, the UI will be able to auto conform based on the bare minimum schema definition alone. However, further customization may be made in the schema for more complex or specific use cases by adjusting the layout, or adjusting the details for a specific field.
+The Extensions UI uses the information in the schema to determine its UI elements. For most simple extensions, the minimum schema definition is enough. For more complex or specific use cases, you can customize the schema. Adjust the layout, or adjust the details of a specific field.
 
 ### Deconstructing the Page
 
-Generally the top of the extension page will show the extension label and it's short description. If it exists, it will also show a button for quick access to this extension's "associated sensor".
+The top of the extension page shows the extension label and its short description. If an "associated sensor" exists for the extension, the page also shows a button for quick access to that sensor.
 
 ![ext 1](../../assets/images/ext-1.png)
 
-In the top right, any actions (as defined in your request schema) will be displayed as a dropdown and button.
+In the top right, the page shows the actions from your request schema as a dropdown and a button.
 ![ext 2](../../assets/images/ext-2.png)
 
-Note that there are small changes to this structure depending on the layout selected, however all variations should be intuitive as they do not deviate much from this general page structure.
- Beyond this, main content of the page is determined by the layout.
+This structure has small changes for each layout that you select, but each variation stays close to the general page structure.
+ The layout determines the main content of the page.
 
 ### Picking Your Layout Type
 
-- `auto` (default layout, it will pick one of the below)
+- `auto` (default layout, it picks one of the layouts below)
 - `config` (use this if you have a configuration)
-- `editor` (very specific use-case for editing large code blocks like yaml)
+- `editor` (a specific use case, to edit large code blocks such as yaml)
 - `action` (use this to prioritize certain actions in the UI)
 - `description`
-- `key` (just a variation of description)
+- `key` (a variation of description)
 
-For the action, and editor layouts, make sure you define one (or more) default actions as well. The editor UI for the action layout will show all the actions in-page, as opposed to a button on the top right. When set to the editor layout, the UI will automatically run the default action and display the results and a supported action.
+For the action and editor layouts, make sure that you also define one or more default actions. For the action layout, the editor UI shows all the actions in the page, and not as a button in the top right. For the editor layout, the UI runs the default action and shows the results and a supported action.
 
 ### Form Data Types
 
-Every field has the following optional details to further adjust the UI.
+Each field has these optional details to adjust the UI.
 
-- **label**: Add a label if you want a more 'human-legible' label on this field
-- **placeholder**: Placeholder text on the input can serve as an example for the user
-- **description**: A description for this field can be added that will be available as a tooltip on the UI next to the field label
-- **display\_index**: The display index starts at 1 (not 0) and guides the GUI on the order to show the fields. A display index of 1, will display before a display index of 2.
-- **default\_value**: A default value for the field, will auto-populate the field with this value
+- **label**: Add a label to give this field a more 'human-legible' name
+- **placeholder**: Placeholder text in the input gives the user an example
+- **description**: Add a description for this field. The UI shows it as a tooltip next to the field label
+- **display\_index**: The display index starts at 1, not 0, and tells the GUI the order to show the fields. A field with display index 1 shows before a field with display index 2.
+- **default\_value**: A default value for the field. The UI fills the field with this value
 
-Some other configurations that conditionally apply to specific data\_types:
+Other configurations apply only to specific data\_types:
 
 - **filter**: Available on select primitive data\_types.
 - **enum\_values**: Details on the available enums, to support the enum data type.
 - **complex\_enum\_values**: Details to support the complex enum data type. Supports reference links, and categories.
-- **object**: An object that contains nested key-value pairs for more fields, and serves to detail the nested fields.
+- **object**: An object that contains nested key-value pairs for more fields. It gives the details of the nested fields.
 
-For the complete list of all data types, please see the [page on data types](schema-data-types.md).
+For the complete list of data types, see the [page on data types](schema-data-types.md).
 
 ## Nuanced Usage
 
-If your extension requires it, there are more opportunities to adjust the UI in order to better guide or facilitate a user on using your extension.
+If your extension needs it, you can adjust the UI more, to guide the user and to help the user work with your extension.
 
 ### Multiple Layouts as Tabs
 
-In the schema, it is possible to define several views to utilize a combination of layout types. This may be useful in order to guide a user on how you want them to use your extension.
+In the schema, you can define several views that use a combination of layout types. Use several views to guide the user on how to use your extension.
 ![ext 3](../../assets/images/ext-3.png)
 
 ### Setting Supported Actions
 
-Functionality for this field is set to be expanded in the future
+The functionality of this field will expand in the future
 
-Please feel free to reach out to us on the [community forum](https://community.limacharlie.com/) if you'd like to stay up to date on
+To stay up to date, ask a question on the [community forum](https://community.limacharlie.com/)
 
-Supported actions are tied to a request's (also called "actions") response. It allows the response data to be modified and passed along to a follow-up action. This may be useful when operating a dry run, or triggering a workflow.
+Supported actions are tied to the response of a request (also called an "action"). They let you change the response data and pass it to a follow-up action. Use them for a dry run, or to trigger a workflow.

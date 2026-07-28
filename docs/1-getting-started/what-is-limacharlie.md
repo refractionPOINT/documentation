@@ -1,16 +1,16 @@
 # What is LimaCharlie?
 
-LimaCharlie is the **Agentic SecOps Workspace** - delivering security operations for the modern era.
+LimaCharlie is the **Agentic SecOps Workspace** - a platform for modern security operations.
 
-LimaCharlie's Agentic SecOps Workspace provides you with comprehensive enterprise protection that brings together critical cybersecurity capabilities and eliminates integration challenges and security gaps for more effective protection against today's threats.
+The LimaCharlie Agentic SecOps Workspace combines cybersecurity capabilities in one platform for the enterprise. The single platform removes the work to integrate separate tools and the gaps in security between them. It protects you against current threats.
 
-The Agentic SecOps Workspace offers a unified platform where you can build customized solutions effortlessly. With open APIs, centralized telemetry, and automated detection and response mechanisms, it's time cybersecurity moves into the modern era.
+The Agentic SecOps Workspace is one platform on which you build customized solutions. It has open APIs, central telemetry, and automated mechanisms for detection and response.
 
-Simplifying procurement, deployment and integration of best-of-breed cybersecurity solutions, the Agentic SecOps Workspace delivers complete protection tailored to each organization's specific needs, much in the same way IT Clouds have supported enterprises for years.
+The Agentic SecOps Workspace makes the procurement, the deployment, and the integration of cybersecurity solutions simpler. It gives complete protection that is adapted to the needs of each organization, in the same way that IT clouds supported enterprises for years.
 
-Our documentation can walk you through setting up your own Organization, deploying Sensors, writing detection and response rules, or outputting your data to any destination of your choosing. To dive in immediately, see our [Quickstart](quickstart.md) guide.
+This documentation explains how to set up your own Organization, deploy Sensors, and write detection and response rules. It also explains how to send your data to a destination that you select. To start immediately, read the [Quickstart](quickstart.md) guide.
 
-Dig in, and build the security program you need and have always wanted.
+Use the platform to build the security program that you need.
 
 ---
 

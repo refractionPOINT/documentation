@@ -1,6 +1,6 @@
 # API Reference
 
-This document provides a complete reference for the AI Sessions REST API and WebSocket protocol.
+This document is the complete reference for the AI Sessions REST API and the WebSocket protocol.
 
 ## Base URL
 
@@ -11,7 +11,7 @@ This document provides a complete reference for the AI Sessions REST API and Web
 
 ## Authentication
 
-All API requests require a valid LimaCharlie JWT token in the Authorization header:
+All API requests need a valid LimaCharlie JWT token in the Authorization header:
 
 ```text
 Authorization: Bearer <LC-JWT>
@@ -66,7 +66,7 @@ Register the authenticated user for the AI Sessions platform.
 DELETE /v1/register
 ```
 
-Deregister the user and delete all associated data. This terminates all active sessions and deletes stored credentials.
+Deregister the user and delete all related data. This operation terminates all active sessions and deletes the stored credentials.
 
 ##### Response: 200 OK
 
@@ -214,15 +214,15 @@ Delete a terminated session from history. Only sessions in the `ended` state can
 GET /v1/sessions/{sessionId}/fork-preflight
 ```
 
-Inspect a source session before forking. Reports whether the source can be forked, a suggested name, and any MCP servers the source uses that are missing from the forker's profile (these must be acknowledged when forking).
+Examine a source session before you fork it. The response shows if the source can be forked, a suggested name, and the MCP servers that the source uses but that the profile of the forker does not have. You must acknowledge these servers when you fork.
 
-Forking your own session needs no special permission. Forking a session owned by the organization (an API/D&R session) requires the `ai_agent.set` permission on the org.
+A fork of your own session needs no special permission. A fork of a session that the organization owns (an API/D&R session) needs the `ai_agent.set` permission on the org.
 
 ##### Query Parameters
 
 | Parameter | Description |
 |-----------|-------------|
-| `profile_id` | The forker's profile ID. Defaults to the caller's default profile if omitted. |
+| `profile_id` | The profile ID of the forker. If you omit it, the default profile of the caller is used. |
 
 ##### Response: 200 OK
 
@@ -242,7 +242,7 @@ Forking your own session needs no special permission. Forking a session owned by
 }
 ```
 
-`source_session_type` is `user` or `api`. When `missing_mcps` is non-empty, pass those names in `acknowledge_missing_tools` on the fork request.
+`source_session_type` is `user` or `api`. If `missing_mcps` is not empty, give those names in `acknowledge_missing_tools` on the fork request.
 
 #### Fork Session
 
@@ -250,7 +250,7 @@ Forking your own session needs no special permission. Forking a session owned by
 POST /v1/sessions/{sessionId}/fork
 ```
 
-Create a new session forked from the given source. The fork inherits the source's conversation context but starts with the forker's profile. The source must be in a forkable state (dormant or ended, within its retention window).
+Create a new session that is a fork of the given source. The fork gets the conversation context of the source, but it starts with the profile of the forker. The source must be in a forkable state: dormant or ended, and inside its retention window.
 
 All fields are optional:
 
@@ -266,22 +266,22 @@ All fields are optional:
 | Field | Type | Description |
 |-------|------|-------------|
 | `name` | string | Name for the forked session (defaults to a derived name). |
-| `profile_id` | string | Profile to use for the fork (defaults to the caller's default profile). |
+| `profile_id` | string | Profile for the fork. The default is the default profile of the caller. |
 | `initial_prompt` | string | Initial prompt for the forked session. |
-| `acknowledge_missing_tools` | array | MCP servers present in the source but missing from the fork profile, acknowledged by the caller. |
+| `acknowledge_missing_tools` | array | MCP servers that are in the source but not in the fork profile. The caller acknowledges them. |
 
 ##### Response: 201 Created
 
-Returns the new session object, the same shape as [Create Session](#create-session). The new session's `forked_from_session_id` field references the source.
+Returns the new session object with the same shape as [Create Session](#create-session). The `forked_from_session_id` field of the new session refers to the source.
 
 ##### Errors
 
 | Status | Meaning |
 |--------|---------|
-| `403` | Forking an org-owned session without the `ai_agent.set` permission. |
+| `403` | A fork of an org-owned session without the `ai_agent.set` permission. |
 | `409` | Source is not in a forkable state, or a create/fork/resume is already in progress. |
 | `410` | Source workspace archive is no longer available. |
-| `412` | Source uses MCP servers missing from the fork profile; acknowledge them via `acknowledge_missing_tools`. |
+| `412` | The source uses MCP servers that the fork profile does not have. Acknowledge them with `acknowledge_missing_tools`. |
 | `429` | Maximum concurrent sessions reached. |
 
 ---
@@ -699,7 +699,7 @@ Request a signed URL for file upload.
 
 #### upload_complete
 
-Notify that file upload has completed.
+Notify that the file upload is complete.
 
 ```json
 {
@@ -752,7 +752,7 @@ Claude's response content.
 
 #### tool_use
 
-Claude is invoking a tool.
+Claude calls a tool.
 
 ```json
 {
@@ -785,7 +785,7 @@ Result of a tool execution.
 
 #### user
 
-Echo of user input (for display purposes).
+Echo of the user input, for display.
 
 ```json
 {
@@ -842,7 +842,7 @@ Session status update.
 
 #### session_end
 
-Session has ended.
+The session ended.
 
 ```json
 {
@@ -858,12 +858,12 @@ Session has ended.
 **End Reasons:**
 
 - `completed`: Session completed normally
-- `failed`: Session encountered an execution error
+- `failed`: Session had an execution error
 - `job_completed`: Session runner process exited
 - `user_requested`: User terminated the session
-- `org_api_requested`: Session was terminated via the org API
+- `org_api_requested`: The org API terminated the session
 - `max_duration_exceeded`: Session exceeded its maximum duration
-- `startup_timeout`: Session failed to start within the allowed time
+- `startup_timeout`: Session did not start in the allowed time
 - `heartbeat_stale`: Lost connection to the session runner
 
 #### session_error
@@ -952,13 +952,13 @@ Response to download_request.
 
 If the connection is lost:
 
-1. Reconnect using the same session ID
+1. Reconnect with the same session ID
 2. Server sends any buffered messages (up to 60 seconds old)
-3. If session has ended, server sends `session_end` message
+3. If the session ended, the server sends a `session_end` message
 
 ### Message Size
 
-Maximum message size is 1 MB. Use file transfer for larger payloads.
+The maximum message size is 1 MB. Use file transfer for larger payloads.
 
 ---
 

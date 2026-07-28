@@ -1,15 +1,15 @@
 # GreyNoise
 
-GreyNoise collects, analyzes, and labels data on IP addresses that scan the Internet and often saturate security tools with noise. By querying IP addresses against GreyNoise, teams can spend less time on irrelevant or harmless activity and focus on targeted and/or emerging threats.
+GreyNoise collects, analyzes, and labels data on IP addresses that scan the Internet. These IP addresses often saturate security tools with noise. When you query IP addresses against GreyNoise, your team spends less time on irrelevant or harmless activity. The team can then focus on targeted threats and new threats.
 
-LimaCharlie offers integrations with two GreyNoise API lookups:
+LimaCharlie has integrations with two GreyNoise API lookups:
 
 - [IP Context](https://docs.greynoise.io/reference/noisecontextip-1)
 
-  - Get more information about a given IP address. Returns time ranges, IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags, and raw port scan and web request information.
+  - Gets more information about an IP address. Returns time ranges, IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags, and raw data about port scans and web requests.
 - [RIOT IP Lookups](https://docs.greynoise.io/reference/riotip)
 
-  - RIOT identifies IPs from known benign services and organizations that commonly cause false positives in network security and threat intelligence products. The collection of IPs in RIOT is continually curated and verified to provide accurate results.
+  - RIOT identifies IPs from known benign services and companies. These IPs often cause false positives in products for network security and threat intelligence. The collection of IPs in RIOT is continually curated and verified for accurate results.
 
 ## IP Context
 

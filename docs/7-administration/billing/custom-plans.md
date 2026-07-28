@@ -2,15 +2,15 @@
 
 > Applicability
 >
-> This page only applies to Organizations with a contracted custom billing plan.
+> This page applies only to Organizations with a contracted custom billing plan.
 
-If your organization has a custom pricing plan, follow these steps to ensure it's correctly applied when creating your organization. You will need to know the exact plan ID that's been allocated for your organization. If you're unsure about your plan details or need assistance, please reach out.
+If your organization has a custom pricing plan, obey these steps. The steps make sure that the plan applies when you create your organization. You must know the exact plan ID for your organization. If you do not know the details of your plan, or if you need help, contact LimaCharlie.
 
-How to apply your custom billing plan to newly created organizations:
+To apply your custom billing plan to a new organization:
 
-- Web UI: When creating your organization, select your assigned plan from the drop-down menu.
-- API Users: If using the API, specify your plan using the appropriate `loc` parameter.
-- REST API: Use the `loc` parameter (general location). If you need to specify a custom plan, provide the exact plan ID. [API Documentation](https://api.limacharlie.io/static/swagger/#/Organizations/requestCreateOrg)
+- Web UI: When you create your organization, select your assigned plan in the drop-down menu.
+- API Users: With the API, give your plan in the correct `loc` parameter.
+- REST API: Use the `loc` parameter (general location). For a custom plan, give the exact plan ID. [API Documentation](https://api.limacharlie.io/static/swagger/#/Organizations/requestCreateOrg)
 - Python SDK: Use the `location` parameter for the same purpose. [Python SDK Reference](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Manager.py#L1197)
 
-Note: If you do not specify your custom plan at the time your organization is created, you will be put on standard pricing and will not receive discounted pricing.
+Note: If you do not give your custom plan when you create the organization, you get standard pricing. You do not get the discounted pricing.

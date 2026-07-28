@@ -1,61 +1,61 @@
 # macOS Agent Installation via Microsoft Intune
 
-You can deploy the LimaCharlie Sensor for macOS using the MDM provider of your choice. Below are instructions for deploying the LimaCharlie Sensor for macOS using Microsoft Intune.
+You can deploy the LimaCharlie Sensor for macOS with the MDM provider that you choose. These instructions show how to deploy the LimaCharlie Sensor for macOS with Microsoft Intune.
 
 ## MDM Profile
 
-Set up the installation script by following these steps:
+Set up the installation script with these steps:
 
 1. In the [Microsoft Intune admin center](https://intune.microsoft.com/), go to Devices → Manage Devices → Configuration.
 
-![Screenshot of MS Intune -> Devices | Configuration](../../../assets/images/Configurations.png)
+    ![Screenshot of MS Intune -> Devices | Configuration](../../../assets/images/Configurations.png)
 
-1. Choose [Policies](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/configuration), click the Create button and choose New Policy
+2. Choose [Policies](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/configuration), click the Create button, and choose New Policy.
 
-   1. Set the Platform to be macOS
+    1. Set the Platform to macOS.
 
-   2. Set the Profile Type to be Templates, then choose the template name "Custom"
+    2. Set the Profile Type to Templates, then choose the template name "Custom".
 
-   3. Click Create
+    3. Click Create.
 
-2. Enter the custom policy details as follows:
+3. Enter the custom policy details as follows:
 
-   1. Name: LimaCharlie
+    1. Name: LimaCharlie
 
-   2. Custom configuration profile name: LimaCharlie
+    2. Custom configuration profile name: LimaCharlie
 
-   3. Deployment channel: Device channel
+    3. Deployment channel: Device channel
 
-   4. Configuration profile file: Download and use the [LimaCharlie MDM profile](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip).
+    4. Configuration profile file: Download and use the [LimaCharlie MDM profile](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/LimaCharlie.mobileconfig.zip).
 
-Set the Assignments to include all users who need the profile installed.
+Set the Assignments to include all users that need the profile.
 
 ![Screenshot of MS Intune -> Devices | Configuration | Details](../../../assets/images/Configuration-details.png)
 
 ## Installation Script
 
-Set up the installation script by following these steps:
+Set up the installation script with these steps:
 
 1. In the [Microsoft Intune admin center](https://intune.microsoft.com/), go to Devices → Manage Devices → Scripts and remediations.
 
-![Screenshot of MS Intune -> Devices | Scripts](../../../assets/images/Scripts.png)
+    ![Screenshot of MS Intune -> Devices | Scripts](../../../assets/images/Scripts.png)
 
-1. Choose [Platform scripts](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/scripts), click the Add button and choose macOS
+2. Choose [Platform scripts](https://intune.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_DeviceSettings/DevicesMenu/~/scripts), click the Add button, and choose macOS.
 
-2. Set up the script with the following parameters:
+3. Set up the script with these parameters:
 
-Name: Install LimaCharlie
+    Name: Install LimaCharlie
 
-Shell script: [Download this template shell script](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/sample-install-limacharlie.sh); be sure to edit it to include your Installation Key before uploading it in MS Intune.
+    Shell script: Download the [template shell script](https://storage.googleapis.com/limacharlie-io/doc/sensor-installation/macOS/MDM_profiles/sample-install-limacharlie.sh). Edit it to add your Installation Key before you upload it in MS Intune.
 
-Run script as signed-in user: No
+    Run script as signed-in user: No
 
-Hide script notifications on devices: Yes
+    Hide script notifications on devices: Yes
 
-Script frequency: Not configured
+    Script frequency: Not configured
 
-Max number of times to retry if script fails: 3
+    Max number of times to retry if script fails: 3
 
-Assignments: Set the `Included groups` to be `All Users` if you wish all users to get the application to be installed, or simply select the correct group to whom you wish to have LimaCharlie be installed for.
+    Assignments: To install the application for all users, set the `Included groups` to `All Users`. To install it for some users, select the correct group.
 
 ![Screenshot of MS Intune -> Devices | Scripts | Details](../../../assets/images/Script-details.png)

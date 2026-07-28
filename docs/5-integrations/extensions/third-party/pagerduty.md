@@ -1,8 +1,8 @@
 # PagerDuty
 
-The PagerDuty Extension allows you to trigger events within PagerDuty. It requires you to setup the PagerDuty access token in the Integrations section of your Organization.
+The PagerDuty Extension lets you trigger events in PagerDuty. First, set the PagerDuty access token in the Integrations section of your Organization.
 
-See PagerDuty's [Events API v2 trigger reference](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/) for more detail.
+For more information, see the PagerDuty [Events API v2 trigger reference](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/).
 
 ## REST
 
@@ -21,16 +21,16 @@ See PagerDuty's [Events API v2 trigger reference](https://developer.pagerduty.co
 
 ### PagerDuty Configuration
 
-On the PagerDuty side, you need to configure your PagerDuty service to receive the API notifications:
+In PagerDuty, configure your PagerDuty service to receive the API notifications:
 
 1. In your Service, go to the "Integrations" tab.
 2. Click "Add a new integration".
 3. Give it a name, like "LimaCharlie".
 4. In the "Integration Type" section, select the radio button "Use our API directly" and select "Events API v2" from the dropdown.
 5. Click "Add integration".
-6. Back in the "Integrations" page, you should see your new integration in the list. Copy the "Integration Key" to your clipboard and add it in the "Integrations" section of LimaCharlie for PagerDuty.
+6. Go back to the "Integrations" page. The new integration is in the list. Copy the "Integration Key". Add the key in the "Integrations" section of LimaCharlie for PagerDuty.
 
-From this point on, you may use a rule to trigger a PagerDuty event. For example the following rule "response":
+You can now use a rule to trigger a PagerDuty event. This example shows a rule "response":
 
 ```yaml
 - action: extension request
@@ -46,12 +46,12 @@ From this point on, you may use a rule to trigger a PagerDuty event. For example
        details: '{{ .event }}'
 ```
 
-> **Important — wrap literal strings in `{{ "..." }}`.**
-> Values under `extension request` are evaluated as templates. A bare string without `{{ }}` is interpreted as a [gjson](https://github.com/tidwall/gjson) path against the event and, if it doesn't resolve, the key is silently dropped from the payload. That's why every literal above is written as `'{{ "..." }}'`. For required fields (`summary`, `source`, `severity`) this matters most — a dropped key will cause the request to be rejected with `missing one of <field>`.
+> **Important — put literal strings in `{{ "..." }}`.**
+> The extension evaluates the values under `extension request` as templates. A bare string without `{{ }}` is a [gjson](https://github.com/tidwall/gjson) path into the event. If the path does not resolve, the extension removes the key from the payload without a message. For this reason, each literal above is written as `'{{ "..." }}'`. The required fields (`summary`, `source`, `severity`) are the most important. If one of these keys is removed, PagerDuty rejects the request with `missing one of <field>`.
 
 ### Pass-through `parameters` block
 
-For richer PagerDuty incidents you can supply an optional `parameters` block alongside the flat fields. Recognized keys are mapped to their proper place in the [V2 event payload](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/); any key that isn't recognized is merged into `custom_details` so nothing is lost.
+To add more detail to a PagerDuty incident, supply an optional `parameters` block with the flat fields. The extension puts each known key in its correct place in the [V2 event payload](https://developer.pagerduty.com/docs/events-api-v2/trigger-events/). It merges each unknown key into `custom_details`, so no data is lost.
 
 | Key | Type | Where it goes |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ For richer PagerDuty incidents you can supply an optional `parameters` block alo
 | `client_url` | string | top-level `client_url` |
 | `dedup_key` | string | top-level `dedup_key` |
 
-Example with a clickable link back to LimaCharlie and a dedup key tied to the detection:
+This example has a link back to LimaCharlie and a dedup key that uses the detection:
 
 ```yaml
 - action: extension request
@@ -94,9 +94,9 @@ Example with a clickable link back to LimaCharlie and a dedup key tied to the de
 
 ### Migrating D&R Rule from legacy Service to new Extension
 
-***Note: LimaCharlie has migrated from Services to Extensions. Legacy services are no longer supported.***
+***Note: LimaCharlie moved from Services to Extensions. Legacy services are not supported.***
 
-The [Python CLI](https://github.com/refractionPOINT/python-limacharlie) gives you a direct way to assess if any rules reference legacy PagerDuty service, preview the change and execute the conversion required in the rule "response".
+Use the [Python CLI](https://github.com/refractionPOINT/python-limacharlie) to find the rules that reference the legacy PagerDuty service. The CLI also shows a preview of the change and does the conversion in the rule "response".
 
 Command line to preview PagerDuty rule conversion:
 
@@ -104,9 +104,9 @@ Command line to preview PagerDuty rule conversion:
 limacharlie extension convert_rules --name ext-pagerduty
 ```
 
-A dry-run response (default) will display the rule name being changed, a JSON of the service request rule and a JSON of the incoming extension request change.
+A dry run is the default. It shows the name of the rule that changes, a JSON of the service request rule, and a JSON of the new extension request.
 
-To execute the change in the rule, explicitly set `--dry-run` flag to `--no-dry-run`
+To do the change in the rule, set the `--dry-run` flag to `--no-dry-run`.
 
 Command line to execute PagerDuty rule conversion:
 
@@ -114,6 +114,6 @@ Command line to execute PagerDuty rule conversion:
 limacharlie extension convert_rules --name ext-pagerduty --no-dry-run
 ```
 
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+LimaCharlie Extensions let users expand and customize their security environments. Extensions integrate third-party tools, automate workflows, and add new capabilities. Organizations subscribe to Extensions, and each Extension gets specific permissions to interact with the infrastructure of the organization. An Extension can be private or public, for use in one organization or for the full community. This framework supports scale, flexibility, and secure, repeatable deployments.
 
-In LimaCharlie, an Organization represents a tenant within the SecOps Cloud Platform, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the SecOps Cloud Platform. It gives a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives full control of security operations. This structure supports flexible, multi-tenant setups for managed security providers, and for enterprises that manage many departments or clients.

@@ -1,12 +1,12 @@
 # GitHub
 
-The GitHub CLI is a tool that brings GitHub to the terminal, allowing you to interact with and control Git accounts, repositories, organizations, and users from the CLI. With this component of the Cloud CLI Extension, you can interact with GitHub directly from LimaCharlie.
+The GitHub CLI is a tool that gives access to GitHub from the terminal. It lets you control Git accounts, repositories, organizations, and users from the CLI. This component of the Cloud CLI Extension lets you interact with GitHub directly from LimaCharlie.
 
 This extension uses [the GitHub CLI](https://cli.github.com/manual/).
 
 ## Example
 
-The following example returns a list of GitHub organizations.
+This example returns a list of GitHub organizations.
 
 ```yaml
 - action: extension request
@@ -20,10 +20,10 @@ The following example returns a list of GitHub organizations.
 
 ## Credentials
 
-To utilize the GitHub CLI, you will need:
+To use the GitHub CLI, you need:
 
 - A [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-- Create a secret in the secrets manager in the following format:
+- Create a secret in the secrets manager in this format:
 
 ```text
 access_token

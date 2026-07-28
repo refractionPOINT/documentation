@@ -2,24 +2,24 @@
 
 ## How do I verify the LimaCharlie agent was uninstalled from macOS systems?
 
-After [performing an uninstallation](../../2-sensors-deployment/endpoint-agent/macos/installation.md#uninstallation-flow) of the LimaCharlie Sensor for macOS, you can verify that the process was successful by manually checking several items on the endpoint, as described below.
+After you [uninstall the LimaCharlie Sensor for macOS](../../2-sensors-deployment/endpoint-agent/macos/installation.md#uninstallation-flow), check the items below on the endpoint manually. These checks show that the uninstallation was successful.
 
 ## Verify the LimaCharlie processes are not running
 
 1. Open Activity Monitor (`/Applications/Utilities/Activity Monitor.app`).
-2. From the View menu, ensure "All Processes" is selected.
+2. In the View menu, select "All Processes".
 3. In the Search box, type: `rphcp`
-4. Ensure that neither of the following processes appear:
+4. Make sure that these two processes do not appear:
 
-`rphcp`
+    `rphcp`
 
-`com.refractionpoint.rphcp.extension`
+    `com.refractionpoint.rphcp.extension`
 
-If either appear, the uninstallation likely did not complete successfully and it should be re-attempted.
+If one of the two processes appears, the uninstallation was not successful. Do the uninstallation again.
 
 ## Verify all files on disk were removed
 
-The following LimaCharlie sensor-related files should no longer exist on disk:
+These files of the LimaCharlie sensor must not be on disk:
 
 /Applications/RPHCP.app
 
@@ -31,30 +31,30 @@ The following LimaCharlie sensor-related files should no longer exist on disk:
 
 /usr/local/hcp_hbs
 
-You may optionally remove the log file located at: /usr/local/hcp.log
+You can also remove the log file at: /usr/local/hcp.log
 
 ## Verify LimaCharlie Network Extension was removed
 
 1. Open System Settings
-2. Navigate to Network
+2. Go to Network
 3. Select VPN & Filters
-4. Check if. "RPHCP" appears in the list.
+4. Check if "RPHCP" appears in the list.
 
-✅ If it does not appear, the Network Extension was successfully removed.
+✅ If it does not appear, the Network Extension was removed.
 
-❌ If you see RPHCP in the list, the Network Extension was not properly removed and you should perform uninstallation again.
+❌ If RPHCP appears in the list, the Network Extension was not removed. Do the uninstallation again.
 
 ## Verify LimaCharlie Security Extension was removed
 
-Open the Terminal and run the following commands
+Open the Terminal and run the commands below.
 
 ### Run Command #1
 
 `sudo systemextensionsctl list | grep rphcp`
 
-✅ No result would indicate that the uninstall was successful.
+✅ No result shows that the uninstall was successful.
 
-❌ The following result would indicate that the uninstall was not successful:
+❌ This result shows that the uninstall was not successful:
 
 ```text
 * * N7N82884NH com.refractionpoint.rphcp.extension (1.0.241204/1.0.241204) RPHCP [activated enabled]
@@ -64,6 +64,6 @@ Open the Terminal and run the following commands
 
 `sudo cat /Library/SystemExtensions/db.plist | grep rphcp`
 
-✅ If no result is returned, the security extension was successfully removed.
+✅ If there is no result, the security extension was removed.
 
-❌ If instead you see something similar to the below, the extension was not properly removed and you may need to take some additional measures to do so (i.e. manual removal after booting into Recovery mode).
+❌ If you see a similar result, the extension was not removed. More steps are then necessary to remove it, for example a manual removal after you start the host in Recovery mode.

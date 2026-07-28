@@ -1,21 +1,21 @@
 # Incident Response
 
-LimaCharlie provides incident response teams with a powerful, centralized solution that unifies threat visibility across diverse data sources, streamlines detection capabilities, enhances threat hunting and analysis, and enables instant deployment. IR teams can respond to incidents with unparalleled speed, accuracy, and effectiveness.
+LimaCharlie gives incident response teams one centralized solution. It unifies threat visibility across different data sources, makes detection easier, improves threat hunting and analysis, and deploys immediately. IR teams can respond to incidents with speed and accuracy.
 
 ## Incident response problems
 
-- **Limited visibility and data correlation:** Incident response teams often face incomplete or fragmented data from clients, hindering their ability to grasp the full extent of an incident and make informed analysis.
-- **Time-consuming manual analysis:** Manually sifting through large volumes of logs, alerts, and endpoint data can be time-consuming and prone to human error, delaying incident response and remediation.
-- **Lack of centralized threat hunting capabilities:** Traditional IR toolkits often lack advanced analytics and threat hunting features, making it challenging to proactively uncover hidden threats or investigate complex attack patterns.
-- **Slow infrastructure deployment:** Setting up traditional incident response infrastructure can take hours or even days, leaving critical time gaps where attackers have the upper hand.
+- **Limited visibility and data correlation:** Incident response teams often get incomplete or fragmented data from clients. The teams cannot then see the full extent of an incident or make an informed analysis.
+- **Time-consuming manual analysis:** Manual examination of large volumes of logs, alerts, and endpoint data takes much time and causes human errors. This delays incident response and remediation.
+- **Lack of centralized threat hunting capabilities:** Traditional IR toolkits often have no advanced analytics or threat hunting features. It is then difficult to find hidden threats early or to investigate complex attack patterns.
+- **Slow infrastructure deployment:** Setup of traditional incident response infrastructure can take hours or days. During this time, the attacker has the advantage.
 
 ## LimaCharlie's solution
 
-- **Unified Threat Visibility:** LimaCharlie aggregates data from diverse sources (endpoints, networks, cloud environments, security tools), providing incident response teams with centralized visibility and context for swift analysis.
-- **Streamlined Detection Capabilities:** The platform's powerful detection and response capabilities allow IR teams to quickly pinpoint relevant data, identify patterns, and correlate events across multiple impacted systems.
-- **Enhanced Threat Hunting and Analysis:** LimaCharlie's advanced analytics and threat intelligence feeds enable IR teams to proactively hunt for hidden threats, investigate attack chains, and attribute attacks with greater confidence.
-- **Instant Deployment:** Launch LimaCharlie in seconds, not hours, gaining immediate visibility and control over the compromised environment to outpace attacker timelines and minimize damage.
+- **Unified Threat Visibility:** LimaCharlie collects data from different sources: endpoints, networks, cloud environments, and security tools. Incident response teams get centralized visibility and context for a fast analysis.
+- **Streamlined Detection Capabilities:** The detection and response capabilities of the platform let IR teams find the relevant data quickly. Teams identify patterns and correlate events across each system that the incident touches.
+- **Enhanced Threat Hunting and Analysis:** The advanced analytics and threat intelligence feeds of LimaCharlie let IR teams hunt for hidden threats early. Teams investigate attack chains and attribute attacks with more confidence.
+- **Instant Deployment:** Start LimaCharlie in seconds, not hours. You get immediate visibility into the compromised environment and control of it, so you act faster than the attacker and decrease the damage.
 
 ### Related Resources
 
-- [Investigation Guide](investigation-guide.md) - Best practices for documenting investigations with MITRE ATT&CK mapping and standardized tagging
+- [Investigation Guide](investigation-guide.md) - Best practices to document investigations with MITRE ATT&CK mapping and standard tagging

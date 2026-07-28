@@ -1,5 +1,5 @@
 # Adding Outputs to an Allow List
 
-At LimaCharlie, we rely on infrastructure with auto-scalers, and thus do not have static IPs nor a CIDR that you can rely on for an allow list (or "whitelisting").
+LimaCharlie uses infrastructure with auto-scalers. LimaCharlie therefore has no static IPs and no CIDR that you can use for an allow list (or "whitelisting").
 
-Typically, the concern around adding IPs to an allow list for Outputs is based on wanting to limit abuse and ensure that data from webhooks is truly coming from LimaCharlie and not other sources. To address this, we provide a `secret_key` parameter that can be used as a *shared secret* between LimaCharlie and your webhook receiver. When we issue a webhook, we include a `lc-signature` header that is an HMAC of the content of the webhook using the shared `secret_key`.
+Users add IPs to an allow list for Outputs to limit abuse, and to make sure that webhook data comes from LimaCharlie and not from another source. For this purpose, LimaCharlie supplies a `secret_key` parameter that you use as a *shared secret* between LimaCharlie and your webhook receiver. Each webhook from LimaCharlie includes an `lc-signature` header. This header is an HMAC of the webhook content, computed with the shared `secret_key`.

@@ -1,14 +1,14 @@
 # Building Reports with BigQuery + Looker Studio
 
-LimaCharlie does not include reporting by default, however our granular and customizable Output options allow you to push data to any source and use third-party tools for reporting. In this tutorial, we'll push a subset of LimaCharlie EDR telemetry to [BigQuery](https://cloud.google.com/bigquery) and analyze our data using Google's [Looker Studio](https://lookerstudio.google.com/). We'll be doing the work in the web UI, however this could also be done via the API.
+LimaCharlie does not include reporting by default. Output options send data to any destination, and you use third-party tools for reporting. This tutorial sends a subset of LimaCharlie EDR telemetry to [BigQuery](https://cloud.google.com/bigquery), then analyzes the data with Google [Looker Studio](https://lookerstudio.google.com/). This tutorial uses the web app, but you can also do the same work with the API.
 
-For this example, we will aggregate and analyze Windows processes making network connections.
+This example aggregates and analyzes Windows processes that make network connections.
 
 ## Preparing BigQuery
 
-Within your project of choice, begin by creating a new dataset. For the purposes of this tutorial, I'm going to create a dataset named `windows_process_details`. Within this dataset, I'll create a table named `network_connections`.
+In your project, create a new dataset. This tutorial uses a dataset named `windows_process_details`. In this dataset, create a table named `network_connections`.
 
-Let's examine this hierarchy for a moment:
+This is the hierarchy:
 
 ```text
 ├── limacharlie-bq-testing    # project
@@ -16,25 +16,29 @@ Let's examine this hierarchy for a moment:
 │   │   ├── network_connections    # table
 ```
 
-The nice part about this type of hierarchy is that I can build out multiple tables of process details within the same dataset, and then link/analyze them as needed. We'll focus on the `network_connections` data for now, but we could also look at exporting other process details into the same dataset.
+This hierarchy lets you build more than one table of process details in the same dataset. You can then link and analyze those tables. This tutorial uses only the `network_connections` data, but you can export other process details into the same dataset.
 
 ![image.png](../../assets/images/image(97).png)
 
-Within the Google Cloud Console, we also want to create a Service Account and gather an API key. See Google Cloud's [service account creation guide](https://cloud.google.com/iam/docs/service-accounts-create) for more detail.
+In the Google Cloud Console, create a Service Account and get an API key. For more detail, see the Google Cloud [service account creation guide](https://cloud.google.com/iam/docs/service-accounts-create).
 
-Copy the API key and keep it somewhere safe, we'll need to configure it in the output.
+Copy the API key and keep it in a safe place. You configure it in the output.
 
 ## Creating the BigQuery Output
 
-Creating an Output within LimaCharlie is straightforward. Navigate to `Outputs` in the web UI, select `Add Output`, and select `Events`.
+To create an Output in LimaCharlie:
+
+1. In the web app, go to `Outputs`.
+2. Select `Add Output`.
+3. Select `Events`.
 
 Note:
 
-We want to export raw events in this case - however, we'll use filters to export only the events of interest to BigQuery.
+This output exports raw events. Filters send only the events of interest to BigQuery.
 
-Within the Output Destination menu, select `Google Cloud BigQuery`. You'll be prompted with a configuration menu; expand the `Advanced Options`, as we'll need those too.
+In the Output Destination menu, select `Google Cloud BigQuery`. A configuration menu opens. Expand the `Advanced Options`, because this tutorial also uses those options.
 
-The following values must be provided in order for the Output to work:
+The Output needs these values:
 
 - Name (choose your own name)
 - Dataset (from the previous section)
@@ -44,11 +48,11 @@ The following values must be provided in order for the Output to work:
 
 Where to Store the Secret?
 
-The secret key for this output can be inserted directly in the web app helper, however we recommend keeping secrets in the [Secret hive](../../7-administration/config-hive/secrets.md) for centralized management.
+You can put the secret key directly in the web app helper. LimaCharlie recommends that you keep secrets in the [Secret hive](../../7-administration/config-hive/secrets.md) for central management.
 
-Within the `Advanced Options`, we'll need to provide the following details:
+In the `Advanced Options`, supply these details:
 
-- Custom Transform - we don't want to include *all* the details from the `NETWORK_CONNECTIONS` event. For this output, we are interested in processes making network connections and the users associated with them. Thus, we'll apply the following transform to pare this down:
+- Custom Transform - this output does not need *all* the details from the `NETWORK_CONNECTIONS` event. It needs the processes that make network connections and the users of those processes. Apply this transform to reduce the fields:
 
 ```json
 {
@@ -58,36 +62,36 @@ Within the `Advanced Options`, we'll need to provide the following details:
 }
 ```
 
-Within the `Specific Event Types` field, we'll specify only `NETWORK_CONNECTIONS`. This is another way to pare down the number of events processed and exported.
+In the `Specific Event Types` field, specify only `NETWORK_CONNECTIONS`. This is another way to reduce the number of events that LimaCharlie processes and exports.
 
-Finally, we'll also specify a tag of `windows`, ensuring we only capture Windows systems (per our tagging - your tags may differ). Based on the values provided and discussed, here's a screenshot of the Output configuration (minus the API key):
+Also specify a tag of `windows`, to capture only Windows systems. This tag matches the tagging in this example; your tags can be different. This screenshot shows the Output configuration with these values, without the API key:
 
 ![image](../../assets/images/output-config.png)
 
-Save the output details, and then check `View Samples` in the Outputs menu to see if you're successfully seeing events.
+Save the output details. Then select `View Samples` in the Outputs menu to check that events arrive.
 
 ![image](../../assets/images/output-sample.png)
 
 ## Analyzing Events in BigQuery + Looker Studio
 
-Navigating back to BigQuery, we can see some initial events flowing in:
+Go back to BigQuery. The first events arrive:
 
 ![image.png](../../assets/images/image(102).png)
 
-Let's hop over to Looker Studio. Create a Blank Report, and select `BigQuery` in the `Connect to Data` menu.
+Go to Looker Studio. Create a Blank Report. Select `BigQuery` in the `Connect to Data` menu.
 
 ![image.png](../../assets/images/image(103).png)
 
-Select the Project, Dataset, and Table of interest, and click `Add`.
+Select the Project, Dataset, and Table. Click `Add`.
 
 ![image.png](../../assets/images/image(104).png)
 
-Looker Studio may prompt you about permissions of connected data. However, once connected, we'll be able to see a starter table with aggregate details from our `network_connections` table.
+Looker Studio can ask you about the permissions of connected data. After the connection is complete, a starter table shows aggregate details from the `network_connections` table.
 
 ![image.png](../../assets/images/image(105).png)
 
-And that's it! From here, you can manipulate and move around the data as needed. You can also blend with another table, allowing you to combine multiple data points.
+You can now change and move the data. You can also blend the data with another table to combine more data points.
 
-Reports can also be styled, additional statistics generated, etc. The following example continues to pull on the basic data we exported to provide some unique insights:
+You can also style reports and generate more statistics. This example uses the same exported data to show other insights:
 
 ![image.png](../../assets/images/image(106).png)

@@ -1,18 +1,18 @@
 # Detection and Response Examples
 
-The following are sample detection and response rules can help you get started in crafting efficient rules utilizing LimaCharlie's telemetry. In addition to these rules, we also recommend checking out [Sigma Rules](managed-rulesets/sigma-converter.md) for more rules.
+These sample detection and response rules help you write efficient rules with LimaCharlie telemetry. For more rules, see [Sigma Rules](managed-rulesets/sigma-converter.md).
 
 ## Translating Existing Rules
 
-Before listing examples, it's worth mentioning [uncoder.io](https://uncoder.io/) by [SOC Prime](https://socprime.com/) is a great resource for learning by analogy. If you're already familiar with another platform for rules or search queries (Sigma, Splunk, Kibana, etc.) you can use uncoder to translate to LimaCharlie's D&R rules.
+[uncoder.io](https://uncoder.io/) by [SOC Prime](https://socprime.com/) helps you learn by analogy. If you know another platform for rules or search queries (Sigma, Splunk, Kibana, etc.), you can use uncoder to translate to LimaCharlie D&R rules.
 
-Looking for more?
+More resources are available.
 
-Check out this video that shows you the power of leveraging community resources with LimaCharlie
+This video shows how to use community resources with LimaCharlie.
 
 ## Examples
 
-Note that through limacharlie.io, in order to provide an easier to edit format, the same rule configuration is used but is in YAML format instead. For example:
+In limacharlie.io, the same rule configuration is in YAML format. This format is easier to edit. For example:
 
 ```yaml
 # Detection
@@ -54,7 +54,7 @@ case sensitive: false
 
 ### Classify Users
 
-Tag any Sensor where the CEO logs in with "vip".
+Add the "vip" tag to any Sensor where the CEO logs in.
 
 ```yaml
 # Detection
@@ -71,7 +71,7 @@ case sensitive: false
 
 ### SSH from External IP Address
 
-The following example looks for connections to/from `sshd` involving a non-RFC1918 IP Address. Be mindful that this is only looking for network connections, not actual logons, so this could be noisy on an internet-facing system but still indicative of an exposed service.
+This example looks for connections to or from `sshd` with a non-RFC1918 IP address. The rule looks only for network connections, not for logons. On an internet-facing system the rule can be noisy, but it still shows an exposed service.
 
 ```yaml
 # Detection
@@ -94,7 +94,7 @@ The `report` uses [Go Templates](../4-data-queries/template-strings.md) to inclu
 
 ### RDP from External IP Address
 
-Similar to the above SSH example, this example looks for RDP connections from an external IP address. Be mindful that this is only looking for network connections, not actual logons, so this could be noisy on an internet-facing system but still indicative of an exposed service.
+This example is similar to the SSH example above. It looks for RDP connections from an external IP address. The rule looks only for network connections, not for logons. On an internet-facing system the rule can be noisy, but it still shows an exposed service.
 
 ```yaml
 # Detection
@@ -138,7 +138,7 @@ re: .*((\\.txt)|(\\.doc.?)|(\\.ppt.?)|(\\.xls.?)|(\\.zip)|(\\.rar)|(\\.rtf)|(\\.
 
 ### Disable an Event at the Source
 
-Turn off the sending of a specific event to the cloud. Useful to limit some verbose data sources when not needed.
+Stop the sensor from sending a specific event to the cloud. Use this rule to limit verbose data sources that you do not need.
 
 ```yaml
 # Detection
@@ -153,7 +153,7 @@ name: windows
 
 ### Windows Event Logs
 
-A simple example of looking for a specific Event ID in WEL events.
+This example looks for a specific Event ID in WEL events.
 
 ```yaml
 # Detection
@@ -174,7 +174,7 @@ rules:
 
 ### Nested Logic
 
-An example demonstrating nested boolean logic. This detection looks specifically for the following conditions:
+This example shows nested boolean logic. The detection looks for these conditions:
  ((`4697` OR `7045`) in the `System` log) OR (`4698` in the `Security` log)
 
 ```yaml
@@ -209,7 +209,7 @@ rules:
 
 #### Monitoring Sensitive Directories
 
-Make sure the File Integrity Monitoring of some directories is enabled whenever Windows sensors connect.
+Enable File Integrity Monitoring of some directories each time that a Windows sensor connects.
 
 ```yaml
 # Detection
@@ -237,7 +237,7 @@ name: linux
 
 #### FIM Hit Detection
 
-Adding a FIM pattern with `fim_add` by itself will only cause `FIM_HIT` events to be generated on the affected system's timeline. To know that we have positive hits on a FIM rule, we want to capture the relevant event and generate a proper Detection.
+A FIM pattern that you add with `fim_add` only puts `FIM_HIT` events on the timeline of the affected system. To see the hits on a FIM rule, capture the event and generate a Detection.
 
 ```yaml
 # Detection
@@ -254,13 +254,13 @@ path: event/FILE_PATH
 
 Resource Utilization
 
-Performing CPU intensive actions such as YARA scanning can impact endpoint performance if not optimized. Be sure to always test rules that carry out sensor commands (like the examples below) before deploying at scale in production. Use [suppression](../8-reference/response-actions.md#suppression) to prevent runaway conditions.
+CPU intensive actions such as a YARA scan can decrease endpoint performance. Always test rules that run sensor commands, such as the examples below, before you deploy them at scale in production. Use [suppression](../8-reference/response-actions.md#suppression) to stop runaway conditions.
 
-Here are a few examples of using D&R rules to initiate automatic YARA scans on an endpoint. Note that the defined YARA rule must exist in your org before using it in a D&R rule.
+These examples use D&R rules to start automatic YARA scans on an endpoint. The YARA rule must exist in your organization before you use it in a D&R rule.
 
 #### YARA Scan Processes
 
-This  example looks for `NEW_PROCESS` events that meet certain criteria, then initiates a YARA scan against the offending process ID in memory. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](#yara-detections) rule.
+This example looks for `NEW_PROCESS` events that obey some criteria. It then starts a YARA scan of the process ID in memory. This rule, or a similar rule, also needs a companion [YARA Detection](#yara-detections) rule.
 
 ```yaml
 # Detection
@@ -291,11 +291,11 @@ rules:
     period: 1m
 ```
 
-Notice the use of `suppression` to prevent the same `PROCESS_ID` from being scanned more than once per minute to prevent a resource runaway situation.
+The `suppression` block stops a scan of the same `PROCESS_ID` more than one time each minute. This stops a resource runaway situation.
 
 #### YARA Scan Files
 
-This  example looks for `NEW_DOCUMENT` events that meet certain criteria, then initiates a YARA scan against the offending file path. Note, this or a similar D&R rule will also depend on a companion [YARA Detection](#yara-detections) rule.
+This example looks for `NEW_DOCUMENT` events that obey some criteria. It then starts a YARA scan of the file path. This rule, or a similar rule, also needs a companion [YARA Detection](#yara-detections) rule.
 
 ```yaml
 # Detection
@@ -328,11 +328,11 @@ rules:
     period: 1m
 ```
 
-Notice the use of `suppression` to prevent the same `FILE_PATH` from being scanned more than once per minute to prevent a resource runaway situation.
+The `suppression` block stops a scan of the same `FILE_PATH` more than one time each minute. This stops a resource runaway situation.
 
 ### YARA Detections
 
-Running a YARA scan by itself only sends a `YARA_DETECTION` event to the affected system's timeline. To know that we have positive hits on a YARA scan, we want to capture the relevant event and generate a proper Detection. The following two examples split out a YARA detection on-disk, versus in-memory. Notice we simply check for the presence of `event/PROCESS/*` fields to determine if it's a file or process detection, which may have different severities to security teams (dormant malware versus running malware).
+A YARA scan only sends a `YARA_DETECTION` event to the timeline of the affected system. To see the hits from a YARA scan, capture the event and generate a Detection. The two examples below separate a YARA detection on disk from a YARA detection in memory. The rules check for `event/PROCESS/*` fields to find if the detection is a file or a process. Security teams can give a different severity to each one (dormant malware or running malware).
 
 #### YARA Detection On-Disk (file)
 
@@ -375,7 +375,7 @@ rules:
   ttl: 80000
 ```
 
-Both rules will generate a Detection report and add a tag to the system which the detection occurred on.
+Both rules generate a Detection report and add a tag to the system where the detection occurred.
 
 ### Mention of an Internal Resource
 
@@ -395,9 +395,9 @@ value: /corp/private/info
 
 ### De-duplicate Cloned Sensors
 
-Sometimes users install a sensor on a VM image by mistake. This means every time a new instance of the image gets started the same sensor ID (SID) is used for multiple boxes with different names. When detected, LimaCharlie produces a `sensor_clone` event.
+Sometimes users install a sensor on a VM image by mistake. Each new instance of the image then uses the same sensor ID (SID) on different machines with different names. When LimaCharlie detects this, it produces a `sensor_clone` event.
 
-We can use these events to deduplicate. This example targets Windows clones.
+You can use these events to deduplicate. This example targets Windows clones.
 
 ```yaml
 # Detection
@@ -410,7 +410,7 @@ name: windows
 - action: re-enroll
 ```
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Sensors send telemetry to the LimaCharlie cloud as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless solution that connects the endpoints of an organization to the cloud securely.
 
 ---
 

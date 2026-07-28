@@ -1,10 +1,10 @@
 # FAQ - Invoices
 
-This page contains frequently asked questions about invoices you receive for LimaCharlie service.
+This page contains frequently asked questions about the invoices that you receive for the LimaCharlie service.
 
 Pricing Details
 
-Please note that our pricing is transparent and is available via our [Pricing webpage](https://limacharlie.io/pricing).
+LimaCharlie pricing is available on the [Pricing webpage](https://limacharlie.io/pricing).
 
 ## LimaCharlie Invoices
 
@@ -13,26 +13,26 @@ LimaCharlie offers two types of invoices:
 - Individual Organization
 - Unified billing
 
-We'll examine each in detail.
+The sections below describe each type in detail.
 
 ### Individual organization invoices
 
-Your invoice will include a detailed breakdown of usage for your LimaCharlie tenant organization. You'll see individual line items for each LimaCharlie product utilized, along with your actual usage for the period. For example:
+Your invoice includes a detailed breakdown of the usage for your LimaCharlie tenant organization. There is a line item for each LimaCharlie product that you used, with your usage for the period. For example:
 
 - Sensors
 - Output usage
 - Artifact ingestion
 - Replay usage
 
-Invoices cover both lines for standard billable items like Sensor quota which are pre-paid for the following month, as well as consumption-based items (e.g. per-gigabyte costs incurred throughout the prior period) which are post-paid after the month has ended.
+Invoices have lines for standard billable items and for consumption-based items. Standard items such as the Sensor quota are pre-paid for the next month. Consumption-based items, for example the costs for each gigabyte in the prior period, are post-paid after the month ends.
 
-Your monthly invoices include a detailed breakdown enable you to see the exact periods covered for each product listed.
+Your monthly invoices include a detailed breakdown that shows the exact periods covered for each product listed.
 
-Because you are able to adjust your organization quota on demand, this will trigger proration of charges. You will see line items on your invoice which indicate "Remaining time on ..." or "Unused time on ..." that are related to the proration, which is done on a per-second basis.
+You can adjust the quota of your organization on demand, and this triggers proration of the charges. Your invoice then has line items that show "Remaining time on ..." or "Unused time on ...". The proration is calculated for each second.
 
 ### Unified Billing invoices
 
-Customers who are set up on Unified Billing receive one invoice that contain a roll-up summary of all of their LimaCharlie organizations so that they can pay them all together. The Unified invoice includes one line item per tenant organization. Those tenant organizations include a reference to their sub-invoice number; you can refer to those for detailed line-level information related to each organization.
+Customers on Unified Billing receive one invoice with a summary of all their LimaCharlie organizations, so they can pay for all of them together. The Unified invoice has one line item for each tenant organization. Each line item gives the sub-invoice number of that organization. Use the sub-invoices for detailed line-level information about each organization.
 
 #### Example Unified invoice
 
@@ -42,10 +42,10 @@ Your browser does not support PDF. [Download the example unified invoice](../../
 
 Your browser does not support PDF. [Download the example tenant invoice](../../assets/images/EXAMPLE---Alpha-Customer---Invoice-BCDE9876-0035.pdf).
 
-In addition to the Unified Billing invoice, customers are also provided with a LimaCharlie Global Billing email. This email contains:
+With the Unified Billing invoice, customers also receive a LimaCharlie Global Billing email. This email contains:
 
-1. A table showing all organizations included in the period, along with a link to each individual organization's detailed invoice which shows breakdown of charges. Note that these individual invoices have a zero-dollar balance as the amounts are reflected on the Unified Invoice; this is reflected with a line item called "UNIFIED-BILLING" that shows the invoice total was moved to the unified invoice.
-2. A summary report (attachment) in CSV format that contains a list of the organizations included on the global billing invoice. The fields included in the CSV are as follows:
+1. A table with all the organizations in the period. The table gives a link to the detailed invoice of each organization, which shows the breakdown of the charges. These individual invoices have a zero-dollar balance, because the amounts are on the Unified Invoice. A line item called "UNIFIED-BILLING" shows that the invoice total moved to the unified invoice.
+2. A summary report (attachment) in CSV format with a list of the organizations on the global billing invoice. The CSV has these fields:
     A - Org Name
     B - Org ID
     C - Payment
@@ -53,8 +53,8 @@ In addition to the Unified Billing invoice, customers are also provided with a L
     E - Total Due
     F - Total Paid
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives you full control over security operations. This structure supports flexible, multi-tenant setups for managed security providers, and for enterprises that manage many departments or clients.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, Sensors send telemetry to the LimaCharlie cloud as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless solution that connects the endpoints of an organization to the cloud in a secure way.
 
-In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+In LimaCharlie, an Organization ID (OID) is a unique identifier for each tenant or customer account. It distinguishes the different organizations, so LimaCharlie can manage resources, permissions, and the separation of data in a secure way. The Organization ID keeps all telemetry, configurations, and operations isolated and specific to each organization. This gives multi-tenant support and a clear separation between customer environments.

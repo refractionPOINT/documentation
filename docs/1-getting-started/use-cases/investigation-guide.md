@@ -1,14 +1,14 @@
 # Investigation Guide
 
-This guide provides opinionated best practices for SOC analysts using LimaCharlie Investigations to document and encode security investigations. By following these conventions, you enable attack chain visualization, cross-investigation analysis, and consistent reporting.
+This guide gives best practices for SOC analysts who use LimaCharlie Investigations to document and encode security investigations. These conventions make attack chain visualization, cross-investigation analysis, and consistent reports possible.
 
 ## Tag Format Specification
 
-Use colon-separated tags to categorize events, detections, and entities within your timeline. This section defines the format patterns - actual values are either format-based (you define them) or fetched dynamically from authoritative sources.
+Use colon-separated tags to categorize events, detections, and entities in your timeline. This section defines the format patterns. The values are either format-based, and you define them, or the tool reads them from authoritative sources at runtime.
 
 ### MITRE ATT&CK Tags (Dynamic)
 
-MITRE ATT&CK tags should be validated against the authoritative MITRE STIX data rather than hardcoded lists.
+Validate MITRE ATT&CK tags against the authoritative MITRE STIX data. Do not use hardcoded lists.
 
 **Authoritative Source:** <https://github.com/mitre-attack/attack-stix-data>
 
@@ -19,7 +19,7 @@ MITRE ATT&CK tags should be validated against the authoritative MITRE STIX data 
 | `phase:{tactic-name}` | Attack phase aligned with MITRE tactic | `phase:initial-access` |
 | `mitre:{technique-id}` | Specific MITRE ATT&CK technique | `mitre:T1566` |
 
-**Fetching Valid Values at Runtime:**
+**Get Valid Values at Runtime:**
 
 ```yaml
 URL: https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json
@@ -35,7 +35,7 @@ Parsing:
 
 ### Operational Tags (Format-Based)
 
-These tags follow a consistent format pattern. You define the values based on your investigation context.
+These tags use a consistent format pattern. You define the values from your investigation context.
 
 | Category | Format | Description | Examples |
 |----------|--------|-------------|----------|
@@ -54,7 +54,7 @@ These tags follow a consistent format pattern. You define the values based on yo
 
 ## Attack Chain Visualization
 
-Use `phase:` tags chronologically to visualize attack progression through MITRE ATT&CK tactics:
+Use `phase:` tags in time order to show how the attack moves through MITRE ATT&CK tactics:
 
 ```text
 [phase:initial-access] → [phase:execution] → [phase:persistence] → [phase:credential-access] → [phase:lateral-movement] → [phase:exfiltration]
@@ -68,7 +68,7 @@ Apply timing tags to key events:
 |-----|---------------|
 | `timing:first-observed` | Earliest confirmed malicious activity |
 | `timing:pivot-point` | Critical decision points in the attack chain |
-| `timing:detection-trigger` | Event/detection that initiated the investigation |
+| `timing:detection-trigger` | The event or detection that started the investigation |
 
 ### Example: Attack Chain Tags
 
@@ -100,7 +100,7 @@ Apply timing tags to key events:
 
 ### IOC Provenance
 
-Document how entities were discovered and validated in the `context` field:
+In the `context` field, record how you found and validated each entity:
 
 **Pattern:** `Provenance: [how discovered]. Validation: [how confirmed]. Attribution: [threat intel correlation].`
 
@@ -120,9 +120,9 @@ Document how entities were discovered and validated in the `context` field:
 | Verdict | Criteria |
 |---------|----------|
 | `malicious` | Confirmed IOC match, known-bad behavior, validated threat |
-| `suspicious` | Anomalous but not definitively malicious, requires review |
+| `suspicious` | Anomalous but not definitely malicious. Needs review |
 | `benign` | Cleared by investigation, legitimate activity |
-| `unknown` | Insufficient context, further analysis needed |
+| `unknown` | Not enough context. Needs more analysis |
 
 ### Entity Context Templates
 
@@ -221,10 +221,10 @@ Defense gaps: [what failed]
 
 | Status | When to Use |
 |--------|-------------|
-| `new` | Timeline just created, investigation not started |
-| `in_progress` | Active investigation underway |
-| `pending_review` | Analyst completed, awaiting peer review |
-| `escalated` | Requires senior analyst or management attention |
+| `new` | The timeline is created. The investigation is not started |
+| `in_progress` | The investigation is active |
+| `pending_review` | The analyst is finished. Peer review is pending |
+| `escalated` | Needs the attention of a senior analyst or a manager |
 | `closed_false_positive` | Confirmed benign, documented rationale |
 | `closed_true_positive` | Confirmed incident, remediation complete |
 
@@ -234,7 +234,7 @@ Defense gaps: [what failed]
 
 - [ ] Benign explanation documented in conclusion
 - [ ] Finding note with FP rationale
-- [ ] Consider FP rule if pattern is common
+- [ ] Decide if an FP rule is necessary, if the pattern is common
 
 **For `closed_true_positive`:**
 
@@ -269,7 +269,7 @@ Attribution: Financially-motivated actor (medium confidence).
 
 ### Conclusion Field (Technical Closure)
 
-Document technical determination:
+Record the technical determination:
 
 ```text
 CLASSIFICATION: [true positive/false positive] - [incident type]
@@ -284,7 +284,7 @@ CONTAINMENT: [status and date]
 
 ## Example: Complete Tagged Timeline
 
-*Note: MITRE technique IDs shown are illustrative. Validate against the authoritative STIX source.*
+*The MITRE technique IDs in this example are illustrative. Validate them against the authoritative STIX source.*
 
 ```json
 {
@@ -370,7 +370,7 @@ CONTAINMENT: [status and date]
 
 ## Cross-Timeline Analysis
 
-Consistent tagging enables searching across multiple investigations:
+Consistent tags let you query across multiple investigations:
 
 | Search Goal | Tag Pattern to Query |
 |-------------|---------------------|

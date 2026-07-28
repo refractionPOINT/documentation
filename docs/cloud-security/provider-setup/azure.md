@@ -1,23 +1,24 @@
 # Microsoft Azure
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and configuration
+    formats on this page can change before general availability. Contact us to
+    request access.
 
-Collects the Azure estate — VMs and scale sets, storage, Key Vault, SQL/Cosmos,
-AKS, networking and NSGs, Azure OpenAI — plus the tenant's Entra ID directory
-(users, groups, service principals, app registrations, roles) and, where
-licensed, Conditional Access and sign-in activity.
+This provider collects the Azure estate: VMs and scale sets, storage, Key
+Vault, SQL/Cosmos, AKS, networking and NSGs, and Azure OpenAI. It also
+collects the Entra ID directory of the tenant (users, groups, service
+principals, app registrations, roles). With the correct licence, it collects
+Conditional Access and sign-in activity.
 
 **Auth model:** an **Entra ID app registration** (service principal) with a
-**client secret**, granted the **Reader** RBAC role on your subscriptions and
+**client secret**. Give it the **Reader** RBAC role on your subscriptions and
 **Microsoft Graph application permissions** on the tenant.
 
 !!! tip "Directory only, no Azure subscription?"
     If you have Entra ID / Microsoft 365 but no Azure infrastructure to
-    enumerate, use the [Entra ID](entra.md) provider instead — same app
-    registration, none of the ARM setup.
+    enumerate, use the [Entra ID](entra.md) provider. It uses the same app
+    registration and needs no ARM setup.
 
 ## Prerequisites
 
@@ -25,8 +26,8 @@ licensed, Conditional Access and sign-in activity.
   Developer** or higher).
 - Permission to **grant tenant-wide admin consent** for Graph application
   permissions (**Privileged Role Administrator** or **Global Administrator**).
-- **Owner** or **User Access Administrator** on each subscription you want
-  read, to assign Reader.
+- **Owner** or **User Access Administrator** on each subscription that you
+  want to read, to assign Reader.
 
 ## Required permissions
 
@@ -40,15 +41,15 @@ licensed, Conditional Access and sign-in activity.
 | Grant | Unlocks | Preflight check |
 |---|---|---|
 | **Policy.Read.All** (application) | Conditional Access policy posture | *(collected during the sweep)* |
-| **AuditLog.Read.All** (application) | Last-sign-in / dormancy enrichment on identities. **Requires an Entra ID P1 or P2 licence** — without the licence the report is unavailable regardless of consent | `signin_activity` |
+| **AuditLog.Read.All** (application) | Last-sign-in / dormancy enrichment on identities. **Needs an Entra ID P1 or P2 licence**. Without the licence, the report is unavailable, even with consent | `signin_activity` |
 | **RoleManagement.Read.Directory** (application) | Directory role assignments and PIM eligibility | *(collected during the sweep)* |
-| **Application.Read.All** (application) | Fuller app-registration / service-principal credential detail | *(collected during the sweep)* |
+| **Application.Read.All** (application) | More credential detail for app registrations and service principals | *(collected during the sweep)* |
 | **AdministrativeUnit.Read.All** (application) | Administrative-unit scoping | *(collected during the sweep)* |
 | **AgentIdentity.Read.All** (application) | Source-asserted AI-agent identities in the directory | *(collected during the sweep)* |
-| *(covered by Reader)* | Defender for Cloud vulnerability assessments via Azure Resource Graph | `defender_vuln` |
+| *(covered by Reader)* | Defender for Cloud vulnerability assessments through Azure Resource Graph | `defender_vuln` |
 
-A denied Graph permission 403s only its own collector — that surface goes
-unobserved while everything else still collects.
+If Graph denies one permission, only its own collector gets a 403 error. That
+surface is not collected, but all other collectors continue.
 
 ## Create the app registration
 
@@ -82,24 +83,26 @@ az ad app permission admin-consent --id "$APP_ID"
 ```
 
 !!! note "In the portal"
-    **Microsoft Entra ID → App registrations → New registration** → then
-    **Certificates & secrets → New client secret** (copy the *Value*, not the
-    ID) → **API permissions → Add a permission → Microsoft Graph →
-    Application permissions** → add the permissions above → **Grant admin
-    consent for \<tenant\>** (the status column must read *Granted*) →
-    finally **Subscriptions → \<sub\> → Access control (IAM) → Add role
-    assignment → Reader → your app**.
+    1. Go to **Microsoft Entra ID → App registrations → New registration**.
+    2. Go to **Certificates & secrets → New client secret**. Copy the
+       *Value*, not the ID.
+    3. Go to **API permissions → Add a permission → Microsoft Graph →
+       Application permissions** and add the permissions above.
+    4. Select **Grant admin consent for \<tenant\>**. The status column must
+       read *Granted*.
+    5. Go to **Subscriptions → \<sub\> → Access control (IAM) → Add role
+       assignment → Reader → your app**.
 
 !!! danger "`credential reset` clears existing secrets"
-    Without `--append`, `az ad app credential reset` **removes every existing
-    password and certificate** on the app before adding the new one. Always
-    pass `--append` when the app already carries credentials something else
-    depends on.
+    Always use `--append` when the app holds credentials that other systems
+    need. Without `--append`, `az ad app credential reset` **removes every
+    existing password and certificate** on the app before it adds the new
+    one.
 
 !!! danger "Application permissions, not delegated"
-    Graph permissions must be added under **Application permissions**.
-    Delegated permissions require a signed-in user and will leave the
-    `graph_directory` check failing even after consent.
+    Add the Graph permissions under **Application permissions**. Delegated
+    permissions need a signed-in user. With delegated permissions, the
+    `graph_directory` check continues to fail, even after consent.
 
 ## Create the credentials secret
 
@@ -127,14 +130,15 @@ refresh: 6h
 ```
 
 !!! info "`azure_subscription_id` is an anchor, not a limit"
-    The collector enumerates **every subscription the service principal can
-    see** (`subscriptions` check). Assign Reader on each subscription you want
-    swept; the one named here is simply the anchor used for scoping and
-    probing. If the tenant-wide `subscriptions` read is denied, the sweep falls
-    back to the single configured subscription.
+    The collector enumerates **every subscription that the service principal
+    can see** (`subscriptions` check). Assign Reader on each subscription that
+    you want to sweep. The subscription named here is only the anchor for
+    scoping and probing. If the tenant-wide `subscriptions` read is denied,
+    the sweep covers the one configured subscription.
 
-In the web app: **Add provider → Azure**, then set **Tenant ID**, **Client
-ID**, **Subscription ID**, **Credentials**, and **Refresh interval**.
+In the web app, select **Add provider → Azure**. Then set **Tenant ID**,
+**Client ID**, **Subscription ID**, **Credentials**, and **Refresh
+interval**.
 
 ## Verify
 
@@ -145,19 +149,19 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | Check | Required | Meaning if it fails |
 |---|:--:|---|
 | `auth` | ✅ | The client ID/secret pair was rejected, or the secret expired. |
-| `arm_reader` | ✅ | Reader is not assigned on the configured subscription — no resource inventory. |
-| `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
-| `subscriptions` | — | Subscription fan-out disabled; only the configured subscription is swept. |
+| `arm_reader` | ✅ | Reader is not assigned on the configured subscription. There is no resource inventory. |
+| `graph_directory` | ✅ | `Directory.Read.All` has no consent. There is no identity inventory. |
+| `subscriptions` | — | Subscription fan-out is disabled. The sweep covers only the configured subscription. |
 | `defender_vuln` | — | Workload vulnerability findings unavailable. |
-| `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
+| `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable. The usual cause is a missing Entra ID P1/P2 licence. |
 
 ## Troubleshooting
 
 | `provider test` result | Cause | Fix |
 |---|---|---|
-| `auth` fails with `invalid_client` | The secret **ID** was stored instead of the secret **Value**, or the secret expired | Re-mint (`az ad app credential reset`) and store the new value |
-| `graph_directory` fails after adding permissions | Admin consent not granted, or permissions added as *Delegated* | Grant tenant-wide admin consent; confirm the permissions are under *Application* |
-| `arm_reader` fails | Reader assigned at the wrong scope, or not yet propagated | Assign Reader on the subscription (or a management group above it); retry after a minute |
-| `signin_activity` fails with a licence error | Sign-in activity requires Entra ID P1/P2 | Either accept the degrade or add the licence |
-| Directory data appears twice | An `azure` **and** an `entra` record both cover the tenant | This is handled automatically: the Azure connection defers its tenant-global directory collectors to the standalone [Entra](entra.md) record |
-| A scale set / App Service is missing | The resource type may need quota or a supported SKU in that subscription | Confirm the resource is visible to the SP with `az resource list` under the same identity |
+| `auth` fails with `invalid_client` | The secret **ID** was stored instead of the secret **Value**, or the secret expired | Create a new secret with `az ad app credential reset` and store the new value |
+| `graph_directory` fails after you add the permissions | Admin consent not granted, or permissions added as *Delegated* | Grant tenant-wide admin consent. Check that the permissions are under *Application* |
+| `arm_reader` fails | Reader assigned at the wrong scope, or not yet propagated | Assign Reader on the subscription (or a management group above it). Try again after a minute |
+| `signin_activity` fails with a licence error | Sign-in activity needs Entra ID P1/P2 | Accept the reduced data, or add the licence |
+| Directory data appears twice | An `azure` **and** an `entra` record both cover the tenant | LimaCharlie handles this automatically. The Azure connection defers its tenant-global directory collectors to the standalone [Entra](entra.md) record |
+| A scale set / App Service is missing | The resource type can need quota or a supported SKU in that subscription | Check that the SP can see the resource. Run `az resource list` under the same identity |

@@ -1,27 +1,27 @@
 # Config Hive: Apps
 
-The `app` hive stores user-authored, AI-generated mini web applications. Each record holds a single, self-contained HTML document (HTML plus inline JavaScript and CSS) that the LimaCharlie web UI renders inside a sandboxed `<iframe>`. The result is a small custom "app" that users can build conversationally through AI and surface throughout the LimaCharlie console.
+The `app` hive stores mini web applications that users write with AI. Each record holds one self-contained HTML document, which contains HTML with inline JavaScript and CSS. The LimaCharlie web app renders this document in a sandboxed `<iframe>`. The result is a small custom "app". Users build an app in a conversation with AI, then show the app in many places in the web app.
 
-Because each app is a single self-contained document, there are no external asset fetches to authorize and no build step: the whole app is content-addressed by the record's etag. The `schema_version` field exists so the format can evolve to a multi-asset layout later without breaking existing records.
+Each app is one self-contained document. There are therefore no external asset fetches to authorize and no build step. The etag of the record content-addresses the whole app. The `schema_version` field lets the format change to a multi-asset layout later, and existing records continue to work.
 
 ## Security Model
 
-An app frequently needs to call LimaCharlie APIs on behalf of the user viewing it. To make that possible, the host mints a **user JWT scoped down to a subset of permissions** and hands it to the iframe. The granted set is always the intersection of what the app declares and what the viewer actually holds:
+An app often calls LimaCharlie APIs for the user that views it. To make this possible, the host mints a **user JWT that is scoped down to a subset of permissions** and gives it to the iframe. The granted set is always the intersection of the permissions that the app declares and the permissions that the viewer holds:
 
 ```text
 granted_to_iframe = required_permissions ∩ viewing_user_permissions
 ```
 
-A viewer can therefore never gain authority they don't already have. To also close the classic "confused deputy" hole — where a low-privilege author crafts an app requesting powerful permissions that only become active when an admin opens it — the following invariants are enforced at **write time**:
+A viewer therefore never gets authority that the viewer does not already have. A second problem is the "confused deputy" attack. In this attack, an author with low privilege writes an app that declares strong permissions. Those permissions become active only when an administrator opens the app. To close this hole, the cloud enforces these invariants at **write time**:
 
-1. **Every declared permission must be a real, JWT-issuable permission.** Typos and invented strings are rejected.
-2. **No permission may be a root/backend-only permission.** Those are never minted into a user JWT.
-3. **The author must already hold every permission they declare.** You cannot author an app that requests authority you do not yourself possess. (Trusted root/backend writes are exempt, so the platform can provision apps on a user's behalf.)
+1. **Every declared permission must be a real, JWT-issuable permission.** The cloud rejects typos and invented strings.
+2. **A permission must not be a root or backend-only permission.** The cloud never mints those into a user JWT.
+3. **The author must already hold every permission that the author declares.** You cannot write an app that requests authority that you do not have. Trusted root and backend writes are exempt, so the platform can provision apps for a user.
 
-As defense in depth, the iframe's network egress is also allowlisted via the iframe's Content-Security-Policy `connect-src`, across two dimensions:
+As defense in depth, the Content-Security-Policy `connect-src` of the iframe also allowlists the network egress of the iframe. The allowlist has two dimensions:
 
-- `allowed_origins` — arbitrary third-party `https` origins the app opts into. `https` is mandatory so the scoped JWT can never be exfiltrated over cleartext.
-- `required_services` — first-party LimaCharlie services beyond the always-available `api.limacharlie.io`. Authors name services from a curated allowlist rather than hardcoding internal hostnames (which differ per deployment); the host resolves each to the org's concrete, region-specific origin. The same scoped JWT is used against them, and each service independently enforces the declared permissions — so `required_services` brokers only *where* the token may go, never *what* it may do.
+- `allowed_origins` — third-party `https` origins that the app opts into. `https` is mandatory, so no one can exfiltrate the scoped JWT over cleartext.
+- `required_services` — first-party LimaCharlie services other than `api.limacharlie.io`, which is always available. Authors name services from a curated allowlist. They do not hardcode internal hostnames, which are different for each deployment. The host resolves each service to the concrete, region-specific origin of the organization. The app uses the same scoped JWT against these services, and each service enforces the declared permissions on its own. `required_services` therefore controls only *where* the token can go, and never *what* the token can do.
 
 ## Format
 
@@ -42,22 +42,22 @@ As defense in depth, the iframe's network egress is also allowlisted via the ifr
 
 | Field | Required | Description |
 | --- | --- | --- |
-| `schema_version` | No | App content format version. `0`/omitted is treated as v1. A version newer than the platform supports is rejected. Current max: `1`. |
-| `display_name` | Yes | Human label shown in the launcher and embeds (max 256 chars). The record *name* is the stable slug/id; this is the pretty name. |
-| `description` | No | Optional blurb describing the app (max 4096 chars). |
+| `schema_version` | No | Version of the app content format. `0` or an omitted value is v1. The cloud rejects a version that is newer than the platform supports. Current max: `1`. |
+| `display_name` | Yes | Label shown in the launcher and in embeds (max 256 chars). The record *name* is the stable slug or id; this field is the readable name. |
+| `description` | No | Optional text that describes the app (max 4096 chars). |
 | `icon` | No | Optional emoji, icon id, or small data-URI for the launcher (max 256 chars). |
-| `html` | Yes | The single self-contained document rendered in the iframe. |
-| `required_permissions` | No | LimaCharlie permissions the app's JS needs. The iframe JWT is scoped to the intersection of this set and the viewer's own permissions. Each entry must be a real, non-root, JWT-issuable permission that the author already holds. May be empty for a purely static app (the safest kind). Max 64. |
-| `allowed_origins` | No | Allowlist of external `https` origins the app's JS may contact. Each must be scheme + host only (no path, query, fragment, or credentials). Empty means "LimaCharlie only". Max 32. |
-| `required_services` | No | First-party LimaCharlie services the app needs to reach beyond `api.limacharlie.io`. Valid values: `search`, `replay`, `cases`, `ai`. Max 16. |
-| `locations` | No | Where the app may be surfaced in the UI: `standalone`, `within_a_sensor`, `within_a_detection`, `within_a_case`, `within_a_dr_rule`. Max 8. |
-| `expected_context` | No | Context keys the app expects when embedded (e.g. `sid`, `atom`, `detection_id`), so the host passes the right identifiers from the surrounding object into the iframe. Max 32. |
+| `html` | Yes | The one self-contained document that the iframe renders. |
+| `required_permissions` | No | LimaCharlie permissions that the JavaScript of the app needs. The iframe JWT is scoped to the intersection of this set and the permissions of the viewer. Each entry must be a real, non-root, JWT-issuable permission that the author already holds. Can be empty for a static app, which is the safest kind. Max 64. |
+| `allowed_origins` | No | Allowlist of external `https` origins that the JavaScript of the app can contact. Each entry must have only a scheme and a host: no path, query, fragment, or credentials. An empty list means "LimaCharlie only". Max 32. |
+| `required_services` | No | First-party LimaCharlie services that the app must reach other than `api.limacharlie.io`. Valid values: `search`, `replay`, `cases`, `ai`. Max 16. |
+| `locations` | No | Places in the web app that can show the app: `standalone`, `within_a_sensor`, `within_a_detection`, `within_a_case`, `within_a_dr_rule`. Max 8. |
+| `expected_context` | No | Context keys that the app expects when it is embedded, for example `sid`, `atom`, or `detection_id`. The host then passes the correct identifiers from the surrounding object into the iframe. Max 32. |
 
-Records use a strict unmarshal: unknown fields are rejected. The maximum record size is 10 MB; larger documents are rejected.
+Records use a strict unmarshal, and the cloud rejects unknown fields. The maximum record size is 10 MB. The cloud rejects larger documents.
 
 ## Permissions
 
-Managing records in the `app` hive requires the `app.*` permission set:
+To manage records in the `app` hive, you need the `app.*` permission set:
 
 - `app.get`
 - `app.set`
@@ -66,12 +66,12 @@ Managing records in the `app` hive requires the `app.*` permission set:
 - `app.set.mtd`
 
 !!! note
-    These permissions gate who can **manage app records**. They are entirely separate from an app's own `required_permissions`, which are minted into the per-viewer iframe JWT. Do not conflate the two.
+    These permissions control who can **manage app records**. They are separate from the `required_permissions` of an app, which the cloud mints into the iframe JWT for each viewer. Do not confuse the two.
 
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All API and SDK examples require an API key with the appropriate permissions. See [API Keys](../access/api-keys.md) for setup instructions.
+    All API and SDK examples need an API key with the correct permissions. See [API Keys](../access/api-keys.md) for setup instructions.
 
 ### List Apps
 
@@ -192,7 +192,7 @@ Managing records in the `app` hive requires the `app.*` permission set:
 ### Create / Update an App
 
 !!! warning
-    New hive records are created **disabled by default**. Each example below explicitly enables the app — drop the `enabled` portion if you want the app to start disabled and enable it later via `limacharlie hive enable --hive-name app --key …`.
+    The cloud creates new hive records **disabled by default**. Each example below enables the app. To make the app start disabled, remove the `enabled` part. You can then enable the app later with `limacharlie hive enable --hive-name app --key …`.
 
 === "REST API"
 
@@ -277,7 +277,7 @@ Managing records in the `app` hive requires the `app.*` permission set:
     }
     ```
 
-    The `--enabled` flag creates-and-enables the record in one shot. Omit it (and `usr_mtd.enabled` in the file) to leave the app disabled until you call `limacharlie hive enable --hive-name app --key my-app`.
+    The `--enabled` flag creates and enables the record in one operation. Omit the flag, and omit `usr_mtd.enabled` in the file, to keep the app disabled. The app stays disabled until you call `limacharlie hive enable --hive-name app --key my-app`.
 
 ### Delete an App
 
@@ -346,6 +346,6 @@ Managing records in the `app` hive requires the `app.*` permission set:
 
 ## See Also
 
-- [Apps](../../apps/index.md) -- The end-user guide to building and using apps in the console: the AI authoring flow, the `window.lc` runtime, and recipes for charts and tables.
-- [Permissions Reference](../../8-reference/permissions.md) -- The `app.*` permissions that gate app record management.
-- [AI Sessions](../../9-ai-sessions/index.md) -- AI-driven workflows that author and consume LimaCharlie configuration.
+- [Apps](../../apps/index.md) -- The guide for end users that explains how to build and use apps in the web app: the AI authoring flow, the `window.lc` runtime, and recipes for charts and tables.
+- [Permissions Reference](../../8-reference/permissions.md) -- The `app.*` permissions that control the management of app records.
+- [AI Sessions](../../9-ai-sessions/index.md) -- AI workflows that write and read LimaCharlie configuration.

@@ -1,34 +1,38 @@
 # Integrity
 
-The Integrity Extension helps you manage all aspects of file or registry integrity monitoring (FIM and RIM, respectively). This extension automates integrity checks of file system and registry values through pattern-based rules.
+The Integrity Extension helps you manage file integrity monitoring (FIM) and registry integrity monitoring (RIM). The extension automates integrity checks of file system values and registry values with pattern-based rules.
 
 ## Enabling the Integrity Extension
 
-To enable the Integrity extension, navigate to the [Integrity extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-integrity) in the marketplace. Select the Organization you wish to enable the extension for, and select **Subscribe**.
+To enable the Integrity extension, do these steps:
+
+1. Open the [Integrity extension page](https://app.limacharlie.io/add-ons/extension-detail/ext-integrity) in the marketplace.
+2. Select the Organization that you want to enable the extension for.
+3. Select **Subscribe**.
 
 ![integrity 1(1).png "image(242).png"](../../../assets/images/integrity-1(1).png "image(242).png")
 
-After clicking **Subscribe**, the Infrastructure extension should be available almost immediately.
+After you select **Subscribe**, the Infrastructure extension becomes available almost immediately.
 
 ## Using the Integrity Extension
 
-Once enabled, you will see an **File/Reg Integrity** option under **Automation** within the LimaCharlie web UI.
+After you enable the extension, a **File/Reg Integrity** option shows under **Automation** in the LimaCharlie web app.
 
 ![integrity 2.png "image(243).png"](../../../assets/images/integrity-2.png "image(243).png")
 
-Selecting this option allows you to customize **File & Registry Integrity Monitoring** rules, as seen in the screenshot below.
+Select this option to customize **File & Registry Integrity Monitoring** rules. The screenshot below shows this page.
 
 ![integrity 3.png "image(244).png"](../../../assets/images/integrity-3.png "image(244).png")
 
-Selecting **Add Monitoring Rule** will allow you to create a FIM or RIM rule, specifying a platform, Tag(s), and pattern(s).
+Select **Add Monitoring Rule** to create a FIM or RIM rule. For each rule, specify a platform, Tag(s), and pattern(s).
 
 ![integrity 4.png "image(245).png"](../../../assets/images/integrity-4.png "image(245).png")
 
 ### Rule Patterns
 
-Patterns are file or registry patterns and support wildcards (\*, ?, +). Windows directory separators (backslash, `"\"`) must be escape with a double-slash `"\\"`.
+Patterns are file patterns or registry patterns. They support the wildcards \*, ?, and +. You must escape Windows directory separators (backslash, `"\"`) with a double-slash `"\\"`.
 
-When a FIM or RIM rule is tripped, you will see a `FIM_HIT` event in the Sensor(s) timeline.
+When a FIM or RIM rule triggers, a `FIM_HIT` event shows in the Sensor(s) timeline.
 
 ![integrity 5](../../../assets/images/integrity-5.png)
 
@@ -43,7 +47,7 @@ When a FIM or RIM rule is tripped, you will see a `FIM_HIT` event in the Sensor(
 
 #### Windows Registry Monitoring
 
-> All registry monitoring patterns MUST begin with **\\REGISTRY**, followed by the hive and then the path or value to monitor.
+> Every registry monitoring pattern MUST begin with **\\REGISTRY**. After that, give the hive and then the path or value to monitor.
 
 | Monitor for changes to system Run and RunOnce | Monitor all users for additions to a user's Run |
 | --- | --- |
@@ -64,19 +68,19 @@ When a FIM or RIM rule is tripped, you will see a `FIM_HIT` event in the Sensor(
 
 ### Linux Support
 
-FIM is supported on Linux systems, however, support may vary based on Linux distribution and software.
+LimaCharlie supports FIM on Linux systems. The level of support can change with the Linux distribution and the software.
 
 #### Linux with eBPF Support
 
-Linux hosts capable of running with [eBPF](https://ebpf.io/) have file notification and FIM capabilities on par with Windows and macOS.
+Linux hosts that can run [eBPF](https://ebpf.io/) have the same file notification capabilities and FIM capabilities as Windows and macOS.
 
 #### Legacy Support
 
-FIM is partially supported on systems without eBPF. Specified file expressions are actively monitored via `inotify` (as opposed to macOS and Windows, which utilize passive kernel monitoring). Due to [inotify](https://man7.org/linux/man-pages/man7/inotify.7.html) limitations, paths with wildcards are less efficient and only support monitoring up to 20 sub-directories covered by the wildcard. In addition to this, the path expressions should specify a final wildcard of *when all files under a directory need to be monitored. Omitting the final* `*` will result in only the top-level directory being monitoring.
+Systems without eBPF have partial FIM support. `inotify` actively monitors the file expressions that you specify. macOS and Windows use passive kernel monitoring instead. Because of the limits of [inotify](https://man7.org/linux/man-pages/man7/inotify.7.html), paths with wildcards are less efficient. They monitor a maximum of 20 sub-directories under the wildcard. Also, a path expression must end with the `*` wildcard when you must monitor all files under a directory. If you omit the final `*`, LimaCharlie monitors only the top-level directory.
 
 ## Actions via REST API
 
-The following REST API actions can be sent to interact with the Integrity extension:
+Send these REST API actions to the Integrity extension:
 
 ### List Rules
 
@@ -118,5 +122,5 @@ The following REST API actions can be sent to interact with the Integrity extens
 
 - [Reference: Endpoint Agent Commands](../../../8-reference/endpoint-commands.md)
 - [Detection and Response Examples](../../../3-detection-response/examples.md)
-- [Compliance Frameworks](../../../9-ai-sessions/compliance/frameworks.md) -- FIM rules ship as part of every framework's recommended baseline (PCI DSS Req 11.5.x, HIPAA §164.312(c)(1), CMMC SI.L2-3.14.1, etc.). The Compliance plugin's `compliance-baseline-deploy` skill deploys these rules into `ext-integrity` automatically.
-- [Compliance Gap Analysis](../../../9-ai-sessions/compliance/gap-analysis.md) -- Surfaces missing FIM rules per framework and flags when `ext-integrity` is not subscribed.
+- [Compliance Frameworks](../../../9-ai-sessions/compliance/frameworks.md) -- FIM rules are part of the recommended baseline of every framework (PCI DSS Req 11.5.x, HIPAA §164.312(c)(1), CMMC SI.L2-3.14.1, etc.). The `compliance-baseline-deploy` skill of the Compliance plugin deploys these rules into `ext-integrity` automatically.
+- [Compliance Gap Analysis](../../../9-ai-sessions/compliance/gap-analysis.md) -- Shows the missing FIM rules for each framework, and flags when `ext-integrity` is not subscribed.

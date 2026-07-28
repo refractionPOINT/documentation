@@ -2,59 +2,59 @@
 
 ## Overview
 
-Our BigQuery output allows you to send Velociraptor hunt results to a BigQuery table allowing SQL-like queries against the hunt data. This is very similar to using [Velociraptor notebooks](https://docs.velociraptor.app/docs/vql/notebooks/), allowing you to perform hunt analysis at scale against massive datasets. For guidance on using LimaCharlie to execute Velociraptor hunts, see [Velociraptor Extension](../extensions/third-party/velociraptor.md).
+The BigQuery output sends Velociraptor hunt results to a BigQuery table, where you can run SQL-like queries against the hunt data. This is similar to [Velociraptor notebooks](https://docs.velociraptor.app/docs/vql/notebooks/), and it lets you analyze hunts against very large datasets. To learn how to run Velociraptor hunts with LimaCharlie, see [Velociraptor Extension](../extensions/third-party/velociraptor.md).
 
-Imagine you wanted to obtain running processes from 10s, 100s, or 1000s of systems using Velociraptor. You could easily issue a `Windows.System.Pslist` hunt across these systems, and let LimaCharlie push Velociraptor to the endpoints and collect the results. The issue is, if you want to run queries against all of the data returned by the hunts, you'll need a database-like tool to do that which is where BigQuery comes in.
+You want to get the running processes from 10s, 100s, or 1000s of systems with Velociraptor. You can issue a `Windows.System.Pslist` hunt across these systems, and LimaCharlie pushes Velociraptor to the endpoints and collects the results. To run queries against all the data that the hunts return, you need a database tool. BigQuery is that tool.
 
-BigQuery dataset containing Velociraptor hunt results:
+A BigQuery dataset that contains Velociraptor hunt results:
 ![image.png](../../assets/images/image(186).png)
 
 ### Prerequisites
 
-1. **A Google Cloud project with billing enabled.** LimaCharlie writes to BigQuery using streaming inserts, which are not available in the free tier (BigQuery sandbox). If billing is not enabled on the project, the output will fail with an error like:
+1. **A Google Cloud project with billing enabled.** LimaCharlie writes to BigQuery with streaming inserts, which are not available in the free tier (BigQuery sandbox). If billing is not enabled on the project, the output fails with an error like this:
 
    ```text
    googleapi: Error 403: Access Denied: BigQuery BigQuery: Streaming insert is not allowed in the free tier, accessDenied
    ```
 
-2. **The ability to create service account keys.** Some organizations enforce the `iam.disableServiceAccountKeyCreation` organization policy, which blocks the creation of service account JSON keys. If key creation fails with a policy error, an administrator will need to grant an exception for the project (Organization Policies > "Disable service account key creation"), or you can use a project outside of that policy.
+2. **The ability to create service account keys.** Some organizations enforce the `iam.disableServiceAccountKeyCreation` organization policy, which blocks the creation of JSON keys for service accounts. If the key creation fails with a policy error, an administrator must grant an exception for the project (Organization Policies > "Disable service account key creation"). You can also use a project that this policy does not control.
 
 ### Steps to Accomplish
 
-1. You will need to create a service account within your Google Cloud project
+1. Create a service account in your Google Cloud project
 
-   1. Navigate to your project
-   2. Navigate to IAM
-   3. Navigate to Service Accounts > Create Service Account
-   4. Click on newly created Service Account and create a new key
+   1. Go to your project
+   2. Go to IAM
+   3. Go to Service Accounts > Create Service Account
+   4. Click the new Service Account and create a new key
 
       1. ![image.png](../../assets/images/image(188).png)
-      2. This will provide you with the JSON format secret key you will later setup in your LimaCharlie output
-   5. In BigQuery, create a Dataset, Table, & Schema similar to the screenshot below
+      2. This gives you the secret key in JSON format. You configure this key later in your LimaCharlie output
+   5. In BigQuery, create a Dataset, Table, & Schema like the screenshot below
 
       1. ![image.png](../../assets/images/image(189).png)
-   6. Grant the service account the **BigQuery Data Editor** role, either on the project or scoped to the dataset you just created
+   6. Give the service account the **BigQuery Data Editor** role, on the project or on the new dataset
 
-      1. The output needs the `bigquery.tables.get` permission (to read the table schema) and `bigquery.tables.updateData` (to stream rows in). Roles like *BigQuery Data Viewer* or *BigQuery Job User* are **not** sufficient — without *BigQuery Data Editor* the output will fail with an error like `Permission bigquery.tables.get denied on table <project>:<dataset>.<table> (or it may not exist)`
-2. Now we're ready to create our LimaCharlie tailored output
+      1. The output needs the `bigquery.tables.get` permission to read the table schema, and `bigquery.tables.updateData` to stream rows in. Roles such as *BigQuery Data Viewer* or *BigQuery Job User* are **not** enough. Without *BigQuery Data Editor*, the output fails with an error like `Permission bigquery.tables.get denied on table <project>:<dataset>.<table> (or it may not exist)`
+2. Create the LimaCharlie tailored output
 
-   1. In the side navigation menu, click "Outputs" then add a new output
+   1. In the side navigation menu, click "Outputs" and add a new output
 
       1. **Output stream**: Tailored
       2. **Destination**: Google Cloud BigQuery
 
          1. **Name**: `bigquery-tailored`
 
-            1. You can change this, but it affects a subsequent step so take note of the output name
-         2. **Dataset**: *whatever you named BQ your dataset above*
-         3. **Table**: *whatever you named your BQ table above*
+            1. You can change this name, but it affects a later step, so note the output name
+         2. **Dataset**: *the name that you gave your BQ dataset above*
+         3. **Table**: *the name that you gave your BQ table above*
 
-            1. The output streams rows directly into this table, so the table's columns (defined when you created it above, e.g. `sid:STRING, job_id:STRING, artifact:JSON`) must match the fields produced by the Custom Transform below — rows with fields that don't exist as columns are rejected by BigQuery
-         4. **Project**: *your GCP project **ID*** (e.g. `my-project-123456`, not the display name — you can find it on the GCP console dashboard or in the resource picker)
-         5. **Secret Key**: *provide the JSON secret key for your GCP service account*
+            1. The output streams rows directly into this table. The columns of the table that you defined above, for example `sid:STRING, job_id:STRING, artifact:JSON`, must match the fields from the Custom Transform below. BigQuery rejects rows with fields that do not exist as columns
+         4. **Project**: *your GCP project **ID*** (for example `my-project-123456`, not the display name). You can find the ID on the GCP console dashboard or in the resource picker
+         5. **Secret Key**: *give the JSON secret key for your GCP service account*
          6. **Advanced Options**
 
-            1. **Custom Transform**: paste in this JSON
+            1. **Custom Transform**: paste this JSON
 
                ```json
                {
@@ -66,7 +66,7 @@ BigQuery dataset containing Velociraptor hunt results:
 
             2. **Specific Event Types**: `velociraptor_collection`
       3. ![velociraptor](../../assets/images/velociraptor.png)
-3. We now need a rule that will watch for Velociraptor collections and send them to the new tailored output
+3. Create a rule that watches for Velociraptor collections and sends them to the new tailored output
 
    1. Create a new D&R rule
 
@@ -87,25 +87,25 @@ BigQuery dataset containing Velociraptor hunt results:
            name: Velociraptor hunt sent to BigQuery
          ```
 
-4. You are now ready to send Velociraptor hunts to BigQuery!
+4. You can now send Velociraptor hunts to BigQuery
 
 ## Including the Hostname
 
-The `velociraptor_collection` event identifies the endpoint by its sensor ID (`sid`) only — it does not contain the hostname, and because the event is delivered through the extension's webhook adapter, the output's `routing` metadata identifies the adapter rather than the endpoint. To get the hostname alongside your hunt results, include the built-in `Generic.Client.Info` artifact in your collections; its `BasicInformation` source reports the endpoint's `Hostname` and `Fqdn` as part of the collection results.
+The `velociraptor_collection` event identifies the endpoint only by its sensor ID (`sid`). The event does not contain the hostname. The extension delivers the event through its webhook adapter, so the `routing` metadata of the output identifies the adapter and not the endpoint. To get the hostname with your hunt results, include the built-in `Generic.Client.Info` artifact in your collections. Its `BasicInformation` source reports the `Hostname` and the `Fqdn` of the endpoint in the collection results.
 
-For example, when starting a collection, use an artifact list like:
+For example, when you start a collection, use an artifact list like this:
 
 ```json
 ["Generic.Client.Info", "Windows.System.Pslist"]
 ```
 
-You can then surface the hostname as its own BigQuery column. First add the column to your table (fields sent by the output must exist as columns, or the rows will be rejected):
+You can then show the hostname in its own BigQuery column. First, add the column to your table (each field that the output sends must exist as a column, or BigQuery rejects the rows):
 
 ```sql
 ALTER TABLE `velociraptor.hunts` ADD COLUMN hostname STRING
 ```
 
-Then add a `hostname` field to the output's Custom Transform, extracted from the `Generic.Client.Info` results:
+Then add a `hostname` field to the Custom Transform of the output. This field comes from the `Generic.Client.Info` results:
 
 ```json
 {
@@ -116,7 +116,7 @@ Then add a `hostname` field to the output's Custom Transform, extracted from the
 }
 ```
 
-Alternatively, leave the schema and transform as-is and extract the hostname at query time from the `artifact` JSON column:
+As an alternative, keep the schema and the transform, and extract the hostname from the `artifact` JSON column at query time:
 
 ```sql
 SELECT
@@ -130,11 +130,11 @@ FROM
 
 ### Query Examples
 
-Once the data arrives in BigQuery, it will be in three simple columns: `sid`, `job_id`, and `artifact`. The `artifact` column contains the raw JSON of the hunt results from each sensor that returned results.
+After the data arrives in BigQuery, it is in three columns: `sid`, `job_id`, and `artifact`. The `artifact` column contains the raw JSON of the hunt results from each sensor that returned results.
 
 ![image.png](../../assets/images/image(191).png)
 
-Let's say we wanted to split out all results of a `Windows.System.Pslist` hunt so that each process, from each system, is returned in its own row. Here is an example notebook to accomplish this:
+To split all results of a `Windows.System.Pslist` hunt so that each process from each system is in its own row, use this example notebook:
 
 ```sql
 SELECT
@@ -153,12 +153,12 @@ FROM
 LIMIT 1000
 ```
 
-Be sure to swap out `lc-demo-infra.velociraptor.hunts` for your own `project.dataset.table` names.
+Replace `lc-demo-infra.velociraptor.hunts` with your own `project.dataset.table` names.
 
-This results in the following view of our data
+This query gives this view of the data
 ![image.png](../../assets/images/image(200).png)
 
-Suppose we wanted to perform some stacking analysis to identify the rarest combinations of `Exe` and `CommandLine`; the following query could help:
+To do a stacking analysis that finds the rarest combinations of `Exe` and `CommandLine`, use this query:
 
 ```sql
 SELECT
@@ -175,10 +175,10 @@ ORDER BY
   Count ASC
 ```
 
-This results in the following view of our data
+This query gives this view of the data
 ![image.png](../../assets/images/image(201).png)
 
-Now let's say you wanted to look for only processes that are `Authenticode` = `untrusted`, you would use a query such as this:
+To find only the processes that are `Authenticode` = `untrusted`, use a query such as this:
 
 ```sql
 SELECT
@@ -201,11 +201,11 @@ LIMIT 1000
 
 ### WHERE Filters for Specific Conditions
 
-Here are some brief examples of `WHERE` statements to perform specific filtering.
+These are short examples of `WHERE` statements that do specific filtering.
 
 #### String presence
 
-This example checks for the presence of a string `mimikatz` appearing anywhere within `CommandLine`
+This example checks for the string `mimikatz` at any position in `CommandLine`
 
 ```text
 WHERE
@@ -214,7 +214,7 @@ WHERE
 
 #### Compare integers
 
-This example checks for the presence of an integer `0` in a numeric field `GroupID`
+This example checks for the integer `0` in the numeric field `GroupID`
 
 ```text
 WHERE
@@ -223,7 +223,7 @@ WHERE
 
 ### Parsing Nested JSON Objects
 
-In the `Windows.System.Pslist` examples above, there are a few columns which contain nested JSON such as `Authenticode` and `Hash`. To expand these objects in their entirety in the corresponding column/row, we'd write a query like this:
+In the `Windows.System.Pslist` examples above, some columns contain nested JSON, such as `Authenticode` and `Hash`. To expand these objects fully in the related column and row, write a query like this:
 
 ```sql
 SELECT
@@ -237,5 +237,5 @@ FROM
 LIMIT 1000
 ```
 
-See the output of this query below:
+The output of this query is below:
 ![image.png](../../assets/images/image(202).png)

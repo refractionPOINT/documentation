@@ -1,48 +1,48 @@
 # Installation Keys
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+Installation keys are Base64-encoded strings that you give to Sensors and Adapters to associate them with the correct Organization. You create installation keys for each organization. The keys let you label and control your deployment population.
 
 There are four components of an Installation Key:
 
-- Organization ID **(**OID**)**: The Organization ID that this key should enroll into.
-- **Installer ID (IID)**: Installer ID that is generated and associated with every Installation Key.
-- **Tags**: A list of Tags automatically applied to sensors enrolling with the key.
-- **Description**: The description used to help you differentiate uses of various keys.
+- **Organization ID (OID)**: The Organization ID that this key enrolls into.
+- **Installer ID (IID)**: The Installer ID that the cloud generates and associates with each Installation Key.
+- **Tags**: A list of Tags that the cloud applies automatically to sensors that enroll with the key.
+- **Description**: The description that helps you identify the use of each key.
 
 ## Management
 
-Installation keys can be managed on the **Sensors > Installation Keys** page in the web app.
+You manage installation keys on the **Sensors > Installation Keys** page in the web app.
 
-On this page, under the `Connectivity` section, you will see the various URLs associated with Sensor and Adapter connectivity.
+On this page, the `Connectivity` section shows the URLs for Sensor and Adapter connectivity.
 
 ### Pinned Certificates
 
-Typically, Sensors require access over port 443 and use pinned SSL certificates. This is the default deployment option, and does not support traffic interception.
+Typically, Sensors need access over port 443 and use pinned SSL certificates. This is the default deployment option. It does not support traffic interception.
 
-If you need to install sensors without pinned certificates, an installation key must be created with a specific flag. This must be done via the REST API, by setting the `use_public_root_ca` flag to `true`.
+If you must install sensors without pinned certificates, create an installation key with a specific flag. Use the REST API and set the `use_public_root_ca` flag to `true`.
 
 See the [Python SDK Manager.replicantRequest source](https://github.com/refractionPOINT/python-limacharlie/blob/master/limacharlie/Manager.py#L1386) for more detail.
 
 ## Use of Tags
 
-Generally speaking, we use at least one Installation Key per organization. Then we use different keys to help differentiate parts of our infrastructure. For example, you may create a key with Tag "server" that you will use to install on your servers, a key with "vip" for executives in your organization, or a key with "sales" for the sales department, etc. This way you can use the tags on various sensors to figure out different detection and response rules for different types of hosts on your infrastructure.
+Use at least one Installation Key for each organization. Then use different keys to identify the parts of your infrastructure. For example, create a key with the Tag "server" for your servers, a key with "vip" for the executives in your organization, or a key with "sales" for the sales department. You can then use the tags on the sensors to apply different detection and response rules to different types of hosts.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives you full control of security operations. This structure supports multi-tenant setups for managed security providers, and for enterprises with many departments or clients.
 
-Installation keys are Base64-encoded strings provided to Sensors and Adapters in order to associate them with the correct Organization. Installation keys are created per-organization and offer a way to label and control your deployment population.
+Installation keys are Base64-encoded strings that you give to Sensors and Adapters to associate them with the correct Organization. You create installation keys for each organization. The keys let you label and control your deployment population.
 
-In LimaCharlie, an Organization ID is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+In LimaCharlie, an Organization ID is a unique identifier for each tenant or customer account. It separates the different organizations in LimaCharlie, so LimaCharlie can manage resources, permissions, and data segregation securely. The Organization ID keeps all telemetry, configurations, and operations isolated and specific to each organization. This gives multi-tenant support and a clear separation between customer environments.
 
-In LimaCharlie, an Organization ID (OID) is a unique identifier assigned to each tenant or customer account. It distinguishes different organizations within the platform, enabling LimaCharlie to manage resources, permissions, and data segregation securely. The Organization ID ensures that all telemetry, configurations, and operations are kept isolated and specific to each organization, allowing for multi-tenant support and clear separation between different customer environments.
+In LimaCharlie, an Organization ID (OID) is a unique identifier for each tenant or customer account. It separates the different organizations in LimaCharlie, so LimaCharlie can manage resources, permissions, and data segregation securely. The Organization ID keeps all telemetry, configurations, and operations isolated and specific to each organization. This gives multi-tenant support and a clear separation between customer environments.
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Like agents, Sensors send telemetry to the LimaCharlie cloud as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless solution that connects the endpoints of an organization to the cloud securely.
 
-Adapters serve as flexible data ingestion mechanisms for both on-premise and cloud environments.
+Adapters ingest data from on-premise environments and from cloud environments.
 
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All programmatic examples require an API key with `ikey.list`, `ikey.set`, and `ikey.del` permissions. See [API Keys](../7-administration/access/api-keys.md) for setup instructions.
+    All programmatic examples need an API key with the `ikey.list`, `ikey.set`, and `ikey.del` permissions. For setup instructions, see [API Keys](../7-administration/access/api-keys.md).
 
 ### List Installation Keys
 

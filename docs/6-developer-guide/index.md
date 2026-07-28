@@ -17,7 +17,7 @@ Programmatic access to LimaCharlie:
 
 ## AI Assistants
 
-Connect AI assistants to LimaCharlie via the Claude Code Plugin or MCP:
+Connect AI assistants to LimaCharlie with the Claude Code Plugin or MCP:
 
 - [Connecting AI Assistants](mcp-server.md)
 

@@ -2,14 +2,14 @@
 
 ## Overview
 
-This Adapter allows you to connect to the local Windows Event Logs API on Windows. This means this Adapter is only available from Windows builds and only works locally (will not connect to remote Windows instances).
+This Adapter connects to the local Windows Event Logs API on Windows. The Adapter is available only in Windows builds, and it works only locally. It does not connect to remote Windows instances.
 
 ## Configurations
 
 Adapter Type: `wel`
 
 - `client_options`: see [common adapter configuration](../usage.md).
-- `evt_sources`: a comma separated list of elements in the format `SOURCE:FILTER`, where `SOURCE` is an Event Source name like `Application`, `System` or `Security` and `FILTER` is an `XPath` filter value as described in the documentation linked below.
+- `evt_sources`: a comma separated list of elements in the format `SOURCE:FILTER`. `SOURCE` is an Event Source name, such as `Application`, `System`, or `Security`. `FILTER` is an `XPath` filter value, as described in the documentation linked below.
 - `write_timeout_sec`: number of seconds before a write to LimaCharlie times out (default: 600).
 
 ### Configuration File Example
@@ -64,4 +64,4 @@ Specific Provider:
 
 ## API Doc
 
-See the [official documentation](https://learn.microsoft.com/en-us/windows/win32/wes/consuming-events).
+See the [Microsoft documentation for consuming events](https://learn.microsoft.com/en-us/windows/win32/wes/consuming-events).

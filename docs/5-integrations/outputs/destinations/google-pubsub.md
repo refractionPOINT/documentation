@@ -2,9 +2,9 @@
 
 Output events and detections to a Pubsub topic.
 
-- `secret_key`: the secret json key identifying a service account.
-- `project`: the GCP Project name where the Topic lives.
-- `topic`: use this specific value as a topic.
+- `secret_key`: the secret json key that identifies a service account.
+- `project`: the name of the GCP Project that contains the Topic.
+- `topic`: the specific value to use as a topic.
 
 Example:
 

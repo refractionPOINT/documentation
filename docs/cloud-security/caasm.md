@@ -1,24 +1,24 @@
 # CAASM — Cyber Asset Attack Surface Management
 
 !!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
+    Cloud Security is in **Private Beta**. Features, APIs, and
+    configuration formats on this page can change before general
+    availability. Contact LimaCharlie to request access.
 
 Your tools already know what you own: the EDR sees devices, the identity
-provider sees users and their devices, MDM and scanners see more. CAASM
-merges those third-party views into one entity-resolved asset inventory and
-evaluates your *expected-coverage* policy over it — surfacing the assets a
-required tool does **not** see.
+provider sees users and their devices, and MDM and scanners see more. CAASM
+merges those third-party views into one entity-resolved asset inventory. It
+then evaluates your *expected-coverage* policy over that inventory and shows
+the assets that a required tool does **not** see.
 
 ## The merged asset inventory
 
-Records from connected sources are normalized and entity-resolved
-(**merge-on-read**) into one canonical asset per real device. Resolution is a
-union-find that joins records sharing a strong identifier, in priority order —
-serial, then MAC address, then cloud id, then hostname, then email — so the
-same laptop seen by the EDR, the IdP, and MDM collapses to a single row with
-per-source provenance retained:
+CAASM normalizes and entity-resolves the records from connected sources
+(**merge-on-read**) into one canonical asset for each real device.
+Resolution is a union-find that joins records with a shared strong
+identifier, in priority order — serial, then MAC address, then cloud id,
+then hostname, then email. The same laptop seen by the EDR, the IdP, and MDM
+becomes a single row that keeps the provenance of each source:
 
 ```bash
 limacharlie cloudsec caasm assets -q laptop --limit 50
@@ -28,16 +28,16 @@ Supported sources: `sentinelone`, `crowdstrike`, `defender`, `okta`,
 `entraid`, `ms_graph`, `wiz`, plus two **native** sources — `limacharlie`
 (your own LimaCharlie sensors, capability `edr`) and `google_workspace`
 (managed devices from the Workspace directory, capability `mdm`). The native
-sources feed automatically once the corresponding provider or sensor telemetry
-is connected — no ingest needed. Other telemetry the organization already
-pulls through USP adapters also feeds the inventory automatically; anything
-else can be pushed through the ingest endpoint below.
+sources feed automatically after you connect the corresponding provider or
+sensor telemetry — no ingest is needed. Other telemetry that the
+organization already pulls through USP adapters also feeds the inventory
+automatically. You can push anything else through the ingest endpoint below.
 
 ### Managed devices and device posture
 
-Because assets are resolved per real device, CAASM can reason about **managed
-device posture**. When a source positively asserts a non-compliant state on an
-asset, CAASM raises a `device_posture` finding:
+Because CAASM resolves assets for each real device, it can reason about
+**managed device posture**. When a source positively asserts a non-compliant
+state on an asset, CAASM raises a `device_posture` finding:
 
 | Asserted state | Severity |
 |---|---|
@@ -47,11 +47,12 @@ asset, CAASM raises a `device_posture` finding:
 | `developer_mode` on | Low |
 | `auto_update` off / OS past end-of-life | Medium |
 
-Posture checks fire only on a positive assertion — an asset that simply never
+Posture checks fire only on a positive assertion. An asset that never
 reported a field is not flagged. A device owned by a privileged identity
-raises the finding rather than swallowing it, and `owns-device` edges
+raises the finding instead of hiding it. `owns-device` edges
 (identity → device) join owners to their devices in the
-[security graph](graph.md), so "who owns this at-risk laptop" is one hop away.
+[security graph](graph.md), so the owner of an at-risk laptop is one hop
+away.
 
 ## Declare expected coverage
 
@@ -82,18 +83,19 @@ The policy shape is `{expect: [ ... ]}`, and each expectation rule takes:
 
 - `label` **(required)** — names the expectation; it anchors the resulting
   finding.
-- `kinds` — asset kinds the rule applies to; defaults to `["device"]`.
+- `kinds` — the asset kinds that the rule applies to; defaults to
+  `["device"]`.
 - `capability` **or** `sources` **(one required)** — either a required
   capability (`edr`, `idp`, `mdm`, `vuln_scanner`, or `cloud_scanner`) or an
   explicit list of source names that must see the asset.
 - `severity` — severity of the gap finding; defaults to `MEDIUM`.
-- `max_age_days` / `source_max_age_days` — staleness gates: an asset (or a
-  source's view of it) older than the window is treated as no longer covered,
-  so a stale sensor does not silently count as coverage.
+- `max_age_days` / `source_max_age_days` — staleness gates: an asset (or the
+  view of it from one source) older than the window is no longer covered, so
+  a stale sensor does not count as coverage.
 
-With no policy set, there are **no gap findings** — coverage expectations are
-entirely user-declared. The policy is validated on write; an invalid policy is
-rejected loudly rather than silently ignored.
+If you set no policy, there are **no gap findings** — you declare all
+coverage expectations. The cloud validates the policy on write. It rejects
+an invalid policy instead of ignoring it.
 
 !!! note "Distinct from the `coverage` cloudsec_policy"
     This CAASM expected-coverage policy evaluates **third-party assets** (the
@@ -105,21 +107,22 @@ rejected loudly rather than silently ignored.
 
 ## Coverage gaps
 
-Assets observed by at least one source but missing a required capability
-become `coverage_gap` findings — same shape and triage verbs as every other
-finding, pre-filtered here:
+Assets that at least one source sees, but that miss a required capability,
+become `coverage_gap` findings — the same shape and triage verbs as every
+other finding, pre-filtered here:
 
 ```bash
 limacharlie cloudsec caasm coverage --status open --severity HIGH
 ```
 
 "Seen by Okta, no EDR" is the canonical example: the asset exists, a human
-uses it, and your endpoint tooling is blind to it.
+uses it, and your endpoint tools do not see it.
 
 ## Pushing records in
 
-For sources without a live adapter, push raw vendor-shaped records directly.
-Ingestion is idempotent — re-sending identical records is a no-op:
+If a source has no live adapter, push raw vendor-shaped records directly.
+Ingestion is idempotent — if you send identical records again, nothing
+changes:
 
 ```bash
 # A batch from a file (chunk large imports; the request body caps at 1 MiB).
@@ -130,9 +133,9 @@ limacharlie cloudsec caasm ingest --source crowdstrike --record-json '{...}'
 ```
 
 The response carries the reconcile counters — `received`, `normalized`,
-`skipped`, `assets`, `created`, `updated`, `deleted` — so a feeder can
-observe exactly what its batch changed.
+`skipped`, `assets`, `created`, `updated`, `deleted` — so a feeder can see
+what its batch changed.
 
 !!! info "Permissions"
-    Reading assets and coverage requires `cloudsec.get`; setting the policy
-    and ingesting records require `cloudsec.set`.
+    To read assets and coverage, you need `cloudsec.get`. To set the policy
+    and to ingest records, you need `cloudsec.set`.

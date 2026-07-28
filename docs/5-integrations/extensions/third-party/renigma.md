@@ -2,17 +2,17 @@
 
 ## About REnigma
 
-[REnigma](https://dtrsec.com/) is an advanced malware analysis platform leveraging its unique Record and Replay technology to deliver unparalleled precision and depth. By recording every state change in a virtual machine during live execution, REnigma enables analysts to replay and analyze malware behaviors offline, down to the instruction level. This approach eliminates the risk of evasion and ensures a comprehensive capture of malicious activity. For SOC teams triaging alerts or incident responders conducting deep dives, REnigma offers rapid detonation, precision analysis, and effortless artifact extraction. Its API integrations further enhance workflows, enabling seamless automation and streamlined investigation processes.
+[REnigma](https://dtrsec.com/) is a malware analysis platform that uses Record and Replay technology. REnigma records each state change in a virtual machine during live execution. Analysts can then replay and analyze the behavior of the malware offline, down to the instruction level. This method removes the risk of evasion and captures all malicious activity. For SOC teams that triage alerts, and for incident responders, REnigma gives fast detonation, precise analysis, and extraction of artifacts. Its API integrations also automate investigation workflows.
 
 ## About the Extension
 
-The LimaCharlie Extension for REnigma seamlessly integrates with the REnigma API, enabling automated analysis of suspicious URLs or files collected using the LimaCharlie BinLib or Artifact Extensions. When a file or URL triggers an alert in LimaCharlie, preconfigured Detection & Response () rules can automatically queue the item for further investigation in REnigma.
+The LimaCharlie Extension for REnigma connects to the REnigma API. It analyzes suspicious URLs or files that the LimaCharlie BinLib or Artifact Extensions collect. When a file or URL triggers an alert in LimaCharlie, preconfigured Detection & Response () rules can queue the item for investigation in REnigma.
 
-Through the integration, these D&R rules send the artifact or URL directly to REnigma, where it is recorded and analyzed in a controlled virtual machine environment. Analysts can then access detailed execution data, artifacts, and network patterns captured by REnigma's Record and Replay technology. This workflow not only streamlines the triage process but also provides deep insights into potential threats without requiring manual intervention at every step.
+These D&R rules send the artifact or URL directly to REnigma. REnigma records and analyzes the item in a controlled virtual machine. Analysts can then see the execution data, the artifacts, and the network patterns that the Record and Replay technology captured. This workflow shortens the triage process. It also gives deep information about possible threats without manual work at each step.
 
 ## Configuration
 
-To use the REnigma extension, you will need your REnigma URL and API key. [Contact the REnigma team for access](https://dtrsec.com/contact.html).
+To use the REnigma extension, you need your REnigma URL and API key. [Contact the REnigma team for access](https://dtrsec.com/contact.html).
 
 ![Configuration To use the REnigma extension, you will need your REnigma URL and API key](../../../assets/images/image(284).png)
 
@@ -20,11 +20,11 @@ To use the REnigma extension, you will need your REnigma URL and API key. [Conta
 
 You can submit a file or URL to the REnigma extension for processing in one of 2 ways:
 
-1. Via the LimaCharlie web UI:
+1. With the LimaCharlie web app:
 
-   1. Submit the ID of the artifact you wish to process with REnigma, and it will get uploaded and processed via a series of D&R rules. You will see the output in the `ext-renigma` sensor timeline.![You can submit a file or URL to the REnigma extension for processing in one of 2 ways: 1](../../../assets/images/image(297).png)
-   2. Submit the URL you wish to analyze with REnigma, and it will get sent and processed via a series of D&R rules. You will see the output in the `ext-renigma` sensor timeline.![You can submit a file or URL to the REnigma extension for processing in one of 2 ways: 1](../../../assets/images/image(296).png)
-2. Via D&R rules:
+   1. Submit the ID of the artifact that you want REnigma to process. A series of D&R rules uploads and processes the artifact. The output shows in the `ext-renigma` sensor timeline.![You can submit a file or URL to the REnigma extension for processing in one of 2 ways: 1](../../../assets/images/image(297).png)
+   2. Submit the URL that you want REnigma to analyze. A series of D&R rules sends and processes the URL. The output shows in the `ext-renigma` sensor timeline.![You can submit a file or URL to the REnigma extension for processing in one of 2 ways: 1](../../../assets/images/image(296).png)
+2. With D&R rules:
 
    1. Detect:
 
@@ -47,7 +47,7 @@ You can submit a file or URL to the REnigma extension for processing in one of 2
             disable_internet: false
       ```
 
-LimaCharlie Extensions allow users to expand and customize their security environments by integrating third-party tools, automating workflows, and adding new capabilities. Organizations subscribe to Extensions, which are granted specific permissions to interact with their infrastructure. Extensions can be private or public, enabling tailored use or broader community sharing. This framework supports scalability, flexibility, and secure, repeatable deployments.
+LimaCharlie Extensions let users expand and customize their security environments. Extensions integrate third-party tools, automate workflows, and add new capabilities. Organizations subscribe to Extensions and give them specific permissions to interact with their infrastructure. An Extension can be private or public, for one organization or for the community. This framework supports scale, flexibility, and secure, repeatable deployments.
 
 ## Related Articles
 

@@ -1,60 +1,60 @@
 # Sensor Tags
 
-Tags in LimaCharlie are simple strings that can be associated with any number of sensors. A Sensor can also have an arbitrary number of tags associated with it.
+Tags in LimaCharlie are strings that you can associate with any number of sensors. A Sensor can also have any number of tags.
 
-Tags appear in every event coming from a sensor under the `routing` component of the event. This greatly simplifies the writing of detection and response rules based on the presence of specific tags, at the cost of including more non-unique data per event.
-Tags can be used for a variety of purposes, including:
+Tags appear in each event that comes from a sensor, in the `routing` component of the event. This makes it much easier to write detection and response rules that test for specific tags. The cost is more non-unique data in each event.
+You can use tags for many purposes:
 
 - to classify endpoints
 - automate detection and response
-- create powerful workflows
+- create workflows
 - trigger automations
 
 ## Use Cases for Sensor Tags
 
 ### Classification
 
-You can use tags to classify an endpoint in a number of different ways based on what is important to you.  Some examples of classifications are shown below for inspiration.
+You can classify an endpoint with tags in many ways, based on what is important to you. The examples below show some classifications.
 
 #### Departments
 
-Create tags to classify endpoints based on what business department they belong to.  e.g. sales, finance, operations, development, support, legal, executives.
+Create tags that classify endpoints by their business department. For example: sales, finance, operations, development, support, legal, executives.
 
 #### Usage Type
 
-You may wish to tag endpoints based on their type of usage.  e.g. workstation, server, production, staging.
+You can also tag endpoints by their type of usage. For example: workstation, server, production, staging.
 
-By having endpoints tagged in this manner you can easily identify endpoints and decide what actions you may wish to take while considering the tag.  For example, if you see an endpoint is tagged with `workstation` and `executives`, and you happen to see suspicious activity on the endpoint, it may be worthwhile for you to prioritize response.
+Tags of this type help you identify endpoints and decide which actions to take. For example, an endpoint has the tags `workstation` and `executives`. If you see suspicious activity on that endpoint, give the response a higher priority.
 
 ### Automating detection and response
 
 You can use tags to automate detection and response.
 
-For example, you can create a detection & response rule so that when a specific user logs in on a device, the box is tagged as `VIP-sales` and the sensor starts collecting an extended list of events from that box.
+For example, create a detection & response rule for the login of a specific user on a device. The rule tags the device as `VIP-sales`. The sensor then collects an extended list of events from that device.
 
 ### Creating workflows
 
-You can use tags to create workflows and automations. For instance, you can configure an output (forwarder) to send all detections containing `VIP-sales` tag to Slack so that you can review them asap, while detections tagged as `sales` can be sent to an email address.
+You can use tags to create workflows and automations. For example, configure an output (forwarder) that sends all detections with the `VIP-sales` tag to Slack for immediate review. Send the detections with the `sales` tag to an email address.
 
 ### Trigger Automations
 
-Create a Yara scanning rule so that endpoints tagged as 'sales' are continuously scanned against the specific sets of Yara signatures.
+Create a Yara scanning rule that scans the endpoints with the 'sales' tag continuously against specific sets of Yara signatures.
 
 ## Adding Tags
 
-Tags can be added to a sensor a few different ways:
+You can add tags to a sensor in these ways:
 
-1. Enrollment: the installation keys can optionally have a list of Tags that will get applied to sensors that use them.
-2. Manually: using the API as described below, either manually by a human or through some other integration.
-3. Detection & Response: automated detection and response rules can programatically add a tag (and check for tags).
+1. Enrollment: an installation key can have an optional list of Tags. The cloud applies these tags to the sensors that use the key.
+2. Manually: use the API as described below, either by a person or through another integration.
+3. Detection & Response: automated detection and response rules can add a tag programmatically, and can check for tags.
 
 ### Manual API
 
-Issue a `POST` to `/{sid}/tags` REST endpoint
+Issue a `POST` to the `/{sid}/tags` REST endpoint
 
 ### Detection & Response
 
-In detection and response rules. To achieve this, in the response part of the detection & response rule, specify the add tag action. For example, to tag a device as DESKTOP, you would say:
+In detection and response rules. In the response part of the detection & response rule, specify the add tag action. For example, to tag a device as DESKTOP, write:
 
 ```yaml
 - action: add tag
@@ -65,7 +65,7 @@ tag: DESKTOP
 
 ### Manual API
 
-Issue a `DELETE` to `/{sid}/tags` REST endpoint
+Issue a `DELETE` to the `/{sid}/tags` REST endpoint
 
 ### Detection & Response
 
@@ -73,13 +73,13 @@ In detection and response rules
 
 ### Manual in the web app
 
-In the web app, click on the sensor in question to expand it. You will see the list of tags you can add/edit/remove.
+In the web app, click the sensor to expand it. The web app shows the list of tags that you can add, edit, or remove.
 
 ## Checking Tags
 
 ### Manual API
 
-Issue a `GET` to `/{sid}/tags` REST endpoint
+Issue a `GET` to the `/{sid}/tags` REST endpoint
 
 ### Detection & Response
 
@@ -87,44 +87,44 @@ In detection and response rules
 
 ## System Tags
 
-We provide system level functionality with a few system tags.  Those tags are listed below for reference:
+LimaCharlie gives system level functionality with some system tags. The list below is for reference:
 
 ### lc:latest
 
-When you tag a sensor with `lc:latest`, the sensor version currently assigned to the Organization will be ignored for that specific sensor, and the latest version of the sensor will be used instead. This means you can tag a representative set of computers in the Organization with the `lc:latest` tag in order to test-deploy the latest version and confirm no negative effects.
+When you tag a sensor with `lc:latest`, that sensor ignores the sensor version that is assigned to the Organization. It uses the latest version of the sensor instead. Tag a representative set of computers in the Organization with the `lc:latest` tag. You can then test-deploy the latest version and confirm that it has no negative effects.
 
 ### lc:stable
 
-When you tag a sensor with `lc:stable`, the sensor version currently assigned to the Organization will be ignored for that specific sensor, and the *stable* version of the sensor will be used instead. This means you can upgrade an organization as a whole, but leave a few specific sensors behind by assigning the lc:stable tag to them.
+When you tag a sensor with `lc:stable`, that sensor ignores the sensor version that is assigned to the Organization. It uses the *stable* version of the sensor instead. You can upgrade an organization as a whole, but keep a few specific sensors behind with the lc:stable tag.
 
 ### lc:experimental
 
-When you tag a sensor with `lc:experimental`, the sensor version currently assigned to the Organization will be ignored for that specific sensor. An experimental version of the sensor will be used instead. This tag is typically used when working with the LimaCharlie team to troubleshoot sensor-specific issues.
+When you tag a sensor with `lc:experimental`, that sensor ignores the sensor version that is assigned to the Organization. It uses an experimental version of the sensor instead. Use this tag when you work with the LimaCharlie team to troubleshoot a problem in a sensor.
 
 ### lc:no_kernel
 
-When you tag a sensor with `lc:no_kernel`, the kernel component will not be loaded on the host.
+When you tag a sensor with `lc:no_kernel`, the sensor does not load the kernel component on the host.
 
 ### lc:debug
 
-When you tag a sensor with `lc:debug`, the debug version of the sensor currently assigned to the Organization will be used.
+When you tag a sensor with `lc:debug`, that sensor uses the debug version of the sensor version that is assigned to the Organization.
 
 ### lc:limit-update
 
-When you tag a sensor with lc:limit-update, the sensor will not update the version it's running at run-time. The version will only be loaded when the sensor starts from scratch like after a reboot.
+When you tag a sensor with lc:limit-update, the sensor does not update its version at run-time. The sensor loads the version only when it starts from scratch, for example after a reboot.
 
 ### lc:sleeper
 
-When you tag a sensor with *lc:sleeper*, the sensor will keep its connection to the LimaCharlie Cloud, but will disable all other functionality to avoid any impact on the system. To wake up sensors from sleeper mode, set your organization's Quota to accommodate the number of sensors you want to activate, then remove the `lc:sleeper` tag from those sensors. For more details, see [Sleeper Deployments](endpoint-agent/sleeper.md).
+When you tag a sensor with *lc:sleeper*, the sensor keeps its connection to the LimaCharlie Cloud. It disables all other functionality so that it has no impact on the system. To wake sensors from sleeper mode, set the Quota of your organization for the number of sensors that you want to activate. Then remove the `lc:sleeper` tag from those sensors. For more details, see [Sleeper Deployments](endpoint-agent/sleeper.md).
 
-Similar to agents, Sensors send telemetry to the LimaCharlie platform in the form of EDR telemetry or forwarded logs. Sensors are offered as a scalable, serverless solution for securely connecting endpoints of an organization to the cloud.
+Similar to agents, Sensors send telemetry to the LimaCharlie platform as EDR telemetry or as forwarded logs. Sensors are a scalable, serverless solution that connects the endpoints of an organization to the cloud securely.
 
-In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Workspace, providing a self-contained environment to manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, offering complete control over security operations. This structure enables flexible, multi-tenant setups, ideal for managed security providers or enterprises managing multiple departments or clients.
+In LimaCharlie, an Organization is a tenant in the Agentic SecOps Workspace. It is a self-contained environment where you manage security data, configurations, and assets independently. Each Organization has its own sensors, detection rules, data sources, and outputs, and gives you complete control of security operations. This structure supports flexible, multi-tenant setups for managed security providers, and for enterprises that manage many departments or clients.
 
 ## Programmatic Management
 
 !!! info "Prerequisites"
-    All programmatic examples require an API key with `sensor.tag` permissions. See [API Keys](../7-administration/access/api-keys.md) for setup instructions.
+    All programmatic examples need an API key with `sensor.tag` permissions. See [API Keys](../7-administration/access/api-keys.md) for setup instructions.
 
 ### List All Organization Tags
 
@@ -386,4 +386,4 @@ In LimaCharlie, an Organization represents a tenant within the Agentic SecOps Wo
 - [Sensor Selectors](../8-reference/sensor-selector-expressions.md)
 - [Python SDK](../6-developer-guide/sdks/python-sdk.md)
 - [Go SDK](../6-developer-guide/sdks/go-sdk.md)
-- [Compliance Frameworks](../9-ai-sessions/compliance/frameworks.md) -- Scope-tag conventions per framework (`cde` for PCI, `ephi-host` for HIPAA, `cui` for CMMC, `fisma-scope` for NIST 800-53, etc.). The compliance reviewer agents key their in-scope check off these tags.
+- [Compliance Frameworks](../9-ai-sessions/compliance/frameworks.md) -- Scope-tag conventions for each framework (`cde` for PCI, `ephi-host` for HIPAA, `cui` for CMMC, `fisma-scope` for NIST 800-53, and others). The compliance reviewer agents use these tags for their in-scope check.

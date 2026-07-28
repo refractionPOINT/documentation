@@ -2,16 +2,16 @@
 
 ## Overview
 
-This Adapter allows you to connect to Sophos Central to fetch event logs.
+This Adapter connects to Sophos Central to fetch event logs.
 
 ## Deployment Configurations
 
-All adapters support the same `client_options`, which you should always specify if using the binary adapter or creating a webhook adapter. If you use any of the Adapter helpers in the web app, you will not need to specify these values.
+All adapters support the same `client_options`. Always specify these options if you use the binary adapter or if you create a webhook adapter. If you use an Adapter helper in the web app, you do not need to specify these values.
 
-- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) this adapter is used with.
-- `client_options.identity.installation_key`: the LimaCharlie Installation Key this adapter should use to identify with LimaCharlie.
+- `client_options.identity.oid`: the LimaCharlie Organization ID (OID) that this adapter is used with.
+- `client_options.identity.installation_key`: the LimaCharlie Installation Key that this adapter uses to identify with LimaCharlie.
 - `client_options.platform`: the type of data ingested through this adapter, like `text`, `json`, `gcp`, `carbon_black`, etc.
-- `client_options.sensor_seed_key`: an arbitrary name for this adapter which Sensor IDs (SID) are generated from, see below.
+- `client_options.sensor_seed_key`: an arbitrary name for this adapter. LimaCharlie generates the Sensor IDs (SID) from this name, see below.
 
 ### Adapter-specific Options
 
@@ -27,14 +27,14 @@ Adapter Type: `sophos`
 Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
 
 1. Add a new credential in [Sophos Central Settings → Credentials](https://cloud.sophos.com/manage/config/settings/credentials)
-2. Get your client ID and client secret from the credentials you just created
-3. Get your JWT -- be sure to replace the values with the client ID and secret from the last step
+2. Get your client ID and client secret from the credentials that you created
+3. Get your JWT. Replace the values with the client ID and secret from the last step
 
    ```bash
    curl -XPOST -H "Content-Type:application/x-www-form-urlencoded" -d "grant_type=client_credentials&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&scope=token" https://id.sophos.com/api/v2/oauth2/token
    ```
 
-   Response content -- grab the `access_token` from the output:
+   Response content. Take the `access_token` from the output:
 
    ```json
    {
@@ -48,13 +48,13 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
    }
    ```
 
-4. Get your tenant ID -- you will need the `access_token` (JWT) from the last step.
+4. Get your tenant ID. You need the `access_token` (JWT) from the last step.
 
    ```bash
    curl -XGET -H "Authorization: Bearer YOUR_JWT_HERE" https://api.central.sophos.com/whoami/v1
    ```
 
-   Response content -- grab the `id` (`tenant_id`) and `dataRegion` (`url`) from the output. You will need these for your LimaCharlie Sophos adapter configuration.
+   Response content. Take the `id` (`tenant_id`) and the `dataRegion` (`url`) from the output. You need these values for the configuration of your LimaCharlie Sophos adapter.
 
    ```json
    {
@@ -67,7 +67,7 @@ Sophos documentation - <https://developer.sophos.com/getting-started-tenant>
    }
    ```
 
-5. Now you have all the pieces for your adapter:
+5. You now have all the values for your adapter:
 
    1. `client_id`
    2. `client_secret`

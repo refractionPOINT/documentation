@@ -1,10 +1,10 @@
 # Sublime Security
 
-[Sublime Security](https://sublime.security/) is a comprehensive email security platform that allows users to create custom detections, gain visibility and control, and focus on prevention of malicious emails.
+[Sublime Security](https://sublime.security/) is an email security platform. Users can create custom detections, get visibility and control, and stop malicious emails.
 
 ## Ingesting Audit Logs
 
-Audit logs from Sublime can be ingested cloud-to-cloud via the API.
+You can ingest audit logs from Sublime cloud-to-cloud through the API.
 
 ### Adapter-specific Options
 
@@ -57,21 +57,21 @@ See the official [documentation](https://docs.sublime.security/reference/authent
 
 ## Ingesting Alerts
 
-Sublime events can be ingested in LimaCharlie via a `json` Webhook Adapter configuration.
+LimaCharlie can ingest Sublime events with a `json` Webhook Adapter configuration.
 
 ### Adapter Deployment
 
-Sublime Security logs are ingested via a cloud-to-cloud webhook Adapter configured to receive JSON events. The steps of creating this Adapter and enabling the input include:
+A cloud-to-cloud webhook Adapter that receives JSON events ingests the Sublime Security logs. To create this Adapter and enable the input, do these steps:
 
-1. Creating the Webhook Adapter via the LimaCharlie CLI
-2. Discovering the URL created for the Webhook Adapter.
-3. Providing the completed URL to Sublime Security for webhook events.
+1. Create the Webhook Adapter with the LimaCharlie CLI.
+2. Find the URL that LimaCharlie creates for the Webhook Adapter.
+3. Give the completed URL to Sublime Security for webhook events.
 
 #### 1. Creating the LimaCharlie Webhook Adapter
 
 These steps are adapted from the [generic Webhook Adapter creation guide](../tutorials/webhook-adapter.md).
 
-Creating a Webhook Adapter requires a set of parameters, including organization ID, Installation Key, platform, and mapping details, among other parameters. The following configuration can be modified to easily configure a Webhook Adapter for ingesting Sublime Security events:
+A Webhook Adapter needs a set of parameters. These include the organization ID, the Installation Key, the platform, the mapping details, and other parameters. Change the configuration below to configure a Webhook Adapter that ingests Sublime Security events:
 
 ```json
 {
@@ -95,35 +95,35 @@ Creating a Webhook Adapter requires a set of parameters, including organization 
 }
 ```
 
-Note that in the mapping above, we make the following changes:
+The mapping above makes these changes:
 
 - `event_type_path` is mapped to the rule name from the Sublime alert
 - `event_time_path` is mapped to the `created_at` field from the Sublime alert
 
 #### 2. Building the Adapter URL
 
-After creating the webhook, you'll need to retrieve the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You'll need the following information to complete the Webhook URL:
+After you create the webhook, get the webhook URL from the [Get Org URLs](https://api.limacharlie.io/static/swagger/get-org-urls) API call. You need this information to complete the Webhook URL:
 
 - Organization ID
 - Webhook name (from the config)
 - Secret (from the config)
 
-Let's assume the returned domain looks like `9157798c50af372c.hook.limacharlie.io`, the format of the URL would be:
+If the returned domain is `9157798c50af372c.hook.limacharlie.io`, the format of the URL is:
 
 `https://9157798c50af372c.hook.limacharlie.io/OID/HOOKNAME/SECRET`
 
-Note that the `secret` value can be provided in the webhook URL or as an HTTP header named `lc-secret`.
+You can give the `secret` value in the webhook URL or in an HTTP header named `lc-secret`.
 
 #### 3. Configuring the Sublime webhook Action
 
-Within the Sublime Security console, navigate to **Manage** > **Actions**. From here, you can select **New Action** > **Webhook**.
+In the Sublime Security console, go to **Manage** > **Actions**. Then select **New Action** > **Webhook**.
 
 ![image.png](../../../assets/images/image(174).png)
 
-Within the **Configure webhook** menu, provide a name and the Adapter URL constructed in Step 2 above.
+In the **Configure webhook** menu, give a name and the Adapter URL that you built in Step 2.
 
 ![image.png](../../../assets/images/image(175).png)
 
-As mentioned in Step 2, you can configure the HTTP header `lc-secret`, if so desired.
+As Step 2 explains, you can configure the HTTP header `lc-secret`.
 
-Upon configuration of the webhook within Sublime Security, alerts can be configured to be sent to the LimaCharlie platform. To test the Webhook, select **Trigger Custom Action** from any Flagged message, and send to the LimaCharlie webhook.
+After you configure the webhook in Sublime Security, you can configure alerts to go to LimaCharlie. To test the Webhook, select **Trigger Custom Action** on a Flagged message and send it to the LimaCharlie webhook.
