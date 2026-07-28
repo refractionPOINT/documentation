@@ -128,7 +128,7 @@ Guided deployment of a framework's case-reviewer agent to a LimaCharlie organiza
 The skill walks through these steps, asking for confirmation before each platform write:
 
 1. **Pre-flight checks** — verifies `ext-cases` is subscribed on the target org, that the framework's bundled assets are accessible, and that an Anthropic key is staged or available to stage.
-2. **API-key creation** — creates a scoped LimaCharlie API key for the reviewer agent, with the minimum permissions needed (typically `org.get`, `sensor.list`, `sensor.get`, `dr.list`, `insight.det.get`, `insight.evt.get`, `investigation.get`, `investigation.set`, `ext.request`, `ext.list`, `org_notes.read`, `sop.get`, `sop.get.mtd`, `ai_agent.operate`).
+2. **API-key creation** — creates a scoped LimaCharlie API key for the reviewer agent, with the minimum permissions needed (typically `org.get`, `sensor.list`, `sensor.get`, `dr.list`, `insight.det.get`, `insight.evt.get`, `investigation.get`, `investigation.set`, `ext.request`, `ext.list`, `org_notes.get`, `sop.get`, `sop.get.mtd`, `ai_agent.operate`).
 3. **Anthropic secret staging** — captures or stages the Anthropic key into a [Hive Secret](../../7-administration/config-hive/secrets.md).
 4. **Agent hive sync** — pushes the reviewer manifest (`ai_agent` record) and its trigger rule (`dr-general` record) into the org.
 5. **Verification** — reads the resulting hive records back to confirm the deploy succeeded and reports the agent identifier for follow-up.

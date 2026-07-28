@@ -1,10 +1,5 @@
 # Anthropic
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects your Anthropic organization as an AI-security surface: the member
 directory (including pending invites — staged seats that have never logged in),
 workspaces, and API keys from the Console plane, plus — for Claude

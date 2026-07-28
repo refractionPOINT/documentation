@@ -1,10 +1,5 @@
 # Cloudflare
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 The lightest provider: a **scoped, read-only API token** plus your **account
 ID**. No infrastructure to stand up.
 

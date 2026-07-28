@@ -1,10 +1,5 @@
 # Google Workspace
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects identity posture from Google Workspace — users, groups and
 membership, admin roles, user security posture, devices, inbound-SSO profiles,
 and Gemini-in-Workspace usage — via the Admin SDK and Cloud Identity APIs.

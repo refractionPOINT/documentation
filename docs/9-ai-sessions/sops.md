@@ -2,8 +2,9 @@
 
 A Standard Operating Procedure is a document you store in your organization that
 tells AI agents how *your* team wants a job done. Where [AI Skills](skills.md) are
-reusable capabilities an agent can invoke and [AI Memory](memory.md) is what an agent
-has learned, an SOP is organizational policy: the escalation path for a ransomware
+reusable capabilities an agent can invoke, [AI Memory](memory.md) is what an agent
+has learned, and [Organization Notes](org-notes.md) are reference material about the
+environment, an SOP is organizational policy: the escalation path for a ransomware
 detection, who must approve an endpoint isolation, which hosts are never to be
 touched during business hours.
 
@@ -85,7 +86,9 @@ described SOPs (`ransomware-response`, `after-hours-escalation`,
     `limacharlie sop list` and `GET /v1/hive/sop/{oid}` return every SOP in full,
     including `text`. Agents are instructed to read only the names and descriptions
     at that stage and re-fetch the body with `sop get`, but budget context
-    accordingly if you keep many large SOPs.
+    accordingly if you keep many large SOPs. `limacharlie sop list --brief` reduces
+    each record's data to its `description` — that is the index-only form to prefer
+    when all you need is to decide what to fetch.
 
 ## Permissions
 
@@ -105,9 +108,9 @@ author policy.
 
 ### Web interface
 
-SOPs are managed under **Automation → SOPs** in the organization view, where you can
-create, edit, tag, enable, and disable them. In an interactive AI session, the
-`/sops` [slash command](rich-cards.md) renders the same list inline.
+SOPs are managed under **Organization Settings → SOPs** in the organization view,
+where you can create, edit, tag, enable, and disable them. In an interactive AI
+session, the `/sops` [slash command](rich-cards.md) renders the same list inline.
 
 ### CLI
 
@@ -198,5 +201,7 @@ for name, rec in sops.list().items():
 
 - [AI Skills](skills.md) — reusable instruction sets an agent invokes as capabilities.
 - [AI Memory](memory.md) — what an agent has learned and should recall later.
+- [Organization Notes](org-notes.md) — free-form reference documents about the
+  organization itself, in the sibling `org_notes` hive.
 - [Config Hive](../7-administration/config-hive/index.md) — the store SOPs live in.
 - [Permissions](../8-reference/permissions.md) — the full permission reference.

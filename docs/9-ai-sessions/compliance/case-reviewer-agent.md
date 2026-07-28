@@ -66,7 +66,7 @@ The scoped LimaCharlie API key created by `compliance-deploy` is granted only th
 | `insight.evt.get` | Read historical events for context |
 | `investigation.get`, `investigation.set` | Read and update the case |
 | `ext.request`, `ext.list` | Communicate with the Cases extension and list subscribed extensions |
-| `org_notes.read` | Read organization-level notes for context |
+| `org_notes.get` | Read organization-level notes for context |
 | `sop.get`, `sop.get.mtd` | Read Standard Operating Procedures relevant to the case |
 | `ai_agent.operate` | Operate as an AI agent in the org |
 

@@ -1,10 +1,5 @@
 # Microsoft Azure
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects the Azure estate — VMs and scale sets, storage, Key Vault, SQL/Cosmos,
 AKS, networking and NSGs, Azure OpenAI — plus the tenant's Entra ID directory
 (users, groups, service principals, app registrations, roles) and, where

@@ -1,10 +1,5 @@
 # Connecting Providers
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 A provider connection is one `cloudsec_provider` Hive record: a `provider_type`,
 the scope to enumerate, and a read-only credential. All collection is agentless.
 The credential itself always lives in the [secret](../7-administration/config-hive/secrets.md)

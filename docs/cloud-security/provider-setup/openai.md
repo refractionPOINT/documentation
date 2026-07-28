@@ -1,10 +1,5 @@
 # OpenAI
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects your OpenAI platform organization as an AI-security surface: projects,
 members (including pending invites — staged seats that have never logged in)
 and service accounts, API keys (with last-used timestamps, so dormant

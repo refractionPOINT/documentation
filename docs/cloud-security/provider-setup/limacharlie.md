@@ -1,10 +1,5 @@
 # LimaCharlie
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Inventories your **own LimaCharlie tenancy** as an estate, like any other SaaS
 platform: org members as identities (with MFA state), API keys as machine
 identities, sensors as assets, installation keys, telemetry outputs, extension

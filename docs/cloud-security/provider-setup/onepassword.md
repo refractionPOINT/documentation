@@ -1,10 +1,5 @@
 # 1Password
 
-!!! warning "Private Beta"
-    Cloud Security is currently in **Private Beta**. Features, APIs, and
-    configuration formats described here may change before general
-    availability. Contact us if you would like access.
-
 Collects the 1Password account directory — users and groups with membership —
 into the identity graph, unified by email with your cloud and IdP identities.
 Optionally, a **1Password Connect** server adds vault (secret-store) inventory.
