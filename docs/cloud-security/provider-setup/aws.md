@@ -118,6 +118,7 @@ the AWS-specific checks follow.
 | `s3` | ✅ | Storage inventory unavailable. |
 | `regions` | — | Only meaningful when `aws_regions` is **unset** (with it set the check is skipped as unnecessary, and still counts as passing). Enabled-region enumeration was denied, so the sweep falls back to `us-east-1` alone — list the regions you want in `aws_regions`. |
 | `organizations` | — | Member-account discovery unavailable; only the connected account is swept. |
+| `org_policies` | — | The organization's **service control policies** (SCPs) and **resource control policies** (RCPs) are unreadable, so they are not collected. Passes when the account is not in an organization, or the policy type is not enabled — in both cases there is nothing to read. |
 | `inspector` | — | Workload vulnerability findings unavailable. |
 | `secrets_manager` | — | Secret-store inventory unavailable. |
 | `data_stores` | — | RDS / DynamoDB / Redshift inventory unavailable. |
@@ -125,6 +126,39 @@ the AWS-specific checks follow.
 
 With `SecurityAudit` + `ViewOnlyAccess`, every optional surface above also
 passes — no extra policies needed.
+
+## Organization guardrails (SCPs and RCPs)
+
+For an account in an AWS Organization, LimaCharlie records where the account
+sits in the organization tree and every **service control policy** and
+**resource control policy** that applies to it — those attached to the account
+itself, plus each organizational unit above it, plus the root. The policy
+documents are stored verbatim, each labelled with the level it is attached at.
+
+!!! warning "Collected, not yet applied"
+    These policies are **inventory today, not part of the access calculation**.
+    Permission and attack-path answers are still the union of the permissions
+    that were *granted*, without subtracting what an SCP forbids — so they can
+    over-state access. If the collection role cannot read the policies at all,
+    that is reported as a finding ("effective-permission analysis is
+    unconstrained") rather than left implicit.
+
+Collecting them uses these read-only actions on the role named by
+`aws_role_arn`, all of which `SecurityAudit` already grants:
+
+```
+organizations:DescribeOrganization    organizations:ListPolicies
+organizations:DescribePolicy          organizations:ListTargetsForPolicy
+organizations:ListRoots               organizations:ListAccounts
+organizations:ListOrganizationalUnitsForParent
+organizations:ListAccountsForParent
+```
+
+If you attached a hand-written least-privilege policy instead of
+`SecurityAudit`, add the actions above — the `org_policies` check tells you
+whether they are in place. A standalone account (not in an organization) needs
+none of this and reports no finding: with no organization there are no
+guardrails to account for.
 
 !!! note "Propagation"
     Fresh IAM keys and role trust can take a few seconds to propagate; retry
