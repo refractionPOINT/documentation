@@ -270,6 +270,7 @@ the GCP-specific checks follow.
 | `provider test` result | Cause | Fix |
 |---|---|---|
 | `auth` fails: `PERMISSION_DENIED` on the scope | The service account has no binding at that org/folder/project | Grant `roles/viewer` at the scope node (not just on the SA's own project) |
+| `auth` fails: *"Cloud Resource Manager API has not been used in project `<number>`"* on an **organization** or **folder** scope | An org/folder has no project of its own, so the API-enablement check is billed to the **caller's** project — `<number>` is the **service account's** project, not a project being scanned. The console only offers to enable APIs per project, which makes this look unresolvable at the org level | `gcloud services enable cloudresourcemanager.googleapis.com --project "$SA_PROJECT"` (see [Prerequisites](#prerequisites)) |
 | `projects` fails | Missing `resourcemanager.projects.list` | `roles/viewer` or `roles/browser` at the scope node |
 | `iam` fails on `getIamPolicy` | `roles/viewer` alone does not cover every `getIamPolicy` | Add `roles/iam.securityReviewer` |
 | A check passes with *"API not enabled on the probed project"* | Benign — the sweep skips API-disabled projects | Enable the named API if you want that surface; otherwise ignore |
