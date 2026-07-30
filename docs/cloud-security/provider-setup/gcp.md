@@ -115,11 +115,15 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 !!! note "2nd-gen functions are authorized as Cloud Run services"
     A 2nd-gen Cloud Function runs on Cloud Run, and its **invoker** permission
     lives on the underlying Cloud Run service (`roles/run.invoker`) rather than
-    on the function (`roles/cloudfunctions.invoker` is the 1st-gen role). A
-    least-privilege grant with `roles/cloudfunctions.viewer` but **not**
-    `roles/run.viewer` will therefore list your 2nd-gen functions while leaving
-    every one of them without a public-access verdict. If you use 2nd-gen
-    functions, grant both.
+    on the function (`roles/cloudfunctions.invoker` is the 1st-gen role). So
+    assessing a 2nd-gen function's public access reads the **Cloud Run** side,
+    not the Cloud Functions side.
+
+    If you are assembling a least-privilege grant rather than using the required
+    baseline, grant both `roles/run.viewer` and `roles/cloudfunctions.viewer` and
+    let `provider test` confirm it: the `serverless` check exercises both APIs and
+    reports each separately, so it will tell you if one half is missing rather
+    than leaving you to reason about role contents.
 
 !!! note "`osconfig_vuln` does not prove the inventory join"
     The `osconfig_vuln` check probes the vulnerability-report read only, so it
@@ -270,6 +274,6 @@ the GCP-specific checks follow.
 | `iam` fails on `getIamPolicy` | `roles/viewer` alone does not cover every `getIamPolicy` | Add `roles/iam.securityReviewer` |
 | A check passes with *"API not enabled on the probed project"* | Benign — the sweep skips API-disabled projects | Enable the named API if you want that surface; otherwise ignore |
 | `activity_ciem` fails with *Recommender API not enabled* | Recommender / Policy Analyzer not enabled on the probed project | Enable `recommender.googleapis.com` and `policyanalyzer.googleapis.com` |
-| `serverless` fails on `run` only | The grant covers Cloud Functions but not Cloud Run | Add `roles/run.viewer`. 2nd-gen functions are authorized as Cloud Run services, so without it they list with no public-access verdict |
+| `serverless` fails on `run` only | The grant reaches Cloud Functions but not Cloud Run | Add `roles/run.viewer`. 2nd-gen functions are authorized as Cloud Run services, so without that read they list with no public-access verdict |
 | Cloud Run services appear but none is ever flagged public | `getIamPolicy` is denied on Cloud Run, so the invoker verdict is unobserved rather than negative | Add `roles/iam.securityReviewer` (or `roles/run.viewer`) and re-run the sweep |
 | Inventory is missing whole projects | Those projects are not `ACTIVE`, or the grant is on a narrower node | Confirm project state, and that the binding is at the scope you configured |
