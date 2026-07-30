@@ -104,6 +104,14 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
     verdict rather than guess — so serverless exposure findings are **absent,
     not empty**, which is a different thing from "you have none".
 
+!!! note "Services published only through a load balancer"
+    A Cloud Run service or function whose ingress is **internal and Cloud Load
+    Balancing** cannot be reached at its own `run.app` URL, but it *can* be
+    published to the internet through an external load balancer in front of it.
+    We do not yet collect load balancers, so such a service is inventoried but
+    is **not** reported as internet-facing. Services reachable directly at their
+    own URL are assessed normally.
+
 !!! note "2nd-gen functions are authorized as Cloud Run services"
     A 2nd-gen Cloud Function runs on Cloud Run, and its **invoker** permission
     lives on the underlying Cloud Run service (`roles/run.invoker`) rather than
