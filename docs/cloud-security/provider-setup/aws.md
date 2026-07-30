@@ -122,10 +122,25 @@ the AWS-specific checks follow.
 | `inspector` | — | Workload vulnerability findings unavailable. |
 | `secrets_manager` | — | Secret-store inventory unavailable. |
 | `data_stores` | — | RDS / DynamoDB / Redshift inventory unavailable. |
+| `front_doors` | — | Lambda / API Gateway / load-balancer inventory unavailable — a public function URL, API stage or internet-facing load balancer stays invisible to the exposure model. |
 | `ai_services` | — | SageMaker / Bedrock inventory unavailable. |
 
 With `SecurityAudit` + `ViewOnlyAccess`, every optional surface above also
 passes — no extra policies needed.
+
+!!! note "Why `front_doors` probes more than one call"
+    Lambda's exposure verdict needs three separate grants —
+    `lambda:ListFunctions`, `lambda:ListFunctionUrlConfigs` and
+    `lambda:GetPolicy` — and a role missing any one of them still passes a
+    single representative list call. The check therefore exercises the real
+    per-function reads against one existing function, so a hand-rolled
+    least-privilege policy is caught at connect time instead of leaving the
+    Lambda inventory unreadable on every sweep.
+
+    The two managed policies grant these BETWEEN them, not each on its own:
+    `SecurityAudit` supplies `lambda:List*` and `lambda:GetPolicy`,
+    `ViewOnlyAccess` the ELBv2 describes, and both supply `apigateway:GET`.
+    Attach both, as the setup above does.
 
 ## Organization guardrails (SCPs and RCPs)
 
