@@ -1,9 +1,9 @@
 # Google Cloud
 
 Collects the Google Cloud estate across every project in scope — compute,
-storage, networking, IAM, KMS, databases, secrets, Pub/Sub — plus CIEM (who can
-reach what), Vertex AI inventory, and agentless workload vulnerabilities from
-VM Manager.
+serverless (Cloud Run and Cloud Functions), storage, networking, IAM, KMS,
+databases, secrets, Pub/Sub — plus CIEM (who can reach what), Vertex AI
+inventory, and agentless workload vulnerabilities from VM Manager.
 
 **Auth model:** a **service-account key** (JSON) granted read-only roles at the
 **organization**, **folder**, or **project** you want enumerated. The collector
@@ -32,6 +32,8 @@ discovers every active project underneath that node by itself.
       pubsub.googleapis.com \
       apikeys.googleapis.com \
       osconfig.googleapis.com \
+      run.googleapis.com \
+      cloudfunctions.googleapis.com \
       aiplatform.googleapis.com \
       notebooks.googleapis.com \
       recommender.googleapis.com \
@@ -85,7 +87,31 @@ Each adds one inventory or analysis surface. Skipping one leaves that surface
 | `roles/recommender.iamViewer` | Unused-privilege findings (activity-based CIEM) | `activity_ciem` |
 | `roles/policyanalyzer.activityAnalysisViewer` | Dormant-identity / last-authentication findings | `activity_ciem` |
 | `roles/aiplatform.viewer` | Vertex AI endpoint and model inventory | `vertex_ai` |
+| `roles/run.viewer` | Cloud Run service inventory **and its public-access verdict** (`run.services.list` + `run.services.getIamPolicy`) | `serverless` |
+| `roles/cloudfunctions.viewer` | Cloud Functions inventory (1st and 2nd gen) plus their invoker policies (`cloudfunctions.functions.list` + `cloudfunctions.functions.getIamPolicy`) | `serverless` |
 | `roles/cloudidentity.groups.readonly` | Google-group **membership expansion**, so `group:` IAM bindings resolve to real people | `cloud_identity` |
+
+!!! note "Serverless already works on the required baseline"
+    The required `roles/viewer` + `roles/iam.securityReviewer` pair **already**
+    grants both the list and the `getIamPolicy` reads for Cloud Run and Cloud
+    Functions, so you do not need to add anything for serverless coverage. The
+    two roles above exist for the least-privilege alternative (`roles/browser`
+    plus per-service viewers), where they are what turns serverless coverage on.
+
+    Both halves of each grant matter, and the second is the one that gets
+    missed: without `getIamPolicy` we can list a service but cannot tell whether
+    it is invocable by *anyone on the internet*. In that case we report no
+    verdict rather than guess — so serverless exposure findings are **absent,
+    not empty**, which is a different thing from "you have none".
+
+!!! note "2nd-gen functions are authorized as Cloud Run services"
+    A 2nd-gen Cloud Function runs on Cloud Run, and its **invoker** permission
+    lives on the underlying Cloud Run service (`roles/run.invoker`) rather than
+    on the function (`roles/cloudfunctions.invoker` is the 1st-gen role). A
+    least-privilege grant with `roles/cloudfunctions.viewer` but **not**
+    `roles/run.viewer` will therefore list your 2nd-gen functions while leaving
+    every one of them without a public-access verdict. If you use 2nd-gen
+    functions, grant both.
 
 !!! note "`osconfig_vuln` does not prove the inventory join"
     The `osconfig_vuln` check probes the vulnerability-report read only, so it
@@ -139,7 +165,9 @@ for ROLE in roles/secretmanager.viewer \
             roles/osconfig.inventoryViewer \
             roles/recommender.iamViewer \
             roles/policyanalyzer.activityAnalysisViewer \
-            roles/aiplatform.viewer; do
+            roles/aiplatform.viewer \
+            roles/run.viewer \
+            roles/cloudfunctions.viewer; do
   gcloud organizations add-iam-policy-binding "$ORG_ID" \
     --member "serviceAccount:${SA}" --role "$ROLE"
 done
@@ -215,6 +243,7 @@ the GCP-specific checks follow.
 | `activity_ciem` | — | Unused-privilege and dormant-identity findings unavailable. |
 | `osconfig_vuln` | — | Workload vulnerability findings unavailable. |
 | `vertex_ai` | — | Vertex AI endpoint inventory unavailable. |
+| `serverless` | — | Cloud Run / Cloud Functions inventory unavailable, and with it the "invocable by anyone on the internet" verdict for that tier. Reported per API, so a partial grant names the half that is missing. |
 | `cloud_identity` | — | Group membership is not expanded; `group:` bindings do not resolve to people. |
 
 !!! tip "Org-scope tests probe one representative project"
@@ -233,4 +262,6 @@ the GCP-specific checks follow.
 | `iam` fails on `getIamPolicy` | `roles/viewer` alone does not cover every `getIamPolicy` | Add `roles/iam.securityReviewer` |
 | A check passes with *"API not enabled on the probed project"* | Benign — the sweep skips API-disabled projects | Enable the named API if you want that surface; otherwise ignore |
 | `activity_ciem` fails with *Recommender API not enabled* | Recommender / Policy Analyzer not enabled on the probed project | Enable `recommender.googleapis.com` and `policyanalyzer.googleapis.com` |
+| `serverless` fails on `run` only | The grant covers Cloud Functions but not Cloud Run | Add `roles/run.viewer`. 2nd-gen functions are authorized as Cloud Run services, so without it they list with no public-access verdict |
+| Cloud Run services appear but none is ever flagged public | `getIamPolicy` is denied on Cloud Run, so the invoker verdict is unobserved rather than negative | Add `roles/iam.securityReviewer` (or `roles/run.viewer`) and re-run the sweep |
 | Inventory is missing whole projects | Those projects are not `ACTIVE`, or the grant is on a narrower node | Confirm project state, and that the binding is at the scope you configured |
