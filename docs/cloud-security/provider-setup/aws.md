@@ -122,10 +122,20 @@ the AWS-specific checks follow.
 | `inspector` | — | Workload vulnerability findings unavailable. |
 | `secrets_manager` | — | Secret-store inventory unavailable. |
 | `data_stores` | — | RDS / DynamoDB / Redshift inventory unavailable. |
+| `front_doors` | — | Lambda / API Gateway / load-balancer inventory unavailable — a public function URL, API stage or internet-facing load balancer stays invisible to the exposure model. |
 | `ai_services` | — | SageMaker / Bedrock inventory unavailable. |
 
 With `SecurityAudit` + `ViewOnlyAccess`, every optional surface above also
 passes — no extra policies needed.
+
+!!! note "Why `front_doors` probes more than one call"
+    A missing `lambda:ListFunctionUrlConfigs` grant does not fail loudly: every
+    function simply reads as having no URL, so a function that anyone on the
+    internet can invoke looks private. The check therefore exercises the real
+    per-function reads against one existing function rather than a representative
+    list call. Both `SecurityAudit` (`lambda:List*`, `lambda:GetPolicy`,
+    `apigateway:GET`, `elasticloadbalancing:Describe*`) and `ViewOnlyAccess` grant
+    everything it needs.
 
 ## Organization guardrails (SCPs and RCPs)
 
