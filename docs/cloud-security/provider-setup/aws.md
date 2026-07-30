@@ -146,7 +146,7 @@ documents are stored verbatim, each labelled with the level it is attached at.
 Collecting them uses these read-only actions on the role named by
 `aws_role_arn`, all of which `SecurityAudit` already grants:
 
-```
+```text
 organizations:DescribeOrganization    organizations:ListPolicies
 organizations:DescribePolicy          organizations:ListTargetsForPolicy
 organizations:ListRoots               organizations:ListAccounts
