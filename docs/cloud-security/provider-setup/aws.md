@@ -129,13 +129,18 @@ With `SecurityAudit` + `ViewOnlyAccess`, every optional surface above also
 passes — no extra policies needed.
 
 !!! note "Why `front_doors` probes more than one call"
-    A missing `lambda:ListFunctionUrlConfigs` grant does not fail loudly: every
-    function simply reads as having no URL, so a function that anyone on the
-    internet can invoke looks private. The check therefore exercises the real
-    per-function reads against one existing function rather than a representative
-    list call. Both `SecurityAudit` (`lambda:List*`, `lambda:GetPolicy`,
-    `apigateway:GET`, `elasticloadbalancing:Describe*`) and `ViewOnlyAccess` grant
-    everything it needs.
+    Lambda's exposure verdict needs three separate grants —
+    `lambda:ListFunctions`, `lambda:ListFunctionUrlConfigs` and
+    `lambda:GetPolicy` — and a role missing any one of them still passes a
+    single representative list call. The check therefore exercises the real
+    per-function reads against one existing function, so a hand-rolled
+    least-privilege policy is caught at connect time instead of leaving the
+    Lambda inventory unreadable on every sweep.
+
+    The two managed policies grant these BETWEEN them, not each on its own:
+    `SecurityAudit` supplies `lambda:List*` and `lambda:GetPolicy`,
+    `ViewOnlyAccess` the ELBv2 describes, and both supply `apigateway:GET`.
+    Attach both, as the setup above does.
 
 ## Organization guardrails (SCPs and RCPs)
 
