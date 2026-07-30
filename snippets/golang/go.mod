@@ -2,7 +2,7 @@ module github.com/refractionPOINT/documentation/snippets/golang
 
 go 1.25.9
 
-require github.com/refractionPOINT/go-limacharlie/limacharlie v0.0.0-20260706232626-4212dfffc585
+require github.com/refractionPOINT/go-limacharlie/limacharlie v0.0.0-20260726172822-e1078d02bc52
 
 require (
 	cel.dev/expr v0.25.1 // indirect
