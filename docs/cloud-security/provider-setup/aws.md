@@ -118,7 +118,7 @@ the AWS-specific checks follow.
 | `s3` | ✅ | Storage inventory unavailable. |
 | `regions` | — | Only meaningful when `aws_regions` is **unset** (with it set the check is skipped as unnecessary, and still counts as passing). Enabled-region enumeration was denied, so the sweep falls back to `us-east-1` alone — list the regions you want in `aws_regions`. |
 | `organizations` | — | Member-account discovery unavailable; only the connected account is swept. |
-| `org_policies` | — | The organization's **service control policies** (SCPs) and **resource control policies** (RCPs) are unreadable, so they are not collected. Passes when the account is not in an organization, or the policy type is not enabled — in both cases there is nothing to read. |
+| `org_policies` | — | The organization's **service control policies** (SCPs) and **resource control policies** (RCPs) are unreadable, so they are not collected. Passes when the account is not in an organization, or no policy type is enabled on the organization root — in both cases there is nothing to read. |
 | `inspector` | — | Workload vulnerability findings unavailable. |
 | `secrets_manager` | — | Secret-store inventory unavailable. |
 | `data_stores` | — | RDS / DynamoDB / Redshift inventory unavailable. |
@@ -159,6 +159,14 @@ If you attached a hand-written least-privilege policy instead of
 whether they are in place. A standalone account (not in an organization) needs
 none of this and reports no finding: with no organization there are no
 guardrails to account for.
+
+!!! note "Which account the role must live in"
+    AWS only allows these reads from the organization's **management account**,
+    or from an account you have registered as a **delegated administrator** for
+    AWS Organizations. From any other member account they are refused with the
+    same `AccessDenied` you would get from a missing permission, and adding IAM
+    permissions will not change that. If `org_policies` keeps failing with a
+    fully-granted role, check which account `aws_role_arn` points at.
 
 !!! note "Propagation"
     Fresh IAM keys and role trust can take a few seconds to propagate; retry
