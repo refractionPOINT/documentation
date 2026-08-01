@@ -15,11 +15,16 @@ limacharlie cloudsec compliance report --framework cis-gcp
 limacharlie cloudsec compliance frameworks
 ```
 
-Ten frameworks ship today — `cis-aws`, `cis-azure`, `cis-gcp` (the default),
-`soc2`, `pci-dss`, `hipaa`, `iso-27001`, `nist-csf`, `nist-ai-rmf`, and
-`owasp-llm`. The last two are AI frameworks: they assess the OpenAI and
+Eleven frameworks ship today — `cis-aws`, `cis-azure`, `cis-gcp` (the default),
+`cis-m365`, `soc2`, `pci-dss`, `hipaa`, `iso-27001`, `nist-csf`, `nist-ai-rmf`,
+and `owasp-llm`. The last two are AI frameworks: they assess the OpenAI and
 Anthropic estate connected through the
-[AI providers](providers.md#ai-security-aispm). The set
+[AI providers](providers.md#ai-security-aispm). `cis-m365` is graded off the
+Microsoft Entra directory, so it covers the benchmark's Entra chapter and reports
+NOT_ASSESSED for the admin centers that are not collected (Defender, Purview,
+Exchange, SharePoint, Teams) — read each control's description for what it
+assesses and why. It applies to a tenant connected as an `entra` provider, or as
+the Entra half of an `azure` one. The set
 grows over time, so `limacharlie cloudsec compliance frameworks`
 (`GET /compliance/frameworks`) — which carries each framework's `id`, `name`,
 `version`, and control counts — is the source of truth for valid
