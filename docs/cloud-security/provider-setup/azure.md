@@ -58,11 +58,19 @@ unobserved while everything else still collects.
     scanning, so a subscription paying only for that is still reported as having
     no image vulnerability source.
 
-    Each vulnerable image is reported against its **digest**, matching how we
-    report Amazon ECR and GCP Artifact Registry images, so one image is one
-    thing to triage across clouds. Images are **not inventoried yet** — an
-    affected image is a finding subject, not an entry in Inventory or the
-    topology, and nothing links it to the workloads that run it.
+    Each vulnerable image is reported against its **digest**, so one image is
+    one finding however many tags point at it — the same shape we use for
+    Amazon ECR and GCP Artifact Registry. Two limits are worth knowing:
+
+    - **Images are not inventoried yet.** An affected image is a finding
+      subject, not an entry in Inventory or the topology, and nothing links it
+      to the workloads that run it.
+    - **Very large registries are skipped whole, not truncated.** A subscription
+      whose registries hold more scan results than our per-subscription
+      ingestion budget reports **none** of them rather than an arbitrary
+      subset — a truncated set would look like a shrinking estate. A
+      subscription that keeps every historical build image is the case that
+      hits this.
 
 !!! note "MFA-registration state has no preflight check of its own"
     The `signin_activity` check probes the sign-in report only. MFA-registration
@@ -177,7 +185,7 @@ the Azure-specific checks follow.
 | `arm_reader` | ✅ | Reader is not assigned on the configured subscription — no resource inventory. |
 | `graph_directory` | ✅ | `Directory.Read.All` not consented — no identity inventory. |
 | `subscriptions` | — | Subscription fan-out disabled; only the configured subscription is swept. |
-| `defender_vuln` | — | Workload vulnerability findings unavailable — the check covers both the server assessments and the container-image ones (it also probes the registry lookup that gives each image its region, which is a separate Resource Graph table). |
+| `defender_vuln` | — | Workload **and container image** vulnerability findings unavailable — both are rows in the same Resource Graph table behind the same grant, so one check covers both. |
 | `signin_activity` | — | Last-sign-in and dormancy enrichment unavailable (usually a missing Entra ID P1/P2 licence). |
 
 ## Troubleshooting
