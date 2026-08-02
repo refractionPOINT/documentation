@@ -115,6 +115,7 @@ the AWS-specific checks follow.
 | `auth` | ✅ | `sts:AssumeRole` failed — wrong external ID, trust policy, or credentials. Nothing else is probed. |
 | `ec2` | ✅ | Compute inventory unavailable. |
 | `iam` | ✅ | IAM inventory unavailable — the CIEM access graph cannot be built. |
+| `iam_boundaries` | — | IAM permission boundaries unreadable (`iam:GetAccountAuthorizationDetails`). A principal whose boundary caps it below its policies is scored on the uncapped policies, so it can be reported as an administrator when it is not. |
 | `s3` | ✅ | Storage inventory unavailable. |
 | `regions` | — | Only meaningful when `aws_regions` is **unset** (with it set the check is skipped as unnecessary, and still counts as passing). Enabled-region enumeration was denied, so the sweep falls back to `us-east-1` alone — list the regions you want in `aws_regions`. |
 | `organizations` | — | Member-account discovery unavailable; only the connected account is swept. |
