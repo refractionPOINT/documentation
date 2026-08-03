@@ -32,6 +32,7 @@ limacharlie cloudsec topology
 
 # Findings worklist + triage
 limacharlie cloudsec finding list --severity CRITICAL --class toxic_combination --kev
+limacharlie cloudsec finding list --sla breached --sort due_at        # what is late
 limacharlie cloudsec finding facets --status open
 limacharlie cloudsec finding classes                      # the finding_class enum
 limacharlie cloudsec finding get fnd_0a1b...
@@ -126,11 +127,16 @@ the one command that does not resolve a single `--oid`.
     the generic `limacharlie api <path>` escape hatch — see the
     [API Reference](api-reference.md).
 
-    Two things that look like missing commands are really something else.
+    Some things that look like missing commands are really something else.
     **Scheduled queries** are not a separate feature: a scheduled query is a
     `cloudsec_query` Hive record carrying a `schedule` block, authored with
     `limacharlie hive set --hive-name cloudsec_query` (see
-    [Configuration](configuration.md#cloudsec_query)). **Workload groups**
+    [Configuration](configuration.md#cloudsec_query)). **Custom posture rules**
+    and **remediation SLAs** are likewise `cloudsec_policy` Hive records
+    (`policy_type` `rules` and `sla`) written with
+    `limacharlie hive set --hive-name cloudsec_policy` — see
+    [Custom Posture Rules](custom-rules.md) and
+    [Remediation SLAs](remediation-sla.md). **Workload groups**
     are not a view of their own either: they arrive on findings as
     `source_scope` / `target_scope` in `finding list`, and as the
     `ComputeGroup` node type in graph queries.
@@ -152,6 +158,20 @@ limacharlie cloudsec finding list --cursor "<next_cursor>" --limit 50
 
 Boolean tri-state flags (`--kev/--no-kev`, `--reachable/--no-reachable`)
 send the filter only when given, so the server default applies otherwise.
+
+`--sla` selects on the derived [remediation-SLA
+state](remediation-sla.md#stored-vs-derived) — `breached`, `due_soon`,
+`on_track`, `exempt`, `none` — and is repeatable like the other filters. It
+applies to `finding list`, `finding facets`, `finding causes`, and
+`export findings`. `--sort due_at` is the matching sort key, and the one key
+that defaults to **ascending** (soonest deadline first), keeping findings with
+no due date last rather than dropping them.
+
+!!! note "`--sla` needs a CLI newer than 5.6.1"
+    The SLA selector and the `due_at` sort key ship in the first `limacharlie`
+    release after 5.6.1. On an older CLI, use the `sla=` and `sort=due_at`
+    parameters on the [REST route](api-reference.md#reads) — the server-side
+    feature is live either way.
 
 The other lists carry a subset, so check `--help` before assuming a flag is
 there. `caasm coverage` behaves like `finding list` (repeatable filters,

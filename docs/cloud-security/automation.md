@@ -94,6 +94,101 @@ The `account` matcher takes globs, including leading-`!` negation —
 }
 ```
 
+## Custom posture rules
+
+Your own CSPM detections are a `rules`-typed `cloudsec_policy` record, which
+makes them the easiest part of the product to keep in a git repository and push
+to a fleet. The full authoring contract — the detection format, the operator
+allowlist, `scope`, id stability, and the per-organization bounds — is in
+[Custom Posture Rules](custom-rules.md).
+
+```bash
+cat > rules.json <<EOF
+{
+  "policy_type": "rules",
+  "rules": {
+    "rules": [
+      {
+        "id": "custom-public-bucket-outside-cdn",
+        "resource_type": "DataStore",
+        "finding_class": "public_exposure",
+        "severity": "HIGH",
+        "title": "Storage bucket is readable by anyone on the internet",
+        "detect": {
+          "op": "and",
+          "rules": [
+            {"op": "is", "path": "event/store_kind", "value": "bucket"},
+            {"op": "is", "path": "event/is_public", "value": true},
+            {"op": "starts with", "path": "event/name", "value": "cdn-", "not": true}
+          ]
+        }
+      }
+    ],
+    "overrides": [
+      {"rule_id": "bucket-uniform-access-disabled", "disabled": true}
+    ]
+  }
+}
+EOF
+limacharlie hive set --hive-name cloudsec_policy --key my-rules \
+  --oid $OID --input-file rules.json --enabled
+```
+
+The write is validated synchronously — every `detect` block is compiled on the
+real detection engine — so a bad rule fails your pipeline loudly instead of
+saving and silently never matching. That makes `hive set` a usable CI gate: a
+non-zero exit is a rule that could not run.
+
+## Remediation SLAs
+
+An `sla`-typed record puts a due date on findings. There is no default one, so
+adopting an SLA is a single write — see [Remediation SLAs](remediation-sla.md).
+
+```bash
+cat > sla.json <<EOF
+{
+  "policy_type": "sla",
+  "sla": {
+    "default_due_days": { "CRITICAL": 7, "HIGH": 30, "MEDIUM": 90, "LOW": 180 }
+  }
+}
+EOF
+limacharlie hive set --hive-name cloudsec_policy --key sla \
+  --oid $OID --input-file sla.json --enabled
+```
+
+### Escalating an SLA breach
+
+The first projection pass that observes a finding past its due date emits
+`cloud_finding.sla_breached` — once per breach, never re-fired for the same
+deadline. The payload is flat: `finding_id`, `fingerprint`, `finding_class`,
+`severity`, `resource_urn`, `owner`, `ticket`, and `actor: "policy:sla"`.
+
+```yaml
+detect:
+  event: cloud_finding.sla_breached
+  op: exists
+  path: event/fingerprint
+respond:
+  - action: extension request
+    extension name: ext-cases
+    extension action: update_case
+    extension request:
+      detect_id: "{{ .event.fingerprint }}"
+      reopen_if_closed: true
+      note: "Remediation SLA breached — this finding is past its due date"
+```
+
+Because the event carries `owner` and `severity`, the same hook routes just as
+well to a paging Output or a team channel: branch on `severity` for who gets
+woken up, and on `owner` for where it lands.
+
+!!! note "Breach webhooks are capped per pass"
+    A pass that newly breaches a very large number of findings pushes at most
+    **200** breach events, so an SLA adopted over an old backlog cannot flood
+    your stream on day one. Every breach is still reflected in the findings API
+    — read `sla_state` there when you need the complete set.
+
 ## Saved queries
 
 Save a graph query as a `cloudsec_query` record and it appears in every
@@ -236,6 +331,9 @@ operator/policy disposition).
       the verb, to tell "fixed" from "accepted". These are not only human
       actions: a `suppression` policy emits the same verbs with `actor` set to
       `policy:<rule-name>`.
+    - `cloud_finding.sla_breached` — an open finding passed the `due_at` its
+      [`sla` policy](remediation-sla.md) assigned, emitted exactly once per
+      breach. See [Escalating an SLA breach](#escalating-an-sla-breach).
     - `cloudsec.sync_completed` — the first-sync summary
       (`{total, by_class, by_severity}`) emitted once instead of a
       per-finding `created` flood, so onboarding a large estate is one event,

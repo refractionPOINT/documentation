@@ -40,8 +40,8 @@ Shared behaviors:
 
 | Route | Returns |
 |---|---|
-| `GET /findings` | `{findings, next_cursor}` — the risk-ranked worklist. Filters: `severity[]`, `finding_class[]`, `status[]`, `account[]`, `reachable`, `kev`, `q`, `sort`, `order`, `cursor`, `limit`. |
-| `GET /findings/facets` | `{facets}` — cross-filtered facet counts under the same selectors. |
+| `GET /findings` | `{findings, next_cursor}` — the risk-ranked worklist. Filters: `severity[]`, `finding_class[]`, `status[]`, `account[]`, `owner[]`, `sla[]`, `reachable`, `kev`, `q`, `sort`, `order`, `cursor`, `limit`. `sort` is `lc_risk` (default), `severity`, `first_seen`, or `due_at`; `due_at` is the one key that defaults to **ascending** and sorts findings with no due date last. |
+| `GET /findings/facets` | `{facets}` — cross-filtered facet counts under the same selectors, including an `sla` dimension counting each state. |
 | `GET /findings/classes` | `{classes}` — the canonical `finding_class` enum (the 11 values), for building selectors. |
 | `GET /findings/causes` | `{causes, distinct}` — findings grouped by their **cause**, the mutable object (a firewall rule, a role binding) whose single edit resolves all of them. Takes the full findings selectors, plus `cause` for the exact count of one cause and `limit` (default 20, max 200) for the top causes; `distinct` is the total number of causes matching the filter. |
 | `GET /findings/{finding_id}` | `{finding}` — one finding in full. |
@@ -160,6 +160,7 @@ carry the same shape) — key fields:
 | `runtime_sids` | Sensors resolved onto the affected asset. |
 | `status`, `resolution`, `resolved_by`, `resolution_expires_at`, `owner`, `ticket` | The triage overlay. |
 | `first_seen`, `last_seen` | Lifecycle timestamps. |
+| `due_at`, `sla_source`, `sla_state` | The remediation clock. `due_at` (the deadline) and `sla_source` (the policy clause that set it, or `default`) are stored; `sla_state` — `breached` \| `due_soon` \| `on_track` \| `exempt` \| `none` — is **derived on every read** from `due_at`, `first_seen`, and `status`, because it changes with the clock and nothing writes when a deadline passes. All three are absent until the organization writes an [`sla` policy](remediation-sla.md); there is no default SLA. |
 
 ## Events
 
@@ -182,6 +183,11 @@ summary still counts the whole estate).
 - `cloud_finding.still_open` — re-asserted at most once a day for open
   findings with a linked ticket (the case-sync verb); the payload carries the
   `ticket` alongside the identity fields.
+- `cloud_finding.sla_breached` — emitted once, on the first projection pass
+  that observes an open finding past its `due_at`. The breach is latched, so
+  the event never re-fires for the same breach of the same deadline. Requires
+  an [`sla` policy](remediation-sla.md); granularity is the reprojection
+  cadence, not the second.
 
 **Disposition** — flat payload
 `{finding_id, fingerprint, finding_class, actor, note?}`, plus the finding's

@@ -596,9 +596,11 @@ nav:
           - Anthropic: cloud-security/provider-setup/anthropic.md
           - LimaCharlie: cloud-security/provider-setup/limacharlie.md
       - Findings & Triage: cloud-security/findings.md
+      - Remediation SLAs: cloud-security/remediation-sla.md
       - Security Graph & Queries: cloud-security/graph.md
       - Compliance: cloud-security/compliance.md
       - CAASM: cloud-security/caasm.md
+      - Custom Posture Rules: cloud-security/custom-rules.md
       - Configuration Reference: cloud-security/configuration.md
       - Command Line Interface: cloud-security/cli.md
       - API Reference: cloud-security/api-reference.md
