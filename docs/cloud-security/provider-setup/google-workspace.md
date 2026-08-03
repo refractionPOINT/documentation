@@ -52,10 +52,8 @@ https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.google
     `admin.reports.audit.readonly` reads the Admin SDK **Reports** audit stream
     to land Gemini-in-Workspace usage as an application with per-user access
     edges — only the set of users seen in the trailing window, never any
-    prompt or response content. Leaving it out is safe: the surface degrades to
-    unobserved (previously collected rows are kept, not deleted) and
-    `provider test` reports it as a failed **optional** check, so the connection
-    stays healthy overall.
+    prompt or response content. Skipping it costs only that surface: it degrades
+    to unobserved and previously collected rows are kept, never deleted.
 
 ## Register domain-wide delegation
 
@@ -205,6 +203,23 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `devices_ci` | — | Cloud Identity device inventory unavailable. |
 | `reports` | — | Gemini-in-Workspace usage unavailable (no AI-application rows or per-user access edges). |
 
+!!! warning "An ungranted optional scope still shows the connection as Failed"
+    The optional surfaces above degrade safely — the surface goes unobserved,
+    its previously collected rows are kept rather than deleted, and
+    `provider test` still reports **OK** overall, because only the required
+    checks decide that verdict.
+
+    The **Last Sync** badge on the providers page works differently. It reports
+    *partial coverage*: any collector left uncovered marks the sync **Failed**,
+    even when every required surface succeeded. So a connection that is working
+    as intended, minus one optional scope you chose not to grant, sits on a
+    permanent **Failed** badge.
+
+    Hover the badge for the error detail — it names the collectors that were
+    left uncovered and why. If the reason is a scope you deliberately skipped,
+    the connection is healthy and the badge can be ignored; grant the scope to
+    clear it.
+
 ## Troubleshooting
 
 | `provider test` error | Cause | Fix |
@@ -215,4 +230,4 @@ limacharlie cloudsec provider test --input-file provider.yaml
 | `token mint failed (HTTP 401): scope not granted to the delegated admin` | DWD missing scopes (all-or-nothing mint), a non-`.readonly` variant, or not yet propagated | Register the **full** scope list exactly; wait for propagation; confirm the service account's client ID matches |
 | `core` fails: `HTTP 403: Not Authorized to access this resource/api` | A token **was** minted (so the scopes are registered) but the caller has no Workspace admin authority. Almost always the secret is a **raw service-account key with no `admin_email`** — typically the GCP provider's secret reused verbatim — so nothing is impersonated and the delegation you configured is never used. It is silently accepted as the no-delegation form. Otherwise, `admin_email` names a user who is not a Super Admin | Give Workspace its **own** secret in the wrapper envelope with `admin_email`; leave the GCP provider's secret untouched. Reusing the same *service account* is fine — reusing the same *secret* is not |
 | `HTTP 403: … API has not been used in project …` | Admin SDK / Cloud Identity API not enabled | Enable the named API in the service account's project |
-| `reports` fails: `HTTP 401: Access denied. You are not authorized to read activity records.` | The token minted (so the DWD registration itself is fine) but the impersonated admin cannot read the Reports audit stream — either `admin.reports.audit.readonly` is missing from the DWD scope list, or `admin_email` names an admin without the *Reports* privilege | Add the scope to the delegation and impersonate a Super Admin. Optional surface: leaving it as-is only drops Gemini-in-Workspace usage |
+| `reports` fails: `HTTP 401: Access denied. You are not authorized to read activity records.` | The token minted (so the DWD registration itself is fine) but the impersonated admin cannot read the Reports audit stream — either `admin.reports.audit.readonly` is missing from the DWD scope list, or `admin_email` names an admin without the *Reports* privilege | Add the scope to the delegation and impersonate a Super Admin. Optional surface: leaving it as-is drops only Gemini-in-Workspace usage — but it does leave the connection's **Last Sync** badge on Failed, per the note above |
